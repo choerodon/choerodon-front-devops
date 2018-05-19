@@ -1,0 +1,43 @@
+.c7n-app-wrapper {
+  .error-text {
+    height: 28px;
+    color: #da4336;
+    font-size: 12px;
+    display: block;
+  }
+
+  .display-none {
+    display: none;
+  }
+
+  .table-pagination {
+    margin-top: 10px;
+    float: right;
+    display: block;
+  }
+
+  .template-icon {
+    color: initial;
+    font-size: 18px;
+    padding-right: 18px;
+  }
+
+  .c7n-app-table {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 250px;
+    overflow: hidden;
+    display: block;
+  }
+
+  .c7n-app-icon-disabled {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.36);
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    display: inline-block;
+  }
+}
+

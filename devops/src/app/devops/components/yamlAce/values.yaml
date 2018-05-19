@@ -1,0 +1,48 @@
+# Default values for api-gateway.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: registry.saas.hand-china.com/choerodon-devops/choerodon-front-devops
+  tag: develop.20180502172827
+  pullPolicy: Always
+
+preJob:
+  preConfig:
+    mysql:
+      host: 192.168.12.175
+      port: 3306
+      username: root
+      password: handhand
+      dbname: iam_service
+    lable:
+      servicecode: choerodon-front-devops
+      servicegroup: com.hand.devops
+      servicekind: MicroServiceUI
+
+service:
+  enable: false
+  type: ClusterIP
+  port: 80
+  name: choerodon-front-devops
+
+ingress:
+  enable: false
+  host: devops.choerodon.alpha.saas.hand-china.com
+
+env:
+  open:
+    PRO_API_HOST: gateway.alpha.saas.hand-china.com
+resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources,such as Minikube. If you do want to specify resources,uncomment the following
+  # lines,adjust them as necessary,and remove the curly braces after 'resources:'.
+  limits:
+    # cpu: 100m
+    # memory: 2Gi
+  requests:
+    # cpu: 100m
+    # memory: 1Gi

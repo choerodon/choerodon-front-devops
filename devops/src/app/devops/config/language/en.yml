@@ -1,0 +1,11 @@
+"devops": "Devops"
+"devops.template": "Template"
+"devops.app": "App"
+"devops.ci": "CI"
+"devops.version": "App Version"
+"devops.environment": "Environment"
+"devops.deploy": "Deploy"
+"devops.service": "Service"
+"devops.domain": "Domain"
+"devops.container": "Container"
+

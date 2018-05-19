@@ -1,0 +1,130 @@
+.c7n-deployDetail-wrapper {
+  .c7n-deployDetail-title {
+    margin-bottom: 16px;
+  }
+
+  .c7n-deployDetail-card {
+    margin-bottom: 20px;
+    margin-top: 4px;
+  }
+
+  .c7n-deployDetail-card-content {
+    padding: 16px 24px 20px 24px;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: rgba(0, 0, 0, 0.12) 0 1px 6px, rgba(0, 0, 0, 0.12) 0 1px 4px;
+    border-radius: 2px;
+
+    //&:hover {
+    //  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0;
+    //}
+  }
+
+  .c7n-deployDetail-pre {
+    background: black;
+    color: white;
+    padding: 10px;
+  }
+
+  .c7n-header-table {
+    margin-left: -8px;
+    margin-top: 6px;
+    margin-bottom: 8px;
+  }
+
+  .c7n-deployDetail-hidden {
+    display: none;
+  }
+
+  .c7n-deployDetail-show {
+    display: block;
+  }
+
+  .c7n-deployDetail-expand {
+    display: inline-block;
+    // float: right;
+
+    & span {
+      color: #3f51b5;
+      font-size: 18px;
+    }
+  }
+
+  .c7n-h2-inline {
+    display: inline-block;
+  }
+
+  .c7n-deployDetail-steps {
+    margin-bottom: 20px;
+  }
+
+  .c7n-deployDetail-table-title {
+    font-size: 16px;
+    color: #000;
+  }
+
+  .header-first {
+    margin-top: 24px;
+  }
+
+  .c7n-deployDetail-table-header {
+    margin-bottom: 40px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .c7n-deployDetail-table {
+    width: 100%;
+    margin-top: 16px;
+
+    & thead > tr {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.65);
+      text-align: left;
+      line-height: 20px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.36);
+    }
+
+    & tbody > tr {
+      font-size: 13px;
+      color: #000;
+      text-align: left;
+      line-height: 20px;
+    }
+
+    & tbody > tr td {
+      padding: 10px 0;
+    }
+  }
+
+  .stage-icon {
+    padding-bottom: 22px;
+    font-size: 30px;
+    margin-bottom: 9px;
+    margin-right: 10px;
+  }
+
+  .icon-success {
+    color: #1ab16f;
+  }
+
+  .icon-error {
+    color: grey;
+  }
+
+  .stage-title-text {
+    vertical-align: middle;
+    font-size: 18px;
+    color: rgba(0, 0, 0, 0.65);
+    // text-align: left;
+    line-height: 24px;
+  }
+
+  .c7n-stage-time {
+    font-size: 10px;
+    color: rgba(0, 0, 0, 0.26);
+    text-align: left;
+    line-height: 16px;
+  }
+}

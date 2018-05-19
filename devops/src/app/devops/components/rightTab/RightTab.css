@@ -1,0 +1,34 @@
+.rightTab-content {
+  display: inline-block;
+  float: right;
+  width: 30%;
+  border-left: 1px solid #d3d3d3; }
+
+.rightTab-hidden {
+  display: none; }
+
+.rightTab-tabPane-title {
+  height: 43px;
+  line-height: 43px; }
+
+.rightTab-tabPane-title-text {
+  padding-left: 20px;
+  vertical-align: middle;
+  color: black;
+  font-size: 18px; }
+
+.rightTab-tabPane-icon-edit {
+  font-size: 12px;
+  padding-right: 4px; }
+
+.rightTab-tabPane-close {
+  vertical-align: middle;
+  color: #3f51b5; }
+
+.rightTab-tabPane-edit {
+  margin-right: 23px;
+  color: #3f51b5;
+  font-size: 13px;
+  text-decoration: none; }
+
+/*# sourceMappingURL=RightTab.css.map */

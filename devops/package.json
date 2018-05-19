@@ -1,0 +1,29 @@
+{
+  "name": "devops",
+  "description": "this is devops",
+  "author": "",
+  "license": "MIT",
+  "version": "0.0.1",
+  "main": "index.js",
+  "keywords": [],
+  "devDependencies": {
+    "why-did-you-update": "^0.1.1"
+  },
+  "dependencies": {
+    "deep-diff": "^1.0.0",
+    "json-beautify": "^1.0.1",
+    "rc-queue-anim": "^1.5.0",
+    "react-ace": "^6.0.0",
+    "react-ace-editor": "0.0.2",
+    "react-addons-css-transition-group": "^15.6.2",
+    "react-codemirror": "^1.0.0",
+    "react-copy-to-clipboard": "^5.0.1",
+    "react-dnd": "^2.6.0",
+    "react-dnd-html5-backend": "^2.6.0",
+    "react-loading": "^1.0.4",
+    "react-static-container": "^1.0.2",
+    "react-timeago": "^3.4.3",
+    "stylelint-config-standard": "^18.2.0",
+    "timeago-react": "^2.0.0"
+  }
+}

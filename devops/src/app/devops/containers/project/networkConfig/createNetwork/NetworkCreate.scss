@@ -1,0 +1,98 @@
+.c7n-network-create {
+  .c7n-domain-icon-delete {
+    position: absolute;
+    bottom: 20px;
+  }
+
+  .c7n-domain-icon-delete-disabled {
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .c7n-domain-btn {
+    background: white !important;
+    padding-left: 0;
+  }
+
+  .c7n-domain-btn-wrapper {
+    margin-bottom: 38px;
+  }
+
+  .c7n-create-network-formitem {
+    width: 512px;
+  }
+
+  .c7n-create-network-test {
+    width: 512px;
+    display: inline-block;
+  }
+
+  .c7n-create-network-formitem-network {
+    width: 300px;
+    display: block;
+  }
+
+  .c7n-app-icon-disabled {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.36);
+    width: 32px;
+    display: inline-block;
+    padding: 22px 0 0 3px;
+    position: absolute;
+    bottom: 29px;
+  }
+}
+
+.c7n-network-status {
+  display: inline-block;
+  width: 50px;
+  height: 16px;
+  font-size: 13px;
+  border-radius: 2px;
+  color: white;
+  text-align: center;
+  line-height: 16px;
+  margin-right: 8px;
+
+  div {
+    transform: scale(0.8);
+  }
+}
+
+.status-success {
+  background: #1bc123;
+}
+
+.status-error {
+  background: #f44336;
+}
+
+.status-success-instance {
+  color: #1bc123;
+}
+
+.status-error-instance {
+  color: #f44336;
+}
+
+.status-instance {
+  vertical-align: middle;
+  font-size: 16px;
+  padding-right: 3px;
+}
+
+.c7n-network-square {
+  background-color: rgba(0, 0, 0, 0.08);
+  display: inline-block;
+  border-radius: 100px;
+  padding: 0 12px;
+  margin: 0 5px;
+  line-height: 20px;
+  // border-radius: 2px;
+  font-size: 10px;
+  // width: 115px;
+}
+
+.c7n-create-network-test .ant-select-tags .ant-select-selection--multiple .ant-select-selection__choice {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+  color: #0f0f0f;
+}

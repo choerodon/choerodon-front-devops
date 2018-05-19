@@ -1,0 +1,50 @@
+.c7n-single-env-outer {
+  overflow: hidden;
+  position: relative;
+  height: 105px;
+
+  .c7n-env-push-left,
+  .c7n-env-push-right {
+    display: none;
+  }
+
+  .c7n-push-none {
+    display: none !important;
+  }
+
+  &:hover {
+    .c7n-env-push-left {
+      display: inline-block;
+      height: 50px;
+      position: absolute;
+      width: 25px;
+      background-color: rgba(0, 0, 0, 0.2);
+      color: white;
+      line-height: 50px;
+      text-align: center;
+      font-size: 24px;
+      top: 17px;
+      z-index: 999;
+    }
+
+    .c7n-env-push-right {
+      display: inline-block;
+      right: 0;
+      height: 50px;
+      position: absolute;
+      width: 25px;
+      background-color: rgba(0, 0, 0, 0.2);
+      color: white;
+      line-height: 50px;
+      text-align: center;
+      font-size: 24px;
+      top: 17px;
+      z-index: 999;
+    }
+  }
+}
+
+.c7n-single-env-inner {
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
