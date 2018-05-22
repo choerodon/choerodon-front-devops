@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Input, Icon, Card } from 'choerodon-ui';
+import { Button, Input, Icon } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
 import './AppStore.scss';
 import '../../../main.scss';
@@ -26,7 +26,7 @@ class AppStoreHome extends Component {
   };
 
   /**
-   * 跳转部署应用
+   * 跳转应用详情
    */
   appDetail = (id) => {
     const { AppState } = this.props;
@@ -83,15 +83,22 @@ class AppStoreHome extends Component {
               ref={node => this.searchInput = node}
             />
           </div>
-          <Card title="Card title" style={{ width: 300 }}>
-            <Button
-              onClick={this.appDetail.bind(this, 99)}
-            >
-              详情
-            </Button>
-            <p>Card content</p>
-            <p>Card content</p>
-          </Card>
+          <div
+            role="none"
+            className="c7n-store-card"
+            onClick={this.appDetail.bind(this, 99)}
+          >
+            <div className="c7n-store-card-icon" />
+            <div className="c7n-store-card-name">
+              Ad Exchange Seller
+            </div>
+            <div className="c7n-store-card-source">
+              devops
+            </div>
+            <div className="c7n-store-card-des">
+              Choerodon认为软件交付过程的本质是用户价值的实现，而用户价值的实现是通过用户价值流动来体现的。
+            </div>
+          </div>
         </div>
       </div>
     );
