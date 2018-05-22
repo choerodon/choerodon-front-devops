@@ -97,7 +97,7 @@ class ContainerHome extends Component {
       </div>
       <div>
         <span className="c7n-container-circle">V</span>
-        <span>{record.appVersion}</span>
+        <span className="c7n-deploy-text_gray">{record.appVersion}</span>
       </div>
     </div>),
   }, {

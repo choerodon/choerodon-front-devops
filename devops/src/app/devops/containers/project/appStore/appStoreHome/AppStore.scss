@@ -49,3 +49,47 @@
     display: none;
   }
 }
+
+.c7n-store-card {
+  cursor: pointer;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  margin-right: 16px;
+  background-color: white;
+  height: 200px;
+  width: 250px;
+  display: inline-block;
+  box-shadow: 0 1px 3px -2px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);
+  border-radius: 2px;
+
+  &:hover {
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+  }
+
+  .c7n-store-card-icon {
+    margin-bottom: 8px;
+    border-radius: 50px;
+    height: 50px;
+    width: 50px;
+    background-image: url(../../../../../devops/assets/images/app.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+  }
+
+  .c7n-store-card-name {
+    font-size: 15px;
+  }
+
+  .c7n-store-card-source {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.65);
+    margin-bottom: 8px;
+  }
+
+  .c7n-store-card-des {
+    font-size: 13px;
+    text-align: justify;
+    color: rgba(0, 0, 0, 0.65);
+  }
+}
