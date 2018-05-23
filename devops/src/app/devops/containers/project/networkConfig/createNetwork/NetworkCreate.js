@@ -331,6 +331,7 @@ class NetworkCreate extends Component {
             }],
           })(
             <Select
+              dropdownClassName="c7n-network-env"
               autoFocus
               filter
               showSearch
@@ -346,9 +347,7 @@ class NetworkCreate extends Component {
             >
               {env.map(v => (
                 <Option key={v.id} value={v.id} disabled={!v.connect}>
-                  <div className={v.connect ? 'c7n-network-status status-success' : 'c7n-network-status status-error'}>
-                    <div>{v.connect ? '运行中' : '未连接'}</div>
-                  </div>
+                  {!v.connect && <span className="status-error icon-portable_wifi_off" />}
                   {v.name}
                 </Option>
               ))}

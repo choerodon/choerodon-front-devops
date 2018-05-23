@@ -41,6 +41,32 @@ class Editnetwok extends Component {
     this.loadData(this.props.id);
     // store.loadEnv(proId);
   }
+  /**
+   * 根据输入框的值判断实例的状态
+   */
+  getInstanceStatus =(index, versionId) => {
+    const { store } = this.props;
+    const instance = store.instance;
+    const value = this.props.form.getFieldValue(`instance-${index}`);
+    const options = _.filter(instance, v => v.id === versionId)[0].options;
+    const status = [];
+    if (value) {
+      value.map((v) => {
+        options.map((opt) => {
+          if (v === opt.id && opt.intanceStatus && opt.intanceStatus !== 'running') {
+            status.push(true);
+          }
+          return status;
+        });
+        return status;
+      });
+    }
+    if (status.includes(true)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
   loadData =(id) => {
     const { store } = this.props;
     const { projectId } = this.state;
@@ -294,7 +320,6 @@ class Editnetwok extends Component {
     }
   };
 
-
   render() {
     const { getFieldDecorator } = this.props.form;
     const menu = this.props.AppState.currentMenuType;
@@ -321,13 +346,10 @@ class Editnetwok extends Component {
       tooltipTitle = '该应用下没有可选版本';
     }
     let haveOption = false;
-    let vss = '';
     if (versionsArr.length && instance.length
       && instance.length >= versionsArr.length
       && selectVersionArr.length >= instance.length) {
       haveOption = true;
-      vss = _.map(
-        _.filter(instance, ver => ver.id === selectVersionArr[0])[0].options, 'id');
     }
 
 
@@ -368,16 +390,17 @@ class Editnetwok extends Component {
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               transform: value => value.toString(),
             }],
-            initialValue: this.state.envId || (SingleData && SingleData.envId),
+            initialValue: this.state.envId || (SingleData && SingleData.envName),
           })(
             <Select
+              dropdownClassName="c7n-network-env"
               disabled
               filter
               className="c7n-create-network-formitem"
               showSearch
               label="环境名称"
               optionFilterProp="children"
-              filterOption={(input, option) => option.props.children.props.children[2]
+              filterOption={(input, option) => option.props.children[1]
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
               {store.loading ? (<Option key={Math.random()}>
@@ -385,20 +408,8 @@ class Editnetwok extends Component {
               </Option>)
                 : env.map(v => (
                   <Option key={v.id} value={v.id} disabled={!v.connect} >
-                    <div
-                      style={{
-                        display: 'inline-block',
-                        alignItems: 'center',
-                      }}
-                    >
-                      {
-                        v.connect === true && <span className="c7n-network-status status-success">运行中</span>
-                      }
-                      {
-                        v.connect === false && <span className="c7n-network-status status-error">未连接</span>
-                      }
-                      {v.name}
-                    </div>
+                    {v.connect ? <span className="status-success" /> : <span className="status-error icon-portable_wifi_off" />}
+                    {v.name}
                   </Option>
                 ))}
             </Select>,
@@ -497,16 +508,22 @@ class Editnetwok extends Component {
           <FormItem
             className="c7n-create-network-test"
             {...formItemLayout}
+            // validateStatus={haveOption && this.getInstanceStatus(index,
+            // selectVersionArr[index]) ? 'error' : ''}
+            // help={haveOption && _.filter(_.map(SingleData.appVersion[index].appInstance,
+            // 'intanceStatus'), v => v !== 'running').length ? '实例故障，建议更换' : ''}
           >
             {getFieldDecorator(`instance-${index}`, {
               rules: [{
                 required: true,
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
                 transform: value => value.toString(),
+                // validator: this.checkName,
               }],
               initialValue: haveOption ? _.map(SingleData.appVersion[index].appInstance, 'id') : undefined,
             })(
               <Select
+                onSelect={this.selectInstance}
                 dropdownClassName="test"
                 filter
                 label={Choerodon.getMessage('实例', 'instance')}
@@ -517,11 +534,7 @@ class Editnetwok extends Component {
                 size="default"
                 optionFilterProp="children"
                 optionLabelProp="children"
-                // onFocus={this.loadInstance.bind(this, index)}
-                // onFocus={store.loadInstance(projectId,
-                //   this.state.envId || SingleData.envId,
-                //   this.state.appId || SingleData.appId,
-                //   this.state.versionId || versionDto[index].appVersionId)}
+
                 filterOption={
                   (input, option) =>
                     option.props.children[1]
@@ -533,8 +546,9 @@ class Editnetwok extends Component {
                     <Option
                       // disabled={instancess.intanceStatus &&
                       // instancess.intanceStatus !== 'running'}
-                      key={instancess.id}
-                      // value={instancess.id}
+                      value={instancess.id}
+                      // eslint-disable-next-line
+                      key={`${index}-${instancess.intanceStatus}`}
                     >
                       {instancess.intanceStatus && instancess.intanceStatus !== 'running' ? <Tooltip title="实例不正常，建议更换实例">
                         <span className="icon-error status-error-instance status-instance" />

@@ -77,27 +77,10 @@
     width: 512px;
   }
 
-  .c7n-network-status {
-    display: inline-block;
-    height: 16px;
-    font-size: 13px;
-    border-radius: 2px;
-    color: white;
-    text-align: center;
-    line-height: 16px;
-    margin-right: 8px;
-
-    div {
-      transform: scale(0.8);
-    }
-  }
-
-  .status-success {
-    background: #1bc123;
-  }
-
   .status-error {
-    background: #f44336;
+    padding-right: 2px;
+    color: #d50000;
+    vertical-align: middle;
   }
 
   .c7n-app-icon-disabled {
@@ -107,5 +90,44 @@
     height: 32px;
     text-align: center;
     display: inline-block;
+  }
+
+  .c7n-network-status {
+    display: inline-block;
+    height: 16px;
+    font-size: 13px;
+    border-radius: 2px;
+    color: white;
+    text-align: center;
+    line-height: 16px;
+    margin-right: 8px;
+    vertical-align: middle;
+
+    div {
+      transform: scale(0.8);
+    }
+  }
+
+  .c7n-network-status-running {
+    background: #1bc123;
+  }
+
+  .c7n-network-status-failed {
+    background: #f44336;
+  }
+
+  .c7n-status-failed {
+    color: #f44336;
+    vertical-align: middle;
+  }
+
+  .c7n-network-status-operating {
+    background: #4d90fe;
+  }
+
+  .c7n-network-icon {
+    vertical-align: middle;
+    font-size: 13px;
+    padding-right: 2px;
   }
 }

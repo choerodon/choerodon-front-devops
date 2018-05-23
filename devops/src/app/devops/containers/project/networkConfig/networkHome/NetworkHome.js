@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Button, Form, Popover, Modal } from 'choerodon-ui';
+import { Table, Button, Form, Popover, Modal, Tooltip, Progress } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
 import _ from 'lodash';
 import Permission from 'PerComponent';
@@ -101,6 +101,32 @@ class NetworkHome extends Component {
     const data = NetworkConfigStore.getAllData;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
+      title: '网络状态',
+      className: 'c7n-network-text_top',
+      // dataIndex: 'name',
+      key: 'status',
+      // width: '5%',
+      render: (record) => {
+        let statusDom = null;
+        switch (record.status) {
+          case 'failed':
+            statusDom = (<div className="c7n-network-status c7n-network-status-failed">
+              <div>失败</div>
+            </div>);
+            break;
+          case 'operating':
+            statusDom = (<div className="c7n-network-status c7n-network-status-operating">
+              <div>处理中</div>
+            </div>);
+            break;
+          default:
+            statusDom = (<div className="c7n-network-status c7n-network-status-running">
+              <div>运行中</div>
+            </div>);
+        }
+        return (statusDom);
+      },
+    }, {
       title: '网络名称',
       className: 'c7n-network-text_top',
       // dataIndex: 'name',
@@ -108,10 +134,28 @@ class NetworkHome extends Component {
       sorter: true,
       filters: [],
       // width: '5%',
-      render: record => (
-        <MouserOverWrapper text={record.name || ''} width={100}>
-          {record.name}</MouserOverWrapper>
-      ),
+      render: (record) => {
+        let statusDom = null;
+        switch (record.status) {
+          case 'failed':
+            statusDom = (<Tooltip title={record.error}>
+              <span className="icon-error c7n-status-error" />
+            </Tooltip>);
+            break;
+          case 'operating':
+            statusDom = (<Tooltip title={record.type}>
+              <Progress type="loading" width="15px" />
+            </Tooltip>);
+            break;
+          default:
+            statusDom = null;
+        }
+        return (<React.Fragment>
+          {statusDom}
+          <MouserOverWrapper text={record.name || ''} width={80} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+            {record.name}</MouserOverWrapper>
+        </React.Fragment>);
+      },
     }, {
       title: '环境名称',
       className: 'c7n-network-text_top',
@@ -121,11 +165,13 @@ class NetworkHome extends Component {
       // width: '14%',
       filters: [],
       render: record => (
-        <MouserOverWrapper text={record.envName || ''} width={120}>
-          <div className={record.envStatus ? 'c7n-network-status status-success' : 'c7n-network-status status-error'}>
-            <div>{record.envStatus ? '运行中' : '未连接'}</div>
-          </div>
-          {record.envName}</MouserOverWrapper>
+        <React.Fragment>
+          { record.envStatus ? null : <Tooltip title="未连接">
+            <span className="icon-portable_wifi_off status-error" />
+          </Tooltip> }
+          <MouserOverWrapper text={record.envName || ''} width={80} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+            {record.envName}</MouserOverWrapper>
+        </React.Fragment>
       ),
     }, {
       title: '外部IP',
@@ -160,7 +206,7 @@ class NetworkHome extends Component {
       // width: '12%',
       render: record => (
         <React.Fragment>
-          <div className="c7n-network-title"><div>App</div></div>
+          <span className="icon-store_mall_directory c7n-network-icon" />
           <MouserOverWrapper text={record.appName || ''} width={80} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
             <span>{record.appName}</span>
           </MouserOverWrapper>
@@ -177,7 +223,6 @@ class NetworkHome extends Component {
         <React.Fragment>
           {_.map(record.appVersion, versions =>
             (<div key={versions.id} className={`c7n-network-col_border col-${record.id}-${versions.id}`}>
-              <span className="c7n-network-circle">V</span>
               <MouserOverWrapper text={versions.version || ''} width={51} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
                 <span className="c7n-network-text_gray">{versions.version}</span>
               </MouserOverWrapper>
@@ -210,19 +255,46 @@ class NetworkHome extends Component {
       width: '98px',
       key: 'action',
       className: 'c7n-network-text_top',
-      render: record => (
-        <div>
+      render: (record) => {
+        let editDom = null;
+        let deletDom = null;
+        switch (record.status) {
+          case 'operating':
+            editDom = (<Popover trigger="hover" placement="bottom" content={<div>处理中</div>}>
+              <span className="icon-mode_edit c7n-app-icon-disabled" />
+            </Popover>);
+            deletDom = (<Popover trigger="hover" placement="bottom" content={<div>处理中</div>}>
+              <span className="icon-delete_forever c7n-app-icon-disabled" />
+            </Popover>);
+            break;
+          default:
+            editDom = (<React.Fragment>
+              {record.envStatus ? <Popover trigger="hover" placement="bottom" content={<div>修改网络</div>}>
+                <Button shape="circle" funcType="flat" onClick={this.editNetwork.bind(this, record.id)}>
+                  <span className="icon-mode_edit" />
+                </Button>
+              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>环境故障中</div>}>
+                <span className="icon-mode_edit c7n-app-icon-disabled" />
+              </Popover>}
+            </React.Fragment>);
+            deletDom = (<React.Fragment>
+              {record.envStatus ? <Popover trigger="hover" placement="bottom" content={<div>删除网络</div>}>
+                <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
+                  <span className="icon-delete_forever" />
+                </Button>
+              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>环境故障中</div>}>
+                <span className="icon-delete_forever c7n-app-icon-disabled" />
+              </Popover>}
+            </React.Fragment>);
+        }
+        return (<div>
           <Permission
             service={['devops-service.devops-service.update']}
             type={type}
             projectId={projectId}
             organizationId={orgId}
           >
-            {record.envStatus ? <Popover trigger="hover" placement="bottom" content={<div>修改网络</div>}>
-              <Button shape="circle" funcType="flat" onClick={this.editNetwork.bind(this, record.id)}>
-                <span className="icon-mode_edit" />
-              </Button>
-            </Popover> : <span className="icon-mode_edit c7n-app-icon-disabled" />}
+            {editDom}
           </Permission>
           <Permission
             service={['devops-service.devops-service.delete']}
@@ -230,15 +302,10 @@ class NetworkHome extends Component {
             projectId={projectId}
             organizationId={orgId}
           >
-            {record.envStatus ? <Popover trigger="hover" placement="bottom" content={<div>删除网络</div>}>
-              <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
-                <span className="icon-delete_forever" />
-              </Button>
-            </Popover> : <span className="icon-mode_edit icon-delete_forever" /> }
-
+            {deletDom}
           </Permission>
-        </div>
-      ),
+        </div>);
+      },
     }];
     return (
       <div className="c7n-region page-container c7n-network-wrapper">

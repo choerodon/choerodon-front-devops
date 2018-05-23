@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Button, Form, Select, Popover, Modal } from 'choerodon-ui';
+import { Table, Button, Form, Select, Popover, Modal, Tooltip, Progress } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
 import Permission from 'PerComponent';
 import _ from 'lodash';
@@ -71,16 +71,58 @@ class DomainHome extends Component {
     const projectName = menu.name;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
-      title: '域名',
+      title: '域名状态',
+      className: 'c7n-network-text_top',
+      // dataIndex: 'name',
+      render: (record) => {
+        let statusDom = null;
+        switch (record.status) {
+          case 'failed':
+            statusDom = (<div className="c7n-domain-status c7n-domain-status-failed">
+              <div>失败</div>
+            </div>);
+            break;
+          case 'operating':
+            statusDom = (<div className="c7n-domain-status c7n-domain-status-operating">
+              <div>处理中</div>
+            </div>);
+            break;
+          default:
+            statusDom = (<div className="c7n-domain-status c7n-domain-status-running">
+              <div>运行中</div>
+            </div>);
+        }
+        return (statusDom);
+      },
+    }, {
+      title: '域名名称',
       className: 'c7n-network-text_top',
       // dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
-      render: record => (
-        <MouserOverWrapper text={record.name || ''} width={100}>
-          {record.name}</MouserOverWrapper>
-      ),
+      render: (record) => {
+        let statusDom = null;
+        switch (record.status) {
+          case 'failed':
+            statusDom = (<Tooltip title={record.error}>
+              <span className="icon-error c7n-status-error" />
+            </Tooltip>);
+            break;
+          case 'operating':
+            statusDom = (<Tooltip title={record.type}>
+              <Progress type="loading" width="15px" />
+            </Tooltip>);
+            break;
+          default:
+            statusDom = null;
+        }
+        return (<React.Fragment>
+          {statusDom}
+          <MouserOverWrapper text={record.name || ''} width={100} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+            {record.name}</MouserOverWrapper>
+        </React.Fragment>);
+      },
     }, {
       title: '域名地址',
       className: 'c7n-network-text_top',
@@ -100,11 +142,14 @@ class DomainHome extends Component {
       sorter: true,
       filters: [],
       render: record => (
-        <MouserOverWrapper text={record.envName || ''} width={120}>
-          <div className={record.envStatus ? 'c7n-network-status status-success' : 'c7n-network-status status-error'}>
-            <div>{record.envStatus ? '运行中' : '未连接'}</div>
-          </div>
-          {record.envName}</MouserOverWrapper>),
+        <React.Fragment>
+          { record.envStatus ? null : <Tooltip title="未连接">
+            <span className="icon-portable_wifi_off status-error" />
+          </Tooltip> }
+          <MouserOverWrapper text={record.envName || ''} width={80} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+            {record.envName}</MouserOverWrapper>
+        </React.Fragment>
+      ),
     }, {
       title: '路径',
       className: 'c7n-network-col',
@@ -140,20 +185,46 @@ class DomainHome extends Component {
       key: 'action',
       width: '96px',
       className: 'c7n-network-text_top',
-      render: (test, record) => (
-        <div>
+      render: (record) => {
+        let editDom = null;
+        let deletDom = null;
+        switch (record.status) {
+          case 'operating':
+            editDom = (<Popover trigger="hover" placement="bottom" content={<div>处理中</div>}>
+              <span className="icon-mode_edit c7n-app-icon-disabled" />
+            </Popover>);
+            deletDom = (<Popover trigger="hover" placement="bottom" content={<div>处理中</div>}>
+              <span className="icon-delete_forever c7n-app-icon-disabled" />
+            </Popover>);
+            break;
+          default:
+            editDom = (<React.Fragment>
+              {record.envStatus ? <Popover trigger="hover" placement="bottom" content={<div>修改网络</div>}>
+                <Button shape="circle" funcType="flat" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
+                  <span className="icon-mode_edit" />
+                </Button>
+              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>环境故障中</div>}>
+                <span className="icon-mode_edit c7n-app-icon-disabled" />
+              </Popover>}
+            </React.Fragment>);
+            deletDom = (<React.Fragment>
+              {record.envStatus ? <Popover trigger="hover" placement="bottom" content={<div>删除网络</div>}>
+                <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
+                  <span className="icon-delete_forever" />
+                </Button>
+              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>环境故障中</div>}>
+                <span className="icon-delete_forever c7n-app-icon-disabled" />
+              </Popover>}
+            </React.Fragment>);
+        }
+        return (<div>
           <Permission
             service={['devops-service.devops-ingress.update']}
             type={type}
             projectId={projectId}
             organizationId={orgId}
           >
-            {record.envStatus ? <Popover placement="bottom" content={<div><span>修改域名</span></div>}>
-              <Button shape="circle" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
-                <span className="icon-mode_edit" />
-              </Button>
-            </Popover>
-              : <span className="c7n-app-icon-disabled icon-mode_edit" /> }
+            {editDom}
           </Permission>
           <Permission
             service={['devops-service.devops-ingress.delete']}
@@ -161,14 +232,10 @@ class DomainHome extends Component {
             projectId={projectId}
             organizationId={orgId}
           >
-            {record.envStatus ? <Popover placement="bottom" content={<div><span>删除域名</span></div>}>
-              <Button shape="circle" onClick={this.openRemove.bind(this, record.id)}>
-                <span className="icon-delete_forever" />
-              </Button>
-            </Popover> : <span className="c7n-app-icon-disabled icon-delete_forever" /> }
-
+            {deletDom}
           </Permission>
-        </div>),
+        </div>);
+      },
     }];
     return (
       <div className="c7n-region page-container c7n-domain-wrapper">
