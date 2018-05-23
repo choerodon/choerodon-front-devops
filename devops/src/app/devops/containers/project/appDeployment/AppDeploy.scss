@@ -25,9 +25,14 @@
   text-align: center;
   padding: 1px;
   border-radius: 50%;
-  margin-right: 9px;
-  margin-left: 8px;
+  margin: 0 8px;
   display: inline-block;
+}
+
+.c7n-icon-publish {
+  font-size: 16px;
+  vertical-align: sub;
+  margin-right: 8px;
 }
 
 .c7n-deploy-circle-only {
@@ -130,6 +135,12 @@
 
 .c7n-app-select_180 {
   width: 180px;
+  margin-bottom: 32px;
+  margin-right: 20px;
+}
+
+.c7n-app-select_220 {
+  width: 220px;
   margin-bottom: 32px;
   margin-right: 20px;
 }
@@ -637,6 +648,11 @@
 
 .c7n-ist-status_ {
   background: rgba(0, 0, 0, 0.36);
+}
+
+.c7n-ist-status_off {
+  color: #d50000;
+  margin-right: 5px;
 }
 
 .c7n-ist-status_failed,

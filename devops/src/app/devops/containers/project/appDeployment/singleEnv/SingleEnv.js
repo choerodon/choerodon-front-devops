@@ -11,7 +11,6 @@ import DelIst from '../component/delIst/DelIst';
 import '../AppDeploy.scss';
 import '../../../main.scss';
 
-
 const Option = Select.Option;
 
 @inject('AppState')
@@ -297,19 +296,15 @@ class SingleEnvironment extends Component {
     const type = AppState.currentMenuType.type;
 
     let envName = envNames.length ? (<React.Fragment>
-      <div className={envNames[0].connect ? 'c7n-ist-status c7n-ist-status_running' : 'c7n-ist-status c7n-ist-status_failed'}>
-        <div>{envNames[0].connect ? '运行中' : '未连接'}</div>
-      </div>
+      {envNames[0].connect ? null : <span className="icon-portable_wifi_off c7n-ist-status_off" />}
       {envNames[0].name}
-    </React.Fragment>) : Choerodon.getMessage('暂无环境', 'Null');
+    </React.Fragment>) : [];
 
     if (envNames.length && store.envId) {
       _.map(envNames, (d) => {
         if (d.id === store.envId) {
           envName = (<React.Fragment>
-            <div className={d.connect ? 'c7n-ist-status c7n-ist-status_running' : 'c7n-ist-status c7n-ist-status_failed'}>
-              <div>{d.connect ? '运行中' : '未连接'}</div>
-            </div>
+            {d.connect ? null : <span className="icon-portable_wifi_off c7n-ist-status_off" />}
             {d.name}
           </React.Fragment>);
         }
@@ -317,13 +312,11 @@ class SingleEnvironment extends Component {
     }
 
     const envNameDom = envNames.length ? _.map(envNames, d => (<Option key={d.id}>
-      <div className={d.connect ? 'c7n-ist-status c7n-ist-status_running' : 'c7n-ist-status c7n-ist-status_failed'}>
-        <div>{d.connect ? '运行中' : '未连接'}</div>
-      </div>
-      {d.name}</Option>)) : <Option key="null">无</Option>;
+      {d.connect ? null : <span className="icon-portable_wifi_off c7n-ist-status_off" />}
+      {d.name}</Option>)) : [];
 
     const appNameDom = appNames.length ? _.map(appNames, d => (<div role="none" className={appID === d.id ? 'c7n-deploy-single_card c7n-deploy-single_card-active' : 'c7n-deploy-single_card'} onClick={this.loadDetail.bind(this, this.state.envId, d.id)}>
-      <div className="c7n-deploy-square"><div>App</div></div>
+      {d.publishLevel ? <span className="icon-store_mall_directory c7n-icon-publish" /> : <span className="icon-project c7n-icon-publish" />}
       <span className="c7n-text-ellipsis"><MouserOverWrapper text={d.name || ''} width={150}>{d.name}</MouserOverWrapper></span>
       <Permission
         service={['devops-service.application-instance.deploy']}
