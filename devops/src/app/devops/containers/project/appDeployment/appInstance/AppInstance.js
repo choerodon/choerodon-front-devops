@@ -248,11 +248,11 @@ class AppInstance extends Component {
       render: record => (
         <div>
           <div className="c7n-deploy-col-inside">
-            <div className="c7n-deploy-square"><div>App</div></div>
+            {record.publishLevel ? <span className="icon-store_mall_directory c7n-icon-publish" /> : <span className="icon-project c7n-icon-publish" />}
             <span>{record.appName}</span>
           </div>
           <div>
-            <span className="c7n-deploy-circle">V</span>
+            <span className="c7n-deploy-circle-only">V</span>
             <span className="c7n-deploy-text_gray">{record.appVersion}</span>
           </div>
         </div>

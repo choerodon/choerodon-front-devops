@@ -14,7 +14,7 @@ import '../../../main.scss';
 import DelIst from '../component/delIst/DelIst';
 
 let scrollLeft = 0;
-const Option = Select.Option;
+const { Option, OptGroup } = Select;
 
 @inject('AppState')
 @observer
@@ -356,9 +356,29 @@ class SingleApp extends Component {
     const ist = store.getIstAll;
     const envID = envId || (envCard.length ? envCard[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
-    const appName = (appNames.length ? appNames[0].name : undefined);
-    const appNameDom = appNames.length ? _.map(appNames, d => <Option key={d.id}>{d.name}</Option>) : <Option key="null">无</Option>;
-    const appVersion = appVer.length ? _.map(appVer, d => <Option key={d.id}>{d.version}</Option>) : <Option key="null">无</Option>;
+    const appName = (appNames.length ? (<React.Fragment>
+      {appNames[0].publishLevel ? <span className="icon-store_mall_directory c7n-icon-publish" /> : <span className="icon-project c7n-icon-publish" />}
+      {appNames[0].name}</React.Fragment>) : undefined);
+    const appVersion = appVer.length ?
+      _.map(appVer, d => <Option key={d.id}>{d.version}</Option>) : [];
+    const appProDom = [];
+    const appPubDom = [];
+    if (appNames.length) {
+      _.map(appNames, (d) => {
+        if (d.publishLevel) {
+          appPubDom.push(<Option key={d.id}>
+            <span className="icon-store_mall_directory c7n-icon-publish" />
+            {d.name}
+          </Option>);
+        } else {
+          appProDom.push(<Option key={d.id}>
+            <span className="icon-project c7n-icon-publish" />
+            {d.name}
+          </Option>);
+        }
+      });
+    }
+
     const leftDom = scrollLeft !== 0 ?
       <div role="none" className="c7n-env-push-left icon-navigate_before" onClick={this.pushScrollRight} />
       : null;
@@ -619,7 +639,7 @@ class SingleApp extends Component {
         <Select
           defaultValue={appName}
           label="应用名称"
-          className="c7n-app-select_180"
+          className="c7n-app-select_220"
           onChange={this.loadAppVer}
           optionFilterProp="children"
           filterOption={(input, option) =>
@@ -628,7 +648,12 @@ class SingleApp extends Component {
           allowClear
           showSearch
         >
-          {appNameDom}
+          <OptGroup label="本项目">
+            {appProDom}
+          </OptGroup>
+          <OptGroup label="应用市场">
+            {appPubDom}
+          </OptGroup>
         </Select>
         <Select
           label="应用版本"
@@ -661,7 +686,6 @@ class SingleApp extends Component {
           idArr={this.state.idArr}
           onClose={this.handleCancel}
         />}
-
         <DelIst
           open={this.state.openRemove}
           handleCancel={this.handleClose}

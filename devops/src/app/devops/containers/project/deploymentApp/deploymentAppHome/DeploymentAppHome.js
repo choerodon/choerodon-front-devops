@@ -163,9 +163,7 @@ class DeploymentAppHome extends Component {
                 {
                   DeploymentAppStore.envs.map(env => (
                     <Option key={env.id} value={env.id}>
-                      <div className={env.connect ? 'c7n-ist-status c7n-ist-status_running' : 'c7n-ist-status c7n-ist-status_failed'}>
-                        <div>{env.connect ? '运行中' : '未连接'}</div>
-                      </div>
+                      {env.connect ? null : <span className="icon-portable_wifi_off c7n-ist-status_off" />}
                       {env.name}
                     </Option>
                   ))

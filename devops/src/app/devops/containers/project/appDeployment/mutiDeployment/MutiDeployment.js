@@ -55,10 +55,10 @@ class MutiDeployment extends Component {
         const tdDom = [];
         envNames.map((e, envIndex) => {
           const versionDom = [];
-          app.envInstanceDTOS.map((env, insIndex) => {
+          app.envInstances.map((env, insIndex) => {
             if (env.envId === e.id) {
               versionDom.push(<td>
-                { env.envVersionDTOS.map(version => (<div className="c7n-deploy-muti-row">
+                { env.envVersions.map(version => (<div className="c7n-deploy-muti-row">
                   <div className="c7n-deploy-muti_card" >
                     <span className="c7n-deploy-circle">V</span>
                     <span className="c7n-deploy-istname c7n-text-ellipsis">{version.version}</span>
@@ -103,7 +103,7 @@ class MutiDeployment extends Component {
                     </Permission>)}
                 </div>))}
               </td>);
-            } else if (versionDom.length === 0 && insIndex === (app.envInstanceDTOS.length - 1)) {
+            } else if (versionDom.length === 0 && insIndex === (app.envInstances.length - 1)) {
               versionDom.push(<td />);
             }
             return versionDom;
@@ -117,7 +117,7 @@ class MutiDeployment extends Component {
             <div className="c7n-deploy-muti-row">
               <div className="c7n-deploy-muti_card">
                 <span className="c7n-deploy-circle">V</span>
-                <span className="c7n-deploy-istname c7n-text-ellipsis">{app.applicationLatestVersion}</span>
+                <span className="c7n-deploy-istname c7n-text-ellipsis">{app.latestVersion}</span>
               </div>
               <Permission
                 service={['devops-service.application-instance.deploy']}
@@ -130,7 +130,7 @@ class MutiDeployment extends Component {
                   funcType="flat"
                   shape="circle"
                   onClick={this.deployApp.bind(this, envNames[0].id,
-                    app.applicationLatestVersionId, app.applicationId)}
+                    app.latestVersionId, app.applicationId)}
                 >
                   <span className="icon-keyboard_arrow_right" />
                 </Button>
