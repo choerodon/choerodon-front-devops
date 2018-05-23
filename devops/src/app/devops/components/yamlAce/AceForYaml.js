@@ -13,6 +13,8 @@ const yaml = require('js-yaml');
 const observableDiff = require('deep-diff').observableDiff;
 
 const { Range } = ace.acequire('ace/range');
+
+const jsdiff = require('diff');
 /* eslint-disable react/no-string-refs */
 
 class AceForYaml extends Component {
@@ -43,6 +45,11 @@ class AceForYaml extends Component {
   componentDidMount() {
     // 第一次加载没有数据
     this.setOptions();
+    // const diff = jsdiff.diffLines(this.props.sourceData, this.props.value);
+    //
+    // diff.forEach((part) => {
+    //   debugger;
+    // });
     if (this.props.showDiff) {
       this.handleDataDiff();
     } else if (typeof this.props.sourceData !== 'string') {

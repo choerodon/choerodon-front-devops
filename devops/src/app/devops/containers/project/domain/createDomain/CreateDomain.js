@@ -297,6 +297,8 @@ class CreateDomain extends Component {
         <FormItem
           className="c7n-domain-formItem"
           {...formItemLayout}
+          // validateStatus={SingleData && SingleData.envStatus !== 'running' ? 'error' : ''}
+          // help={SingleData && SingleData.envStatus !== 'running' ? '环境未连接' : ''}
         >
           {getFieldDecorator('envId', {
             rules: [{
@@ -309,7 +311,7 @@ class CreateDomain extends Component {
             initialValue: SingleData ? SingleData.envId : undefined,
           })(
             <Select
-
+              dropdownClassName="c7n-domain-env"
               autoFocus
               filter
               onSelect={this.selectEnv}
@@ -318,13 +320,11 @@ class CreateDomain extends Component {
               optionFilterProp="children"
               // onChange={handleChange}
               filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                option.props.children[1].toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
               {env.length && env.map(v => (
                 <Option value={v.id} key={`${v.id}-env`} disabled={!v.connect}>
-                  <div className={v.connect ? 'c7n-ist-status c7n-ist-status_running' : 'c7n-ist-status c7n-ist-status_failed'}>
-                    <div>{v.connect ? '运行中' : '未连接'}</div>
-                  </div>
+                  {!v.connect && <Tooltip title="未连接"><span className="status-error icon-portable_wifi_off" /></Tooltip>}
                   {v.name}
                 </Option>
               ))}
@@ -404,6 +404,10 @@ class CreateDomain extends Component {
           <FormItem
             className="c7n-formItem_312"
             {...formItemLayout}
+            // validateStatus={SingleData && dto.length > index && dto[index].
+            // serviceStatus !== 'running' ? 'error' : ''}
+            // help={SingleData && dto.length > index && dto[index].
+            // serviceStatus !== 'running' ? '网络故障，建议更换' : ''}
           >
             {getFieldDecorator(`network-${data.networkIndex}`, {
               rules: [{
@@ -435,9 +439,19 @@ class CreateDomain extends Component {
                 }
               >
                 {network.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
-                  <div className={datas.serviceStatus && datas.serviceStatus !== 'running' ? 'c7n-ist-status c7n-ist-status_failed' : 'c7n-ist-status c7n-ist-status_running'}>
-                    <div>{datas.serviceStatus && datas.serviceStatus !== 'running' ? '故障' : '正常'}</div>
-                  </div>
+                  {datas.serviceStatus && datas.serviceStatus === 'running' && <div className={datas.serviceStatus && datas.serviceStatus === 'running' && 'c7n-domain-create-status c7n-domain-create-status_running'}>
+                    {datas.serviceStatus && datas.serviceStatus === 'running' && <div>正常</div> }
+                  </div> }
+                  {datas.serviceStatus && datas.serviceStatus === 'deleted' && <div className={datas.serviceStatus && datas.serviceStatus === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
+                    {datas.serviceStatus && datas.serviceStatus === 'deleted' && <div>已删除</div> }
+                  </div> }
+                  {datas.serviceStatus && datas.serviceStatus === 'failed' && <div className={datas.serviceStatus && datas.serviceStatus === 'failed' && 'c7n-domain-create-status c7n-domain-create-status_failed'}>
+                    {datas.serviceStatus && datas.serviceStatus === 'failed' && <div>失败</div> }
+                  </div> }
+                  {datas.serviceStatus && datas.serviceStatus === 'operating' && <div className={datas.serviceStatus && datas.serviceStatus === 'operating' && 'c7n-domain-create-status c7n-domain-create-status_operating'}>
+                    {datas.serviceStatus && datas.serviceStatus === 'operating' && <div>处理中</div> }
+                  </div> }
+
                   {datas.name}</Option>),
                 )}
               </Select>,

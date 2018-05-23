@@ -51,7 +51,19 @@
   }
 }
 
-.c7n-ist-status {
+.c7n-domain-env {
+  .status-success {
+    padding-right: 15px;
+  }
+
+  .status-error {
+    padding-right: 2px;
+    color: #d50000;
+    vertical-align: middle;
+  }
+}
+
+.c7n-domain-create-status {
   display: inline-block;
   height: 16px;
   font-size: 13px;
@@ -66,10 +78,19 @@
   }
 }
 
-.c7n-ist-status_running {
+.c7n-domain-create-status_running {
   background: #1bc123;
 }
 
-.c7n-ist-status_failed {
+.c7n-domain-create-status_failed {
   background: #f44336;
 }
+
+.c7n-domain-create-status_operating {
+  background: #4d90fe;
+}
+
+.c7n-domain-create-status_deleted {
+  background: rgba(0, 0, 0, 0.36);
+}
+
