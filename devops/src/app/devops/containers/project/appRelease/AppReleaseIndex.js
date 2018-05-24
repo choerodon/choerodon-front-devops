@@ -6,7 +6,7 @@ import {
 import asyncRouter from '../../../../../util/asyncRouter';
 
 const AppReleaseHome = asyncRouter(() => import('./appReleaseHome'), () => import('../../../stores/project/appRelease'));
-const AppCreateDetail = asyncRouter(() => import('./appReleaseEdit'), () => import('../../../stores/project/appRelease'));
+const AppCreateDetail = asyncRouter(() => import('./appReleaseEdit'), () => import('../../../stores/project/appRelease/editRelease'));
 
 const EnvironmentIndex = ({ match }) => (
   <Switch>

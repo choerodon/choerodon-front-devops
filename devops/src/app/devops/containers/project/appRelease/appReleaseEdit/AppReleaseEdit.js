@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio } from 'choerodon-ui';
+import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio, Popover } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
 import _ from 'lodash';
+import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './AppReleaseEdit.scss';
+import icon from './icon.png';
 // import './CreateDomain.scss';
 
 const Option = Select.Option;
@@ -34,24 +36,119 @@ class AppReleaseEdit extends Component {
       id: props.match.params.id || '',
       projectId: menu.id,
       show: false,
+      isClick: false,
+      selectData: [],
     };
   }
   componentDidMount() {
-    const { store, id, visible } = this.props;
+    const { EditReleaseStore } = this.props;
+    const { projectId, id } = this.state;
+    EditReleaseStore.loadApps(projectId);
+    if (id) {
+      EditReleaseStore.loadDataById(false, projectId, id);
+    }
   }
+
+  /**
+   * 处理图片回显
+   * @param img
+   * @param callback
+   */
+  getBase64 =(img, callback) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
+  };
+  /**
+   * 获取列表的table
+   * @returns {*}
+   */
   getTable =() => {
-    const data = [];
+    const data = this.state.selectData;
     const columns = [{
-      title: 'Name',
-      dataIndex: 'name',
+      title: '版本',
+      dataIndex: 'appName',
     }, {
-      title: 'Age',
-      dataIndex: 'age',
+      title: '生成时间',
+      // dataIndex: 'creationDate',
+      render: (text, record) => <TimePopover content={record.creationDate} />,
     }, {
-      title: 'Address',
-      dataIndex: 'address',
+      width: '46px',
+      key: 'action',
+      className: 'c7n-network-text_top',
+      render: record => (
+        <div>
+          <Popover trigger="hover" placement="bottom" content={<div>删除</div>}>
+            <Button shape="circle" funcType="flat" onClick={this.removeVersion.bind(this, record.id)}>
+              <span className="icon-delete_forever" />
+            </Button>
+          </Popover>
+        </div>
+      ),
     }];
-    return <Table columns={columns} dataSource={data} />;
+    return (<Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      rowKey={record => record.id}
+    />);
+  };
+
+
+  /**
+   * 获取弹出框的table
+   * @returns {*}
+   */
+  getSidebarTable =() => {
+    const { EditReleaseStore } = this.props;
+    const data = EditReleaseStore.getVersionData || [{
+      id: 1,
+      appName: 'ssd',
+      creationDate: '2018-05-22 11:19:41',
+    }, {
+      id: 2,
+      appName: 'ssdeee',
+      creationDate: '2018-05-22 11:19:41',
+    }];
+    const columns = [{
+      title: '版本',
+      dataIndex: 'appName',
+      render: text => <a href="#">{text}</a>,
+    }, {
+      title: '生成时间',
+      // dataIndex: 'creationDate',
+      render: (text, record) => <TimePopover content={record.creationDate} />,
+    }];
+    const rowSelection = {
+      selectedRowKeys: this.state.selectedRowKeys || [],
+      onChange: (selectedRowKeys, selectedRows) => {
+        this.setState({ selectedRows, selectedRowKeys });
+      },
+      // getCheckboxProps: record => ({
+      //   disabled: record.name === 'Disabled User', // Column configuration not to be checked
+      //   name: record.name,
+      // }),
+      // selections: true,
+    };
+    return (<Table
+      loading={EditReleaseStore.loading}
+      pagination={EditReleaseStore.versionPage}
+      rowSelection={rowSelection} 
+      columns={columns} 
+      dataSource={data}
+      rowKey={record => record.id}
+    />);
+  };
+  /**
+   * 删除列表中的数据
+   * @param id 版本id
+   */
+  removeVersion =(id) => {
+    const data = this.state.selectData;
+    const selectedRowKeys = this.state.selectedRowKeys;
+    _.remove(data, n => n.id === id);
+    _.remove(selectedRowKeys, n => n === id);
+    this.setState({ selectData: data, selectedRowKeys });
   };
   /**
    * 检查域名是否符合规则
@@ -71,39 +168,33 @@ class AppReleaseEdit extends Component {
    */
   handleSubmit =(e) => {
     e.preventDefault();
-    const { store, id, type } = this.props;
-    const { projectId } = this.state;
+    const { EditReleaseStore } = this.props;
+    const { projectId, id, img, selectData } = this.state;
     this.props.form.validateFieldsAndScroll((err, data) => {
       if (!err) {
-        const keys = Object.keys(data);
-        const postData = { domain: data.domain, name: data.name, envId: data.envId };
-        const devopsDomainAttrDTOS = [];
-        keys.map((k) => {
-          if (k.includes('path')) {
-            const index = parseInt(k.split('-')[1], 10);
-            devopsDomainAttrDTOS.push({ path: `${data[k]}`, serviceDeployId: data[`network-${index}`] });
-          }
-          return devopsDomainAttrDTOS;
-        });
-        postData.devopsDomainAttrDTOS = devopsDomainAttrDTOS;
-        // window.console.log(postData);
-        if (type === 'create') {
+        const postData = data;
+        const file = img ? img.get('img') : '';
+        postData.appVersions = selectData;
+        if (!id) {
           this.setState({ submitting: true });
-          store.addData(projectId, postData)
-            .then(() => {
+          EditReleaseStore.addData(projectId, postData, file)
+            .then((datass) => {
               this.setState({ submitting: false });
-              this.handleClose();
+              if (datass) {
+                this.handleBack();
+              }
             }).catch(() => {
               this.setState({ submitting: false });
               Choerodon.prompt(err.response.data.message);
             });
         } else {
-          postData.domainId = id;
           this.setState({ submitting: true });
-          store.updateData(projectId, id, postData)
-            .then(() => {
+          EditReleaseStore.updateData(projectId, id, postData)
+            .then((datass) => {
               this.setState({ submitting: false });
-              this.handleClose();
+              if (datass) {
+                this.handleBack();
+              }
             }).catch(() => {
               this.setState({ submitting: false });
               Choerodon.prompt(err.response.data.message);
@@ -112,32 +203,83 @@ class AppReleaseEdit extends Component {
       }
     });
   };
-
-
+  /**
+   * 显示添加版本的侧边栏
+   */
+  handleShowSideBar =() => {
+    const { EditReleaseStore } = this.props;
+    const { appId, projectId } = this.state;
+    EditReleaseStore.loadAllVersion(false, projectId, appId);
+    this.setState({ show: true });
+  };
+  /**
+   * 添加选择的版本
+   */
+  handleAddVersion =() => {
+    const data = this.state.selectedRows;
+    this.setState({ selectData: data, show: false });
+  };
+  /**
+   * 关闭滑块
+   */
+  handleClose =() => {
+    this.setState({ show: false });
+  };
+  /**
+   * 图标的上传button显示
+   */
+  showBth =() => {
+    this.setState({ showBtn: true });
+  };
+  /**
+   * 图标的上传button隐藏
+   */
+  hideBth =() => {
+    this.setState({ showBtn: false });
+  };
+  /**
+   * 触发上传按钮
+   */
+  triggerFileBtn =() => {
+    this.setState({ isClick: true, showBtn: true });
+    const ele = document.getElementById('file');
+    ele.click();
+  };
+  /**
+   * 选择文件
+   * @param e
+   */
+  selectFile =(e) => {
+    const formdata = new FormData();
+    formdata.append('img', e.target.files[0]);
+    this.setState({ img: formdata, isClick: false, showBtn: false });
+    this.getBase64(formdata.get('img'), (imgUrl) => {
+      const ele = document.getElementById('img');
+      ele.style.backgroundImage = `url(${imgUrl})`;
+    });
+  };
+  /**
+   * 选择应用
+   * @param value
+   * @param options
+   */
+  selectApp =(value, options) => {
+    this.setState({ appId: value, appName: options.key });
+  };
+  /**
+   * 返回上一级
+   */
+  handleBack =() => {
+    const menu = this.props.AppState.currentMenuType;
+    this.props.history.push(`/devops/app-release?type=${menu.type}&id=${menu.id}&name=${menu.name}`);
+  };
   render() {
-    const { store } = this.props;
+    const { EditReleaseStore } = this.props;
     const { getFieldDecorator } = this.props.form;
     const menu = this.props.AppState.currentMenuType;
-    const env = [];
-    const fileProps = {
-      name: 'file',
-      action: '//jsonplaceholder.typicode.com/posts/',
-      headers: {
-        authorization: 'authorization-text',
-      },
-      onChange(info) {
-        if (info.file.status !== 'uploading') {
-          // console.log(info.file, info.fileList);
-        }
-        if (info.file.status === 'done') {
-          // message.success(`${info.file.name} file uploaded successfully`);
-        } else if (info.file.status === 'error') {
-          // message.error(`${info.file.name} file upload failed.`);
-        }
-      },
-    };
+    const app = EditReleaseStore.apps;
+    const SingleData = EditReleaseStore.getSingleData;
     const form = this.props.form;
-    const { SingleData } = this.state;
     const title = this.state.id ? '修改应用发布' : '创建应用发布';
     const content = this.state.id ? '这些权限会影响此项目及其所有资源修改应用发布' : '这些权限会影响此项目及其所有资源创建应用发布';
     const contentDom = (<div className="c7n-region c7n-domainCreate-wrapper">
@@ -164,12 +306,12 @@ class AppReleaseEdit extends Component {
             }, {
               // validator: this.checkCode,
             }],
-            initialValue: SingleData ? SingleData.envId : undefined,
+            initialValue: SingleData ? SingleData.appId : undefined,
           })(
             <Select
               className="c7n-sidebar-form"
               filter
-              // onSelect={this.selectEnv}
+              onSelect={this.selectApp}
               showSearch
               label="选择应用"
               optionFilterProp="children"
@@ -177,8 +319,8 @@ class AppReleaseEdit extends Component {
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              {env.length && env.map(v => (
-                <Option value={v.id} key={`${v.id}-app`}>
+              {app.length && app.map(v => (
+                <Option value={v.id} key={v.name}>
                   <Tooltip title={v.code} placement="right" trigger="hover">
                     {v.name}
                   </Tooltip>
@@ -191,17 +333,17 @@ class AppReleaseEdit extends Component {
           className="c7n-sidebar-form"
           {...formItemLayout}
         >
-          {getFieldDecorator('level', {
+          {getFieldDecorator('publishLevel', {
             rules: [{
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              transform: value => value.toString(),
+              // transform: value => value.toString(),
             }, {
               // validator: this.checkCode,
             }],
-            initialValue: SingleData ? SingleData.envId : undefined,
+            initialValue: SingleData ? SingleData.publishLevel : 'organization',
           })(
-            <RadioGroup name="level" defaultValue="organization">
+            <RadioGroup name="level">
               <Radio value="organization">本组织</Radio>
               <Radio value="site">全平台</Radio>
             </RadioGroup>,
@@ -212,20 +354,35 @@ class AppReleaseEdit extends Component {
           className="c7n-sidebar-form"
           {...formItemLayout}
         >
+          <div className="c7n-appRelease-img">
+            <div className="c7n-appRelease-img-hover" id="img" onMouseLeave={this.state.isClick ? () => {} : this.hideBth} onMouseEnter={this.showBth} onClick={this.triggerFileBtn} role="none">
+              {this.state.showBtn && <div className="c7n-appRelease-img-child">
+                <span className="icon-photo_camera" />
+                <Input id="file" type="file" onChange={this.selectFile} style={{ display: 'none' }} />
+              </div>
+              }
+            </div>
+            <span className="c7n-appRelease-img-title">应用图标</span>
+          </div>
+        </FormItem>
+        <FormItem
+          className="c7n-sidebar-form"
+          {...formItemLayout}
+        >
           {getFieldDecorator('name', {
             rules: [{
               required: true,
               whitespace: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
             }, {
-              validator: this.checkName,
+              // validator: this.checkName,
             }],
-            initialValue: SingleData ? SingleData.name : '',
+            initialValue: SingleData ? SingleData.name : this.state.appName,
           })(
             <Input
+              disabled
               label={Choerodon.getMessage('应用名称', 'name')}
               size="default"
-              // placeholder={Choerodon.getMessage('域名', 'domain')}
             />,
           )}
         </FormItem>
@@ -233,18 +390,20 @@ class AppReleaseEdit extends Component {
           className="c7n-sidebar-form"
           {...formItemLayout}
         >
-          {getFieldDecorator('creator', {
+          {getFieldDecorator('contributor', {
             rules: [{
               required: true,
               whitespace: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
             }, {
-              validator: this.checkDomain,
+              // validator: this.checkDomain,
             }],
-            initialValue: SingleData ? SingleData.domain : '',
+            initialValue: SingleData ? SingleData.contributor : menu.name,
           })(
             <Input
-              label={Choerodon.getMessage('贡献者', 'creator')}
+              disabled
+              maxLength={30}
+              label={Choerodon.getMessage('贡献者', 'contributor')}
               size="default"
               // placeholder={Choerodon.getMessage('域名路径', 'domain path')}
             />,
@@ -254,40 +413,22 @@ class AppReleaseEdit extends Component {
           className="c7n-sidebar-form"
           {...formItemLayout}
         >
-          {getFieldDecorator('type', {
+          {getFieldDecorator('category', {
             rules: [{
               required: true,
               whitespace: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
             }, {
-              validator: this.checkDomain,
+              // validator: this.checkDomain,
             }],
-            initialValue: SingleData ? SingleData.domain : '',
+            initialValue: SingleData ? SingleData.category : '',
           })(
-            <Select
-              disabled={!this.state.versionId}
-              label={Choerodon.getMessage('分类', 'type')}
-              showSearch
-              // notFoundContent="该版本下还没有实例"
-              mode="multiple"
-              dropdownMatchSelectWidth
+            <Input
+              maxLength={10}
+              label={Choerodon.getMessage('分类', 'category')}
               size="default"
-              optionFilterProp="children"
-              optionLabelProp="children"
-              filterOption={
-                (input, option) =>
-                  option.props.children.props.children.props.children
-                    .toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {env.length && env.map(v => (
-                <Option value={v.id} key={`${v.id}-app`}>
-                  <Tooltip title={v.code} placement="right" trigger="hover">
-                    {v.name}
-                  </Tooltip>
-                </Option>
-              ))}
-            </Select>,
+              // placeholder={Choerodon.getMessage('域名路径', 'domain path')}
+            />,
           )}
         </FormItem>
         <FormItem
@@ -300,11 +441,12 @@ class AppReleaseEdit extends Component {
               whitespace: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
             }, {
-              validator: this.checkDomain,
+              // validator: this.checkDomain,
             }],
-            initialValue: SingleData ? SingleData.domain : '',
+            initialValue: SingleData ? SingleData.description : '',
           })(
             <TextArea
+              maxLength={200}
               label={Choerodon.languageChange('template.description')}
               autosize={{ minRows: 2, maxRows: 6 }}
             />,
@@ -314,8 +456,7 @@ class AppReleaseEdit extends Component {
           className="c7n-sidebar-form"
           {...formItemLayout}
         >
-          <Button onClick={this.handleSelectVersion}>添加版本</Button>
-
+          <Button type="primary" onClick={this.handleShowSideBar}><span className="icon-add" />添加版本</Button>
         </FormItem>
         <FormItem
           className="c7n-sidebar-form"
@@ -323,66 +464,57 @@ class AppReleaseEdit extends Component {
         >
           {this.getTable()}
         </FormItem>
-
+        <div className="c7n-appRelease-hr" />
         <FormItem
           className="c7n-sidebar-form"
           {...formItemLayout}
         >
-          {getFieldDecorator('description', {
-            rules: [{
-              required: true,
-              whitespace: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-            }, {
-              validator: this.checkDomain,
-            }],
-            initialValue: SingleData ? SingleData.domain : '',
-          })(
-            <Upload {...fileProps}>
-              <Button>
-                <Icon type="file_upload" /> Click to Upload
-              </Button>
-            </Upload>,
-          )}
+          <Button
+            onClick={this.handleSubmit}
+            type="primary"
+            funcType="raised"
+            className="sidebar-btn"
+            style={{ marginRight: 12 }}
+            loading={this.state.submitting}
+          >
+            {Choerodon.getMessage('保存', 'Save')}</Button>
+          <Button
+            funcType="raised"
+            disabled={this.state.submitting}
+            onClick={this.handleBack}
+          >
+            {Choerodon.getMessage('取消', 'Cancel')}</Button>
         </FormItem>
       </Form>
     </div>);
     return (
       <div className="c7n-region page-container">
-        <PageHeader title="创建应用发布">
-          <Button
-            className="header-btn headRightBtn leftBtn2"
-            ghost
-            onClick={this.handleRefresh}
-          >
-            <span className="icon-refresh" />
-            <span className="icon-space">刷新</span>
-          </Button>
-        </PageHeader>
+        <PageHeader title="创建应用发布" backPath={`/devops/app-release?type=${menu.type}&id=${menu.id}&name=${menu.name}`} />
         <div className="page-content c7n-appRelease-wrapper">
-          <Sidebar
-            cancelText="取消"
-            visible
-            title="创建应用发布"
-            onCancel={this.handleClose}
-            onOk={this.handleSubmit}
-            className="c7n-podLog-content"
-            confirmloading={this.state.submitting}
-          >
-            {contentDom}
-          </Sidebar>
+          {contentDom}
         </div>
         { this.state.show && (<Sidebar
-          okText={this.props.type === 'create' ? '创建' : '保存'}
+          okText="添加"
           cancelText="取消"
-          visible={this.props.visible}
-          title={this.props.title}
+          visible={this.state.show}
+          title="添加版本"
           onCancel={this.handleClose}
-          onOk={this.handleSubmit}
-          className="c7n-podLog-content"
+          onOk={this.handleAddVersion}
           confirmloading={this.state.submitting}
         >
-          {this.props.visible ? contentDom : null}
+          {this.state.show ? (<div className="c7n-region">
+            <h2 className="c7n-space-first">选择版本</h2>
+            <p>
+              这些权限会影响此项目及其所有资源。
+              <a href="http://choerodon.io/zh/docs/user-guide/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <span className="c7n-external-link-content">
+                  了解详情
+                </span>
+                <span className="icon-open_in_new" />
+              </a>
+            </p>
+            {this.getSidebarTable()}
+          </div>) : null}
         </Sidebar>) }
       </div>
     );
