@@ -182,8 +182,8 @@ class ContainerHome extends Component {
     const { ContainerStore } = this.props;
     const authToken = document.cookie.split('=')[1];
     const logs = [];
-    const ws = new WebSocket(`ws://10.211.97.81:8060/ws/log?key=env:${this.state.namespace}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}`);
-    // const ws = new WebSocket(`ws://${process.env.DEVOPS_HOST}/ws/log?key=env:${this.state.namespace}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}`);
+    // const ws = new WebSocket(`ws://10.211.97.81:8060/ws/log?key=env:${this.state.namespace}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}`);
+    const ws = new WebSocket(`ws://${process.env.DEVOPS_HOST}/ws/log?key=env:${this.state.namespace}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}`);
     const editor = this.ace.editor;
     this.setState({
       ws,
