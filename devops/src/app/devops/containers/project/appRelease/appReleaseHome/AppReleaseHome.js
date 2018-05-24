@@ -22,6 +22,7 @@ class AppReleaseHome extends Component {
       openRemove: false,
       show: false,
       projectId: menu.id,
+      upDown: [],
     };
   }
   componentDidMount() {
@@ -52,22 +53,22 @@ class AppReleaseHome extends Component {
       sorter: true,
       filters: [],
     }, {
-      // width: '410px',
+      width: '120',
       title: Choerodon.languageChange('deploy.ver'),
       key: 'appVersion',
       sorter: true,
       filters: [],
       render: record => (
         <React.Fragment>
-          {_.map(record.appVersions, versions =>
-            (<div key={versions.version} role="none" className={`c7n-network-col_border col-${record.id}`} onClick={this.showChange.bind(this, record.id, record.appVersions.length)}>
-              {record.appVersions && record.appVersions > 1
+          <div role="none" className={`c7n-network-col_border col-${record.id}`} onClick={this.showChange.bind(this, record.id, record.appVersions.length)}>
+            {record.appVersions && record.appVersions.length > 2
               && <span className={_.indexOf(upDown, record.id) !== -1
                 ? 'c7n-network-change icon-keyboard_arrow_up' : 'c7n-network-change icon-keyboard_arrow_down'}
               />
-              }
-              <MouserOverWrapper key={versions.id} width={115} className="c7n-app-release-square " text={versions.version}>{versions.version}</MouserOverWrapper>
-            </div>))}
+            }
+            { _.map(record.appVersions, versions => (
+              <MouserOverWrapper key={versions.id} width={115} className="c7n-app-release-square" text={versions.version}>{versions.version}</MouserOverWrapper>))}
+          </div>
         </React.Fragment>),
     }, {
       width: '98px',

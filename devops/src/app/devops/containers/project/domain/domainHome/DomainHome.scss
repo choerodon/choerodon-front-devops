@@ -31,7 +31,7 @@
   .c7n-network-col_border {
     border-bottom: 1px solid rgba(0, 0, 0, 0.04);
     padding: 5px 0;
-    height: 40px;
+    height: 31px;
     overflow: hidden;
 
     &:last-child {
@@ -60,7 +60,7 @@
   }
 
   .c7n-network-text_top {
-    vertical-align: top;
+    // vertical-align: top;
   }
 
   .c7n-network-col {
@@ -84,6 +84,7 @@
     color: rgba(0, 0, 0, 0.36);
     width: 32px;
     height: 32px;
+    line-height: 32px;
     text-align: center;
     display: inline-block;
   }

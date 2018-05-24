@@ -102,10 +102,7 @@ class NetworkHome extends Component {
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
       title: '网络状态',
-      className: 'c7n-network-text_top',
-      // dataIndex: 'name',
       key: 'status',
-      // width: '5%',
       render: (record) => {
         let statusDom = null;
         switch (record.status) {
@@ -128,23 +125,20 @@ class NetworkHome extends Component {
       },
     }, {
       title: '网络名称',
-      className: 'c7n-network-text_top',
-      // dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
-      // width: '5%',
       render: (record) => {
         let statusDom = null;
         switch (record.status) {
           case 'failed':
             statusDom = (<Tooltip title={record.error}>
-              <span className="icon-error c7n-status-error" />
+              <span className="icon-error c7n-status-error c7n-network-icon" />
             </Tooltip>);
             break;
           case 'operating':
-            statusDom = (<Tooltip title={record.type}>
-              <Progress type="loading" width="15px" />
+            statusDom = (<Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
+              <Progress type="loading" width="15px" className="c7n-network-icon" />
             </Tooltip>);
             break;
           default:
@@ -158,11 +152,8 @@ class NetworkHome extends Component {
       },
     }, {
       title: '环境名称',
-      className: 'c7n-network-text_top',
-      // dataIndex: 'envName',
       key: 'envName',
       sorter: true,
-      // width: '14%',
       filters: [],
       render: record => (
         <React.Fragment>
@@ -175,11 +166,7 @@ class NetworkHome extends Component {
       ),
     }, {
       title: '外部IP',
-      className: 'c7n-network-text_top',
-      // dataIndex: 'externalIp',
       key: 'ip',
-      // width: '10%',
-      // sorter: true,
       filters: [],
       render: record => (
         <MouserOverWrapper text={record.externalIp || ''} width={80}>
@@ -187,10 +174,8 @@ class NetworkHome extends Component {
       ),
     }, {
       title: '端口',
-      className: 'c7n-network-text_top',
-      // dataIndex: 'port',
+      // className: 'c7n-network-text_top',
       key: 'port',
-      // width: '10%',
       sorter: true,
       filters: [],
       render: record => (
@@ -199,11 +184,9 @@ class NetworkHome extends Component {
       ),
     }, {
       title: '应用',
-      className: 'c7n-network-text_top',
       key: 'appName',
       filters: [],
       sorter: true,
-      // width: '12%',
       render: record => (
         <React.Fragment>
           <span className="icon-store_mall_directory c7n-network-icon" />
@@ -213,7 +196,6 @@ class NetworkHome extends Component {
         </React.Fragment>
       ),
     }, {
-      // width: '8%',
       title: '版本',
       className: 'c7n-network-col',
       key: 'version',
@@ -223,8 +205,8 @@ class NetworkHome extends Component {
         <React.Fragment>
           {_.map(record.appVersion, versions =>
             (<div key={versions.id} className={`c7n-network-col_border col-${record.id}-${versions.id}`}>
-              <MouserOverWrapper text={versions.version || ''} width={51} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
-                <span className="c7n-network-text_gray">{versions.version}</span>
+              <MouserOverWrapper text={versions.version || ''} width={51} className="c7n-network-column-version" >
+                <span>{versions.version}</span>
               </MouserOverWrapper>
             </div>))}
         </React.Fragment>
@@ -232,10 +214,8 @@ class NetworkHome extends Component {
     }, {
       width: 150,
       title: '部署实例',
-      // width: '18%',
       className: 'c7n-network-col',
       key: 'code',
-      // sorter: true,
       filters: [],
       render: record => (
         <React.Fragment>
@@ -254,16 +234,15 @@ class NetworkHome extends Component {
     }, {
       width: '98px',
       key: 'action',
-      className: 'c7n-network-text_top',
       render: (record) => {
         let editDom = null;
         let deletDom = null;
         switch (record.status) {
           case 'operating':
-            editDom = (<Popover trigger="hover" placement="bottom" content={<div>处理中</div>}>
+            editDom = (<Popover trigger="hover" placement="bottom" content={Choerodon.languageChange(`ist_${record.commandType}`)}>
               <span className="icon-mode_edit c7n-app-icon-disabled" />
             </Popover>);
-            deletDom = (<Popover trigger="hover" placement="bottom" content={<div>处理中</div>}>
+            deletDom = (<Popover trigger="hover" placement="bottom" content={Choerodon.languageChange(`ist_${record.commandType}`)}>
               <span className="icon-delete_forever c7n-app-icon-disabled" />
             </Popover>);
             break;

@@ -57,7 +57,7 @@
         permission:
           - 'devops-service.application-market.create'
     - "appStore":
-        icon: near_me
+        icon: store_mall_directory
         Routes: /devops/appstore
         sort: 6
         permission:

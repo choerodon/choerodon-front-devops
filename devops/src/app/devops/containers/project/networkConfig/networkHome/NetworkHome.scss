@@ -60,7 +60,7 @@
   }
 
   tbody .c7n-network-text_top {
-    vertical-align: top;
+    // vertical-align: top;
   }
 
   .c7n-network-col {
@@ -88,6 +88,7 @@
     color: rgba(0, 0, 0, 0.36);
     width: 32px;
     height: 32px;
+    line-height: 32px;
     text-align: center;
     display: inline-block;
   }
@@ -103,7 +104,7 @@
     margin-right: 8px;
     vertical-align: middle;
 
-    div {
+    .c7n-network-status div {
       transform: scale(0.8);
     }
   }
@@ -128,6 +129,14 @@
   .c7n-network-icon {
     vertical-align: middle;
     font-size: 13px;
-    padding-right: 2px;
+    padding-right: 8px;
+  }
+
+  .c7n-network-column-version {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-block;
+    vertical-align: middle;
   }
 }

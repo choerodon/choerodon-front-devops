@@ -252,6 +252,7 @@ class AppReleaseEdit extends Component {
   selectFile =(e) => {
     const formdata = new FormData();
     formdata.append('img', e.target.files[0]);
+    debugger;
     this.setState({ img: formdata, isClick: false, showBtn: false });
     this.getBase64(formdata.get('img'), (imgUrl) => {
       const ele = document.getElementById('img');

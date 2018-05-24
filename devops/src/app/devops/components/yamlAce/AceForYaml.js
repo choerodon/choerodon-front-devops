@@ -45,11 +45,6 @@ class AceForYaml extends Component {
   componentDidMount() {
     // 第一次加载没有数据
     this.setOptions();
-    // const diff = jsdiff.diffLines(this.props.sourceData, this.props.value);
-    //
-    // diff.forEach((part) => {
-    //   debugger;
-    // });
     if (this.props.showDiff) {
       this.handleDataDiff();
     } else if (typeof this.props.sourceData !== 'string') {
@@ -73,12 +68,13 @@ class AceForYaml extends Component {
   };
   setOptions =() => {
     const editor = this.ace.editor;
+    // eslint-disable-next-line
+    require('brace/mode/yaml');
+
     editor.setPrintMarginColumn(0);
     editor.setHighlightGutterLine(false);
     editor.setWrapBehavioursEnabled(false);
-    editor.session.setMode('ace/mode/yaml');
-    // editor.session.setNewLineMode('yaml');
-    // editor.session.setOptions({ wrap: 'off' });
+    editor.getSession().setMode('ace/mode/yaml');
   };
 
   getRangeObj =range =>
@@ -177,6 +173,7 @@ class AceForYaml extends Component {
     const editor = this.ace.editor;
     const rangeObj = editor.find(tarStr);
     const range = this.getRangeObj(rangeObj);
+    editor.session.addMarker(range, 'lineHeight', 'fullLine', false);
     editor.session.addMarker(range, 'errorHighlight', 'text', false);
   };
 

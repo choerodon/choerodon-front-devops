@@ -1,9 +1,19 @@
 .errorHighlight {
   position: absolute;
   z-index: 20;
-  background: #f4b9b7;
+  background: #acf2bd;
+}
+
+.lineHeight {
+  background-color: #cdffd8;
+  position: absolute;
+  z-index: 20;
+
+  &::before {
+    content: '+';
+  }
 }
 
 .ace_error {
-  background-image: none !important;
+  // background-image: none !important;
 }
