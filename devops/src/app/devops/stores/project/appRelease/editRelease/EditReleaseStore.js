@@ -146,7 +146,7 @@ class EditReleaseStore {
       .then((datas) => {
         let res = this.handleProptError(datas);
         if (res && img) {
-          axios.post(`/v1/project/${projectId}/apps_market/upload/${res}`, img, {
+          axios.post(`/devops/v1/project/${projectId}/apps_market/upload/${res}`, img, {
             header: { 'Content-Type': 'multipart/form-data' },
           }).then((r) => {
             res = this.handleProptError(r);

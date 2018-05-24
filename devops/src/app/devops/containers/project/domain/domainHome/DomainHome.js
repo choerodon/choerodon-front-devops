@@ -72,17 +72,15 @@ class DomainHome extends Component {
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
       title: '域名状态',
-      className: 'c7n-network-text_top',
-      // dataIndex: 'name',
       render: (record) => {
         let statusDom = null;
-        switch (record.status) {
+        switch (record.commandStatus) {
           case 'failed':
             statusDom = (<div className="c7n-domain-status c7n-domain-status-failed">
               <div>失败</div>
             </div>);
             break;
-          case 'operating':
+          case 'doing':
             statusDom = (<div className="c7n-domain-status c7n-domain-status-operating">
               <div>处理中</div>
             </div>);
@@ -96,21 +94,19 @@ class DomainHome extends Component {
       },
     }, {
       title: '域名名称',
-      className: 'c7n-network-text_top',
-      // dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
       render: (record) => {
         let statusDom = null;
-        switch (record.status) {
+        switch (record.commandStatus) {
           case 'failed':
             statusDom = (<Tooltip title={record.error}>
               <span className="icon-error c7n-status-error" />
             </Tooltip>);
             break;
-          case 'operating':
-            statusDom = (<Tooltip title={record.type}>
+          case 'doing':
+            statusDom = (<Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
               <Progress type="loading" width="15px" />
             </Tooltip>);
             break;
@@ -125,19 +121,14 @@ class DomainHome extends Component {
       },
     }, {
       title: '域名地址',
-      className: 'c7n-network-text_top',
-      // dataIndex: 'domain',
       key: 'domain',
-      // sorter: true,
       filters: [],
       render: record => (
-        <MouserOverWrapper text={record.name || ''} width={120}>
-          {record.name}</MouserOverWrapper>
+        <MouserOverWrapper text={record.domain || ''} width={120}>
+          {record.domain}</MouserOverWrapper>
       ),
     }, {
       title: '环境名称',
-      className: 'c7n-network-text_top',
-      // dataIndex: 'envName',
       key: 'envName',
       sorter: true,
       filters: [],
@@ -188,12 +179,12 @@ class DomainHome extends Component {
       render: (record) => {
         let editDom = null;
         let deletDom = null;
-        switch (record.status) {
-          case 'operating':
-            editDom = (<Popover trigger="hover" placement="bottom" content={<div>处理中</div>}>
+        switch (record.commandStatus) {
+          case 'doing':
+            editDom = (<Popover trigger="hover" placement="bottom" content={Choerodon.languageChange(`ist_${record.commandType}`)}>
               <span className="icon-mode_edit c7n-app-icon-disabled" />
             </Popover>);
-            deletDom = (<Popover trigger="hover" placement="bottom" content={<div>处理中</div>}>
+            deletDom = (<Popover trigger="hover" placement="bottom" content={Choerodon.languageChange(`ist_${record.commandType}`)}>
               <span className="icon-delete_forever c7n-app-icon-disabled" />
             </Popover>);
             break;

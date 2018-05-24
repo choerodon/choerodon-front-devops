@@ -8,4 +8,5 @@
 "devops.service": "Service"
 "devops.domain": "Domain"
 "devops.container": "Container"
-
+"devops.app-release": "App Release"
+"devops.appstore": "App Store"
