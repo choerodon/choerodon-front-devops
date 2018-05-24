@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Popover } from 'choerodon-ui';
+import { Button, Table, Popover, Modal } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
 import Permission from 'Permission';
 import Remove from 'Remove';
 import _ from 'lodash';
 import { commonComponent } from '../../../../components/commonFunction';
-import TimePopover from '../../../../components/timePopover';
-import Loadingbar from '../../../../components/loadingBar';
 import '../../../main.scss';
-import AppReleaseEdit from '../appReleaseEdit';
-import Ace from '../../../../components/yamlAce';
+import './AppRelease.scss';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 @inject('AppState')
 @commonComponent ('AppReleaseStore')
@@ -33,15 +31,14 @@ class AppReleaseHome extends Component {
 
   getColumn = () => {
     const { type, id: orgId } = this.props.AppState.currentMenuType;
+    const { upDown } = this.state;
     return [{
-      width: '410px',
       title: Choerodon.languageChange('app.name'),
       dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
     }, {
-      width: '410px',
       title: Choerodon.languageChange('app.code'),
       dataIndex: 'code',
       key: 'code',
@@ -63,9 +60,13 @@ class AppReleaseHome extends Component {
       render: record => (
         <React.Fragment>
           {_.map(record.appVersions, versions =>
-            (<div key={versions.version}>
-              <span className="c7n-network-circle">V</span>
-              <span className="c7n-network-text_gray">{versions.version}</span>
+            (<div key={versions.version} role="none" className={`c7n-network-col_border col-${record.id}`} onClick={this.showChange.bind(this, record.id, record.appVersions.length)}>
+              {record.appVersions && record.appVersions > 1
+              && <span className={_.indexOf(upDown, record.id) !== -1
+                ? 'c7n-network-change icon-keyboard_arrow_up' : 'c7n-network-change icon-keyboard_arrow_down'}
+              />
+              }
+              <MouserOverWrapper key={versions.id} width={115} className="c7n-app-release-square " text={versions.version}>{versions.version}</MouserOverWrapper>
             </div>))}
         </React.Fragment>),
     }, {
@@ -89,6 +90,32 @@ class AppReleaseHome extends Component {
     }];
   } ;
 
+  /**
+   * 展开/收起实例
+   */
+  showChange = (id, length) => {
+    const { upDown } = this.state;
+    const cols = document.getElementsByClassName(`col-${id}`);
+    if (_.indexOf(upDown, id) === -1) {
+      for (let i = 0; i < cols.length; i += 1) {
+        cols[i].style.height = `${length * 31}px`;
+      }
+      upDown.push(id);
+      this.setState({
+        upDown,
+      });
+      // console.log(upDown, length);
+    } else {
+      for (let i = 0; i < cols.length; i += 1) {
+        cols[i].style.height = '31px';
+      }
+      _.pull(upDown, id);
+      this.setState({
+        upDown,
+      });
+      // console.log(upDown, length);
+    }
+  };
   showSidebar = (ids) => {
     const { name, id } = this.props.AppState.currentMenuType;
     if (ids) {
@@ -109,7 +136,7 @@ class AppReleaseHome extends Component {
       id: 1,
     }];
     return (
-      <div className="c7n-region page-container">
+      <div className="c7n-region page-container app-release-wrapper">
         <PageHeader title="应用发布">
           <Button
             className="header-btn headLeftBtn leftBtn"
@@ -129,16 +156,16 @@ class AppReleaseHome extends Component {
           </Button>
         </PageHeader>
         <div className="page-content">
-          <h2 className="c7n-space-first">项目&quot;{this.props.AppState.currentMenuType.name}&quot;的应用管理</h2>
+          <h2 className="c7n-space-first">项目&quot;{this.props.AppState.currentMenuType.name}&quot;的应用发布 </h2>
           <p>
             这些权限会影响此项目及其所有资源。
             <a href="http://choerodon.io/zh/docs/user-guide/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>
+              <span className="icon-open_in_new" />
             </a>
           </p>
-          <Ace sourceData={AppReleaseStore.data1} value={AppReleaseStore.data2} />
           <Table
             // filters={['appCode', 'appName', 'version']}
             loading={AppReleaseStore.loading}
@@ -149,12 +176,8 @@ class AppReleaseHome extends Component {
             onChange={this.tableChange}
           />
         </div>
-        { this.state.show && <AppReleaseEdit
-          visible={this.state.show}
-          store={AppReleaseStore}
-        /> }
-        <Remove
-          delTip={Choerodon.languageChange('service.delete.tip')}
+        <Modal
+          title="取消发布"
           open={this.state.openRemove}
           handleCancel={this.closeRemove}
           handleConfirm={this.handleDelete}

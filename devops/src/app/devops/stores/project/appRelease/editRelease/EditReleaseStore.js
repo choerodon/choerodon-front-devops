@@ -5,9 +5,8 @@ import store from 'Store';
 import { Observable } from 'rxjs';
 import { List, formJS } from 'immutable';
 
-@store('AppReleaseStore')
-class AppReleaseStore {
-  @observable allData = [];
+@store('EditReleaseStore')
+class EditReleaseStore {
   @observable isRefresh= false;// 页面的loading
   @observable loading = false; // 打开tab的loading
   @observable singleData = null;
@@ -19,16 +18,7 @@ class AppReleaseStore {
     current: 0, total: 0, pageSize: 10,
   };
   @observable versionData = [];
-
-  @action setPageInfo(page) {
-    this.pageInfo.current = page.number + 1;
-    this.pageInfo.total = page.totalElements;
-    this.pageInfo.pageSize = page.size;
-  }
-
-  @computed get getPageInfo() {
-    return this.pageInfo;
-  }
+  @observable type = [];
 
   @action setVersionPageInfo(page) {
     this.pageInfo.current = page.number + 1;
@@ -89,40 +79,27 @@ class AppReleaseStore {
     return this.singleData;
   }
 
-  loadData = (isRefresh = false, projectId, page = this.pageInfo.current, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
+  @action setType(data) {
+    this.type = data;
+  }
+
+  loadAllVersion = (isRefresh = false, projectId, appId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
     param: '',
   }) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/project/${projectId}/apps_market/list?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
+    return Observable.fromPromise(axios.post(`/devops/v1/project/${projectId}/apps/${appId}/version/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
       .subscribe((data) => {
         const res = this.handleProptError(data);
         if (res) {
-          this.handleData(data);
+          this.handleVersionData(data);
         }
         this.changeLoading(false);
         this.changeIsRefresh(false);
       });
   };
-  handleData =(data) => {
-    this.setAllData(data.content);
-    const { number, size, totalElements } = data;
-    const page = { number, size, totalElements };
-    this.setPageInfo(page);
-  };
-
-  loadAllVersion =(projectId, appId, page = this.versionPage.current, size = this.versionPage.pageSize, sort = { field: 'id', order: 'desc' }, postData = {
-    param: '', searchParam: {},
-  }) =>
-    axios.post(`/devops/v1/project/${projectId}/apps_market/list_in_project?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
-      .then((data) => {
-        const res = this.handleProptError(data);
-        if (res) {
-          this.handleVersionData(res);
-        }
-      });
   handleVersionData = (data) => {
     this.setVersionData(data.content);
     const { number, size, totalElements } = data;
@@ -130,8 +107,8 @@ class AppReleaseStore {
     this.setVersionPageInfo(page);
   };
 
-  loadApps = orgId =>
-    axios.get(`/devops/v1/organization/${orgId}/app_templates`)
+  loadApps = projectId =>
+    axios.get(`/devops/v1/project/${projectId}/apps/listById`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -165,11 +142,16 @@ class AppReleaseStore {
       });
 
   addData = (projectId, data, img) =>
-    axios.post(`/devops/v1/project/${projectId}/apps?appId=${data.appId}&description=${data.description}&category=${data.category}&contributor=${data.contributor}&publishLevel=${data.publishLevel}&appVersions=${data.appVersions}`, img, {
-      header: { 'Content-Type': 'multipart/form-data' },
-    })
+    axios.post(`/devops/v1/project/${projectId}/apps_market`, JSON.stringify(data))
       .then((datas) => {
-        const res = this.handleProptError(datas);
+        let res = this.handleProptError(datas);
+        if (res && img) {
+          axios.post(`/v1/project/${projectId}/apps_market/upload/${res}`, img, {
+            header: { 'Content-Type': 'multipart/form-data' },
+          }).then((r) => {
+            res = this.handleProptError(r);
+          });
+        }
         return res;
       });
 
@@ -179,6 +161,17 @@ class AppReleaseStore {
         const res = this.handleProptError(datas);
         return res;
       });
+
+  loadType = projectId =>
+    axios.get(`/devops/v1/organization/${projectId}/appTemplates`)
+      .then((data) => {
+        const res = this.handleProptError(data);
+        if (res) {
+          this.setType(res);
+        }
+      });
+
+
   handleProptError =(error) => {
     if (error && error.failed) {
       Choerodon.prompt(error.message);
@@ -189,8 +182,8 @@ class AppReleaseStore {
   }
 }
 
-const appReleaseStore = new AppReleaseStore();
-export default appReleaseStore;
+const editReleaseStore = new EditReleaseStore();
+export default editReleaseStore;
 
 // autorun(() => {
 //   window.console.log(templateStore.allData.length);

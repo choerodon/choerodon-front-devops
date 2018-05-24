@@ -95,6 +95,7 @@ class AceForYaml extends Component {
       if (diffArr.length && value) {
         this.handleDiff(diffArr);
       } else {
+        this.setState({ diffLen: 0 });
         this.ace.editor.setValue(yaml.safeDump(yaml.safeLoad(sourceData), { lineWidth: 400 }));
         this.ace.editor.clearSelection();
       }
