@@ -12,6 +12,8 @@ import './DeployHome.scss';
 import '../AppDeploy.scss';
 import '../../../main.scss';
 
+const ButtonGroup = Button.Group;
+
 @inject('AppState')
 @observer
 class DeployHome extends Component {
@@ -215,34 +217,36 @@ class DeployHome extends Component {
           </p>
           <div className="c7n-deploy-tab">
             <span>查看视图：</span>
-            <Button
-              funcType="flat"
-              className={tabActive === 'instance' && 'c7n-tab-active'}
-              onClick={this.changeTabs.bind(this, 'instance')}
-            >
-              部署实例
-            </Button>
-            <Button
-              funcType="flat"
-              className={tabActive === 'singleEnv' && 'c7n-tab-active'}
-              onClick={this.changeTabs.bind(this, 'singleEnv')}
-            >
-              单环境
-            </Button>
-            <Button
-              funcType="flat"
-              className={tabActive === 'singleApp' && 'c7n-tab-active'}
-              onClick={this.changeTabs.bind(this, 'singleApp')}
-            >
-              单应用
-            </Button>
-            <Button
-              funcType="flat"
-              className={tabActive === 'multiApp' && 'c7n-tab-active'}
-              onClick={this.changeTabs.bind(this, 'multiApp')}
-            >
-              多应用
-            </Button>
+            <ButtonGroup>
+              <Button
+                funcType="flat"
+                className={tabActive === 'instance' && 'c7n-tab-active'}
+                onClick={this.changeTabs.bind(this, 'instance')}
+              >
+                部署实例
+              </Button>
+              <Button
+                funcType="flat"
+                className={tabActive === 'singleEnv' && 'c7n-tab-active'}
+                onClick={this.changeTabs.bind(this, 'singleEnv')}
+              >
+                单环境
+              </Button>
+              <Button
+                funcType="flat"
+                className={tabActive === 'singleApp' && 'c7n-tab-active'}
+                onClick={this.changeTabs.bind(this, 'singleApp')}
+              >
+                单应用
+              </Button>
+              <Button
+                funcType="flat"
+                className={tabActive === 'multiApp' && 'c7n-tab-active'}
+                onClick={this.changeTabs.bind(this, 'multiApp')}
+              >
+                多应用
+              </Button>
+            </ButtonGroup>
           </div>
           {tabActive === 'multiApp' && <MutiDeployment key="multiApp" store={AppDeploymentStore} />}
           {tabActive === 'singleApp' && <SingleApp key="singleApp" store={AppDeploymentStore} />}

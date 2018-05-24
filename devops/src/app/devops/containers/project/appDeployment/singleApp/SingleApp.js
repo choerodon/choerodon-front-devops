@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Icon, Select, Button, Form, Dropdown, Menu, Progress, Tooltip } from 'choerodon-ui';
+import { Table, Icon, Select, Button, Form, Dropdown, Menu, Progress, Tooltip, Popover } from 'choerodon-ui';
 import _ from 'lodash';
 import classNames from 'classnames';
 import Action from 'Action';
@@ -367,13 +367,49 @@ class SingleApp extends Component {
       _.map(appNames, (d) => {
         if (d.publishLevel) {
           appPubDom.push(<Option key={d.id}>
-            <span className="icon-store_mall_directory c7n-icon-publish" />
-            {d.name}
+            <Popover
+              placement="right"
+              content={<div>
+                <p>
+                  <span>名称：</span>
+                  <span>{d.name}</span>
+                </p>
+                <p>
+                  <span>贡献者：</span>
+                  <span>{d.contributor}</span>
+                </p>
+                <p>
+                  <span>描述：</span>
+                  <span>{d.description}</span>
+                </p>
+              </div>}
+            >
+              <div className="c7n-option-popover">
+                <span className="icon-store_mall_directory c7n-icon-publish" />
+                {d.name}
+              </div>
+            </Popover>
           </Option>);
         } else {
           appProDom.push(<Option key={d.id}>
-            <span className="icon-project c7n-icon-publish" />
-            {d.name}
+            <Popover
+              placement="right"
+              content={<div>
+                <p>
+                  <span>名称：</span>
+                  <span>{d.name}</span>
+                </p>
+                <p>
+                  <span>编码：</span>
+                  <span>{d.code}</span>
+                </p>
+              </div>}
+            >
+              <div className="c7n-option-popover">
+                <span className="icon-project c7n-icon-publish" />
+                {d.name}
+              </div>
+            </Popover>
           </Option>);
         }
       });

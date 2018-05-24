@@ -298,17 +298,9 @@
   margin-bottom: 16px;
 
   button {
-    border-radius: 0;
     font-size: 13px;
     color: #3f51b5;
-
-    &:hover {
-      background: rgba(140, 158, 255, 0.2);
-    }
-
-    &:focus {
-      background: rgba(140, 158, 255, 0.2);
-    }
+    margin: 0 1px;
   }
 }
 
