@@ -150,8 +150,8 @@ class EnvPipelineStore {
       }
     });
 
-  loadShell = (projectId, id) =>
-    axios.get(`/devops/v1/project/${projectId}/envs/${id}/shell`).then((data) => {
+  loadShell = (projectId, id, update) =>
+    axios.get(`/devops/v1/project/${projectId}/envs/${id}/shell?update=${update}`).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
       } else {
