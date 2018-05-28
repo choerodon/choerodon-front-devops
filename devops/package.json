@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "deep-diff": "^1.0.0",
+    "diff2html": "^2.3.3",
     "json-beautify": "^1.0.1",
     "rc-queue-anim": "^1.5.0",
     "react-ace": "^6.0.0",
@@ -24,6 +25,7 @@
     "react-static-container": "^1.0.2",
     "react-timeago": "^3.4.3",
     "stylelint-config-standard": "^18.2.0",
-    "timeago-react": "^2.0.0"
+    "timeago-react": "^2.0.0",
+    "yaml": "^0.3.0"
   }
 }

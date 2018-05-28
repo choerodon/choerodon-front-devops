@@ -130,13 +130,13 @@ class NetworkHome extends Component {
       filters: [],
       render: (record) => {
         let statusDom = null;
-        switch (record.status) {
+        switch (record.commandStatus) {
           case 'failed':
             statusDom = (<Tooltip title={record.error}>
               <span className="icon-error c7n-status-error c7n-network-icon" />
             </Tooltip>);
             break;
-          case 'operating':
+          case 'doing':
             statusDom = (<Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
               <Progress type="loading" width="15px" className="c7n-network-icon" />
             </Tooltip>);
@@ -239,10 +239,10 @@ class NetworkHome extends Component {
         let deletDom = null;
         switch (record.status) {
           case 'operating':
-            editDom = (<Popover trigger="hover" placement="bottom" content={Choerodon.languageChange(`ist_${record.commandType}`)}>
+            editDom = (<Popover trigger="hover" placement="bottom" content={Choerodon.languageChange(`network_${record.commandType}`)}>
               <span className="icon-mode_edit c7n-app-icon-disabled" />
             </Popover>);
-            deletDom = (<Popover trigger="hover" placement="bottom" content={Choerodon.languageChange(`ist_${record.commandType}`)}>
+            deletDom = (<Popover trigger="hover" placement="bottom" content={Choerodon.languageChange(`network_${record.commandType}`)}>
               <span className="icon-delete_forever c7n-app-icon-disabled" />
             </Popover>);
             break;
@@ -252,7 +252,7 @@ class NetworkHome extends Component {
                 <Button shape="circle" funcType="flat" onClick={this.editNetwork.bind(this, record.id)}>
                   <span className="icon-mode_edit" />
                 </Button>
-              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>环境故障中</div>}>
+              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>环境未连接</div>}>
                 <span className="icon-mode_edit c7n-app-icon-disabled" />
               </Popover>}
             </React.Fragment>);
@@ -261,7 +261,7 @@ class NetworkHome extends Component {
                 <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
                   <span className="icon-delete_forever" />
                 </Button>
-              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>环境故障中</div>}>
+              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>环境未连接</div>}>
                 <span className="icon-delete_forever c7n-app-icon-disabled" />
               </Popover>}
             </React.Fragment>);
