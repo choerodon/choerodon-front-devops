@@ -194,7 +194,7 @@ class DomainHome extends Component {
                 <Button shape="circle" funcType="flat" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                   <span className="icon-mode_edit" />
                 </Button>
-              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>环境未连接</div>}>
+              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>请先连接环境</div>}>
                 <span className="icon-mode_edit c7n-app-icon-disabled" />
               </Popover>}
             </React.Fragment>);
@@ -203,7 +203,7 @@ class DomainHome extends Component {
                 <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
                   <span className="icon-delete_forever" />
                 </Button>
-              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>环境未连接</div>}>
+              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>请先连接环境</div>}>
                 <span className="icon-delete_forever c7n-app-icon-disabled" />
               </Popover>}
             </React.Fragment>);
