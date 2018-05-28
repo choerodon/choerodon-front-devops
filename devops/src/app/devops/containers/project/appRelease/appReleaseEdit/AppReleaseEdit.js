@@ -67,7 +67,7 @@ class AppReleaseEdit extends Component {
     const data = this.state.selectData;
     const columns = [{
       title: '版本',
-      dataIndex: 'appName',
+      dataIndex: 'version',
     }, {
       title: '生成时间',
       // dataIndex: 'creationDate',
@@ -112,7 +112,7 @@ class AppReleaseEdit extends Component {
     }];
     const columns = [{
       title: '版本',
-      dataIndex: 'appName',
+      dataIndex: 'version',
       render: text => <a href="#">{text}</a>,
     }, {
       title: '生成时间',
@@ -173,11 +173,11 @@ class AppReleaseEdit extends Component {
     this.props.form.validateFieldsAndScroll((err, data) => {
       if (!err) {
         const postData = data;
-        const file = img ? img.get('img') : '';
+        postData.imgUrl = img;
         postData.appVersions = selectData;
         if (!id) {
           this.setState({ submitting: true });
-          EditReleaseStore.addData(projectId, postData, file)
+          EditReleaseStore.addData(projectId, postData)
             .then((datass) => {
               this.setState({ submitting: false });
               if (datass) {
@@ -250,14 +250,22 @@ class AppReleaseEdit extends Component {
    * @param e
    */
   selectFile =(e) => {
+    const menu = this.props.AppState.currentMenuType;
+    const { EditReleaseStore } = this.props;
     const formdata = new FormData();
-    formdata.append('img', e.target.files[0]);
-    debugger;
-    this.setState({ img: formdata, isClick: false, showBtn: false });
-    this.getBase64(formdata.get('img'), (imgUrl) => {
-      const ele = document.getElementById('img');
-      ele.style.backgroundImage = `url(${imgUrl})`;
-    });
+    const img = e.target.files[0];
+    formdata.append('file', e.target.files[0]);
+    EditReleaseStore.uploadFile(menu.organizationId, 'devops-service', img.name.split('.')[0], formdata)
+      .then((data) => {
+        if (data) {
+          this.setState({ img: data });
+          this.getBase64(formdata.get('file'), (imgUrl) => {
+            const ele = document.getElementById('img');
+            ele.style.backgroundImage = `url(${imgUrl})`;
+          });
+        }
+      });
+    this.setState({ isClick: false, showBtn: false });
   };
   /**
    * 选择应用
@@ -272,7 +280,7 @@ class AppReleaseEdit extends Component {
    */
   handleBack =() => {
     const menu = this.props.AppState.currentMenuType;
-    this.props.history.push(`/devops/app-release?type=${menu.type}&id=${menu.id}&name=${menu.name}`);
+    this.props.history.push(`/devops/app-release?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`);
   };
   render() {
     const { EditReleaseStore } = this.props;
@@ -490,7 +498,7 @@ class AppReleaseEdit extends Component {
     </div>);
     return (
       <div className="c7n-region page-container">
-        <PageHeader title="创建应用发布" backPath={`/devops/app-release?type=${menu.type}&id=${menu.id}&name=${menu.name}`} />
+        <PageHeader title="创建应用发布" backPath={`/devops/app-release?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
         <div className="page-content c7n-appRelease-wrapper">
           {contentDom}
         </div>

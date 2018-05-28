@@ -226,7 +226,7 @@ class BranchHome extends Component {
       {
         title: Choerodon.languageChange('branch.code'),
         dataIndex: 'commit.id',
-        render: (text, record) => (<a href={record.commit.url}>{record.commit.id.slice(0, 8)}</a>),
+        render: (text, record) => (<a href={record.commit.url} target="_blank">{record.commit.id.slice(0, 8)}</a>),
       },
       {
         title: Choerodon.languageChange('branch.des'),

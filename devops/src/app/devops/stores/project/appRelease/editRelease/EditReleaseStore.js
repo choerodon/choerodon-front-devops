@@ -144,16 +144,17 @@ class EditReleaseStore {
   addData = (projectId, data, img) =>
     axios.post(`/devops/v1/project/${projectId}/apps_market`, JSON.stringify(data))
       .then((datas) => {
-        let res = this.handleProptError(datas);
-        if (res && img) {
-          axios.post(`/devops/v1/project/${projectId}/apps_market/upload/${res}`, img, {
-            header: { 'Content-Type': 'multipart/form-data' },
-          }).then((r) => {
-            res = this.handleProptError(r);
-          });
-        }
+        const res = this.handleProptError(datas);
         return res;
       });
+  uploadFile = (orgId, backName = 'devops-service', fileName, img) =>
+    axios.post(`/file/v1/organization/${orgId}/file/backetName/${backName}?fileName=${fileName}`, img, {
+      header: { 'Content-Type': 'multipart/form-data' },
+    })
+      .then((datas) => {
+        const res = this.handleProptError(datas);
+        return res;
+      });;
 
   deleteData =(projectId, id) =>
     axios.delete(`/devops/v1/organization/${projectId}/appTemplates/${id}`)

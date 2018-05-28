@@ -118,11 +118,11 @@ class AppReleaseHome extends Component {
     }
   };
   showSidebar = (ids) => {
-    const { name, id } = this.props.AppState.currentMenuType;
+    const { name, id, organizationId } = this.props.AppState.currentMenuType;
     if (ids) {
-      this.props.history.push(`/devops/app-release/edit/${id}?type=project&id=${name}&name=${name}`);
+      this.props.history.push(`/devops/app-release/edit/${id}?type=project&id=${name}&name=${name}&organizationId=${organizationId}`);
     } else {
-      this.props.history.push(`/devops/app-release/add?type=project&id=${id}&name=${name}`);
+      this.props.history.push(`/devops/app-release/add?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
     }
   };
 
