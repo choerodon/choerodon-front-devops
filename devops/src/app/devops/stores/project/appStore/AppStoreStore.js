@@ -29,7 +29,7 @@ class AppStoreStore {
   loadApps = (projectId, page = 0, size = 20, sorter = { id: 'asc' }, datas = {
     searchParam: {},
     param: '',
-  }) => axios.post(`devops/v1/project/${projectId}/apps_market/list_all?page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
+  }) => axios.post(`devops/v1/projects/${projectId}/apps_market/list_all?page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
     if (data && data.failed) {
       Choerodon.prompt(data.message);
     } else {

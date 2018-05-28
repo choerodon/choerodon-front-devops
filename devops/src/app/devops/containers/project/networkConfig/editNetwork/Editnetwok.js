@@ -390,7 +390,7 @@ class Editnetwok extends Component {
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               transform: value => value.toString(),
             }],
-            initialValue: this.state.envId || (SingleData && SingleData.envName),
+            initialValue: SingleData ? SingleData.envId : undefined,
           })(
             <Select
               dropdownClassName="c7n-network-env"
@@ -403,15 +403,9 @@ class Editnetwok extends Component {
               filterOption={(input, option) => option.props.children[1]
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              {store.loading ? (<Option key={Math.random()}>
-                <Progress type="loading" />
-              </Option>)
-                : env.map(v => (
-                  <Option key={v.id} value={v.id} disabled={!v.connect} >
-                    {v.connect ? <span className="status-success" /> : <span className="status-error icon-portable_wifi_off" />}
-                    {v.name}
-                  </Option>
-                ))}
+              <Option
+                value={SingleData ? SingleData.envId : Math.random()}
+              >{SingleData ? SingleData.envName : ''}</Option>
             </Select>,
           )}
         </FormItem>

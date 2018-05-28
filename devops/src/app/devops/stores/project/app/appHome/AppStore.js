@@ -79,7 +79,7 @@ class AppStore {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/project/${projectId}/apps/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
+    return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
       .subscribe((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -97,7 +97,7 @@ class AppStore {
   };
 
   loadSelectData =orgId =>
-    axios.get(`/devops/v1/project/${orgId}/apps/template`)
+    axios.get(`/devops/v1/projects/${orgId}/apps/template`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -106,7 +106,7 @@ class AppStore {
       });
 
   loadDataById =(projectId, id) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/${id}`).then((data) => {
+    axios.get(`/devops/v1/projects/${projectId}/apps/${id}`).then((data) => {
       const res = this.handleProptError(data);
       if (res) {
         this.setSingleData(data);
@@ -114,42 +114,42 @@ class AppStore {
     });
 
   checkCode =(projectId, code) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/checkCode?code=${code}`)
+    axios.get(`/devops/v1/projects/${projectId}/apps/checkCode?code=${code}`)
       .then((data) => {
         const res = this.handleProptError(data);
         return res;
       });
 
   checkName = (projectId, name) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/checkName?name=${name}`)
+    axios.get(`/devops/v1/projects/${projectId}/apps/checkName?name=${name}`)
       .then((data) => {
         const res = this.handleProptError(data);
         return res;
       });
 
   updateData = (projectId, data) =>
-    axios.put(`/devops/v1/project/${projectId}/apps`, JSON.stringify(data))
+    axios.put(`/devops/v1/projects/${projectId}/apps`, JSON.stringify(data))
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
 
   addData = (projectId, data) =>
-    axios.post(`/devops/v1/project/${projectId}/apps`, JSON.stringify(data))
+    axios.post(`/devops/v1/projects/${projectId}/apps`, JSON.stringify(data))
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
 
   deleteData =(projectId, id) =>
-    axios.delete(`/devops/v1/organization/${projectId}/appTemplates/${id}`)
+    axios.delete(`/devops/v1/organizations/${projectId}/appTemplates/${id}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
 
   changeAppStatus = (projectId, id, status) =>
-    axios.put(`/devops/v1/project/${projectId}/apps/${id}?active=${status}`)
+    axios.put(`/devops/v1/projects/${projectId}/apps/${id}?active=${status}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;

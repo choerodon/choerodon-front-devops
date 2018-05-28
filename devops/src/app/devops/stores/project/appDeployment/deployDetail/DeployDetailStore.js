@@ -54,7 +54,7 @@ class DeployDetailStore {
 
   getStageData = (proId, instanceId) => {
     this.changeLoading(true);
-    return axios.get(`/devops/v1/project/${proId}/app_instances/${instanceId}/stages`)
+    return axios.get(`/devops/v1/projects/${proId}/app_instances/${instanceId}/stages`)
       .then((stage) => {
         const res = this.handleProptError(stage);
         if (res) {
@@ -65,7 +65,7 @@ class DeployDetailStore {
   };
 
   getInstanceValue = (projectId, id) =>
-    axios.get(`/devops/v1/project/${projectId}/app_instances/${id}/value`)
+    axios.get(`/devops/v1/projects/${projectId}/app_instances/${id}/value`)
       .then((stage) => {
         const res = this.handleProptError(stage);
         if (res) {
@@ -75,7 +75,7 @@ class DeployDetailStore {
 
 
   getResourceData = (proId, id) =>
-    axios.get(`/devops/v1/project/${proId}/app_instances/${id}/resources`)
+    axios.get(`/devops/v1/projects/${proId}/app_instances/${id}/resources`)
       .then((stage) => {
         const res = this.handleProptError(stage);
         if (res) {
