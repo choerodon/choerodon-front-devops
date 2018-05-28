@@ -107,7 +107,7 @@ class DomainStore {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/project/${proId}/ingress/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field},${sort.order}`, JSON.stringify(datas)))
+    return Observable.fromPromise(axios.post(`/devops/v1/projects/${proId}/ingress/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field},${sort.order}`, JSON.stringify(datas)))
       .subscribe((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -126,7 +126,7 @@ class DomainStore {
   };
 
   loadDataById = (projectId, id) =>
-    axios.get(`/devops/v1/project/${projectId}/ingress/${id}`).then((data) => {
+    axios.get(`/devops/v1/projects/${projectId}/ingress/${id}`).then((data) => {
       const res = this.handleProptError(data);
       if (res) {
         this.setSingleData(data);
@@ -137,7 +137,7 @@ class DomainStore {
             name: service.serviceName,
             serviceStatus: service.serviceStatus,
           }));
-        axios.get(`/devops/v1/project/${projectId}/service?envId=${res.envId}`)
+        axios.get(`/devops/v1/projects/${projectId}/service?envId=${res.envId}`)
           .then((datass) => {
             const ress = this.handleProptError(datass);
             if (ress) {
@@ -160,7 +160,7 @@ class DomainStore {
     });
 
   loadEnv = projectId =>
-    axios.get(`devops/v1/project/${projectId}/envs?active=true`)
+    axios.get(`devops/v1/projects/${projectId}/envs?active=true`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -171,41 +171,41 @@ class DomainStore {
 
 
   checkName = (projectId, envId, value) =>
-    axios.get(`/devops/v1/project/${projectId}/ingress/check_name?name=${envId}&envId=${value}`).then((datas) => {
+    axios.get(`/devops/v1/projects/${projectId}/ingress/check_name?name=${envId}&envId=${value}`).then((datas) => {
       const res = this.handleProptError(datas);
       return res;
     });
 
   checkPath =(projectId, domain, value) =>
-    axios.get(`/devops/v1/project/${projectId}/ingress/check_domain?domain=${domain}&path=${value}`)
+    axios.get(`/devops/v1/projects/${projectId}/ingress/check_domain?domain=${domain}&path=${value}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
 
   updateData = (projectId, id, data) =>
-    axios.put(`/devops/v1/project/${projectId}/ingress/${id}`, JSON.stringify(data))
+    axios.put(`/devops/v1/projects/${projectId}/ingress/${id}`, JSON.stringify(data))
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
 
   addData = (projectId, data) =>
-    axios.post(`/devops/v1/project/${projectId}/ingress`, JSON.stringify(data))
+    axios.post(`/devops/v1/projects/${projectId}/ingress`, JSON.stringify(data))
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
 
   deleteData = (projectId, id) =>
-    axios.delete(`/devops/v1/project/${projectId}/ingress/${id}`)
+    axios.delete(`/devops/v1/projects/${projectId}/ingress/${id}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
 
   loadNetwork = (projectId, envId) =>
-    axios.get(`/devops/v1/project/${projectId}/service?envId=${envId}`)
+    axios.get(`/devops/v1/projects/${projectId}/service?envId=${envId}`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {

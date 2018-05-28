@@ -32,13 +32,13 @@ class BranchStore {
   };
 
   loadApps(projectId) {
-    return axios.get(`/devops/v1/project/${projectId}/apps`)
+    return axios.get(`/devops/v1/projects/${projectId}/apps`)
       .then(datas => this.handleProptError(datas));
   }
 
   loadPipelines(appId, page = 0, size = 10, projectId = AppState.currentMenuType.id) {
     this.setLoading(true);
-    axios.get(`/devops/v1/project/${projectId}/applications/${appId}/pipelines?page=${page}&size=${size}`)
+    axios.get(`/devops/v1/projects/${projectId}/applications/${appId}/pipelines?page=${page}&size=${size}`)
       .then((res) => {
         const response = this.handleProptError(res);
         if (response) {
@@ -59,7 +59,7 @@ class BranchStore {
   }
 
   loadCommits(gitlabProjectId, shas, projectId = AppState.currentMenuType.id) {
-    axios.post(`/devops/v1/project/${projectId}/gitlab_projects/${gitlabProjectId}/commit_sha`, shas)
+    axios.post(`/devops/v1/projects/${projectId}/gitlab_projects/${gitlabProjectId}/commit_sha`, shas)
       .then((res) => {
         const response = this.handleProptError(res);
         if (response) {
@@ -74,12 +74,12 @@ class BranchStore {
   }
 
   cancelPipeline(gitlabProjectId, pipelineId) {
-    return axios.post(`/devops/v1/project/${AppState.currentMenuType.id}/gitlab_projects/${gitlabProjectId}/pipelines/${pipelineId}/cancel`)
+    return axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/gitlab_projects/${gitlabProjectId}/pipelines/${pipelineId}/cancel`)
       .then(datas => this.handleProptError(datas));
   }
 
   retryPipeline(gitlabProjectId, pipelineId) {
-    return axios.post(`/devops/v1/project/${AppState.currentMenuType.id}/gitlab_projects/${gitlabProjectId}/pipelines/${pipelineId}/retry`)
+    return axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/gitlab_projects/${gitlabProjectId}/pipelines/${pipelineId}/retry`)
       .then(datas => this.handleProptError(datas));
   }
 

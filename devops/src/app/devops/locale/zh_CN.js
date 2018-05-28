@@ -40,13 +40,13 @@ const zhCN = {
   ist_delete: '删除中',
   ist_update: '更新中',
 
-  network_create: '网络创建中',
-  network_delete: '网络删除中',
-  network_update: '网络更新中',
+  network_create: '网络创建中，请耐心等待',
+  network_delete: '网络删除中，请耐心等待',
+  network_update: '网络更新中，请耐心等待',
 
-  domain_create: '域名创建中',
-  domain_delete: '域名删除中',
-  domain_update: '域名更新中',
+  domain_create: '域名创建中，请耐心等待',
+  domain_delete: '域名删除中，请耐心等待',
+  domain_update: '域名更新中，请耐心等待',
   // deploy
   'deploy.title': '应用部署',
   'deploy.status': '容器状态',

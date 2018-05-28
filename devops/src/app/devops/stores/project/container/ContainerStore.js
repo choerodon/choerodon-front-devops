@@ -67,7 +67,7 @@ class ContainerStore {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/project/${proId}/app_pod/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(datas)))
+    return Observable.fromPromise(axios.post(`/devops/v1/projects/${proId}/app_pod/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(datas)))
       .subscribe((data) => {
         const res = this.handleProptError(datas);
         if (res) {
@@ -86,7 +86,7 @@ class ContainerStore {
   };
 
   loadPodParam(projectId, id) {
-    return axios.get(`devops/v1/project/${projectId}/app_pod/${id}/containers/logs`)
+    return axios.get(`devops/v1/projects/${projectId}/app_pod/${id}/containers/logs`)
       .then(datas => this.handleProptError(datas));
   }
   handleProptError =(error) => {

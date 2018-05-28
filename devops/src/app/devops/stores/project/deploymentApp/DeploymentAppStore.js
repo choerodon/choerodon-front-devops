@@ -94,14 +94,14 @@ class DeploymentAppStore {
   };
 
   loadApps(projectId = AppState.currentMenuType.id) {
-    return axios.get(`/devops/v1/project/${projectId}/apps`).then((data) => {
+    return axios.get(`/devops/v1/projects/${projectId}/apps`).then((data) => {
       const res = this.handleProptError(data);
       return res;
     });
   }
 
   loadVersion(appId, projectId = AppState.currentMenuType.id) {
-    return axios.get(`/devops/v1/project/${projectId}/apps/${appId}/version/list`)
+    return axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version/list`)
       .then((data) => {
         const res = this.handleProptError(data);
         return res;
@@ -109,7 +109,7 @@ class DeploymentAppStore {
   }
 
   loadEnv(projectId = AppState.currentMenuType.id) {
-    return axios.get(`/devops/v1/project/${projectId}/envs?active=true`)
+    return axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
       .then((data) => {
         const res = this.handleProptError(data);
         return res;
@@ -117,7 +117,7 @@ class DeploymentAppStore {
   }
 
   loadValue(appId, verId, envId, projectId = AppState.currentMenuType.id) {
-    return axios.get(`/devops/v1/project/${projectId}/app_instances/value?appId=${appId}&appVersionId=${verId}&envId=${envId}`)
+    return axios.get(`/devops/v1/projects/${projectId}/app_instances/value?appId=${appId}&appVersionId=${verId}&envId=${envId}`)
       .then((data) => {
         const res = this.handleProptError(data);
         return res;
@@ -125,7 +125,7 @@ class DeploymentAppStore {
   }
 
   loadInstances(appId, envId, projectId = AppState.currentMenuType.id) {
-    return axios.get(`/devops/v1/project/${projectId}/app_instances/options?envId=${envId}&appId=${appId}`)
+    return axios.get(`/devops/v1/projects/${projectId}/app_instances/options?envId=${envId}&appId=${appId}`)
       .then((data) => {
         const res = this.handleProptError(data);
         return res;
@@ -133,7 +133,7 @@ class DeploymentAppStore {
   }
 
   deploymentApp(applicationDeployDTO, projectId = AppState.currentMenuType.id) {
-    return axios.post(`/devops/v1/project/${projectId}/app_instances`, applicationDeployDTO)
+    return axios.post(`/devops/v1/projects/${projectId}/app_instances`, applicationDeployDTO)
       .then((data) => {
         const res = this.handleProptError(data);
         return res;

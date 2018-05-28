@@ -96,7 +96,7 @@ class AppReleaseStore {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/project/${projectId}/apps_market/list?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
+    return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps_market/list?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
       .subscribe((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -116,7 +116,7 @@ class AppReleaseStore {
   loadAllVersion =(projectId, appId, page = this.versionPage.current, size = this.versionPage.pageSize, sort = { field: 'id', order: 'desc' }, postData = {
     param: '', searchParam: {},
   }) =>
-    axios.post(`/devops/v1/project/${projectId}/apps_market/list_in_project?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+    axios.post(`/devops/v1/projects/${projectId}/apps_market/list_in_project?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -131,7 +131,7 @@ class AppReleaseStore {
   };
 
   loadApps = orgId =>
-    axios.get(`/devops/v1/organization/${orgId}/app_templates`)
+    axios.get(`/devops/v1/organizations/${orgId}/app_templates`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -140,7 +140,7 @@ class AppReleaseStore {
       });
 
   loadDataById =(projectId, id) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/${id}`).then((data) => {
+    axios.get(`/devops/v1/projects/${projectId}/apps/${id}`).then((data) => {
       const res = this.handleProptError(data);
       if (res) {
         this.setSingleData(data);
@@ -148,24 +148,24 @@ class AppReleaseStore {
     });
 
   checkCode =(projectId, code) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/checkCode?code=${code}`);
+    axios.get(`/devops/v1/projects/${projectId}/apps/checkCode?code=${code}`);
 
   checkName = (projectId, name) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/checkName?name=${name}`)
+    axios.get(`/devops/v1/projects/${projectId}/apps/checkName?name=${name}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
 
   updateData = (projectId, data) =>
-    axios.put(`/devops/v1/project/${projectId}/apps`, JSON.stringify(data))
+    axios.put(`/devops/v1/projects/${projectId}/apps`, JSON.stringify(data))
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
 
   addData = (projectId, data, img) =>
-    axios.post(`/devops/v1/project/${projectId}/apps?appId=${data.appId}&description=${data.description}&category=${data.category}&contributor=${data.contributor}&publishLevel=${data.publishLevel}&appVersions=${data.appVersions}`, img, {
+    axios.post(`/devops/v1/projects/${projectId}/apps?appId=${data.appId}&description=${data.description}&category=${data.category}&contributor=${data.contributor}&publishLevel=${data.publishLevel}&appVersions=${data.appVersions}`, img, {
       header: { 'Content-Type': 'multipart/form-data' },
     })
       .then((datas) => {
@@ -174,7 +174,7 @@ class AppReleaseStore {
       });
 
   deleteData =(projectId, id) =>
-    axios.delete(`/devops/v1/organization/${projectId}/appTemplates/${id}`)
+    axios.delete(`/devops/v1/organizations/${projectId}/appTemplates/${id}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;

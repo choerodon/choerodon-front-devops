@@ -109,7 +109,7 @@ class EnvPipelineStore {
 
   loadEnv = (projectId, active) => {
     this.changeLoading(true);
-    return axios.get(`devops/v1/project/${projectId}/envs?active=${active}`).then((data) => {
+    return axios.get(`devops/v1/projects/${projectId}/envs?active=${active}`).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
       } else if (data && active) {
@@ -122,12 +122,12 @@ class EnvPipelineStore {
   };
 
   createEnv(projectId, data) {
-    return axios.post(`/devops/v1/project/${projectId}/envs`, JSON.stringify(data));
+    return axios.post(`/devops/v1/projects/${projectId}/envs`, JSON.stringify(data));
   }
 
   updateSort = (projectId, envIds) => {
     this.changeLoading(true);
-    return axios.put(`/devops/v1/project/${projectId}/envs/sort`, JSON.stringify(envIds)).then((data) => {
+    return axios.put(`/devops/v1/projects/${projectId}/envs/sort`, JSON.stringify(envIds)).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -138,11 +138,11 @@ class EnvPipelineStore {
   };
 
   updateEnv(projectId, data) {
-    return axios.put(`/devops/v1/project/${projectId}/envs`, JSON.stringify(data));
+    return axios.put(`/devops/v1/projects/${projectId}/envs`, JSON.stringify(data));
   }
 
   loadEnvById = (projectId, id) =>
-    axios.get(`/devops/v1/project/${projectId}/envs/${id}`).then((data) => {
+    axios.get(`/devops/v1/projects/${projectId}/envs/${id}`).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -151,7 +151,7 @@ class EnvPipelineStore {
     });
 
   loadShell = (projectId, id, update) =>
-    axios.get(`/devops/v1/project/${projectId}/envs/${id}/shell?update=${update}`).then((data) => {
+    axios.get(`/devops/v1/projects/${projectId}/envs/${id}/shell?update=${update}`).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -162,7 +162,7 @@ class EnvPipelineStore {
   loadInstance = (projectId, page, size = 10, sorter = { id: 'asc' }, envId, datas = {
     searchParam: {},
     param: '',
-  }) => axios.post(`devops/v1/project/${projectId}/app_instances/list_by_options?envId=${envId}&page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
+  }) => axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?envId=${envId}&page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
     if (data && data.failed) {
       Choerodon.prompt(data.message);
     } else {
@@ -171,15 +171,15 @@ class EnvPipelineStore {
   });
 
   banEnvById(projectId, id, active) {
-    return axios.put(`/devops/v1/project/${projectId}/envs/${id}/active?active=${active}`);
+    return axios.put(`/devops/v1/projects/${projectId}/envs/${id}/active?active=${active}`);
   }
 
   loadName(projectId, name) {
-    return axios.get(`/devops/v1/project/${projectId}/envs/checkName?name=${name}`);
+    return axios.get(`/devops/v1/projects/${projectId}/envs/checkName?name=${name}`);
   }
 
   loadCode(projectId, code) {
-    return axios.get(`/devops/v1/project/${projectId}/envs/checkCode?code=${code}`);
+    return axios.get(`/devops/v1/projects/${projectId}/envs/checkCode?code=${code}`);
   }
 }
 

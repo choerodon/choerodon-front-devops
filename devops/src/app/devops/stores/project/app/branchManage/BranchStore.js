@@ -74,7 +74,7 @@ class BranchStore {
   }
 
   loadBranchData = (projectId, appId) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/branches`)
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/branches`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -83,7 +83,7 @@ class BranchStore {
       });
 
   loadTagData = (projectId, appId, page = this.pageInfo.current, sizes = this.pageInfo.pageSize) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=${sizes}`)
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=${sizes}`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -98,8 +98,8 @@ class BranchStore {
   loadAllData = (projectId, appId, page) => {
     this.changeLoading(true);
     return axios.all([
-      axios.get(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/branches`),
-      axios.get(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=10`)])
+      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/branches`),
+      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=10`)])
       .then(axios.spread((branch, tag) => {
         if (!branch.failed && !tag.failed) {
           this.setBranchData(branch);
@@ -113,7 +113,7 @@ class BranchStore {
   }
 
   getLatestHotfixVersion =(projectId, appId) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/tags/hotfix`)
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags/hotfix`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -122,7 +122,7 @@ class BranchStore {
         return res;
       });
   getLatestReleaseVersion =(projectId, appId) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/tags/release`)
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags/release`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -130,25 +130,25 @@ class BranchStore {
         }
       });
   createBranch =(projectId, appId, name) =>
-    axios.post(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/start?name=${name}`)
+    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/start?name=${name}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
   finishFeature =(projectId, appId, name) =>
-    axios.post(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/finish_feature?branch=${name}`)
+    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/finish_feature?branch=${name}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
   finishBranch =(projectId, appId, name) =>
-    axios.post(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/finish?branch=${name}`)
+    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/finish?branch=${name}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
   getBranchMergeStaus =(projectId, appId, name) =>
-    axios.post(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/update_merge_request_status?branch=${name}`)
+    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/update_merge_request_status?branch=${name}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
