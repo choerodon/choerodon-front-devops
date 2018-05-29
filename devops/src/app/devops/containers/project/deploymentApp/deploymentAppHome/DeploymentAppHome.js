@@ -13,6 +13,7 @@ import './DeploymentAppHome.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DeploymentAppStore from '../../../../stores/project/deploymentApp';
 import AceForYaml from '../../../../components/yamlAce';
+import AppStoreStore from '../../../../stores/project/appStore';
 
 const beautify = require('json-beautify');
 require('codemirror/lib/codemirror.css');
@@ -29,6 +30,7 @@ class DeploymentAppHome extends Component {
       appId: undefined,
       verId: undefined,
       envId: undefined,
+      storeId: props.match.params.storeId,
     };
   }
 
@@ -310,6 +312,7 @@ class DeploymentAppHome extends Component {
         appId: Request.appId === 'null' || !Request.appId ? undefined : Request.appId * 1,
         verId: Request.verId === 'null' || !Request.verId ? undefined : Request.verId * 1,
         envId: Request.envId === 'null' || !Request.envId ? undefined : Request.envId * 1,
+        storeId: Request.storeId === 'null' || !Request.storeId ? undefined : Request.storeId * 1,
       }, () => {
         DeploymentAppStore.loadInitData(this.state.appId, this.state.verId, this.state.envId);
       });
@@ -741,10 +744,14 @@ class DeploymentAppHome extends Component {
     const { AppState } = this.props;
     const projectName = AppState.currentMenuType.name;
     const projectId = AppState.currentMenuType.id;
+    const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
+    const backPath = AppStoreStore.backPath ? `/devops/appstore/${this.state.storeId}/app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}` : `/devops/app-deployment?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`;
+    // eslint-disable-next-line no-console
+    console.log(backPath);
     return (
       <div className="c7n-region c7n-deploymentApp page-container">
-        <PageHeader title={Choerodon.languageChange('deploymentApp.title')} backPath={`/devops/app-deployment?type=${type}&id=${projectId}&name=${projectName}`}>
+        <PageHeader title={Choerodon.languageChange('deploymentApp.title')} backPath={backPath}>
           <Button
             funcType="flat"
             className="leftBtn"

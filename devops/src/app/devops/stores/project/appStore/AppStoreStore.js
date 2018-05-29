@@ -5,6 +5,7 @@ import store from 'Store';
 @store('AppStoreStore')
 class AppStoreStore {
   @observable isLoading = true;
+  @observable backPath = false;
   @observable listActive = 'card';
   @observable appCards = [];
   @observable app = [];
@@ -31,6 +32,11 @@ class AppStoreStore {
   @action
   setApp(app) {
     this.app = app;
+  }
+
+  @action
+  setBackPath(backPath) {
+    this.backPath = backPath;
   }
 
   @computed
