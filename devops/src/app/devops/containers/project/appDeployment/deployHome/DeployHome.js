@@ -11,6 +11,7 @@ import MutiDeployment from '../mutiDeployment';
 import './DeployHome.scss';
 import '../AppDeploy.scss';
 import '../../../main.scss';
+import AppStoreStore from '../../../../stores/project/appStore';
 
 const ButtonGroup = Button.Group;
 
@@ -27,6 +28,7 @@ class DeployHome extends Component {
 
   componentDidMount() {
     const { AppDeploymentStore } = this.props;
+    AppStoreStore.setBackPath(false);
     const tabActive = AppDeploymentStore.getTabActive;
     this.loadEnvCards();
     this.loadAppName();
@@ -156,8 +158,9 @@ class DeployHome extends Component {
     const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const projectName = AppState.currentMenuType.name;
+    const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}`);
+    this.linkToChange(`/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**

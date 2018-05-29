@@ -46,8 +46,9 @@ class SingleEnvironment extends Component {
     const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const projectName = AppState.currentMenuType.name;
+    const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/app-deployment/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}`);
+    this.linkToChange(`/devops/app-deployment/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -163,9 +164,10 @@ class SingleEnvironment extends Component {
     const envID = envId || envNames[0].id;
     const projectId = AppState.currentMenuType.id;
     const projectName = AppState.currentMenuType.name;
+    const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     store.setIstAll('null');
-    this.linkToChange(`/devops/deployment-app?envId=${envID}&appId=${appId}&type=${type}&id=${projectId}&name=${projectName}`);
+    this.linkToChange(`/devops/deployment-app?envId=${envID}&appId=${appId}&type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
