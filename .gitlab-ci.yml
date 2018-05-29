@@ -11,7 +11,7 @@ node_build_dev:
   stage: node_build
   script:
     - node_config
-    - node_module_ci
+    - node_module devops
     - node_build devbuild
     - cache_dist
   artifacts:
@@ -27,7 +27,7 @@ node_build:
   stage: node_build
   script:
     - node_config
-    - node_module_ci
+    - node_module devops
     - node_build build
     - clean_cache
   only:
@@ -51,17 +51,6 @@ docker_build:
         "${CHOERODON_URL}/devops/ci?token=${Token}&type=front"
     cat .auto_devops.sh
     source .auto_devops.sh
-
-    function node_config() {
-      cnpm config set registry http://npm.saas.hand-china.com
-    }
-
-    function node_module_ci() {
-      mkdir  -p /cache/$CI_PROJECT_NAME-$CI_PROJECT_ID-$CI_COMMIT_REF_NAME-$CI_COMMIT_SHA/
-      python ./boot/structure/configAuto.py devops
-      cp -r config.yml /cache/$CI_PROJECT_NAME-$CI_PROJECT_ID-$CI_COMMIT_REF_NAME-$CI_COMMIT_SHA/
-      chmod 777 ./boot/structure/moduleCi.sh && ./boot/structure/moduleCi.sh boot devops
-    }
 
 before_script:
   - *auto_devops
