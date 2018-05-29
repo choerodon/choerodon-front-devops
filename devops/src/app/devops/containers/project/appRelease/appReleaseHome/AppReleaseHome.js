@@ -81,7 +81,7 @@ class AppReleaseHome extends Component {
               <span className="icon-mode_edit" />
             </Button>
           </Popover>
-          <Popover trigger="hover" placement="bottom" content={<div>删除</div>}>
+          <Popover trigger="hover" placement="bottom" content={<div>取消应用发布</div>}>
             <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
               <span className="icon-delete_forever" />
             </Button>
@@ -160,7 +160,7 @@ class AppReleaseHome extends Component {
           <h2 className="c7n-space-first">项目&quot;{this.props.AppState.currentMenuType.name}&quot;的应用发布 </h2>
           <p>
             这些权限会影响此项目及其所有资源。
-            <a href="http://choerodon.io/zh/docs/user-guide/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>
@@ -168,6 +168,7 @@ class AppReleaseHome extends Component {
             </a>
           </p>
           <Table
+            scroll={{ y: window.screen.height <= 900 ? 350 : 600 }}
             // filters={['appCode', 'appName', 'version']}
             loading={AppReleaseStore.loading}
             pagination={AppReleaseStore.pageInfo}
@@ -178,11 +179,17 @@ class AppReleaseHome extends Component {
           />
         </div>
         <Modal
-          title="取消发布"
-          open={this.state.openRemove}
-          handleCancel={this.closeRemove}
-          handleConfirm={this.handleDelete}
-        />
+          visible={this.state.openRemove}
+          title="取消应用发布"
+          footer={[
+            <Button key="back" onClick={this.closeRemove}>取消</Button>,
+            <Button key="submit" type="danger" onClick={this.handleDelete}>
+              确定
+            </Button>,
+          ]}
+        >
+          <p>取消应用发布可能导致某些实例不可用，确定要取消应用发布吗？</p>
+        </Modal>
       </div>
 
     );

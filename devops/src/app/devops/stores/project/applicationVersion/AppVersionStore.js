@@ -8,13 +8,15 @@ import store from 'Store';
 import { Observable } from 'rxjs';
 import { List, formJS } from 'immutable';
 
+const height = window.screen.height;
+
 @store('AppVersionStore')
 class AppVersionStore {
   @observable allData = [];
   @observable isRefresh = false;// 页面的loading
   @observable loading = false; // 打开tab的loading
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: 10,
+    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
 
   @action setPageInfo(page) {
@@ -53,7 +55,7 @@ class AppVersionStore {
     return this.loading;
   }
 
-  loadData = (isRefresh = false, proId, page, pageSize = 10, sort = { field: 'id', order: 'desc' }, datas = {
+  loadData = (isRefresh = false, proId, page = this.pageInfo.current, pageSize = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
     searchParam: {},
     param: '',
   }) => {

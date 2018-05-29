@@ -65,7 +65,7 @@ export default class MouserOverWrapper extends Component {
     if (text && domWidth <= width) {
       return <div style={textStyle} className={className}> {this.props.children}</div>;
     } else {
-      return (<Tooltip title={text} placement="bottom" getPopupContainer={node => node}>
+      return (<Tooltip title={text} placement="bottom" >
         <div style={textStyle} className={className}>
           {this.props.children}
         </div>

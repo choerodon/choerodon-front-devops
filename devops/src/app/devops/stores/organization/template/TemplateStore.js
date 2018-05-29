@@ -8,6 +8,7 @@ import store from 'Store';
 import { Observable } from 'rxjs';
 import { List, formJS } from 'immutable';
 
+const height = window.screen.height;
 @store('TemplateStore')
 class TemplateStore {
   @observable allData = [];
@@ -16,7 +17,7 @@ class TemplateStore {
   @observable singleData = null;
   @observable selectData = [];
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: 10,
+    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
 
   @action setPageInfo(page) {
