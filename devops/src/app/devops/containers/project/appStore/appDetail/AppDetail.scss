@@ -31,6 +31,7 @@
   .c7n-store-img {
     height: 72px;
     width: 72px;
+    border-radius: 72px;
     background-image: url(../../../../../devops/assets/images/app.png);
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -79,6 +80,7 @@
 
 .c7n-store-detail-left {
   width: 12%;
+  min-width: 152px;
 }
 
 .c7n-store-detail-right {

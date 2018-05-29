@@ -36,8 +36,9 @@ class MutiDeployment extends Component {
     const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const projectName = AppState.currentMenuType.name;
+    const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/deployment-app?envId=${envId}&verId=${verId}&appId=${appId}&type=${type}&id=${projectId}&name=${projectName}`);
+    this.linkToChange(`/devops/deployment-app?envId=${envId}&verId=${verId}&appId=${appId}&type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   render() {
@@ -112,7 +113,10 @@ class MutiDeployment extends Component {
         });
 
         trDom.push(<tr>
-          <td>{app.applicationName}</td>
+          <td>
+            {app.publishLevel ? <span className="icon-store_mall_directory c7n-icon-publish" /> : <span className="icon-project c7n-icon-publish" />}
+            {app.applicationName}
+          </td>
           <td><React.Fragment>
             <div className="c7n-deploy-muti-row">
               <div className="c7n-deploy-muti_card">

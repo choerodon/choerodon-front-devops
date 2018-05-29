@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Input, Icon, Pagination } from 'choerodon-ui';
+import { Button, Input, Icon, Pagination, Table, Popover } from 'choerodon-ui';
+import Permission from 'PerComponent';
 import PageHeader from 'PageHeader';
 import _ from 'lodash';
+import LoadingBar from '../../../../components/loadingBar';
 import './AppStore.scss';
 import '../../../main.scss';
+
+const ButtonGroup = Button.Group;
 
 @inject('AppState')
 @observer
@@ -13,7 +17,7 @@ class AppStoreHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      val: null,
+      val: '',
       pageSize: 20,
       page: 0,
     };
@@ -24,6 +28,52 @@ class AppStoreHome extends Component {
   }
 
   /**
+   * pageSize 变化的回调
+   * @param current 当前页码
+   * @param size 每页条数
+   */
+  onPageSizeChange = (current, size) => {
+    const { val } = this.state;
+    const pagination = {
+      current, pageSize: size,
+    };
+    this.onChange(pagination, null, null, val);
+  };
+
+  /**
+   * 页码改变的回调
+   * @param page 改变后的页码
+   * @param pageSize 每页条数
+   */
+  onPageChange = (page, pageSize) => {
+    const { val } = this.state;
+    const pagination = {
+      current: page, pageSize,
+    };
+    this.onChange(pagination, null, null, val);
+  };
+
+  /**
+   * table 改变的函数
+   * @param pagination 分页
+   * @param filters 过滤
+   * @param sorter 排序
+   * @param param 搜索
+   */
+  onChange = (pagination, filters, sorter, param) => {
+    const { AppStoreStore, AppState } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    const sort = {};
+    const searchParam = {};
+    const postData = {
+      searchParam,
+      param: param.toString(),
+    };
+    this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
+    AppStoreStore.loadApps(projectId, pagination.current - 1, pagination.pageSize, sort, postData);
+  };
+
+  /**
    * 搜索函数
    */
   onSearch = () => {
@@ -32,7 +82,7 @@ class AppStoreHome extends Component {
     const pagination = {
       current: page + 1, pageSize,
     };
-    this.tableChange(pagination, null, null, val);
+    this.onChange(pagination, null, null, val);
   };
 
   /**
@@ -44,11 +94,10 @@ class AppStoreHome extends Component {
   };
 
   /**
-   * 清除输入
+   * 刷新函数
    */
-  emitEmpty = () => {
-    this.searchInput.focus();
-    this.setState({ val: '' });
+  reload = () => {
+    this.onSearch();
   };
 
   /**
@@ -62,13 +111,15 @@ class AppStoreHome extends Component {
 
   /**
    * 跳转应用详情
+   * @param id 应用id
    */
   appDetail = (id) => {
     const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
+    const organizationId = AppState.currentMenuType.organizationId;
     const projectName = AppState.currentMenuType.name;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/appstore/${id}/app?type=${type}&id=${projectId}&name=${projectName}`);
+    this.linkToChange(`/devops/appstore/${id}/app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -81,23 +132,17 @@ class AppStoreHome extends Component {
   };
 
   /**
-   * table 改变的函数
-   * @param pagination 分页
-   * @param filters 过滤
-   * @param sorter 排序
-   * @param param 搜索
+   * 清除输入
    */
-  tableChange =(pagination, filters, sorter, param) => {
-    const { AppStoreStore, AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    const sort = {};
-    const searchParam = {};
-    const postData = {
-      searchParam,
-      param: param.toString(),
-    };
-    this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
-    AppStoreStore.loadApps(projectId, pagination.current - 1, pagination.pageSize, sort, postData);
+  emitEmpty = () => {
+    this.searchInput.focus();
+    this.setState({ val: '' });
+  };
+
+
+  listViewChange = (view) => {
+    const { AppStoreStore } = this.props;
+    AppStoreStore.setListActive(view);
   };
 
 
@@ -105,16 +150,22 @@ class AppStoreHome extends Component {
     const { AppStoreStore, AppState } = this.props;
     const pageInfo = AppStoreStore.getPageInfo;
     const appCards = AppStoreStore.getAppCards;
+    const listActive = AppStoreStore.getListActive;
+    const projectId = AppState.currentMenuType.id;
+    const organizationId = AppState.currentMenuType.organizationId;
+    const type = AppState.currentMenuType.type;
 
     const prefix = <Icon type="search" onClick={this.onSearch} />;
     const suffix = this.state.val ? <Icon type="close" onClick={this.emitEmpty} /> : null;
+
     const appCardsDom = appCards.length ? _.map(appCards, card => (
       <div
         role="none"
         className="c7n-store-card"
         onClick={this.appDetail.bind(this, card.id)}
       >
-        <div className="c7n-store-card-icon" />
+        {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
+          : <div className="c7n-store-card-icon" />}
         <div className="c7n-store-card-name">
           {card.name}
         </div>
@@ -125,6 +176,50 @@ class AppStoreHome extends Component {
           {card.description}
         </div>
       </div>)) : (<span className="c7n-none-des">暂无已发布应用</span>);
+
+    const columns = [{
+      title: Choerodon.languageChange('app.name'),
+      dataIndex: 'name',
+      key: 'name',
+    }, {
+      title: Choerodon.getMessage('应用分类', 'Category'),
+      dataIndex: 'category',
+      key: 'category',
+    }, {
+      title: Choerodon.getMessage('描述', 'Description'),
+      dataIndex: 'description',
+      key: 'description',
+    }, {
+      width: '40px',
+      key: 'action',
+      render: (test, record) => (
+        <div>
+          <Permission
+            service={['devops-service.devops-env-pod-container.queryLogByPod']}
+            organizationId={organizationId}
+            projectId={projectId}
+            type={type}
+          >
+            <Popover placement="bottom" content={<div><span>应用详情</span></div>}>
+              <Button
+                shape="circle"
+                onClick={this.appDetail.bind(this, record.id)}
+              >
+                <span className="icon-insert_drive_file" />
+              </Button>
+            </Popover>
+          </Permission>
+        </div>
+      ),
+    }];
+    const appListDom = (<Table
+      columns={columns}
+      dataSource={appCards}
+      filterBar={false}
+      pagination={false}
+      loading={AppStoreStore.isLoading}
+      rowKey={record => record.id}
+    />);
 
     return (
       <div className="c7n-region page-container">
@@ -142,7 +237,7 @@ class AppStoreHome extends Component {
           <h2 className="c7n-space-first">应用市场</h2>
           <p>
             这里是应用市场的描述。
-            <a href="http://c7n.saas.hand-china.com/docs/devops/develop/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>
@@ -160,14 +255,23 @@ class AppStoreHome extends Component {
               // eslint-disable-next-line no-return-assign
               ref={node => this.searchInput = node}
             />
+            <ButtonGroup>
+              <Button onClick={this.listViewChange.bind(this, 'list')} className={listActive === 'list' && 'c7n-tab-active'}><Icon type="format_list_bulleted" /></Button>
+              <Button onClick={this.listViewChange.bind(this, 'card')} className={listActive === 'card' && 'c7n-tab-active'}><Icon type="dashboard" /></Button>
+            </ButtonGroup>
           </div>
-          {appCardsDom}
+          {AppStoreStore.isLoading ? <LoadingBar display /> :
+            (<div className="c7n-store-list-wrap">
+              {listActive === 'card' ? appCardsDom : appListDom}
+            </div>)}
           <div className="c7n-store-pagination">
             <Pagination
               total={pageInfo.total}
               current={pageInfo.current}
               pageSize={pageInfo.pageSize}
-              onChange={this.tableChange}
+              showSizeChanger
+              onChange={this.onPageChange}
+              onShowSizeChange={this.onPageSizeChange}
             />
           </div>
         </div>

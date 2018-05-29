@@ -121,8 +121,9 @@ class SingleApp extends Component {
     const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const projectName = AppState.currentMenuType.name;
+    const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/app-deployment/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}`);
+    this.linkToChange(`/devops/app-deployment/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -148,7 +149,8 @@ class SingleApp extends Component {
     const projectId = AppState.currentMenuType.id;
     const projectName = AppState.currentMenuType.name;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/deployment-app?envId=${envId}&verId=${verId}&appId=${appId}&type=${type}&id=${projectId}&name=${projectName}`);
+    const organizationId = AppState.currentMenuType.organizationId;
+    this.linkToChange(`/devops/deployment-app?envId=${envId}&verId=${verId}&appId=${appId}&type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
 
@@ -679,7 +681,8 @@ class SingleApp extends Component {
           onChange={this.loadAppVer}
           optionFilterProp="children"
           filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            option.props.children.props.children
+              .props.children[1].toLowerCase().indexOf(input.toLowerCase()) >= 0}
           filter
           allowClear
           showSearch
