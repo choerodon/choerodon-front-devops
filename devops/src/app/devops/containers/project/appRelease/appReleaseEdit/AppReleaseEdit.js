@@ -37,15 +37,15 @@ class AppReleaseEdit extends Component {
       projectId: menu.id,
       show: false,
       isClick: false,
-      selectData: [],
     };
   }
   componentDidMount() {
     const { EditReleaseStore } = this.props;
     const { projectId, id } = this.state;
-    EditReleaseStore.loadApps(projectId);
     if (id) {
-      EditReleaseStore.loadDataById(false, projectId, id);
+      EditReleaseStore.loadDataById(projectId, id);
+    } else {
+      EditReleaseStore.loadApps(projectId);
     }
   }
 
@@ -64,7 +64,8 @@ class AppReleaseEdit extends Component {
    * @returns {*}
    */
   getTable =() => {
-    const data = this.state.selectData;
+    const { EditReleaseStore } = this.props;
+    const data = EditReleaseStore.getSelectData;
     const columns = [{
       title: '版本',
       dataIndex: 'version',
@@ -113,7 +114,6 @@ class AppReleaseEdit extends Component {
     const columns = [{
       title: '版本',
       dataIndex: 'version',
-      render: text => <a href="#">{text}</a>,
     }, {
       title: '生成时间',
       // dataIndex: 'creationDate',
@@ -144,11 +144,13 @@ class AppReleaseEdit extends Component {
    * @param id 版本id
    */
   removeVersion =(id) => {
-    const data = this.state.selectData;
+    const { EditReleaseStore } = this.props;
+    const data = EditReleaseStore.getSelectData;
     const selectedRowKeys = this.state.selectedRowKeys;
     _.remove(data, n => n.id === id);
     _.remove(selectedRowKeys, n => n === id);
-    this.setState({ selectData: data, selectedRowKeys });
+    EditReleaseStore.setSelectData(data);
+    this.setState({ selectedRowKeys });
   };
   /**
    * 检查域名是否符合规则
@@ -169,7 +171,8 @@ class AppReleaseEdit extends Component {
   handleSubmit =(e) => {
     e.preventDefault();
     const { EditReleaseStore } = this.props;
-    const { projectId, id, img, selectData } = this.state;
+    const selectData = EditReleaseStore.getSelectData;
+    const { projectId, id, img } = this.state;
     this.props.form.validateFieldsAndScroll((err, data) => {
       if (!err) {
         const postData = data;
@@ -189,15 +192,16 @@ class AppReleaseEdit extends Component {
             });
         } else {
           this.setState({ submitting: true });
+          postData.id = id;
           EditReleaseStore.updateData(projectId, id, postData)
             .then((datass) => {
               this.setState({ submitting: false });
               if (datass) {
                 this.handleBack();
               }
-            }).catch(() => {
+            }).catch((errs) => {
               this.setState({ submitting: false });
-              Choerodon.prompt(err.response.data.message);
+              Choerodon.prompt(errs.response.data.message);
             });
         }
       }
@@ -208,7 +212,9 @@ class AppReleaseEdit extends Component {
    */
   handleShowSideBar =() => {
     const { EditReleaseStore } = this.props;
-    const { appId, projectId } = this.state;
+    const { projectId } = this.state;
+    const SingleData = EditReleaseStore.getSingleData;
+    const appId = SingleData ? SingleData.appId : this.state.appId;
     EditReleaseStore.loadAllVersion(false, projectId, appId);
     this.setState({ show: true });
   };
@@ -217,7 +223,9 @@ class AppReleaseEdit extends Component {
    */
   handleAddVersion =() => {
     const data = this.state.selectedRows;
-    this.setState({ selectData: data, show: false });
+    const { EditReleaseStore } = this.props;
+    EditReleaseStore.setSelectData(data);
+    this.setState({ show: false });
   };
   /**
    * 关闭滑块
@@ -280,6 +288,9 @@ class AppReleaseEdit extends Component {
    */
   handleBack =() => {
     const menu = this.props.AppState.currentMenuType;
+    const { EditReleaseStore } = this.props;
+    EditReleaseStore.setSelectData([]);
+    EditReleaseStore.setSingleData(null);
     this.props.history.push(`/devops/app-release?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`);
   };
   render() {
@@ -318,6 +329,7 @@ class AppReleaseEdit extends Component {
             initialValue: SingleData ? SingleData.appId : undefined,
           })(
             <Select
+              disabled={this.state.id}
               className="c7n-sidebar-form"
               filter
               onSelect={this.selectApp}
@@ -335,6 +347,9 @@ class AppReleaseEdit extends Component {
                   </Tooltip>
                 </Option>
               ))}
+              {SingleData && (<Option value={SingleData.appId}>
+                {SingleData.name}
+              </Option>)}
             </Select>,
           )}
         </FormItem>
@@ -364,7 +379,15 @@ class AppReleaseEdit extends Component {
           {...formItemLayout}
         >
           <div className="c7n-appRelease-img">
-            <div className="c7n-appRelease-img-hover" id="img" onMouseLeave={this.state.isClick ? () => {} : this.hideBth} onMouseEnter={this.showBth} onClick={this.triggerFileBtn} role="none">
+            <div
+              style={{ backgroundImage: SingleData && SingleData.imgUrl !== null ? `url(${SingleData.imgUrl})` : '' }}
+              className="c7n-appRelease-img-hover"
+              id="img"
+              onMouseLeave={this.state.isClick ? () => {} : this.hideBth}
+              onMouseEnter={this.showBth}
+              onClick={this.triggerFileBtn}
+              role="none"
+            >
               {this.state.showBtn && <div className="c7n-appRelease-img-child">
                 <span className="icon-photo_camera" />
                 <Input id="file" type="file" onChange={this.selectFile} style={{ display: 'none' }} />

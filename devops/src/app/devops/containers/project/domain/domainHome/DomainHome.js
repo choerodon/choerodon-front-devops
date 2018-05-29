@@ -72,6 +72,7 @@ class DomainHome extends Component {
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
       title: '域名状态',
+      width: '12%',
       render: (record) => {
         let statusDom = null;
         switch (record.commandStatus) {
@@ -97,6 +98,7 @@ class DomainHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
+      width: '18%',
       render: (record) => {
         let statusDom = null;
         switch (record.commandStatus) {
@@ -123,6 +125,7 @@ class DomainHome extends Component {
       title: '域名地址',
       key: 'domain',
       filters: [],
+      width: '15%',
       render: record => (
         <MouserOverWrapper text={record.domain || ''} width={120}>
           {record.domain}</MouserOverWrapper>
@@ -132,6 +135,7 @@ class DomainHome extends Component {
       key: 'envName',
       sorter: true,
       filters: [],
+      width: '15%',
       render: record => (
         <React.Fragment>
           { record.envStatus ? null : <Tooltip title="未连接">
@@ -144,7 +148,7 @@ class DomainHome extends Component {
     }, {
       title: '路径',
       className: 'c7n-network-col',
-      width: '100px',
+      width: '15%',
       key: 'path',
       sorter: true,
       filters: [],

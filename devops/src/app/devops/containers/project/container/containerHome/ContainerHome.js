@@ -65,6 +65,7 @@ class ContainerHome extends Component {
       title: Choerodon.languageChange('container.status'),
       dataIndex: 'status',
       key: 'status',
+      width: '12%',
       sorter: true,
       render: (text, record) => {
         let dom = null;
@@ -107,6 +108,7 @@ class ContainerHome extends Component {
       sorter: true,
       filters: [],
       filterMultiple: false,
+      width: '25%',
       render: record => (
         <MouserOverWrapper text={record.name} width={200}>{record.name}</MouserOverWrapper>),
     }, {
@@ -114,6 +116,7 @@ class ContainerHome extends Component {
       dataIndex: 'app',
       key: 'app',
       filters: [],
+      width: '22%',
       filterMultiple: false,
       render: (text, record) => (<div>
         <div className="c7n-container-col-inside">
@@ -132,6 +135,7 @@ class ContainerHome extends Component {
       sorter: true,
       filters: [],
       filterMultiple: false,
+      width: '12%',
     }, {
       title: Choerodon.languageChange('container.usable'),
       dataIndex: 'ready',
@@ -143,6 +147,7 @@ class ContainerHome extends Component {
         text: '不可用',
         value: '0',
       }],
+      width: '12%',
       filterMultiple: false,
       render: (text, record) => (<div className="c7n-container-table">
         {record.ready ? <span className="icon-done" /> : <span className="icon-close" />}
