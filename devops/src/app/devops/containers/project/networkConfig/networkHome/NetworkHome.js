@@ -103,6 +103,7 @@ class NetworkHome extends Component {
     const columns = [{
       title: '网络状态',
       key: 'status',
+      width: '9%',
       render: (record) => {
         let statusDom = null;
         switch (record.status) {
@@ -126,6 +127,7 @@ class NetworkHome extends Component {
     }, {
       title: '网络名称',
       key: 'name',
+      width: '14.5%',
       sorter: true,
       filters: [],
       render: (record) => {
@@ -155,6 +157,7 @@ class NetworkHome extends Component {
       key: 'envName',
       sorter: true,
       filters: [],
+      width: '11.5%',
       render: record => (
         <React.Fragment>
           { record.envStatus ? null : <Tooltip title="未连接">
@@ -167,12 +170,14 @@ class NetworkHome extends Component {
     }, {
       title: '外部IP',
       key: 'ip',
+      width: '8%',
       filters: [],
       render: record => (
-        <MouserOverWrapper text={record.externalIp || ''} width={80}>
+        <MouserOverWrapper text={record.externalIp || ''} width={50}>
           {record.externalIp}</MouserOverWrapper>
       ),
     }, {
+      width: '9%',
       title: '端口',
       // className: 'c7n-network-text_top',
       key: 'port',
@@ -183,6 +188,7 @@ class NetworkHome extends Component {
           {record.port}</MouserOverWrapper>
       ),
     }, {
+      width: '13%',
       title: '应用',
       key: 'appName',
       filters: [],
@@ -190,12 +196,13 @@ class NetworkHome extends Component {
       render: record => (
         <React.Fragment>
           <span className="icon-store_mall_directory c7n-network-icon" />
-          <MouserOverWrapper text={record.appName || ''} width={80} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
+          <MouserOverWrapper text={record.appName || ''} width={60} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
             <span>{record.appName}</span>
           </MouserOverWrapper>
         </React.Fragment>
       ),
     }, {
+      width: '9%',
       title: '版本',
       className: 'c7n-network-col',
       key: 'version',

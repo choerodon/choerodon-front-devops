@@ -237,22 +237,26 @@ class BranchHome extends Component {
       {
         title: Choerodon.languageChange('branch.tag'),
         dataIndex: 'name',
-        sorter: true,
+        width: '15%',
       },
       {
+        width: '15%',
         title: Choerodon.languageChange('branch.code'),
         dataIndex: 'commit.id',
         render: (text, record) => (<a href={record.commit.url} target="_blank">{record.commit.id.slice(0, 8)}</a>),
       },
       {
+        width: '35%',
         title: Choerodon.languageChange('branch.des'),
         dataIndex: 'commit.message',
         render: (text, record) => <Tooltip title={record.commit.message} trigger="hover" placement="bottom"><div className="c7n-table-column">{record.commit.message}</div></Tooltip>,
       }, {
+        width: '21%',
         title: Choerodon.languageChange('branch.owner'),
         dataIndex: 'commit.authorName',
       },
       {
+        width: '14%',
         title: Choerodon.languageChange('branch.time'),
         dataIndex: 'commit.committedDate',
         render: (text, record) => <TimePopover content={record.commit.committedDate} />,

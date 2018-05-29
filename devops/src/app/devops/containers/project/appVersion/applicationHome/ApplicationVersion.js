@@ -53,6 +53,7 @@ class ApplicationVersion extends Component {
   getColumn = () => {
     const { type, id: orgId } = this.props.AppState.currentMenuType;
     return [{
+      width: '30%',
       title: Choerodon.languageChange('app.version'),
       dataIndex: 'version',
       key: 'version',
@@ -68,7 +69,7 @@ class ApplicationVersion extends Component {
       // { sensitivity: 'accent' }),
     // },
     {
-      width: '410px',
+      width: '20%',
       title: Choerodon.languageChange('app.code'),
       dataIndex: 'appCode',
       key: 'appCode',
@@ -77,6 +78,7 @@ class ApplicationVersion extends Component {
       filterMultiple: false,
     }, {
       // width: '410px',
+      width: '30%',
       title: Choerodon.languageChange('app.name'),
       dataIndex: 'appName',
       key: 'appName',
@@ -85,6 +87,7 @@ class ApplicationVersion extends Component {
       filterMultiple: false,
     }, {
       // width: '410px',
+      width: '20%',
       title: Choerodon.languageChange('app.createTime'),
       dataIndex: 'creationDate',
       key: 'creationDate',

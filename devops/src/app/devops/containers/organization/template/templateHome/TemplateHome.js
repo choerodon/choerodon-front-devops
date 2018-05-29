@@ -79,18 +79,21 @@ class TemplateHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
+      width: '14%',
     }, {
       title: Choerodon.languageChange('template.code'),
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
+      width: '14%',
     }, {
       title: Choerodon.languageChange('template.description'),
       dataIndex: 'description',
       key: 'description',
       sorter: true,
       filters: [],
+      width: '14%',
     }, {
       width: '30%',
       title: Choerodon.languageChange('template.url'),
@@ -110,6 +113,7 @@ class TemplateHome extends Component {
       dataIndex: 'type',
       key: 'type',
       sorter: true,
+      width: '15%',
       filters: [{
         text: '预定义',
         value: 1,

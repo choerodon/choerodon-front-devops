@@ -34,12 +34,14 @@ class AppReleaseHome extends Component {
     const { type, id: orgId } = this.props.AppState.currentMenuType;
     const { upDown } = this.state;
     return [{
+      width: '22.5%',
       title: Choerodon.languageChange('app.name'),
       dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
     }, {
+      width: '22.5%',
       title: Choerodon.languageChange('app.code'),
       dataIndex: 'code',
       key: 'code',
@@ -47,13 +49,14 @@ class AppReleaseHome extends Component {
       filters: [],
     }, {
       // width: '410px',
+      width: '15%',
       title: '发布层级',
       dataIndex: 'publishLevel',
       key: 'publishLevel',
       sorter: true,
       filters: [],
     }, {
-      width: '120',
+      width: '30%',
       title: Choerodon.languageChange('deploy.ver'),
       key: 'appVersion',
       sorter: true,
@@ -77,7 +80,7 @@ class AppReleaseHome extends Component {
       render: record => (
         <div>
           <Popover trigger="hover" placement="bottom" content={<div>修改</div>}>
-            <Button shape="circle" funcType="flat" onClick={this.showSidebar.bind(this, 'edit', record.id)}>
+            <Button shape="circle" funcType="flat" onClick={this.showSidebar.bind(this, record.id)}>
               <span className="icon-mode_edit" />
             </Button>
           </Popover>
@@ -120,7 +123,7 @@ class AppReleaseHome extends Component {
   showSidebar = (ids) => {
     const { name, id, organizationId } = this.props.AppState.currentMenuType;
     if (ids) {
-      this.props.history.push(`/devops/app-release/edit/${id}?type=project&id=${name}&name=${name}&organizationId=${organizationId}`);
+      this.props.history.push(`/devops/app-release/edit/${ids}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
     } else {
       this.props.history.push(`/devops/app-release/add?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
     }

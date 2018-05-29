@@ -11,6 +11,7 @@ class EditReleaseStore {
   @observable isRefresh= false;// 页面的loading
   @observable loading = false; // 打开tab的loading
   @observable singleData = null;
+  @observable selectData = [];
   @observable apps = [];
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
@@ -39,6 +40,15 @@ class EditReleaseStore {
 
   @action setAllData(data) {
     this.allData = data;
+    // window.console.log(this.allData);
+  }
+
+  @action setSelectData(data) {
+    this.selectData = data;
+    // window.console.log(this.allData);
+  }
+  @computed get getSelectData() {
+    return this.selectData.slice();
     // window.console.log(this.allData);
   }
 
@@ -118,10 +128,11 @@ class EditReleaseStore {
       });
 
   loadDataById =(projectId, id) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/${id}`).then((data) => {
+    axios.get(`/devops/v1/projects/${projectId}/apps_market/${id}`).then((data) => {
       const res = this.handleProptError(data);
       if (res) {
         this.setSingleData(data);
+        this.setSelectData(data.appVersions);
       }
     });
 
@@ -135,8 +146,8 @@ class EditReleaseStore {
         return res;
       });
 
-  updateData = (projectId, data) =>
-    axios.put(`/devops/v1/projects/${projectId}/apps`, JSON.stringify(data))
+  updateData = (projectId, id, data) =>
+    axios.put(`/devops/v1/projects/${projectId}/apps_market/${id}`, JSON.stringify(data))
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
