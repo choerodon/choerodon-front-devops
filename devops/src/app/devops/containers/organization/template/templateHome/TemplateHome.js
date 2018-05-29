@@ -449,7 +449,7 @@ class TemplateHome extends Component {
     </div>);
     const contentDom = (
       <Table
-        scroll={{ y: window.screen.height <= 900 ? 350 : 600 }}
+        scroll={{ y: this.getHeight() }}
         loading={TemplateStore.loading}
         pagination={TemplateStore.getPageInfo}
         columns={this.getColumn()}

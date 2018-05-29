@@ -210,6 +210,22 @@ class BranchHome extends Component {
       />
     );
   }
+  /**
+   * 获取屏幕的高度
+   * @returns {number}
+   */
+  getHeight = () => {
+    const screenHeight = window.screen.height;
+    let height = 350;
+    if (screenHeight <= 900) {
+      height = 350;
+    } else if (screenHeight > 900 && screenHeight <= 1050) {
+      height = 600;
+    } else {
+      height = 650;
+    }
+    return height;
+  };
 
   /**
    * 获取标记列表
@@ -245,7 +261,7 @@ class BranchHome extends Component {
     ];
     return (
       <Table
-        scroll={{ y: window.screen.height <= 900 ? 200 : 400 }}
+        scroll={{ y: this.getHeight() }}
         onChnage={this.tableChange}
         pagination={BranchStore.pageInfo}
         filterBar={false}

@@ -115,6 +115,22 @@ export const commonComponent =(storeName) => {
       store
         .loadData(false, organizationId, pagination.current - 1, pagination.pageSize, sort, postData);
     };
+    /**
+     * 获取屏幕的高度
+     * @returns {number}
+     */
+    getHeight = () => {
+      const screenHeight = window.screen.height;
+      let height = 350;
+      if (screenHeight <= 900) {
+        height = 350;
+      } else if (screenHeight > 900 && screenHeight <= 1050) {
+        height = 600;
+      } else {
+        height = 650;
+      }
+      return height;
+    };
 
     handleProptError =(error) => {
       if(error && error.failed) {

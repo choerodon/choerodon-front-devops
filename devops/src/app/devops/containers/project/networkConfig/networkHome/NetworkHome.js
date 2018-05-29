@@ -334,7 +334,7 @@ class NetworkHome extends Component {
               </a>
             </p>
             <Table
-              scroll={{ y: window.screen.height <= 900 ? 350 : 600 }}
+              scroll={{ y: this.getHeight() }}
               loading={NetworkConfigStore.loading}
               pagination={NetworkConfigStore.getPageInfo}
               columns={columns}
