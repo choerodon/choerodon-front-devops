@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { Button, Input, Icon, Card, Select } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
 import MDReactComponent from 'markdown-react-js';
+import Permission from 'PerComponent';
 import _ from 'lodash';
 import LoadingBar from '../../../../components/loadingBar';
 import './AppDetail.scss';
@@ -96,7 +97,7 @@ class AppDetail extends Component {
     const imgDom = app.imgUrl ? <div className="c7n-store-img" style={{ backgroundImage: `url(${app.imgUrl}` }} /> : <div className="c7n-store-img" />;
     return (
       <div className="c7n-region page-container">
-        <PageHeader title="Ad Exchange Seller" backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+        <PageHeader title={app.name} backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <Button
             funcType="flat"
             className="leftBtn"
@@ -133,14 +134,21 @@ class AppDetail extends Component {
                   >
                     {appVersion}
                   </Select>
-                  <Button
-                    className="c7n-store-deploy"
-                    type="primary"
-                    funcType="raised"
-                    onClick={this.deployApp.bind(this, app.id, app.appId)}
+                  <Permission
+                    service={['devops-service.application-instance.deploy']}
+                    organizationId={organizationId}
+                    projectId={projectId}
+                    type={type}
                   >
-                    部署
-                  </Button>
+                    <Button
+                      className="c7n-store-deploy"
+                      type="primary"
+                      funcType="raised"
+                      onClick={this.deployApp.bind(this, app.id, app.appId)}
+                    >
+                      部署
+                    </Button>
+                  </Permission>
                 </div>
               </div>
             </div>
@@ -157,16 +165,7 @@ class AppDetail extends Component {
                     <a href={app.appURL} target="_blank">README.md</a>
                   </h1>
                   <div>
-                    <MDReactComponent text="# To customize a template
-you need to push the template code to this git repository.
-
-Please make sure the following file exists.
-+ **gitlab-ci.yml**. (Refer to [GitLab Documentation](https://docs.gitlab.com/ee/ci/yaml/))
-+ **Dockerfile**. (Refer to [Dockerfile reference](https://docs.docker.com/engine/reference/builder/))
-+ **Chart** setting directory. (Refer to [helm](https://github.com/kubernetes/helm))
-
-Finally, removing or re-editing this **README.md** file to make it useful."
-                    />
+                    <MDReactComponent text={app.readme} />
                   </div>
                 </div>
                 <h1>教程和文档</h1>
