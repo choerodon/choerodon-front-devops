@@ -168,7 +168,7 @@ class AppReleaseHome extends Component {
             </a>
           </p>
           <Table
-            scroll={{ y: window.screen.height <= 900 ? 350 : 600 }}
+            scroll={{ y: this.getHeight() }}
             // filters={['appCode', 'appName', 'version']}
             loading={AppReleaseStore.loading}
             pagination={AppReleaseStore.pageInfo}

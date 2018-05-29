@@ -275,7 +275,7 @@ class DomainHome extends Component {
               </a>
             </p>
             <Table
-              scroll={{ y: window.screen.height <= 900 ? 350 : 600 }}
+              scroll={{ y: this.getHeight() }}
               loading={DomainStore.loading}
               onChange={this.tableChange}
               pagination={DomainStore.pageInfo}

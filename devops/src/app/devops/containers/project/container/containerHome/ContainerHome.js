@@ -287,7 +287,7 @@ class ContainerHome extends Component {
           </a>
         </p>
         <Table
-          scroll={{ y: window.screen.height <= 900 ? 350 : 600 }}
+          scroll={{ y: this.getHeight() }}
           loading={ContainerStore.loading}
           pagination={ContainerStore.pageInfo}
           columns={this.getColumn()}
