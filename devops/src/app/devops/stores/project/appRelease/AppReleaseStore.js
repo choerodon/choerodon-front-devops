@@ -5,6 +5,7 @@ import store from 'Store';
 import { Observable } from 'rxjs';
 import { List, formJS } from 'immutable';
 
+const height = window.screen.height;
 @store('AppReleaseStore')
 class AppReleaseStore {
   @observable allData = [];
@@ -13,10 +14,10 @@ class AppReleaseStore {
   @observable singleData = null;
   @observable apps = [];
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: 10,
+    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
   @observable versionPage = {
-    current: 0, total: 0, pageSize: 10,
+    current: 0, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
   @observable versionData = [];
 
@@ -89,7 +90,7 @@ class AppReleaseStore {
     return this.singleData;
   }
 
-  loadData = (isRefresh = false, projectId, page = this.pageInfo.current, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
+  loadData = (isRefresh = false, projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
     param: '',
   }) => {
     if (isRefresh) {
@@ -174,7 +175,7 @@ class AppReleaseStore {
       });
 
   deleteData =(projectId, id) =>
-    axios.delete(`/devops/v1/organizations/${projectId}/appTemplates/${id}`)
+    axios.post(`devops/v1/projects/${projectId}/apps_market/${id}/unpublish`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;

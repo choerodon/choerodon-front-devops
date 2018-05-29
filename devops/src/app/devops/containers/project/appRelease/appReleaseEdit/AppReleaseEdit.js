@@ -295,7 +295,7 @@ class AppReleaseEdit extends Component {
       <h2 className="c7n-space-first">在项目&quot;{menu.name}&quot;{title}</h2>
       <p>
         {content}
-        <a href="http://choerodon.io/zh/docs/user-guide/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+        <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
           <span className="c7n-external-link-content">
               了解详情
           </span>
@@ -352,9 +352,9 @@ class AppReleaseEdit extends Component {
             }],
             initialValue: SingleData ? SingleData.publishLevel : 'organization',
           })(
-            <RadioGroup name="level">
+            <RadioGroup name="level" label="选择发布层级">
               <Radio value="organization">本组织</Radio>
-              <Radio value="site">全平台</Radio>
+              <Radio value="public">全平台</Radio>
             </RadioGroup>,
           )}
         </FormItem>
@@ -410,7 +410,6 @@ class AppReleaseEdit extends Component {
             initialValue: SingleData ? SingleData.contributor : menu.name,
           })(
             <Input
-              disabled
               maxLength={30}
               label={Choerodon.getMessage('贡献者', 'contributor')}
               size="default"
@@ -515,7 +514,7 @@ class AppReleaseEdit extends Component {
             <h2 className="c7n-space-first">选择版本</h2>
             <p>
               这些权限会影响此项目及其所有资源。
-              <a href="http://choerodon.io/zh/docs/user-guide/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>

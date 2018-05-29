@@ -5,6 +5,7 @@ import store from 'Store';
 import { Observable } from 'rxjs';
 import { List, formJS } from 'immutable';
 
+const height = window.screen.height;
 @store('EditReleaseStore')
 class EditReleaseStore {
   @observable isRefresh= false;// 页面的loading
@@ -12,10 +13,10 @@ class EditReleaseStore {
   @observable singleData = null;
   @observable apps = [];
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: 10,
+    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
   @observable versionPage = {
-    current: 0, total: 0, pageSize: 10,
+    current: 0, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
   @observable versionData = [];
   @observable type = [];
@@ -157,21 +158,11 @@ class EditReleaseStore {
       });;
 
   deleteData =(projectId, id) =>
-    axios.delete(`/devops/v1/organizations/${projectId}/appTemplates/${id}`)
+    axios.post(`devops/v1/projects/${projectId}/apps_market/${id}/unpublish`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
-
-  loadType = projectId =>
-    axios.get(`/devops/v1/organizations/${projectId}/appTemplates`)
-      .then((data) => {
-        const res = this.handleProptError(data);
-        if (res) {
-          this.setType(res);
-        }
-      });
-
 
   handleProptError =(error) => {
     if (error && error.failed) {

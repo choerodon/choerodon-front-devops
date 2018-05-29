@@ -245,6 +245,7 @@ class BranchHome extends Component {
     ];
     return (
       <Table
+        scroll={{ y: window.screen.height <= 900 ? 200 : 400 }}
         onChnage={this.tableChange}
         pagination={BranchStore.pageInfo}
         filterBar={false}
@@ -454,20 +455,19 @@ class BranchHome extends Component {
       <div className="c7n-region c7n-branch page-container">
         { BranchStore.loading ? <Loadingbar display /> : (<React.Fragment>
           <PageHeader title={Choerodon.languageChange('branch.title')} backPath={`/devops/app?type=project&id=${this.props.AppState.currentMenuType.id}&name=${this.props.AppState.currentMenuType.name}`}>
-            <Tooltip
-              title={<div>
-                采用gitflow分支模型，可创建feature、release、hotfix等分支，结束分支时自动触发分支合并和特有的持续集成流水线。
-              </div>}
-              placement="rightTop"
+            <Permission
+              service={['devops-service.git-flow.start']}
+              type={type}
+              projectId={projectId}
+              organizationId={orgId}
             >
-              <Permission
-                service={['devops-service.git-flow.start']}
-                type={type}
-                projectId={projectId}
-                organizationId={orgId}
+              <Tooltip
+                title={<div>
+                  采用gitflow分支模型，可创建feature、release、hotfix等分支，结束分支时自动触发分支合并和特有的持续集成流水线。
+                </div>}
+                placement="rightTop"
               >
                 <Button
-                  funcType="flat"
                   className="leftBtn"
                   ghost
                   onClick={this.showSidebar}
@@ -475,8 +475,9 @@ class BranchHome extends Component {
                   <span className="icon-playlist_add" />
                   <span className="icon-space">{Choerodon.languageChange('branch.create')}</span>
                 </Button>
-              </Permission>
-            </Tooltip>
+              </Tooltip>
+            </Permission>
+
             <Permission
               service={['devops-service.git-flow.listByAppId']}
               type={type}

@@ -99,6 +99,7 @@ class ApplicationVersion extends Component {
     const { type, id: orgId } = this.props.AppState.currentMenuType;
     const contentDom = (
       <Table
+        scroll={{ y: window.screen.height <= 900 ? 350 : 600 }}
         // filters={['appCode', 'appName', 'version']}
         loading={AppVersionStore.loading}
         pagination={AppVersionStore.pageInfo}

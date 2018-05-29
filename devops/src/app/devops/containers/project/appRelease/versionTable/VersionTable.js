@@ -96,7 +96,12 @@ class VersionTable extends Component {
           <span className="icon-open_in_new" />
         </a>
       </p>
-      <Table rowSelection={rowSelection} columns={columns} dataSource={data} />
+      <Table
+        scroll={{ y: window.screen.height <= 900 ? 350 : 600 }}
+        rowSelection={rowSelection}
+        columns={columns}
+        dataSource={data}
+      />
     </div>);
     return (
       <div className="c7n-region page-container">

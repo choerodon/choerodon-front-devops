@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { List, formJS } from 'immutable';
 import _ from 'lodash';
 
+const height = window.screen.height;
 @store('NetworkConfigStore')
 class NetworkConfigStore {
   @observable allData = [];
@@ -22,7 +23,7 @@ class NetworkConfigStore {
   @observable app = [];
   @observable envLoading = false;
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: 10,
+    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
   @observable versionDto = [];
 

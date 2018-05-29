@@ -2,6 +2,7 @@ import { observable, action, computed } from 'mobx';
 import axios from 'Axios';
 import store from 'Store';
 
+const height = window.screen.height;
 @store('BranchStore')
 class BranchStore {
   @observable branchData = [];
@@ -18,7 +19,7 @@ class BranchStore {
   @observable pageInfo = {
     current: 0,
     total: 1,
-    pageSize: 10,
+    pageSize: height <= 900 ? 10 : 15,
   };
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
