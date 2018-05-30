@@ -189,16 +189,7 @@ class DeploymentAppHome extends Component {
         json: true,
       },
     };
-    const value = DeploymentAppStore.value;
-    let data = '';
-    let source = '';
-    if (value.length === 2) {
-      source = value[1];
-      data = value[0];
-    } else if (value.length === 1) {
-      data = value[0];
-    }
-
+    const data = DeploymentAppStore.value;
     return (
       <div className="c7n-section">
         <div className="c7n-header-section">
@@ -212,11 +203,11 @@ class DeploymentAppHome extends Component {
         </div>
         <div className={`c7n-body-section ${DeploymentAppStore.getCurrentStage > 4 ? 'c7n-border-done' : 'c7n-border-doing'}`}>
           {
-            !DeploymentAppStore.loadingArr[3] && value && (
+            !DeploymentAppStore.loadingArr[3] && data && (
               <div className="">
                 <AceForYaml
-                  sourceData={data}
-                  value={source}
+                  value={data.yaml}
+                  highlightMarkers={data.highlightMarkers}
                   onChange={this.handleChangeValue}
                 />
               </div>
@@ -708,17 +699,17 @@ class DeploymentAppHome extends Component {
    * 事件处理，部署应用
    */
   handleDeploy = () => {
-    let value = '';
-    if (this.state.value) {
-      try {
-        value = JSON.stringify(yaml.safeLoad(this.state.value));
-      } catch (err) {
-        Choerodon.prompt('yaml文件格式出错');
-        return;
-      }
-    } else {
-      value = JSON.stringify(yaml.safeLoad(DeploymentAppStore.value[0]));
-    }
+    const value = this.state.value || DeploymentAppStore.value.yaml;
+    // if (this.state.value) {
+    //   try {
+    //     value = this.state.value;
+    //   } catch (err) {
+    //     Choerodon.prompt('yaml文件格式出错');
+    //     return;
+    //   }
+    // } else {
+    //   value = DeploymentAppStore.value.yaml;
+    // }
     const applicationDeployDTO = {
       appId: this.state.appId || DeploymentAppStore.currentApp.id,
       appVerisonId: this.state.verId || DeploymentAppStore.currentVersion.id,

@@ -61,17 +61,7 @@ class ValueConfig extends Component {
   handleOk = () => {
     const { store, id, idArr, AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
-    let value = '';
-    if (this.state.value) {
-      try {
-        value = JSON.stringify(yaml.safeLoad(this.state.value));
-      } catch (err) {
-        Choerodon.prompt('yaml文件格式出错');
-        return;
-      }
-    } else {
-      value = JSON.stringify(yaml.safeLoad(this.props.store.getValue[0]));
-    }
+    const value = this.state.value || this.props.store.getValue.yaml;
     const data = {
       values: value,
       appInstanceId: id,
@@ -91,15 +81,7 @@ class ValueConfig extends Component {
   };
 
   render() {
-    const value = this.props.store.getValue;
-    let changData = '';
-    let soure = '';
-    if (value.length === 1) {
-      soure = value[0];
-    } else if (value.length === 2) {
-      soure = value[0];
-      changData = value[1];
-    }
+    const data = this.props.store.getValue;
     const sideDom = (<div>
       <h2 className="c7n-space-first">对&quot;{this.props.name}&quot;进行修改</h2>
       <p>
@@ -114,10 +96,10 @@ class ValueConfig extends Component {
       <div className="c7n-section">
         <div className="c7n-body-section c7n-border-done">
           <div>
-            {value.length >= 1 && <Ace
+            {data && <Ace
               height={500}
-              sourceData={soure}
-              value={changData}
+              value={data.yaml}
+              highlightMarkers={data.highlightMarkers}
               onChange={this.onChange}
             /> }
           </div>
