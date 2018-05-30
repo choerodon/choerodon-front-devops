@@ -18,7 +18,7 @@ class AppDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      verId: null,
+      verId: '',
       id: props.match.params.id,
     };
   }
@@ -53,6 +53,7 @@ class AppDetail extends Component {
     this.setState({
       verId,
     });
+    this.loadReadmes(verId);
   };
 
   /**
@@ -78,9 +79,22 @@ class AppDetail extends Component {
    */
   loadAppData = () => {
     const { AppStoreStore, AppState } = this.props;
+    const { id, verId } = this.state;
+    const projectId = AppState.currentMenuType.id;
+    AppStoreStore.loadAppStore(projectId, id).then((app) => {
+      this.loadReadmes(verId || app.appVersions[0].id);
+    });
+  };
+
+  /**
+   * 加载对应版本readme
+   * @param verId
+   */
+  loadReadmes = (verId) => {
+    const { AppStoreStore, AppState } = this.props;
     const { id } = this.state;
     const projectId = AppState.currentMenuType.id;
-    AppStoreStore.loadAppStore(projectId, id);
+    AppStoreStore.loadReadme(projectId, id, verId);
   };
 
   render() {
@@ -90,10 +104,10 @@ class AppDetail extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     const app = AppStoreStore.getApp;
+    const readme = AppStoreStore.getReadme || '## 暂无';
 
     const appVersion = app.appVersions ?
       _.map(app.appVersions, d => <Option key={d.id}>{d.version}</Option>) : [];
-
     const imgDom = app.imgUrl ? <div className="c7n-store-img" style={{ backgroundImage: `url(${app.imgUrl}` }} /> : <div className="c7n-store-img" />;
     return (
       <div className="c7n-region page-container">
@@ -154,18 +168,16 @@ class AppDetail extends Component {
             </div>
             <div className="c7n-store-detail">
               <div className="c7n-store-detail-left">
-                <div className="c7n-store-key">类型</div>
+                <div className="c7n-store-key">分类</div>
                 <div className="c7n-store-type">{app.category}</div>
                 <div className="c7n-store-key">上次更新日期</div>
                 <div className="c7n-store-time">{app.appVersions ? app.appVersions[0].creationDate : 'xx-xx-xx'}</div>
               </div>
               <div className="c7n-store-detail-right">
                 <div className="c7n-store-detail-overview">
-                  <h1>
-                    <a href={app.appURL} target="_blank">README.md</a>
-                  </h1>
+                  <h1>Readme</h1>
                   <div>
-                    <MDReactComponent text={app.readme} />
+                    <MDReactComponent text={readme} />
                   </div>
                 </div>
                 <h1>教程和文档</h1>

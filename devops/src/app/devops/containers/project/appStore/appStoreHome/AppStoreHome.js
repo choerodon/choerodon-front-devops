@@ -236,7 +236,7 @@ class AppStoreHome extends Component {
         <div className="c7n-store-content">
           <h2 className="c7n-space-first">应用市场</h2>
           <p>
-            这里是应用市场的描述。
+            您可以在此查看已发布的应用及其详细信息，并选择版本进行部署。
             <a href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
