@@ -1,18 +1,10 @@
-/**
- *create by mading on 2018/3/15
- */
-
 import React, { Component } from 'react';
 import { Modal } from 'choerodon-ui';
-import NewButton from 'NewButton';
 
 /*eslint-disable*/
 export const commonComponent =(storeName) => {
-  // console.log(storeName);
 
   return component => class extends component {
-
-    // 2
 
     static displayName = 'commonComponent';
 

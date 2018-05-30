@@ -29,7 +29,7 @@ class ContainerStore {
     this.show = flag;
   }
   @computed get getAllData() {
-    return this.allData.slice();
+    return this.allData;
   }
 
   @action setAllData(data) {

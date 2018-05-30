@@ -8,6 +8,7 @@ import Permission from 'PerComponent';
 import { fromJS, is } from 'immutable';
 import { Observable } from 'rxjs';
 import ReactAce from 'react-ace-editor';
+import _ from 'lodash';
 import 'brace/mode/text';
 import 'brace/theme/terminal';
 import { commonComponent } from '../../../../components/commonFunction';
@@ -184,17 +185,16 @@ class ContainerHome extends Component {
   };
 
   loadLog = () => {
-    const { ContainerStore } = this.props;
     const authToken = document.cookie.split('=')[1];
     const logs = [];
-    // const ws = new WebSocket(`ws://10.211.97.81:8060/ws/log?key=env:${this.state.namespace}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}`);
-    const ws = new WebSocket(`ws://${process.env.DEVOPS_HOST}/ws/log?key=env:${this.state.namespace}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}`);
+    const ws = new WebSocket(`ws://${process.env.DEVOPS_HOST}/ws/log?key=env:${this.state.namespace}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}&tail=`);
     const editor = this.ace.editor;
     this.setState({
       ws,
     });
     editor.setValue('No Logs.');
-    editor.clearSelection();
+    editor.renderer.setShowGutter(false);
+    editor.$blockScrolling = Infinity;
     ws.onopen = () => {
       console.log('open.........');
     };
@@ -203,25 +203,19 @@ class ContainerHome extends Component {
       reader.readAsText(e.data, 'utf-8');
       reader.onload = () => {
         logs.push(reader.result);
-        console.log(logs);
         if (logs.length > 0) {
-          editor.setValue(logs.toString());
+          const logSlice = _.slice(logs, logs.length - 100, logs.length);
+          const logString = _.join(logSlice, '');
+          editor.setValue(logString);
+          editor.renderer.scrollCursorIntoView();
+          editor.getAnimatedScroll();
           editor.clearSelection();
         } else {
           editor.setValue('No Logs.');
         }
-        // logs.push(reader.result);
       };
-      // if (logs.length > 0) {
-      //   editor.setValue(logs.toString());
-      // } else {
-      //   editor.setValue('No Logs.');
-      // }
-      editor.clearSelection();
     };
-    // ws.onclose = () => {
-    //   console.log('Connection instanceInfo Close ...');
-    // };
+    editor.clearSelection();
   };
 
   /**
@@ -260,6 +254,7 @@ class ContainerHome extends Component {
       console.log('Connection instanceInfo Close ...');
     };
     const editor = this.ace.editor;
+    this.loadAllData(this.state.page);
     ContainerStore.changeShow(false);
     editor.setValue('No Logs.');
   };

@@ -738,8 +738,6 @@ class DeploymentAppHome extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     const backPath = AppStoreStore.backPath ? `/devops/appstore/${this.state.storeId}/app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}` : `/devops/app-deployment?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`;
-    // eslint-disable-next-line no-console
-    console.log(backPath);
     return (
       <div className="c7n-region c7n-deploymentApp page-container">
         <PageHeader title={Choerodon.languageChange('deploymentApp.title')} backPath={backPath}>

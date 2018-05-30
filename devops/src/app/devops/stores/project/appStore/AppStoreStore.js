@@ -7,6 +7,7 @@ class AppStoreStore {
   @observable isLoading = true;
   @observable backPath = false;
   @observable listActive = 'card';
+  @observable readme = false;
   @observable appCards = [];
   @observable app = [];
   @observable pageInfo = {};
@@ -17,6 +18,10 @@ class AppStoreStore {
 
   @computed get getPageInfo() {
     return this.pageInfo;
+  }
+
+  @computed get getReadme() {
+    return this.readme;
   }
 
   @action
@@ -32,6 +37,11 @@ class AppStoreStore {
   @action
   setApp(app) {
     this.app = app;
+  }
+
+  @action
+  setReadme(readme) {
+    this.readme = readme;
   }
 
   @action
@@ -83,6 +93,15 @@ class AppStoreStore {
     } else {
       this.setApp(data);
       this.changeLoading(false);
+    }
+    return data;
+  });
+
+  loadReadme = (projectId, id, verId) => axios.get(`devops/v1/projects/${projectId}/apps_market/${id}/versions/${verId}/readme`).then((data) => {
+    if (data && data.failed) {
+      Choerodon.prompt(data.message);
+    } else {
+      this.setReadme(data);
     }
   });
 
