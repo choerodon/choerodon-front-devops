@@ -9,9 +9,25 @@
   position: absolute;
   z-index: 20;
 
-  &::before {
-    content: '+';
-  }
+  //&::before {
+  //  content: '+  ';
+  //}
+}
+
+.modifyHighlight {
+  position: absolute;
+  z-index: 20;
+  background: #f1f8ff;
+}
+
+.modifyHighlight-line {
+  position: absolute;
+  z-index: 20;
+  background-color: rgba(140, 158, 255, 0.16);
+
+  //&::before {
+  //  content: '+  ';
+  //}
 }
 
 .ace_error {

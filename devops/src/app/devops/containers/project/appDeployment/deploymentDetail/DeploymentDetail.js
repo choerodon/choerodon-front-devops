@@ -187,7 +187,7 @@ class DeploymentDetail extends Component {
       stageData.map((step, index) => {
         const title = (<div>
           <div className={`${index}-stage-title stage-title-text`}>{step.stageName}</div>
-          <span className="c7n-stage-time">时间:{this.getTime(step.stageTime)}</span>
+          {step.stageTime && <span className="c7n-stage-time">时间:{this.getTime(step.stageTime)}</span>}
         </div>);
         dom.push(<Step
           key={step.weight}
@@ -375,8 +375,8 @@ class DeploymentDetail extends Component {
                 <div className={valueStyle}>
                   {DeployDetailStore.getValue
                   && <Ace
-                    showDiff={false}
-                    sourceData={DeployDetailStore.getValue}
+                    readOnly
+                    value={DeployDetailStore.getValue}
                   />}
 
                 </div>

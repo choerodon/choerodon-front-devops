@@ -60,7 +60,7 @@ class ContainerStore {
   }
 
 
-  loadData = (isRefresh = false, proId, page = this.pageInfo.current, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'asc' }, datas = {
+  loadData = (isRefresh = false, proId, page = this.pageInfo.current, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
     searchParam: {},
     param: '',
   }) => {
