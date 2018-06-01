@@ -73,7 +73,7 @@ class CreateDomain extends Component {
       if (!err) {
         const keys = Object.keys(data);
         const postData = { domain: data.domain, name: data.name, envId: data.envId };
-        const devopsIngressPathDTOList = [];
+        const pathList = [];
         keys.map((k) => {
           if (k.includes('path')) {
             const index = parseInt(k.split('-')[1], 10);
@@ -85,11 +85,11 @@ class CreateDomain extends Component {
             //   }
             // });
             // window.console.log(ids);
-            devopsIngressPathDTOList.push({ path: `${data[k]}`, serviceId: value });
+            pathList.push({ path: `${data[k]}`, serviceId: value });
           }
-          return devopsIngressPathDTOList;
+          return pathList;
         });
-        postData.devopsIngressPathDTOList = devopsIngressPathDTOList;
+        postData.pathList = pathList;
         // window.console.log(postData);
         if (type === 'create') {
           this.setState({ submitting: true });
@@ -174,6 +174,7 @@ class CreateDomain extends Component {
     const { store } = this.props;
     this.setState({ show: false });
     store.setEnv([]);
+    store.setNetwork([]);
     this.props.onClose();
   };
   /**

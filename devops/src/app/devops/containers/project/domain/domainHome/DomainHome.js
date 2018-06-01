@@ -154,7 +154,7 @@ class DomainHome extends Component {
       filters: [],
       render: record => (
         <div>
-          {_.map(record.devopsIngressPathDTOList, router =>
+          {_.map(record.pathList, router =>
             (<div className="c7n-network-col_border">
               <span>{router.path}</span>
             </div>))}
@@ -169,7 +169,7 @@ class DomainHome extends Component {
       filters: [],
       render: record => (
         <div>
-          {_.map(record.devopsIngressPathDTOList, instance =>
+          {_.map(record.pathList, instance =>
             (<MouserOverWrapper text={instance.serviceName || ''} width={140} className="c7n-network-col_border">
               <span>{instance.serviceName}</span>
             </MouserOverWrapper>
