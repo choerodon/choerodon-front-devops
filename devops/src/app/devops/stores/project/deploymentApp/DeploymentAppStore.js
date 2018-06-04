@@ -94,7 +94,7 @@ class DeploymentAppStore {
   };
 
   loadApps(id, projectId = AppState.currentMenuType.id) {
-    return axios.get(`/devops/v1/projects/${projectId}/apps_market/${id}/detail`).then((data) => {
+    return axios.get(`/devops/v1/projects/${projectId}/apps/${id}`).then((data) => {
       const res = this.handleProptError(data);
       return res;
     });
