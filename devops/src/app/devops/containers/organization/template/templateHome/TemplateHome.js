@@ -103,7 +103,7 @@ class TemplateHome extends Component {
       render: (test, record) => (
         <Tooltip trigger="hover" placement="bottom" title={record.repoUrl}>
           <div className="c7n-template-table">
-            <a href={record.repoUrl} target="_blank">{record.repoUrl}</a>
+            <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl}</a>
           </div>
         </Tooltip>
 
