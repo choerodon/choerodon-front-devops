@@ -20,6 +20,9 @@ class AppDeploymentStore {
   @observable alertType = '';
   @observable value = [];
   @observable pageInfo = {};
+  @observable appPageInfo = {};
+  @observable appPage = 0;
+  @observable appPageSize = 1;
   @observable tabActive = 'instance';
   @observable envId = false;
   @observable verId = false;
@@ -31,6 +34,14 @@ class AppDeploymentStore {
 
   @computed get getPageInfo() {
     return this.pageInfo;
+  }
+
+  @action setAppPageInfo(page) {
+    this.appPageInfo = { current: page.number + 1, total: page.totalElements, pageSize: page.size };
+  }
+
+  @computed get getAppPageInfo() {
+    return this.appPageInfo;
   }
 
   @action changeShow(flag) {
@@ -145,6 +156,22 @@ class AppDeploymentStore {
     this.value = data;
   }
 
+  @computed get getAppPage() {
+    return this.appPage;
+  }
+
+  @action setAppPage(appPage) {
+    this.appPage = appPage;
+  }
+
+  @computed get getAppPageSize() {
+    return this.appPageSize;
+  }
+
+  @action setAppPageSize(appPageSize) {
+    this.appPageSize = appPageSize;
+  }
+
   @action setAlertType(data) {
     this.alertType = data;
   }
@@ -232,12 +259,15 @@ class AppDeploymentStore {
     }
   });
 
-  loadAppNameByEnv = (projectId, envId) => axios.get(`devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=nodelete`).then((data) => {
+  loadAppNameByEnv = (projectId, envId, page, appPageSize) => axios.get(`devops/v1/projects/${projectId}/apps/pages?envId=${envId}&page=${page}&size=${appPageSize}`).then((data) => {
     this.changeLoading(true);
     if (data && data.failed) {
       Choerodon.prompt(data.message);
     } else {
-      this.setAppNameByEnv(data);
+      this.setAppNameByEnv(data.content);
+      const { number, size, totalElements } = data;
+      const pageInfo = { number, size, totalElements };
+      this.setAppPageInfo(pageInfo);
       this.changeLoading(false);
     }
   });

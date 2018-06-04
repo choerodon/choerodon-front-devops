@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Icon, Select, Button, Form, Dropdown, Menu, Progress, Tooltip } from 'choerodon-ui';
+import { Table, Icon, Select, Button, Form, Dropdown, Menu, Progress, Tooltip, Pagination } from 'choerodon-ui';
 import _ from 'lodash';
 import Action from 'Action';
 import ValueConfig from '../valueConfig';
@@ -28,38 +28,25 @@ class SingleEnvironment extends Component {
   }
 
   /**
+   * 页码改变的回调
+   * @param appPage 改变后的页码
+   * @param appPageSize 每页条数
+   */
+  onPageChange = (appPage, appPageSize) => {
+    const { envId } = this.state;
+    const { store } = this.props;
+    store.setAppPage(appPage);
+    store.setAppPageSize(appPageSize);
+    this.loadSingleEnv(envId);
+  };
+
+  /**
    * 处理页面跳转
    * @param url 跳转地址
    */
   linkToChange = (url) => {
     const { history } = this.props;
     history.push(url);
-  };
-
-  /**
-   * 查看部署详情
-   * @param id 实例ID
-   * @param status 实例状态
-   */
-  linkDeployDetail = (id, status) => {
-    const { AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    const projectName = AppState.currentMenuType.name;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
-  };
-
-  /**
-   * 查看版本特性
-   * @param id 实例ID
-   * @param istName 实例名
-   */
-  linkVersionFeature = (id, istName) => {
-    const { store } = this.props;
-    store.setAlertType('versionFeature');
-    this.setState({ id, instanceName: istName });
-    store.changeShow(true);
   };
 
   /**
@@ -90,6 +77,32 @@ class SingleEnvironment extends Component {
   };
 
   /**
+   * 查看部署详情
+   * @param id 实例ID
+   * @param status 实例状态
+   */
+  linkDeployDetail = (id, status) => {
+    const { AppState } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    const projectName = AppState.currentMenuType.name;
+    const organizationId = AppState.currentMenuType.organizationId;
+    const type = AppState.currentMenuType.type;
+    this.linkToChange(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+  };
+
+  /**
+   * 查看版本特性
+   * @param id 实例ID
+   * @param istName 实例名
+   */
+  linkVersionFeature = (id, istName) => {
+    const { store } = this.props;
+    store.setAlertType('versionFeature');
+    this.setState({ id, instanceName: istName });
+    store.changeShow(true);
+  };
+
+  /**
    * 查询应用标签及实例列表
    * @param id 环境id
    */
@@ -97,15 +110,14 @@ class SingleEnvironment extends Component {
     const { store, AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const { pageSize, appId } = this.state;
-    const envID = id || null;
+    const envNames = store.getEnvcard;
+    const envID = id || envNames[0].id;
     this.setState({
       envId: envID,
     });
     store.setEnvId(envID);
     store.loadInstanceAll(projectId, 0, pageSize, null, envID, null, appId);
-    if (id) {
-      store.loadAppNameByEnv(projectId, id);
-    }
+    store.loadAppNameByEnv(projectId, envID, store.appPage - 1, store.appPageSize);
   };
 
   /**
@@ -275,12 +287,13 @@ class SingleEnvironment extends Component {
     const envNames = store.getEnvcard;
     const appNames = store.getAppNameByEnv;
     const appID = store.appId;
+    const appPageInfo = store.getAppPageInfo;
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
 
     let envName = envNames.length ? (<React.Fragment>
-      {envNames[0].connect ? <span className="icon-link c7n-ist-status_on" /> : <span className="icon-unlink c7n-ist-status_off" />}
+      {envNames[0].connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
       {envNames[0].name}
     </React.Fragment>) : [];
 
@@ -288,7 +301,7 @@ class SingleEnvironment extends Component {
       _.map(envNames, (d) => {
         if (d.id === store.envId) {
           envName = (<React.Fragment>
-            {d.connect ? <span className="icon-link c7n-ist-status_on" /> : <span className="icon-unlink c7n-ist-status_off" />}
+            {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
             {d.name}
           </React.Fragment>);
         }
@@ -338,16 +351,16 @@ class SingleEnvironment extends Component {
       filters: [],
       render: record => (record.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{record.code}</span> : <div>
         {record.commandStatus === 'doing' ? (<div>
+          <span className="c7n-deploy-istCode">{record.code}</span>
           <Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
             <Progress type="loading" width="15px" />
           </Tooltip>
-          <span className="c7n-deploy-istCode">{record.code}</span>
         </div>) :
           (<div>
+            <span className="c7n-deploy-istCode">{record.code}</span>
             <Tooltip title={record.error}>
               <span className="icon-error c7n-deploy-ist-operate" />
             </Tooltip>
-            <span className="c7n-deploy-istCode">{record.code}</span>
           </div>)}
       </div>),
     }, {
@@ -364,40 +377,51 @@ class SingleEnvironment extends Component {
       className: 'c7n-operate-icon',
       key: 'action',
       render: (test, record) => (
-        <Action
-          data={[
-            {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
-              text: '查看实例详情',
-              action: this.linkDeployDetail.bind(this, record.id, record.status),
-            }, {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.application-instance.queryValues'],
-              text: Choerodon.getMessage('修改配置信息', 'Modify configuration information'),
-              action: this.updateConfig.bind(this, record.code, record.id,
-                record.envId, record.appVersionId, record.appId),
-            }, {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.application-instance.start', 'devops-service.application-instance.stop'],
-              text: record.status !== 'stoped' ? Choerodon.getMessage('停止实例', 'Stop the instance') : Choerodon.getMessage('重启实例', 'Start the instance'),
-              action: record.status !== 'stoped' ? this.activeIst.bind(this, record.id, 'stop') : this.activeIst.bind(this, record.id, 'start'),
-            }, {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.application-instance.delete'],
-              text: Choerodon.getMessage('删除实例', 'Delete the instance'),
-              action: this.handleOpen.bind(this, record.id),
-            },
-          ]}
-        />
+        record.status === 'operating' ?
+          <Action
+            data={[
+              {
+                type,
+                organizationId,
+                projectId,
+                service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
+                text: '查看实例详情',
+                action: this.linkDeployDetail.bind(this, record.id, record.status),
+              }]}
+          /> : <Action
+            data={[
+              {
+                type,
+                organizationId,
+                projectId,
+                service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
+                text: '查看实例详情',
+                action: this.linkDeployDetail.bind(this, record.id, record.status),
+              }, {
+                type,
+                organizationId,
+                projectId,
+                service: ['devops-service.application-instance.queryValues'],
+                text: Choerodon.getMessage('修改配置信息', 'Modify configuration information'),
+                action: this.updateConfig.bind(this, record.code, record.id,
+                  record.envId, record.appVersionId, record.appId),
+              }, {
+                type,
+                organizationId,
+                projectId,
+                service: ['devops-service.application-instance.start', 'devops-service.application-instance.stop'],
+                text: record.status !== 'stoped' ? Choerodon.getMessage('停止实例', 'Stop the instance') : Choerodon.getMessage('重启实例', 'Start the instance'),
+                action: record.status !== 'stoped' ? this.activeIst.bind(this, record.id, 'stop') : this.activeIst.bind(this, record.id, 'start'),
+              }, {
+                type,
+                organizationId,
+                projectId,
+                service: ['devops-service.application-instance.delete'],
+                text: Choerodon.getMessage('删除实例', 'Delete the instance'),
+                action: this.handleOpen.bind(this, record.id),
+              },
+            ]}
+          />
       ),
     }];
 
@@ -405,6 +429,16 @@ class SingleEnvironment extends Component {
       <h2 className="c7n-space-first">应用</h2>
       <div>
         {appNameDom}
+      </div>
+      <div className="c7n-store-pagination">
+        <Pagination
+          total={appPageInfo.total}
+          current={appPageInfo.current}
+          pageSize={appPageInfo.pageSize}
+          showSizeChanger
+          onChange={this.onPageChange}
+          onShowSizeChange={this.onPageChange}
+        />
       </div>
       <h2>实例</h2>
       <Table
