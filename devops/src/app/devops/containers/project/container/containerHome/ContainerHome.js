@@ -121,7 +121,7 @@ class ContainerHome extends Component {
       filterMultiple: false,
       render: (text, record) => (<div>
         <div className="c7n-container-col-inside">
-          {record.publishLevel ? <span className="icon-store_mall_directory c7n-icon-publish" /> : <span className="icon-project c7n-icon-publish" />}
+          {record.publishLevel ? <Tooltip title="应用市场"><span className="icon-apps c7n-icon-publish" /></Tooltip> : <Tooltip title="本项目"><span className="icon-project c7n-icon-publish" /></Tooltip>}
           <span>{record.appName}</span>
         </div>
         <div>
@@ -193,7 +193,6 @@ class ContainerHome extends Component {
       ws,
     });
     editor.setValue('No Logs.');
-    editor.renderer.setShowGutter(false);
     editor.$blockScrolling = Infinity;
     ws.onopen = () => {
       console.log('open.........');
@@ -204,8 +203,8 @@ class ContainerHome extends Component {
       reader.onload = () => {
         logs.push(reader.result);
         if (logs.length > 0) {
-          const logSlice = _.slice(logs, logs.length - 100, logs.length);
-          const logString = _.join(logSlice, '');
+          // const logSlice = _.slice(logs, logs.length - 100, logs.length);
+          const logString = _.join(logs, '');
           editor.setValue(logString);
           editor.renderer.scrollCursorIntoView();
           editor.getAnimatedScroll();
@@ -250,7 +249,6 @@ class ContainerHome extends Component {
     const { ContainerStore } = this.props;
     this.state.ws.close();
     this.state.ws.onclose = () => {
-      // eslint-disable-next-line no-console
       console.log('Connection instanceInfo Close ...');
     };
     const editor = this.ace.editor;
@@ -261,7 +259,7 @@ class ContainerHome extends Component {
 
   render() {
     const { ContainerStore, AppState } = this.props;
-    const { status, ip, containerName, ready, creationDate } = this.state;
+    const { containerName } = this.state;
     const serviceData = ContainerStore.getAllData;
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
@@ -298,38 +296,6 @@ class ContainerHome extends Component {
       </div>
     </React.Fragment>);
 
-    let statusDom = null;
-    switch (status) {
-      case 'Running':
-        statusDom = (<div>
-          <span className="icon-check_circle c7n-icon-running c7n-podLog-icon-status " />
-          <span className="c7n-container-title">{status}</span>
-        </div>);
-        break;
-      case 'Completed':
-        statusDom = (<div>
-          <span className="icon-check_circle c7n-icon-running c7n-podLog-icon-status " />
-          <span className="c7n-container-title">{status}</span>
-        </div>);
-        break;
-      case 'Pending':
-        statusDom = (<div>
-          <span className="icon-timelapse c7n-icon-pending c7n-podLog-icon-status " />
-          <span className="c7n-container-title">{status}</span>
-        </div>);
-        break;
-      case 'Error':
-        statusDom = (<div>
-          <span className="icon-timelapse c7n-icon-failed c7n-podLog-icon-status " />
-          <span className="c7n-container-title">{status}</span>
-        </div>);
-        break;
-      default:
-        statusDom = (<div>
-          <span className="icon-help c7n-icon-help c7n-podLog-icon-status " />
-        </div>);
-    }
-
     return (
       <div className="c7n-region page-container c7n-container-wrapper">
         {contentDom}
@@ -351,46 +317,6 @@ class ContainerHome extends Component {
               <span className="icon-open_in_new" />
             </a>
           </p>
-          <header>
-            <table className="c7n-podLog-table">
-              <thead>
-                <tr>
-                  <td className="c7n-podLog-column">
-                    <span className="icon-restore c7n-podLog-icon" />
-                    <span className="c7n-podLog-title">状态</span>
-                  </td>
-                  <td className="c7n-podLog-column">
-                    <span className="icon-room c7n-podLog-icon" />
-                    <span className="c7n-podLog-title">容器地址</span>
-                  </td>
-                  <td className="c7n-podLog-column">
-                    <span className="icon-live_help c7n-podLog-icon" />
-                    <span className="c7n-podLog-title">是否可用</span>
-                  </td>
-                  <td className="c7n-podLog-column">
-                    <span className="icon-date_range c7n-podLog-icon" />
-                    <span className="c7n-podLog-title">创建时间</span>
-                  </td>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="c7n-podLog-column">
-                    {statusDom}
-                  </td>
-                  <td className="c7n-podLog-column">
-                    <span className="c7n-podLog-text c7n-podLog-text-hasPadding ">{ip}</span>
-                  </td>
-                  <td className="c7n-podLog-column">
-                    <span className="c7n-podLog-text c7n-podLog-text-hasPadding ">{ready ? '可用' : '不可用'}</span>
-                  </td>
-                  <td className="c7n-podLog-column-text">
-                    <TimePopover content={creationDate} className="c7n-podLog-text c7n-podLog-text-hasPadding" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </header>
           <section className="c7n-podLog-section">
             <ReactAce
               mode="text"
