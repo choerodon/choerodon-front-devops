@@ -22,7 +22,7 @@ class DeploymentAppHome extends Component {
     super(props);
     this.state = {
       appId: props.match.params.appId || undefined,
-      versionId: props.match.params.versionId || undefined,
+      versionId: props.match.params.verId || undefined,
       current: props.match.params.appId ? 2 : 1,
       envId: undefined,
       storeId: props.match.params.storeId,
@@ -34,10 +34,11 @@ class DeploymentAppHome extends Component {
   componentDidMount() {
     const { AppState, DeploymentAppStore } = this.props;
     if (this.state.appId) {
-      DeploymentAppStore.loadApp(this.state.appId)
+      DeploymentAppStore.loadApps(this.state.appId)
         .then((data) => {
           this.setState({ app: data });
         });
+      DeploymentAppStore.loadVersion(this.state.appId);
     }
     DeploymentAppStore.loadEnv();
   }
@@ -246,7 +247,7 @@ class DeploymentAppHome extends Component {
             <span className="section-title">选择版本</span>
           </div>
           <Select
-            value={this.state.versionId}
+            value={parseInt(this.state.versionId, 10)}
             label={<span className="deploy-text">应用版本</span>}
             className="section-text-margin"
             onSelect={this.handleSelectVersion}

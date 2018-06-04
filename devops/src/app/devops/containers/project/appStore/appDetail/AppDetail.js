@@ -77,7 +77,7 @@ class AppDetail extends Component {
     const projectName = AppState.currentMenuType.name;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/deployment-app?storeId=${id}&verId=${verID}&appId=${appId}&type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    this.linkToChange(`/devops/deployment-app/${appId}/${verID}?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
