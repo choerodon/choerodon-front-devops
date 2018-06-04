@@ -155,7 +155,7 @@ class DeploymentAppHome extends Component {
     const projectId = AppState.currentMenuType.id;
     const type = AppState.currentMenuType.type;
     this.props.history.push(
-      `/devops/app-deployment?type=${type}&id=${projectId}&name=${projectName}`,
+      `/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
     );
   }
 
@@ -247,12 +247,11 @@ class DeploymentAppHome extends Component {
             <span className="section-title">选择版本</span>
           </div>
           <Select
-            value={parseInt(this.state.versionId, 10)}
+            value={this.state.versionId ? parseInt(this.state.versionId, 10) : ''}
             label={<span className="deploy-text">应用版本</span>}
             className="section-text-margin"
             onSelect={this.handleSelectVersion}
             style={{ width: 512 }}
-            placeholder="Select a person"
             optionFilterProp="children"
             filterOption={(input, option) => option.props.children
               .toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -291,7 +290,6 @@ class DeploymentAppHome extends Component {
             className="section-text-margin"
             onSelect={this.handleSelectEnv}
             style={{ width: 512 }}
-            placeholder="Select a person"
             optionFilterProp="children"
             filterOption={(input, option) => option.props.children[1]
               .toLowerCase().indexOf(input.toLowerCase()) >= 0}
