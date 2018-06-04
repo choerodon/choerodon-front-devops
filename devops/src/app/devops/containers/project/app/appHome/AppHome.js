@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Tootip, Button, Spin, message, Radio, Input, Form, Modal, Tooltip, Select, Popover, Pagination } from 'choerodon-ui';
+import { Table, Tootip, Button, Spin, message, Radio, Input, Form, Modal, Tooltip, Select, Pagination } from 'choerodon-ui';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import Permission from 'PerComponent';
@@ -128,28 +128,28 @@ class AppHome extends Component {
       render: (test, record) => (
         <div>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.git-flow.listByAppId', 'devops-service.git-flow.queryTags']} >
-            <Popover placement="bottom" content={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>分支管理</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
+            <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>分支管理</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
               {record.active && record.synchro ? <Button shape="circle" onClick={this.linkToBranch.bind(this, record.id, record.name)}>
                 <span className="icon-branch" />
               </Button> : <span className="icon-branch c7n-app-icon-disabled" /> }
-            </Popover>
+            </Tooltip>
           </Permission>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']} >
-            <Popover placement="bottom" content={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>修改应用</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
+            <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>修改</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
               {record.active && record.synchro ? <Button shape="circle" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                 <span className="icon-mode_edit" />
               </Button> : <span className="icon-mode_edit c7n-app-icon-disabled" /> }
-            </Popover>
+            </Tooltip>
           </Permission>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']} >
-            <Popover placement="bottom" content={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>停用应用</span> : <span>启用应用</span>}</React.Fragment> }</div>}>
+            <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>停用</span> : <span>启用</span>}</React.Fragment> }</div>}>
               {record.synchro ? <Button shape="circle" onClick={this.changeAppStatus.bind(this, record.id, record.active)}>
                 {record.active ? <span className="icon-remove_circle_outline" /> : <span className="icon-finished" />}
               </Button> : <React.Fragment>
                 {record.active ? <span className="icon-remove_circle_outline c7n-app-icon-disabled" /> : <span className="icon-finished c7n-app-icon-disabled" />}
               </React.Fragment> }
               
-            </Popover>
+            </Tooltip>
           </Permission>
         </div>
       ),
@@ -161,7 +161,8 @@ class AppHome extends Component {
    * @param id 应用id
    */
   linkToBranch =(id, name) => {
-    this.linkToChange(`/devops/app/${name}/${id}/branch?type=project&id=${this.props.AppState.currentMenuType.id}&name=${this.props.AppState.currentMenuType.name}`);
+    const menu = this.props.AppState.currentMenuType;
+    this.linkToChange(`/devops/app/${name}/${id}/branch?type=project&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`);
   };
 
   /**

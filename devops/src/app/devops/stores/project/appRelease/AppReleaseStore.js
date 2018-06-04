@@ -114,16 +114,24 @@ class AppReleaseStore {
     this.setPageInfo(page);
   };
 
-  loadAllVersion =(projectId, appId, page = this.versionPage.current, size = this.versionPage.pageSize, sort = { field: 'id', order: 'desc' }, postData = {
-    param: '', searchParam: {},
-  }) =>
-    axios.post(`/devops/v1/projects/${projectId}/apps_market/list_in_project?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
-      .then((data) => {
+
+  loadAllVersion = (isRefresh = false, projectId, appId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
+    param: '',
+  }) => {
+    if (isRefresh) {
+      this.changeIsRefresh(true);
+    }
+    this.changeLoading(true);
+    return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/version/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
+      .subscribe((data) => {
         const res = this.handleProptError(data);
         if (res) {
-          this.handleVersionData(res);
+          this.handleVersionData(data);
         }
+        this.changeLoading(false);
+        this.changeIsRefresh(false);
       });
+  };
   handleVersionData = (data) => {
     this.setVersionData(data.content);
     const { number, size, totalElements } = data;

@@ -13,7 +13,7 @@ class DeploymentAppStore {
   @observable currentVersion = {};
   @observable envs = [];
   @observable currentEnv = {};
-  @observable value = [];
+  @observable value = null;
   @observable currentMode = 'new';
   @observable instances = [];
   @observable currentInstance = {};
@@ -93,8 +93,8 @@ class DeploymentAppStore {
     }
   };
 
-  loadApps(projectId = AppState.currentMenuType.id) {
-    return axios.get(`/devops/v1/projects/${projectId}/apps`).then((data) => {
+  loadApps(id, projectId = AppState.currentMenuType.id) {
+    return axios.get(`/devops/v1/projects/${projectId}/apps_market/${id}/detail`).then((data) => {
       const res = this.handleProptError(data);
       return res;
     });
@@ -104,6 +104,9 @@ class DeploymentAppStore {
     return axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version/list`)
       .then((data) => {
         const res = this.handleProptError(data);
+        if (res) {
+          this.setVersions(res);
+        }
         return res;
       });
   }
@@ -112,6 +115,9 @@ class DeploymentAppStore {
     return axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
       .then((data) => {
         const res = this.handleProptError(data);
+        if (res) {
+          this.setEnvs(res);
+        }
         return res;
       });
   }
@@ -120,6 +126,9 @@ class DeploymentAppStore {
     return axios.get(`/devops/v1/projects/${projectId}/app_instances/value?appId=${appId}&appVersionId=${verId}&envId=${envId}`)
       .then((data) => {
         const res = this.handleProptError(data);
+        if (res) {
+          this.setValue(res);
+        }
         return res;
       });
   }
@@ -128,6 +137,9 @@ class DeploymentAppStore {
     return axios.get(`/devops/v1/projects/${projectId}/app_instances/options?envId=${envId}&appId=${appId}`)
       .then((data) => {
         const res = this.handleProptError(data);
+        if (res) {
+          this.setCurrentInstance(res);
+        }
         return res;
       });
   }

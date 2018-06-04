@@ -1,3 +1,3 @@
-import DeploymentAppStore from './DeploymentAppStore';
+import DeployAppStore from './DeploymentAppStore';
 
-export default DeploymentAppStore;
+export default DeployAppStore;

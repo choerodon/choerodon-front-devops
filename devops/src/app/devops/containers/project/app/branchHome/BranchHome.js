@@ -115,14 +115,14 @@ class BranchHome extends Component {
           <div>
             {record.type !== '开发分支' && record.type !== '主分支' ?
               <Permission projectId={this.state.projectId} organizationId={orgId} type={type} service={record.type === 'feature分支' ? ['devops-service.git-flow.finishFeatureEvent'] : ['devops-service.git-flow.finishEvent']}>
-                <Popover
+                <Tooltip
                   placement="bottom"
-                  content={'结束分支'}
+                  title={'结束分支'}
                 >
                   <Button shape="circle" onClick={this.confirm.bind(this, record.name, record.type)}>
                     <span className="icon-power_settings_new" />
                   </Button>
-                </Popover>
+                </Tooltip>
               </Permission>
 
               : null
@@ -216,13 +216,15 @@ class BranchHome extends Component {
    */
   getHeight = () => {
     const screenHeight = window.screen.height;
-    let height = 350;
-    if (screenHeight <= 900) {
-      height = 350;
+    let height = 310;
+    if (screenHeight <= 800) {
+      height = 310;
+    } else if (screenHeight > 800 && screenHeight <= 900) {
+      height = 450;
     } else if (screenHeight > 900 && screenHeight <= 1050) {
       height = 600;
     } else {
-      height = 650;
+      height = 630;
     }
     return height;
   };
@@ -474,7 +476,7 @@ class BranchHome extends Component {
     return (
       <div className="c7n-region c7n-branch page-container">
         { BranchStore.loading ? <Loadingbar display /> : (<React.Fragment>
-          <PageHeader title={Choerodon.languageChange('branch.title')} backPath={`/devops/app?type=project&id=${this.props.AppState.currentMenuType.id}&name=${this.props.AppState.currentMenuType.name}`}>
+          <PageHeader title={Choerodon.languageChange('branch.title')} backPath={`/devops/app?type=project&id=${projectId}&name=${name}&organizationId=${orgId}`}>
             <Permission
               service={['devops-service.git-flow.start']}
               type={type}
