@@ -3,7 +3,6 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Table, Popover, Modal } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
-import Permission from 'Permission';
 import Remove from 'Remove';
 import _ from 'lodash';
 import { commonComponent } from '../../../../components/commonFunction';
