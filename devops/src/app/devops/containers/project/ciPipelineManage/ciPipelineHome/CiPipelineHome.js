@@ -79,9 +79,11 @@ class CiPipelineHome extends Component {
       <div>
         <Select
           style={{ width: '512px', marginBottom: '16px' }}
-          // mode="multiple"
           value={CiPipelineStore.currentApp.id}
           label="选择应用"
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          filter
           onChange={this.handleChange.bind(this)}
         >
           {
@@ -188,7 +190,6 @@ class CiPipelineHome extends Component {
   };
 
   handleRefresh =() => {
-    // window.console.log(CiPipelineStore.pagination);
     CiPipelineStore.setLoading(true);
     CiPipelineStore.loadPipelines(
       CiPipelineStore.currentApp.id,
@@ -206,7 +207,7 @@ class CiPipelineHome extends Component {
         <span className="c7n-text-status black">{ICONS[status].display}</span>
       </a>
     </div>
-  )
+  );
 
   renderSign = (id, record) => (
     <div className="c7n-sign">

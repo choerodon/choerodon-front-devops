@@ -43,7 +43,8 @@ class AppInstance extends Component {
     const projectId = AppState.currentMenuType.id;
     const projectName = AppState.currentMenuType.name;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/app-deployment/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}`);
+    const organizationId = AppState.currentMenuType.organizationId;
+    this.linkToChange(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -248,11 +249,10 @@ class AppInstance extends Component {
       render: record => (
         <div>
           <div className="c7n-deploy-col-inside">
-            {record.publishLevel ? <span className="icon-store_mall_directory c7n-icon-publish" /> : <span className="icon-project c7n-icon-publish" />}
+            {record.publishLevel ? <Tooltip title="应用市场"><span className="icon-apps c7n-icon-publish" /></Tooltip> : <Tooltip title="本项目"><span className="icon-project c7n-icon-publish" /></Tooltip>}
             <span>{record.appName}</span>
           </div>
           <div>
-            <span className="c7n-deploy-circle-only">V</span>
             <span className="c7n-deploy-text_gray">{record.appVersion}</span>
           </div>
         </div>
@@ -264,11 +264,10 @@ class AppInstance extends Component {
       render: record => (
         <div>
           <div className="c7n-deploy-col-inside">
-            <div className="c7n-deploy-square"><div>Env</div></div>
+            {record.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
             <span>{record.envName}</span>
           </div>
           <div>
-            <span className="c7n-deploy-circle">C</span>
             <span className="c7n-deploy-text_gray">{record.envCode}</span>
           </div>
         </div>

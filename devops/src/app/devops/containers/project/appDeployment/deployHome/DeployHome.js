@@ -152,18 +152,6 @@ class DeployHome extends Component {
   };
 
   /**
-   * 跳转部署应用
-   */
-  deployApp = () => {
-    const { AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    const projectName = AppState.currentMenuType.name;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
-  };
-
-  /**
    * 处理页面跳转
    * @param url 跳转地址
    */
@@ -175,31 +163,13 @@ class DeployHome extends Component {
   render() {
     const { AppDeploymentStore, AppState } = this.props;
     const projectName = AppState.currentMenuType.name;
-    const projectId = AppState.currentMenuType.id;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
     const tabActive = AppDeploymentStore.getTabActive;
 
     return (
       <div className="c7n-region page-container">
         <PageHeader title={Choerodon.languageChange('deploy.title')}>
-          <Permission
-            service={['devops-service.application-instance.deploy']}
-            organizationId={organizationId}
-            projectId={projectId}
-            type={type}
-          >
-            <Button
-              className="leftBtn"
-              funcType="flat"
-              onClick={this.deployApp}
-            >
-              <span className="icon-cloud_upload page-head-icon" />
-              <span className="icon-space">部署应用</span>
-            </Button>
-          </Permission>
           <Button
-            className="leftBtn2"
+            className="leftBtn"
             funcType="flat"
             onClick={this.reload}
           >
@@ -208,9 +178,9 @@ class DeployHome extends Component {
           </Button>
         </PageHeader>
         <div className="page-content">
-          <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的应用部署</h2>
+          <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的实例视图</h2>
           <p>
-            您可在此用四种方式查看该项目下应用的部署情况。
+            您可在此用四种方式查看该项目下应用的实例情况。
             <a href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情

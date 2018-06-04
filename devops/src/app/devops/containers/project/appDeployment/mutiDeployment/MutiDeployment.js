@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
-import { Button, Popover } from 'choerodon-ui';
-import Permission from 'PerComponent';
+import { Button, Popover, Tooltip } from 'choerodon-ui';
 import LoadingBar from '../../../../components/loadingBar';
 import '../../../main.scss';
 import '../AppDeploy.scss';
@@ -26,28 +25,10 @@ class MutiDeployment extends Component {
     history.push(url);
   };
 
-  /**
-   * 条件部署应用到下一个环境
-   * @param envId 环境ID
-   * @param verId 版本ID
-   * @param appId 应用ID
-   */
-  deployApp = (envId, verId, appId) => {
-    const { AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    const projectName = AppState.currentMenuType.name;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/deployment-app?envId=${envId}&verId=${verId}&appId=${appId}&type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
-  };
-
   render() {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const appList = store.getMutiData;
     const envNames = store.getEnvcard;
-    const projectId = AppState.currentMenuType.id;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
 
     const trDom = [];
     let envDom = [];
@@ -61,8 +42,6 @@ class MutiDeployment extends Component {
               versionDom.push(<td>
                 { env.envVersions.map(version => (<div className="c7n-deploy-muti-row">
                   <div className="c7n-deploy-muti_card" >
-                    <span className="c7n-deploy-circle">V</span>
-                    <span className="c7n-deploy-istname c7n-text-ellipsis">{version.version}</span>
                     <Popover
                       placement="bottom"
                       title="实例"
@@ -81,27 +60,13 @@ class MutiDeployment extends Component {
                         funcType="flat"
                         shape="circle"
                       >
-                        <span className="icon-instance_outline" />
+                        <div>
+                          {version.instances.length}
+                        </div>
                       </Button>
                     </Popover>
+                    <span className="c7n-deploy-istname c7n-text-ellipsis">{version.version}</span>
                   </div>
-                  {(envIndex + 1) === envNames.length ? '' :
-                    (<Permission
-                      service={['devops-service.application-instance.deploy']}
-                      organizationId={organizationId}
-                      projectId={projectId}
-                      type={type}
-                    >
-                      <Button
-                        className="c7n-mutiDep-icon"
-                        funcType="flat"
-                        shape="circle"
-                        onClick={this.deployApp.bind(this, envNames[envIndex + 1].id,
-                          version.versionId, appList[appIndex].applicationId)}
-                      >
-                        <span className="icon-keyboard_arrow_right" />
-                      </Button>
-                    </Permission>)}
                 </div>))}
               </td>);
             } else if (versionDom.length === 0 && insIndex === (app.envInstances.length - 1)) {
@@ -114,37 +79,23 @@ class MutiDeployment extends Component {
 
         trDom.push(<tr>
           <td>
-            {app.publishLevel ? <span className="icon-store_mall_directory c7n-icon-publish" /> : <span className="icon-project c7n-icon-publish" />}
+            {app.publishLevel ? <Tooltip title="应用市场"><span className="icon-apps c7n-icon-publish" /></Tooltip> : <Tooltip title="本项目"><span className="icon-project c7n-icon-publish" /></Tooltip>}
             {app.applicationName}
           </td>
           <td><React.Fragment>
             <div className="c7n-deploy-muti-row">
               <div className="c7n-deploy-muti_card">
-                <span className="c7n-deploy-circle">V</span>
                 <span className="c7n-deploy-istname c7n-text-ellipsis">{app.latestVersion}</span>
               </div>
-              <Permission
-                service={['devops-service.application-instance.deploy']}
-                organizationId={organizationId}
-                projectId={projectId}
-                type={type}
-              >
-                <Button
-                  className="c7n-mutiDep-icon"
-                  funcType="flat"
-                  shape="circle"
-                  onClick={this.deployApp.bind(this, envNames[0].id,
-                    app.latestVersionId, app.applicationId)}
-                >
-                  <span className="icon-keyboard_arrow_right" />
-                </Button>
-              </Permission>
             </div>
           </React.Fragment></td><React.Fragment>{tdDom}</React.Fragment>
         </tr>);
         return trDom;
       });
-      envDom = envNames.map(env => <td>{env.name}{env.id}</td>);
+      envDom = envNames.map(env => (<td>
+        {env.connect ? <Tooltip title="已连接"><span className="c7n-ist-status_on" /></Tooltip> : <Tooltip title="未连接"><span className="c7n-ist-status_off" /></Tooltip>}
+        {env.name}
+      </td>));
     }
 
     const contentDom = store.getIsLoading ? <LoadingBar display />

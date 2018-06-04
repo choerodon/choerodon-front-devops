@@ -13,8 +13,6 @@ import Log from '../../appDeployment/component/log';
 import LoadingBar from '../../../../components/loadingBar';
 import Ace from '../../../../components/yamlAce';
 
-const beautify = require('json-beautify');
-
 const Step = Steps.Step;
 const TabPane = Tabs.TabPane;
 
@@ -38,27 +36,7 @@ class DeploymentDetail extends Component {
     DeployDetailStore.getInstanceValue(projectId, id);
     DeployDetailStore.getResourceData(projectId, id);
     DeployDetailStore.getStageData(projectId, id);
-    // this.loadAllData();
   }
-
-  getStageContent =(data) => {
-    const dom = [];
-    data.map((step, index) => {
-      const title = (<div className={`${index}-stage-title stage-title-text`} >
-        <span>{step.stageName}</span>
-        {this.getTime.bind(this, step.stageTime)}
-      </div>);
-      dom.push(<Step
-        icon={<Tooltip trigger="hover" placement="top" title={step.status}>
-          {this.getIcon(step.status, index + 1)}
-        </Tooltip>}
-        onClick={this.changeStage.bind(this, index)}
-        title={title}
-      />);
-      return dom;
-    });
-    return dom;
-  };
 
   /**
    * 获取pipe的icon
@@ -133,11 +111,7 @@ class DeploymentDetail extends Component {
     const { expand } = this.state;
     this.setState({ expand: !expand });
   };
-  showLog =(id) => {
-    const { DeployDetailStore } = this.props;
-    this.setState({ id });
-    DeployDetailStore.changeLogVisible(true);
-  };
+
   handleClose =() => {
     const { DeployDetailStore } = this.props;
     DeployDetailStore.changeLogVisible(false);
@@ -166,21 +140,8 @@ class DeploymentDetail extends Component {
       rsDTO = resource.replicaSetDTOS;
       ingressDTO = resource.ingressDTOS;
     }
-    const option = {
-      enableBasicAutocompletion: false,
-      enableLiveAutocompletion: false,
-      enableSnippets: false,
-      showLineNumbers: false,
-      tabSize: 2,
-    };
-    const options = {
-      readOnly: true,
-      mode: 'yaml',
-      theme: 'eclipse',
-      printMargin: 0,
-    };
-    const stageData = DeployDetailStore.getStage || [
-    ];
+
+    const stageData = DeployDetailStore.getStage || [];
     const log = stageData.length && stageData[0].log ? stageData[0].log : '没有日志信息';
     const dom = [];
     if (stageData.length) {
@@ -202,10 +163,9 @@ class DeploymentDetail extends Component {
     }
     const a = DeployDetailStore.getValue;
 
-    // eslint-disable-next-line
     return (
       <div className="c7n-region c7n-deployDetail-wrapper page-container">
-        <PageHeader title={Choerodon.getMessage('查看实例详情', ' Instance Detail')} backPath={`/devops/app-deployment?type=${type}&id=${projectId}&name=${projectName}`}>
+        <PageHeader title={Choerodon.getMessage('查看实例详情', ' Instance Detail')} backPath={`/devops/instance?type=${type}&id=${projectId}&name=${projectName}`}>
           <Button
             onClick={this.loadAllData}
             funcType="flat"
@@ -380,10 +340,6 @@ class DeploymentDetail extends Component {
                   />}
 
                 </div>
-
-                {/* <pre
-                  className={valueStyle}
-                >{beautify(DeployDetailStore.getValue, null, 2, 100)}</pre> */}
               </div>
               {stageData.length >= 1 && <div className="c7n-deployDetail-card-content">
                 <h2 className="c7n-space-first c7n-deployDetail-title">阶段及日志</h2>

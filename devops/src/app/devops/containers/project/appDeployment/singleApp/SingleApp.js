@@ -123,7 +123,7 @@ class SingleApp extends Component {
     const projectName = AppState.currentMenuType.name;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/app-deployment/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    this.linkToChange(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -137,22 +137,6 @@ class SingleApp extends Component {
     this.setState({ id, instanceName: istName });
     store.changeShow(true);
   };
-
-  /**
-   * 条件部署应用
-   * @param envId 环境ID
-   * @param verId 版本ID
-   * @param appId 应用ID
-   */
-  deployApp = (envId, verId, appId) => {
-    const { AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    const projectName = AppState.currentMenuType.name;
-    const type = AppState.currentMenuType.type;
-    const organizationId = AppState.currentMenuType.organizationId;
-    this.linkToChange(`/devops/deployment-app?envId=${envId}&verId=${verId}&appId=${appId}&type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
-  };
-
 
   /**
    * table 改变的函数
@@ -359,7 +343,7 @@ class SingleApp extends Component {
     const envID = envId || (envCard.length ? envCard[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
     const appName = (appNames.length ? (<React.Fragment>
-      {appNames[0].publishLevel ? <span className="icon-store_mall_directory c7n-icon-publish" /> : <span className="icon-project c7n-icon-publish" />}
+      {appNames[0].publishLevel ? <span className="icon-apps c7n-icon-publish" /> : <span className="icon-project c7n-icon-publish" />}
       {appNames[0].name}</React.Fragment>) : undefined);
     const appVersion = appVer.length ?
       _.map(appVer, d => <Option key={d.id}>{d.version}</Option>) : [];
@@ -387,7 +371,7 @@ class SingleApp extends Component {
               </div>}
             >
               <div className="c7n-option-popover">
-                <span className="icon-store_mall_directory c7n-icon-publish" />
+                <span className="icon-apps c7n-icon-publish" />
                 {d.name}
               </div>
             </Popover>
@@ -434,14 +418,6 @@ class SingleApp extends Component {
             {d.connect ? '运行中' : '未连接'}
           </div>
           <div className="c7n-app-name"><MouserOverWrapper text={d.name || ''} width={80}>{d.name}</MouserOverWrapper></div>
-          <Permission
-            service={['devops-service.application-instance.deploy']}
-            organizationId={organizationId}
-            projectId={projectId}
-            type={type}
-          >
-            <span role="none" className="icon-cloud_upload c7n-env-deploy-icon" onClick={this.deployApp.bind(this, d.id, verId, appID)} />
-          </Permission>
         </div>
         <span className="c7n-app-arrow">→</span>
       </div>)) :
@@ -503,7 +479,6 @@ class SingleApp extends Component {
       filters: [],
       render: record => (
         <div>
-          <span className="c7n-deploy-circle-only">V</span>
           <span>{record.appVersion}</span>
         </div>
       ),
