@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Button, Form, Select, Popover, Modal, Tooltip, Progress } from 'choerodon-ui';
+import { Table, Button, Form, Select, Tooltip, Modal, Progress } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
 import Permission from 'PerComponent';
 import _ from 'lodash';
@@ -185,31 +185,31 @@ class DomainHome extends Component {
         let deletDom = null;
         switch (record.commandStatus) {
           case 'doing':
-            editDom = (<Popover trigger="hover" placement="bottom" content={Choerodon.languageChange(`domain_${record.commandType}`)}>
+            editDom = (<Tooltip trigger="hover" placement="bottom" title={Choerodon.languageChange(`domain_${record.commandType}`)}>
               <span className="icon-mode_edit c7n-app-icon-disabled" />
-            </Popover>);
-            deletDom = (<Popover trigger="hover" placement="bottom" content={Choerodon.languageChange(`domain_${record.commandType}`)}>
+            </Tooltip>);
+            deletDom = (<Tooltip trigger="hover" placement="bottom" title={Choerodon.languageChange(`domain_${record.commandType}`)}>
               <span className="icon-delete_forever c7n-app-icon-disabled" />
-            </Popover>);
+            </Tooltip>);
             break;
           default:
             editDom = (<React.Fragment>
-              {record.envStatus ? <Popover trigger="hover" placement="bottom" content={<div>修改网络</div>}>
+              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
                 <Button shape="circle" funcType="flat" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                   <span className="icon-mode_edit" />
                 </Button>
-              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>请先连接环境</div>}>
+              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
                 <span className="icon-mode_edit c7n-app-icon-disabled" />
-              </Popover>}
+              </Tooltip>}
             </React.Fragment>);
             deletDom = (<React.Fragment>
-              {record.envStatus ? <Popover trigger="hover" placement="bottom" content={<div>删除网络</div>}>
+              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>删除</div>}>
                 <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
                   <span className="icon-delete_forever" />
                 </Button>
-              </Popover> : <Popover trigger="hover" placement="bottom" content={<div>请先连接环境</div>}>
+              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
                 <span className="icon-delete_forever c7n-app-icon-disabled" />
-              </Popover>}
+              </Tooltip>}
             </React.Fragment>);
         }
         return (<div>

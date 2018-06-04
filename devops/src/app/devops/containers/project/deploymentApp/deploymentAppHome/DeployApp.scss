@@ -1,0 +1,110 @@
+.c7n-deployApp-wrapper {
+  background-color: rgba(0, 0, 0, 0.04);
+
+  .deployApp-card-content {
+    margin-left: 32px;
+    padding-top: 32px;
+
+    p {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 20px;
+    }
+
+    .deployApp-section {
+      margin: 32px 0;
+
+      a {
+        margin-left: 231px;
+      }
+
+      button {
+        margin-right: 12px;
+      }
+
+      .deploy-title {
+        // margin: 16px 0;
+
+        .section-title {
+          vertical-align: middle;
+          font-size: 16px;
+          color: #000;
+          line-height: 20px;
+        }
+
+        .section-title-icon {
+          vertical-align: middle;
+          font-size: 18px;
+          padding-right: 10px;
+        }
+      }
+
+      .deploy-text {
+        margin: 16px 0;
+
+        .section-text {
+          vertical-align: middle;
+          font-size: 13px;
+          color: #000;
+          line-height: 20px;
+        }
+
+        .section-text-icon {
+          vertical-align: middle;
+          font-size: 13px;
+          padding-right: 5px;
+          color: #000;
+        }
+      }
+
+      .section-text-margin {
+        margin-left: 3%;
+        display: inline-block;
+
+        .section-instance-icon {
+          vertical-align: middle;
+          font-size: 13px;
+          padding: 0 6px 0 12px;
+          color: #f44336;
+        }
+      }
+    }
+
+    .deployApp-review {
+      .deployApp-title {
+        font-size: 16px;
+        color: #000;
+        line-height: 20px;
+        display: inline-block;
+        margin: 0 0 16px 0;
+
+        span {
+          padding-right: 10px;
+        }
+      }
+
+      .deployApp-text {
+        display: inline-block;
+        font-size: 13px;
+        color: #000;
+        line-height: 20px;
+        padding-left: 15px;
+      }
+
+      .deployApp-value {
+        font-size: 13px;
+        color: rgba(0, 0, 0, 0.65);
+        text-align: left;
+        line-height: 20px;
+      }
+    }
+  }
+}
+
+.env-icon-success {
+  color: #00bf96;
+}
+
+.env-icon-error {
+  color: #d50000;
+}

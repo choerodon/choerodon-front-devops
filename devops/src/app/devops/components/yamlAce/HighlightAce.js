@@ -29,7 +29,7 @@ class HighlightAce extends Component {
       gutter: false,
       readOnly: false,
       mode: 'yaml',
-      theme: 'eclipse',
+      theme: 'dawn',
       softWrap: false,
     },
   };
@@ -37,6 +37,7 @@ class HighlightAce extends Component {
     super(props);
     this.state = {
       isTriggerChange: false,
+      height: '300px',
     };
   }
 
@@ -44,20 +45,44 @@ class HighlightAce extends Component {
     // 第一次加载没有数据
     this.setOptions();
     const editor = this.ace.editor;
-    this.handleLoad();
-    editor.clearSelection();
+    if (this.props.value) {
+      this.handleLoad();
+      editor.clearSelection();
+    }
+    if (this.props.readOnly) {
+      this.ace.editor.setReadOnly(true);
+    }
+    if (this.props.modifyMarkers) {
+      Object.values(this.props.modifyMarkers).map((marker) => {
+        if (marker.clazz === 'modifyHighlight-line' || marker.clazz === 'modifyHighlight') {
+          editor.session.addMarker(marker.range, 'modifyHighlight-line', 'fullLine', false);
+          editor.session.addMarker(marker.range, 'modifyHighlight', 'text', false);
+        }
+        return marker;
+      });
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.readOnly) {
+      this.ace.editor.setReadOnly(true);
+    }
   }
   onChange =_.debounce((values, options) => {
     const { isTriggerChange } = this.state;
+    const editor = this.ace.editor;
+    const lines = editor.session.getLength();
+    const lineHeight = editor.renderer.lineHeight;
+    const height = `${lines * lineHeight}px`;
+    this.setState({ height });
     if (isTriggerChange) {
-      const editor = this.ace.editor;
       const start = options.start;
       const end = options.end;
       const value = editor.session.getLine(start.row);
       const range = new Range(start.row, value.split(':')[0].length + 2, end.row, end.column);
       editor.session.addMarker(range, 'modifyHighlight-line', 'fullLine', false);
       editor.session.addMarker(range, 'modifyHighlight', 'text', false);
-      this.props.onChange(values);
+      const modifyMarkers = editor.session.getMarkers();
+      this.props.onChange(values, modifyMarkers);
     } else {
       this.setState({ isTriggerChange: true });
     }
@@ -66,11 +91,14 @@ class HighlightAce extends Component {
     const editor = this.ace.editor;
     // eslint-disable-next-line
     require('brace/mode/yaml');
+    // eslint-disable-next-line
+    require('brace/theme/dawn');
 
     editor.setPrintMarginColumn(0);
     editor.setHighlightGutterLine(false);
     editor.setWrapBehavioursEnabled(false);
     editor.getSession().setMode('ace/mode/yaml');
+    editor.setTheme('ace/theme/dawn');
   };
   handleLoad =() => {
     const editor = this.ace.editor;
@@ -97,7 +125,7 @@ class HighlightAce extends Component {
   }
 
   render() {
-    const { value, height, width, options, className } = this.props;
+    const { value, width, options, className, height } = this.props;
     return (
       <ReactAce
         className={className}
@@ -105,7 +133,7 @@ class HighlightAce extends Component {
         showGutter={false}
         setOptions={options}
         onChange={this.onChange}
-        style={{ height: height || '800px', width }}
+        style={{ height: height || '500px', width }}
         ref={(instance) => { this.ace = instance; }} // Let's put things into scope
       />
     );

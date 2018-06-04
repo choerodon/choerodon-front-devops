@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
 import _ from 'lodash';
+import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './AppReleaseEdit.scss';
 // import './CreateDomain.scss';
@@ -22,7 +23,7 @@ const formItemLayout = {
   },
 };
 const { TextArea } = Input;
-const Sidebar = Modal.Sidebar;
+const ButtonGroup = Button.Group;
 
 @inject('AppState')
 @observer
@@ -39,23 +40,48 @@ class VersionTable extends Component {
   }
 
   componentDidMount() {
-    const { store, id, visible } = this.props;
+    const { projectId } = this.props;
+    this.props.store.loadAllVersion(projectId, this.props.appId);
   }
 
-  onSelectChange = (selectedRowKeys) => {
-    // window.console.log('selectedRowKeys changed: ', selectedRowKeys);
-    this.setState({ selectedRowKeys });
-  };
-
-
-  /**
-   * 关闭弹框
-   */
-  handleClose =() => {
-    const { store } = this.props;
-    this.setState({ show: false });
-    store.setEnv([]);
-    this.props.onClose();
+  getSidebarTable =() => {
+    const { EditReleaseStore } = this.props;
+    const data = EditReleaseStore.getVersionData || [{
+      id: 1,
+      appName: 'ssd',
+      creationDate: '2018-05-22 11:19:41',
+    }, {
+      id: 2,
+      appName: 'ssdeee',
+      creationDate: '2018-05-22 11:19:41',
+    }];
+    const columns = [{
+      title: '版本',
+      dataIndex: 'version',
+    }, {
+      title: '生成时间',
+      // dataIndex: 'creationDate',
+      render: (text, record) => <TimePopover content={record.creationDate} />,
+    }];
+    const rowSelection = {
+      selectedRowKeys: this.state.selectedRowKeys || [],
+      onChange: (selectedRowKeys, selectedRows) => {
+        this.setState({ selectedRows, selectedRowKeys });
+      },
+      // getCheckboxProps: record => ({
+      //   disabled: record.name === 'Disabled User', // Column configuration not to be checked
+      //   name: record.name,
+      // }),
+      // selections: true,
+    };
+    return (<Table
+      loading={EditReleaseStore.loading}
+      pagination={EditReleaseStore.versionPage}
+      rowSelection={rowSelection}
+      columns={columns}
+      dataSource={data}
+      rowKey={record => record.id}
+    />);
   };
 
 
@@ -80,8 +106,8 @@ class VersionTable extends Component {
 
     const title = this.state.id ? '修改应用发布' : '创建应用发布';
     const content = this.state.id ? '这些权限会影响此项目及其所有资源修改应用发布' : '这些权限会影响此项目及其所有资源创建应用发布';
-    const contentDom = (<div className="c7n-region c7n-domainCreate-wrapper">
-      <h2 className="c7n-space-first">在项目&quot;{menu.name}&quot;{title}</h2>
+    const contentDom = (<div className="c7n-region version-wrapper">
+      <h2 className="c7n-space-first">在应用&quot;{this.props.appName}&quot;中的版本信息</h2>
       <p>
         {content}
         <a
@@ -96,28 +122,37 @@ class VersionTable extends Component {
           <span className="icon-open_in_new" />
         </a>
       </p>
-      <Table
-        scroll={{ y: window.screen.height <= 900 ? 350 : 600 }}
-        rowSelection={rowSelection}
-        columns={columns}
-        dataSource={data}
-      />
+      <div className="version-tab">
+        <span>查看方式：</span>
+        <ButtonGroup>
+          <Button
+            funcType="flat"
+            onClick={this.changeTabs.bind(this, 'instance')}
+          >
+            仅标记
+          </Button>
+          <Button
+            funcType="flat"
+            onClick={this.changeTabs.bind(this, 'singleEnv')}
+          >
+            全部版本
+          </Button>
+        </ButtonGroup>
+      </div>
+      {this.getSidebarTable()}
+      <div className="version-selection">
+        <div className="version-selection-selected">
+          <h2 className="c7n-space-first">已选择的版本</h2>
+          <p>sjjjd</p>
+        </div>
+        <div className="version-selection-selected">
+          <h2 className="c7n-space-first">取消的版本</h2>
+          <p>kkskkd</p>
+        </div>
+      </div>
     </div>);
     return (
-      <div className="c7n-region page-container">
-        <Sidebar
-          okText={this.props.type === 'create' ? '创建' : '保存'}
-          cancelText="取消"
-          visible={this.props.visible}
-          title={this.props.title}
-          onCancel={this.handleClose}
-          onOk={this.handleSubmit}
-          className="c7n-podLog-content"
-          confirmloading={this.state.submitting}
-        >
-          {this.props.visible ? contentDom : null}
-        </Sidebar>
-      </div>
+      contentDom
     );
   }
 }

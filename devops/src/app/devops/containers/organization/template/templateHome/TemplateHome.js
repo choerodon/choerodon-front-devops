@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Button, Input, Form, Tooltip, Select, Popover, Modal, Icon } from 'choerodon-ui';
+import { Table, Button, Input, Form, Tooltip, Select, Modal, Icon } from 'choerodon-ui';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import Permission from 'PerComponent';
@@ -133,18 +133,18 @@ class TemplateHome extends Component {
         !record.type &&
         <div>
           <Permission type={type} organizationId={orgId} service={['devops-service.application-template.update']} >
-            <Popover trigger="hover" placement="bottom" content={<div>修改模板</div>}>
+            <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
               <Button shape="circle" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                 <span className="icon-mode_edit" />
               </Button>
-            </Popover>
+            </Tooltip>
           </Permission>
           <Permission type={type} organizationId={orgId} service={['devops-service.application-template.delete']} >
-            <Popover trigger="hover" placement="bottom" content={<div>删除模板</div>}>
+            <Tooltip trigger="hover" placement="bottom" title={<div>删除</div>}>
               <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
                 <span className="icon-delete_forever" />
               </Button>
-            </Popover>
+            </Tooltip>
           </Permission>
         </div>
       ),

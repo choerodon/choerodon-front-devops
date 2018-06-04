@@ -113,13 +113,15 @@ export const commonComponent =(storeName) => {
      */
     getHeight = () => {
       const screenHeight = window.screen.height;
-      let height = 350;
-      if (screenHeight <= 900) {
-        height = 350;
+      let height = 310;
+      if (screenHeight <= 800) {
+        height = 310;
+      } else if (screenHeight > 800 && screenHeight <= 900) {
+        height = 450;
       } else if (screenHeight > 900 && screenHeight <= 1050) {
         height = 600;
       } else {
-        height = 650;
+        height = 630;
       }
       return height;
     };
