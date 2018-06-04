@@ -168,7 +168,6 @@ class EnvPipelineHome extends Component {
    */
   banCancel = () => {
     const { EnvPipelineStore } = this.props;
-    EnvPipelineStore.setIst([]);
     EnvPipelineStore.setBan(false);
   };
 
@@ -179,19 +178,15 @@ class EnvPipelineHome extends Component {
     const { EnvPipelineStore, AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const envId = EnvPipelineStore.getEnvData.id;
-    const ist = EnvPipelineStore.getIst;
-    if (ist.length > 0) {
-      EnvPipelineStore.setIst([]);
-    } else {
-      EnvPipelineStore.banEnvById(projectId, envId, false)
-        .then((data) => {
-          if (data && data.failed) {
-            Choerodon.prompt(data.message);
-          } else if (data) {
-            this.loadEnvs();
-          }
-        });
-    }
+    EnvPipelineStore.banEnvById(projectId, envId, false)
+      .then((data) => {
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else if (data) {
+          this.loadEnvs();
+        }
+      });
+
     EnvPipelineStore.setBan(false);
   };
 

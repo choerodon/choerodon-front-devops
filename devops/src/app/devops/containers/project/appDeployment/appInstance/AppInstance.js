@@ -230,16 +230,16 @@ class AppInstance extends Component {
       filters: [],
       render: record => (record.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{record.code}</span> : <div>
         {record.commandStatus === 'doing' ? (<div>
+          <span className="c7n-deploy-istCode">{record.code}</span>
           <Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
             <Progress type="loading" width="15px" />
           </Tooltip>
-          <span className="c7n-deploy-istCode">{record.code}</span>
         </div>) :
           (<div>
+            <span className="c7n-deploy-istCode">{record.code}</span>
             <Tooltip title={record.error}>
               <span className="icon-error c7n-deploy-ist-operate" />
             </Tooltip>
-            <span className="c7n-deploy-istCode">{record.code}</span>
           </div>)}
       </div>),
     }, {
@@ -277,40 +277,51 @@ class AppInstance extends Component {
       className: 'c7n-operate-icon',
       key: 'action',
       render: (test, record) => (
-        <Action
-          data={[
-            {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
-              text: '查看实例详情',
-              action: this.linkDeployDetail.bind(this, record.id, record.status),
-            }, {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.application-instance.queryValues'],
-              text: Choerodon.getMessage('修改配置信息', 'Modify configuration information'),
-              action: this.updateConfig.bind(this, record.code, record.id,
-                record.envId, record.appVersionId, record.appId),
-            }, {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.application-instance.start', 'devops-service.application-instance.stop'],
-              text: record.status !== 'stoped' ? Choerodon.getMessage('停止实例', 'Stop the instance') : Choerodon.getMessage('重启实例', 'Start the instance'),
-              action: record.status !== 'stoped' ? this.activeIst.bind(this, record.id, 'stop') : this.activeIst.bind(this, record.id, 'start'),
-            }, {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.application-instance.delete'],
-              text: Choerodon.getMessage('删除实例', 'Delete the instance'),
-              action: this.handleOpen.bind(this, record.id),
-            },
-          ]}
-        />
+        record.status === 'operating' ?
+          <Action
+            data={[
+              {
+                type,
+                organizationId,
+                projectId,
+                service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
+                text: '查看实例详情',
+                action: this.linkDeployDetail.bind(this, record.id, record.status),
+              }]}
+          /> : <Action
+            data={[
+              {
+                type,
+                organizationId,
+                projectId,
+                service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
+                text: '查看实例详情',
+                action: this.linkDeployDetail.bind(this, record.id, record.status),
+              }, {
+                type,
+                organizationId,
+                projectId,
+                service: ['devops-service.application-instance.queryValues'],
+                text: Choerodon.getMessage('修改配置信息', 'Modify configuration information'),
+                action: this.updateConfig.bind(this, record.code, record.id,
+                  record.envId, record.appVersionId, record.appId),
+              }, {
+                type,
+                organizationId,
+                projectId,
+                service: ['devops-service.application-instance.start', 'devops-service.application-instance.stop'],
+                text: record.status !== 'stoped' ? Choerodon.getMessage('停止实例', 'Stop the instance') : Choerodon.getMessage('重启实例', 'Start the instance'),
+                action: record.status !== 'stoped' ? this.activeIst.bind(this, record.id, 'stop') : this.activeIst.bind(this, record.id, 'start'),
+              }, {
+                type,
+                organizationId,
+                projectId,
+                service: ['devops-service.application-instance.delete'],
+                text: Choerodon.getMessage('删除实例', 'Delete the instance'),
+                action: this.handleOpen.bind(this, record.id),
+              },
+            ]}
+          />
       ),
     }];
 

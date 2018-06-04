@@ -126,6 +126,7 @@ class DeploymentDetail extends Component {
     });
     const resource = DeployDetailStore.getResource;
     const projectName = AppState.currentMenuType.name;
+    const organizationId = AppState.currentMenuType.organizationId;
     const projectId = AppState.currentMenuType.id;
     const type = AppState.currentMenuType.type;
     let serviceDTO = [];
@@ -165,7 +166,7 @@ class DeploymentDetail extends Component {
 
     return (
       <div className="c7n-region c7n-deployDetail-wrapper page-container">
-        <PageHeader title={Choerodon.getMessage('查看实例详情', ' Instance Detail')} backPath={`/devops/instance?type=${type}&id=${projectId}&name=${projectName}`}>
+        <PageHeader title={Choerodon.getMessage('查看实例详情', ' Instance Detail')} backPath={`/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <Button
             onClick={this.loadAllData}
             funcType="flat"
