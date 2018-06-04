@@ -45,7 +45,7 @@ const ICONS = {
 };
 const ICONS_ACTION = {
   pending: {
-    icon: 'icon-refresh',
+    icon: 'icon-not_interested',
   },
   running: {
     icon: 'icon-not_interested',
@@ -173,7 +173,7 @@ class CiPipelineHome extends Component {
   }
 
   handleAction(record) {
-    if (record.status === 'running') {
+    if (record.status === 'running' || record.status === 'pending') {
       CiPipelineStore.cancelPipeline(record.gitlabProjectId, record.id);
     } else {
       CiPipelineStore.retryPipeline(record.gitlabProjectId, record.id);
@@ -386,7 +386,7 @@ class CiPipelineHome extends Component {
           projectId={projectId}
           type={type}
         >
-          <Popover placement="bottom" content={<div><span>{record.status === 'running' ? 'cancel' : 'retry'}</span></div>}>
+          <Popover placement="bottom" content={<div><span>{(record.status === 'running' || record.status === 'pending') ? 'cancel' : 'retry'}</span></div>}>
             <Button shape="circle" onClick={this.handleAction.bind(this, record)}>
               <span className={`${ICONS_ACTION[record.status].icon} c7n-icon-action c7n-icon-sm`} />
             </Button>
