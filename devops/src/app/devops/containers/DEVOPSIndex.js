@@ -38,7 +38,7 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/app-version`} component={AppVersion} />
           <Route path={`${match.url}/app`} component={App} />
           <Route path={`${match.url}/appstore`} component={AppStore} />
-          <Route path={`${match.url}/app-deployment`} component={AppDeployment} />
+          <Route path={`${match.url}/instance`} component={AppDeployment} />
           <Route path={`${match.url}/deployment-app`} component={DeploymentApp} />
           <Route path={`${match.url}/service`} component={NetworkConfig} />
           <Route path={`${match.url}/domain`} component={Domain} />

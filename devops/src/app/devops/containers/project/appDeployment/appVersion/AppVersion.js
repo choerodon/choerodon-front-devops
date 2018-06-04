@@ -59,7 +59,7 @@ class AppVersion extends Component {
   };
 
   linkDeployDetail = (id) => {
-    this.linkToChange(`/devops/app-deployment/${id}/detail`);
+    this.linkToChange(`/devops/instance/${id}/detail`);
   };
 
   render() {

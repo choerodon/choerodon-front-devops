@@ -4,7 +4,6 @@ import { withRouter } from 'react-router-dom';
 import { Table, Icon, Select, Button, Form, Dropdown, Menu, Progress, Tooltip } from 'choerodon-ui';
 import _ from 'lodash';
 import Action from 'Action';
-import Permission from 'PerComponent';
 import ValueConfig from '../valueConfig';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DelIst from '../component/delIst/DelIst';
@@ -48,7 +47,7 @@ class SingleEnvironment extends Component {
     const projectName = AppState.currentMenuType.name;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/app-deployment/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    this.linkToChange(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -151,23 +150,6 @@ class SingleEnvironment extends Component {
     this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
     store.loadInstanceAll(projectId, pagination.current - 1,
       pagination.pageSize, sort, envID, verId, appId, postData);
-  };
-
-  /**
-   * 条件部署应用
-   * @param envId 环境ID
-   * @param appId 应用ID
-   */
-  deployApp = (envId, appId) => {
-    const { store, AppState } = this.props;
-    const envNames = store.getEnvcard;
-    const envID = envId || envNames[0].id;
-    const projectId = AppState.currentMenuType.id;
-    const projectName = AppState.currentMenuType.name;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
-    store.setIstAll('null');
-    this.linkToChange(`/devops/deployment-app?envId=${envID}&appId=${appId}&type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -298,7 +280,7 @@ class SingleEnvironment extends Component {
     const type = AppState.currentMenuType.type;
 
     let envName = envNames.length ? (<React.Fragment>
-      {envNames[0].connect ? null : <span className="icon-portable_wifi_off c7n-ist-status_off" />}
+      {envNames[0].connect ? <span className="icon-link c7n-ist-status_on" /> : <span className="icon-unlink c7n-ist-status_off" />}
       {envNames[0].name}
     </React.Fragment>) : [];
 
@@ -306,7 +288,7 @@ class SingleEnvironment extends Component {
       _.map(envNames, (d) => {
         if (d.id === store.envId) {
           envName = (<React.Fragment>
-            {d.connect ? null : <span className="icon-portable_wifi_off c7n-ist-status_off" />}
+            {d.connect ? <span className="icon-link c7n-ist-status_on" /> : <span className="icon-unlink c7n-ist-status_off" />}
             {d.name}
           </React.Fragment>);
         }
@@ -314,20 +296,12 @@ class SingleEnvironment extends Component {
     }
 
     const envNameDom = envNames.length ? _.map(envNames, d => (<Option key={d.id}>
-      {d.connect ? null : <span className="icon-portable_wifi_off c7n-ist-status_off" />}
+      {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
       {d.name}</Option>)) : [];
 
     const appNameDom = appNames.length ? _.map(appNames, d => (<div role="none" className={appID === d.id ? 'c7n-deploy-single_card c7n-deploy-single_card-active' : 'c7n-deploy-single_card'} onClick={this.loadDetail.bind(this, this.state.envId, d.id)}>
-      {d.publishLevel ? <span className="icon-store_mall_directory c7n-icon-publish" /> : <span className="icon-project c7n-icon-publish" />}
+      {d.publishLevel ? <span className="icon-apps c7n-icon-publish" /> : <span className="icon-project c7n-icon-publish" />}
       <span className="c7n-text-ellipsis"><MouserOverWrapper text={d.name || ''} width={150}>{d.name}</MouserOverWrapper></span>
-      <Permission
-        service={['devops-service.application-instance.deploy']}
-        organizationId={organizationId}
-        projectId={projectId}
-        type={type}
-      >
-        <span role="none" className="icon-cloud_upload c7n-deploy-icon" onClick={this.deployApp.bind(this, this.state.envId, d.id)} />
-      </Permission>
     </div>)) : (<div className="c7n-deploy-single_card" >
       <div className="c7n-deploy-square"><div>App</div></div>
       <span>暂无应用</span>
@@ -382,7 +356,6 @@ class SingleEnvironment extends Component {
       filters: [],
       render: record => (
         <div>
-          <span className="c7n-deploy-circle-only">V</span>
           <span>{record.appVersion}</span>
         </div>
       ),

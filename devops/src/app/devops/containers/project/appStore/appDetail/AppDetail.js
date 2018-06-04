@@ -29,6 +29,12 @@ class AppDetail extends Component {
     this.loadAppData();
   }
 
+  componentWillUnmount() {
+    const { AppStoreStore } = this.props;
+    AppStoreStore.setApp([]);
+    AppStoreStore.setReadme(false);
+  }
+
   /**
    * 刷新函数
    */
@@ -104,7 +110,7 @@ class AppDetail extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     const app = AppStoreStore.getApp;
-    const readme = AppStoreStore.getReadme || '## 暂无';
+    const readme = AppStoreStore.getReadme || '# 暂无';
 
     const appVersion = app.appVersions ?
       _.map(app.appVersions, d => <Option key={d.id}>{d.version}</Option>) : [];
