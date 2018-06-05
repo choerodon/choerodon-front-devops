@@ -267,7 +267,7 @@ class NetworkCreate extends Component {
     }
   };
   checkIP =(rule, value, callback) => {
-    const p = /^(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3})$/;
+    const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
     if (value) {
       if (p.test(value)) {
         callback();

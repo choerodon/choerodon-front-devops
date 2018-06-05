@@ -2,25 +2,10 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Select, Button, Spin, Radio, Card, Steps, Form, Tabs, Icon, Modal, Input, Table, Pagination } from 'choerodon-ui';
-import ReactLoading from 'react-loading';
-import axios from 'Axios';
-import _ from 'lodash';
-import CodeMirror from 'react-codemirror';
-import PageHeader from 'PageHeader';
-import yaml from 'js-yaml';
 import '../../../main.scss';
 import './SelectApp.scss';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
-import DeploymentAppStore from '../../../../stores/project/deploymentApp';
-import AceForYaml from '../../../../components/yamlAce';
 import SelectAppStore from '../../../../stores/project/deploymentApp/SelectAppStore';
 
-const beautify = require('json-beautify');
-require('codemirror/lib/codemirror.css');
-require('codemirror/mode/javascript/javascript');
-
-const Option = Select.Option;
-const Step = Steps.step;
 const TabPane = Tabs.TabPane;
 const ButtonGroup = Button.Group;
 const SideBar = Modal.Sidebar;
@@ -39,10 +24,13 @@ class DeployAppHome extends Component {
   componentDidMount() {
     SelectAppStore.loadData({ projectId: this.state.projectId });
     this.handleSelectData();
-    // 初始化页面，获取应用信息
-    // DeploymentAppStore.loadInitData(this.state.appId, this.state.verId, this.state.envId);
   }
 
+  /**
+   * 切换分页
+   * @param page
+   * @param size
+   */
   onPageChange =(page, size) => {
     const key = this.state.activeTab;
     if (key === '1') {
@@ -53,12 +41,12 @@ class DeployAppHome extends Component {
         projectId: this.state.projectId, page: page - 1, size });
     }
   }
+  /**
+   * 获取本项目的app
+   * @returns {*}
+   */
   getProjectTable = () => {
-    const dataSource = SelectAppStore.getAllData || [{
-      name: 'test',
-      code: '123',
-      id: 2,
-    }];
+    const dataSource = SelectAppStore.getAllData;
     const column = [{
       key: 'check',
       width: '50px',
@@ -81,7 +69,7 @@ class DeployAppHome extends Component {
     }];
     return (<Table
       onRow={(record) => {
-        const { isClick } = this.state;
+        const a = record;
         return {
           onClick: this.hanldeSelectApp.bind(this, record),
         };
@@ -93,7 +81,10 @@ class DeployAppHome extends Component {
       pagination={SelectAppStore.pageInfo}
     />);
   }
-
+  /**
+   * 获取应用市场的数据
+   * @returns {*}
+   */
   getMarketTable = () => {
     const dataSource = SelectAppStore.allData;
     const column = [{
@@ -122,7 +113,7 @@ class DeployAppHome extends Component {
     }];
     return (<Table
       onRow={(record) => {
-        const { isClick } = this.state;
+        const a = record;
         return {
           onClick: this.hanldeSelectApp.bind(this, record),
         };
@@ -134,28 +125,42 @@ class DeployAppHome extends Component {
       pagination={SelectAppStore.pageInfo}
     />);
   };
-
+  /**
+   * 初始化选择数据
+   */
   handleSelectData =() => {
     if (this.props.app) {
       this.setState({ app: this.props.app });
     }
   };
-
+  /**
+   * 切换视图
+   * @param view
+   */
   changeView =(view) => {
     this.setState({ view });
   };
-
+  /**
+   * 搜索
+   * @param e
+   */
   handleSearch =(e) => {
     this.setState({ val: e.target.value });
     SelectAppStore.loadData({
       projectId: this.state.projectId, postData: { param: e.target.value, searchParam: {} } });
   }
+  /**
+   * 清空搜索框数据
+   */
   clearInputValue = () => {
     this.setState({ val: '' });
     SelectAppStore.loadData({
       projectId: this.state.projectId, postData: { param: '', searchParam: {} } });
   }
-
+  /**
+   * 点击选择数据
+   * @param record
+   */
   hanldeSelectApp = (record) => {
     if (this.state.app && this.state.app.id === record.id) {
       this.setState({ app: null });
@@ -171,7 +176,6 @@ class DeployAppHome extends Component {
    * @param sorter 排序
    */
   tableChange =(pagination, filters, sorter, paras) => {
-    const store = SelectAppStore;
     const key = this.state.activeTab;
     const menu = this.props.AppState.currentMenuType;
     const organizationId = menu.id;
@@ -196,24 +200,21 @@ class DeployAppHome extends Component {
     if (key === '1') {
       SelectAppStore.loadData({
         projectId: organizationId,
-        page: pagination.current - 1,
-        size: pagination.pageSize,
         sorter: sort,
         postData,
       });
     } else {
       SelectAppStore.loadApp({
         projectId: organizationId,
-        page: pagination.current - 1,
-        size: pagination.pageSize,
         sorter: sort,
         postData,
       });
     }
-    store
-      .loadData();
   };
-
+  /**
+   * 切换tabs
+   * @param key
+   */
   changeTab =(key) => {
     if (key === '1') {
       SelectAppStore.loadData({
@@ -224,6 +225,9 @@ class DeployAppHome extends Component {
     }
     this.setState({ activeTab: key });
   }
+  /**
+   * 确定选择数据
+   */
   handleOk =() => {
     this.props.handleOk(this.state.app, this.state.activeTab);
   }
@@ -233,9 +237,6 @@ class DeployAppHome extends Component {
     const { AppState } = this.props;
     const pageInfo = SelectAppStore.pageInfo;
     const projectName = AppState.currentMenuType.name;
-    const projectId = AppState.currentMenuType.id;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
     const prefix = <Icon type="search" onClick={this.handleSearch} />;
     const suffix = this.state.val ? <Icon type="close" onClick={this.clearInputValue} /> : null;
     return (

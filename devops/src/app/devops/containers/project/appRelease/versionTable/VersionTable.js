@@ -7,22 +7,6 @@ import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './../AppRelease.scss';
 
-const TabPane = Tabs.TabPane;
-const Option = Select.Option;
-const RadioGroup = Radio.Group;
-const FormItem = Form.Item;
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 100 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 26 },
-  },
-};
-const { TextArea } = Input;
-const ButtonGroup = Button.Group;
 const Sidebar = Modal.Sidebar;
 @inject('AppState')
 @observer
@@ -88,6 +72,9 @@ class VersionTable extends Component {
     const selectData = _.map(this.props.store.selectData, 'id') || [];
     this.setState({ selectedRowKeys: selectData });
   }
+  /**
+   * 关闭弹框
+   */
   handleClose = () => {
     this.props.store.changeShow(false);
   }
@@ -100,7 +87,9 @@ class VersionTable extends Component {
     this.props.store
       .loadAllVersion({ projectId: this.state.projectId, appId: this.props.appId, key: value });
   }
-
+  /**
+   * 添加版本
+   */
   handleAddVersion = () => {
     const { selectedRows } = this.state;
     this.props.store.setSelectData(selectedRows);
