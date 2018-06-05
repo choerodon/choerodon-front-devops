@@ -8,8 +8,7 @@ import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './AppReleaseEdit.scss';
-import icon from './icon.png';
-// import './CreateDomain.scss';
+
 
 const Option = Select.Option;
 const RadioGroup = Radio.Group;
@@ -60,42 +59,6 @@ class AppReleaseEdit extends Component {
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
   };
-  /**
-   * 获取列表的table
-   * @returns {*}
-   */
-  getTable =() => {
-    const { EditReleaseStore } = this.props;
-    const data = EditReleaseStore.getSelectData;
-    const columns = [{
-      title: '版本',
-      dataIndex: 'version',
-    }, {
-      title: '生成时间',
-      // dataIndex: 'creationDate',
-      render: (text, record) => <TimePopover content={record.creationDate} />,
-    }, {
-      width: '46px',
-      key: 'action',
-      className: 'c7n-network-text_top',
-      render: record => (
-        <div>
-          <Popover trigger="hover" placement="bottom" content={<div>删除</div>}>
-            <Button shape="circle" funcType="flat" onClick={this.removeVersion.bind(this, record.id)}>
-              <span className="icon-delete_forever" />
-            </Button>
-          </Popover>
-        </div>
-      ),
-    }];
-    return (<Table
-      columns={columns}
-      dataSource={data}
-      pagination={false}
-      rowKey={record => record.id}
-    />);
-  };
-
 
   /**
    * 获取弹出框的table
@@ -396,7 +359,7 @@ class AppReleaseEdit extends Component {
             initialValue: SingleData ? SingleData.description : '',
           })(
             <TextArea
-              maxLength={200}
+              maxLength={50}
               label={Choerodon.languageChange('template.description')}
               autosize={{ minRows: 2, maxRows: 6 }}
             />,

@@ -4,10 +4,9 @@ import { withRouter } from 'react-router-dom';
 import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio, Tabs } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
 import Permission from 'PerComponent';
-import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
-// import './CreateDomain.scss';
+import './EditVersion.scss';
 
 const TabPane = Tabs.TabPane;
 @inject('AppState')
@@ -44,7 +43,6 @@ class EditVersion extends Component {
       dataIndex: 'version',
     }, {
       title: '生成时间',
-      // dataIndex: 'creationDate',
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }];
     const rowSelection = {
@@ -74,7 +72,6 @@ class EditVersion extends Component {
       dataIndex: 'version',
     }, {
       title: '生成时间',
-      // dataIndex: 'creationDate',
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }];
     return (<Table
@@ -119,16 +116,7 @@ class EditVersion extends Component {
     const menu = this.props.AppState.currentMenuType;
     return (
       <div className="c7n-region page-container">
-        <PageHeader title="查看应用版本" backPath={`/devops/app-release?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`}>
-          <Button
-            className="header-btn headRightBtn leftBtn2"
-            ghost
-            onClick={this.handleRefresh}
-          >
-            <span className="icon-refresh" />
-            <span className="icon-space">刷新</span>
-          </Button>
-        </PageHeader>
+        <PageHeader title="查看应用版本" backPath={`/devops/app-release?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
         <div className="page-content">
           <h2 className="c7n-space-first">查看应用&quot;{this.state.name}&quot;的版本 </h2>
           <p>
@@ -142,20 +130,20 @@ class EditVersion extends Component {
           </p>
           <Tabs defaultActiveKey={this.state.key || '1'} onChange={this.changeTabs}>
             <TabPane tab="未发布版本" key="1">
-              <div style={{ width: 512, marginBottom: 32 }}>
+              <div className="version-table-wrap">
                 {this.getSidebarTable()}
               </div>
             </TabPane>
             <TabPane tab="已发布版本" key="2">
-              <div style={{ width: 512 }}>
+              <div className="version-table-wrap">
                 {this.getPublishTable()}
               </div>
             </TabPane>
           </Tabs>
           {this.state.key === '1' && <React.Fragment>
-            <hr style={{ marginBottom: 16 }} />
+            <div className="c7n-appRelease-hr" />
             <Permission service={['devops-service.application-market.updateVersions']}>
-              <Button type="primary" funcType="raised" onClick={this.handleOk}>发布</Button>
+              <Button className="release-button-margin" type="primary" funcType="raised" onClick={this.handleOk}>发布</Button>
             </Permission>
             <Button funcType="raised" onClick={this.handleBack}>取消</Button>
           </React.Fragment>}

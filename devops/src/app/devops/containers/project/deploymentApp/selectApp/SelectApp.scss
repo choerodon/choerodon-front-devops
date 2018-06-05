@@ -91,6 +91,9 @@
 
     .c7n-store-card-name {
       font-size: 15px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
 
     .c7n-store-card-source {
@@ -99,10 +102,12 @@
       margin-bottom: 8px;
     }
 
-    .c7n-store-card-des {
+    .c7n-store-card-des-60 {
       font-size: 13px;
       text-align: justify;
       color: rgba(0, 0, 0, 0.65);
+      height: 60px;
+      overflow: hidden;
     }
 
     .span-icon-check {

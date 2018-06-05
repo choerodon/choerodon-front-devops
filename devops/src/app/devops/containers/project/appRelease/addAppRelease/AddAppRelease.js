@@ -6,26 +6,13 @@ import _ from 'lodash';
 import PageHeader from 'PageHeader';
 import Permission from 'PerComponent';
 import '../../../main.scss';
-import './AddAppRelease.scss';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
-import AceForYaml from '../../../../components/yamlAce';
+import './../AppRelease.scss';
 import VersionTable from '../versionTable';
 import TimePopover from '../../../../components/timePopover';
 
-const FormItem = Form.Item;
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 100 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 26 },
-  },
-};
+
 const { TextArea } = Input;
 const RadioGroup = Radio.Group;
-const Option = Select.Option;
 const Step = Steps.Step;
 @inject('AppState')
 @observer
@@ -55,7 +42,6 @@ class AddAppRelease extends Component {
    */
   getStatus = (index) => {
     const { current } = this.state;
-    const { appId, envId, versionId, mode, instanceId } = this.state;
     let status = 'process';
     if (index === current) {
       status = 'process';
@@ -85,7 +71,6 @@ class AddAppRelease extends Component {
   }
 
   handleChangeMode =(value) => {
-    const { AppState, EditReleaseStore } = this.props;
     this.setState({ mode: value.target.value });
   }
 
@@ -226,7 +211,7 @@ class AddAppRelease extends Component {
     const app = EditReleaseStore.app;
     const column = [{
       key: 'check',
-      width: '3%',
+      width: '50px',
       render: record => (
         app && record.id === app.id && <span className="icon-check icon-select" />
       ),
@@ -237,36 +222,28 @@ class AddAppRelease extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      width: '45%',
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={120}>
-        {record.name}
-      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('app.code'),
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
-      width: '45%',
-      render: (test, record) => (<MouserOverWrapper text={record.code} width={120}>
-        {record.code}
-      </MouserOverWrapper>),
     }];
     return (
       <div className="deployApp-app">
         <p>
           您可以在此选择需要发布的应用。
         </p>
-        <section className="deployApp-section">
+        <section className="deployAddApp-section">
           <div>
             <Table
+              className="c7n-table-512"
               onRow={(record) => {
                 const { isClick } = this.state;
                 return {
                   onClick: this.hanldeSelectApp.bind(this, record),
                 };
               }}
-              // loading={EditReleaseStore.loading}
               pagination={EditReleaseStore.pageInfo}
               columns={column}
               dataSource={apps}
@@ -275,7 +252,7 @@ class AddAppRelease extends Component {
             />
           </div>
         </section>
-        <section className="deployApp-section">
+        <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" disabled={!(this.state.appId)} onClick={this.state.appId ? this.changeStep.bind(this, 2) : () => {}}>下一步</Button>
           <Button funcType="raised" onClick={this.clearStepOne}>取消</Button>
         </section>
@@ -286,17 +263,16 @@ class AddAppRelease extends Component {
    * 渲染第二步
    */
   handleRenderEnv = () => {
-    const { AppState, EditReleaseStore } = this.props;
+    const { EditReleaseStore } = this.props;
     const data = EditReleaseStore.selectData;
     const columns = [{
       title: '版本',
       dataIndex: 'version',
     }, {
       title: '生成时间',
-      // dataIndex: 'creationDate',
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }, {
-      width: '46px',
+      width: '40px',
       key: 'action',
       className: 'c7n-network-text_top',
       render: record => (
@@ -314,10 +290,10 @@ class AddAppRelease extends Component {
         <p>
           您可以在此点击添加版本选择添加需要发布的版本。
         </p>
-        <section className="deployApp-section">
+        <section className="deployAddApp-section">
           <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.handleAddVersion}><span className="icon-add" />添加版本</Button>
         </section>
-        <section className="deployApp-section">
+        <section className="deployAddApp-section">
           <div style={{ width: 512 }}>
             <Table
               columns={columns}
@@ -327,7 +303,7 @@ class AddAppRelease extends Component {
             />
           </div>
         </section>
-        <section className="deployApp-section">
+        <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" onClick={data.length > 0 ? this.changeStep.bind(this, 3) : ''} disabled={!(data.length)}>下一步</Button>
           <Button onClick={this.changeStep.bind(this, 1)} funcType="raised">上一步</Button>
         </section>
@@ -350,17 +326,18 @@ class AddAppRelease extends Component {
         <p>
           请在此选择应用发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。
         </p>
-        <section className="deployApp-section">
+        <section className="deployAddApp-section">
           <div className="section-text-margin">
             <RadioGroup onChange={this.handleChangeMode} value={this.state.mode} label={<span className="deploy-text">选择发布层次</span>}>
               <Radio style={radioStyle} value={'organization'}>本组织</Radio>
               <Radio style={radioStyle} value={'public'}>全平台
                 <span className="icon-error section-instance-icon" />
-                <span style={{ color: 'rgba(0,0,0,0.65)' }}>请注意：发布后不可修改发布范围。</span></Radio>
+                <span className="deploy-tip-text">请注意：发布后不可修改发布范围。</span>
+              </Radio>
             </RadioGroup>
           </div>
         </section>
-        <section className="deployApp-section">
+        <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 4)}>下一步</Button>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>上一步</Button>
         </section>
@@ -379,8 +356,8 @@ class AddAppRelease extends Component {
         <p>
           您可以在此上传应用图标，填写贡献者、分类及应用描述，维护应用展示信息。
         </p>
-        <section className="deployApp-section">
-          <div style={{ marginLeft: '37%' }}>
+        <section className="deployAddApp-section">
+          <div className="c7n-appRelease-img-wrap">
             <div className="c7n-appRelease-img">
               <div
                 style={{ backgroundImage: this.state.img ? `url(${this.state.img})` : '' }}
@@ -401,7 +378,7 @@ class AddAppRelease extends Component {
             </div>
           </div>
         </section>
-        <section className="deployApp-section">
+        <section className="deployAddApp-section">
           <Input
             value={contributor}
             onChange={(value) => { this.setState({ contributor: value.target.value }); }}
@@ -412,7 +389,7 @@ class AddAppRelease extends Component {
             // placeholder={Choerodon.getMessage('域名路径', 'domain path')}
           />
         </section>
-        <section className="deployApp-section">
+        <section className="deployAddApp-section">
           <Input
             value={category}
             style={{ width: 512 }}
@@ -423,21 +400,21 @@ class AddAppRelease extends Component {
             // placeholder={Choerodon.getMessage('域名路径', 'domain path')}
           />
         </section>
-        <section className="deployApp-section">
+        <section className="deployAddApp-section">
           <TextArea
             value={description}
             onChange={(value) => { this.setState({ description: value.target.value }); }}
             style={{ width: 512 }}
-            maxLength={200}
+            maxLength={50}
             label={Choerodon.languageChange('template.description')}
             autosize={{ minRows: 2, maxRows: 6 }}
           />
           <p>
-            <span className="icon-error" />
-            <span>请注意：平台将会提取发布的应用版本中Readme文件展示在应用市场的应用详情页，请先维护好对应的Readme文件后再发布。</span>
+            <span className="icon-error release-icon-error" />
+            <span className="deploy-tip-text">请注意：平台将会提取发布的应用版本中Readme文件展示在应用市场的应用详情页，请先维护好对应的Readme文件后再发布。</span>
           </p>
         </section>
-        <section className="deployApp-section">
+        <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" disabled={!(category && contributor && description)} onClick={this.changeStep.bind(this, 5)}>下一步</Button>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 3)}>上一步</Button>
         </section>
@@ -486,9 +463,9 @@ class AddAppRelease extends Component {
           </div>
         </section>
         <section>
-          <span className="icon-error" /><span>请注意：该版本发布后不可取消发布，且不可修改发布范围。</span>
+          <span className="icon-error release-icon-error" /><span>请注意：该版本发布后不可取消发布，且不可修改发布范围。</span>
         </section>
-        <section className="deployApp-section">
+        <section className="deployAddApp-section">
           <Permission service={['devops-service.application-market.create']}>
             <Button type="primary" loading={this.state.submitting} funcType="raised" onClick={this.handleSubmit}>发布</Button>
           </Permission>
@@ -519,7 +496,7 @@ class AddAppRelease extends Component {
     return (
       <div className="c7n-region page-container">
         <PageHeader title={'应用发布'} backPath={`/devops/app-release?type=${type}&id=${id}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`} />
-        <div className="page-content c7n-AddAppRelease-wrapper" style={{ paddingBottom: '16px' }}>
+        <div className="page-content c7n-deployApp-wrapper" style={{ paddingBottom: '16px' }}>
           <h2 className="c7n-space-first">在项目&quot;{projectName}&quot;中进行应用发布</h2>
           <p>
             您可以在此按指引分步骤完成应用发布。
@@ -530,7 +507,7 @@ class AddAppRelease extends Component {
               <span className="icon-open_in_new" />
             </a>
           </p>
-          <Card className="deployApp-card">
+          <div className="deployApp-card">
             <Steps current={this.state.current}>
               <Step
                 title={<span style={{ color: current === 1 ? '#3F51B5' : '', fontSize: 14 }}>选择应用</span>}
@@ -568,7 +545,7 @@ class AddAppRelease extends Component {
 
               { this.state.current === 5 && this.handleRenderReview() }
             </div>
-          </Card>
+          </div>
           {EditReleaseStore.show && <VersionTable
             show={EditReleaseStore.show}
             appName={this.state.appName}

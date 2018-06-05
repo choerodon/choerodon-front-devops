@@ -72,18 +72,12 @@ class DeployAppHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={120}>
-        {record.name}
-      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('app.code'),
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.code} width={120}>
-        {record.code}
-      </MouserOverWrapper>),
     }];
     return (<Table
       onRow={(record) => {
@@ -345,13 +339,13 @@ class DeployAppHome extends Component {
                         {this.state.app && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon-check" /></span> }
                         {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
                           : <div className="c7n-store-card-icon" />}
-                        <div className="c7n-store-card-name">
+                        <div title={card.name} className="c7n-store-card-name">
                           {card.name}
                         </div>
                         <div className="c7n-store-card-source">
                           {card.category}
                         </div>
-                        <div className="c7n-store-card-des">
+                        <div title={card.description} className="c7n-store-card-des-60">
                           {card.description}
                         </div>
                       </div>
