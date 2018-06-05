@@ -3,6 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio, Popover } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
+import Permission from 'PerComponent';
 import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
@@ -177,7 +178,7 @@ class AppReleaseEdit extends Component {
       if (!err) {
         const postData = data;
         postData.imgUrl = img;
-        postData.appVersions = selectData;
+        postData.publishLevel = EditReleaseStore.SingleData.publishLevel;
         if (!id) {
           this.setState({ submitting: true });
           EditReleaseStore.addData(projectId, postData)
@@ -300,10 +301,9 @@ class AppReleaseEdit extends Component {
     const app = EditReleaseStore.apps;
     const SingleData = EditReleaseStore.getSingleData;
     const form = this.props.form;
-    const title = this.state.id ? '修改应用发布' : '创建应用发布';
-    const content = this.state.id ? '这些权限会影响此项目及其所有资源修改应用发布' : '这些权限会影响此项目及其所有资源创建应用发布';
+    const content = '您可以在此修改应用发布的展示信息，包括贡献者、分类及应用描述。';
     const contentDom = (<div className="c7n-region c7n-domainCreate-wrapper">
-      <h2 className="c7n-space-first">在项目&quot;{menu.name}&quot;{title}</h2>
+      <h2 className="c7n-space-first">修改应用&quot;{SingleData && SingleData.name}&quot;的信息</h2>
       <p>
         {content}
         <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
@@ -314,66 +314,6 @@ class AppReleaseEdit extends Component {
         </a>
       </p>
       <Form layout="vertical" onSubmit={this.handleSubmit}>
-        <FormItem
-          className="c7n-sidebar-form"
-          {...formItemLayout}
-        >
-          {getFieldDecorator('appId', {
-            rules: [{
-              required: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              transform: value => value.toString(),
-            }, {
-              // validator: this.checkCode,
-            }],
-            initialValue: SingleData ? SingleData.appId : undefined,
-          })(
-            <Select
-              disabled={this.state.id}
-              className="c7n-sidebar-form"
-              filter
-              onSelect={this.selectApp}
-              showSearch
-              label="选择应用"
-              optionFilterProp="children"
-              // onChange={handleChange}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            >
-              {app.length && app.map(v => (
-                <Option value={v.id} key={v.name}>
-                  <Tooltip title={v.code} placement="right" trigger="hover">
-                    {v.name}
-                  </Tooltip>
-                </Option>
-              ))}
-              {SingleData && (<Option value={SingleData.appId}>
-                {SingleData.name}
-              </Option>)}
-            </Select>,
-          )}
-        </FormItem>
-        <FormItem
-          className="c7n-sidebar-form"
-          {...formItemLayout}
-        >
-          {getFieldDecorator('publishLevel', {
-            rules: [{
-              required: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              // transform: value => value.toString(),
-            }, {
-              // validator: this.checkCode,
-            }],
-            initialValue: SingleData ? SingleData.publishLevel : 'organization',
-          })(
-            <RadioGroup name="level" label="选择发布层级">
-              <Radio value="organization">本组织</Radio>
-              <Radio value="public">全平台</Radio>
-            </RadioGroup>,
-          )}
-        </FormItem>
-        <span className="c7n-appRelease-span-title">应用信息</span><span className="icon-help help-icon" />
         <FormItem
           className="c7n-sidebar-form"
           {...formItemLayout}
@@ -396,27 +336,6 @@ class AppReleaseEdit extends Component {
             </div>
             <span className="c7n-appRelease-img-title">应用图标</span>
           </div>
-        </FormItem>
-        <FormItem
-          className="c7n-sidebar-form"
-          {...formItemLayout}
-        >
-          {getFieldDecorator('name', {
-            rules: [{
-              required: true,
-              whitespace: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-            }, {
-              // validator: this.checkName,
-            }],
-            initialValue: SingleData ? SingleData.name : this.state.appName,
-          })(
-            <Input
-              disabled
-              label={Choerodon.getMessage('应用名称', 'name')}
-              size="default"
-            />,
-          )}
         </FormItem>
         <FormItem
           className="c7n-sidebar-form"
@@ -483,32 +402,22 @@ class AppReleaseEdit extends Component {
             />,
           )}
         </FormItem>
-        <FormItem
-          className="c7n-sidebar-form"
-          {...formItemLayout}
-        >
-          <Button type="primary" onClick={this.handleShowSideBar}><span className="icon-add" />添加版本</Button>
-        </FormItem>
-        <FormItem
-          className="c7n-sidebar-form"
-          {...formItemLayout}
-        >
-          {this.getTable()}
-        </FormItem>
         <div className="c7n-appRelease-hr" />
         <FormItem
           className="c7n-sidebar-form"
           {...formItemLayout}
         >
-          <Button
-            onClick={this.handleSubmit}
-            type="primary"
-            funcType="raised"
-            className="sidebar-btn"
-            style={{ marginRight: 12 }}
-            loading={this.state.submitting}
-          >
-            {Choerodon.getMessage('保存', 'Save')}</Button>
+          <Permission service={['devops-service.application-market.update']}>
+            <Button
+              onClick={this.handleSubmit}
+              type="primary"
+              funcType="raised"
+              className="sidebar-btn"
+              style={{ marginRight: 12 }}
+              loading={this.state.submitting}
+            >
+              {Choerodon.getMessage('保存', 'Save')}</Button>
+          </Permission>
           <Button
             funcType="raised"
             disabled={this.state.submitting}
@@ -520,33 +429,10 @@ class AppReleaseEdit extends Component {
     </div>);
     return (
       <div className="c7n-region page-container">
-        <PageHeader title="创建应用发布" backPath={`/devops/app-release?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
+        <PageHeader title="修改应用信息" backPath={`/devops/app-release?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
         <div className="page-content c7n-appRelease-wrapper">
           {contentDom}
         </div>
-        { this.state.show && (<Sidebar
-          okText="添加"
-          cancelText="取消"
-          visible={this.state.show}
-          title="添加版本"
-          onCancel={this.handleClose}
-          onOk={this.handleAddVersion}
-          confirmloading={this.state.submitting}
-        >
-          {this.state.show ? (<div className="c7n-region">
-            <h2 className="c7n-space-first">选择版本</h2>
-            <p>
-              这些权限会影响此项目及其所有资源。
-              <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                <span className="c7n-external-link-content">
-                  了解详情
-                </span>
-                <span className="icon-open_in_new" />
-              </a>
-            </p>
-            {this.getSidebarTable()}
-          </div>) : null}
-        </Sidebar>) }
       </div>
     );
   }

@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio } from 'choerodon-ui';
+import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio, Tabs } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
 import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
-import './AppReleaseEdit.scss';
 // import './CreateDomain.scss';
 
+const TabPane = Tabs.TabPane;
 const Option = Select.Option;
 const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
@@ -24,7 +24,7 @@ const formItemLayout = {
 };
 const { TextArea } = Input;
 const ButtonGroup = Button.Group;
-
+const Sidebar = Modal.Sidebar;
 @inject('AppState')
 @observer
 class VersionTable extends Component {
@@ -40,13 +40,20 @@ class VersionTable extends Component {
   }
 
   componentDidMount() {
-    const { projectId } = this.props;
-    this.props.store.loadAllVersion(projectId, this.props.appId);
+    const { projectId } = this.state;
+    const app = this.props.store.app;
+    this.handleSelectData();
+    this.props.store.loadAllVersion({ projectId, appId: app.id });
   }
 
+
+  /**
+   * 获取未发布版本
+   * @returns {*}
+   */
   getSidebarTable =() => {
-    const { EditReleaseStore } = this.props;
-    const data = EditReleaseStore.getVersionData || [{
+    const { store } = this.props;
+    const data = store.getVersionData || [{
       id: 1,
       appName: 'ssd',
       creationDate: '2018-05-22 11:19:41',
@@ -68,46 +75,45 @@ class VersionTable extends Component {
       onChange: (selectedRowKeys, selectedRows) => {
         this.setState({ selectedRows, selectedRowKeys });
       },
-      // getCheckboxProps: record => ({
-      //   disabled: record.name === 'Disabled User', // Column configuration not to be checked
-      //   name: record.name,
-      // }),
-      // selections: true,
     };
     return (<Table
-      loading={EditReleaseStore.loading}
-      pagination={EditReleaseStore.versionPage}
+      loading={store.loading}
+      pagination={store.versionPage}
       rowSelection={rowSelection}
       columns={columns}
       dataSource={data}
       rowKey={record => record.id}
     />);
   };
+  handleSelectData =() => {
+    const selectData = _.map(this.props.store.selectData, 'id') || [];
+    this.setState({ selectedRowKeys: selectData });
+  }
+  handleClose = () => {
+    this.props.store.changeShow(false);
+  }
+  /**
+   * 切换tabs
+   * @param value
+   */
+  changeTabs = (value) => {
+    this.setState({ key: value });
+    this.props.store
+      .loadAllVersion({ projectId: this.state.projectId, appId: this.props.appId, key: value });
+  }
 
+  handleAddVersion = () => {
+    const { selectedRows } = this.state;
+    this.props.store.setSelectData(selectedRows);
+    this.props.store.changeShow(false);
+  };
 
   render() {
     const { store } = this.props;
     const menu = this.props.AppState.currentMenuType;
-    const data = [];
-    const columns = [{
-      title: 'Name',
-      dataIndex: 'name',
-    }, {
-      title: 'Age',
-      dataIndex: 'age',
-    }, {
-      title: 'Address',
-      dataIndex: 'address',
-    }];
-    const rowSelection = {
-      selectedRowKeys: this.state.selectedRowKeys,
-      onChange: this.onSelectChange,
-    };
-
-    const title = this.state.id ? '修改应用发布' : '创建应用发布';
-    const content = this.state.id ? '这些权限会影响此项目及其所有资源修改应用发布' : '这些权限会影响此项目及其所有资源创建应用发布';
+    const content = '您可以在此查看未发布及已发布的版本，且可以发布未发布的版本。';
     const contentDom = (<div className="c7n-region version-wrapper">
-      <h2 className="c7n-space-first">在应用&quot;{this.props.appName}&quot;中的版本信息</h2>
+      <h2 className="c7n-space-first">添加应用&quot;{store.app && store.app.name}&quot;发布的版本</h2>
       <p>
         {content}
         <a
@@ -122,37 +128,19 @@ class VersionTable extends Component {
           <span className="icon-open_in_new" />
         </a>
       </p>
-      <div className="version-tab">
-        <span>查看方式：</span>
-        <ButtonGroup>
-          <Button
-            funcType="flat"
-            onClick={this.changeTabs.bind(this, 'instance')}
-          >
-            仅标记
-          </Button>
-          <Button
-            funcType="flat"
-            onClick={this.changeTabs.bind(this, 'singleEnv')}
-          >
-            全部版本
-          </Button>
-        </ButtonGroup>
-      </div>
       {this.getSidebarTable()}
-      <div className="version-selection">
-        <div className="version-selection-selected">
-          <h2 className="c7n-space-first">已选择的版本</h2>
-          <p>sjjjd</p>
-        </div>
-        <div className="version-selection-selected">
-          <h2 className="c7n-space-first">取消的版本</h2>
-          <p>kkskkd</p>
-        </div>
-      </div>
     </div>);
     return (
-      contentDom
+      <Sidebar
+        okText="添加"
+        cancelText="取消"
+        visible={this.props.show}
+        title="添加应用版本"
+        onCancel={this.handleClose}
+        onOk={this.handleAddVersion}
+      >
+        {contentDom}
+      </Sidebar>
     );
   }
 }

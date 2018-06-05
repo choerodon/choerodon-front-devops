@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Popover, Modal } from 'choerodon-ui';
+import { Button, Table, Popover, Modal, Tabs, Tooltip, Icon } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
 import Permission from 'PerComponent';
 import Remove from 'Remove';
@@ -10,9 +10,10 @@ import { commonComponent } from '../../../../components/commonFunction';
 import '../../../main.scss';
 import './AppRelease.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import editReleaseStore from '../../../../stores/project/appRelease/editRelease';
 
+const TabPane = Tabs.TabPane;
 @inject('AppState')
-@commonComponent ('AppReleaseStore')
 @observer
 class AppReleaseHome extends Component {
   constructor(props) {
@@ -23,25 +24,26 @@ class AppReleaseHome extends Component {
       show: false,
       projectId: menu.id,
       upDown: [],
+      key: '1',
     };
   }
   componentDidMount() {
-    const { projectId } = this.state;
-    this.loadAllData(this.state.page);
+    const { AppReleaseStore } = this.props;
+    AppReleaseStore.loadData({ projectId: this.state.projectId });
   }
 
   getColumn = () => {
     const { type, id: orgId } = this.props.AppState.currentMenuType;
     const { upDown } = this.state;
     return [{
-      width: '22.5%',
+      width: '25%',
       title: Choerodon.languageChange('app.name'),
       dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
     }, {
-      width: '22.5%',
+      width: '30%',
       title: Choerodon.languageChange('app.code'),
       dataIndex: 'code',
       key: 'code',
@@ -49,91 +51,163 @@ class AppReleaseHome extends Component {
       filters: [],
     }, {
       // width: '410px',
-      width: '15%',
-      title: '发布层级',
-      dataIndex: 'publishLevel',
+      width: '25%',
+      title: '发布范围',
+      // dataIndex: 'publishLevel',
       key: 'publishLevel',
       sorter: true,
       filters: [],
-    }, {
-      width: '30%',
-      title: Choerodon.languageChange('deploy.ver'),
-      key: 'appVersion',
-      sorter: true,
-      filters: [],
       render: record => (
-        <React.Fragment>
-          <div role="none" className={`c7n-network-col_border col-${record.id}`} onClick={this.showChange.bind(this, record.id, record.appVersions.length)}>
-            {record.appVersions && record.appVersions.length > 2
-              && <span className={_.indexOf(upDown, record.id) !== -1
-                ? 'c7n-network-change icon-keyboard_arrow_up' : 'c7n-network-change icon-keyboard_arrow_down'}
-              />
-            }
-            { _.map(record.appVersions, versions => (
-              <MouserOverWrapper key={versions.id} width={115} className="c7n-app-release-square" text={versions.version}>{versions.version}</MouserOverWrapper>))}
-          </div>
-        </React.Fragment>),
+        <span>{Choerodon.languageChange(`${record.publishLevel}`)}</span>
+      ),
     }, {
       width: '98px',
       key: 'action',
       className: 'c7n-network-text_top',
       render: record => (
         <div>
-          <Popover trigger="hover" placement="bottom" content={<div>修改</div>}>
-            <Button shape="circle" funcType="flat" onClick={this.showSidebar.bind(this, record.id)}>
-              <span className="icon-mode_edit" />
-            </Button>
-          </Popover>
-          <Popover trigger="hover" placement="bottom" content={<div>版本控制</div>}>
-            <Button shape="circle" funcType="flat" onClick={this.showSidebar.bind(this, record.id)}>
-              <span className="icon-mode_edit" />
-            </Button>
-          </Popover>
-          <Popover trigger="hover" placement="bottom" content={<div>取消应用发布</div>}>
-            <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
-              <span className="icon-delete_forever" />
-            </Button>
-          </Popover>
+          <Permission service={['devops-service.application-market.update']}>
+            <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
+              <Button shape="circle" funcType="flat" onClick={this.handleEdit.bind(this, record.id)}>
+                <span className="icon-mode_edit" />
+              </Button>
+            </Tooltip>
+          </Permission>
+          <Permission service={['devops-service.application-market.updateVersions']}>
+            <Tooltip trigger="hover" placement="bottom" title={<div>版本控制</div>}>
+              <Button shape="circle" funcType="flat" onClick={this.handleEditVersion.bind(this, record)}>
+                <span className="icon-versionline" />
+              </Button>
+            </Tooltip>
+          </Permission>
         </div>
       ),
     }];
   } ;
+  /**
+   * 获取屏幕的高度
+   * @returns {number}
+   */
+  getHeight = () => {
+    const screenHeight = window.screen.height;
+    let height = 310;
+    if (screenHeight <= 800) {
+      height = 310;
+    } else if (screenHeight > 800 && screenHeight <= 900) {
+      height = 450;
+    } else if (screenHeight > 900 && screenHeight <= 1050) {
+      height = 600;
+    } else {
+      height = 630;
+    }
+    return height;
+  };
+
+  handleEdit = (ids) => {
+    const { name, id, organizationId } = this.props.AppState.currentMenuType;
+    this.props.history.push(`/devops/app-release/edit/${ids}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
+  };
+  handleCreate = (record) => {
+    const { name, id, organizationId } = this.props.AppState.currentMenuType;
+    editReleaseStore.setApp(record);
+    this.props.history.push(`/devops/app-release/add/${record.id}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
+  }
+  handleEditVersion = (ids) => {
+    const { name, id, organizationId } = this.props.AppState.currentMenuType;
+    this.props.history.push(`/devops/app-release/app/${ids.name}/edit-version/${ids.id}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
+  }
+  showProjectTable = () => {
+    const { AppReleaseStore } = this.props;
+    const data = AppReleaseStore.allData;
+    const column = [{
+      title: Choerodon.languageChange('app.name'),
+      dataIndex: 'name',
+      key: 'name',
+      sorter: true,
+      filters: [],
+      width: '45%',
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={120}>
+        {record.name}
+      </MouserOverWrapper>),
+    }, {
+      title: Choerodon.languageChange('app.code'),
+      dataIndex: 'code',
+      key: 'code',
+      sorter: true,
+      filters: [],
+      width: '45%',
+      render: (test, record) => (<MouserOverWrapper text={record.code} width={120}>
+        {record.code}
+      </MouserOverWrapper>),
+    }, {
+      width: '46px',
+      key: 'action',
+      render: (test, record) => (
+        <div>
+          <Permission service={['devops-service.application-market.create']}>
+            <Tooltip placement="bottom" title={'发布应用'}>
+              <Button shape="circle" onClick={this.handleCreate.bind(this, record)}><Icon type="publish2" /></Button>
+            </Tooltip>
+          </Permission>
+        </div>),
+    }];
+    return (
+      <div style={{ width: 512 }}>
+        <Table
+          // eslint-disable-next-line
+          scroll={{ y: this.getHeight() }}
+          // filters={['appCode', 'appName', 'version']}
+          loading={AppReleaseStore.loading}
+          pagination={AppReleaseStore.pageInfo}
+          columns={column}
+          dataSource={data}
+          rowKey={record => record.id}
+          onChange={this.tableChange}
+        />
+      </div>
+    );
+  }
+  handleChangeTabs = (value) => {
+    const { AppReleaseStore } = this.props;
+    AppReleaseStore.loadData({ page: 0, key: value, projectId: this.state.projectId });
+    this.setState({ key: value });
+  }
 
   /**
-   * 展开/收起实例
+   * table 改变的函数
+   * @param pagination 分页
+   * @param filters 过滤
+   * @param sorter 排序
    */
-  showChange = (id, length) => {
-    const { upDown } = this.state;
-    const cols = document.getElementsByClassName(`col-${id}`);
-    if (_.indexOf(upDown, id) === -1) {
-      for (let i = 0; i < cols.length; i += 1) {
-        cols[i].style.height = `${length * 31}px`;
+  tableChange =(pagination, filters, sorter, paras) => {
+    const { AppReleaseStore } = this.props;
+    const menu = this.props.AppState.currentMenuType;
+    const organizationId = menu.id;
+    const sort = { field: 'id', order: 'desc' };
+    if (sorter.column) {
+      sort.field = sorter.field || sorter.columnKey;
+      // sort = sorter;
+      if (sorter.order === 'ascend') {
+        sort.order = 'asc';
+      } else if (sorter.order === 'descend') {
+        sort.order = 'desc';
       }
-      upDown.push(id);
-      this.setState({
-        upDown,
-      });
-      // console.log(upDown, length);
-    } else {
-      for (let i = 0; i < cols.length; i += 1) {
-        cols[i].style.height = '31px';
-      }
-      _.pull(upDown, id);
-      this.setState({
-        upDown,
-      });
-      // console.log(upDown, length);
     }
-  };
-  showSidebar = (ids) => {
-    const { name, id, organizationId } = this.props.AppState.currentMenuType;
-    if (ids) {
-      this.props.history.push(`/devops/app-release/edit/${ids}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
-    } else {
-      this.props.history.push(`/devops/app-release/add?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
+    let searchParam = {};
+    if (Object.keys(filters).length) {
+      searchParam = filters;
     }
+    const postData = {
+      searchParam,
+      param: paras.toString(),
+    };
+    AppReleaseStore
+      .loadData({ projectId: organizationId, sorter: sort, postData });
   };
-
+  handleRefresh =() => {
+    const { AppReleaseStore } = this.props;
+    AppReleaseStore.loadData({ isRefresh: true });
+  };
 
   render() {
     const { AppReleaseStore } = this.props;
@@ -148,14 +222,6 @@ class AppReleaseHome extends Component {
       <div className="c7n-region page-container app-release-wrapper">
         <PageHeader title="应用发布">
           <Button
-            className="header-btn headLeftBtn leftBtn"
-            ghost
-            onClick={this.showSidebar.bind(this, '')}
-          >
-            <span className="icon-playlist_add" />
-            <span className="icon-space">创建</span>
-          </Button>
-          <Button
             className="header-btn headRightBtn leftBtn2"
             ghost
             onClick={this.handleRefresh}
@@ -167,7 +233,7 @@ class AppReleaseHome extends Component {
         <div className="page-content">
           <h2 className="c7n-space-first">项目&quot;{this.props.AppState.currentMenuType.name}&quot;的应用发布 </h2>
           <p>
-            这些权限会影响此项目及其所有资源。
+            应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。
             <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
@@ -175,17 +241,26 @@ class AppReleaseHome extends Component {
               <span className="icon-open_in_new" />
             </a>
           </p>
-          <Table
-            // eslint-disable-next-line
-            scroll={{ y: this.getHeight() }}
-            // filters={['appCode', 'appName', 'version']}
-            loading={AppReleaseStore.loading}
-            pagination={AppReleaseStore.pageInfo}
-            columns={this.getColumn()}
-            dataSource={data}
-            rowKey={record => record.id}
-            onChange={this.tableChange}
-          />
+          <Tabs defaultActiveKey={this.state.key} onChange={this.handleChangeTabs}>
+            <TabPane tab="未发布应用" key="1">
+              {this.showProjectTable()}
+            </TabPane>
+            <TabPane tab="已发布应用" key="2">
+              <div style={{ width: 512 }}>
+                <Table
+                  // eslint-disable-next-line
+                  scroll={{ y: this.getHeight() }}
+                  // filters={['appCode', 'appName', 'version']}
+                  loading={AppReleaseStore.loading}
+                  pagination={AppReleaseStore.pageInfo}
+                  columns={this.getColumn()}
+                  dataSource={data}
+                  rowKey={record => record.id}
+                  onChange={this.tableChange}
+                />
+              </div>
+            </TabPane>
+          </Tabs>
         </div>
         <Modal
           visible={this.state.openRemove}

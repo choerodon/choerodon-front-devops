@@ -462,7 +462,7 @@ class DeploymentAppHome extends Component {
     //     DeploymentAppStore.setCurrentEnv({});
     //     DeploymentAppStore.setValue('');
     //     DeploymentAppStore.setCurrentMode('new');
-    //     const currentVersion = DeploymentAppStore.versions.
+    //     const currentVersion = DeploymentAppStore.editVersions.
     //       find(version => version.id === versionId);
     //     DeploymentAppStore.setCurrentVersion(currentVersion);
     //     DeploymentAppStore.setShowArr([false, true, true, false, false]);
@@ -475,11 +475,11 @@ class DeploymentAppHome extends Component {
     //     this.setState({
     //       verId: undefined,
     //     });
-    //     const currentVersion = DeploymentAppStore.versions
+    //     const currentVersion = DeploymentAppStore.editVersions
     //       .find(version => version.id === versionId);
     //     DeploymentAppStore.setCurrentVersion(currentVersion);
     //   } else if (envId && !verId) {
-    //     const currentVersion = DeploymentAppStore.versions
+    //     const currentVersion = DeploymentAppStore.editVersions
     //       .find(version => version.id === versionId);
     //     DeploymentAppStore.setCurrentVersion(currentVersion);
     //     DeploymentAppStore.setShowArr([false, true, true, true, false]);
