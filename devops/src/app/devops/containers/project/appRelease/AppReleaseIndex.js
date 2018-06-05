@@ -13,6 +13,7 @@ const EditVersions = asyncRouter(() => import('./editVersions'), () => import('.
 const EnvironmentIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={AppReleaseHome} />
+    <Route exact path={`${match.url}/:key`} component={AppReleaseHome} />
     <Route exact path={`${match.url}/edit/:id`} component={AppCreateDetail} />
     <Route exact path={`${match.url}/add/:appId`} component={AddAppRelease} />
     <Route exact path={`${match.url}/app/:name/edit-version/:id`} component={EditVersions} />

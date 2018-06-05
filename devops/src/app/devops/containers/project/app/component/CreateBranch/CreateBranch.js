@@ -45,6 +45,7 @@ class CreateBranch extends Component {
   onChange = (e) => {
     const { store, appId } = this.props;
     const projectId = this.state.projectId;
+    this.props.form.resetFields();
     this.setState({
       name: e.target.value,
     });
@@ -100,10 +101,17 @@ class CreateBranch extends Component {
     const endWith = /(\/|\.|\.lock)$/;
     const contain = /(\s|~|\^|:|\?|\*|\[|\\|\.\.|@\{|\/{2,}){1}/;
     const single = /^@+$/;
+    const p = /^([1-9]{1,3}\.\d{1,3}\.\d{1,3})$/;
     if (endWith.test(value)) {
       callback('不能以"/"、"."、".lock"结尾');
     } else if (contain.test(value) || single.test(value)) {
       callback("只能包含字母、数字、'——'、'_'");
+    } else if (this.state.name === 'release') {
+      if (p.test(value)) {
+        callback();
+      } else {
+        callback('名称只能包含数字和".",并且以数字开头和结尾');
+      }
     } else {
       callback();
     }
@@ -168,7 +176,7 @@ class CreateBranch extends Component {
                 <Input
                   autoFocus
                   prefix={`${this.state.name}-`}
-                  readOnly={this.state.name === 'release' && !this.state.initValue}
+                  // readOnly={this.state.name === 'release' && !this.state.initValue}
                   maxLength={30}
                 />,
               )}

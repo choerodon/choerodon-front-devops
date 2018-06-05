@@ -182,6 +182,7 @@ class CreateDomain extends Component {
    * @type {Function}
    */
   checkName =_.debounce((rule, value, callback) => {
+    // const p = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
     const { SingleData } = this.state;
     if (SingleData && SingleData.name === value) {
       callback();
@@ -325,7 +326,8 @@ class CreateDomain extends Component {
             >
               {env.length && env.map(v => (
                 <Option value={v.id} key={`${v.id}-env`} disabled={!v.connect}>
-                  {!v.connect && <Tooltip title="未连接"><span className="status-error icon-portable_wifi_off" /></Tooltip>}
+                  {!v.connect && <span className="env-status-error" />}
+                  {v.connect && <span className="env-status-success" />}
                   {v.name}
                 </Option>
               ))}

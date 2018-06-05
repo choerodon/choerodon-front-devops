@@ -69,7 +69,7 @@ class TemplateStore {
     this.selectData = data;
   }
 
-  loadData = (isRefresh = false, orgId, page = this.pageInfo.current, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
+  loadData = (isRefresh = false, orgId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
     searchParam: {},
     param: '',
   }) => {

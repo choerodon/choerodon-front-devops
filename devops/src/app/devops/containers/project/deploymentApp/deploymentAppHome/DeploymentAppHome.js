@@ -175,27 +175,6 @@ class DeploymentAppHome extends Component {
   }
 
   /**
-   * 取消返回到第一步
-   */
-  clearAll = () => {
-    const { DeploymentAppStore } = this.props;
-    DeploymentAppStore.setVersions([]);
-    DeploymentAppStore.setValue(null);
-    DeploymentAppStore.setCurrentInstance([]);
-    this.setState({
-      appId: undefined,
-      app: null,
-      versionId: undefined,
-      versionDto: null,
-      envId: undefined,
-      envDto: null,
-      mode: 'new',
-      instanceId: undefined,
-      current: 1,
-    });
-  };
-
-  /**
    * 取消第一步
    */
   clearStepOne = () => {

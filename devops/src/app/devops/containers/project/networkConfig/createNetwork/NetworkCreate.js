@@ -251,7 +251,7 @@ class NetworkCreate extends Component {
     const { store } = this.props;
     const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     if (!pattern.test(value)) {
-      callback(Choerodon.getMessage('编码只能包含字母,数字,\'.\',"-"', 'Code can contain only letters, digits,\'.\',"-"'));
+      callback('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾');
     } else {
       store.checkDomainName(this.state.projectId, this.state.envId, value)
         .then((data) => {
@@ -267,7 +267,7 @@ class NetworkCreate extends Component {
     }
   };
   checkIP =(rule, value, callback) => {
-    const p = /^(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3})$/;
+    const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
     if (value) {
       if (p.test(value)) {
         callback();
@@ -347,7 +347,8 @@ class NetworkCreate extends Component {
             >
               {env.map(v => (
                 <Option key={v.id} value={v.id} disabled={!v.connect}>
-                  {!v.connect && <span className="status-error icon-portable_wifi_off" />}
+                  {!v.connect && <span className="env-status-error" />}
+                  {v.connect && <span className="env-status-success" />}
                   {v.name}
                 </Option>
               ))}
@@ -536,6 +537,22 @@ class NetworkCreate extends Component {
             }],
           })(
             <Input maxLength={30} label="端口号" />,
+          )}
+        </FormItem>
+        <FormItem
+          className="c7n-create-network-formitem"
+          {...formItemLayout}
+        >
+          {getFieldDecorator('targetPort', {
+            rules: [{
+              required: true,
+              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              // transform: value => value.toString(),
+            }, {
+              // validator: this.checkCode,
+            }],
+          })(
+            <Input maxLength={30} label="目标端口" />,
           )}
         </FormItem>
       </Form>

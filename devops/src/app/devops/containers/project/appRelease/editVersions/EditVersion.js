@@ -88,14 +88,21 @@ class EditVersion extends Component {
    */
   changeTabs = (value) => {
     const { EditVersionStore } = this.props;
+    this.setState({ key: value });
     EditVersionStore
       .loadData({ projectId: this.state.projectId, id: this.state.id, key: value });
   }
+  /**
+   * 返回上一级目录
+   */
   handleBack =() => {
     const menu = this.props.AppState.currentMenuType;
     const { id, name, organizationId } = menu;
-    this.props.history.push(`/devops/app-release?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
+    this.props.history.push(`/devops/app-release/2?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
   }
+  /**
+   * 发布应用版本
+   */
   handleOk = () => {
     const { selectedRows, id } = this.state;
     const { EditVersionStore } = this.props;
@@ -112,11 +119,11 @@ class EditVersion extends Component {
       });
   }
   render() {
-    const { store } = this.props;
     const menu = this.props.AppState.currentMenuType;
+    const { key } = this.state;
     return (
       <div className="c7n-region page-container">
-        <PageHeader title="查看应用版本" backPath={`/devops/app-release?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
+        <PageHeader title="查看应用版本" backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
         <div className="page-content">
           <h2 className="c7n-space-first">查看应用&quot;{this.state.name}&quot;的版本 </h2>
           <p>
@@ -140,13 +147,13 @@ class EditVersion extends Component {
               </div>
             </TabPane>
           </Tabs>
-          {this.state.key === '1' && <React.Fragment>
+          {key === '1' ? <React.Fragment>
             <div className="c7n-appRelease-hr" />
             <Permission service={['devops-service.application-market.updateVersions']}>
               <Button className="release-button-margin" type="primary" funcType="raised" onClick={this.handleOk}>发布</Button>
             </Permission>
             <Button funcType="raised" onClick={this.handleBack}>取消</Button>
-          </React.Fragment>}
+          </React.Fragment> : null}
         </div>
       </div>
     );

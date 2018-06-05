@@ -85,7 +85,7 @@ class AddAppRelease extends Component {
     const { EditReleaseStore } = this.props;
     EditReleaseStore.setSelectData([]);
     this.props.history.push(
-      `/devops/app-release?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
+      `/devops/app-release/2?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
     );
   }
 
@@ -113,7 +113,7 @@ class AddAppRelease extends Component {
     const projectId = AppState.currentMenuType.id;
     const type = AppState.currentMenuType.type;
     this.props.history.push(
-      `/devops/app-release?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
+      `/devops/app-release/2?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
     );
   }
   handleSubmit =(e) => {
@@ -495,7 +495,7 @@ class AddAppRelease extends Component {
     const { appId, mode, current, category, description, contributor } = this.state;
     return (
       <div className="c7n-region page-container">
-        <PageHeader title={'应用发布'} backPath={`/devops/app-release?type=${type}&id=${id}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`} />
+        <PageHeader title={'应用发布'} backPath={`/devops/app-release/2?type=${type}&id=${id}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`} />
         <div className="page-content c7n-deployApp-wrapper" style={{ paddingBottom: '16px' }}>
           <h2 className="c7n-space-first">在项目&quot;{projectName}&quot;中进行应用发布</h2>
           <p>

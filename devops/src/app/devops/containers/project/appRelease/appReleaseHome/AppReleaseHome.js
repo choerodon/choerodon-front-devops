@@ -19,13 +19,12 @@ class AppReleaseHome extends Component {
       openRemove: false,
       show: false,
       projectId: menu.id,
-      upDown: [],
-      key: '1',
+      key: props.match.params.key ? '2' : '1',
     };
   }
   componentDidMount() {
     const { AppReleaseStore } = this.props;
-    AppReleaseStore.loadData({ projectId: this.state.projectId });
+    AppReleaseStore.loadData({ projectId: this.state.projectId, key: this.state.key });
   }
 
   getColumn = () => {
@@ -52,22 +51,21 @@ class AppReleaseHome extends Component {
         <span>{Choerodon.languageChange(`${record.publishLevel}`)}</span>
       ),
     }, {
-      width: '96px',
+      width: '100px',
       key: 'action',
-      className: 'c7n-network-text_top',
       render: record => (
         <div>
           <Permission service={['devops-service.application-market.update']}>
             <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
-              <Button shape="circle" funcType="flat" onClick={this.handleEdit.bind(this, record.id)}>
-                <span className="icon-mode_edit" />
+              <Button shape="circle" onClick={this.handleEdit.bind(this, record.id)}>
+                <Icon type="mode_edit" />
               </Button>
             </Tooltip>
           </Permission>
           <Permission service={['devops-service.application-market.updateVersions']}>
             <Tooltip trigger="hover" placement="bottom" title={<div>版本控制</div>}>
-              <Button shape="circle" funcType="flat" onClick={this.handleEditVersion.bind(this, record)}>
-                <span className="icon-versionline" />
+              <Button shape="circle" onClick={this.handleEditVersion.bind(this, record)}>
+                <Icon type="versionline" />
               </Button>
             </Tooltip>
           </Permission>
@@ -75,20 +73,35 @@ class AppReleaseHome extends Component {
       ),
     }];
   } ;
-
+  /**
+   * 修改基本信息
+   * @param ids
+   */
   handleEdit = (ids) => {
     const { name, id, organizationId } = this.props.AppState.currentMenuType;
     this.props.history.push(`/devops/app-release/edit/${ids}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
   };
+  /**
+   *发布应用
+   * @param record 发布的数据
+   */
   handleCreate = (record) => {
     const { name, id, organizationId } = this.props.AppState.currentMenuType;
     editReleaseStore.setApp(record);
     this.props.history.push(`/devops/app-release/add/${record.id}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
   }
+  /**
+   * 版本控制
+   * @param ids
+   */
   handleEditVersion = (ids) => {
     const { name, id, organizationId } = this.props.AppState.currentMenuType;
     this.props.history.push(`/devops/app-release/app/${ids.name}/edit-version/${ids.id}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
   }
+  /**
+   * 控制显示为项目下的数据
+   * @returns {*}
+   */
   showProjectTable = () => {
     const { AppReleaseStore } = this.props;
     const data = AppReleaseStore.allData;
@@ -118,7 +131,6 @@ class AppReleaseHome extends Component {
     }];
     return (
       <Table
-        className="c7n-table-512"
         loading={AppReleaseStore.loading}
         pagination={AppReleaseStore.pageInfo}
         columns={column}
@@ -128,6 +140,10 @@ class AppReleaseHome extends Component {
       />
     );
   }
+  /**
+   * 切换tabs
+   * @param value
+   */
   handleChangeTabs = (value) => {
     const { AppReleaseStore } = this.props;
     AppReleaseStore.loadData({ page: 0, key: value, projectId: this.state.projectId });
@@ -163,22 +179,16 @@ class AppReleaseHome extends Component {
       param: paras.toString(),
     };
     AppReleaseStore
-      .loadData({ projectId: organizationId, sorter: sort, postData });
+      .loadData({ projectId: organizationId, sorter: sort, postData, key: this.state.key });
   };
   handleRefresh =() => {
     const { AppReleaseStore } = this.props;
-    AppReleaseStore.loadData({ isRefresh: true });
+    AppReleaseStore.loadData({ isRefresh: true, key: this.state.key });
   };
 
   render() {
     const { AppReleaseStore } = this.props;
-    const data = AppReleaseStore.allData || [{
-      name: 'yesy',
-      code: 'yeysu',
-      appVersions: [{ version: 'ttyy' }],
-      publishLevel: '组织',
-      id: 1,
-    }];
+    const data = AppReleaseStore.allData;
     return (
       <div className="c7n-region page-container app-release-wrapper">
         <PageHeader title="应用发布">
@@ -206,7 +216,6 @@ class AppReleaseHome extends Component {
             </TabPane>
             <TabPane tab="已发布应用" key="2">
               <Table
-                className="c7n-table-512"
                 loading={AppReleaseStore.loading}
                 pagination={AppReleaseStore.pageInfo}
                 columns={this.getColumn()}
@@ -217,18 +226,6 @@ class AppReleaseHome extends Component {
             </TabPane>
           </Tabs>
         </div>
-        <Modal
-          visible={this.state.openRemove}
-          title="取消应用发布"
-          footer={[
-            <Button key="back" onClick={this.closeRemove}>取消</Button>,
-            <Button key="submit" type="danger" onClick={this.handleDelete}>
-              确定
-            </Button>,
-          ]}
-        >
-          <p>取消应用发布可能导致某些实例不可用，确定要取消应用发布吗？</p>
-        </Modal>
       </div>
 
     );

@@ -286,7 +286,7 @@ class Editnetwok extends Component {
     const envId = this.state.envId || SingleData.envId;
     const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     if (!pattern.test(value)) {
-      callback('名称只能包含字母、数字、"-"、"."');
+      callback('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾');
     } else if (value !== SingleData.name) {
       store.checkDomainName(this.state.projectId, envId, value)
         .then(() => {
@@ -593,6 +593,22 @@ class Editnetwok extends Component {
             initialValue: SingleData ? SingleData.port : '',
           })(
             <Input maxLength={30} label="端口号" />,
+          )}
+        </FormItem>
+        <FormItem
+          className="c7n-create-network-formitem"
+          {...formItemLayout}
+        >
+          {getFieldDecorator('targetPort', {
+            rules: [{
+              required: true,
+              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              // transform: value => value.toString(),
+            }, {
+              initialValue: SingleData ? SingleData.targetPort : '',
+            }],
+          })(
+            <Input maxLength={30} label="目标端口" />,
           )}
         </FormItem>
       </Form>

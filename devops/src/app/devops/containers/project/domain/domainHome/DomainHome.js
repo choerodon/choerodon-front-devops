@@ -75,13 +75,13 @@ class DomainHome extends Component {
       width: '12%',
       render: (record) => {
         let statusDom = null;
-        switch (record.commandStatus) {
+        switch (record.status) {
           case 'failed':
             statusDom = (<div className="c7n-domain-status c7n-domain-status-failed">
               <div>失败</div>
             </div>);
             break;
-          case 'doing':
+          case 'operating':
             statusDom = (<div className="c7n-domain-status c7n-domain-status-operating">
               <div>处理中</div>
             </div>);
@@ -109,7 +109,7 @@ class DomainHome extends Component {
             break;
           case 'doing':
             statusDom = (<Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
-              <Progress type="loading" width="15px" />
+              <Progress type="loading" width="15px" style={{ marginRight: 5 }} />
             </Tooltip>);
             break;
           default:
@@ -138,8 +138,10 @@ class DomainHome extends Component {
       width: '15%',
       render: record => (
         <React.Fragment>
-          { record.envStatus ? null : <Tooltip title="未连接">
-            <span className="icon-portable_wifi_off status-error" />
+          { record.envStatus ? <Tooltip title="已连接">
+            <span className="env-status-success" />
+          </Tooltip> : <Tooltip title="未连接">
+            <span className="env-status-error" />
           </Tooltip> }
           <MouserOverWrapper text={record.envName || ''} width={80} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
             {record.envName}</MouserOverWrapper>
@@ -183,8 +185,8 @@ class DomainHome extends Component {
       render: (record) => {
         let editDom = null;
         let deletDom = null;
-        switch (record.commandStatus) {
-          case 'doing':
+        switch (record.status) {
+          case 'operating':
             editDom = (<Tooltip trigger="hover" placement="bottom" title={Choerodon.languageChange(`domain_${record.commandType}`)}>
               <span className="icon-mode_edit c7n-app-icon-disabled" />
             </Tooltip>);
