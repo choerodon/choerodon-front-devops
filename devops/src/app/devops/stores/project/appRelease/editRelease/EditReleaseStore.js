@@ -19,7 +19,7 @@ class EditReleaseStore {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
   @observable versionPage = {
-    current: 0, total: 0, pageSize: height <= 900 ? 10 : 15,
+    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
   @observable versionData = [];
   @observable type = [];

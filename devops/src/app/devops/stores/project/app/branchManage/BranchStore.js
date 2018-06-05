@@ -17,8 +17,8 @@ class BranchStore {
   @observable createBranchShow = false;
   @observable confirmShow = false;
   @observable pageInfo = {
-    current: 0,
-    total: 1,
+    current: 1,
+    total: 0,
     pageSize: height <= 900 ? 10 : 15,
   };
   @action setPageInfo(page) {
@@ -83,7 +83,8 @@ class BranchStore {
         }
       });
 
-  loadTagData = (projectId, appId, page = this.pageInfo.current, sizes = this.pageInfo.pageSize) =>
+  loadTagData = (projectId, appId, page = this.pageInfo.current - 1,
+    sizes = this.pageInfo.pageSize) =>
     axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=${sizes}`)
       .then((data) => {
         const res = this.handleProptError(data);

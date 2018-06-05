@@ -64,7 +64,7 @@ export const commonComponent =(storeName) => {
      */
     handleRefresh = () => {
       const store = this.props[storeName];
-      this.loadAllData(true, store.getPageInfo.current - 1);
+      this.loadAllData(true);
     };
 
     /***

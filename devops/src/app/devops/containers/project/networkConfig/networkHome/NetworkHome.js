@@ -160,10 +160,10 @@ class NetworkHome extends Component {
       width: '11.5%',
       render: record => (
         <React.Fragment>
-          { record.envStatus ? <span className="icon-link" /> : <Tooltip title="未连接">
-            <span className="icon-link status-error" />
+          { record.envStatus ? <Tooltip title="已连接"> <span className="env-status-success" /></Tooltip> : <Tooltip title="未连接">
+            <span className="env-status-error" />
           </Tooltip> }
-          <MouserOverWrapper text={record.envName || ''} width={80} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+          <MouserOverWrapper text={record.envName || ''} width={64} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
             {record.envName}</MouserOverWrapper>
         </React.Fragment>
       ),

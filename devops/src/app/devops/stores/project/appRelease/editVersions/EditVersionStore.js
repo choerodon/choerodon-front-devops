@@ -129,58 +129,8 @@ class EditVersionStore {
     this.setPageInfo(page);
   };
 
-  loadApps = projectId =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/listById`)
-      .then((data) => {
-        const res = this.handleProptError(data);
-        if (res) {
-          this.setApps(data);
-        }
-      });
-
-  loadDataById =(projectId, id) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps_market/${id}`).then((data) => {
-      const res = this.handleProptError(data);
-      if (res) {
-        this.setSingleData(data);
-        this.setSelectData(data.appVersions);
-      }
-    });
-
-  checkCode =(projectId, code) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/checkCode?code=${code}`);
-
-  checkName = (projectId, name) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/checkName?name=${name}`)
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
-
   updateData = (projectId, id, data) =>
     axios.put(`/devops/v1/projects/${projectId}/apps_market/${id}/versions`, JSON.stringify(data))
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
-
-  addData = (projectId, data, img) =>
-    axios.post(`/devops/v1/projects/${projectId}/apps_market`, JSON.stringify(data))
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
-  uploadFile = (orgId, backName = 'devops-service', fileName, img) =>
-    axios.post(`/file/v1/organization/${orgId}/file/backetName/${backName}?fileName=${fileName}`, img, {
-      header: { 'Content-Type': 'multipart/form-data' },
-    })
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });;
-
-  deleteData =(projectId, id) =>
-    axios.post(`devops/v1/projects/${projectId}/apps_market/${id}/unpublish`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
