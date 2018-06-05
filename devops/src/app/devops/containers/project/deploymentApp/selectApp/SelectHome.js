@@ -59,7 +59,7 @@ class DeployAppHome extends Component {
     }];
     const column = [{
       key: 'check',
-      width: '3%',
+      width: '50px',
       render: record => (
         this.state.app && record.id === this.state.app.id && <span className="icon-check icon-select" />
       ),
@@ -70,7 +70,6 @@ class DeployAppHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      width: '18%',
       render: (test, record) => (<MouserOverWrapper text={record.name} width={120}>
         {record.name}
       </MouserOverWrapper>),
@@ -80,7 +79,6 @@ class DeployAppHome extends Component {
       key: 'code',
       sorter: true,
       filters: [],
-      width: '18%',
       render: (test, record) => (<MouserOverWrapper text={record.code} width={120}>
         {record.code}
       </MouserOverWrapper>),
@@ -104,7 +102,7 @@ class DeployAppHome extends Component {
     const dataSource = SelectAppStore.allData;
     const column = [{
       key: 'check',
-      width: '3%',
+      width: '50px',
       render: record => (
         this.state.app && record.id === this.state.app.id && <span className="icon-check icon-select" />
       ),
@@ -248,7 +246,7 @@ class DeployAppHome extends Component {
         onCancel={this.props.handleCancel}
       >
         <div className="c7n-region c7n-deployApp-sidebar">
-          <div style={{ paddingBottom: '16px' }}>
+          <div>
             <h2 className="c7n-space-first">项目&quot;{projectName}&quot;部署选择应用</h2>
             <p>
               您可以在此灵活选择来源于本项目及应用市场的应用，且有列表式及卡片式两种展示方式可以切换。
@@ -267,7 +265,7 @@ class DeployAppHome extends Component {
               onChange={this.changeTab}
 
             >
-              <TabPane tab="项目应用" key="1">
+              <TabPane className="c7n-deploy-tabpane" tab="项目应用" key="1">
                 {this.state.view === 'list' && this.getProjectTable()}
                 {this.state.view === 'card' && <React.Fragment>
                   <div className="c7n-store-search">
@@ -282,23 +280,25 @@ class DeployAppHome extends Component {
                       ref={node => this.searchInput = node}
                     />
                   </div>
-                  {dataSource.length >= 1 && dataSource.map(card => (
-                    <div
-                      role="none"
-                      className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && 'c7n-card-active'}`}
-                      onClick={this.hanldeSelectApp.bind(this, card)}
-                    >
-                      {this.state.app && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon-check" /></span> }
-                      {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
-                        : <div className="c7n-store-card-icon" />}
-                      <div className="c7n-store-card-name">
-                        {card.name}
+                  <div>
+                    {dataSource.length >= 1 && dataSource.map(card => (
+                      <div
+                        role="none"
+                        className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && 'c7n-card-active'}`}
+                        onClick={this.hanldeSelectApp.bind(this, card)}
+                      >
+                        {this.state.app && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon-check" /></span> }
+                        {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
+                          : <div className="c7n-store-card-icon" />}
+                        <div className="c7n-store-card-name">
+                          {card.name}
+                        </div>
+                        <div className="c7n-store-card-source">
+                          {card.code}
+                        </div>
                       </div>
-                      <div className="c7n-store-card-source">
-                        {card.code}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                   <div className="c7n-store-pagination">
                     <Pagination
                       total={pageInfo.total}
@@ -312,37 +312,43 @@ class DeployAppHome extends Component {
                 </React.Fragment> }
 
               </TabPane>
-              <TabPane tab="应用市场" key="2">
+              <TabPane className="c7n-deploy-tabpane" tab="应用市场" key="2">
                 {this.state.view === 'list' && this.getMarketTable()}
                 {this.state.view === 'card' && <React.Fragment>
                   <div className="c7n-store-search">
-                    <Input.Search
+                    <Input
                       placeholder="搜索应用"
-                      onSearch={this.handleSearch}
+                      value={this.state.val}
+                      prefix={prefix}
+                      suffix={suffix}
+                      onChange={this.handleSearch}
+                      onPressEnter={this.handleSearch}
                       // eslint-disable-next-line no-return-assign
                       ref={node => this.searchInput = node}
                     />
                   </div>
-                  {dataSource.length >= 1 && dataSource.map(card => (
-                    <div
-                      role="none"
-                      className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && 'c7n-card-active'}`}
-                      onClick={this.hanldeSelectApp.bind(this, card)}
-                    >
-                      {this.state.app && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon-check" /></span> }
-                      {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
-                        : <div className="c7n-store-card-icon" />}
-                      <div className="c7n-store-card-name">
-                        {card.name}
+                  <div>
+                    {dataSource.length >= 1 && dataSource.map(card => (
+                      <div
+                        role="none"
+                        className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && 'c7n-card-active'}`}
+                        onClick={this.hanldeSelectApp.bind(this, card)}
+                      >
+                        {this.state.app && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon-check" /></span> }
+                        {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
+                          : <div className="c7n-store-card-icon" />}
+                        <div className="c7n-store-card-name">
+                          {card.name}
+                        </div>
+                        <div className="c7n-store-card-source">
+                          {card.category}
+                        </div>
+                        <div className="c7n-store-card-des">
+                          {card.description}
+                        </div>
                       </div>
-                      <div className="c7n-store-card-source">
-                        {card.category}
-                      </div>
-                      <div className="c7n-store-card-des">
-                        {card.description}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                   <div className="c7n-store-pagination">
                     <Pagination
                       total={pageInfo.total}
