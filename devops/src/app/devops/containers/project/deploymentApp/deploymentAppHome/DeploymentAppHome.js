@@ -32,6 +32,7 @@ class DeploymentAppHome extends Component {
 
   componentDidMount() {
     const { DeploymentAppStore } = this.props;
+    DeploymentAppStore.setValue(null);
     if (this.state.appId) {
       DeploymentAppStore.loadApps(this.state.appId)
         .then((data) => {
@@ -65,14 +66,20 @@ class DeploymentAppHome extends Component {
    * @param index
    */
   changeStep = (index) => {
+    const { DeploymentAppStore } = this.props;
+    const { appId, versionId, envId, mode } = this.state;
     this.setState({ current: index });
+    if (index === 2 && appId && versionId && envId) {
+      DeploymentAppStore.setValue(null);
+      DeploymentAppStore.loadValue(appId, versionId, envId);
+    }
   };
 
   /**
    * 展开选择应用的弹框
    */
   showSideBar = () => {
-    this.setState({ show: true });
+    this.setState({ show: true, versionId: undefined, versionDto: null });
   };
 
   /**
@@ -150,6 +157,7 @@ class DeploymentAppHome extends Component {
    * @param value
    */
   handleChangeMode = (value) => {
+    const { DeploymentAppStore } = this.props;
     this.setState({ mode: value.target.value });
   };
 
@@ -263,6 +271,7 @@ class DeploymentAppHome extends Component {
             <span className="section-title">选择版本</span>
           </div>
           <Select
+            notFoundContent={'该应用下还未生成版本'}
             value={this.state.versionId ? parseInt(this.state.versionId, 10) : undefined}
             label="应用版本"
             className="section-text-margin"
@@ -319,7 +328,7 @@ class DeploymentAppHome extends Component {
               .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
           >
-            {envs.map(v => (<option value={v.id}>
+            {envs.map(v => (<option value={v.id} disabled={!v.connect}>
               {v.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
               {v.name}
             </option>))}
@@ -331,6 +340,7 @@ class DeploymentAppHome extends Component {
             <span className="section-title">配置信息</span>
           </div>
           {data && (<AceForYaml
+            totalLine={data.totalLine + 1}
             modifyMarkers={this.state.markers}
             value={this.state.value || data.yaml}
             highlightMarkers={data.highlightMarkers}
@@ -382,6 +392,7 @@ class DeploymentAppHome extends Component {
             </RadioGroup>
             {this.state.mode === 'replace' && <Select
               onSelect={this.handleSelectInstance}
+              value={this.state.instanceId}
               label="选择要替换的实例"
               className="deploy-select"
               placeholder="Select a person"
@@ -401,7 +412,7 @@ class DeploymentAppHome extends Component {
             type="primary"
             funcType="raised"
             onClick={this.changeStep.bind(this, 4)}
-            disabled={!this.state.mode}
+            disabled={!(this.state.mode === 'new' || (this.state.mode === 'replace' && this.state.instanceId))}
           >
             下一步
           </Button>
@@ -440,13 +451,14 @@ class DeploymentAppHome extends Component {
           <div>
             <div className="deployApp-title"><span className="icon-jsfiddle" />部署模式：</div>
             <div className="deployApp-text">{this.state.mode === 'new' ? '新建实例' : '替换实例'} {this.state.mode === 'replace' &&
-            <span className="deployApp-value">{this.state.instanceDto.code}</span>}</div>
+            <span className="deployApp-value">({this.state.instanceDto.code})</span>}</div>
           </div>
           <div>
             <div className="deployApp-title"><span className="icon-description" />配置信息：</div>
           </div>
           {data && <div>
             {<AceForYaml
+              totalLine={data.totalLine + 1}
               modifyMarkers={this.state.markers}
               readOnly={this.state.current === 4}
               value={this.state.value || data.yaml}
@@ -458,7 +470,7 @@ class DeploymentAppHome extends Component {
           <Permission service={['devops-service.application-instance.deploy']}>
             <Button type="primary" funcType="raised" onClick={this.handleDeploy}>部署</Button>
           </Permission>
-          <Button funcType="raised" onClick={this.clearAll}>取消</Button>
+          <Button funcType="raised" onClick={this.changeStep.bind(this, 3)}>上一步</Button>
         </section>
       </section>
     );
@@ -522,6 +534,7 @@ class DeploymentAppHome extends Component {
             </div>
           </div>
           {this.state.show && <SelectApp
+            app={this.state.app}
             show={this.state.show}
             handleCancel={this.handleCancel}
             handleOk={this.handleOk}
