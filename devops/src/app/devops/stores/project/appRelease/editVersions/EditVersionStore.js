@@ -6,12 +6,12 @@ import { Observable } from 'rxjs';
 import { List, formJS } from 'immutable';
 
 const height = window.screen.height;
-@store('AppReleaseStore')
-class AppReleaseStore {
-  @observable allData = [];
+@store('EditVersionStore')
+class EditVersionStore {
   @observable isRefresh= false;// 页面的loading
   @observable loading = false; // 打开tab的loading
   @observable singleData = null;
+  @observable selectData = [];
   @observable apps = [];
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
@@ -20,6 +20,7 @@ class AppReleaseStore {
     current: 0, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
   @observable versionData = [];
+  @observable type = [];
 
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
@@ -31,16 +32,6 @@ class AppReleaseStore {
     return this.pageInfo;
   }
 
-  @action setVersionPageInfo(page) {
-    this.pageInfo.current = page.number + 1;
-    this.pageInfo.total = page.totalElements;
-    this.pageInfo.pageSize = page.size;
-  }
-
-  @computed get getVersionPageInfo() {
-    return this.pageInfo;
-  }
-
 
   @computed get getAllData() {
     // window.console.log(this.allData);
@@ -49,6 +40,15 @@ class AppReleaseStore {
 
   @action setAllData(data) {
     this.allData = data;
+    // window.console.log(this.allData);
+  }
+
+  @action setSelectData(data) {
+    this.selectData = data;
+    // window.console.log(this.allData);
+  }
+  @computed get getSelectData() {
+    return this.selectData.slice();
     // window.console.log(this.allData);
   }
 
@@ -90,14 +90,17 @@ class AppReleaseStore {
     return this.singleData;
   }
 
-  loadData = ({ isRefresh = false, projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
-    param: '' }, key = '1' }) => {
+  @action setType(data) {
+    this.type = data;
+  }
+
+  loadData = ({ isRefresh = false, projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {}, param: '' }, key = '1', id }) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
     if (key === '1') {
-      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/list_unpublish?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
+      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps_market/${id}/versions?is_publish=false&page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
         .subscribe((data) => {
           const res = this.handleProptError(data);
           if (res) {
@@ -107,7 +110,7 @@ class AppReleaseStore {
           this.changeIsRefresh(false);
         });
     } else {
-      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps_market/list?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
+      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps_market/${id}/versions?is_publish=true&page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
         .subscribe((data) => {
           const res = this.handleProptError(data);
           if (res) {
@@ -126,33 +129,8 @@ class AppReleaseStore {
     this.setPageInfo(page);
   };
 
-
-  loadAllVersion = ({ isRefresh = false, projectId, appId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
-    param: '',
-  } }) => {
-    if (isRefresh) {
-      this.changeIsRefresh(true);
-    }
-    this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/version/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
-      .subscribe((data) => {
-        const res = this.handleProptError(data);
-        if (res) {
-          this.handleVersionData(data);
-        }
-        this.changeLoading(false);
-        this.changeIsRefresh(false);
-      });
-  };
-  handleVersionData = (data) => {
-    this.setVersionData(data.content);
-    const { number, size, totalElements } = data;
-    const page = { number, size, totalElements };
-    this.setVersionPageInfo(page);
-  };
-
-  loadApps = orgId =>
-    axios.get(`/devops/v1/organizations/${orgId}/app_templates`)
+  loadApps = projectId =>
+    axios.get(`/devops/v1/projects/${projectId}/apps/listById`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -161,10 +139,11 @@ class AppReleaseStore {
       });
 
   loadDataById =(projectId, id) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/${id}`).then((data) => {
+    axios.get(`/devops/v1/projects/${projectId}/apps_market/${id}`).then((data) => {
       const res = this.handleProptError(data);
       if (res) {
         this.setSingleData(data);
+        this.setSelectData(data.appVersions);
       }
     });
 
@@ -178,21 +157,27 @@ class AppReleaseStore {
         return res;
       });
 
-  updateData = (projectId, data) =>
-    axios.put(`/devops/v1/projects/${projectId}/apps`, JSON.stringify(data))
+  updateData = (projectId, id, data) =>
+    axios.put(`/devops/v1/projects/${projectId}/apps_market/${id}/versions`, JSON.stringify(data))
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
 
   addData = (projectId, data, img) =>
-    axios.post(`/devops/v1/projects/${projectId}/apps?appId=${data.appId}&description=${data.description}&category=${data.category}&contributor=${data.contributor}&publishLevel=${data.publishLevel}&appVersions=${data.appVersions}`, img, {
+    axios.post(`/devops/v1/projects/${projectId}/apps_market`, JSON.stringify(data))
+      .then((datas) => {
+        const res = this.handleProptError(datas);
+        return res;
+      });
+  uploadFile = (orgId, backName = 'devops-service', fileName, img) =>
+    axios.post(`/file/v1/organization/${orgId}/file/backetName/${backName}?fileName=${fileName}`, img, {
       header: { 'Content-Type': 'multipart/form-data' },
     })
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
-      });
+      });;
 
   deleteData =(projectId, id) =>
     axios.post(`devops/v1/projects/${projectId}/apps_market/${id}/unpublish`)
@@ -200,6 +185,7 @@ class AppReleaseStore {
         const res = this.handleProptError(datas);
         return res;
       });
+
   handleProptError =(error) => {
     if (error && error.failed) {
       Choerodon.prompt(error.message);
@@ -210,8 +196,8 @@ class AppReleaseStore {
   }
 }
 
-const appReleaseStore = new AppReleaseStore();
-export default appReleaseStore;
+const editVersionStore = new EditVersionStore();
+export default editVersionStore;
 
 // autorun(() => {
 //   window.console.log(templateStore.allData.length);

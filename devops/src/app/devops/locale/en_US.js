@@ -219,6 +219,8 @@ const enUS = {
   // app-release
   'app-release.title': 'Release',
   'app-release.level': 'Level',
+  organization: 'organization',
+  public: 'public',
 
 
 };

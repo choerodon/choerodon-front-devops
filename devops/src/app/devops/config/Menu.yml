@@ -59,6 +59,7 @@
           - 'devops-service.application-market.unpublish'
           - 'devops-service.application-market.update'
           - 'devops-service.application-market.pageListMarketAppsByProjectId'
+          - 'devops-service.application-market.updateVersions'
     - "appstore":
         icon: store_mall_directory
         Routes: /devops/appstore

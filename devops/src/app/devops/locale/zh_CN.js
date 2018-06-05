@@ -255,6 +255,8 @@ const zhCN = {
   // app-release
   'app-release.title': '应用发布',
   'app-release.level': '发布层级',
+  organization: '本组织',
+  public: '全平台',
 
 
 };

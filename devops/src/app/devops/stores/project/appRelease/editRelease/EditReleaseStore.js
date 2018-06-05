@@ -13,6 +13,8 @@ class EditReleaseStore {
   @observable singleData = null;
   @observable selectData = [];
   @observable apps = [];
+  @observable app = null;
+  @observable show = false;
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
@@ -22,16 +24,34 @@ class EditReleaseStore {
   @observable versionData = [];
   @observable type = [];
 
+  @observable selectPageInfo = {
+    current: 1, pageSize: 10, total: 0,
+  }
+
+  @action setSelectPageInfo(data) {
+    this.selectPageInfo = data;
+  }
+
   @action setVersionPageInfo(page) {
+    this.versionPage.current = page.number + 1;
+    this.versionPage.total = page.totalElements;
+    this.versionPage.pageSize = page.size;
+  }
+
+  @computed get getVersionPageInfo() {
+    return this.versionPage;
+  }
+
+  @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
     this.pageInfo.total = page.totalElements;
     this.pageInfo.pageSize = page.size;
   }
 
-  @computed get getVersionPageInfo() {
+
+  @computed get getPageInfo() {
     return this.pageInfo;
   }
-
 
   @computed get getAllData() {
     // window.console.log(this.allData);
@@ -45,6 +65,7 @@ class EditReleaseStore {
 
   @action setSelectData(data) {
     this.selectData = data;
+    this.setSelectPageInfo({ pageSize: 10, total: data.length, current: 0 });
     // window.console.log(this.allData);
   }
   @computed get getSelectData() {
@@ -93,23 +114,66 @@ class EditReleaseStore {
   @action setType(data) {
     this.type = data;
   }
+  @action changeShow(flag) {
+    this.show = flag;
+  }
+  @action setApp(data) {
+    this.app = data;
+  }
 
-  loadAllVersion = (isRefresh = false, projectId, appId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
+  loadApps = ({ isRefresh = false, projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
     param: '',
-  }) => {
+  } }) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/version/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
+    return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/list_unpublish?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
       .subscribe((data) => {
         const res = this.handleProptError(data);
         if (res) {
-          this.handleVersionData(data);
+          this.handleData(data);
         }
         this.changeLoading(false);
         this.changeIsRefresh(false);
       });
+  };
+
+  handleData =(data) => {
+    this.setApps(data.content);
+    const { number, size, totalElements } = data;
+    const page = { number, size, totalElements };
+    this.setPageInfo(page);
+  };
+
+  loadAllVersion = ({ isRefresh = false, projectId, appId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
+    param: '',
+  }, key = '1' }) => {
+    if (isRefresh) {
+      this.changeIsRefresh(true);
+    }
+    this.changeLoading(true);
+    if (key === '1') {
+      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/version/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
+        .subscribe((data) => {
+          const res = this.handleProptError(data);
+          if (res) {
+            this.handleVersionData(data);
+          }
+          this.changeLoading(false);
+          this.changeIsRefresh(false);
+        });
+    } else {
+      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/version/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
+        .subscribe((data) => {
+          const res = this.handleProptError(data);
+          if (res) {
+            this.handleVersionData(data);
+          }
+          this.changeLoading(false);
+          this.changeIsRefresh(false);
+        });
+    }
   };
   handleVersionData = (data) => {
     this.setVersionData(data.content);
@@ -117,15 +181,6 @@ class EditReleaseStore {
     const page = { number, size, totalElements };
     this.setVersionPageInfo(page);
   };
-
-  loadApps = projectId =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/listById`)
-      .then((data) => {
-        const res = this.handleProptError(data);
-        if (res) {
-          this.setApps(data);
-        }
-      });
 
   loadDataById =(projectId, id) =>
     axios.get(`/devops/v1/projects/${projectId}/apps_market/${id}`).then((data) => {
@@ -174,6 +229,15 @@ class EditReleaseStore {
         const res = this.handleProptError(datas);
         return res;
       });
+  loadApp = (projectId, id) => {
+    axios.get(`/devops/v1/projects/${projectId}/apps/${id}`)
+      .then((data) => {
+        const res = this.handleProptError(data);
+        if (res) {
+          this.setApp(data);
+        }
+      });
+  }
 
   handleProptError =(error) => {
     if (error && error.failed) {

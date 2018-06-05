@@ -11,11 +11,11 @@ export const commonComponent =(storeName) => {
     /***
      * 加载table数据
      */
-    loadAllData = (isRefresh = false, page = 0) => {
+    loadAllData = (isRefresh = false) => {
       const store = this.props[storeName];
       const menu = this.props.AppState.currentMenuType;
       const organizationId = menu.id;
-      store.loadData(isRefresh,organizationId, page)};
+      store.loadData(isRefresh,organizationId)};
 
     /**
      * 打开删除数据模态框
