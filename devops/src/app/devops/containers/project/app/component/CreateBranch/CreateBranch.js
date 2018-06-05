@@ -45,6 +45,7 @@ class CreateBranch extends Component {
   onChange = (e) => {
     const { store, appId } = this.props;
     const projectId = this.state.projectId;
+    this.props.form.resetFields();
     this.setState({
       name: e.target.value,
     });
