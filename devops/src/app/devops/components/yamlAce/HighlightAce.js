@@ -125,7 +125,7 @@ class HighlightAce extends Component {
   }
 
   render() {
-    const { value, width, options, className, height } = this.props;
+    const { value, width, options, className, totalLine } = this.props;
     return (
       <ReactAce
         className={className}
@@ -133,7 +133,7 @@ class HighlightAce extends Component {
         showGutter={false}
         setOptions={options}
         onChange={this.onChange}
-        style={{ height: height || '500px', width }}
+        style={{ height: totalLine ? `${totalLine * 16}px` : '500px', width }}
         ref={(instance) => { this.ace = instance; }} // Let's put things into scope
       />
     );

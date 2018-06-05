@@ -38,9 +38,11 @@ class DeployAppHome extends Component {
 
   componentDidMount() {
     SelectAppStore.loadData({ projectId: this.state.projectId });
+    this.handleSelectData();
     // 初始化页面，获取应用信息
     // DeploymentAppStore.loadInitData(this.state.appId, this.state.verId, this.state.envId);
   }
+
   onPageChange =(page, size) => {
     const key = this.state.activeTab;
     if (key === '1') {
@@ -137,6 +139,12 @@ class DeployAppHome extends Component {
       dataSource={dataSource}
       pagination={SelectAppStore.pageInfo}
     />);
+  };
+
+  handleSelectData =() => {
+    if (this.props.app) {
+      this.setState({ app: this.props.app });
+    }
   };
 
   changeView =(view) => {

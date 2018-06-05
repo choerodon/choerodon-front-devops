@@ -3,8 +3,6 @@ import AppState from 'AppState';
 import axios from 'Axios';
 import store from 'Store';
 
-const beautify = require('json-beautify');
-
 @store('DeploymentAppStore')
 class DeploymentAppStore {
   @observable apps = [];
@@ -17,81 +15,6 @@ class DeploymentAppStore {
   @observable currentMode = 'new';
   @observable instances = [];
   @observable currentInstance = {};
-  @observable showArr = [
-    true,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ];
-  @observable loadingArr = [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ];
-
-  loadInitData = (appId, verId, envId) => {
-    this.setCurrentApp({});
-    this.setCurrentVersion({});
-    this.setCurrentEnv({});
-    this.setValue([]);
-    this.setCurrentMode('new');
-    this.setShowArr([true, false, false, false, false, false]);
-    if (!appId && !verId && !envId) {
-      this.loadApps().then((res) => {
-        const response = this.handleProptError(res);
-        if (response) {
-          this.setApps(res || []);
-          this.setCurrentApp({});
-          this.setShowArr([true, false, false, false, false, false]);
-          this.setLoadingArr([false, false, false, false, false, false]);
-        }
-      });
-    } else if (appId && verId && envId) {
-      this.setShowArr([true, true, true, true, false, false]);
-      this.setLoadingArr([true, true, true, true, false, false]);
-      axios
-        .all([
-          this.loadApps(),
-          this.loadVersion(appId),
-          this.loadEnv(),
-          this.loadValue(appId, verId, envId),
-        ])
-        .then(
-          axios.spread((apps, versions, envs, value) => {
-            if (!(apps.failed && versions.failed && envs.failed && value.failed)) {
-              this.setApps(apps || []);
-              this.setVersions(versions);
-              this.setEnvs(envs);
-              this.setValue(value);
-              this.setLoadingArr([false, false, false, false, false, false]);
-              this.setShowArr([true, true, true, true, true, true]);
-            }
-          }),
-        );
-    } else if (appId && envId && !verId) {
-      this.setShowArr([true, true, false, false, false]);
-      this.setLoadingArr([true, true, false, false, false]);
-      axios
-        .all([
-          this.loadApps(),
-          this.loadVersion(appId),
-        ])
-        .then(
-          axios.spread((apps, versions) => {
-            if (!(apps.failed && versions.failed)) {
-              this.setApps(apps || []);
-              this.setVersions(versions);
-              this.setLoadingArr([false, false, false, false, false]);
-            }
-          }),
-        );
-    }
-  };
 
   loadApps(id, projectId = AppState.currentMenuType.id) {
     return axios.get(`/devops/v1/projects/${projectId}/apps/${id}`).then((data) => {
