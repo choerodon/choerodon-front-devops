@@ -1,3 +1,26 @@
+.app-release-wrapper {
+  .c7n-app-release-square {
+    background-color: rgba(0, 0, 0, 0.08);
+    display: inline-block;
+    border-radius: 100px;
+    padding: 0 12px;
+    margin: 6px 5px;
+    line-height: 20px;
+    font-size: 10px;
+    width: 115px;
+  }
+
+  .c7n-network-change {
+    font-size: 24px;
+    color: #3f51b5;
+    float: right;
+  }
+}
+
+.c7n-table-512 {
+  width: 512px;
+}
+
 .c7n-deployApp-wrapper {
   background-color: rgba(0, 0, 0, 0.04);
 
@@ -18,8 +41,50 @@
       text-align: justify;
     }
 
-    .deployApp-section {
+    .c7n-appRelease-img-wrap {
+      margin-left: 216px;
+    }
+
+    .c7n-appRelease-img-title {
+      display: block;
+      color: rgba(0, 0, 0, 0.54);
+      font-size: 13px;
+      padding-left: 14px;
+      padding-top: 3px;
+    }
+
+    .c7n-appRelease-img-hover {
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      background-image: url(../../../../devops/assets/images/app.png);
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      -moz-background-size: 100% 100%;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.288);
+      }
+
+      .c7n-appRelease-img-child {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.288);
+        padding-top: 20px;
+        line-height: 53px;
+        text-align: center;
+      }
+
+      span {
+        font-size: 30px;
+        color: white;
+      }
+    }
+
+    .deployAddApp-section {
       margin: 32px 0;
+      width: 512px;
 
       a {
         margin-left: auto;
@@ -114,6 +179,12 @@
   border-radius: 8px;
   display: inline-block;
   background-color: #d50000;
+  margin-right: 5px;
+}
+
+.release-icon-error {
+  color: #f44336;
+  font-size: 16px;
   margin-right: 5px;
 }
 

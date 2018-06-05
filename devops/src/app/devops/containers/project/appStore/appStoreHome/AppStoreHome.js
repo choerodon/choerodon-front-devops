@@ -166,13 +166,13 @@ class AppStoreHome extends Component {
       >
         {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
           : <div className="c7n-store-card-icon" />}
-        <div className="c7n-store-card-name">
+        <div title={card.name} className="c7n-store-card-name">
           {card.name}
         </div>
         <div className="c7n-store-card-source">
           {card.category}
         </div>
-        <div className="c7n-store-card-des">
+        <div title={card.description} className="c7n-store-card-des">
           {card.description}
         </div>
       </div>)) : (<span className="c7n-none-des">暂无已发布应用</span>);

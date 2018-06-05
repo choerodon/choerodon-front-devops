@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio, Tabs } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
 import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
-// import './CreateDomain.scss';
+import './../AppRelease.scss';
 
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
@@ -67,7 +66,6 @@ class VersionTable extends Component {
       dataIndex: 'version',
     }, {
       title: '生成时间',
-      // dataIndex: 'creationDate',
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }];
     const rowSelection = {
@@ -77,6 +75,7 @@ class VersionTable extends Component {
       },
     };
     return (<Table
+      className="c7n-table-512"
       loading={store.loading}
       pagination={store.versionPage}
       rowSelection={rowSelection}
@@ -111,7 +110,7 @@ class VersionTable extends Component {
   render() {
     const { store } = this.props;
     const menu = this.props.AppState.currentMenuType;
-    const content = '您可以在此查看未发布及已发布的版本，且可以发布未发布的版本。';
+    const content = '您可以在此勾选并添加需要发布的版本。';
     const contentDom = (<div className="c7n-region version-wrapper">
       <h2 className="c7n-space-first">添加应用&quot;{store.app && store.app.name}&quot;发布的版本</h2>
       <p>

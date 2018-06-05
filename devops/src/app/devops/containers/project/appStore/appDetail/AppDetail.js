@@ -117,7 +117,7 @@ class AppDetail extends Component {
     const imgDom = app.imgUrl ? <div className="c7n-store-img" style={{ backgroundImage: `url(${app.imgUrl}` }} /> : <div className="c7n-store-img" />;
     return (
       <div className="c7n-region page-container">
-        <PageHeader title={app.name} backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+        <PageHeader title="应用详情" backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <Button
             funcType="flat"
             className="leftBtn"

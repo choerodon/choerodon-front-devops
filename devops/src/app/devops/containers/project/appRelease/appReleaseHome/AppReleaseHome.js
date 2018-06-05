@@ -4,12 +4,8 @@ import { withRouter } from 'react-router-dom';
 import { Button, Table, Popover, Modal, Tabs, Tooltip, Icon } from 'choerodon-ui';
 import PageHeader from 'PageHeader';
 import Permission from 'PerComponent';
-import Remove from 'Remove';
-import _ from 'lodash';
-import { commonComponent } from '../../../../components/commonFunction';
 import '../../../main.scss';
-import './AppRelease.scss';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import '../AppRelease.scss';
 import editReleaseStore from '../../../../stores/project/appRelease/editRelease';
 
 const TabPane = Tabs.TabPane;
@@ -36,24 +32,19 @@ class AppReleaseHome extends Component {
     const { type, id: orgId } = this.props.AppState.currentMenuType;
     const { upDown } = this.state;
     return [{
-      width: '25%',
       title: Choerodon.languageChange('app.name'),
       dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
     }, {
-      width: '30%',
       title: Choerodon.languageChange('app.code'),
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
     }, {
-      // width: '410px',
-      width: '25%',
       title: '发布范围',
-      // dataIndex: 'publishLevel',
       key: 'publishLevel',
       sorter: true,
       filters: [],
@@ -61,7 +52,7 @@ class AppReleaseHome extends Component {
         <span>{Choerodon.languageChange(`${record.publishLevel}`)}</span>
       ),
     }, {
-      width: '98px',
+      width: '96px',
       key: 'action',
       className: 'c7n-network-text_top',
       render: record => (
@@ -84,24 +75,6 @@ class AppReleaseHome extends Component {
       ),
     }];
   } ;
-  /**
-   * 获取屏幕的高度
-   * @returns {number}
-   */
-  getHeight = () => {
-    const screenHeight = window.screen.height;
-    let height = 310;
-    if (screenHeight <= 800) {
-      height = 310;
-    } else if (screenHeight > 800 && screenHeight <= 900) {
-      height = 450;
-    } else if (screenHeight > 900 && screenHeight <= 1050) {
-      height = 600;
-    } else {
-      height = 630;
-    }
-    return height;
-  };
 
   handleEdit = (ids) => {
     const { name, id, organizationId } = this.props.AppState.currentMenuType;
@@ -125,22 +98,14 @@ class AppReleaseHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      width: '45%',
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={120}>
-        {record.name}
-      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('app.code'),
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
-      width: '45%',
-      render: (test, record) => (<MouserOverWrapper text={record.code} width={120}>
-        {record.code}
-      </MouserOverWrapper>),
     }, {
-      width: '46px',
+      width: '40px',
       key: 'action',
       render: (test, record) => (
         <div>
@@ -152,19 +117,15 @@ class AppReleaseHome extends Component {
         </div>),
     }];
     return (
-      <div style={{ width: 512 }}>
-        <Table
-          // eslint-disable-next-line
-          scroll={{ y: this.getHeight() }}
-          // filters={['appCode', 'appName', 'version']}
-          loading={AppReleaseStore.loading}
-          pagination={AppReleaseStore.pageInfo}
-          columns={column}
-          dataSource={data}
-          rowKey={record => record.id}
-          onChange={this.tableChange}
-        />
-      </div>
+      <Table
+        className="c7n-table-512"
+        loading={AppReleaseStore.loading}
+        pagination={AppReleaseStore.pageInfo}
+        columns={column}
+        dataSource={data}
+        rowKey={record => record.id}
+        onChange={this.tableChange}
+      />
     );
   }
   handleChangeTabs = (value) => {
@@ -222,11 +183,9 @@ class AppReleaseHome extends Component {
       <div className="c7n-region page-container app-release-wrapper">
         <PageHeader title="应用发布">
           <Button
-            className="header-btn headRightBtn leftBtn2"
-            ghost
             onClick={this.handleRefresh}
           >
-            <span className="icon-refresh" />
+            <span className="icon-refresh page-head-icon" />
             <span className="icon-space">刷新</span>
           </Button>
         </PageHeader>
@@ -246,19 +205,15 @@ class AppReleaseHome extends Component {
               {this.showProjectTable()}
             </TabPane>
             <TabPane tab="已发布应用" key="2">
-              <div style={{ width: 512 }}>
-                <Table
-                  // eslint-disable-next-line
-                  scroll={{ y: this.getHeight() }}
-                  // filters={['appCode', 'appName', 'version']}
-                  loading={AppReleaseStore.loading}
-                  pagination={AppReleaseStore.pageInfo}
-                  columns={this.getColumn()}
-                  dataSource={data}
-                  rowKey={record => record.id}
-                  onChange={this.tableChange}
-                />
-              </div>
+              <Table
+                className="c7n-table-512"
+                loading={AppReleaseStore.loading}
+                pagination={AppReleaseStore.pageInfo}
+                columns={this.getColumn()}
+                dataSource={data}
+                rowKey={record => record.id}
+                onChange={this.tableChange}
+              />
             </TabPane>
           </Tabs>
         </div>
