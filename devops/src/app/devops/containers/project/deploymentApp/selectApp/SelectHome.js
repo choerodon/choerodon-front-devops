@@ -68,6 +68,7 @@ class DeployAppHome extends Component {
       filters: [],
     }];
     return (<Table
+      rowClassName={'col-check'}
       onRow={(record) => {
         const a = record;
         return {
@@ -118,6 +119,7 @@ class DeployAppHome extends Component {
           onClick: this.hanldeSelectApp.bind(this, record),
         };
       }}
+      rowClassName={'col-check'}
       onChange={this.tableChange}
       columns={column}
       rowKey={record => record.id}
@@ -218,12 +220,12 @@ class DeployAppHome extends Component {
   changeTab =(key) => {
     if (key === '1') {
       SelectAppStore.loadData({
-        projectId: this.state.projectId });
+        projectId: this.state.projectId, page: 0, size: 10 });
     } else {
       SelectAppStore.loadApps({
-        projectId: this.state.projectId });
+        projectId: this.state.projectId, page: 0, size: 10 });
     }
-    this.setState({ activeTab: key });
+    this.setState({ activeTab: key, page: 0, size: 10 });
   }
   /**
    * 确定选择数据

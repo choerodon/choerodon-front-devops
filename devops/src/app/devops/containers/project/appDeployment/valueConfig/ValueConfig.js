@@ -97,7 +97,7 @@ class ValueConfig extends Component {
         <div className="c7n-body-section c7n-border-done">
           <div>
             {data && <Ace
-              totalLine={data.totalLine + 1}
+              totalLine={data.totalLine}
               value={data.yaml}
               highlightMarkers={data.highlightMarkers}
               onChange={this.onChange}

@@ -176,7 +176,6 @@ class CreateBranch extends Component {
                 <Input
                   autoFocus
                   prefix={`${this.state.name}-`}
-                  // readOnly={this.state.name === 'release' && !this.state.initValue}
                   maxLength={30}
                 />,
               )}

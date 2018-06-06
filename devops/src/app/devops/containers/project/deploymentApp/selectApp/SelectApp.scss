@@ -113,9 +113,9 @@
     .span-icon-check {
       position: absolute;
       font-size: 30px;
-      left: 92%;
+      left: 220px;
       float: left;
-      margin-top: -12%;
+      margin-top: -30px;
       background-color: #3f51b5;
       color: white;
       width: 30px;
@@ -127,7 +127,7 @@
   }
 
   .c7n-card-active {
-    border: 2px solid #3f51b5;
+    outline: 2px solid #3f51b5;
     position: relative;
   }
 
@@ -148,5 +148,9 @@
 
   .c7n-store-pagination {
     float: right;
+  }
+
+  .col-check {
+    height: 32px;
   }
 }

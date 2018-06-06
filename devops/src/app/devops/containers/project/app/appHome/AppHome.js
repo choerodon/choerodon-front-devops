@@ -76,7 +76,6 @@ class AppHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      width: '18%',
       render: (test, record) => (<MouserOverWrapper text={record.name} width={120}>
         {record.name}
       </MouserOverWrapper>),
@@ -86,13 +85,10 @@ class AppHome extends Component {
       key: 'code',
       sorter: true,
       filters: [],
-      width: '18%',
       render: (test, record) => (<MouserOverWrapper text={record.code} width={120}>
         {record.code}
       </MouserOverWrapper>),
     }, {
-      // width: '55%',
-      width: '40%',
       title: Choerodon.languageChange('app.url'),
       dataIndex: 'repoUrl',
       key: 'repoUrl',
@@ -103,9 +99,6 @@ class AppHome extends Component {
       title: Choerodon.languageChange('app.active'),
       dataIndex: 'active',
       key: 'active',
-      width: '10%',
-      // width: '10%',
-      // sorter: true,
       filters: [{
         text: '停用',
         value: 0,
@@ -374,6 +367,7 @@ class AppHome extends Component {
             }],
           })(
             <Input
+              autoFocus
               maxLength={30}
               label={Choerodon.languageChange('app.code')}
               size="default"
@@ -454,7 +448,7 @@ class AppHome extends Component {
     </div>);
     const contentDom = (
       <Table
-        scroll={{ y: this.getHeight() }}
+        filterBarPlaceholder={'过滤表'}
         pagination={AppStore.getPageInfo}
         loading={AppStore.loading}
         columns={this.getColumn()}

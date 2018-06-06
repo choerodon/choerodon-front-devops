@@ -29,7 +29,6 @@ class AppReleaseHome extends Component {
 
   getColumn = () => {
     const { type, id: orgId } = this.props.AppState.currentMenuType;
-    const { upDown } = this.state;
     return [{
       title: Choerodon.languageChange('app.name'),
       dataIndex: 'name',
@@ -46,7 +45,13 @@ class AppReleaseHome extends Component {
       title: '发布范围',
       key: 'publishLevel',
       sorter: true,
-      filters: [],
+      filters: [{
+        text: '全平台',
+        value: 2,
+      }, {
+        text: '本组织',
+        value: 1,
+      }],
       render: record => (
         <span>{Choerodon.languageChange(`${record.publishLevel}`)}</span>
       ),
@@ -131,6 +136,7 @@ class AppReleaseHome extends Component {
     }];
     return (
       <Table
+        filterBarPlaceholder={'过滤表'}
         loading={AppReleaseStore.loading}
         pagination={AppReleaseStore.pageInfo}
         columns={column}
@@ -146,7 +152,7 @@ class AppReleaseHome extends Component {
    */
   handleChangeTabs = (value) => {
     const { AppReleaseStore } = this.props;
-    AppReleaseStore.loadData({ page: 0, key: value, projectId: this.state.projectId });
+    AppReleaseStore.loadData({ page: 0, key: value, projectId: this.state.projectId, size: 10 });
     this.setState({ key: value });
   }
 
@@ -183,7 +189,11 @@ class AppReleaseHome extends Component {
   };
   handleRefresh =() => {
     const { AppReleaseStore } = this.props;
-    AppReleaseStore.loadData({ isRefresh: true, key: this.state.key });
+    AppReleaseStore.loadData({
+      projectId: this.state.projectId,
+      isRefresh: true,
+      key: this.state.key,
+    });
   };
 
   render() {
@@ -216,6 +226,7 @@ class AppReleaseHome extends Component {
             </TabPane>
             <TabPane tab="已发布应用" key="2">
               <Table
+                filterBarPlaceholder={'过滤表'}
                 loading={AppReleaseStore.loading}
                 pagination={AppReleaseStore.pageInfo}
                 columns={this.getColumn()}

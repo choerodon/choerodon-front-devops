@@ -103,7 +103,6 @@ class NetworkHome extends Component {
     const columns = [{
       title: '网络状态',
       key: 'status',
-      width: '9%',
       render: (record) => {
         let statusDom = null;
         switch (record.status) {
@@ -127,7 +126,6 @@ class NetworkHome extends Component {
     }, {
       title: '网络名称',
       key: 'name',
-      width: '14.5%',
       sorter: true,
       filters: [],
       render: (record) => {
@@ -135,7 +133,7 @@ class NetworkHome extends Component {
         switch (record.commandStatus) {
           case 'failed':
             statusDom = (<Tooltip title={record.error}>
-              <span className="icon-error c7n-status-error c7n-network-icon" />
+              <span className="icon-error c7n-status-failed c7n-network-icon" />
             </Tooltip>);
             break;
           case 'doing':
@@ -157,7 +155,6 @@ class NetworkHome extends Component {
       key: 'envName',
       sorter: true,
       filters: [],
-      width: '11.5%',
       render: record => (
         <React.Fragment>
           { record.envStatus ? <Tooltip title="已连接"> <span className="env-status-success" /></Tooltip> : <Tooltip title="未连接">
@@ -170,14 +167,12 @@ class NetworkHome extends Component {
     }, {
       title: '外部IP',
       key: 'ip',
-      width: '8%',
       filters: [],
       render: record => (
         <MouserOverWrapper text={record.externalIp || ''} width={50}>
           {record.externalIp}</MouserOverWrapper>
       ),
     }, {
-      width: '9%',
       title: '端口',
       // className: 'c7n-network-text_top',
       key: 'port',
@@ -188,7 +183,6 @@ class NetworkHome extends Component {
           {record.port}</MouserOverWrapper>
       ),
     }, {
-      width: '13%',
       title: '应用',
       key: 'appName',
       filters: [],
@@ -202,7 +196,6 @@ class NetworkHome extends Component {
         </React.Fragment>
       ),
     }, {
-      width: '9%',
       title: '版本',
       className: 'c7n-network-col',
       key: 'version',
@@ -341,7 +334,7 @@ class NetworkHome extends Component {
               </a>
             </p>
             <Table
-              scroll={{ y: this.getHeight() }}
+              filterBarPlaceholder={'过滤表'}
               loading={NetworkConfigStore.loading}
               pagination={NetworkConfigStore.getPageInfo}
               columns={columns}
@@ -366,7 +359,7 @@ class NetworkHome extends Component {
         /> }
         <Modal
           visible={this.state.openRemove}
-          title="删除网路"
+          title="删除网络"
           footer={[
             <Button key="back" onClick={this.closeRemove}>取消</Button>,
             <Button key="submit" type="danger" onClick={this.handleDelete}>

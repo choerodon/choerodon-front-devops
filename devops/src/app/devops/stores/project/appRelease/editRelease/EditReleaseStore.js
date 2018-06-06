@@ -183,7 +183,7 @@ class EditReleaseStore {
   };
 
   loadDataById =(projectId, id) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps_market/${id}`).then((data) => {
+    axios.get(`/devops/v1/projects/${projectId}/apps_market/${id}/detail`).then((data) => {
       const res = this.handleProptError(data);
       if (res) {
         this.setSingleData(data);

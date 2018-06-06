@@ -88,8 +88,9 @@ class NetworkCreate extends Component {
           externalIp,
           name,
           port,
+          targetPort,
         } = data;
-        const postData = { envId, appId, externalIp, port, name, appInstance };
+        const postData = { envId, appId, externalIp, port, name, appInstance, targetPort };
         this.setState({ submitting: true });
         store.addData(projectId, postData)
           .then((res) => {
@@ -340,7 +341,7 @@ class NetworkCreate extends Component {
               optionFilterProp="children"
               // onChange={handleChange}
               onSelect={this.selectEnv}
-              filterOption={(input, option) => option.props.children[1]
+              filterOption={(input, option) => option.props.children[2]
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
 

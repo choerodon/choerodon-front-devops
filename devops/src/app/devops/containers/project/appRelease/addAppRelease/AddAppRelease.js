@@ -237,6 +237,8 @@ class AddAppRelease extends Component {
         <section className="deployAddApp-section">
           <div>
             <Table
+              rowClassName={'col-check'}
+              filterBarPlaceholder={'过滤表'}
               className="c7n-table-512"
               onRow={(record) => {
                 const { isClick } = this.state;
@@ -328,14 +330,16 @@ class AddAppRelease extends Component {
         </p>
         <section className="deployAddApp-section">
           <div className="section-text-margin">
-            <RadioGroup onChange={this.handleChangeMode} value={this.state.mode} label={<span className="deploy-text">选择发布层次</span>}>
+            <RadioGroup onChange={this.handleChangeMode} value={this.state.mode} label={<span className="deploy-text">选择发布范围</span>}>
               <Radio style={radioStyle} value={'organization'}>本组织</Radio>
               <Radio style={radioStyle} value={'public'}>全平台
-                <span className="icon-error section-instance-icon" />
-                <span className="deploy-tip-text">请注意：发布后不可修改发布范围。</span>
               </Radio>
             </RadioGroup>
           </div>
+          <p style={{ marginLeft: 30, marginTop: 24 }}>
+            <span className="icon-error release-icon-error" />
+            <span className="deploy-tip-text">请注意：发布后不可修改发布范围。</span>
+          </p>
         </section>
         <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 4)}>下一步</Button>

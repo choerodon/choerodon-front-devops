@@ -117,8 +117,9 @@ class Editnetwok extends Component {
           externalIp,
           name,
           port,
+          targetPort,
         } = data;
-        const postData = { envId, appId, externalIp, port, name, appInstance };
+        const postData = { envId, appId, externalIp, port, name, appInstance, targetPort };
         this.setState({ submitting: true });
         store.updateData(projectId, id, postData)
           .then((datasss) => {
@@ -603,12 +604,11 @@ class Editnetwok extends Component {
             rules: [{
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              // transform: value => value.toString(),
-            }, {
-              initialValue: SingleData ? SingleData.targetPort : '',
+              transform: value => value.toString(),
             }],
+            initialValue: SingleData ? SingleData.targetPort : '',
           })(
-            <Input maxLength={30} label="目标端口" />,
+            <Input maxLength={30} label="端口号" />,
           )}
         </FormItem>
       </Form>

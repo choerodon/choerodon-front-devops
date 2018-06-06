@@ -322,7 +322,7 @@ class CreateDomain extends Component {
               optionFilterProp="children"
               // onChange={handleChange}
               filterOption={(input, option) =>
-                option.props.children[1].toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                option.props.children[2].toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
               {env.length && env.map(v => (
                 <Option value={v.id} key={`${v.id}-env`} disabled={!v.connect}>
