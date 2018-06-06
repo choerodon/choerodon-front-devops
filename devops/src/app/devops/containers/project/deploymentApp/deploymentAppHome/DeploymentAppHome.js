@@ -195,11 +195,11 @@ class DeploymentAppHome extends Component {
     const { DeploymentAppStore } = this.props;
     const value = this.state.value || DeploymentAppStore.value.yaml;
     const applicationDeployDTO = {
-      appId: this.state.appId || DeploymentAppStore.currentApp.id,
-      appVerisonId: this.state.versionId || DeploymentAppStore.currentVersion.id,
-      environmentId: this.state.envId || DeploymentAppStore.currentEnv.id,
+      appId: this.state.appId,
+      appVerisonId: this.state.versionId,
+      environmentId: this.state.envId,
       values: value,
-      type: DeploymentAppStore.currentMode === 'new' ? 'create' : 'update',
+      type: this.state.mode === 'new' ? 'create' : 'update',
       appInstanceId: this.state.mode === 'new' ?
         null : this.state.instanceId,
     };
