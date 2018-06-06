@@ -319,7 +319,7 @@ class DeploymentAppHome extends Component {
             <span className="section-title">配置信息</span>
           </div>
           {data && (<AceForYaml
-            totalLine={data.totalLine + 1}
+            totalLine={data.totalLine}
             modifyMarkers={this.state.markers}
             value={this.state.value || data.yaml}
             highlightMarkers={data.highlightMarkers}

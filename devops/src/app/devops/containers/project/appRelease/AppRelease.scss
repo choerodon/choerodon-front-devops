@@ -144,6 +144,7 @@
 
     .deployApp-review {
       .deployApp-title {
+        width: 80px;
         font-size: 16px;
         color: #000;
         line-height: 20px;
@@ -210,4 +211,14 @@
 .deploy-select {
   width: 482px;
   display: block;
+}
+
+.icon-select {
+  vertical-align: middle;
+  font-size: 18px;
+  color: #3f51b5;
+}
+
+.col-check {
+  height: 32px;
 }

@@ -1,11 +1,11 @@
-.errorHighlight {
+.Highlight-line {
   position: absolute;
   z-index: 20;
-  background: #acf2bd;
+  background: #cdffd8;
 }
 
-.lineHeight {
-  background-color: #cdffd8;
+.lineHeight-text {
+  background-color: #acf2bd;
   position: absolute;
   z-index: 20;
 
@@ -14,16 +14,16 @@
   //}
 }
 
-.modifyHighlight {
-  position: absolute;
-  z-index: 20;
-  background: #f1f8ff;
-}
-
 .modifyHighlight-line {
   position: absolute;
   z-index: 20;
-  background-color: rgba(140, 158, 255, 0.16);
+  background-color: rgba(188, 188, 247, 0.8);
+}
+
+.modifyHighlight-text {
+  position: absolute;
+  z-index: 20;
+  background: #9794ff;
 
   //&::before {
   //  content: '+  ';

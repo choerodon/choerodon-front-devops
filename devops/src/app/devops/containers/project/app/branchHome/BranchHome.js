@@ -239,26 +239,21 @@ class BranchHome extends Component {
       {
         title: Choerodon.languageChange('branch.tag'),
         dataIndex: 'name',
-        width: '15%',
       },
       {
-        width: '15%',
         title: Choerodon.languageChange('branch.code'),
         dataIndex: 'commit.id',
         render: (text, record) => (<a href={record.commit.url} rel="nofollow me noopener noreferrer" target="_blank">{record.commit.id.slice(0, 8)}</a>),
       },
       {
-        width: '35%',
         title: Choerodon.languageChange('branch.des'),
         dataIndex: 'commit.message',
         render: (text, record) => <Tooltip title={record.commit.message} trigger="hover" placement="bottom"><div className="c7n-table-column">{record.commit.message}</div></Tooltip>,
       }, {
-        width: '21%',
         title: Choerodon.languageChange('branch.owner'),
         dataIndex: 'commit.authorName',
       },
       {
-        width: '14%',
         title: Choerodon.languageChange('branch.time'),
         dataIndex: 'commit.committedDate',
         render: (text, record) => <TimePopover content={record.commit.committedDate} />,
@@ -267,7 +262,6 @@ class BranchHome extends Component {
     ];
     return (
       <Table
-        scroll={{ y: this.getHeight() }}
         onChnage={this.tableChange}
         pagination={BranchStore.pageInfo}
         filterBar={false}
@@ -472,16 +466,12 @@ class BranchHome extends Component {
       {this.tableBranch}
       {this.tableTag}
     </div>);
-    const { type, id: projectId, organizationId: orgId } = this.props.AppState.currentMenuType;
     return (
       <div className="c7n-region c7n-branch page-container">
         { BranchStore.loading ? <Loadingbar display /> : (<React.Fragment>
-          <PageHeader title={Choerodon.languageChange('branch.title')} backPath={`/devops/app?type=project&id=${projectId}&name=${name}&organizationId=${orgId}`}>
+          <PageHeader title={Choerodon.languageChange('branch.title')} backPath={`/devops/app?type=project&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`}>
             <Permission
               service={['devops-service.git-flow.start']}
-              type={type}
-              projectId={projectId}
-              organizationId={orgId}
             >
               <Tooltip
                 title={<div>
@@ -502,9 +492,6 @@ class BranchHome extends Component {
 
             <Permission
               service={['devops-service.git-flow.listByAppId']}
-              type={type}
-              projectId={projectId}
-              organizationId={orgId}
             >
               <Button
                 funcType="flat"
@@ -525,7 +512,7 @@ class BranchHome extends Component {
           })}
           maskClosable={false}
           closable={false}
-          title={this.state.content && <span style={{ frontSize: 20 }}>结束分支</span>}
+          title={this.state.content && <span style={{ color: 'rgba(0, 0, 0, 0.85)', fontWeight: 500 }}>结束分支</span>}
           confirmLoading={this.state.submitting}
           visible={this.state.visible}
           onOk={this.checkBranchStatus}

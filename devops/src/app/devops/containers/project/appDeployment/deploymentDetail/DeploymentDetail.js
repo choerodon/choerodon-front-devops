@@ -337,7 +337,8 @@ class DeploymentDetail extends Component {
                   {DeployDetailStore.getValue
                   && <Ace
                     readOnly
-                    value={DeployDetailStore.getValue}
+                    totalLine={DeployDetailStore.getValue.totalLine}
+                    value={DeployDetailStore.getValue.yaml}
                   />}
 
                 </div>

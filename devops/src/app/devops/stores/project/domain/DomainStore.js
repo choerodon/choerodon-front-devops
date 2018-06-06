@@ -131,8 +131,8 @@ class DomainStore {
       const res = this.handleProptError(data);
       if (res) {
         this.setSingleData(data);
-        this.setDto(data.devopsIngressPathDTOList);
-        const serviseDto = _.map(data.devopsIngressPathDTOList, service =>
+        this.setDto(data.pathList);
+        const serviseDto = _.map(data.pathList, service =>
           ({
             id: service.serviceId,
             name: service.serviceName,

@@ -9,13 +9,7 @@ import { Map, fromJS, getIn, toJS } from 'immutable';
 import _ from 'lodash';
 import './AceForYaml.scss';
 
-const yaml = require('js-yaml');
-
-const observableDiff = require('deep-diff').observableDiff;
-
 const { Range } = ace.acequire('ace/range');
-
-const jsdiff = require('diff');
 /* eslint-disable react/no-string-refs */
 
 class HighlightAce extends Component {
@@ -54,9 +48,9 @@ class HighlightAce extends Component {
     }
     if (this.props.modifyMarkers) {
       Object.values(this.props.modifyMarkers).map((marker) => {
-        if (marker.clazz === 'modifyHighlight-line' || marker.clazz === 'modifyHighlight') {
+        if (marker.clazz === 'modifyHighlight-text' || marker.clazz === 'modifyHighlight-line') {
           editor.session.addMarker(marker.range, 'modifyHighlight-line', 'fullLine', false);
-          editor.session.addMarker(marker.range, 'modifyHighlight', 'text', false);
+          editor.session.addMarker(marker.range, 'modifyHighlight-text', 'text', false);
         }
         return marker;
       });
@@ -71,6 +65,7 @@ class HighlightAce extends Component {
     const { isTriggerChange } = this.state;
     const editor = this.ace.editor;
     const lines = editor.session.getLength();
+    const prevLineLength = this.state.lines || lines;
     const lineHeight = editor.renderer.lineHeight;
     const height = `${lines * lineHeight}px`;
     this.setState({ height });
@@ -79,8 +74,12 @@ class HighlightAce extends Component {
       const end = options.end;
       const value = editor.session.getLine(start.row);
       const range = new Range(start.row, value.split(':')[0].length + 2, end.row, end.column);
-      editor.session.addMarker(range, 'modifyHighlight-line', 'fullLine', false);
-      editor.session.addMarker(range, 'modifyHighlight', 'text', false);
+      if (options.action === 'insert' || (options.action === 'remove' && end.row === start.row && prevLineLength === lines)) {
+        editor.session.addMarker(range, 'modifyHighlight-line', 'fullLine', false);
+        editor.session.addMarker(range, 'modifyHighlight-text', 'text', false);
+      }
+      this.setState({ lines });
+      window.console.log(lines);
       const modifyMarkers = editor.session.getMarkers();
       this.props.onChange(values, modifyMarkers);
     } else {
@@ -118,8 +117,8 @@ class HighlightAce extends Component {
     const diff = this.props.highlightMarkers;
     diff.map((line) => {
       const range = new Range(line.line, line.startColumn, line.line, line.endColumn);
-      editor.session.addMarker(range, 'lineHeight', 'fullLine', false);
-      editor.session.addMarker(range, 'errorHighlight', 'text', false);
+      editor.session.addMarker(range, 'Highlight-line', 'fullLine', false);
+      editor.session.addMarker(range, 'lineHeight-text', 'text', false);
       return diff;
     });
   }

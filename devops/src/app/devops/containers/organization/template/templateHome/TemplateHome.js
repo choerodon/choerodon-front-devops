@@ -79,23 +79,23 @@ class TemplateHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      width: '14%',
+      // width: '14%',
     }, {
       title: Choerodon.languageChange('template.code'),
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
-      width: '14%',
+      // width: '14%',
     }, {
       title: Choerodon.languageChange('template.description'),
       dataIndex: 'description',
       key: 'description',
       sorter: true,
       filters: [],
-      width: '14%',
+      // width: '14%',
     }, {
-      width: '30%',
+      // width: '30%',
       title: Choerodon.languageChange('template.url'),
       dataIndex: 'repoUrl',
       key: 'repoUrl',
@@ -113,7 +113,7 @@ class TemplateHome extends Component {
       dataIndex: 'type',
       key: 'type',
       sorter: true,
-      width: '15%',
+      // width: '15%',
       filters: [{
         text: '预定义',
         value: 1,
@@ -126,7 +126,7 @@ class TemplateHome extends Component {
           : <React.Fragment><Icon type="av_timer" /><span className="c7n-template-column-text">自定义</span> </React.Fragment>
       ),
     }, {
-      width: '96px',
+      width: '100px',
       // className: 'operateIcons',
       key: 'action',
       render: (test, record) => (
@@ -453,7 +453,7 @@ class TemplateHome extends Component {
     </div>);
     const contentDom = (
       <Table
-        scroll={{ y: this.getHeight() }}
+        filterBarPlaceholder={'过滤表'}
         loading={TemplateStore.loading}
         pagination={TemplateStore.getPageInfo}
         columns={this.getColumn()}

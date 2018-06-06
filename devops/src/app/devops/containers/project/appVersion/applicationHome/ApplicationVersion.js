@@ -53,7 +53,6 @@ class ApplicationVersion extends Component {
   getColumn = () => {
     const { type, id: orgId } = this.props.AppState.currentMenuType;
     return [{
-      width: '30%',
       title: Choerodon.languageChange('app.version'),
       dataIndex: 'version',
       key: 'version',
@@ -61,15 +60,7 @@ class ApplicationVersion extends Component {
       filters: [],
       filterMultiple: false,
     },
-    //   {
-    //   title: Choerodon.languageChange('app.commit'),
-    //   dataIndex: 'commit',
-    //   key: 'commit',
-    //   sorter: (a, b) => a.commit.localeCompare(b.commit, 'zh-Hans-CN',
-      // { sensitivity: 'accent' }),
-    // },
     {
-      width: '20%',
       title: Choerodon.languageChange('app.code'),
       dataIndex: 'appCode',
       key: 'appCode',
@@ -77,8 +68,6 @@ class ApplicationVersion extends Component {
       filters: [],
       filterMultiple: false,
     }, {
-      // width: '410px',
-      width: '30%',
       title: Choerodon.languageChange('app.name'),
       dataIndex: 'appName',
       key: 'appName',
@@ -86,8 +75,6 @@ class ApplicationVersion extends Component {
       filters: [],
       filterMultiple: false,
     }, {
-      // width: '410px',
-      width: '20%',
       title: Choerodon.languageChange('app.createTime'),
       dataIndex: 'creationDate',
       key: 'creationDate',
@@ -102,8 +89,7 @@ class ApplicationVersion extends Component {
     const { type, id: orgId } = this.props.AppState.currentMenuType;
     const contentDom = (
       <Table
-        scroll={{ y: this.getHeight() }}
-        // filters={['appCode', 'appName', 'version']}
+        filterBarPlaceholder={'过滤表'}
         loading={AppVersionStore.loading}
         pagination={AppVersionStore.pageInfo}
         columns={this.getColumn()}
