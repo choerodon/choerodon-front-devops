@@ -66,15 +66,17 @@ class ContainerHome extends Component {
       title: Choerodon.languageChange('container.status'),
       dataIndex: 'status',
       key: 'status',
-      width: '12%',
+      width: 110,
       sorter: true,
       render: (text, record) => {
         let dom = null;
         switch (record.status) {
           case 'Completed':
             dom = (<div>
-              <span className="icon-check_circle c7n-icon-success" />
-              <span className="c7n-container-title">{record.status}</span>
+              <MouserOverWrapper text={record.status} width={78}>
+                <span className="icon-check_circle c7n-icon-success" />
+                <span className="c7n-container-title">{record.status}</span>
+              </MouserOverWrapper>
             </div>);
             break;
           case 'Running':
@@ -97,8 +99,10 @@ class ContainerHome extends Component {
             break;
           default:
             dom = (<div>
-              <span className="icon-help c7n-icon-help" />
-              <span className="c7n-container-title">{record.status}</span>
+              <MouserOverWrapper text={record.status} width={78}>
+                <span className="icon-help c7n-icon-help" />
+                <span className="c7n-container-title">{record.status}</span>
+              </MouserOverWrapper>
             </div>);
         }
         return dom;
@@ -106,18 +110,15 @@ class ContainerHome extends Component {
     }, {
       title: Choerodon.languageChange('container.name'),
       key: 'name',
+      dataIndex: 'name',
       sorter: true,
       filters: [],
       filterMultiple: false,
-      width: '25%',
-      render: record => (
-        <MouserOverWrapper text={record.name} width={200}>{record.name}</MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('container.app'),
       dataIndex: 'app',
       key: 'app',
       filters: [],
-      width: '22%',
       filterMultiple: false,
       render: (text, record) => (<div>
         <div className="c7n-container-col-inside">
@@ -136,7 +137,6 @@ class ContainerHome extends Component {
       sorter: true,
       filters: [],
       filterMultiple: false,
-      width: '12%',
     }, {
       title: Choerodon.languageChange('container.usable'),
       dataIndex: 'ready',
@@ -148,7 +148,6 @@ class ContainerHome extends Component {
         text: '不可用',
         value: '0',
       }],
-      width: '12%',
       filterMultiple: false,
       render: (text, record) => (<div className="c7n-container-table">
         {record.ready ? <span className="icon-done" /> : <span className="icon-close" />}
@@ -160,7 +159,7 @@ class ContainerHome extends Component {
       sorter: true,
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }, {
-      width: '40px',
+      width: 40,
       key: 'action',
       render: (test, record) => (
         <div>
@@ -187,7 +186,7 @@ class ContainerHome extends Component {
   loadLog = () => {
     const authToken = document.cookie.split('=')[1];
     const logs = [];
-    const ws = new WebSocket(`ws://${process.env.DEVOPS_HOST}/ws/log?key=env:${this.state.namespace}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}&tail=`);
+    const ws = new WebSocket(`ws://${process.env.DEVOPS_HOST}/ws/log?key=env:${this.state.namespace}.envId:${this.state.envId}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}`);
     const editor = this.ace.editor;
     this.setState({
       ws,
@@ -203,7 +202,6 @@ class ContainerHome extends Component {
       reader.onload = () => {
         logs.push(reader.result);
         if (logs.length > 0) {
-          // const logSlice = _.slice(logs, logs.length - 100, logs.length);
           const logString = _.join(logs, '');
           editor.setValue(logString);
           editor.renderer.scrollCursorIntoView();
@@ -227,12 +225,8 @@ class ContainerHome extends Component {
     ContainerStore.loadPodParam(projectId, record.id)
       .then((data) => {
         this.setState({
-          id: record.id,
-          status: record.status,
+          envId: record.envId,
           namespace: record.namespace,
-          ip: record.ip,
-          ready: record.ready,
-          creationDate: record.creationDate,
           podName: data.podName,
           containerName: data.containerName,
           logId: data.logId,
@@ -285,7 +279,7 @@ class ContainerHome extends Component {
           </a>
         </p>
         <Table
-          scroll={{ y: this.getHeight() }}
+          filterBarPlaceholder="过滤表"
           loading={ContainerStore.loading}
           pagination={ContainerStore.pageInfo}
           columns={this.getColumn()}

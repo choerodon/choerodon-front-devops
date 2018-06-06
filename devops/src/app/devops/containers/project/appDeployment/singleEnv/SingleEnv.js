@@ -377,7 +377,7 @@ class SingleEnvironment extends Component {
       className: 'c7n-operate-icon',
       key: 'action',
       render: (test, record) => (
-        record.status === 'operating' ?
+        (record.status === 'operating' || !record.connect) ?
           <Action
             data={[
               {
@@ -442,6 +442,7 @@ class SingleEnvironment extends Component {
       </div>
       <h2>实例</h2>
       <Table
+        filterBarPlaceholder="过滤表"
         onChange={this.tableChange}
         loading={store.getIsLoading}
         pagination={store.pageInfo}
