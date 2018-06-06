@@ -264,7 +264,7 @@ class AppInstance extends Component {
       render: record => (
         <div>
           <div className="c7n-deploy-col-inside">
-            {record.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
+            {record.connect ? <Tooltip title="已连接"><span className="c7n-ist-status_on" /></Tooltip> : <Tooltip title="未连接"><span className="c7n-ist-status_off" /></Tooltip>}
             <span>{record.envName}</span>
           </div>
           <div>
@@ -277,7 +277,7 @@ class AppInstance extends Component {
       className: 'c7n-operate-icon',
       key: 'action',
       render: (test, record) => (
-        record.status === 'operating' ?
+        (record.status === 'operating' || !record.connect) ?
           <Action
             data={[
               {
@@ -328,6 +328,7 @@ class AppInstance extends Component {
     return (
       <div className="c7n-region">
         <Table
+          filterBarPlaceholder="过滤表"
           onChange={this.tableChange}
           loading={store.getIsLoading}
           columns={columns}
