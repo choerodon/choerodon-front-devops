@@ -94,7 +94,7 @@ class AppHome extends Component {
       dataIndex: 'repoUrl',
       key: 'repoUrl',
       render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={300}>
-        <a href={record.repoUrl} target="_blank">{record.repoUrl}</a>
+        <a href={record.repoUrl} target="_blank" rel="nofollow me noopener noreferrer">{record.repoUrl}</a>
       </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('app.active'),

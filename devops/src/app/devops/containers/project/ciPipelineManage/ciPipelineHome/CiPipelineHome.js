@@ -201,6 +201,7 @@ class CiPipelineHome extends Component {
       <a
         href={`${record.gitlabUrl.slice(0, -4)}/pipelines/${record.id}`}
         target="_blank"
+        rel="nofollow me noopener noreferrer"
       >
         <i className={`${ICONS[status].icon} c7n-icon-${status} c7n-icon-sm`} /> 
         <span className="c7n-text-status black">{ICONS[status].display}</span>
@@ -216,6 +217,7 @@ class CiPipelineHome extends Component {
             className="c7n-link-decoration"
             href={`${record.gitlabUrl.slice(0, -4)}/pipelines/${record.id}`}
             target="_blank"
+            rel="nofollow me noopener noreferrer"
           >
             <span className="mr7 black">
               #{id}
@@ -262,6 +264,7 @@ class CiPipelineHome extends Component {
             className="c7n-link-decoration"
             href={`${record.gitlabUrl.slice(0, -4)}/commits/${record.ref}`}
             target="_blank"
+            rel="nofollow me noopener noreferrer"
           >
             <span className="black">{record.ref}</span>
           </a>
@@ -276,6 +279,7 @@ class CiPipelineHome extends Component {
             className="c7n-link-decoration"
             href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.sha}`}
             target="_blank"
+            rel="nofollow me noopener noreferrer"
           >
             <span>
               {
@@ -309,6 +313,7 @@ class CiPipelineHome extends Component {
           className="c7n-link-decoration"
           href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.sha}`}
           target="_blank"
+          rel="nofollow me noopener noreferrer"
         >
           <span className="gray">
             {
@@ -337,6 +342,7 @@ class CiPipelineHome extends Component {
               className=""
               href={`${record.gitlabUrl.slice(0, -4)}/-/jobs/${jobs[i].id}`}
               target="_blank"
+              rel="nofollow me noopener noreferrer"
             >
               <i
                 className={`${ICONS[jobs[i].status || 'skipped'].icon || ''}
