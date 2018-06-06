@@ -89,7 +89,7 @@ class BranchHome extends Component {
         // width: '25%',
         dataIndex: 'commit.id',
         render: (text, record) => (<Tooltip title={record.commit.id} trigger="hover" placement="bottom">
-          <a href={record.commit.url} target="_blank">{record.commit.id.slice(0, 8)}</a></Tooltip>),
+          <a href={record.commit.url} rel="nofollow me noopener noreferrer" target="_blank">{record.commit.id.slice(0, 8)}</a></Tooltip>),
       },
       {
         title: Choerodon.languageChange('branch.des'),
