@@ -101,7 +101,7 @@ class CreateBranch extends Component {
     const endWith = /(\/|\.|\.lock)$/;
     const contain = /(\s|~|\^|:|\?|\*|\[|\\|\.\.|@\{|\/{2,}){1}/;
     const single = /^@+$/;
-    const p = /^([1-9]{1,3}\.\d{1,3}\.\d{1,3})$/;
+    const p = /^(\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
     if (endWith.test(value)) {
       callback('不能以"/"、"."、".lock"结尾');
     } else if (contain.test(value) || single.test(value)) {
