@@ -1,8 +1,8 @@
-import { observable, action, computed } from 'mobx';
-import AppState from 'AppState';
-import axios from 'Axios';
-import store from 'Store';
+import { observable, action } from 'mobx';
+import { axios, store, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
+
+const { AppState } = stores;
 
 @store('BranchStore')
 class BranchStore {

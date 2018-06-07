@@ -1,12 +1,7 @@
-/**
- * Created by mading on 2017/11/27.
- */
-import { observable, action, computed, autorun, whyRun } from 'mobx';
-// import axios from 'Axios';
-import axios from 'Axios';
-import store from 'Store';
+import { observable, action, computed } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 import { Observable } from 'rxjs';
-import { List, formJS } from 'immutable';
+import { formJS } from 'immutable';
 
 const height = window.screen.height;
 
@@ -33,22 +28,18 @@ class AppStore {
 
 
   @computed get getAllData() {
-    // window.console.log(this.allData);
     return this.allData.slice();
   }
 
   @action setAllData(data) {
     this.allData = data;
-    // window.console.log(this.allData);
   }
   @computed get getSelectData() {
-    // window.console.log(this.allData);
     return this.singleData.slice();
   }
 
   @action setSelectData(data) {
     this.selectData = data;
-    // window.console.log(this.allData);
   }
 
   @action changeIsRefresh(flag) {
@@ -171,8 +162,3 @@ class AppStore {
 
 const appStore = new AppStore();
 export default appStore;
-
-// autorun(() => {
-//   window.console.log(templateStore.allData.length);
-//   whyRun();
-// });

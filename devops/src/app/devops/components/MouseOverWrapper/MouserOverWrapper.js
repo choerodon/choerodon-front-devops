@@ -3,8 +3,6 @@
  */
 
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
 import { Tooltip } from 'choerodon-ui';
 import PropTypes from 'prop-types';
 

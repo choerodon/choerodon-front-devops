@@ -1,12 +1,6 @@
-/**
- * Created by mading on 2017/11/27.
- */
-import { observable, action, computed, autorun, whyRun } from 'mobx';
-// import axios from 'Axios';
-import axios from 'Axios';
-import store from 'Store';
+import { observable, action, computed } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 import { Observable } from 'rxjs';
-import { List, formJS } from 'immutable';
 import _ from 'lodash';
 
 const height = window.screen.height;
@@ -110,14 +104,12 @@ class NetworkConfigStore {
 
   @computed
   get getSelectData() {
-    // window.console.log(this.allData);
     return this.selectData.slice();
   }
 
   @action
   setSelectData(data) {
     this.selectData = data;
-    // window.console.log(this.allData);
   }
 
   @action changeIsRefresh(flag) {
@@ -207,7 +199,6 @@ class NetworkConfigStore {
         this.setVersionDto('add', '', data.appVersion);
         _.map(data.appVersion,
           (ins) => {
-            // let instance = { id: ins.id, options: ins.appInstance };
             axios.get(`/devops/v1/projects/${projectId}/app_instances/options?envId=${res.envId}&appId=${res.appId}&appVersionId=${ins.id}`)
               .then((inss) => {
                 const a = this.handleProptError(inss);
@@ -218,7 +209,6 @@ class NetworkConfigStore {
                       instance = instance.concat((ins.appInstance[index]));
                     }
                     const instances = { id: ins.id, options: instance };
-                    // window.console.log(instances);
                     this.setInstance('add', '', instances);
                     return inss;
                   });
@@ -304,7 +294,6 @@ class NetworkConfigStore {
           this.setInstance('add', '', { id: versionId, options: data });
         }
         this.changeLoading(false);
-        // return { versionId, options: data };
       });
   };
   handleProptError =(error) => {

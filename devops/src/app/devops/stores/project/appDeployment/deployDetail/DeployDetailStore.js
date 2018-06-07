@@ -1,8 +1,5 @@
 import { observable, action, computed } from 'mobx';
-import _ from 'lodash';
-import axios from 'Axios';
-import store from 'Store';
-
+import { axios, store } from 'choerodon-front-boot';
 
 @store('DeployDetailStore')
 class DeployDetailStore {

@@ -1,7 +1,6 @@
 import { observable, action, computed } from 'mobx';
-import { Observable } from 'rxjs';
-import axios from 'Axios';
-import store from 'Store';
+import { axios, store } from 'choerodon-front-boot';
+
 
 
 @store('AppDeploymentStore')

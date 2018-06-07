@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import ReactAce from 'react-ace-editor';
 import ace from 'brace';
 import PropTypes from 'prop-types';
-import { Map, fromJS, getIn, toJS } from 'immutable';
+import { getIn, toJS } from 'immutable';
 import _ from 'lodash';
 import './AceForYaml.scss';
 
@@ -83,7 +83,6 @@ class HighlightAce extends Component {
           editor.session.addMarker(range, 'modifyHighlight-text', 'text', false);
         }
       } else {
-        // editor.session.removeMarker(start.row);
         editor.session.addMarker(range, 'clearLineHeight-line', 'fullLine', false);
         editor.session.addMarker(range, 'clearLineHeight-text', 'text', false);
       }

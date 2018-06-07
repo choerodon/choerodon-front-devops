@@ -1,8 +1,6 @@
 import { observable, action, computed } from 'mobx';
-import axios from 'Axios';
-import store from 'Store';
+import { axios, store } from 'choerodon-front-boot';
 
-const height = window.screen.height;
 @store('BranchStore')
 class BranchStore {
   @observable branchData = [];

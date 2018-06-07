@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import { Modal } from 'choerodon-ui';
+import React from 'react';
 
 /*eslint-disable*/
 export const commonComponent =(storeName) => {

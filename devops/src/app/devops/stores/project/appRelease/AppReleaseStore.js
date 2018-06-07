@@ -1,9 +1,7 @@
-import { observable, action, computed, autorun, whyRun } from 'mobx';
-// import axios from 'Axios';
-import axios from 'Axios';
-import store from 'Store';
+import { observable, action, computed } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 import { Observable } from 'rxjs';
-import { List, formJS } from 'immutable';
+import { formJS } from 'immutable';
 
 const height = window.screen.height;
 @store('AppReleaseStore')
