@@ -1,13 +1,10 @@
 /* eslint-disable react/no-string-refs */
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Modal } from 'choerodon-ui';
+import { Modal } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import yaml from 'js-yaml';
-
-import 'brace/mode/yaml';
-import 'brace/theme/github';
 import Ace from '../../../../components/yamlAce';
 import '../AppDeploy.scss';
 import '../../../main.scss';
