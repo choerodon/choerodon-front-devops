@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio, Popover } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
-import Permission from 'PerComponent';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import '../../../main.scss';
 import './AppReleaseEdit.scss';
 
@@ -19,12 +18,12 @@ const formItemLayout = {
   },
 };
 const { TextArea } = Input;
+const { AppState } = stores;
 
-@inject('AppState')
 @observer
 class AppReleaseEdit extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       id: props.match.params.id || '',
@@ -102,7 +101,7 @@ class AppReleaseEdit extends Component {
    * @param e
    */
   selectFile =(e) => {
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { EditReleaseStore } = this.props;
     const formdata = new FormData();
     const img = e.target.files[0];
@@ -123,7 +122,7 @@ class AppReleaseEdit extends Component {
    * 返回上一级
    */
   handleBack =() => {
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { EditReleaseStore } = this.props;
     EditReleaseStore.setSelectData([]);
     EditReleaseStore.setSingleData(null);
@@ -132,7 +131,7 @@ class AppReleaseEdit extends Component {
   render() {
     const { EditReleaseStore } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const SingleData = EditReleaseStore.getSingleData;
     const content = '您可以在此修改应用发布的展示信息，包括贡献者、分类及应用描述。';
     const contentDom = (<div className="c7n-region c7n-domainCreate-wrapper">
@@ -254,12 +253,12 @@ class AppReleaseEdit extends Component {
       </Form>
     </div>);
     return (
-      <div className="c7n-region page-container">
-        <PageHeader title="修改应用信息" backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
-        <div className="page-content c7n-appRelease-wrapper">
+      <Page className="c7n-region">
+        <Header title="修改应用信息" backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
+        <Content className="page-content c7n-appRelease-wrapper">
           {contentDom}
-        </div>
-      </div>
+        </Content>
+      </Page>
     );
   }
 }

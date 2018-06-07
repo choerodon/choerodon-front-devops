@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Form, Select, Input, Tooltip, Modal } from 'choerodon-ui';
+import { Button, Form, Select, Input, Tooltip, Modal } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-// import Sidebar from '../../../../components/Sidebar';
 import '../../../main.scss';
-// import '../networkHome/NetworkHome.scss';
 import './NetworkCreate.scss';
 
+const { AppState } = stores;
 const { Sidebar } = Modal;
 const Option = Select.Option;
 const FormItem = Form.Item;
@@ -22,11 +22,10 @@ const formItemLayout = {
   },
 };
 
-@inject('AppState')
 @observer
 class NetworkCreate extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       projectId: menu.id,
@@ -144,7 +143,7 @@ class NetworkCreate extends Component {
    * @param options
    */
   selectApp = (value, options) => {
-    const { store, type } = this.props;
+    const { store } = this.props;
     store.loadVersion(this.state.projectId, this.state.envId, value);
     this.setState({ versionsArr: [{ versionIndex: 0, instanceIndex: 0 }],
       versionId: null,
@@ -166,7 +165,6 @@ class NetworkCreate extends Component {
    * @param value
    */
   selectVersion = (value) => {
-    // const selectVersionArr = this.state.selectVersionArr || [];
     const { store } = this.props;
     store.loadInstance(this.state.projectId, this.state.envId, this.state.appId, value);
     const selectVersionArr = this.state.selectVersionArr || [];
@@ -282,7 +280,7 @@ class NetworkCreate extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { store, form } = this.props;
     const app = store.getApp;
     const env = store.getEnv;
@@ -371,7 +369,6 @@ class NetworkCreate extends Component {
               notFoundContent="该环境下没有应用部署"
               label="应用名称"
               optionFilterProp="children"
-              // onChange={handleChange}
               onSelect={this.selectApp}
               filterOption={(input, option) =>
                 option.props.children.props.children.props.children
@@ -405,7 +402,6 @@ class NetworkCreate extends Component {
                 disabled={!this.state.appId}
                 label={Choerodon.getMessage('版本', 'version')}
                 showSearch
-                // onBlur={this.handleSelecVersion}
                 onSelect={this.selectVersion}
                 dropdownMatchSelectWidth
                 size="default"
@@ -523,9 +519,7 @@ class NetworkCreate extends Component {
             rules: [{
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              // transform: value => value.toString(),
             }, {
-              // validator: this.checkCode,
             }],
           })(
             <Input maxLength={5} label="端口号" />,
@@ -539,9 +533,7 @@ class NetworkCreate extends Component {
             rules: [{
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              // transform: value => value.toString(),
             }, {
-              // validator: this.checkCode,
             }],
           })(
             <Input maxLength={30} label="目标端口" />,

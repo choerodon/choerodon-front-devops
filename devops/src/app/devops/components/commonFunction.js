@@ -1,5 +1,7 @@
-import React, { Component } from 'react';
-import { Modal } from 'choerodon-ui';
+import React from 'react';
+import { stores } from 'choerodon-front-boot';
+
+const { AppState } = stores;
 
 /*eslint-disable*/
 export const commonComponent =(storeName) => {
@@ -13,7 +15,7 @@ export const commonComponent =(storeName) => {
      */
     loadAllData = (isRefresh = false) => {
       const store = this.props[storeName];
-      const menu = this.props.AppState.currentMenuType;
+      const menu = AppState.currentMenuType;
       const organizationId = menu.id;
       store.loadData(isRefresh,organizationId)};
 
@@ -31,7 +33,7 @@ export const commonComponent =(storeName) => {
     handleDelete = () => {
       const store = this.props[storeName];
       const { id } = this.state;
-      const menu = this.props.AppState.currentMenuType;
+      const menu = AppState.currentMenuType;
       const organizationId = menu.id;
       const lastDatas = store.getPageInfo.total % 10;
       const page = store.getPageInfo.current;
@@ -63,7 +65,6 @@ export const commonComponent =(storeName) => {
      * 处理刷新函数
      */
     handleRefresh = () => {
-      const store = this.props[storeName];
       this.loadAllData(true);
     };
 
@@ -84,7 +85,7 @@ export const commonComponent =(storeName) => {
      */
     tableChange =(pagination, filters, sorter, paras) => {
       const store = this.props[storeName];
-      const menu = this.props.AppState.currentMenuType;
+      const menu = AppState.currentMenuType;
       const organizationId = menu.id;
       let sort = {field: 'id', order: 'desc' };
       if (sorter.column) {

@@ -2,9 +2,8 @@
  * hover 显示时间
  */
 
-import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
+import React from 'react';
+import { observer } from 'mobx-react';
 import { Popover } from 'choerodon-ui';
 import TimeAgo from 'timeago-react';
 import PropTypes from 'prop-types';
@@ -17,10 +16,8 @@ const TimePopoverRequiredProps = {
 function TimePopover({ content, title }) {
   return (<div>
     <Popover
-      // rowKey={content}
       title={title}
       content={content}
-      // getPopupContainer={triggerNode => triggerNode.parentNode}
       placement="bottom"
     >
       <TimeAgo

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Modal } from 'choerodon-ui';
 import TimePopover from '../../../../components/timePopover';
 import Log from '../component/log';
 import '../../../main.scss';

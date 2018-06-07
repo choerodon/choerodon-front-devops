@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon } from 'choerodon-ui';
+import { Button, Form, Select, Input, Modal } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
 import './CreateDomain.scss';
@@ -19,12 +20,12 @@ const formItemLayout = {
   },
 };
 const Sidebar = Modal.Sidebar;
+const { AppState } = stores;
 
-@inject('AppState')
 @observer
 class CreateDomain extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       pathArr: [{ pathIndex: 0, networkIndex: 0 }],
@@ -263,7 +264,7 @@ class CreateDomain extends Component {
   render() {
     const { store } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const network = store.getNetwork;
     const env = store.getEnv;
     const form = this.props.form;

@@ -1,18 +1,12 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { observer, inject } from 'mobx-react';
-import { Modal, Form, DatePicker, Button, Select, Radio, Input } from 'choerodon-ui';
+import { Modal, Form, Radio, Input } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import '../../../../main.scss';
 import './CreateBranch.scss';
 
+const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
-const RadioGroup = Radio.Group;
-const InputGroup = Input.Group;
-const PLACEHOLDER = {
-  feature: '输入Issue号',
-  release: '',
-  hotfix: '输入Hotfix号',
-};
 const FormItem = Form.Item;
 const formItemLayout = {
   labelCol: {
@@ -24,10 +18,10 @@ const formItemLayout = {
     sm: { span: 26 },
   },
 };
-@inject('AppState')
+
 class CreateBranch extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       name: 'feature',
@@ -125,7 +119,7 @@ class CreateBranch extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const { visible, onClose, onOk } = this.props;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const radioStyle = {
       display: 'block',
       height: '30px',

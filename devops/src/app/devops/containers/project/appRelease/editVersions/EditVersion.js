@@ -2,18 +2,18 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio, Tabs } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
-import Permission from 'PerComponent';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './EditVersion.scss';
 
 const TabPane = Tabs.TabPane;
-@inject('AppState')
+const { AppState } = stores;
+
 @observer
 class EditVersion extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       name: props.match.params.name || '',
@@ -92,7 +92,7 @@ class EditVersion extends Component {
    */
   versionTableChange =(pagination, filters, sorter, paras) => {
     const { EditVersionStore } = this.props;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     const sort = { field: 'id', order: 'desc' };
     if (sorter.column) {
@@ -135,7 +135,7 @@ class EditVersion extends Component {
    * 返回上一级目录
    */
   handleBack =() => {
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { id, name, organizationId } = menu;
     this.props.history.push(`/devops/app-release/2?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
   }
@@ -158,12 +158,12 @@ class EditVersion extends Component {
       });
   }
   render() {
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { key } = this.state;
     return (
-      <div className="c7n-region page-container">
-        <PageHeader title="查看应用版本" backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
-        <div className="page-content">
+      <Page className="c7n-region">
+        <Header title="查看应用版本" backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
+        <Content>
           <h2 className="c7n-space-first">查看应用&quot;{this.state.name}&quot;的版本 </h2>
           <p>
             您可以在此查看未发布及已发布的版本，且可以发布未发布的版本。
@@ -193,8 +193,8 @@ class EditVersion extends Component {
             </Permission>
             <Button funcType="raised" onClick={this.handleBack}>取消</Button>
           </React.Fragment> : null}
-        </div>
-      </div>
+        </Content>
+      </Page>
     );
   }
 }

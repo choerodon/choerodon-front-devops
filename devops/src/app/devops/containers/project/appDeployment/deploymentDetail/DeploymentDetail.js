@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
-import { Button, Col, Table, Popover, Card, Steps, Tabs, Tooltip, Icon } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
+import { Button, Steps, Tabs, Tooltip, Icon } from 'choerodon-ui';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import classnames from 'classnames';
-import { Observable } from 'rxjs';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './Deploydetail.scss';
@@ -16,7 +15,8 @@ import Ace from '../../../../components/yamlAce';
 const Step = Steps.Step;
 const TabPane = Tabs.TabPane;
 
-@inject('AppState')
+const { AppState } = stores;
+
 @observer
 class DeploymentDetail extends Component {
   constructor(props) {
@@ -30,7 +30,7 @@ class DeploymentDetail extends Component {
   }
 
   componentDidMount() {
-    const { DeployDetailStore, AppState } = this.props;
+    const { DeployDetailStore } = this.props;
     const { id } = this.state;
     const projectId = AppState.currentMenuType.id;
     DeployDetailStore.getInstanceValue(projectId, id);
@@ -95,7 +95,7 @@ class DeploymentDetail extends Component {
   };
 
   loadAllData =() => {
-    const { DeployDetailStore, AppState } = this.props;
+    const { DeployDetailStore } = this.props;
     const { id } = this.state;
     const projectId = AppState.currentMenuType.id;
     DeployDetailStore.loadAllData(projectId, id);
@@ -118,7 +118,7 @@ class DeploymentDetail extends Component {
   };
 
   render() {
-    const { DeployDetailStore, AppState } = this.props;
+    const { DeployDetailStore } = this.props;
     const { expand } = this.state;
     const valueStyle = classnames({
       'c7n-deployDetail-show': expand,
@@ -165,8 +165,8 @@ class DeploymentDetail extends Component {
     const a = DeployDetailStore.getValue;
 
     return (
-      <div className="c7n-region c7n-deployDetail-wrapper page-container">
-        <PageHeader title={Choerodon.getMessage('查看实例详情', ' Instance Detail')} backPath={`/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+      <Page className="c7n-region c7n-deployDetail-wrapper">
+        <Header title={Choerodon.getMessage('查看实例详情', ' Instance Detail')} backPath={`/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <Button
             onClick={this.loadAllData}
             funcType="flat"
@@ -174,8 +174,8 @@ class DeploymentDetail extends Component {
             <span className="icon-refresh icon" />
             <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
-        </PageHeader>
-        { DeployDetailStore.isLoading ? <LoadingBar display /> : <div className="page-content">
+        </Header>
+        { DeployDetailStore.isLoading ? <LoadingBar display /> : <Content className="page-content">
           <h2 className="c7n-space-first">查看应用&quot;{projectName}&quot;的实例详情</h2>
           <p>
             您可在此查看该实例的运行详情及部署详情。运行详情包括各资源对象的基本信息；部署详情包括配置信息及部署阶段及日志。
@@ -353,8 +353,8 @@ class DeploymentDetail extends Component {
               }
             </TabPane>
           </Tabs>
-        </div>}
-      </div>);
+        </Content>}
+      </Page>);
   }
 }
 export default withRouter(DeploymentDetail);

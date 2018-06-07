@@ -1,21 +1,17 @@
 /* eslint-disable react/no-string-refs */
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Modal } from 'choerodon-ui';
-import ReactAce from 'react-ace-editor';
+import { Modal } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import yaml from 'js-yaml';
-
-import 'brace/mode/yaml';
-import 'brace/theme/github';
 import Ace from '../../../../components/yamlAce';
 import '../AppDeploy.scss';
 import '../../../main.scss';
 
-
 const { Sidebar } = Modal;
+const { AppState } = stores;
 
-@inject('AppState')
 @observer
 class ValueConfig extends Component {
   constructor(props) {
@@ -56,7 +52,7 @@ class ValueConfig extends Component {
    * 修改配置重新部署
    */
   handleOk = () => {
-    const { store, id, idArr, AppState } = this.props;
+    const { store, id, idArr } = this.props;
     const projectId = AppState.currentMenuType.id;
     const value = this.state.value || this.props.store.getValue.yaml;
     const data = {

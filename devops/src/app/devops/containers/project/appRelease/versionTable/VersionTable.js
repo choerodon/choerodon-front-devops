@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio, Tabs } from 'choerodon-ui';
+import { Table, Modal } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './../AppRelease.scss';
 
 const Sidebar = Modal.Sidebar;
-@inject('AppState')
+const { AppState } = stores;
 @observer
 class VersionTable extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       id: props.match.params.id || '',
@@ -78,7 +79,7 @@ class VersionTable extends Component {
   versionTableChange =(pagination, filters, sorter, paras) => {
     const { store } = this.props;
     const app = store.app;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     const sort = { field: 'id', order: 'desc' };
     if (sorter.column) {
@@ -131,7 +132,7 @@ class VersionTable extends Component {
 
   render() {
     const { store } = this.props;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const content = '您可以在此勾选并添加需要发布的版本。';
     const contentDom = (<div className="c7n-region version-wrapper">
       <h2 className="c7n-space-first">添加应用&quot;{store.app && store.app.name}&quot;发布的版本</h2>

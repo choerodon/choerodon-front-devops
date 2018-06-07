@@ -1,9 +1,6 @@
-import { observable, action, computed, autorun, whyRun } from 'mobx';
-// import axios from 'Axios';
-import axios from 'Axios';
-import store from 'Store';
+import { observable, action, computed } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 import { Observable } from 'rxjs';
-import { List, formJS } from 'immutable';
 
 const height = window.screen.height;
 @store('EditVersionStore')
@@ -34,37 +31,30 @@ class EditVersionStore {
 
 
   @computed get getAllData() {
-    // window.console.log(this.allData);
     return this.allData.slice();
   }
 
   @action setAllData(data) {
     this.allData = data;
-    // window.console.log(this.allData);
   }
 
   @action setSelectData(data) {
     this.selectData = data;
-    // window.console.log(this.allData);
   }
   @computed get getSelectData() {
     return this.selectData.slice();
-    // window.console.log(this.allData);
   }
 
   @computed get getVersionData() {
-    // window.console.log(this.allData);
     return this.versionData.slice();
   }
 
   @action setVersionData(data) {
     this.versionData = data;
-    // window.console.log(this.allData);
   }
 
   @action setApps(data) {
     this.apps = data;
-    // window.console.log(this.allData);
   }
 
   @action changeIsRefresh(flag) {
@@ -148,8 +138,3 @@ class EditVersionStore {
 
 const editVersionStore = new EditVersionStore();
 export default editVersionStore;
-
-// autorun(() => {
-//   window.console.log(templateStore.allData.length);
-//   whyRun();
-// });

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Table, Tootip, Button, Spin, message, Radio, Input, Form, Modal, Tooltip, Select, Pagination } from 'choerodon-ui';
+import { Table, Tootip, Button, Input, Form, Modal, Tooltip, Select } from 'choerodon-ui';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import Permission from 'PerComponent';
-import PageHeader from 'PageHeader';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import { fromJS, is } from 'immutable';
 import { commonComponent } from '../../../../components/commonFunction';
@@ -12,6 +11,7 @@ import './AppHome.scss';
 import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
+const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
 const Option = Select.Option;
 const FormItem = Form.Item;
@@ -26,13 +26,11 @@ const formItemLayout = {
   },
 };
 
-
-@inject('AppState')
 @commonComponent('AppStore')
 @observer
 class AppHome extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       page: 0,
@@ -68,7 +66,7 @@ class AppHome extends Component {
   };
 
   getColumn = () => {
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { type, id: projectId, organizationId: orgId } = menu;
     return [{
       title: Choerodon.languageChange('app.name'),
@@ -117,7 +115,7 @@ class AppHome extends Component {
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.git-flow.listByAppId', 'devops-service.git-flow.queryTags']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>分支管理</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
               {record.active && record.synchro ? <Button shape="circle" onClick={this.linkToBranch.bind(this, record.id, record.name)}>
-                <span className="icon-branch" />
+                <span className="icon icon-branch" />
               </Button> : <span className="icon-branch c7n-app-icon-disabled" /> }
             </Tooltip>
           </Permission>
@@ -148,7 +146,7 @@ class AppHome extends Component {
    * @param id 应用id
    */
   linkToBranch =(id, name) => {
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     this.linkToChange(`/devops/app/${name}/${id}/branch?type=project&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`);
   };
 
@@ -301,7 +299,7 @@ class AppHome extends Component {
     this.props.form.resetFields();
     const { AppStore } = this.props;
     const { projectId } = this.state;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     if (type === 'create') {
       AppStore.setSingleData(null);
@@ -320,7 +318,7 @@ class AppHome extends Component {
     const { getFieldDecorator } = this.props.form;
     const serviceData = AppStore.getAllData;
     const { singleData, selectData } = AppStore;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { type, id: projectId, organizationId: orgId } = menu;
     const formContent = (<div className="c7n-region">
       {this.state.type === 'create' ? <div>
@@ -452,9 +450,9 @@ class AppHome extends Component {
       />);
 
     return (
-      <div className="c7n-region page-container c7n-app-wrapper">
+      <Page className="c7n-region c7n-app-wrapper">
         { AppStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <PageHeader title={Choerodon.languageChange('app.title')}>
+          <Header title={Choerodon.languageChange('app.title')}>
             <Permission
               service={['devops-service.application.create']}
               type={type}
@@ -474,8 +472,8 @@ class AppHome extends Component {
               <span className="icon-refresh icon" />
               <span>{Choerodon.languageChange('refresh')}</span>
             </Button>
-          </PageHeader>
-          <div className="page-content">
+          </Header>
+          <Content>
             <h2 className="c7n-space-first">项目&quot;{menu.name}&quot;的应用管理</h2>
             <p>
               应用是满足用户某些需求的程序代码的集合，可以是某个解耦的微服务或是某个单体应用。您可在此创建应用、修改应用名称、停用应用、启用应用及分支管理。
@@ -498,11 +496,11 @@ class AppHome extends Component {
               {formContent}
             </Sidebar>}
             {contentDom}
-          </div>
+          </Content>
         </React.Fragment>}
 
 
-      </div>
+      </Page>
     );
   }
 }

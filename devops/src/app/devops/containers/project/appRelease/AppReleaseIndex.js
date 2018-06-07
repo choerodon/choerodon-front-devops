@@ -3,7 +3,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import asyncRouter from '../../../../../util/asyncRouter';
+import { asyncRouter } from 'choerodon-front-boot';
 
 const AppReleaseHome = asyncRouter(() => import('./appReleaseHome'), () => import('../../../stores/project/appRelease'));
 const AppCreateDetail = asyncRouter(() => import('./appReleaseEdit'), () => import('../../../stores/project/appRelease/editRelease'));

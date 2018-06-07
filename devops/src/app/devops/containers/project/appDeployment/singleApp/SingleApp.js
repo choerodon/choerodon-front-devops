@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Icon, Select, Button, Form, Dropdown, Menu, Progress, Tooltip, Popover } from 'choerodon-ui';
+import { Table, Select, Form, Progress, Tooltip, Popover } from 'choerodon-ui';
+import { stores, Action } from 'choerodon-front-boot';
 import _ from 'lodash';
 import classNames from 'classnames';
-import Action from 'Action';
-import Permission from 'PerComponent';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import ValueConfig from '../valueConfig';
 import '../AppDeploy.scss';
@@ -16,7 +15,7 @@ import DelIst from '../component/delIst/DelIst';
 let scrollLeft = 0;
 const { Option, OptGroup } = Select;
 
-@inject('AppState')
+const { AppState } = stores;
 @observer
 class SingleApp extends Component {
   constructor(props, context) {
@@ -37,7 +36,7 @@ class SingleApp extends Component {
    * 获取应用版本
    */
   loadAppVer = (id) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     const { verId, envId } = this.state;
     const envNames = store.getEnvcard;
@@ -118,7 +117,6 @@ class SingleApp extends Component {
    * @param status 实例状态
    */
   linkDeployDetail = (id, status) => {
-    const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const projectName = AppState.currentMenuType.name;
     const organizationId = AppState.currentMenuType.organizationId;
@@ -146,7 +144,7 @@ class SingleApp extends Component {
    * @param param 搜索
    */
   tableChange =(pagination, filters, sorter, param) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     const { envId, appId, verId } = this.state;
     const envNames = store.getEnvcard;
@@ -180,7 +178,7 @@ class SingleApp extends Component {
    * @param appId
    */
   updateConfig = (name, id, envId, verId, appId) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     this.setState({
       idArr: [envId, verId, appId],
@@ -205,7 +203,7 @@ class SingleApp extends Component {
    * @param res 是否重新部署需要重载数据
    */
   handleCancel =(res) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     const { envId, appId, verId, page } = this.state;
     const appNames = store.getAppNames;
@@ -233,7 +231,7 @@ class SingleApp extends Component {
    * 删除数据
    */
   handleDelete = (id) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     const { envId, appId, verId, page } = this.state;
     const appNames = store.getAppNames;
@@ -268,7 +266,7 @@ class SingleApp extends Component {
    * @param status 状态
    */
   activeIst = (id, status) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     const { envId, appId, verId, page } = this.state;
     const appNames = store.getAppNames;
@@ -335,7 +333,6 @@ class SingleApp extends Component {
    * @returns {*}
    */
   columnAction = (record) => {
-    const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
@@ -419,7 +416,7 @@ class SingleApp extends Component {
 
 
   render() {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const { envId, verId, appId } = this.state;
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;

@@ -1,13 +1,8 @@
-/**
- * Created by mading on 2017/11/27.
- */
-import { observable, action, computed, autorun, whyRun } from 'mobx';
-// import axios from 'Axios';
-import axios from 'Axios';
+import { observable, action, computed } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 import _ from 'lodash';
-import store from 'Store';
 import { Observable } from 'rxjs';
-import { List, formJS } from 'immutable';
+import { formJS } from 'immutable';
 
 const height = window.screen.height;
 @store('DomainStore')
@@ -122,8 +117,6 @@ class DomainStore {
     this.setAllData(data.content);
     const { number, size, totalElements } = data;
     this.setPageInfo({ number, size, totalElements });
-    // DomainStore.setTotalPage(data.totalPages);
-    // DomainStore.setTotalSize(data.totalElements);
   };
 
   loadDataById = (projectId, id) =>
@@ -147,14 +140,11 @@ class DomainStore {
                 if (s.serviceStatus !== 'running') {
                   resss = resss.concat(serviseDto[index]);
                 }
-                // window.console.log(resss);
                 this.setNetwork(resss);
                 return ress;
               });
             }
           });
-        // this.setNetwork(serviseDto);
-        // this.loadNetwork(projectId, data.envId);
         return data;
       }
       return res;
@@ -167,7 +157,6 @@ class DomainStore {
         if (res) {
           this.setEnv(data);
         }
-        // this.loadNetwork(projectId, data.id);
       });
 
 
@@ -226,7 +215,3 @@ class DomainStore {
 
 const domainStore = new DomainStore();
 export default domainStore;
-// autorun(() => {
-//   window.console.log(templateStore.allData.length);
-//   whyRun();
-// });

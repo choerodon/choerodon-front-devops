@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Form, Select, Input, Tooltip, Modal, Progress } from 'choerodon-ui';
-
+import { Button, Form, Select, Input, Tooltip, Modal, Progress } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-// import Sidebar from '../../../../components/Sidebar';
 import '../../../main.scss';
 import '../createNetwork/NetworkCreate.scss';
 
@@ -21,11 +20,12 @@ const formItemLayout = {
     sm: { span: 26 },
   },
 };
-@inject('AppState')
+const { AppState } = stores;
+
 @observer
 class Editnetwok extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       projectId: menu.id,
@@ -236,8 +236,6 @@ class Editnetwok extends Component {
    * 添加版本
    */
   addVersion =() => {
-    const { store } = this.props;
-    // const versionDto = store.getVersionDto;
     const versionsArr = this.state.versionsArr;
     if (versionsArr.length === 0) {
       versionsArr.push({ versionIndex: 0,
@@ -323,7 +321,7 @@ class Editnetwok extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { store, form } = this.props;
     const { versionsArr, SingleData, projectId, selectVersionArr } = this.state;
     const version = store.getVersions;

@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import ReactAce from 'react-ace-editor';
 import ace from 'brace';
 import PropTypes from 'prop-types';
-import { Map, fromJS, getIn, toJS } from 'immutable';
+import { fromJS, getIn, toJS } from 'immutable';
 import './AceForYaml.scss';
 
 const yaml = require('js-yaml');
@@ -61,7 +61,6 @@ class AceForYaml extends Component {
   onChange =(values) => {
     const number = this.state.number;
     const diffLen = this.state.diffLen;
-    // window.console.log(this.state);
     if (number === diffLen && this.props.onChange) {
       this.props.onChange(values);
     }
@@ -81,7 +80,6 @@ class AceForYaml extends Component {
     new Range(range.start.row, range.start.column, range.end.row, range.end.column + 2);
   // 比较数据函数
   handleDataDiff =() => {
-    const editor = this.ace.editor;
     const { sourceData, value } = this.props;
     try {
       const oldData = yaml.safeLoad(sourceData);
@@ -101,11 +99,10 @@ class AceForYaml extends Component {
   };
 
   handleDiff = (diffArr) => {
-    const number = this.state.number;
     const that = this;
     const len = diffArr.length;
     const editor = this.ace.editor;
-    const { sourceData, value } = this.props;
+    const { sourceData } = this.props;
     let oldData = '';
     try {
       oldData = yaml.safeLoad(sourceData);
@@ -134,17 +131,14 @@ class AceForYaml extends Component {
             oldData = oldData.setIn(data.path, data.rhs);
           } else {
             oldData = oldData.setIn(data.path, randomStr);
-            // showData = showData.setIn(data.path, data.rhs);
             editor.setValue(yaml.safeDump(oldData.toJS(), { lineWidth: 400 }));
             this.handleHighLigth(data, pathLen - 1, randomStr);
             oldData = oldData.setIn(data.path, data.lhs);
           }
           editor.setValue(yaml.safeDump(oldData.toJS(), { lineWidth: 400 }));
-          // editor.setValue(yaml.safeDump(yaml.safeLoad(sourceData), { lineWidth: 400 }));
         }
         if (index === len - 1) {
           editor.setValue(yaml.safeDump(oldData.toJS(), { lineWidth: 400 }));
-          // editor.setValue(yaml.safeDump(yaml.safeLoad(sourceData), { lineWidth: 400 }));
           this.ace.editor.clearSelection();
         }
       });

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Tooltip, Spin, Modal, Table, Popover, Progress } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
-import Permission from 'PerComponent';
+import { Button, Tooltip, Modal, Table, Popover, Progress } from 'choerodon-ui';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import '../../../main.scss';
 import './BranchHome.scss';
@@ -13,13 +12,13 @@ import Loadingbar from '../../../../components/loadingBar';
 import { devConflictMessage, masterConflictMessage, bothConflictMessage } from './CommonConst';
 
 // import BranchStore from '../../../../stores/project/app/branchManage';
+const { AppState } = stores;
 
-@inject('AppState')
 @observer
 class BranchHome extends Component {
   constructor(props) {
     super(props);
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     this.state = {
       projectId: menu.id,
       appId: props.match.params.id,
@@ -68,7 +67,7 @@ class BranchHome extends Component {
    */
   get tableBranch() {
     const { BranchStore } = this.props;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { type, organizationId: orgId } = menu;
     const branchColumns = [
       {
@@ -455,8 +454,8 @@ class BranchHome extends Component {
 
   render() {
     const { BranchStore } = this.props;
-    const menu = this.props.AppState.currentMenuType;
-    const content = (<div className="page-content">
+    const menu = AppState.currentMenuType;
+    const content = (<Content className="page-content">
       <h2 className="c7n-space-first">应用&quot;{this.state.appName}&quot;的分支管理</h2>
       <p>
         分支是将您的工作从开发主线上分离开来，以免影响开发主线。
@@ -470,11 +469,11 @@ class BranchHome extends Component {
       </p>
       {this.tableBranch}
       {this.tableTag}
-    </div>);
+    </Content>);
     return (
-      <div className="c7n-region c7n-branch page-container">
+      <Page className="c7n-region c7n-branch page-container">
         { BranchStore.loading ? <Loadingbar display /> : (<React.Fragment>
-          <PageHeader title={Choerodon.languageChange('branch.title')} backPath={`/devops/app?type=project&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`}>
+          <Header title={Choerodon.languageChange('branch.title')} backPath={`/devops/app?type=project&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`}>
             <Permission
               service={['devops-service.git-flow.start']}
             >
@@ -506,7 +505,7 @@ class BranchHome extends Component {
                 <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
-          </PageHeader>
+          </Header>
           {content}
         </React.Fragment>) }
         <Modal
@@ -544,7 +543,7 @@ class BranchHome extends Component {
           visible={BranchStore.createBranchShow}
           onClose={this.hideSidebar}
         /> }
-      </div>
+      </Page>
     );
   }
 }

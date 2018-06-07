@@ -7,7 +7,6 @@ import '../../../main.scss';
 import '../AppDeploy.scss';
 import './MutiDeployment.scss';
 
-@inject('AppState')
 @observer
 class MutiDeployment extends Component {
   constructor(props) {

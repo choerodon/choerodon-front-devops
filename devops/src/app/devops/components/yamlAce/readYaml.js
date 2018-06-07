@@ -6,20 +6,14 @@ import ReactAce from 'react-ace-editor';
 import ace from 'brace';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { Map, fromJS, getIn, toJS } from 'immutable';
+import { getIn, toJS } from 'immutable';
 import './AceForYaml.scss';
 
 const yaml = require('js-yaml');
 
-const observableDiff = require('deep-diff').observableDiff;
-
 const { Range } = ace.acequire('ace/range');
 
 const jsdiff = require('diff');
-/* eslint-disable */
-const yam = require('yaml');
-const diff2html = require('diff2html').Diff2Html;
-/* eslint-disable react/no-string-refs */
 
 class AceForYaml extends Component {
   static PropTypes = {
@@ -132,12 +126,9 @@ class AceForYaml extends Component {
       '  tag: develop.20180502172827cc\n' +
       '  pullPolicy: Alwaysss\n' +
       '  name: mading';
-    // const a = yam.eval(str);
     const changes = jsdiff.diffChars(newStr, str);
     window.console.log(changes);
 
-    // const changes = diff2html.getPrettyHtml(newStr, { inputFormat:
-    // 'diff', showFiles: true, matching: 'lines' });
 
     let lineNumber = 1;
     return changes.reduce((acc, change) => {
@@ -159,11 +150,10 @@ class AceForYaml extends Component {
       if (!change.removed) {
         lineNumber += change.count;
       }
-      // lineNumber += change.count;
       return acc;
     }, []);
   };
-  onChange =(values, options) => {
+  onChange =(values) => {
     window.console.log('+++');
     const number = this.state.number;
     const diffLen = this.state.diffLen;

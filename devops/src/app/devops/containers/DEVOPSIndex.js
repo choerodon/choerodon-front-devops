@@ -4,9 +4,7 @@ import {
   Switch,
 } from 'react-router-dom';
 import { inject } from 'mobx-react';
-import nomatch from 'nomatch';
-import asyncRouter from '../../../util/asyncRouter';
-import asyncLocaleProvider from '../../../util/asyncLocaleProvider';
+import { asyncRouter, nomatch, asyncLocaleProvider } from 'choerodon-front-boot';
 
 // organization
 const Template = asyncRouter(() => import('./organization/template'));
