@@ -480,12 +480,11 @@ class TemplateHome extends Component {
               organizationId={orgId}
             >
               <Button
-                className="leftBtn"
                 funcType="flat"
                 onClick={this.showSideBar.bind(this, 'create')}
               >
-                <span className="icon-playlist_add" />
-                <span className="icon-space">{Choerodon.getMessage('创建应用模板', 'Create')}</span>
+                <span className="icon-playlist_add icon" />
+                <span>{Choerodon.getMessage('创建应用模板', 'Create')}</span>
               </Button>
             </Permission>
             <Permission
@@ -494,12 +493,11 @@ class TemplateHome extends Component {
               organizationId={orgId}
             >
               <Button
-                className="leftBtn2"
                 funcType="flat"
                 onClick={this.handleRefresh}
               >
-                <span className="icon-refresh" />
-                <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+                <span className="icon-refresh icon" />
+                <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
           </PageHeader>

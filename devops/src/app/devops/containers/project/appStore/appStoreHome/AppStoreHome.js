@@ -225,12 +225,11 @@ class AppStoreHome extends Component {
       <div className="c7n-region page-container">
         <PageHeader title={Choerodon.languageChange('appstore.title')}>
           <Button
-            className="leftBtn"
             funcType="flat"
             onClick={this.reload}
           >
-            <span className="icon-refresh page-head-icon" />
-            <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+            <span className="icon-refresh icon" />
+            <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
         </PageHeader>
         <div className="c7n-store-content">

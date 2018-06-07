@@ -298,12 +298,11 @@ class NetworkHome extends Component {
               organizationId={orgId}
             >
               <Button
-                className="leftBtn"
                 funcType="flat"
                 onClick={this.showSideBar}
               >
-                <span className="icon-playlist_add page-head-icon" />
-                <span className="icon-space">{Choerodon.getMessage('创建网络', 'Create Network')}</span>
+                <span className="icon-playlist_add icon" />
+                <span>{Choerodon.getMessage('创建网络', 'Create Network')}</span>
               </Button>
             </Permission>
             <Permission
@@ -313,12 +312,11 @@ class NetworkHome extends Component {
               organizationId={orgId}
             >
               <Button
-                className="leftBtn2"
                 funcType="flat"
                 onClick={this.handleRefresh}
               >
-                <span className="icon-refresh page-head-icon" />
-                <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+                <span className="icon-refresh icon" />
+                <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
           </PageHeader>

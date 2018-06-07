@@ -108,11 +108,10 @@ class ApplicationVersion extends Component {
               projectId={orgId}
             >
               <Button
-                className="leftBtn"
                 onClick={this.handleRefresh}
               >
-                <span className="icon-refresh page-head-icon" />
-                <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+                <span className="icon-refresh icon" />
+                <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
           </PageHeader>

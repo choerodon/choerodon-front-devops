@@ -205,8 +205,8 @@ class AppReleaseHome extends Component {
           <Button
             onClick={this.handleRefresh}
           >
-            <span className="icon-refresh page-head-icon" />
-            <span className="icon-space">刷新</span>
+            <span className="icon-refresh icon" />
+            <span>刷新</span>
           </Button>
         </PageHeader>
         <div className="page-content">

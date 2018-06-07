@@ -464,15 +464,15 @@ class AppHome extends Component {
               <Button
                 onClick={this.showSideBar.bind(this, 'create')}
               >
-                <span className="icon-playlist_add page-head-icon" />
+                <span className="icon-playlist_add icon" />
                 <span>{Choerodon.getMessage('创建应用', 'Create')}</span>
               </Button>
             </Permission>
             <Button
               onClick={this.handleRefresh}
             >
-              <span className="icon-refresh page-head-icon" />
-              <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+              <span className="icon-refresh icon" />
+              <span>{Choerodon.languageChange('refresh')}</span>
             </Button>
           </PageHeader>
           <div className="page-content">
