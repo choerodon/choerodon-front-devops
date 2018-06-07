@@ -36,3 +36,5 @@ const config = {
         'primary-color': '#3F51B5',
     },
 };
+
+module.exports = config;

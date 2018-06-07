@@ -115,7 +115,7 @@ class AppHome extends Component {
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.git-flow.listByAppId', 'devops-service.git-flow.queryTags']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>分支管理</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
               {record.active && record.synchro ? <Button shape="circle" onClick={this.linkToBranch.bind(this, record.id, record.name)}>
-                <span className="icon-branch" />
+                <span className="icon icon-branch" />
               </Button> : <span className="icon-branch c7n-app-icon-disabled" /> }
             </Tooltip>
           </Permission>
