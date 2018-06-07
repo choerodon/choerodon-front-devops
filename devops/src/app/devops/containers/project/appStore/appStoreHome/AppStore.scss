@@ -6,17 +6,21 @@
   margin: 0 !important;
 }
 
-.c7n-store-search {
-  margin-bottom: 24px;
+.ant-btn-group {
+  margin-bottom: 10px;
+  display: flex;
 
-  .ant-btn-group {
-    float: right;
-    margin-bottom: 10px;
+  div {
+    margin-left: auto !important;
   }
 
   button {
-    margin: 0 1px;
+    margin-right: 1px;
   }
+}
+
+.c7n-store-search {
+  margin-bottom: 24px;
 
   .ant-input-wrapper {
     width: 100%;

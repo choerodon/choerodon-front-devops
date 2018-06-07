@@ -262,7 +262,7 @@ class BranchHome extends Component {
     ];
     return (
       <Table
-        onChnage={this.tableChange}
+        onChange={this.tableChange}
         pagination={BranchStore.pageInfo}
         filterBar={false}
         title={() => <span className="c7n-header-table">标记列表</span>}
@@ -308,7 +308,7 @@ class BranchHome extends Component {
     const { projectId, appId } = this.state;
     this.setState({ page: pagination.current });
     BranchStore
-      .loadTagData(projectId, pagination.current - 1, appId, pagination.pageSize);
+      .loadTagData(projectId, appId, pagination.current - 1, pagination.pageSize);
   };
   /**
    * 获取分支和标记列表
@@ -316,7 +316,7 @@ class BranchHome extends Component {
   loadData = () => {
     const { appId, projectId, page } = this.state;
     const { BranchStore } = this.props;
-    BranchStore.loadAllData(projectId, appId, page);
+    BranchStore.loadAllData(projectId, appId, 0);
   };
 
   /**
@@ -480,7 +480,6 @@ class BranchHome extends Component {
                 placement="rightTop"
               >
                 <Button
-                  className="leftBtn"
                   ghost
                   onClick={this.showSidebar}
                 >
@@ -495,7 +494,6 @@ class BranchHome extends Component {
             >
               <Button
                 funcType="flat"
-                className="leftBtn2"
                 ghost="true"
                 onClick={this.handleRefresh}
               >

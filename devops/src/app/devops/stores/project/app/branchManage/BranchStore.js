@@ -19,7 +19,7 @@ class BranchStore {
   @observable pageInfo = {
     current: 1,
     total: 0,
-    pageSize: height <= 900 ? 10 : 15,
+    pageSize: 10,
   };
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
@@ -89,24 +89,27 @@ class BranchStore {
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
-          this.setTagData(data.tagList);
           const { totalElements } = data;
           const number = page;
           const size = sizes;
           const pages = { number, size, totalElements };
           this.setPageInfo(pages);
+          this.setTagData(data.tagList);
         }
       });
-  loadAllData = (projectId, appId, page) => {
+  loadAllData = (projectId, appId, page = this.pageInfo.current - 1,
+    sizes = this.pageInfo.pageSize) => {
     this.changeLoading(true);
     return axios.all([
       axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/branches`),
-      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=10`)])
+      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=${sizes}`)])
       .then(axios.spread((branch, tag) => {
         if (!branch.failed && !tag.failed) {
           this.setBranchData(branch);
           this.setTagData(tag.tagList);
-          const { number, size, totalElements } = tag;
+          const { totalElements } = tag;
+          const number = page;
+          const size = sizes;
           const pages = { number, size, totalElements };
           this.setPageInfo(pages);
         }
