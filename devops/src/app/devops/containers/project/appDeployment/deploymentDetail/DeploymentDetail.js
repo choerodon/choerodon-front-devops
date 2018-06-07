@@ -186,6 +186,7 @@ class DeploymentDetail extends Component {
             </a>
           </p>
           <Tabs
+            className="c7n-deployDetail-tab"
             defaultActiveKey={this.state.status === 'running' ? '1' : '2'}
           >
             {this.state.status === 'running' && <TabPane tab="运行详情" key="1">

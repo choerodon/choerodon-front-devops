@@ -11,7 +11,6 @@ import 'brace/theme/github';
 import Ace from '../../../../components/yamlAce';
 import '../AppDeploy.scss';
 import '../../../main.scss';
-import DeploymentAppStore from '../../../../stores/project/deploymentApp';
 
 
 const { Sidebar } = Modal;
@@ -33,31 +32,29 @@ class ValueConfig extends Component {
     });
   }
 
-  onLoad = () => {
-    const value = yaml.safeLoad(this.props.store.getValue);
+  /**
+   * 事件处理，修改value值后写入store
+   * @param {*} value 修改后的value值
+   */
+  onChange = (value) => {
     this.setState({
       value,
     });
   };
 
   /**
-   * 事件处理，修改value值后写入store
-   * @param {*} value 修改后的value值
+   * 关闭弹窗
+   * @param res
    */
-  onChange = (value) => {
-    // yaml.safeLoad(value);
-    this.setState({
-      value,
-    });
-  };
-
   onClose = (res) => {
     this.setState({
       value: this.props.store.getValue,
     });
     this.props.onClose(res);
   };
-
+  /**
+   * 修改配置重新部署
+   */
   handleOk = () => {
     const { store, id, idArr, AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
@@ -82,7 +79,7 @@ class ValueConfig extends Component {
 
   render() {
     const data = this.props.store.getValue;
-    const sideDom = (<div>
+    const sideDom = (<div className="c7n-region">
       <h2 className="c7n-space-first">对&quot;{this.props.name}&quot;进行修改</h2>
       <p>
         对实例配置信息进行修改后重新部署。
@@ -93,7 +90,7 @@ class ValueConfig extends Component {
           <span className="icon-open_in_new" />
         </a>
       </p>
-      <div className="c7n-section">
+      <div className="c7n-ace-section">
         <div className="c7n-body-section c7n-border-done">
           <div>
             {data && <Ace

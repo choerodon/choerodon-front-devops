@@ -169,7 +169,7 @@ class DeployHome extends Component {
 
     return (
       <div className="c7n-region page-container">
-        <PageHeader title={Choerodon.languageChange('deploy.title')}>
+        <PageHeader title={Choerodon.getMessage('实例', 'Instance')}>
           <Button
             className="leftBtn"
             funcType="flat"
@@ -180,7 +180,7 @@ class DeployHome extends Component {
           </Button>
         </PageHeader>
         <div className="page-content">
-          <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的实例视图</h2>
+          <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的实例</h2>
           <p>
             您可在此用四种方式查看该项目下应用的实例情况。
             <a href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">

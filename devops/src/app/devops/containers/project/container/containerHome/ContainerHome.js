@@ -159,7 +159,7 @@ class ContainerHome extends Component {
       sorter: true,
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }, {
-      width: 40,
+      width: 64,
       key: 'action',
       render: (test, record) => (
         <div>

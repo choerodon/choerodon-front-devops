@@ -108,7 +108,7 @@ class BranchHome extends Component {
         render: (text, record) => <TimePopover content={record.commit.committedDate} />,
       },
       {
-        width: '40px',
+        width: 64,
         className: 'operateIcons',
         key: 'action',
         render: (test, record) => (

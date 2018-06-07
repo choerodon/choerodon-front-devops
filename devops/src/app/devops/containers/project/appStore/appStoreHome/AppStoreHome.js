@@ -190,7 +190,7 @@ class AppStoreHome extends Component {
       dataIndex: 'description',
       key: 'description',
     }, {
-      width: '40px',
+      width: 64,
       key: 'action',
       render: (test, record) => (
         <div>
