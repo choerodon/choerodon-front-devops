@@ -255,11 +255,13 @@ class AppStoreHome extends Component {
               // eslint-disable-next-line no-return-assign
               ref={node => this.searchInput = node}
             />
-            <ButtonGroup>
+          </div>
+          <ButtonGroup>
+            <div>
               <Button onClick={this.listViewChange.bind(this, 'list')} className={listActive === 'list' && 'c7n-tab-active'}><Icon type="format_list_bulleted" /></Button>
               <Button onClick={this.listViewChange.bind(this, 'card')} className={listActive === 'card' && 'c7n-tab-active'}><Icon type="dashboard" /></Button>
-            </ButtonGroup>
-          </div>
+            </div>
+          </ButtonGroup>
           {AppStoreStore.isLoading ? <LoadingBar display /> :
             (<div className="c7n-store-list-wrap">
               {listActive === 'card' ? appCardsDom : appListDom}
