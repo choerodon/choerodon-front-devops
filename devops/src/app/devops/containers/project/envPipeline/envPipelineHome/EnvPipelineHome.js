@@ -1,10 +1,9 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Input, Form, Tooltip, Modal, Popover } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
-import Permission from 'PerComponent';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import classNames from 'classnames';
 import CopyToBoard from 'react-copy-to-clipboard';
@@ -21,6 +20,7 @@ let scrollLeft = 0;
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Sidebar } = Modal;
+const { AppState } = stores;
 
 const formItemLayout = {
   labelCol: {
@@ -33,7 +33,6 @@ const formItemLayout = {
   },
 };
 
-@inject('AppState')
 @observer
 class EnvPipelineHome extends Component {
   constructor(props) {
@@ -65,7 +64,7 @@ class EnvPipelineHome extends Component {
    * 加载环境数据
    */
   loadEnvs = () => {
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     EnvPipelineStore.loadEnv(projectId, true);
     EnvPipelineStore.loadEnv(projectId, false);
@@ -78,7 +77,7 @@ class EnvPipelineHome extends Component {
    * @param callback 回调提示
    */
   checkCode = _.debounce((rule, value, callback) => {
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     // eslint-disable-next-line no-useless-escape
     const pa = /^[a-z0-9]([-a-z0-9\.]*[a-z0-9])?$/;
@@ -103,7 +102,7 @@ class EnvPipelineHome extends Component {
    * @param callback 回调提示
    */
   checkName = _.debounce((rule, value, callback) => {
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     const envData = EnvPipelineStore.getEnvData;
     if (envData ? value !== envData.name : value) {
@@ -151,7 +150,7 @@ class EnvPipelineHome extends Component {
    * @param id 环境ID
    */
   actEnv = (id) => {
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     EnvPipelineStore.banEnvById(projectId, id, true)
       .then((data) => {
@@ -175,7 +174,7 @@ class EnvPipelineHome extends Component {
    * 环境禁用
    */
   banEnv = () => {
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     const envId = EnvPipelineStore.getEnvData.id;
     EnvPipelineStore.banEnvById(projectId, envId, false)
@@ -207,7 +206,7 @@ class EnvPipelineHome extends Component {
    */
   handleSubmit = (e) => {
     e.preventDefault();
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     const sideType = EnvPipelineStore.getSideType;
     this.setState({
@@ -315,7 +314,7 @@ class EnvPipelineHome extends Component {
   };
 
   render() {
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const { getFieldDecorator } = this.props.form;
     const envcardPosition = EnvPipelineStore.getEnvcardPosition;
     const disEnvcardPosition = EnvPipelineStore.getDisEnvcardPosition;
@@ -561,8 +560,8 @@ class EnvPipelineHome extends Component {
     const rightDom = this.state.moveBan ? null : <div role="none" className={rightStyle} onClick={this.pushScrollLeft} />;
 
     return (
-      <div className="c7n-region page-container">
-        <PageHeader title={Choerodon.languageChange('envPl.title')}>
+      <Page className="c7n-region">
+        <Header title={Choerodon.languageChange('envPl.title')}>
           <Permission
             service={['devops-service.devops-environment.create']}
             organizationId={organizationId}
@@ -584,8 +583,8 @@ class EnvPipelineHome extends Component {
             <span className="icon-refresh icon" />
             <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
-        </PageHeader>
-        <div className="page-content">
+        </Header>
+        <Content>
           <Sidebar
             title={this.showTitle(sideType)}
             visible={show}
@@ -641,8 +640,8 @@ class EnvPipelineHome extends Component {
               {rightDom}
             </div>
           </div>
-        </div>
-      </div>
+        </Content>
+      </Page>
     );
   }
 }

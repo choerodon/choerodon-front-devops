@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Select, Button, Spin, Radio, Card, Steps, Form, Tabs, Icon, Modal, Input, Table, Pagination } from 'choerodon-ui';
+import { Button, Tabs, Icon, Modal, Input, Table, Pagination } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import '../../../main.scss';
 import './SelectApp.scss';
 import SelectAppStore from '../../../../stores/project/deploymentApp/SelectAppStore';
@@ -9,14 +10,15 @@ import SelectAppStore from '../../../../stores/project/deploymentApp/SelectAppSt
 const TabPane = Tabs.TabPane;
 const ButtonGroup = Button.Group;
 const SideBar = Modal.Sidebar;
-@inject('AppState')
+const { AppState } = stores;
+
 @observer
 class DeployAppHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
       activeTab: '1',
-      projectId: this.props.AppState.currentMenuType.id,
+      projectId: AppState.currentMenuType.id,
       view: 'card',
     };
   }
@@ -179,7 +181,7 @@ class DeployAppHome extends Component {
    */
   tableChange =(pagination, filters, sorter, paras) => {
     const key = this.state.activeTab;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     const sort = { field: 'id', order: 'desc' };
     if (sorter.column) {
@@ -236,7 +238,6 @@ class DeployAppHome extends Component {
 
   render() {
     const dataSource = SelectAppStore.getAllData;
-    const { AppState } = this.props;
     const pageInfo = SelectAppStore.pageInfo;
     const projectName = AppState.currentMenuType.name;
     const prefix = <Icon type="search" onClick={this.handleSearch} />;

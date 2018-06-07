@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Select, Button, Spin, Radio, Steps } from 'choerodon-ui';
+import { Select, Button, Radio, Steps } from 'choerodon-ui';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import PageHeader from 'PageHeader';
-import Permission from 'PerComponent';
 import '../../../main.scss';
 import './DeployApp.scss';
 import AceForYaml from '../../../../components/yamlAce';
@@ -13,8 +12,8 @@ import SelectApp from '../selectApp';
 
 const RadioGroup = Radio.Group;
 const Step = Steps.Step;
+const { AppState } = stores;
 
-@inject('AppState')
 @observer
 class DeploymentAppHome extends Component {
   constructor(props) {
@@ -157,7 +156,6 @@ class DeploymentAppHome extends Component {
    * @param value
    */
   handleChangeMode = (value) => {
-    const { DeploymentAppStore } = this.props;
     this.setState({ mode: value.target.value });
   };
 
@@ -165,7 +163,6 @@ class DeploymentAppHome extends Component {
    * 返回到上一级
    */
   openAppDeployment() {
-    const { AppState } = this.props;
     const projectName = AppState.currentMenuType.name;
     const projectId = AppState.currentMenuType.id;
     const type = AppState.currentMenuType.type;
@@ -457,14 +454,14 @@ class DeploymentAppHome extends Component {
   };
 
   render() {
-    const { AppState, DeploymentAppStore } = this.props;
+    const { DeploymentAppStore } = this.props;
     const data = DeploymentAppStore.value;
     const projectName = AppState.currentMenuType.name;
     const { appId, versionId, envId, instanceId, mode, value, current } = this.state;
     return (
-      <div className="c7n-region c7n-deployApp page-container">
-        <PageHeader title={Choerodon.languageChange('deploymentApp.title')} />
-        <div className="page-content c7n-deployApp-wrapper">
+      <Page className="c7n-region c7n-deployApp">
+        <Header title={Choerodon.languageChange('deploymentApp.title')} />
+        <Content className="c7n-deployApp-wrapper">
           <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的部署应用</h2>
           <p>
             应用部署是一个将某版本的应用部署至某环境的操作。您可以在此按指引分步骤完成应用部署。
@@ -519,8 +516,8 @@ class DeploymentAppHome extends Component {
             handleCancel={this.handleCancel}
             handleOk={this.handleOk}
           />}
-        </div>
-      </div>
+        </Content>
+      </Page>
     );
   }
 }

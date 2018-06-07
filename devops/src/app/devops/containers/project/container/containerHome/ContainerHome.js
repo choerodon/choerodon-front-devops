@@ -1,12 +1,10 @@
 /* eslint-disable no-console */
 import React, { Component } from 'react';
-import { Table, Button, Spin, message, Radio, Input, Form, Modal, Tooltip, Select, Popover } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
+import { Table, Button, Modal, Tooltip, Popover } from 'choerodon-ui';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import PageHeader from 'PageHeader';
-import Permission from 'PerComponent';
 import { fromJS, is } from 'immutable';
-import { Observable } from 'rxjs';
 import ReactAce from 'react-ace-editor';
 import _ from 'lodash';
 import 'brace/mode/text';
@@ -19,8 +17,8 @@ import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const Sidebar = Modal.Sidebar;
+const { AppState } = stores;
 
-@inject('AppState')
 @commonComponent('ContainerStore')
 @observer
 class ContainerHome extends Component {
@@ -58,7 +56,6 @@ class ContainerHome extends Component {
    *
    */
   getColumn = () => {
-    const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
@@ -219,7 +216,7 @@ class ContainerHome extends Component {
    * @param record 容器record
    */
   showLog =(record) => {
-    const { AppState, ContainerStore } = this.props;
+    const { ContainerStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     ContainerStore.loadPodParam(projectId, record.id)
       .then((data) => {
@@ -251,20 +248,20 @@ class ContainerHome extends Component {
   };
 
   render() {
-    const { ContainerStore, AppState } = this.props;
+    const { ContainerStore } = this.props;
     const { containerName } = this.state;
     const serviceData = ContainerStore.getAllData;
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
-      <PageHeader title={Choerodon.languageChange('container.title')}>
+      <Header title={Choerodon.languageChange('container.title')}>
         <Button
           onClick={this.handleRefresh}
         >
           <span className="icon-refresh icon" />
           <span>{Choerodon.languageChange('refresh')}</span>
         </Button>
-      </PageHeader>
-      <div className="page-content">
+      </Header>
+      <Content className="page-content">
         <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的容器管理</h2>
         <p>
           容器管理便于您查看和管理Kubernetes中应用实例生成的容器，
@@ -285,11 +282,11 @@ class ContainerHome extends Component {
           rowKey={record => record.id}
           onChange={this.tableChange}
         />
-      </div>
+      </Content>
     </React.Fragment>);
 
     return (
-      <div className="c7n-region page-container c7n-container-wrapper">
+      <Page className="c7n-region page-container c7n-container-wrapper">
         {contentDom}
         <Sidebar
           visible={ContainerStore.show}
@@ -321,7 +318,7 @@ class ContainerHome extends Component {
           </section>
         </Sidebar>
 
-      </div>
+      </Page>
     );
   }
 }

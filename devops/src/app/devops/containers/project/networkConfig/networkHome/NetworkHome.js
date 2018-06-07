@@ -1,11 +1,9 @@
-/* eslint-disable no-console */
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Table, Button, Form, Tooltip, Modal, Progress } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
+import { Permission, Content, Header, Page, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import Permission from 'PerComponent';
 import NetworkCreate from '../createNetwork';
 import './NetworkHome.scss';
 import '../../../main.scss';
@@ -14,13 +12,13 @@ import EditNetwork from '../editNetwork';
 import { commonComponent } from '../../../../components/commonFunction';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
+const { AppState } = stores;
 
-@inject('AppState')
 @commonComponent('NetworkConfigStore')
 @observer
 class NetworkHome extends Component {
   constructor(props, context) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props, context);
     this.state = {
       upDown: [],
@@ -46,7 +44,6 @@ class NetworkHome extends Component {
       this.setState({
         upDown,
       });
-      // console.log(upDown, length);
     } else {
       for (let i = 0; i < cols.length; i += 1) {
         cols[i].style.height = '31px';
@@ -55,7 +52,6 @@ class NetworkHome extends Component {
       this.setState({
         upDown,
       });
-      // console.log(upDown, length);
     }
   };
 
@@ -95,7 +91,7 @@ class NetworkHome extends Component {
   };
   render() {
     const { NetworkConfigStore } = this.props;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const projectName = menu.name;
     const { upDown } = this.state;
     const data = NetworkConfigStore.getAllData;
@@ -174,7 +170,6 @@ class NetworkHome extends Component {
       ),
     }, {
       title: '端口',
-      // className: 'c7n-network-text_top',
       key: 'port',
       sorter: true,
       filters: [],
@@ -232,7 +227,7 @@ class NetworkHome extends Component {
         </React.Fragment>
       ),
     }, {
-      width: '98px',
+      width: '96px',
       key: 'action',
       render: (record) => {
         let editDom = null;
@@ -287,12 +282,11 @@ class NetworkHome extends Component {
       },
     }];
     return (
-      <div className="c7n-region page-container c7n-network-wrapper">
+      <Page className="c7n-region c7n-network-wrapper">
         {NetworkConfigStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <PageHeader title="网络配置">
+          <Header title="网络配置">
             <Permission
               service={['devops-service.devops-service.create']}
-              // service={''}
               type={type}
               projectId={projectId}
               organizationId={orgId}
@@ -319,8 +313,8 @@ class NetworkHome extends Component {
                 <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
-          </PageHeader>
-          <div className="page-content">
+          </Header>
+          <Content>
             <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的网络配置</h2>
             <p>
               网络管理是定义了一种访问网络的策略，是指内部的负载均衡以及网络转发，会将网络流量定向转发到指定的单个或者多个实例容器组。
@@ -340,7 +334,7 @@ class NetworkHome extends Component {
               dataSource={data}
               rowKey={record => record.id}
             />
-          </div>
+          </Content>
         </React.Fragment>
         }
 
@@ -367,7 +361,7 @@ class NetworkHome extends Component {
         >
           <p>删除网络后，需要您再去修改相关的域名信息。确定要删除该网络吗？</p>
         </Modal>
-      </div>
+      </Page>
     );
   }
 }

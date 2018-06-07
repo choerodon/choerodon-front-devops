@@ -1,24 +1,22 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Button, Form, Select, Tooltip, Modal, Progress } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
-import Permission from 'PerComponent';
+import { Table, Button, Form, Tooltip, Modal, Progress } from 'choerodon-ui';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import CreateDomain from '../createDomain';
 import LoadingBar from '../../../../components/loadingBar';
 import './DomainHome.scss';
 import '../../../main.scss';
 import { commonComponent } from '../../../../components/commonFunction';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
+const { AppState } = stores;
 
-@inject('AppState')
 @commonComponent('DomainStore')
 @observer
 class DomainHome extends Component {
   constructor(props, context) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props, context);
     this.state = {
       upDown: -1,
@@ -67,7 +65,7 @@ class DomainHome extends Component {
   render() {
     const { DomainStore } = this.props;
     const data = DomainStore.getAllData;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const projectName = menu.name;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
@@ -221,9 +219,9 @@ class DomainHome extends Component {
       },
     }];
     return (
-      <div className="c7n-region page-container c7n-domain-wrapper">
+      <Page className="c7n-region c7n-domain-wrapper">
         { DomainStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <PageHeader title="域名管理">
+          <Header title="域名管理">
             <Permission
               service={['devops-service.devops-ingress.create']}
               type={type}
@@ -252,8 +250,8 @@ class DomainHome extends Component {
                 <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
-          </PageHeader>
-          <div className="page-content">
+          </Header>
+          <Content>
             <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的域名管理</h2>
             <p>
               域名管理是将您已经预定义好的域名在平台中进行配置，使外部能够通过指定的域名访问到系统内部的实例。
@@ -274,7 +272,7 @@ class DomainHome extends Component {
               rowKey={record => record.domainId}
             />
 
-          </div>
+          </Content>
         </React.Fragment> }
 
         {this.state.show && <CreateDomain
@@ -297,7 +295,7 @@ class DomainHome extends Component {
         >
           <p>确定要删除吗</p>
         </Modal>
-      </div>
+      </Page>
     );
   }
 }

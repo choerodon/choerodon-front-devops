@@ -3,8 +3,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import nomatch from 'nomatch';
-import asyncRouter from '../../../../../util/asyncRouter';
+import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
 const NetworkHome = asyncRouter(() => import('./networkHome'), () => import('../../../stores/project/networkConfig'));
 
