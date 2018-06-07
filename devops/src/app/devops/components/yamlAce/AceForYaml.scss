@@ -30,6 +30,21 @@
   //}
 }
 
+.clearLineHeight-line {
+  position: absolute;
+  z-index: 20;
+  background-color: #f9f9f9;
+}
+
+.clearLineHeight-text {
+  position: absolute;
+  background-color: #f9f9f9;
+
+  //&::before {
+  //  content: '+  ';
+  //}
+}
+
 .ace_error {
   // background-image: none !important;
 }
