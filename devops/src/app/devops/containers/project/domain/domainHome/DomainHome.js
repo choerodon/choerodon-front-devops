@@ -231,12 +231,11 @@ class DomainHome extends Component {
               organizationId={orgId}
             >
               <Button
-                className="leftBtn"
                 funcType="flat"
                 onClick={this.showSideBar.bind(this, 'create', '')}
               >
-                <span className="icon-playlist_add page-head-icon" />
-                <span className="icon-space">{Choerodon.getMessage('创建域名', 'Create Domain')}</span>
+                <span className="icon-playlist_add icon" />
+                <span>{Choerodon.getMessage('创建域名', 'Create Domain')}</span>
               </Button>
             </Permission>
             <Permission
@@ -246,12 +245,11 @@ class DomainHome extends Component {
               organizationId={orgId}
             >
               <Button
-                className="leftBtn2"
                 funcType="flat"
                 onClick={this.loadAllData}
               >
-                <span className="icon-refresh page-head-icon" />
-                <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+                <span className="icon-refresh icon" />
+                <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
           </PageHeader>

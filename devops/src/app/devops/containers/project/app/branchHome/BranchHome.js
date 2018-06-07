@@ -489,7 +489,7 @@ class BranchHome extends Component {
                   onClick={this.showSidebar}
                 >
                   <span className="icon-playlist_add" />
-                  <span className="icon-space">{Choerodon.languageChange('branch.create')}</span>
+                  <span>{Choerodon.languageChange('branch.create')}</span>
                 </Button>
               </Tooltip>
             </Permission>
@@ -503,7 +503,7 @@ class BranchHome extends Component {
                 onClick={this.handleRefresh}
               >
                 <span className="icon-refresh" />
-                <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+                <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
           </PageHeader>

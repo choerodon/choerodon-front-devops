@@ -405,11 +405,10 @@ class CiPipelineHome extends Component {
         <PageHeader title={Choerodon.languageChange('ciPipeline.title')}>
           <Button
             funcType="flat"
-            className="leftBtn"
             onClick={this.handleRefresh}
           >
-            <span className="icon-refresh page-head-icon" />
-            <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+            <span className="icon-refresh icon" />
+            <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
         </PageHeader>
         <div className="c7n-under-content c7n-scroll-content page-content">

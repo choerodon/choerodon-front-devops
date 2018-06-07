@@ -171,12 +171,11 @@ class DeployHome extends Component {
       <div className="c7n-region page-container">
         <PageHeader title={Choerodon.getMessage('实例', 'Instance')}>
           <Button
-            className="leftBtn"
             funcType="flat"
             onClick={this.reload}
           >
-            <span className="icon-refresh page-head-icon" />
-            <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+            <span className="icon-refresh icon" />
+            <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
         </PageHeader>
         <div className="page-content">

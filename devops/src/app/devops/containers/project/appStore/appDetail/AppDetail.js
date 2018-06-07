@@ -120,11 +120,10 @@ class AppDetail extends Component {
         <PageHeader title="应用详情" backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <Button
             funcType="flat"
-            className="leftBtn"
             onClick={this.reload}
           >
-            <span className="icon-refresh page-head-icon" />
-            <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+            <span className="icon-refresh icon" />
+            <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
         </PageHeader>
         {AppStoreStore.isLoading ? <LoadingBar display /> :

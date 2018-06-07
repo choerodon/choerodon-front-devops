@@ -170,10 +170,9 @@ class DeploymentDetail extends Component {
           <Button
             onClick={this.loadAllData}
             funcType="flat"
-            className="leftBtn"
           >
-            <span className="icon-refresh page-head-icon" />
-            <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+            <span className="icon-refresh icon" />
+            <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
         </PageHeader>
         { DeployDetailStore.isLoading ? <LoadingBar display /> : <div className="page-content">
