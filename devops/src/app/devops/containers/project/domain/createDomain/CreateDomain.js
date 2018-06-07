@@ -299,16 +299,12 @@ class CreateDomain extends Component {
         <FormItem
           className="c7n-domain-formItem"
           {...formItemLayout}
-          // validateStatus={SingleData && SingleData.envStatus !== 'running' ? 'error' : ''}
-          // help={SingleData && SingleData.envStatus !== 'running' ? '环境未连接' : ''}
         >
           {getFieldDecorator('envId', {
             rules: [{
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               transform: value => value.toString(),
-            }, {
-              // validator: this.checkCode,
             }],
             initialValue: SingleData ? SingleData.envId : undefined,
           })(
@@ -320,7 +316,6 @@ class CreateDomain extends Component {
               showSearch
               label="环境名称"
               optionFilterProp="children"
-              // onChange={handleChange}
               filterOption={(input, option) =>
                 option.props.children[2].toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
@@ -349,10 +344,9 @@ class CreateDomain extends Component {
             initialValue: SingleData ? SingleData.name : '',
           })(
             <Input
-              maxLength={253}
+              maxLength={30}
               label={Choerodon.getMessage('域名名称', 'name')}
               size="default"
-              // placeholder={Choerodon.getMessage('域名', 'domain')}
             />,
           )}
         </FormItem>
@@ -371,10 +365,9 @@ class CreateDomain extends Component {
             initialValue: SingleData ? SingleData.domain : '',
           })(
             <Input
-              maxLength={253}
+              maxLength={50}
               label={Choerodon.getMessage('域名地址', 'domain')}
               size="default"
-              // placeholder={Choerodon.getMessage('域名路径', 'domain path')}
             />,
           )}
         </FormItem>
@@ -386,7 +379,6 @@ class CreateDomain extends Component {
             {getFieldDecorator(`path-${data.pathIndex}`, {
               rules: [{
                 required: true,
-                // transform: value => `/${value}`,
               }, {
                 validator: this.checkPath,
               },
@@ -395,46 +387,33 @@ class CreateDomain extends Component {
                 ? dto[index].path : '/',
             })(
               <Input
-                maxLength={20}
-                // prefix={this.props.id ? '/'}
-                // prefix="/"
+                maxLength={10}
                 label={Choerodon.languageChange('domain.path')}
                 size="default"
-                // placeholder={Choerodon.getMessage('路径', 'path')}
               />,
             )}
           </FormItem>
           <FormItem
             className="c7n-formItem_312"
             {...formItemLayout}
-            // validateStatus={SingleData && dto.length > index && dto[index].
-            // serviceStatus !== 'running' ? 'error' : ''}
-            // help={SingleData && dto.length > index && dto[index].
-            // serviceStatus !== 'running' ? '网络故障，建议更换' : ''}
           >
             {getFieldDecorator(`network-${data.networkIndex}`, {
               rules: [{
                 required: true,
                 transform: value => value.toString(),
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              }, {
-                // validator: this.checkCode,
               }],
               initialValue: SingleData && dto.length > index
                 ? dto[index].serviceId : undefined,
             })(
               <Select
-                // onFocus={this.loadService}
                 filter
-                // disable={!this.state.envId}
                 label={Choerodon.getMessage('网络', 'network')}
                 showSearch
-                // mode="multiple"
                 dropdownMatchSelectWidth
                 size="default"
                 optionFilterProp="children"
                 optionLabelProp="children"
-                // placeholder={Choerodon.getMessage('网络', 'network')}
                 filterOption={
                   (input, option) =>
                     option.props.children[1]

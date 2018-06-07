@@ -185,11 +185,11 @@ const zhCN = {
   // template
 
   'template.title': '应用模板',
-  'template.name': '应用模板名称',
-  'template.description': '应用模板描述',
-  'template.url': '应用模板地址',
-  'template.code': '应用模板编码',
-  'template.type': '应用模板来源',
+  'template.name': '模板名称',
+  'template.description': '模板描述',
+  'template.url': '模板地址',
+  'template.code': '模板编码',
+  'template.type': '模板来源',
   'template.copyFrom': '复制于现有应用模板',
 
 

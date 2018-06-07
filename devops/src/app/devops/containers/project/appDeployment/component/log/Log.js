@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import AceEditor from 'react-ace';
-import 'brace/mode/json';
+import 'brace/mode/text';
 import 'brace/theme/terminal';
 
 import './Log.scss';
@@ -16,7 +16,7 @@ class Log extends Component {
     const height = (window.innerHeight);
     const aceHeight = (height * 53) / 100;
     return (<AceEditor
-      mode="json"
+      mode="text"
       theme="terminal"
       name="blah2"
       style={{ width: '100%', height: '500px', marginBottom: 32 }}

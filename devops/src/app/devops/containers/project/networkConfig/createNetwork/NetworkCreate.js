@@ -327,8 +327,6 @@ class NetworkCreate extends Component {
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               transform: value => value.toString(),
-            }, {
-              // validator: this.checkCode,
             }],
           })(
             <Select
@@ -339,7 +337,6 @@ class NetworkCreate extends Component {
               className="c7n-create-network-formitem"
               label="环境名称"
               optionFilterProp="children"
-              // onChange={handleChange}
               onSelect={this.selectEnv}
               filterOption={(input, option) => option.props.children[2]
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -364,8 +361,6 @@ class NetworkCreate extends Component {
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               transform: value => value.toString(),
-            }, {
-              // gfffcftor: this.checkCode,
             }],
           })(
             <Select
@@ -402,8 +397,6 @@ class NetworkCreate extends Component {
                 required: true,
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
                 transform: value => value.toString(),
-              }, {
-                // gfffcftor: this.checkCode,
               }],
             })(
               <Select
@@ -450,8 +443,6 @@ class NetworkCreate extends Component {
                 required: true,
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
                 transform: value => value.toString(),
-              }, {
-                // gfffcftor: this.checkCode,
               }],
             })(
               <Select
@@ -507,7 +498,7 @@ class NetworkCreate extends Component {
             }],
             initialValue: this.state.networkValue,
           })(
-            <Input disabled={!this.state.appId} label="网络名称" />,
+            <Input disabled={!this.state.appId} label="网络名称" maxLength={25} />,
           )}
         </FormItem>
         <FormItem
@@ -521,7 +512,7 @@ class NetworkCreate extends Component {
               },
             ],
           })(
-            <Input maxLength={30} label="外部IP" />,
+            <Input maxLength={15} label="外部IP" />,
           )}
         </FormItem>
         <FormItem
@@ -537,7 +528,7 @@ class NetworkCreate extends Component {
               // validator: this.checkCode,
             }],
           })(
-            <Input maxLength={30} label="端口号" />,
+            <Input maxLength={5} label="端口号" />,
           )}
         </FormItem>
         <FormItem

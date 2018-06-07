@@ -379,7 +379,7 @@ class Editnetwok extends Component {
             }],
             initialValue: SingleData ? SingleData.name : '',
           })(
-            <Input label="网络名称" />,
+            <Input label="网络名称" maxLength={25} />,
           )}
         </FormItem>
         <FormItem
@@ -429,9 +429,7 @@ class Editnetwok extends Component {
               label="应用名称"
               optionFilterProp="children"
               onFocus={this.loadApp}
-              // onChange={handleChange}
               onSelect={this.selectApp}
-              // onFocus={store.loadApp(projectId, this.state.envId || SingleData.envId)}
               filterOption={(input, option) =>
                 option.props.children.props.children.props.children
                   .toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -466,7 +464,6 @@ class Editnetwok extends Component {
             })(
               <Select
                 filter
-                // disabled={!this.state.appId}
                 notFoundContent="该应用下没有版本生成"
                 label={Choerodon.getMessage('版本', 'version')}
                 showSearch
@@ -503,10 +500,6 @@ class Editnetwok extends Component {
           <FormItem
             className="c7n-create-network-test"
             {...formItemLayout}
-            // validateStatus={haveOption && this.getInstanceStatus(index,
-            // selectVersionArr[index]) ? 'error' : ''}
-            // help={haveOption && _.filter(_.map(SingleData.appVersion[index].appInstance,
-            // 'intanceStatus'), v => v !== 'running').length ? '实例故障，建议更换' : ''}
           >
             {getFieldDecorator(`instance-${index}`, {
               rules: [{
@@ -578,7 +571,7 @@ class Editnetwok extends Component {
             }],
             initialValue: SingleData ? SingleData.externalIp : '',
           })(
-            <Input maxLength={30} label="外部IP" />,
+            <Input maxLength={15} label="外部IP" />,
           )}
         </FormItem>
         <FormItem
@@ -593,7 +586,7 @@ class Editnetwok extends Component {
             }],
             initialValue: SingleData ? SingleData.port : '',
           })(
-            <Input maxLength={30} label="端口号" />,
+            <Input maxLength={5} label="端口号" />,
           )}
         </FormItem>
         <FormItem
@@ -608,7 +601,7 @@ class Editnetwok extends Component {
             }],
             initialValue: SingleData ? SingleData.targetPort : '',
           })(
-            <Input maxLength={30} label="端口号" />,
+            <Input maxLength={10} label="目标口号" />,
           )}
         </FormItem>
       </Form>
