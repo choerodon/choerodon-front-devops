@@ -114,19 +114,15 @@ class DomainHome extends Component {
             statusDom = null;
         }
         return (<React.Fragment>
+          {record.name}
           {statusDom}
-          <MouserOverWrapper text={record.name || ''} width={100} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
-            {record.name}</MouserOverWrapper>
         </React.Fragment>);
       },
     }, {
       title: '域名地址',
       key: 'domain',
       filters: [],
-      render: record => (
-        <MouserOverWrapper text={record.domain || ''} width={120}>
-          {record.domain}</MouserOverWrapper>
-      ),
+      dataIndex: 'domain',
     }, {
       title: '环境名称',
       key: 'envName',
@@ -139,8 +135,7 @@ class DomainHome extends Component {
           </Tooltip> : <Tooltip title="未连接">
             <span className="env-status-error" />
           </Tooltip> }
-          <MouserOverWrapper text={record.envName || ''} width={80} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
-            {record.envName}</MouserOverWrapper>
+          {record.name}
         </React.Fragment>
       ),
     }, {
@@ -165,9 +160,7 @@ class DomainHome extends Component {
       render: record => (
         <div>
           {_.map(record.pathList, instance =>
-            (<MouserOverWrapper text={instance.serviceName || ''} width={140} className="c7n-network-col_border">
-              <span>{instance.serviceName}</span>
-            </MouserOverWrapper>
+            (<span>{instance.serviceName}</span>
             ))}
         </div>
       ),

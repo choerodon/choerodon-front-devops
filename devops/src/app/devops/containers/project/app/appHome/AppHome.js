@@ -76,23 +76,17 @@ class AppHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={120}>
-        {record.name}
-      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('app.code'),
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.code} width={120}>
-        {record.code}
-      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('app.url'),
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={300}>
+      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={480}>
         <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl}</a>
       </MouserOverWrapper>),
     }, {
@@ -116,7 +110,7 @@ class AppHome extends Component {
         </React.Fragment>
       ),
     }, {
-      width: '144px',
+      width: '128px',
       key: 'action',
       render: (test, record) => (
         <div>
@@ -368,7 +362,7 @@ class AppHome extends Component {
           })(
             <Input
               autoFocus
-              maxLength={30}
+              maxLength={20}
               label={Choerodon.languageChange('app.code')}
               size="default"
             />,
@@ -388,7 +382,7 @@ class AppHome extends Component {
             initialValue: singleData ? singleData.name : '',
           })(
             <Input
-              maxLength={30}
+              maxLength={20}
               label={Choerodon.languageChange('app.name')}
               size="default"
             />,
@@ -468,17 +462,13 @@ class AppHome extends Component {
               organizationId={orgId}
             >
               <Button
-                className="leftBtn"
-                funcType="flat"
                 onClick={this.showSideBar.bind(this, 'create')}
               >
                 <span className="icon-playlist_add page-head-icon" />
-                <span className="icon-space">{Choerodon.getMessage('创建应用', 'Create')}</span>
+                <span>{Choerodon.getMessage('创建应用', 'Create')}</span>
               </Button>
             </Permission>
             <Button
-              funcType="flat"
-              className="leftBtn2"
               onClick={this.handleRefresh}
             >
               <span className="icon-refresh page-head-icon" />

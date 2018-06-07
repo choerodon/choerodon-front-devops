@@ -12,6 +12,7 @@ import { commonComponent } from '../../../../components/commonFunction';
 import LoadingBar from '../../../../components/loadingBar';
 import './TemplateHome.scss';
 import '../../../main.scss';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const Option = Select.Option;
 const Sidebar = Modal.Sidebar;
@@ -75,17 +76,22 @@ class TemplateHome extends Component {
     const { type, id: orgId } = menu;
     return [{
       title: Choerodon.languageChange('template.name'),
-      dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
       // width: '14%',
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={108}>
+        {record.name}
+      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('template.code'),
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
+      render: (test, record) => (<MouserOverWrapper text={record.code} width={108}>
+        {record.code}
+      </MouserOverWrapper>),
       // width: '14%',
     }, {
       title: Choerodon.languageChange('template.description'),
@@ -93,6 +99,9 @@ class TemplateHome extends Component {
       key: 'description',
       sorter: true,
       filters: [],
+      render: (test, record) => (<MouserOverWrapper text={record.description} width={150}>
+        {record.description}
+      </MouserOverWrapper>),
       // width: '14%',
     }, {
       // width: '30%',
@@ -356,7 +365,7 @@ class TemplateHome extends Component {
           })(
             <Input
               autoFocus
-              maxLength={32}
+              maxLength={20}
               label={Choerodon.languageChange('template.code')}
               size="default"
             />,
@@ -376,7 +385,7 @@ class TemplateHome extends Component {
             initialValue: singleData ? singleData.name : '',
           })(
             <Input
-              maxLength={32}
+              maxLength={20}
               label={Choerodon.languageChange('template.name')}
               size="default"
             />,
@@ -396,7 +405,7 @@ class TemplateHome extends Component {
             initialValue: singleData ? singleData.description : '',
           })(
             <TextArea
-              maxLength={128}
+              maxLength={50}
               label={Choerodon.languageChange('template.description')}
               autosize={{ minRows: 2, maxRows: 6 }}
             />,

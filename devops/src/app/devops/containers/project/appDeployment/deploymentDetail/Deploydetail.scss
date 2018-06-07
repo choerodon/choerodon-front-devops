@@ -131,4 +131,8 @@
     text-align: left;
     line-height: 16px;
   }
+
+  .ace_gutter-cell.ace_error {
+    background-image: none !important;
+  }
 }

@@ -117,8 +117,8 @@ class BranchStore {
       }));
   }
 
-  getLatestHotfixVersion =(projectId, appId) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags/hotfix`)
+  getLatestHotfixVersion =(projectId, appId, branch = '') =>
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags/hotfix?branch=${branch}`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -126,8 +126,8 @@ class BranchStore {
         }
         return res;
       });
-  getLatestReleaseVersion =(projectId, appId) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags/release`)
+  getLatestReleaseVersion =(projectId, appId, branch = '') =>
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags/release?branch=${branch}`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
