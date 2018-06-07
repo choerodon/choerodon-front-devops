@@ -680,9 +680,13 @@
 .c7n-deploy-ist-operate {
   font-size: 15px;
   color: #f44336;
-  vertical-align: middle;
+  vertical-align: text-top;
 }
 
 .c7n-store-pagination {
   float: right;
+}
+
+.c7n-ace-section {
+  margin-top: 20px;
 }

@@ -274,7 +274,7 @@ class AddAppRelease extends Component {
       title: '生成时间',
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }, {
-      width: '40px',
+      width: 64,
       key: 'action',
       className: 'c7n-network-text_top',
       render: record => (
