@@ -350,7 +350,7 @@ class DeploymentAppHome extends Component {
     return (
       <div className="deployApp-deploy">
         <p>
-          平台支持两种部署模式：新建实例和替换实例。新建实例是部署生成新的实例；替换实例是等待新部署生成的副本集通过健康检查后再删除原副本集，但实例不变，只替换参数。
+          平台支持两种部署模式：新建实例和替换实例。新建实例是部署生成新的实例；替换实例是等待新部署生成的副本集通过健康检查后再删除原副本集，但实例不变，只替换其相关参数。
         </p>
         <section className="deployApp-section">
           <div className="deploy-title">
@@ -408,6 +408,7 @@ class DeploymentAppHome extends Component {
   handleRenderReview = () => {
     const { DeploymentAppStore } = this.props;
     const data = DeploymentAppStore.value;
+    const { app, versionId, envId, instanceId, mode } = this.state;
     return (
       <section className="deployApp-review">
         <section>
@@ -447,7 +448,7 @@ class DeploymentAppHome extends Component {
         </section>
         <section className="deployApp-section">
           <Permission service={['devops-service.application-instance.deploy']}>
-            <Button type="primary" funcType="raised" onClick={this.handleDeploy}>部署</Button>
+            <Button type="primary" funcType="raised" disabled={!(app && versionId && envId && mode)} onClick={this.handleDeploy}>部署</Button>
           </Permission>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 3)}>上一步</Button>
         </section>

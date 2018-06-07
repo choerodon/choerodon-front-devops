@@ -194,6 +194,7 @@ class AddAppRelease extends Component {
    */
   hanldeSelectApp =(record) => {
     const { EditReleaseStore } = this.props;
+    EditReleaseStore.setSelectData([]);
     if (this.state.appId && this.state.appId === record.id) {
       EditReleaseStore.setApp(null);
       this.setState({ appId: '' });
@@ -202,6 +203,37 @@ class AddAppRelease extends Component {
       this.setState({ appId: record.id });
     }
   }
+  /**
+   * table app表格搜索
+   * @param pagination 分页
+   * @param filters 过滤
+   * @param sorter 排序
+   */
+  appTableChange =(pagination, filters, sorter, paras) => {
+    const { EditReleaseStore } = this.props;
+    const menu = this.props.AppState.currentMenuType;
+    const organizationId = menu.id;
+    const sort = { field: 'id', order: 'desc' };
+    if (sorter.column) {
+      sort.field = sorter.field || sorter.columnKey;
+      // sort = sorter;
+      if (sorter.order === 'ascend') {
+        sort.order = 'asc';
+      } else if (sorter.order === 'descend') {
+        sort.order = 'desc';
+      }
+    }
+    let searchParam = {};
+    if (Object.keys(filters).length) {
+      searchParam = filters;
+    }
+    const postData = {
+      searchParam,
+      param: paras.toString(),
+    };
+    EditReleaseStore
+      .loadApps({ projectId: organizationId, sorter: sort, postData });
+  };
   /**
    * 渲染第一步
    */
@@ -250,7 +282,7 @@ class AddAppRelease extends Component {
               columns={column}
               dataSource={apps}
               rowKey={record => record.id}
-              onChange={this.tableChange}
+              onChange={this.appTableChange}
             />
           </div>
         </section>
@@ -410,7 +442,7 @@ class AddAppRelease extends Component {
             onChange={(value) => { this.setState({ description: value.target.value }); }}
             style={{ width: 512 }}
             maxLength={50}
-            label={Choerodon.languageChange('template.description')}
+            label={'应用描述'}
             autosize={{ minRows: 2, maxRows: 6 }}
           />
           <p>
@@ -438,11 +470,11 @@ class AddAppRelease extends Component {
         <p>您可以在此确认应用发布的信息，如需修改请返回相应步骤。</p>
         <section>
           <div>
-            <div className="deployApp-title">应用名称：</div>
+            <div className="app-release-title">应用名称：</div>
             <div className="deployApp-text">{EditReleaseStore.app && EditReleaseStore.app.name}</div>
           </div>
           <div>
-            <div className="deployApp-title">应用版本：</div>
+            <div className="app-release-title">应用版本：</div>
             <div className="deployApp-text">
               {EditReleaseStore.selectData.length && EditReleaseStore.selectData.map(v => (
                 <div>{v.version}</div>
@@ -450,19 +482,19 @@ class AddAppRelease extends Component {
             </div>
           </div>
           <div>
-            <div className="deployApp-title">贡献者：</div>
+            <div className="app-release-title">贡献者：</div>
             <div className="deployApp-text">{this.state.contributor}</div>
           </div>
           <div>
-            <div className="deployApp-title">分类：</div>
+            <div className="app-release-title">分类：</div>
             <div className="deployApp-text">{this.state.category}</div>
           </div>
           <div>
-            <div className="deployApp-title">描述：</div>
+            <div className="app-release-title">描述：</div>
             <div className="deployApp-text">{this.state.description}</div>
           </div>
           <div>
-            <div className="deployApp-title">发布范围：</div>
+            <div className="app-release-title">发布范围：</div>
             <div className="deployApp-text">{this.state.mode === 'organization' ? '本组织' : '全平台'}</div>
           </div>
         </section>
