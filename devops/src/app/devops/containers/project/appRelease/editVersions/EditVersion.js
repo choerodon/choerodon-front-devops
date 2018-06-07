@@ -57,6 +57,7 @@ class EditVersion extends Component {
       rowSelection={rowSelection}
       columns={columns}
       dataSource={data}
+      onChange={this.versionTableChange}
       rowKey={record => record.id}
     />);
   };
@@ -79,9 +80,47 @@ class EditVersion extends Component {
       pagination={EditVersionStore.pageInfo}
       columns={columns}
       dataSource={data}
+      onChange={this.versionTableChange}
       rowKey={record => record.id}
     />);
   }
+  /**
+   * table app表格搜索
+   * @param pagination 分页
+   * @param filters 过滤
+   * @param sorter 排序
+   */
+  versionTableChange =(pagination, filters, sorter, paras) => {
+    const { EditVersionStore } = this.props;
+    const menu = this.props.AppState.currentMenuType;
+    const organizationId = menu.id;
+    const sort = { field: 'id', order: 'desc' };
+    if (sorter.column) {
+      sort.field = sorter.field || sorter.columnKey;
+      // sort = sorter;
+      if (sorter.order === 'ascend') {
+        sort.order = 'asc';
+      } else if (sorter.order === 'descend') {
+        sort.order = 'desc';
+      }
+    }
+    let searchParam = {};
+    if (Object.keys(filters).length) {
+      searchParam = filters;
+    }
+    const postData = {
+      searchParam,
+      param: paras.toString(),
+    };
+    EditVersionStore
+      .loadData({
+        projectId: organizationId,
+        sorter: sort,
+        postData,
+        key: this.state.key,
+        id: this.state.id,
+      });
+  };
   /**
    * 切换tabs
    * @param value

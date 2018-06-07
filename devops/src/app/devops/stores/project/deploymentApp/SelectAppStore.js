@@ -18,7 +18,7 @@ class SelectAppStore {
   @observable singleData = null;
   @observable selectData = [];
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
+    current: 1, total: 0, pageSize: height <= 900 ? 10 : 16,
   };
 
   @action setPageInfo(page) {

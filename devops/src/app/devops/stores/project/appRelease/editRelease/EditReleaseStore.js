@@ -140,10 +140,10 @@ class EditReleaseStore {
   };
 
   handleData =(data) => {
-    this.setApps(data.content);
     const { number, size, totalElements } = data;
     const page = { number, size, totalElements };
     this.setPageInfo(page);
+    this.setApps(data.content);
   };
 
   loadAllVersion = ({ isRefresh = false, projectId, appId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
@@ -176,10 +176,10 @@ class EditReleaseStore {
     }
   };
   handleVersionData = (data) => {
-    this.setVersionData(data.content);
     const { number, size, totalElements } = data;
     const page = { number, size, totalElements };
     this.setVersionPageInfo(page);
+    this.setVersionData(data.content);
   };
 
   loadDataById =(projectId, id) =>

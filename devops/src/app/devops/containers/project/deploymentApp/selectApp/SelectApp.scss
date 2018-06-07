@@ -65,8 +65,8 @@
   .c7n-store-card {
     cursor: pointer;
     padding: 16px 20px;
-    margin-bottom: 10px;
-    margin-right: 10px;
+    margin-bottom: 14px;
+    margin-right: 14px;
     background-color: white;
     height: 190px;
     width: 240px;
@@ -112,14 +112,14 @@
 
     .span-icon-check {
       position: absolute;
-      font-size: 30px;
-      left: 220px;
+      font-size: 28px;
+      left: 217px;
       float: left;
-      margin-top: -30px;
+      margin-top: -28px;
       background-color: #3f51b5;
       color: white;
-      width: 30px;
-      height: 30px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       padding-bottom: 8px;
       display: flex;
@@ -127,7 +127,7 @@
   }
 
   .c7n-card-active {
-    outline: 2px solid #3f51b5;
+    box-shadow: 0 0 0 2px #3f51b5;
     position: relative;
   }
 
