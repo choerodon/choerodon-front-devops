@@ -70,16 +70,24 @@ class HighlightAce extends Component {
     const height = `${lines * lineHeight}px`;
     this.setState({ height });
     if (isTriggerChange) {
+      const { sourceData } = this.state;
       const start = options.start;
       const end = options.end;
+      const newValue = editor.session.getLine(start.row);
+      const oldValue = sourceData[start.row];
       const value = editor.session.getLine(start.row);
       const range = new Range(start.row, value.split(':')[0].length + 2, end.row, end.column);
-      if (options.action === 'insert' || (options.action === 'remove' && end.row === start.row && prevLineLength === lines)) {
-        editor.session.addMarker(range, 'modifyHighlight-line', 'fullLine', false);
-        editor.session.addMarker(range, 'modifyHighlight-text', 'text', false);
+      if (newValue !== oldValue) {
+        if (options.action === 'insert' || (options.action === 'remove' && end.row === start.row && prevLineLength === lines)) {
+          editor.session.addMarker(range, 'modifyHighlight-line', 'fullLine', false);
+          editor.session.addMarker(range, 'modifyHighlight-text', 'text', false);
+        }
+      } else {
+        // editor.session.removeMarker(start.row);
+        editor.session.addMarker(range, 'clearLineHeight-line', 'fullLine', false);
+        editor.session.addMarker(range, 'clearLineHeight-text', 'text', false);
       }
       this.setState({ lines });
-      window.console.log(lines);
       const modifyMarkers = editor.session.getMarkers();
       this.props.onChange(values, modifyMarkers);
     } else {
@@ -108,6 +116,8 @@ class HighlightAce extends Component {
     } else if (this.props.readOnly) {
       this.ace.editor.setReadOnly(true);
     }
+    const sourceData = this.props.value.split('\n');
+    this.setState({ sourceData });
   };
   /**
    * 设置高亮
