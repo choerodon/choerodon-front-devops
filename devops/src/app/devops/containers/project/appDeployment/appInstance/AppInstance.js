@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Icon, Select, Button, Form, Dropdown, Menu, Progress, Tooltip } from 'choerodon-ui';
-import Action from 'Action';
+import { Table, Progress, Tooltip } from 'choerodon-ui';
+import { Content, Header, Page, Permission, Action, stores } from 'choerodon-front-boot';
 import ValueConfig from '../valueConfig';
 import '../AppDeploy.scss';
 import '../../../main.scss';
 import DelIst from '../component/delIst/DelIst';
 
-@inject('AppState')
+const { AppState } = stores;
+
 @observer
 class AppInstance extends Component {
   constructor(props, context) {
@@ -39,7 +40,6 @@ class AppInstance extends Component {
    * @param status 实例状态
    */
   linkDeployDetail = (id, status) => {
-    const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const projectName = AppState.currentMenuType.name;
     const type = AppState.currentMenuType.type;
@@ -71,7 +71,7 @@ class AppInstance extends Component {
    * @param appId
    */
   updateConfig = (name, id, envId, verId, appId) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     this.setState({
       idArr: [envId, verId, appId],
@@ -97,7 +97,7 @@ class AppInstance extends Component {
    * @param status 状态
    */
   activeIst = (id, status) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     store.changeIstActive(projectId, id, status)
       .then((error) => {
@@ -117,7 +117,7 @@ class AppInstance extends Component {
    * @param param 搜索
    */
   tableChange =(pagination, filters, sorter, param) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     const sort = {};
     if (sorter.column) {
@@ -142,7 +142,7 @@ class AppInstance extends Component {
    * @param res 是否重新部署需要重载数据
    */
   handleCancel =(res) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     this.setState({
       visible: false,
@@ -165,7 +165,7 @@ class AppInstance extends Component {
    * 删除数据
    */
   handleDelete = (id) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     this.setState({
       loading: true,
@@ -197,7 +197,6 @@ class AppInstance extends Component {
    * @returns {*}
    */
   columnAction = (record) => {
-    const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;

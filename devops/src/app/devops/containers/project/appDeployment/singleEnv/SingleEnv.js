@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Icon, Select, Button, Form, Dropdown, Menu, Progress, Tooltip, Pagination } from 'choerodon-ui';
+import { Table, Icon, Select, Progress, Tooltip, Pagination } from 'choerodon-ui';
 import _ from 'lodash';
-import Action from 'Action';
+import { Action, stores } from 'choerodon-front-boot';
 import ValueConfig from '../valueConfig';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DelIst from '../component/delIst/DelIst';
@@ -12,7 +12,8 @@ import '../../../main.scss';
 
 const Option = Select.Option;
 
-@inject('AppState')
+const { AppState } = stores;
+
 @observer
 class SingleEnvironment extends Component {
   constructor(props) {
@@ -82,7 +83,6 @@ class SingleEnvironment extends Component {
    * @param status 实例状态
    */
   linkDeployDetail = (id, status) => {
-    const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const projectName = AppState.currentMenuType.name;
     const organizationId = AppState.currentMenuType.organizationId;
@@ -107,7 +107,7 @@ class SingleEnvironment extends Component {
    * @param id 环境id
    */
   loadSingleEnv = (id) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     const { pageSize, appId } = this.state;
     const envNames = store.getEnvcard;
@@ -127,7 +127,7 @@ class SingleEnvironment extends Component {
    * @param appId 应用id
    */
   loadInstance = (envId, verId, appId) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     const { pageSize } = this.state;
     store.loadInstanceAll(projectId, 0, pageSize, null, envId, verId, appId);
@@ -141,7 +141,7 @@ class SingleEnvironment extends Component {
    * @param param 搜索
    */
   tableChange =(pagination, filters, sorter, param) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     const { envId, appId, verId } = this.state;
     const envNames = store.getEnvcard;
@@ -173,7 +173,7 @@ class SingleEnvironment extends Component {
    * @param appId
    */
   updateConfig = (name, id, envId, verId, appId) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     this.setState({
       idArr: [envId, verId, appId],
@@ -259,7 +259,7 @@ class SingleEnvironment extends Component {
    * @param status 状态
    */
   activeIst = (id, status) => {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     const { envId, appId, page } = this.state;
     const envNames = store.getEnvcard;
@@ -287,7 +287,6 @@ class SingleEnvironment extends Component {
    * @returns {*}
    */
   columnAction = (record) => {
-    const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
@@ -370,7 +369,7 @@ class SingleEnvironment extends Component {
   };
 
   render() {
-    const { AppState, store } = this.props;
+    const { store } = this.props;
     const ist = store.getIstAll;
     const envNames = store.getEnvcard;
     const appNames = store.getAppNameByEnv;

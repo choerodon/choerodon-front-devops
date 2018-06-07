@@ -2,18 +2,17 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Table, Popover, Modal, Tabs, Tooltip, Icon } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
-import Permission from 'PerComponent';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import '../../../main.scss';
 import '../AppRelease.scss';
 import editReleaseStore from '../../../../stores/project/appRelease/editRelease';
 
 const TabPane = Tabs.TabPane;
-@inject('AppState')
+const { AppState } = stores;
 @observer
 class AppReleaseHome extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       openRemove: false,
@@ -28,7 +27,7 @@ class AppReleaseHome extends Component {
   }
 
   getColumn = () => {
-    const { type, id: orgId } = this.props.AppState.currentMenuType;
+    const { type, id: orgId } = AppState.currentMenuType;
     return [{
       title: Choerodon.languageChange('app.name'),
       dataIndex: 'name',
@@ -83,7 +82,7 @@ class AppReleaseHome extends Component {
    * @param ids
    */
   handleEdit = (ids) => {
-    const { name, id, organizationId } = this.props.AppState.currentMenuType;
+    const { name, id, organizationId } = AppState.currentMenuType;
     this.props.history.push(`/devops/app-release/edit/${ids}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
   };
   /**
@@ -91,7 +90,7 @@ class AppReleaseHome extends Component {
    * @param record 发布的数据
    */
   handleCreate = (record) => {
-    const { name, id, organizationId } = this.props.AppState.currentMenuType;
+    const { name, id, organizationId } = AppState.currentMenuType;
     editReleaseStore.setApp(record);
     this.props.history.push(`/devops/app-release/add/${record.id}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
   }
@@ -100,7 +99,7 @@ class AppReleaseHome extends Component {
    * @param ids
    */
   handleEditVersion = (ids) => {
-    const { name, id, organizationId } = this.props.AppState.currentMenuType;
+    const { name, id, organizationId } = AppState.currentMenuType;
     this.props.history.push(`/devops/app-release/app/${ids.name}/edit-version/${ids.id}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
   }
   /**
@@ -164,7 +163,7 @@ class AppReleaseHome extends Component {
    */
   tableChange =(pagination, filters, sorter, paras) => {
     const { AppReleaseStore } = this.props;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     const sort = { field: 'id', order: 'desc' };
     if (sorter.column) {
@@ -200,17 +199,17 @@ class AppReleaseHome extends Component {
     const { AppReleaseStore } = this.props;
     const data = AppReleaseStore.allData;
     return (
-      <div className="c7n-region page-container app-release-wrapper">
-        <PageHeader title="应用发布">
+      <Page className="c7n-region app-release-wrapper">
+        <Header title="应用发布">
           <Button
             onClick={this.handleRefresh}
           >
             <span className="icon-refresh icon" />
             <span>刷新</span>
           </Button>
-        </PageHeader>
-        <div className="page-content">
-          <h2 className="c7n-space-first">项目&quot;{this.props.AppState.currentMenuType.name}&quot;的应用发布 </h2>
+        </Header>
+        <Content>
+          <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的应用发布 </h2>
           <p>
             应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。
             <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
@@ -236,8 +235,8 @@ class AppReleaseHome extends Component {
               />
             </TabPane>
           </Tabs>
-        </div>
-      </div>
+        </Content>
+      </Page>
 
     );
   }

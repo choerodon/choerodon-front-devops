@@ -3,8 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Select, Button, Spin, Radio, Card, Steps, Table, Tooltip, Form, Input } from 'choerodon-ui';
 import _ from 'lodash';
-import PageHeader from 'PageHeader';
-import Permission from 'PerComponent';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import '../../../main.scss';
 import './../AppRelease.scss';
 import VersionTable from '../versionTable';
@@ -14,7 +13,8 @@ import TimePopover from '../../../../components/timePopover';
 const { TextArea } = Input;
 const RadioGroup = Radio.Group;
 const Step = Steps.Step;
-@inject('AppState')
+const { AppState } = stores;
+
 @observer
 class AddAppRelease extends Component {
   constructor(props) {
@@ -23,14 +23,14 @@ class AddAppRelease extends Component {
       appId: props.match.params.appId || undefined,
       current: props.match.params.appId ? 2 : 1,
       envId: undefined,
-      projectId: props.AppState.currentMenuType.id,
+      projectId: AppState.currentMenuType.id,
       mode: 'organization',
       markers: null,
     };
   }
 
   componentDidMount() {
-    const { AppState, EditReleaseStore } = this.props;
+    const { EditReleaseStore } = this.props;
     EditReleaseStore.loadApps({ projectId: this.state.projectId });
     EditReleaseStore.loadApp(this.state.projectId, this.state.appId);
   }
@@ -78,7 +78,6 @@ class AddAppRelease extends Component {
    * 返回到上一级
    */
   openAppDeployment() {
-    const { AppState } = this.props;
     const projectName = AppState.currentMenuType.name;
     const projectId = AppState.currentMenuType.id;
     const type = AppState.currentMenuType.type;
@@ -93,7 +92,7 @@ class AddAppRelease extends Component {
    * 取消返回到第一步
    */
   clearAll = () => {
-    const { AppState, EditReleaseStore } = this.props;
+    const { EditReleaseStore } = this.props;
     EditReleaseStore.setVersions([]);
     EditReleaseStore.setValue(null);
     EditReleaseStore.setCurrentInstance([]);
@@ -108,7 +107,6 @@ class AddAppRelease extends Component {
    * 取消第一步
    */
   clearStepOne = () => {
-    const { AppState } = this.props;
     const projectName = AppState.currentMenuType.name;
     const projectId = AppState.currentMenuType.id;
     const type = AppState.currentMenuType.type;
@@ -171,7 +169,7 @@ class AddAppRelease extends Component {
    * @param e
    */
   selectFile =(e) => {
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { EditReleaseStore } = this.props;
     const formdata = new FormData();
     const img = e.target.files[0];
@@ -211,7 +209,7 @@ class AddAppRelease extends Component {
    */
   appTableChange =(pagination, filters, sorter, paras) => {
     const { EditReleaseStore } = this.props;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     const sort = { field: 'id', order: 'desc' };
     if (sorter.column) {
@@ -349,7 +347,7 @@ class AddAppRelease extends Component {
    * @returns {*}
    */
   handleRenderMode = () => {
-    const { AppState, EditReleaseStore } = this.props;
+    const { EditReleaseStore } = this.props;
     const radioStyle = {
       display: 'block',
       height: '30px',
@@ -512,11 +510,11 @@ class AddAppRelease extends Component {
   }
 
   handleAddVersion = () => {
-    const { AppState, EditReleaseStore } = this.props;
+    const { EditReleaseStore } = this.props;
     EditReleaseStore.changeShow(true);
   };
   removeVersion = (id) => {
-    const { AppState, EditReleaseStore } = this.props;
+    const { EditReleaseStore } = this.props;
     const data = _.cloneDeep(EditReleaseStore.selectData.slice());
     _.remove(data, app => app.id === id);
     window.console.log(data);
@@ -524,15 +522,15 @@ class AddAppRelease extends Component {
   };
 
   render() {
-    const { AppState, EditReleaseStore } = this.props;
+    const { EditReleaseStore } = this.props;
     const data = EditReleaseStore.selectData;
     const projectName = AppState.currentMenuType.name;
     const { id, type } = AppState.currentMenuType;
     const { appId, mode, current, category, description, contributor } = this.state;
     return (
-      <div className="c7n-region page-container">
-        <PageHeader title={'应用发布'} backPath={`/devops/app-release/2?type=${type}&id=${id}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`} />
-        <div className="page-content c7n-deployApp-wrapper" style={{ paddingBottom: '16px' }}>
+      <Page className="c7n-region">
+        <Header title={'应用发布'} backPath={`/devops/app-release/2?type=${type}&id=${id}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`} />
+        <Content className="c7n-deployApp-wrapper" style={{ paddingBottom: '16px' }}>
           <h2 className="c7n-space-first">在项目&quot;{projectName}&quot;中进行应用发布</h2>
           <p>
             您可以在此按指引分步骤完成应用发布。
@@ -588,8 +586,8 @@ class AddAppRelease extends Component {
             appId={this.state.appId}
             store={EditReleaseStore}
           />}
-        </div>
-      </div>
+        </Content>
+      </Page>
     );
   }
 }

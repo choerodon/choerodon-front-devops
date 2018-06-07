@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Input, Icon, Pagination, Table, Popover } from 'choerodon-ui';
-import Permission from 'PerComponent';
-import PageHeader from 'PageHeader';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import LoadingBar from '../../../../components/loadingBar';
 import './AppStore.scss';
@@ -11,7 +10,8 @@ import '../../../main.scss';
 
 const ButtonGroup = Button.Group;
 
-@inject('AppState')
+const { AppState } = stores;
+
 @observer
 class AppStoreHome extends Component {
   constructor(props) {
@@ -61,7 +61,7 @@ class AppStoreHome extends Component {
    * @param param 搜索
    */
   onChange = (pagination, filters, sorter, param) => {
-    const { AppStoreStore, AppState } = this.props;
+    const { AppStoreStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     const sort = {};
     const searchParam = {};
@@ -104,7 +104,7 @@ class AppStoreHome extends Component {
    * 加载应用卡片
    */
   loadAppCards = () => {
-    const { AppStoreStore, AppState } = this.props;
+    const { AppStoreStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     AppStoreStore.loadApps(projectId);
   };
@@ -114,7 +114,6 @@ class AppStoreHome extends Component {
    * @param id 应用id
    */
   appDetail = (id) => {
-    const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const projectName = AppState.currentMenuType.name;
@@ -147,7 +146,7 @@ class AppStoreHome extends Component {
 
 
   render() {
-    const { AppStoreStore, AppState } = this.props;
+    const { AppStoreStore } = this.props;
     const pageInfo = AppStoreStore.getPageInfo;
     const appCards = AppStoreStore.getAppCards;
     const listActive = AppStoreStore.getListActive;
@@ -222,8 +221,8 @@ class AppStoreHome extends Component {
     />);
 
     return (
-      <div className="c7n-region page-container">
-        <PageHeader title={Choerodon.languageChange('appstore.title')}>
+      <Page className="c7n-region page-container">
+        <Header title={Choerodon.languageChange('appstore.title')}>
           <Button
             funcType="flat"
             onClick={this.reload}
@@ -231,7 +230,7 @@ class AppStoreHome extends Component {
             <span className="icon-refresh icon" />
             <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
-        </PageHeader>
+        </Header>
         <div className="c7n-store-content">
           <h2 className="c7n-space-first">应用市场</h2>
           <p>
@@ -276,7 +275,7 @@ class AppStoreHome extends Component {
             />
           </div>
         </div>
-      </div>
+      </Page>
     );
   }
 }

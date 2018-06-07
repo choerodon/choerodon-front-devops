@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { DragSource } from 'react-dnd';
 import { Button, Tooltip } from 'choerodon-ui';
-import Permission from 'PerComponent';
+import { Permission } from 'choerodon-front-boot';
 import './EnvPipeLineHome.scss';
 import EnvPipelineStore from '../../../../stores/project/envPipeline';
 

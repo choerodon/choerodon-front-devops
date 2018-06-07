@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { Table, Button, Input, Form, Tooltip, Select, Modal, Icon } from 'choerodon-ui';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import Permission from 'PerComponent';
-import PageHeader from 'PageHeader';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import { fromJS, is } from 'immutable';
 import { Obversable } from 'rxjs';
@@ -14,6 +13,7 @@ import './TemplateHome.scss';
 import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
+const { AppState } = stores;
 const Option = Select.Option;
 const Sidebar = Modal.Sidebar;
 const FormItem = Form.Item;
@@ -29,13 +29,12 @@ const formItemLayout = {
   },
 };
 
-@inject("AppState")
 @commonComponent('TemplateStore')
 @observer
 class TemplateHome extends Component {
   constructor(props) {
     super(props);
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     this.state = {
       id: '',
       organizationId: menu.id,
@@ -72,7 +71,7 @@ class TemplateHome extends Component {
    * @returns {[null,null,null,null,null,null]}
    */
   getColumn = () => {
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { type, id: orgId } = menu;
     return [{
       title: Choerodon.languageChange('template.name'),
@@ -324,7 +323,7 @@ class TemplateHome extends Component {
     const { getFieldDecorator } = this.props.form;
     const serviceData = TemplateStore.getAllData;
     const { singleData, selectData } = TemplateStore;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { type, id: orgId } = menu;
     const formContent = (<div className="c7n-region">
       {this.state.type === 'create' ? <div>
@@ -471,9 +470,9 @@ class TemplateHome extends Component {
         onChange={this.tableChange}
       />);
     return (
-      <div className="c7n-region page-container c7n-template-wrapper">
+      <Page className="c7n-region page-container c7n-template-wrapper">
         {TemplateStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <PageHeader title={Choerodon.languageChange('template.title')}>
+          <Header title={Choerodon.languageChange('template.title')}>
             <Permission
               service={['devops-service.application-template.create']}
               type={type}
@@ -500,8 +499,8 @@ class TemplateHome extends Component {
                 <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
-          </PageHeader>
-          <div className="page-content">
+          </Header>
+          <Content>
             <h2 className="c7n-space-first">组织&quot;{menu.name}&quot;的应用模板</h2>
             <p>
               应用模板是将同类型应用的代码库结构整理成模板，用于创建应用时能引用相应模板快速创建初始代码库。您也可以根据实际情况自定义应用模板。
@@ -524,7 +523,7 @@ class TemplateHome extends Component {
               {formContent}
             </Sidebar> }
             {contentDom}
-          </div>
+          </Content>
         </React.Fragment>}
         <Modal
           visible={this.state.openRemove}
@@ -538,7 +537,7 @@ class TemplateHome extends Component {
         >
           <p>确定要删除该应用模板吗？</p>
         </Modal>
-      </div>
+      </Page>
     );
   }
 }

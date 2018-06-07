@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { Table, Button } from 'choerodon-ui';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import Permission from 'PerComponent';
-import PageHeader from 'PageHeader';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { fromJS, is } from 'immutable';
 import { Obversable } from 'rxjs';
 
@@ -14,13 +13,13 @@ import './ApplicationVersion.scss';
 import '../../../main.scss';
 
 
-@inject('AppState')
+const { AppState } = stores;
 @commonComponent('AppVersionStore')
 @observer
 class ApplicationVersion extends Component {
   constructor(props) {
     super(props);
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     this.state = {
       page: 0,
       id: '',
@@ -51,7 +50,7 @@ class ApplicationVersion extends Component {
   };
 
   getColumn = () => {
-    const { type, id: orgId } = this.props.AppState.currentMenuType;
+    const { type, id: orgId } = AppState.currentMenuType;
     return [{
       title: Choerodon.languageChange('app.version'),
       dataIndex: 'version',
@@ -86,7 +85,7 @@ class ApplicationVersion extends Component {
   render() {
     const { AppVersionStore } = this.props;
     const serviceData = AppVersionStore.getAllData;
-    const { type, id: orgId } = this.props.AppState.currentMenuType;
+    const { type, id: orgId } = AppState.currentMenuType;
     const contentDom = (
       <Table
         filterBarPlaceholder={'过滤表'}
@@ -99,9 +98,9 @@ class ApplicationVersion extends Component {
       />);
 
     return (
-      <div className="c7n-region page-container c7n-appVersion-wrapper">
+      <Page className="c7n-region c7n-appVersion-wrapper">
         {AppVersionStore.isRefresh ? <Loadingbar display /> : <React.Fragment>
-          <PageHeader title={Choerodon.languageChange('app.version')}>
+          <Header title={Choerodon.languageChange('app.version')}>
             <Permission
               service={''}
               type={type}
@@ -114,9 +113,9 @@ class ApplicationVersion extends Component {
                 <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
-          </PageHeader>
-          <div className="page-content">
-            <h2 className="c7n-space-first">项目&quot;{this.props.AppState.currentMenuType.name}&quot;的应用版本管理</h2>
+          </Header>
+          <Content>
+            <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的应用版本管理</h2>
             <p>
               这些权限会影响此项目及其所有资源。
               <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/service-version/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
@@ -127,11 +126,11 @@ class ApplicationVersion extends Component {
               </a>
             </p>
             {contentDom}
-          </div>
+          </Content>
 
         </React.Fragment>}
 
-      </div>
+      </Page>
     );
   }
 }

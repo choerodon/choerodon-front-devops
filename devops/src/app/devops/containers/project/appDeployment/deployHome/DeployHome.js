@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
-import Permission from 'PerComponent';
+import { Header, stores } from 'choerodon-front-boot';
 import SingleApp from '../singleApp';
 import SingleEnv from '../singleEnv';
 import AppInstance from '../appInstance';
@@ -14,8 +13,8 @@ import '../../../main.scss';
 import AppStoreStore from '../../../../stores/project/appStore';
 
 const ButtonGroup = Button.Group;
+const { AppState } = stores;
 
-@inject('AppState')
 @observer
 class DeployHome extends Component {
   constructor(props, context) {
@@ -52,7 +51,7 @@ class DeployHome extends Component {
    * 获取可用环境
    */
   loadEnvCards = () => {
-    const { AppDeploymentStore, AppState } = this.props;
+    const { AppDeploymentStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     AppDeploymentStore.loadActiveEnv(projectId);
   };
@@ -61,7 +60,7 @@ class DeployHome extends Component {
    * 加载部署实例
    */
   loadIstAlls = (pages = 0) => {
-    const { AppDeploymentStore, AppState } = this.props;
+    const { AppDeploymentStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     AppDeploymentStore.loadInstanceAll(projectId, pages);
   };
@@ -70,7 +69,7 @@ class DeployHome extends Component {
    * 获取应用名称
    */
   loadAppName = () => {
-    const { AppDeploymentStore, AppState } = this.props;
+    const { AppDeploymentStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     AppDeploymentStore.loadAppNames(projectId);
   };
@@ -79,7 +78,7 @@ class DeployHome extends Component {
    * 查询多应用部署数据
    */
   loadMuti = () => {
-    const { AppDeploymentStore, AppState } = this.props;
+    const { AppDeploymentStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     AppDeploymentStore.loadMutiData(projectId);
   };
@@ -102,7 +101,7 @@ class DeployHome extends Component {
    * 获取应用版本
    */
   loadAppVer = (id) => {
-    const { AppDeploymentStore, AppState } = this.props;
+    const { AppDeploymentStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     const envNames = AppDeploymentStore.getEnvcard;
     const envID = AppDeploymentStore.getEnvId || envNames[0].id;
@@ -120,7 +119,7 @@ class DeployHome extends Component {
    * @param appId 应用id
    */
   loadInstance = (envId, verId, appId) => {
-    const { AppDeploymentStore, AppState } = this.props;
+    const { AppDeploymentStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     AppDeploymentStore.loadInstanceAll(projectId, 0, 10, null, envId, verId, appId);
   };
@@ -163,13 +162,13 @@ class DeployHome extends Component {
   };
 
   render() {
-    const { AppDeploymentStore, AppState } = this.props;
+    const { AppDeploymentStore } = this.props;
     const projectName = AppState.currentMenuType.name;
     const tabActive = AppDeploymentStore.getTabActive;
 
     return (
       <div className="c7n-region page-container">
-        <PageHeader title={Choerodon.getMessage('实例', 'Instance')}>
+        <Header title={Choerodon.getMessage('实例', 'Instance')}>
           <Button
             funcType="flat"
             onClick={this.reload}
@@ -177,7 +176,7 @@ class DeployHome extends Component {
             <span className="icon-refresh icon" />
             <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
-        </PageHeader>
+        </Header>
         <div className="page-content">
           <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的实例</h2>
           <p>

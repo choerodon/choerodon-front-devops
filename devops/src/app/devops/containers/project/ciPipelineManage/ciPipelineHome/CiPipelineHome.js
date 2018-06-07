@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Table, Tooltip, Popover, Select } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import TimeAgo from 'timeago-react';
-import Permission from 'PerComponent';
 import _ from 'lodash';
 import '../../../main.scss';
 import './CiPipelineHome.scss';
@@ -60,7 +59,8 @@ const ICONS_ACTION = {
     icon: 'icon-refresh',
   },
 };
-@inject('AppState')
+const { AppState } = stores;
+
 @observer
 class CiPipelineHome extends Component {
   constructor(props) {
@@ -374,7 +374,6 @@ class CiPipelineHome extends Component {
   };
 
   renderAction = (record) => {
-    const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
@@ -399,10 +398,9 @@ class CiPipelineHome extends Component {
   };
 
   render() {
-    const { AppState } = this.props;
     return (
-      <div className="c7n-region c7n-ciPipeline page-container">
-        <PageHeader title={Choerodon.languageChange('ciPipeline.title')}>
+      <Page className="c7n-region c7n-ciPipeline">
+        <Header title={Choerodon.languageChange('ciPipeline.title')}>
           <Button
             funcType="flat"
             onClick={this.handleRefresh}
@@ -410,8 +408,8 @@ class CiPipelineHome extends Component {
             <span className="icon-refresh icon" />
             <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
-        </PageHeader>
-        <div className="c7n-under-content c7n-scroll-content page-content">
+        </Header>
+        <Content>
           <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的持续集成</h2>
           <p>
             您可在此查看各应用所有持续集成流水线的运行情况。
@@ -424,8 +422,8 @@ class CiPipelineHome extends Component {
           </p>
           {this.filterBar}
           {this.tableCiPipeline} 
-        </div>
-      </div>
+        </Content>
+      </Page>
     );
   }
 }

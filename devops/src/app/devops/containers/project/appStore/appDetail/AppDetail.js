@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Input, Icon, Card, Select } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import MDReactComponent from 'markdown-react-js';
-import Permission from 'PerComponent';
 import _ from 'lodash';
 import LoadingBar from '../../../../components/loadingBar';
 import './AppDetail.scss';
@@ -12,7 +11,8 @@ import '../../../main.scss';
 
 const Option = Select.Option;
 
-@inject('AppState')
+const { AppState } = stores;
+
 @observer
 class AppDetail extends Component {
   constructor(props) {
@@ -68,7 +68,7 @@ class AppDetail extends Component {
    * @param appId 应用ID
    */
   deployApp = (id, appId) => {
-    const { AppState, AppStoreStore } = this.props;
+    const { AppStoreStore } = this.props;
     const app = AppStoreStore.getApp;
     AppStoreStore.setBackPath(true);
     const { verId } = this.state;
@@ -84,7 +84,7 @@ class AppDetail extends Component {
    * 加载单应用数据
    */
   loadAppData = () => {
-    const { AppStoreStore, AppState } = this.props;
+    const { AppStoreStore} = this.props;
     const { id, verId } = this.state;
     const projectId = AppState.currentMenuType.id;
     AppStoreStore.loadAppStore(projectId, id).then((app) => {
@@ -97,14 +97,14 @@ class AppDetail extends Component {
    * @param verId
    */
   loadReadmes = (verId) => {
-    const { AppStoreStore, AppState } = this.props;
+    const { AppStoreStore } = this.props;
     const { id } = this.state;
     const projectId = AppState.currentMenuType.id;
     AppStoreStore.loadReadme(projectId, id, verId);
   };
 
   render() {
-    const { AppStoreStore, AppState } = this.props;
+    const { AppStoreStore } = this.props;
     const projectName = AppState.currentMenuType.name;
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
@@ -116,8 +116,8 @@ class AppDetail extends Component {
       _.map(app.appVersions, d => <Option key={d.id}>{d.version}</Option>) : [];
     const imgDom = app.imgUrl ? <div className="c7n-store-img" style={{ backgroundImage: `url(${app.imgUrl}` }} /> : <div className="c7n-store-img" />;
     return (
-      <div className="c7n-region page-container">
-        <PageHeader title="应用详情" backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+      <Page className="c7n-region">
+        <Header title="应用详情" backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <Button
             funcType="flat"
             onClick={this.reload}
@@ -125,7 +125,7 @@ class AppDetail extends Component {
             <span className="icon-refresh icon" />
             <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
-        </PageHeader>
+        </Header>
         {AppStoreStore.isLoading ? <LoadingBar display /> :
           (<div className="c7n-store-app-content">
             <div className="c7n-store-detail-head">
@@ -195,7 +195,7 @@ class AppDetail extends Component {
               </div>
             </div>
           </div>)}
-      </div>
+      </Page>
     );
   }
 }
