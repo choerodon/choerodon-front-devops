@@ -137,7 +137,7 @@ class AppReleaseEdit extends Component {
       <h2 className="c7n-space-first">修改应用&quot;{SingleData && SingleData.name}&quot;的信息</h2>
       <p>
         {content}
-        <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+        <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
           <span className="c7n-external-link-content">
               了解详情
           </span>
