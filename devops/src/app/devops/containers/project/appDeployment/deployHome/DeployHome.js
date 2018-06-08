@@ -104,12 +104,12 @@ class DeployHome extends Component {
     const { AppDeploymentStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     const envNames = AppDeploymentStore.getEnvcard;
-    const envID = AppDeploymentStore.getEnvId || envNames[0].id;
+    const envID = envNames.length ? envNames[0].id : null;
     const verID = AppDeploymentStore.getVerId;
-    if (envNames[0].id) {
+    if (envID) {
       this.loadInstance(envID, verID, id);
     }
-    AppDeploymentStore.loadAppVersion(projectId, id);
+    AppDeploymentStore.loadAppVersion(projectId, id, '');
   };
 
   /**

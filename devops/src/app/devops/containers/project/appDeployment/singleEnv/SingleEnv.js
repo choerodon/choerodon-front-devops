@@ -83,7 +83,7 @@ class SingleEnvironment extends Component {
    * @param status 实例状态
    */
   linkDeployDetail = (id, status) => {
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const projectName = AppState.currentMenuType.name;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
@@ -108,7 +108,7 @@ class SingleEnvironment extends Component {
    */
   loadSingleEnv = (id) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const { pageSize, appId } = this.state;
     const envNames = store.getEnvcard;
     const envID = id || envNames[0].id;
@@ -128,7 +128,7 @@ class SingleEnvironment extends Component {
    */
   loadInstance = (envId, verId, appId) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const { pageSize } = this.state;
     store.loadInstanceAll(projectId, 0, pageSize, null, envId, verId, appId);
   };
@@ -142,7 +142,7 @@ class SingleEnvironment extends Component {
    */
   tableChange =(pagination, filters, sorter, param) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const { envId, appId, verId } = this.state;
     const envNames = store.getEnvcard;
     const envID = envId || envNames[0].id;
@@ -174,7 +174,7 @@ class SingleEnvironment extends Component {
    */
   updateConfig = (name, id, envId, verId, appId) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     this.setState({
       idArr: [envId, verId, appId],
       name,
@@ -227,8 +227,7 @@ class SingleEnvironment extends Component {
   handleDelete = (id) => {
     const { store } = this.props;
     const { envId, appId, page } = this.state;
-    const menu = JSON.parse(sessionStorage.selectData);
-    const projectId = menu.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const envNames = store.getEnvcard;
     const envID = envId || (envNames.length ? envNames[0].id : null);
     this.setState({
@@ -260,7 +259,7 @@ class SingleEnvironment extends Component {
    */
   activeIst = (id, status) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const { envId, appId, page } = this.state;
     const envNames = store.getEnvcard;
     const envID = envId || (envNames.length ? envNames[0].id : null);
@@ -287,7 +286,7 @@ class SingleEnvironment extends Component {
    * @returns {*}
    */
   columnAction = (record) => {
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     if (record.status === 'operating' || !record.connect) {
@@ -375,7 +374,7 @@ class SingleEnvironment extends Component {
     const appNames = store.getAppNameByEnv;
     const appID = store.appId;
     const appPageInfo = store.getAppPageInfo;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
 
@@ -400,7 +399,7 @@ class SingleEnvironment extends Component {
       {d.name}</Option>)) : [];
 
     const appNameDom = appNames.length ? _.map(appNames, d => (<div role="none" className={appID === d.id ? 'c7n-deploy-single_card c7n-deploy-single_card-active' : 'c7n-deploy-single_card'} onClick={this.loadDetail.bind(this, this.state.envId, d.id)}>
-      {d.publishLevel ? <span className="icon icon-apps c7n-icon-publish" /> : <span className="icon icon-project c7n-icon-publish" />}
+      {d.projectId === projectId ? <span className="icon icon-project c7n-icon-publish" /> : <span className="icon icon-apps c7n-icon-publish" />}
       <span className="c7n-text-ellipsis"><MouserOverWrapper text={d.name || ''} width={150}>{d.name}</MouserOverWrapper></span>
     </div>)) : (<div className="c7n-deploy-single_card" >
       <div className="c7n-deploy-square"><div>App</div></div>

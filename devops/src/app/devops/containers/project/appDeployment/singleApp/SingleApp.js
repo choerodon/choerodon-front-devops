@@ -35,21 +35,29 @@ class SingleApp extends Component {
   /**
    * 获取应用版本
    */
-  loadAppVer = (id) => {
+  loadAppVer = (ids) => {
+    const idArr = ids.split(',');
     const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     const { verId, envId } = this.state;
     const envNames = store.getEnvcard;
-    const envID = envId || envNames[0].id;
+    const appNames = store.getAppNames;
+    const envID = envId || (envNames.length ? envNames[0].id : null);
     this.setState({
-      appId: id,
+      appId: idArr[0],
     });
-    store.setAppId(id);
+    store.setAppId(idArr[0]);
     if (envID) {
-      this.loadInstance(envID, verId, id);
+      this.loadInstance(envID, verId, idArr[0]);
     }
-    if (id) {
-      store.loadAppVersion(projectId, id);
+    if (idArr[0]) {
+      if (idArr[1] === projectId) {
+        store.loadAppVersion(projectId, idArr[0], '');
+      } else {
+        store.loadAppVersion(idArr[1], idArr[0], 'true');
+      }
+    } else {
+      store.setAppVer([]);
     }
   };
 
@@ -97,8 +105,8 @@ class SingleApp extends Component {
    * @param appId 应用id
    */
   loadInstance = (envId, verId, appId) => {
-    const { store, AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id);
     store.loadInstanceAll(projectId, 0, 10, null, envId, verId, appId);
   };
 
@@ -117,7 +125,7 @@ class SingleApp extends Component {
    * @param status 实例状态
    */
   linkDeployDetail = (id, status) => {
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const projectName = AppState.currentMenuType.name;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
@@ -145,7 +153,7 @@ class SingleApp extends Component {
    */
   tableChange =(pagination, filters, sorter, param) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const { envId, appId, verId } = this.state;
     const envNames = store.getEnvcard;
     const appNames = store.getAppNames;
@@ -179,7 +187,7 @@ class SingleApp extends Component {
    */
   updateConfig = (name, id, envId, verId, appId) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     this.setState({
       idArr: [envId, verId, appId],
       name,
@@ -204,7 +212,7 @@ class SingleApp extends Component {
    */
   handleCancel =(res) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const { envId, appId, verId, page } = this.state;
     const appNames = store.getAppNames;
     const envCard = store.getEnvcard;
@@ -232,7 +240,7 @@ class SingleApp extends Component {
    */
   handleDelete = (id) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const { envId, appId, verId, page } = this.state;
     const appNames = store.getAppNames;
     const envCard = store.getEnvcard;
@@ -267,7 +275,7 @@ class SingleApp extends Component {
    */
   activeIst = (id, status) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const { envId, appId, verId, page } = this.state;
     const appNames = store.getAppNames;
     const envCard = store.getEnvcard;
@@ -333,7 +341,7 @@ class SingleApp extends Component {
    * @returns {*}
    */
   columnAction = (record) => {
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     if (record.status === 'operating' || !record.connect) {
@@ -418,7 +426,7 @@ class SingleApp extends Component {
   render() {
     const { store } = this.props;
     const { envId, verId, appId } = this.state;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     const appNames = store.getAppNames;
@@ -428,7 +436,7 @@ class SingleApp extends Component {
     const envID = envId || (envCard.length ? envCard[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
     const appName = (appNames.length ? (<React.Fragment>
-      {appNames[0].publishLevel ? <span className="icon icon-apps c7n-icon-publish" /> : <span className="icon icon-project c7n-icon-publish" />}
+      {appNames[0].projectId === projectId ? <span className="icon icon-project c7n-icon-publish" /> : <span className="icon icon-apps c7n-icon-publish" />}
       {appNames[0].name}</React.Fragment>) : undefined);
     const appVersion = appVer.length ?
       _.map(appVer, d => <Option key={d.id}>{d.version}</Option>) : [];
@@ -436,8 +444,8 @@ class SingleApp extends Component {
     const appPubDom = [];
     if (appNames.length) {
       _.map(appNames, (d) => {
-        if (d.publishLevel) {
-          appPubDom.push(<Option key={d.id}>
+        if (d.projectId !== projectId) {
+          appPubDom.push(<Option key={[d.id, d.projectId]}>
             <Popover
               placement="right"
               content={<div>
@@ -462,7 +470,7 @@ class SingleApp extends Component {
             </Popover>
           </Option>);
         } else {
-          appProDom.push(<Option key={d.id}>
+          appProDom.push(<Option key={[d.id, d.projectId]}>
             <Popover
               placement="right"
               content={<div>

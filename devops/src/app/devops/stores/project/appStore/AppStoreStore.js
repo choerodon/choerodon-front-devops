@@ -89,16 +89,17 @@ class AppStoreStore {
       Choerodon.prompt(error.message);
     });
 
-  loadAppStore = (projectId, id) => axios.get(`devops/v1/projects/${projectId}/apps_market/${id}`).then((data) => {
-    this.changeLoading(true);
-    if (data && data.failed) {
-      Choerodon.prompt(data.message);
-    } else {
-      this.setApp(data);
-      this.changeLoading(false);
-    }
-    return data;
-  })
+  loadAppStore = (projectId, id) => axios.get(`devops/v1/projects/${projectId}/apps_market/${id}`)
+    .then((data) => {
+      this.changeLoading(true);
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.setApp(data);
+        this.changeLoading(false);
+      }
+      return data;
+    })
     .catch((error) => {
       Choerodon.prompt(error.message);
     });
