@@ -100,7 +100,7 @@ class EditVersionStore {
           this.changeIsRefresh(false);
         });
     } else {
-      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps_market/${id}/versions?is_publish=true&page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
+      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps_market/${id}/versions?is_publish=true&page=${page}&size=${size}&sort=updatedDate,desc`, JSON.stringify(postData)))
         .subscribe((data) => {
           const res = this.handleProptError(data);
           if (res) {

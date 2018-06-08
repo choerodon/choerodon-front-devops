@@ -159,7 +159,7 @@ class CiPipelineHome extends Component {
           size="middle"
           pagination={CiPipelineStore.pagination}
           columns={ciPipelineColumns}
-          dataSource={CiPipelineStore.ciPipelines}
+          dataSource={CiPipelineStore.ciPipelines.slice()}
           rowKey={record => record.id}
           onChange={this.handleTableChange}
         />

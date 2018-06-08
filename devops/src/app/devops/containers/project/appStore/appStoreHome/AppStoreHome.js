@@ -148,7 +148,7 @@ class AppStoreHome extends Component {
   render() {
     const { AppStoreStore } = this.props;
     const pageInfo = AppStoreStore.getPageInfo;
-    const appCards = AppStoreStore.getAppCards;
+    const appCards = AppStoreStore.getAppCards.slice();
     const listActive = AppStoreStore.getListActive;
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;

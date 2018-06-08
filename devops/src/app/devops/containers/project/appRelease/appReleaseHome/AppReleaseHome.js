@@ -108,7 +108,7 @@ class AppReleaseHome extends Component {
    */
   showProjectTable = () => {
     const { AppReleaseStore } = this.props;
-    const data = AppReleaseStore.allData;
+    const data = AppReleaseStore.allData.slice();
     const column = [{
       title: Choerodon.languageChange('app.name'),
       dataIndex: 'name',
@@ -197,7 +197,7 @@ class AppReleaseHome extends Component {
 
   render() {
     const { AppReleaseStore } = this.props;
-    const data = AppReleaseStore.allData;
+    const data = AppReleaseStore.allData.slice();
     return (
       <Page className="c7n-region app-release-wrapper">
         <Header title="应用发布">

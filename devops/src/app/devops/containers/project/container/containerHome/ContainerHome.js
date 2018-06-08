@@ -250,7 +250,7 @@ class ContainerHome extends Component {
   render() {
     const { ContainerStore } = this.props;
     const { containerName } = this.state;
-    const serviceData = ContainerStore.getAllData;
+    const serviceData = ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
       <Header title={Choerodon.languageChange('container.title')}>

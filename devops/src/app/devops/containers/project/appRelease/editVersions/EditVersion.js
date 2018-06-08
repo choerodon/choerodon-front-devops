@@ -77,7 +77,7 @@ class EditVersion extends Component {
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }, {
       title: '发布时间',
-      render: (text, record) => <TimePopover content={record.publishTime} />,
+      render: (text, record) => <TimePopover content={record.updatedDate} />,
     }];
     return (<Table
       filterBarPlaceholder={'过滤表'}
