@@ -181,7 +181,7 @@ class DeploymentDetail extends Component {
             您可在此查看该实例的运行详情及部署详情。运行详情包括各资源对象的基本信息；部署详情包括配置信息及部署阶段及日志。
             <a href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/" className="c7n-external-link">
               <span className="c7n-external-link-content">了解详情</span>
-              <span className="icon-open_in_new" />
+              <span className="icon icon-open_in_new" />
             </a>
           </p>
           <Tabs
@@ -328,8 +328,8 @@ class DeploymentDetail extends Component {
                 <div role="none" className="c7n-deployDetail-expand" onClick={this.changeStatus}>
                   <Button shape="circle">
                     {this.state.expand ?
-                      <span className="icon-expand_more" />
-                      : <span className="icon-expand_less" />
+                      <span className="icon icon-expand_more" />
+                      : <span className="icon icon-expand_less" />
                     }
                   </Button>
                 </div>

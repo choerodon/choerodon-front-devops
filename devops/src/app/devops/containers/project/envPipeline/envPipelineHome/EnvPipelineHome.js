@@ -347,7 +347,7 @@ class EnvPipelineHome extends Component {
                     shape="circle"
                     onClick={this.actEnv.bind(this, env.id)}
                   >
-                    <span className="icon-finished" />
+                    <span className="icon icon-finished" />
                   </Button>
                 </Tooltip>
               </Permission>
@@ -366,7 +366,7 @@ class EnvPipelineHome extends Component {
     const suffix = (<Popover placement="right" trigger="hover" content={this.state.copyMsg}>
       <div onMouseEnter={this.mouseEnter}>
         <CopyToBoard text={shell || this.state.token} onCopy={this.handleCopy}>
-          <span className="icon-library_books" />
+          <span className="icon icon-library_books" />
         </CopyToBoard>
       </div>
     </Popover>);
@@ -449,7 +449,7 @@ class EnvPipelineHome extends Component {
                   <span className="c7n-external-link-content">
                   了解详情
                   </span>
-                  <span className="icon-open_in_new" />
+                  <span className="icon icon-open_in_new" />
                 </a>
               </p>
               <div className="c7n-env-shell-wrap">
@@ -475,7 +475,7 @@ class EnvPipelineHome extends Component {
                   <span className="c7n-external-link-content">
                   了解详情
                   </span>
-                  <span className="icon-open_in_new" />
+                  <span className="icon icon-open_in_new" />
                 </a>
               </p>
               <div className="c7n-env-shell-wrap">
@@ -501,7 +501,7 @@ class EnvPipelineHome extends Component {
                   <span className="c7n-external-link-content">
                   了解详情
                   </span>
-                  <span className="icon-open_in_new" />
+                  <span className="icon icon-open_in_new" />
                 </a>
               </p>
               <Form>
@@ -549,11 +549,11 @@ class EnvPipelineHome extends Component {
       (<Board projectId={projectId} envcardPosition={envcardPosition} />);
 
     const leftDom = scrollLeft !== 0 ?
-      <div role="none" className="c7n-push-left-ban icon-navigate_before" onClick={this.pushScrollRight} />
+      <div role="none" className="c7n-push-left-ban icon icon-navigate_before" onClick={this.pushScrollRight} />
       : null;
 
     const rightStyle = classNames({
-      'c7n-push-right-ban icon-navigate_next': ((window.innerWidth >= 1680 && window.innerWidth < 1920) && disEnvcardPosition.length >= 5) || (window.innerWidth >= 1920 && disEnvcardPosition.length >= 6) || (window.innerWidth < 1680 && disEnvcardPosition.length >= 4),
+      'c7n-push-right-ban icon icon-navigate_next': ((window.innerWidth >= 1680 && window.innerWidth < 1920) && disEnvcardPosition.length >= 5) || (window.innerWidth >= 1920 && disEnvcardPosition.length >= 6) || (window.innerWidth < 1680 && disEnvcardPosition.length >= 4),
       'c7n-push-none': disEnvcardPosition.length <= 4,
     });
 
@@ -615,7 +615,7 @@ class EnvPipelineHome extends Component {
               <span className="c7n-external-link-content">
                 了解详情
               </span>
-              <span className="icon-open_in_new" />
+              <span className="icon icon-open_in_new" />
             </a>
           </p>
           {BoardDom}
@@ -627,7 +627,7 @@ class EnvPipelineHome extends Component {
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>
-                <span className="icon-open_in_new" />
+                <span className="icon icon-open_in_new" />
               </a>
             </p>
             <div className="c7n-outer-container">

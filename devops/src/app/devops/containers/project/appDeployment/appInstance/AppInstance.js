@@ -323,7 +323,7 @@ class AppInstance extends Component {
           (<div>
             <span className="c7n-deploy-istCode">{record.code}</span>
             <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
-              <span className="icon-error c7n-deploy-ist-operate" />
+              <span className="icon icon-error c7n-deploy-ist-operate" />
             </Tooltip>
           </div>)}
       </div>),
@@ -334,7 +334,7 @@ class AppInstance extends Component {
       render: record => (
         <div>
           <div className="c7n-deploy-col-inside">
-            {record.publishLevel ? <Tooltip title="应用市场"><span className="icon-apps c7n-icon-publish" /></Tooltip> : <Tooltip title="本项目"><span className="icon-project c7n-icon-publish" /></Tooltip>}
+            {record.publishLevel ? <Tooltip title="应用市场"><span className="icon icon-apps c7n-icon-publish" /></Tooltip> : <Tooltip title="本项目"><span className="icon icon-project c7n-icon-publish" /></Tooltip>}
             <span>{record.appName}</span>
           </div>
           <div>

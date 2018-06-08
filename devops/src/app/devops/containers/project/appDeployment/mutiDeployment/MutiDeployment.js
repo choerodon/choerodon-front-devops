@@ -78,7 +78,7 @@ class MutiDeployment extends Component {
 
         trDom.push(<tr>
           <td>
-            {app.publishLevel ? <Tooltip title="应用市场"><span className="icon-apps c7n-icon-publish" /></Tooltip> : <Tooltip title="本项目"><span className="icon-project c7n-icon-publish" /></Tooltip>}
+            {app.publishLevel ? <Tooltip title="应用市场"><span className="icon icon-apps c7n-icon-publish" /></Tooltip> : <Tooltip title="本项目"><span className="icon icon-project c7n-icon-publish" /></Tooltip>}
             {app.applicationName}
           </td>
           <td><React.Fragment>

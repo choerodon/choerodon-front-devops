@@ -222,6 +222,10 @@ ul {
   margin-right: 2px;
 }
 
+.c7n-region a .c7n-external-link-content + span {
+  font-size: 13px;
+}
+
 .c7n-region a.c7n-color-primary,
 .c7n-region a.c7n-color-primary .c7n-external-link-content {
   border-color: rgba(0, 0, 0, 0.54);
