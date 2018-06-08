@@ -75,15 +75,16 @@ class AppStoreStore {
   loadApps = (projectId, page = 0, size = 20, sorter = { id: 'asc' }, datas = {
     searchParam: {},
     param: '',
-  }) => axios.post(`devops/v1/projects/${projectId}/apps_market/list_all?page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
-    this.changeLoading(true);
-    if (data && data.failed) {
-      Choerodon.prompt(data.message);
-    } else {
-      this.handleData(data);
-      this.changeLoading(false);
-    }
-  });
+  }) => axios.post(`devops/v1/projects/${projectId}/apps_market/list_all?page=${page}&size=${size}`, JSON.stringify(datas))
+    .then((data) => {
+      this.changeLoading(true);
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.handleData(data);
+        this.changeLoading(false);
+      }
+    });
 
   loadAppStore = (projectId, id) => axios.get(`devops/v1/projects/${projectId}/apps_market/${id}`).then((data) => {
     this.changeLoading(true);
@@ -94,15 +95,22 @@ class AppStoreStore {
       this.changeLoading(false);
     }
     return data;
-  });
+  })
+    .catch((error) => {
+      Choerodon.prompt(error.message);
+    });
 
-  loadReadme = (projectId, id, verId) => axios.get(`devops/v1/projects/${projectId}/apps_market/${id}/versions/${verId}/readme`).then((data) => {
-    if (data && data.failed) {
-      Choerodon.prompt(data.message);
-    } else {
-      this.setReadme(data);
-    }
-  });
+  loadReadme = (projectId, id, verId) => axios.get(`devops/v1/projects/${projectId}/apps_market/${id}/versions/${verId}/readme`)
+    .then((data) => {
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.setReadme(data);
+      }
+    })
+    .catch((error) => {
+      Choerodon.prompt(error.message);
+    });
 
   handleData =(data) => {
     this.setAppCards(data.content);
