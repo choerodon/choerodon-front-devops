@@ -56,7 +56,6 @@
         sort: 5
         permission:
           - 'devops-service.application-market.create'
-          - 'devops-service.application-market.unpublish'
           - 'devops-service.application-market.update'
           - 'devops-service.application-market.pageListMarketAppsByProjectId'
           - 'devops-service.application-market.updateVersions'

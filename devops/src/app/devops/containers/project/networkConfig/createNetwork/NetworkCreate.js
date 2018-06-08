@@ -536,7 +536,20 @@ class NetworkCreate extends Component {
             }, {
             }],
           })(
-            <Input maxLength={30} label={"目标端口"} />,
+            <Input
+              maxLength={30}
+              label={'目标端口'}
+              suffix={<Popover
+                overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}
+                className="routePop"
+                placement="right"
+                trigger="hover"
+                content={'网络选择的目标实例所暴露的端口号'}
+              >
+                <Icon type="help" />
+              </Popover>
+              }
+            />,
           )}
         </FormItem>
       </Form>

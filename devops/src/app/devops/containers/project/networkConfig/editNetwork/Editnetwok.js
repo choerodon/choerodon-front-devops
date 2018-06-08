@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Select, Input, Tooltip, Modal, Progress } from 'choerodon-ui';
+import { Button, Form, Select, Input, Tooltip, Modal, Progress, Popover } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
@@ -599,7 +599,20 @@ class Editnetwok extends Component {
             }],
             initialValue: SingleData ? SingleData.targetPort : '',
           })(
-            <Input maxLength={10} label="目标口号" />,
+            <Input
+              maxLength={10} l
+              abel="目标口号"
+              suffix={<Popover
+                overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}
+                className="routePop"
+                placement="right"
+                trigger="hover"
+                content={'网络选择的目标实例所暴露的端口号'}
+              >
+                <Icon type="help" />
+              </Popover>
+              }
+            />,
           )}
         </FormItem>
       </Form>
