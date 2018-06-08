@@ -305,7 +305,7 @@ class CreateDomain extends Component {
             rules: [{
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              transform: value => value.toString(),
+              transform: (value) => { return value && value.toString() },
             }],
             initialValue: SingleData ? SingleData.envId : undefined,
           })(
@@ -401,7 +401,7 @@ class CreateDomain extends Component {
             {getFieldDecorator(`network-${data.networkIndex}`, {
               rules: [{
                 required: true,
-                transform: value => value.toString(),
+                transform: (value) => { return value && value.toString() },
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               }],
               initialValue: SingleData && dto.length > index
