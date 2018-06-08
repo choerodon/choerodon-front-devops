@@ -34,6 +34,7 @@ const config = {
     favicon: 'favicon.ico', //page favicon
     theme: { // less/sass modify vars
         'primary-color': '#3F51B5',
+        'icon-font-size-base': '16px',
     },
 };
 

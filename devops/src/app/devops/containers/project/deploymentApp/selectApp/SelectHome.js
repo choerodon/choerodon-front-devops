@@ -53,7 +53,7 @@ class DeployAppHome extends Component {
       key: 'check',
       width: '50px',
       render: record => (
-        this.state.app && record.id === this.state.app.id && <span className="icon-check icon-select" />
+        this.state.app && record.id === this.state.app.id && <span className="icon icon-check icon-select" />
       ),
 
     }, {
@@ -94,7 +94,7 @@ class DeployAppHome extends Component {
       key: 'check',
       width: '50px',
       render: record => (
-        this.state.app && record.id === this.state.app.id && <span className="icon-check icon-select" />
+        this.state.app && record.id === this.state.app.id && <span className="icon icon-check icon-select" />
       ),
 
     }, {
@@ -260,7 +260,7 @@ class DeployAppHome extends Component {
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>
-                <span className="icon-open_in_new" />
+                <span className="icon icon-open_in_new" />
               </a>
             </p>
             <Tabs
@@ -293,7 +293,7 @@ class DeployAppHome extends Component {
                         className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && 'c7n-card-active'}`}
                         onClick={this.hanldeSelectApp.bind(this, card)}
                       >
-                        {this.state.app && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon-check" /></span> }
+                        {this.state.app && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon icon-check" /></span> }
                         {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
                           : <div className="c7n-store-card-icon" />}
                         <div className="c7n-store-card-name">
@@ -340,7 +340,7 @@ class DeployAppHome extends Component {
                         className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && 'c7n-card-active'}`}
                         onClick={this.hanldeSelectApp.bind(this, card)}
                       >
-                        {this.state.app && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon-check" /></span> }
+                        {this.state.app && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon icon-check " /></span> }
                         {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
                           : <div className="c7n-store-card-icon" />}
                         <div title={card.name} className="c7n-store-card-name">

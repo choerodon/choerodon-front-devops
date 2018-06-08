@@ -71,33 +71,33 @@ class ContainerHome extends Component {
           case 'Completed':
             dom = (<div>
               <MouserOverWrapper text={record.status} width={78}>
-                <span className="icon-check_circle c7n-icon-success" />
+                <span className="icon icon-check_circle c7n-icon-success" />
                 <span className="c7n-container-title">{record.status}</span>
               </MouserOverWrapper>
             </div>);
             break;
           case 'Running':
             dom = (<div>
-              <span className="icon-check_circle c7n-icon-running" />
+              <span className="icon icon-check_circle c7n-icon-running" />
               <span className="c7n-container-title">{record.status}</span>
             </div>);
             break;
           case 'Error':
             dom = (<div>
-              <span className="icon-cancel c7n-icon-failed" />
+              <span className="icon icon-cancel c7n-icon-failed" />
               <span className="c7n-container-title">{record.status}</span>
             </div>);
             break;
           case 'Pending':
             dom = (<div>
-              <span className="icon-timelapse c7n-icon-pending" />
+              <span className="icon icon-timelapse c7n-icon-pending" />
               <span className="c7n-container-title">{record.status}</span>
             </div>);
             break;
           default:
             dom = (<div>
               <MouserOverWrapper text={record.status} width={78}>
-                <span className="icon-help c7n-icon-help" />
+                <span className="icon icon-help c7n-icon-help" />
                 <span className="c7n-container-title">{record.status}</span>
               </MouserOverWrapper>
             </div>);
@@ -119,7 +119,7 @@ class ContainerHome extends Component {
       filterMultiple: false,
       render: (text, record) => (<div>
         <div className="c7n-container-col-inside">
-          {record.publishLevel ? <Tooltip title="应用市场"><span className="icon-apps c7n-icon-publish" /></Tooltip> : <Tooltip title="本项目"><span className="icon-project c7n-icon-publish" /></Tooltip>}
+          {record.publishLevel ? <Tooltip title="应用市场"><span className="icon icon-apps c7n-icon-publish" /></Tooltip> : <Tooltip title="本项目"><span className="icon icon-project c7n-icon-publish" /></Tooltip>}
           <span>{record.appName}</span>
         </div>
         <div>
@@ -146,7 +146,7 @@ class ContainerHome extends Component {
       }],
       filterMultiple: false,
       render: (text, record) => (<div className="c7n-container-table">
-        {record.ready ? <span className="icon-done" /> : <span className="icon-close" />}
+        {record.ready ? <span className="icon icon-done" /> : <span className="icon icon-close" />}
       </div>),
     }, {
       title: Choerodon.languageChange('container.createTime'),
@@ -170,7 +170,7 @@ class ContainerHome extends Component {
                 shape="circle"
                 onClick={this.showLog.bind(this, record)}
               >
-                <span className="icon-insert_drive_file" />
+                <span className="icon icon-insert_drive_file" />
               </Button>
             </Popover>
           </Permission>
@@ -270,7 +270,7 @@ class ContainerHome extends Component {
             <span className="c7n-external-link-content">
               了解详情
             </span>
-            <span className="icon-open_in_new" />
+            <span className="icon icon-open_in_new" />
           </a>
         </p>
         <Table
@@ -303,7 +303,7 @@ class ContainerHome extends Component {
               <span className="c7n-external-link-content">
                 了解详情
               </span>
-              <span className="icon-open_in_new" />
+              <span className="icon icon-open_in_new" />
             </a>
           </p>
           <section className="c7n-podLog-section">

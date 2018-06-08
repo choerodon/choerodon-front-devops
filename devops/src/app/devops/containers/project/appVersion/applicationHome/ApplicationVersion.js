@@ -122,7 +122,7 @@ class ApplicationVersion extends Component {
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>
-                <span className="icon-open_in_new" />
+                <span className="icon icon-open_in_new" />
               </a>
             </p>
             {contentDom}

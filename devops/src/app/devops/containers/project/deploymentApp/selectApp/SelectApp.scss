@@ -63,6 +63,7 @@
   }
 
   .c7n-store-card {
+    border: 2px solid white;
     cursor: pointer;
     padding: 16px 20px;
     margin-bottom: 14px;
@@ -123,11 +124,15 @@
       border-radius: 50%;
       padding-bottom: 8px;
       display: flex;
+
+      .icon {
+        font-size: 28px !important;
+      }
     }
   }
 
   .c7n-card-active {
-    box-shadow: 0 0 0 2px #3f51b5;
+    border: 2px solid #3f51b5;
     position: relative;
   }
 

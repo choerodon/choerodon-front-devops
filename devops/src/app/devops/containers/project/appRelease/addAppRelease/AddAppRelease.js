@@ -243,7 +243,7 @@ class AddAppRelease extends Component {
       key: 'check',
       width: '50px',
       render: record => (
-        app && record.id === app.id && <span className="icon-check icon-select" />
+        app && record.id === app.id && <span className="icon icon-check icon-select" />
       ),
 
     }, {
@@ -311,7 +311,7 @@ class AddAppRelease extends Component {
         <div>
           <Tooltip trigger="hover" placement="bottom" content={<div>删除</div>}>
             <Button shape="circle" funcType="flat" onClick={this.removeVersion.bind(this, record.id)}>
-              <span className="icon-delete_forever" />
+              <span className="icon icon-delete_forever" />
             </Button>
           </Tooltip>
         </div>
@@ -323,7 +323,7 @@ class AddAppRelease extends Component {
           您可以在此点击添加版本选择添加需要发布的版本。
         </p>
         <section className="deployAddApp-section">
-          <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.handleAddVersion}><span className="icon-add" />添加版本</Button>
+          <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.handleAddVersion}><span className="icon icon-add" />添加版本</Button>
         </section>
         <section className="deployAddApp-section">
           <div style={{ width: 512 }}>
@@ -367,7 +367,7 @@ class AddAppRelease extends Component {
             </RadioGroup>
           </div>
           <p style={{ marginLeft: 30, marginTop: 24 }}>
-            <span className="icon-error release-icon-error" />
+            <span className="icon icon-error release-icon-error" />
             <span className="deploy-tip-text">请注意：发布后不可修改发布范围。</span>
           </p>
         </section>
@@ -403,7 +403,7 @@ class AddAppRelease extends Component {
                 role="none"
               >
                 {this.state.showBtn && <div className="c7n-appRelease-img-child">
-                  <span className="icon-photo_camera" />
+                  <span className="icon icon-photo_camera" />
                   <Input id="file" type="file" onChange={this.selectFile} style={{ display: 'none' }} />
                 </div>
                 }
@@ -444,7 +444,7 @@ class AddAppRelease extends Component {
             autosize={{ minRows: 2, maxRows: 6 }}
           />
           <p>
-            <span className="icon-error release-icon-error" />
+            <span className="icon icon-error release-icon-error" />
             <span className="deploy-tip-text">请注意：平台将会提取发布的应用版本中Readme文件展示在应用市场的应用详情页，请先维护好对应的Readme文件后再发布。</span>
           </p>
         </section>
@@ -497,7 +497,7 @@ class AddAppRelease extends Component {
           </div>
         </section>
         <section>
-          <span className="icon-error release-icon-error" /><span>请注意：该版本发布后不可取消发布，且不可修改发布范围。</span>
+          <span className="icon icon-error release-icon-error" /><span>请注意：该版本发布后不可取消发布，且不可修改发布范围。</span>
         </section>
         <section className="deployAddApp-section">
           <Permission service={['devops-service.application-market.create']}>
@@ -538,7 +538,7 @@ class AddAppRelease extends Component {
               <span className="c7n-external-link-content">
                 了解详情
               </span>
-              <span className="icon-open_in_new" />
+              <span className="icon icon-open_in_new" />
             </a>
           </p>
           <div className="deployApp-card">

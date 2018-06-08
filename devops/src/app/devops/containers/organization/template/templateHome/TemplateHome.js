@@ -143,14 +143,14 @@ class TemplateHome extends Component {
           <Permission type={type} organizationId={orgId} service={['devops-service.application-template.update']} >
             <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
               <Button shape="circle" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
-                <span className="icon-mode_edit" />
+                <span className="icon icon-mode_edit" />
               </Button>
             </Tooltip>
           </Permission>
           <Permission type={type} organizationId={orgId} service={['devops-service.application-template.delete']} >
             <Tooltip trigger="hover" placement="bottom" title={<div>删除</div>}>
               <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
-                <span className="icon-delete_forever" />
+                <span className="icon icon-delete_forever" />
               </Button>
             </Tooltip>
           </Permission>
@@ -334,7 +334,7 @@ class TemplateHome extends Component {
             <span className="c7n-external-link-content">
             了解详情
             </span>
-            <span className="icon-open_in_new" />
+            <span className="icon icon-open_in_new" />
           </a>
         </p>
       </div> : <div>
@@ -345,7 +345,7 @@ class TemplateHome extends Component {
             <span className="c7n-external-link-content">
                   了解详情
             </span>
-            <span className="icon-open_in_new" />
+            <span className="icon icon-open_in_new" />
           </a>
         </p>
       </div>}
@@ -495,7 +495,7 @@ class TemplateHome extends Component {
                 funcType="flat"
                 onClick={this.handleRefresh}
               >
-                <span className="icon-refresh icon" />
+                <span className="con-refresh icon" />
                 <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
@@ -508,7 +508,7 @@ class TemplateHome extends Component {
                 <span className="c7n-external-link-content">
                 了解详情
                 </span>
-                <span className="icon-open_in_new" />
+                <span className="icon icon-open_in_new" />
               </a>
             </p>
             {this.state.show && <Sidebar
