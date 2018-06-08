@@ -84,11 +84,14 @@ class AppDetail extends Component {
    * 加载单应用数据
    */
   loadAppData = () => {
-    const { AppStoreStore} = this.props;
+    const { AppStoreStore } = this.props;
     const { id, verId } = this.state;
     const projectId = AppState.currentMenuType.id;
     AppStoreStore.loadAppStore(projectId, id).then((app) => {
-      this.loadReadmes(verId || app.appVersions[0].id);
+      if (app) {
+        const ver = app.appVersions ? _.reverse(_.slice(app.appVersions)) : [];
+        this.loadReadmes(verId || ver[0].id);
+      }
     });
   };
 
@@ -111,10 +114,10 @@ class AppDetail extends Component {
     const type = AppState.currentMenuType.type;
     const app = AppStoreStore.getApp;
     const readme = AppStoreStore.getReadme || '# 暂无';
-
-    const appVersion = app.appVersions ?
-      _.map(app.appVersions, d => <Option key={d.id}>{d.version}</Option>) : [];
+    const appVers = app.appVersions ? _.reverse(_.slice(app.appVersions)) : [];
+    const appVersion = _.map(appVers, d => <Option key={d.id}>{d.version}</Option>);
     const imgDom = app.imgUrl ? <div className="c7n-store-img" style={{ backgroundImage: `url(${app.imgUrl}` }} /> : <div className="c7n-store-img" />;
+
     return (
       <Page className="c7n-region">
         <Header title="应用详情" backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
@@ -142,7 +145,7 @@ class AppDetail extends Component {
                   <span className="c7n-store-circle">V</span>
                   <Select
                     size="large"
-                    defaultValue={app.appVersions ? app.appVersions[0].version : ''}
+                    defaultValue={appVers.length ? appVers[0].version : ''}
                     className="c7n-store-select"
                     optionFilterProp="children"
                     filterOption={(input, option) =>
@@ -176,17 +179,17 @@ class AppDetail extends Component {
                 <div className="c7n-store-key">分类</div>
                 <div className="c7n-store-type">{app.category}</div>
                 <div className="c7n-store-key">上次更新日期</div>
-                <div className="c7n-store-time">{app.appVersions ? app.appVersions[0].creationDate : 'xx-xx-xx'}</div>
+                <div className="c7n-store-time">{app.lastUpdatedDate || 'xx-xx-xx'}</div>
               </div>
               <div className="c7n-store-detail-right">
                 <div className="c7n-store-detail-overview">
-                  <h1>Readme</h1>
+                  <h1>README</h1>
                   <div>
                     <MDReactComponent text={readme} />
                   </div>
                 </div>
                 <h1>教程和文档</h1>
-                <a href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/application-market/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <span className="c7n-external-link-content">
                     了解详情
                   </span>

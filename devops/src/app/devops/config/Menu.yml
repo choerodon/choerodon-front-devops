@@ -39,7 +39,7 @@
     - "environment":
         icon: linear_scale
         Routes: /devops/env-pipeline
-        sort: 4
+        sort: 5
         permission:
           - 'devops-service.devops-environment.listByProjectIdAndActive'
           - 'devops-service.devops-environment.create'
@@ -53,10 +53,9 @@
     - "app-release":
         icon: near_me
         Routes: /devops/app-release
-        sort: 5
+        sort: 4
         permission:
           - 'devops-service.application-market.create'
-          - 'devops-service.application-market.unpublish'
           - 'devops-service.application-market.update'
           - 'devops-service.application-market.pageListMarketAppsByProjectId'
           - 'devops-service.application-market.updateVersions'

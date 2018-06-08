@@ -330,7 +330,7 @@ class TemplateHome extends Component {
         <h2 className="c7n-space-first">{`在组织"${menu.name}"中创建应用模板`}</h2>
         <p>
           请在下面输入应用模板编码、名称、描述，创建默认空白模板。您也可以通过复制于现有模板，以便节省部分操作，提升效率。
-          <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
             <span className="c7n-external-link-content">
             了解详情
             </span>
@@ -341,7 +341,7 @@ class TemplateHome extends Component {
         <h2 className="c7n-space-first">对应用模板&quot;{singleData ? singleData.code : ''}&quot;进行修改</h2>
         <p>
           您可在此修改应用名称及描述。
-          <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
             <span className="c7n-external-link-content">
                   了解详情
             </span>
@@ -504,7 +504,7 @@ class TemplateHome extends Component {
             <h2 className="c7n-space-first">组织&quot;{menu.name}&quot;的应用模板</h2>
             <p>
               应用模板是将同类型应用的代码库结构整理成模板，用于创建应用时能引用相应模板快速创建初始代码库。您也可以根据实际情况自定义应用模板。
-              <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                 了解详情
                 </span>

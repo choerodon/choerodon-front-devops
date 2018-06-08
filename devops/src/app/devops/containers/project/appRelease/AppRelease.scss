@@ -28,6 +28,7 @@
     padding: 32px;
     background-color: white;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+    margin-bottom: 32px;
   }
 
   .deployApp-card-content {
@@ -71,7 +72,7 @@
         height: 100%;
         border-radius: 50%;
         background-color: rgba(0, 0, 0, 0.288);
-        padding-top: 20px;
+        padding-top: 11px;
         line-height: 53px;
         text-align: center;
       }
@@ -187,6 +188,7 @@
   color: #f44336;
   font-size: 16px;
   margin-right: 5px;
+  vertical-align: middle;
 }
 
 .c7n-ist-status_on {
@@ -206,6 +208,7 @@
 
 .deploy-tip-text {
   color: rgba(0, 0, 0, 0.65);
+  vertical-align: middle;
 }
 
 .deploy-select {
@@ -222,3 +225,8 @@
 .col-check {
   height: 32px;
 }
+
+.step-disabled {
+  pointer-events: none;
+}
+

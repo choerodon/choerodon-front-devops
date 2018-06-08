@@ -13,6 +13,7 @@ import SelectApp from '../selectApp';
 const RadioGroup = Radio.Group;
 const Step = Steps.Step;
 const { AppState } = stores;
+const Option = Select.Option;
 
 @observer
 class DeploymentAppHome extends Component {
@@ -40,6 +41,8 @@ class DeploymentAppHome extends Component {
       DeploymentAppStore.loadVersion(this.state.appId);
     }
     DeploymentAppStore.loadEnv();
+    const card = document.getElementsByClassName('deployApp-card')[0];
+    card.style.minHeight = `${window.innerHeight - 277}px`;
   }
 
   /**
@@ -95,12 +98,16 @@ class DeploymentAppHome extends Component {
    */
   handleOk = (app, key) => {
     const { DeploymentAppStore } = this.props;
-    if (key === '1') {
-      DeploymentAppStore.loadVersion(app.id);
-      this.setState({ app, appId: app.id, show: false });
+    if (app) {
+      if (key === '1') {
+        DeploymentAppStore.loadVersion(app.id);
+        this.setState({ app, appId: app.id, show: false });
+      } else {
+        DeploymentAppStore.loadVersion(app.appId);
+        this.setState({ app, appId: app.appId, show: false });
+      }
     } else {
-      DeploymentAppStore.loadVersion(app.appId);
-      this.setState({ app, appId: app.appId, show: false });
+      this.setState({ show: false });
     }
   };
 
@@ -231,7 +238,7 @@ class DeploymentAppHome extends Component {
               {this.state.app.publishLevel ? <span className="icon icon-apps section-text-icon" /> : <span className="icon icon-project section-text-icon" />}
               <span className="section-text">{this.state.app.name}({this.state.app.code})</span>
             </div>}
-            <Permission service={['devops-service.application.pageByOptions','devops-service.application-market.listAllApp']}>
+            <Permission service={['devops-service.application.pageByOptions', 'devops-service.application-market.listAllApp']}>
               <a
                 role="none"
                 className={`${this.state.app ? '' : 'section-text-margin'}`}
@@ -260,7 +267,7 @@ class DeploymentAppHome extends Component {
               .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
           >
-            {versions.map(v => <option value={v.id}>{v.version}</option>)}
+            {versions.map(v => <Option key={v.id} value={v.id}>{v.version}</Option>)}
           </Select>
         </section>
         <section className="deployApp-section">
@@ -306,10 +313,10 @@ class DeploymentAppHome extends Component {
               .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
           >
-            {envs.map(v => (<option value={v.id} disabled={!v.connect}>
+            {envs.map(v => (<Option value={v.id} key={v.id} disabled={!v.connect}>
               {v.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
               {v.name}
-            </option>))}
+            </Option>))}
           </Select>
         </section>
         <section className="deployApp-section">
@@ -379,9 +386,9 @@ class DeploymentAppHome extends Component {
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0}
               filter
             >
-              {instances.map(v => (<option value={v.id}>
+              {instances.map(v => (<Option value={v.id} key={v.id}>
                 {v.code}
-              </option>))}
+              </Option>))}
             </Select>}
           </div>
         </section>
@@ -468,7 +475,7 @@ class DeploymentAppHome extends Component {
           <p>
             应用部署是一个将某版本的应用部署至某环境的操作。您可以在此按指引分步骤完成应用部署。
             <a
-              href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/"
+              href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/"
               className="c7n-external-link"
               rel="nofollow me noopener noreferrer"
               target="_blank"
@@ -487,18 +494,21 @@ class DeploymentAppHome extends Component {
                 status={this.getStatus(1)}
               />
               <Step
+                className={!(appId && versionId) ? 'step-disabled' : ''}
                 title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>选择环境及修改配置信息</span>}
-                onClick={(appId && versionId) ? this.changeStep.bind(this, 2) : ''}
+                onClick={this.changeStep.bind(this, 2)}
                 status={this.getStatus(2)}
               />
               <Step
+                className={!(envId && (value || (data && data.yaml))) ? 'step-disabled' : ''}
                 title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>选择部署模式</span>}
-                onClick={(envId && (value || (data && data.yaml))) ? this.changeStep.bind(this, 3) : ''}
+                onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}
               />
               <Step
+                className={!((mode === 'new' || (mode === 'replace' && instanceId)) && this.state.envId)  ? 'step-disabled' : ''}
                 title={<span style={{ color: current === 4 ? '#3F51B5' : '', fontSize: 14 }}>确认信息及部署</span>}
-                onClick={((mode === 'new' || (mode === 'replace' && instanceId)) && this.state.envId) ? this.changeStep.bind(this, 4) : ''}
+                onClick={this.changeStep.bind(this, 4)}
                 status={this.getStatus(4)}
               />
             </Steps>

@@ -40,7 +40,7 @@ class AppInstance extends Component {
    * @param status 实例状态
    */
   linkDeployDetail = (id, status) => {
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const projectName = AppState.currentMenuType.name;
     const type = AppState.currentMenuType.type;
     const organizationId = AppState.currentMenuType.organizationId;
@@ -72,7 +72,7 @@ class AppInstance extends Component {
    */
   updateConfig = (name, id, envId, verId, appId) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     this.setState({
       idArr: [envId, verId, appId],
       name,
@@ -98,7 +98,7 @@ class AppInstance extends Component {
    */
   activeIst = (id, status) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     store.changeIstActive(projectId, id, status)
       .then((error) => {
         if (error && error.failed) {
@@ -118,7 +118,7 @@ class AppInstance extends Component {
    */
   tableChange =(pagination, filters, sorter, param) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const sort = {};
     if (sorter.column) {
       const { field, order } = sorter;
@@ -143,7 +143,7 @@ class AppInstance extends Component {
    */
   handleCancel =(res) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     this.setState({
       visible: false,
     });
@@ -166,7 +166,7 @@ class AppInstance extends Component {
    */
   handleDelete = (id) => {
     const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     this.setState({
       loading: true,
     });
@@ -197,7 +197,7 @@ class AppInstance extends Component {
    * @returns {*}
    */
   columnAction = (record) => {
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     if (record.status === 'operating' || !record.connect) {
@@ -281,6 +281,7 @@ class AppInstance extends Component {
   render() {
     const { store } = this.props;
     const ist = store.getIstAll;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const pageInfo = store.getPageInfo;
 
 
@@ -317,7 +318,7 @@ class AppInstance extends Component {
         {record.commandStatus === 'doing' ? (<div>
           <span className="c7n-deploy-istCode">{record.code}</span>
           <Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
-            <Progress type="loading" width="15px" />
+            <Progress type="loading" width={15} />
           </Tooltip>
         </div>) :
           (<div>
@@ -334,7 +335,7 @@ class AppInstance extends Component {
       render: record => (
         <div>
           <div className="c7n-deploy-col-inside">
-            {record.publishLevel ? <Tooltip title="应用市场"><span className="icon icon-apps c7n-icon-publish" /></Tooltip> : <Tooltip title="本项目"><span className="icon icon-project c7n-icon-publish" /></Tooltip>}
+            {record.projectId === projectId ? <Tooltip title="本项目"><span className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title="应用市场"><span className="icon icon-apps c7n-icon-publish" /></Tooltip>}
             <span>{record.appName}</span>
           </div>
           <div>

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Select, Input, Tooltip, Modal, Progress } from 'choerodon-ui';
+import { Button, Form, Select, Input, Tooltip, Modal, Progress, Popover, Icon } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
@@ -356,7 +356,7 @@ class Editnetwok extends Component {
       <h2 className="c7n-space-first">对网络&quot;{SingleData && SingleData.name}&quot;进行修改</h2>
       <p>
         您可在此修改网络配置信息。
-        <a href="http://choerodon.io/zh/docs/user-guide/deploy/network-management/" className="c7n-external-link">
+        <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" className="c7n-external-link">
           <span className="c7n-external-link-content">
               了解详情
           </span>
@@ -599,7 +599,20 @@ class Editnetwok extends Component {
             }],
             initialValue: SingleData ? SingleData.targetPort : '',
           })(
-            <Input maxLength={10} label="目标口号" />,
+            <Input
+              maxLength={10}
+              abel="目标端口"
+              suffix={<Popover
+                overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}
+                className="routePop"
+                placement="right"
+                trigger="hover"
+                content={'网络选择的目标实例所暴露的端口号'}
+              >
+                <Icon type="help" />
+              </Popover>
+              }
+            />,
           )}
         </FormItem>
       </Form>

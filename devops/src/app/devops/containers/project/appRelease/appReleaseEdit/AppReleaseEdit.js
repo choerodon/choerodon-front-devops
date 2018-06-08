@@ -101,12 +101,11 @@ class AppReleaseEdit extends Component {
    * @param e
    */
   selectFile =(e) => {
-    const menu = AppState.currentMenuType;
     const { EditReleaseStore } = this.props;
     const formdata = new FormData();
     const img = e.target.files[0];
     formdata.append('file', e.target.files[0]);
-    EditReleaseStore.uploadFile(menu.organizationId, 'devops-service', img.name.split('.')[0], formdata)
+    EditReleaseStore.uploadFile('devops-service', img.name.split('.')[0], formdata)
       .then((data) => {
         if (data) {
           this.setState({ img: data });
@@ -138,7 +137,7 @@ class AppReleaseEdit extends Component {
       <h2 className="c7n-space-first">修改应用&quot;{SingleData && SingleData.name}&quot;的信息</h2>
       <p>
         {content}
-        <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+        <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
           <span className="c7n-external-link-content">
               了解详情
           </span>

@@ -127,7 +127,9 @@ class VersionTable extends Component {
    */
   handleAddVersion = () => {
     const { selectedRows } = this.state;
-    this.props.store.setSelectData(selectedRows);
+    if (selectedRows && selectedRows.length) {
+      this.props.store.setSelectData(selectedRows);
+    }
     this.props.store.changeShow(false);
   };
 
@@ -140,7 +142,7 @@ class VersionTable extends Component {
       <p>
         {content}
         <a
-          href="http://c7n.saas.hand-china.com/docs/devops/develop/"
+          href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-release/"
           rel="nofollow me noopener noreferrer"
           target="_blank"
           className="c7n-external-link"

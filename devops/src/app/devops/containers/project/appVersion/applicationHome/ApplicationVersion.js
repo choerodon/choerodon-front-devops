@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Button } from 'choerodon-ui';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { Content, Header, Page, stores } from 'choerodon-front-boot';
 import { fromJS, is } from 'immutable';
 import { Obversable } from 'rxjs';
 
@@ -101,24 +101,18 @@ class ApplicationVersion extends Component {
       <Page className="c7n-region c7n-appVersion-wrapper">
         {AppVersionStore.isRefresh ? <Loadingbar display /> : <React.Fragment>
           <Header title={Choerodon.languageChange('app.version')}>
-            <Permission
-              service={''}
-              type={type}
-              projectId={orgId}
+            <Button
+              onClick={this.handleRefresh}
             >
-              <Button
-                onClick={this.handleRefresh}
-              >
-                <span className="icon-refresh icon" />
-                <span>{Choerodon.languageChange('refresh')}</span>
-              </Button>
-            </Permission>
+              <span className="icon-refresh icon" />
+              <span>{Choerodon.languageChange('refresh')}</span>
+            </Button>
           </Header>
           <Content>
             <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的应用版本管理</h2>
             <p>
               这些权限会影响此项目及其所有资源。
-              <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/service-version/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-version/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>

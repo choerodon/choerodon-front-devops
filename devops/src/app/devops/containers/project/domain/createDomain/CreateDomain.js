@@ -289,7 +289,7 @@ class CreateDomain extends Component {
       {title}
       <p>
         {content}
-        <a href="http://choerodon.io/zh/docs/user-guide/deploy/domain-name/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+        <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/ingress/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
           <span className="c7n-external-link-content">
               了解详情
           </span>
@@ -305,7 +305,7 @@ class CreateDomain extends Component {
             rules: [{
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              transform: value => value.toString(),
+              transform: (value) => { return value && value.toString() },
             }],
             initialValue: SingleData ? SingleData.envId : undefined,
           })(
@@ -372,7 +372,7 @@ class CreateDomain extends Component {
             />,
           )}
         </FormItem>
-        {pathArr.length >= 1 && pathArr.map((data, index) => (<div>
+        {pathArr.length >= 1 && pathArr.map((data, index) => (<div key={data.pathIndex}>
           <FormItem
             className="c7n-formItem_180"
             {...formItemLayout}
@@ -401,7 +401,7 @@ class CreateDomain extends Component {
             {getFieldDecorator(`network-${data.networkIndex}`, {
               rules: [{
                 required: true,
-                transform: value => value.toString(),
+                transform: (value) => { return value && value.toString() },
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               }],
               initialValue: SingleData && dto.length > index

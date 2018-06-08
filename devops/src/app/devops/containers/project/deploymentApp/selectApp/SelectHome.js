@@ -258,7 +258,7 @@ class DeployAppHome extends Component {
             <h2 className="c7n-space-first">项目&quot;{projectName}&quot;部署选择应用</h2>
             <p>
               您可以在此灵活选择来源于本项目及应用市场的应用，且有列表式及卡片式两种展示方式可以切换。
-              <a href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/" className="c7n-external-link">
+              <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>
@@ -267,8 +267,8 @@ class DeployAppHome extends Component {
             </p>
             <Tabs
               tabBarExtraContent={<ButtonGroup>
-                <Button onClick={this.changeView.bind(this, 'list')} className={this.state.view === 'list' && 'c7n-tab-active'}><Icon type="format_list_bulleted" /></Button>
-                <Button onClick={this.changeView.bind(this, 'card')} className={this.state.view === 'card' && 'c7n-tab-active'}><Icon type="dashboard" /></Button>
+                <Button onClick={this.changeView.bind(this, 'list')} className={this.state.view === 'list' ? 'c7n-tab-active' : ''}><Icon type="format_list_bulleted" /></Button>
+                <Button onClick={this.changeView.bind(this, 'card')} className={this.state.view === 'card' ? 'c7n-tab-active' : ''}><Icon type="dashboard" /></Button>
               </ButtonGroup>}
               onChange={this.changeTab}
 
@@ -291,6 +291,7 @@ class DeployAppHome extends Component {
                   <div>
                     {dataSource.length >= 1 && dataSource.map(card => (
                       <div
+                        key={card.id}
                         role="none"
                         className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && 'c7n-card-active'}`}
                         onClick={this.hanldeSelectApp.bind(this, card)}
@@ -338,6 +339,7 @@ class DeployAppHome extends Component {
                   <div>
                     {dataSource.length >= 1 && dataSource.map(card => (
                       <div
+                        key={card.id}
                         role="none"
                         className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && 'c7n-card-active'}`}
                         onClick={this.hanldeSelectApp.bind(this, card)}

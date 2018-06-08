@@ -18,7 +18,7 @@ class AppReleaseHome extends Component {
       openRemove: false,
       show: false,
       projectId: menu.id,
-      key: props.match.params.key ? '2' : '1',
+      key: props.match.params.key === '2' ? '2' : '1',
     };
   }
   componentDidMount() {
@@ -52,7 +52,7 @@ class AppReleaseHome extends Component {
         value: 1,
       }],
       render: record => (
-        <span>{Choerodon.languageChange(`${record.publishLevel}`)}</span>
+        <span>{record.publishLevel && Choerodon.languageChange(`${record.publishLevel}`)}</span>
       ),
     }, {
       width: '100px',
@@ -108,7 +108,7 @@ class AppReleaseHome extends Component {
    */
   showProjectTable = () => {
     const { AppReleaseStore } = this.props;
-    const data = AppReleaseStore.allData;
+    const data = AppReleaseStore.allData.slice();
     const column = [{
       title: Choerodon.languageChange('app.name'),
       dataIndex: 'name',
@@ -197,7 +197,7 @@ class AppReleaseHome extends Component {
 
   render() {
     const { AppReleaseStore } = this.props;
-    const data = AppReleaseStore.allData;
+    const data = AppReleaseStore.allData.slice();
     return (
       <Page className="c7n-region app-release-wrapper">
         <Header title="应用发布">
@@ -212,7 +212,7 @@ class AppReleaseHome extends Component {
           <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的应用发布 </h2>
           <p>
             应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。
-            <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>

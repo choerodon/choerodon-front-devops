@@ -3,7 +3,6 @@
 
   .deployApp-card {
     margin-bottom: 32px;
-    min-height: calc(100% - 32px);
     padding: 32px;
     background-color: white;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
@@ -75,7 +74,7 @@
         }
 
         .section-instance-icon {
-          vertical-align: text-bottom;
+          vertical-align: middle;
           font-size: 16px;
           padding: 0 6px 0 12px;
           color: #f44336;
@@ -139,10 +138,15 @@
 }
 
 .deploy-tip-text {
+  vertical-align: middle;
   color: rgba(0, 0, 0, 0.65);
 }
 
 .deploy-select {
   width: 482px;
   display: block;
+}
+
+.step-disabled {
+  pointer-events: none;
 }

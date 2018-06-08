@@ -7,8 +7,11 @@ import { Tooltip } from 'choerodon-ui';
 import PropTypes from 'prop-types';
 
 export default class MouserOverWrapper extends Component {
-  static PropTypes = {
-    text: PropTypes.string.isRequired,
+  static propTypes = {
+    text: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+    ]),
     width: PropTypes.number.isRequired,
   };
   static defaultProps = {

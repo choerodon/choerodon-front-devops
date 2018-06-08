@@ -75,6 +75,9 @@ class EditVersion extends Component {
     }, {
       title: '生成时间',
       render: (text, record) => <TimePopover content={record.creationDate} />,
+    }, {
+      title: '发布时间',
+      render: (text, record) => <TimePopover content={record.updatedDate} />,
     }];
     return (<Table
       filterBarPlaceholder={'过滤表'}
@@ -159,6 +162,18 @@ class EditVersion extends Component {
         Choerodon.prompt(err.response.message);
       });
   }
+  /**
+   * 打开弹框
+   */
+  handleOpen = () => {
+    this.setState({ visible: true });
+  }
+  /**
+   * 关闭弹框
+   */
+  handleClose = () => {
+    this.setState({ visible: false });
+  }
   render() {
     const menu = AppState.currentMenuType;
     const { key } = this.state;
@@ -169,7 +184,7 @@ class EditVersion extends Component {
           <h2 className="c7n-space-first">查看应用&quot;{this.state.name}&quot;的版本 </h2>
           <p>
             您可以在此查看未发布及已发布的版本，且可以发布未发布的版本。
-            <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>
@@ -191,11 +206,23 @@ class EditVersion extends Component {
           {key === '1' ? <React.Fragment>
             <div className="c7n-appRelease-hr" />
             <Permission service={['devops-service.application-market.updateVersions']}>
-              <Button className="release-button-margin" type="primary" funcType="raised" onClick={this.handleOk}>发布</Button>
+              <Button className="release-button-margin" type="primary" funcType="raised" onClick={this.handleOpen}>发布</Button>
             </Permission>
             <Button funcType="raised" onClick={this.handleBack}>取消</Button>
           </React.Fragment> : null}
         </Content>
+        <Modal
+          visible={this.state.visible}
+          title="确认发布版本"
+          footer={[
+            <Button key="back" disabled={this.state.submitting} onClick={this.handleClose}>取消</Button>,
+            <Button key="submit" loading={this.state.submitting} type="primary" onClick={this.handleOk}>
+              发布
+            </Button>,
+          ]}
+        >
+          <p>版本发布后不可取消，确定要发布吗？</p>
+        </Modal>
       </Page>
     );
   }

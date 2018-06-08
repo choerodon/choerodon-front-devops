@@ -13,9 +13,8 @@ const { Range } = ace.acequire('ace/range');
 /* eslint-disable react/no-string-refs */
 
 class HighlightAce extends Component {
-  static PropTypes = {
-    value: PropTypes.object.isRequired,
-    options: PropTypes.object.isRequired,
+  static propTypes = {
+    value: PropTypes.string.isRequired,
     highlightMarkers: PropTypes.object,
   };
   static defaultProps = {
@@ -48,9 +47,11 @@ class HighlightAce extends Component {
     }
     if (this.props.modifyMarkers) {
       Object.values(this.props.modifyMarkers).map((marker) => {
-        if (marker.clazz === 'modifyHighlight-text' || marker.clazz === 'modifyHighlight-line') {
+        if (marker.clazz === 'modifyHighlight-text' || marker.clazz === 'modifyHighlight-line' || marker.clazz === 'clearLineHeight-line' || marker.clazz === 'clearLineHeight-text') {
           editor.session.addMarker(marker.range, 'modifyHighlight-line', 'fullLine', false);
           editor.session.addMarker(marker.range, 'modifyHighlight-text', 'text', false);
+          editor.session.addMarker(marker.range, 'clearLineHeight-line', 'fullLine', false);
+          editor.session.addMarker(marker.range, 'clearLineHeight-text', 'text', false);
         }
         return marker;
       });

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Select, Button, Spin, Radio, Card, Steps, Table, Tooltip, Form, Input } from 'choerodon-ui';
+import { Button, Radio, Steps, Table, Tooltip, Form, Input } from 'choerodon-ui';
 import _ from 'lodash';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import '../../../main.scss';
@@ -33,6 +33,9 @@ class AddAppRelease extends Component {
     const { EditReleaseStore } = this.props;
     EditReleaseStore.loadApps({ projectId: this.state.projectId });
     EditReleaseStore.loadApp(this.state.projectId, this.state.appId);
+    EditReleaseStore.setSelectData([]);
+    const card = document.getElementsByClassName('deployApp-card')[0];
+    card.style.minHeight = `${window.innerHeight - 247}px`;
   }
 
   /**
@@ -111,7 +114,7 @@ class AddAppRelease extends Component {
     const projectId = AppState.currentMenuType.id;
     const type = AppState.currentMenuType.type;
     this.props.history.push(
-      `/devops/app-release/2?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
+      `/devops/app-release/1?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
     );
   }
   handleSubmit =(e) => {
@@ -135,7 +138,12 @@ class AddAppRelease extends Component {
         .then((datass) => {
           this.setState({ submitting: false });
           if (datass) {
-            this.openAppDeployment();
+            const projectName = AppState.currentMenuType.name;
+            const type = AppState.currentMenuType.type;
+            EditReleaseStore.setSelectData([]);
+            this.props.history.push(
+              `/devops/app-release/2?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
+            );
           }
         }).catch((err) => {
           this.setState({ submitting: false });
@@ -169,12 +177,11 @@ class AddAppRelease extends Component {
    * @param e
    */
   selectFile =(e) => {
-    const menu = AppState.currentMenuType;
     const { EditReleaseStore } = this.props;
     const formdata = new FormData();
     const img = e.target.files[0];
     formdata.append('file', e.target.files[0]);
-    EditReleaseStore.uploadFile(menu.organizationId, 'devops-service', img.name.split('.')[0], formdata)
+    EditReleaseStore.uploadFile('devops-service', img.name.split('.')[0], formdata)
       .then((data) => {
         if (data) {
           this.setState({ img: data });
@@ -237,7 +244,7 @@ class AddAppRelease extends Component {
    */
   handleRenderApp =() => {
     const { EditReleaseStore } = this.props;
-    const apps = EditReleaseStore.apps;
+    const apps = EditReleaseStore.apps.slice();
     const app = EditReleaseStore.app;
     const column = [{
       key: 'check',
@@ -285,7 +292,7 @@ class AddAppRelease extends Component {
           </div>
         </section>
         <section className="deployAddApp-section">
-          <Button type="primary" funcType="raised" disabled={!(this.state.appId)} onClick={this.state.appId ? this.changeStep.bind(this, 2) : () => {}}>下一步</Button>
+          <Button type="primary" funcType="raised" disabled={!(this.state.appId)} onClick={this.changeStep.bind(this, 2)}>下一步</Button>
           <Button funcType="raised" onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
@@ -311,7 +318,7 @@ class AddAppRelease extends Component {
         <div>
           <Tooltip trigger="hover" placement="bottom" content={<div>删除</div>}>
             <Button shape="circle" funcType="flat" onClick={this.removeVersion.bind(this, record.id)}>
-              <span className="icon icon-delete_forever" />
+              <span className="icon icon-delete" />
             </Button>
           </Tooltip>
         </div>
@@ -323,7 +330,9 @@ class AddAppRelease extends Component {
           您可以在此点击添加版本选择添加需要发布的版本。
         </p>
         <section className="deployAddApp-section">
-          <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.handleAddVersion}><span className="icon icon-add" />添加版本</Button>
+          <Permission service={['devops-service.application-version.pageByApp']}>
+            <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.handleAddVersion}><span className="icon icon-add" />添加版本</Button>
+          </Permission>
         </section>
         <section className="deployAddApp-section">
           <div style={{ width: 512 }}>
@@ -336,7 +345,7 @@ class AddAppRelease extends Component {
           </div>
         </section>
         <section className="deployAddApp-section">
-          <Button type="primary" funcType="raised" onClick={data.length > 0 ? this.changeStep.bind(this, 3) : ''} disabled={!(data.length)}>下一步</Button>
+          <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 3)} disabled={!(data.length)}>下一步</Button>
           <Button onClick={this.changeStep.bind(this, 1)} funcType="raised">上一步</Button>
         </section>
       </div>
@@ -443,6 +452,8 @@ class AddAppRelease extends Component {
             label={'应用描述'}
             autosize={{ minRows: 2, maxRows: 6 }}
           />
+        </section>
+        <section className="deployAddApp-section">
           <p>
             <span className="icon icon-error release-icon-error" />
             <span className="deploy-tip-text">请注意：平台将会提取发布的应用版本中Readme文件展示在应用市场的应用详情页，请先维护好对应的Readme文件后再发布。</span>
@@ -475,7 +486,7 @@ class AddAppRelease extends Component {
             <div className="app-release-title">应用版本：</div>
             <div className="deployApp-text">
               {EditReleaseStore.selectData.length && EditReleaseStore.selectData.map(v => (
-                <div>{v.version}</div>
+                <div key={v.id}>{v.version}</div>
               ))}
             </div>
           </div>
@@ -517,7 +528,6 @@ class AddAppRelease extends Component {
     const { EditReleaseStore } = this.props;
     const data = _.cloneDeep(EditReleaseStore.selectData.slice());
     _.remove(data, app => app.id === id);
-    window.console.log(data);
     EditReleaseStore.setSelectData(data);
   };
 
@@ -529,12 +539,12 @@ class AddAppRelease extends Component {
     const { appId, mode, current, category, description, contributor } = this.state;
     return (
       <Page className="c7n-region">
-        <Header title={'应用发布'} backPath={`/devops/app-release/2?type=${type}&id=${id}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`} />
+        <Header title={'应用发布'} backPath={`/devops/app-release/1?type=${type}&id=${id}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`} />
         <Content className="c7n-deployApp-wrapper" style={{ paddingBottom: '16px' }}>
           <h2 className="c7n-space-first">在项目&quot;{projectName}&quot;中进行应用发布</h2>
           <p>
             您可以在此按指引分步骤完成应用发布。
-            <a href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/" className="c7n-external-link">
+            <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>
@@ -549,23 +559,27 @@ class AddAppRelease extends Component {
                 status={this.getStatus(1)}
               />
               <Step
+                className={appId ? '' : 'step-disabled'}
                 title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>选择发布版本</span>}
-                onClick={appId ? this.changeStep.bind(this, 2) : ''}
+                onClick={this.changeStep.bind(this, 2)}
                 status={this.getStatus(2)}
               />
               <Step
+                className={data && data.length ? '' : 'step-disabled'}
                 title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>选择发布范围</span>}
-                onClick={data.length ? this.changeStep.bind(this, 3) : ''}
+                onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}
               />
               <Step
+                className={data && data.length ? '' : 'step-disabled'}
                 title={<span style={{ color: current === 4 ? '#3F51B5' : '', fontSize: 14 }}>填写应用信息</span>}
                 onClick={this.changeStep.bind(this, 4)}
                 status={this.getStatus(4)}
               />
               <Step
+                className={(category && description && contributor) ? '' : 'step-disabled'}
                 title={<span style={{ color: current === 5 ? '#3F51B5' : '', fontSize: 14 }}>确认信息</span>}
-                onClick={(category && description && contributor) && this.changeStep.bind(this, 5)}
+                onClick={this.changeStep.bind(this, 5)}
                 status={this.getStatus(5)}
               />
             </Steps>
