@@ -528,7 +528,6 @@ class AddAppRelease extends Component {
     const { EditReleaseStore } = this.props;
     const data = _.cloneDeep(EditReleaseStore.selectData.slice());
     _.remove(data, app => app.id === id);
-    window.console.log(data);
     EditReleaseStore.setSelectData(data);
   };
 
@@ -566,12 +565,12 @@ class AddAppRelease extends Component {
               />
               <Step
                 title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>选择发布范围</span>}
-                onClick={data.length ? this.changeStep.bind(this, 3) : ''}
+                onClick={ data && data.length ? this.changeStep.bind(this, 3) : ''}
                 status={this.getStatus(3)}
               />
               <Step
                 title={<span style={{ color: current === 4 ? '#3F51B5' : '', fontSize: 14 }}>填写应用信息</span>}
-                onClick={data.length ? this.changeStep.bind(this, 4) : ''}
+                onClick={data && data.length ? this.changeStep.bind(this, 4) : ''}
                 status={this.getStatus(4)}
               />
               <Step

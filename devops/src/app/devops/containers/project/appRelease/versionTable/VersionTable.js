@@ -127,7 +127,9 @@ class VersionTable extends Component {
    */
   handleAddVersion = () => {
     const { selectedRows } = this.state;
-    this.props.store.setSelectData(selectedRows);
+    if (selectedRows && selectedRows.length) {
+      this.props.store.setSelectData(selectedRows);
+    }
     this.props.store.changeShow(false);
   };
 

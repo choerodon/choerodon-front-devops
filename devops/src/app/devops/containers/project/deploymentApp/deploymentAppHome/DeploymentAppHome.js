@@ -97,12 +97,16 @@ class DeploymentAppHome extends Component {
    */
   handleOk = (app, key) => {
     const { DeploymentAppStore } = this.props;
-    if (key === '1') {
-      DeploymentAppStore.loadVersion(app.id);
-      this.setState({ app, appId: app.id, show: false });
+    if (app) {
+      if (key === '1') {
+        DeploymentAppStore.loadVersion(app.id);
+        this.setState({ app, appId: app.id, show: false });
+      } else {
+        DeploymentAppStore.loadVersion(app.appId);
+        this.setState({ app, appId: app.appId, show: false });
+      }
     } else {
-      DeploymentAppStore.loadVersion(app.appId);
-      this.setState({ app, appId: app.appId, show: false });
+      this.setState({ show: false });
     }
   };
 
@@ -233,7 +237,7 @@ class DeploymentAppHome extends Component {
               {this.state.app.publishLevel ? <span className="icon icon-apps section-text-icon" /> : <span className="icon icon-project section-text-icon" />}
               <span className="section-text">{this.state.app.name}({this.state.app.code})</span>
             </div>}
-            <Permission service={['devops-service.application.pageByOptions','devops-service.application-market.listAllApp']}>
+            <Permission service={['devops-service.application.pageByOptions', 'devops-service.application-market.listAllApp']}>
               <a
                 role="none"
                 className={`${this.state.app ? '' : 'section-text-margin'}`}
