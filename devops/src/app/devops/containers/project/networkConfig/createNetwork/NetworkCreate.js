@@ -55,7 +55,7 @@ class NetworkCreate extends Component {
         instanceOptions = instance[index].options.map(options => (
           <Option key={options.id} value={options.id} title={options.code}>
             <Tooltip title="正常">
-              <span className="icon-check_circle status-success-instance status-instance" />
+              <span className="icon icon-check_circle status-success-instance status-instance" />
             </Tooltip>
             {options.code}
           </Option>
@@ -312,7 +312,7 @@ class NetworkCreate extends Component {
           <span className="c7n-external-link-content">
               了解详情
           </span>
-          <span className="icon-open_in_new" />
+          <span className="icon icon-open_in_new" />
         </a>
       </p>
       <Form layout="vertical">
@@ -474,8 +474,8 @@ class NetworkCreate extends Component {
             )}
           </FormItem>
           { versionsArr.length > 1 ? <Button shape="circle" className="c7n-domain-icon-delete" onClick={this.removeVersion.bind(this, index)}>
-            <span className="icon-delete" />
-          </Button> : <span className="icon-delete c7n-app-icon-disabled" />}
+            <span className="icon icon-delete" />
+          </Button> : <span className="icon icon-delete c7n-app-icon-disabled" />}
         </div>))}
         <div className="c7n-domain-btn-wrapper">
           {addStatus ? <Button className="c7n-domain-btn" onClick={this.addVersion} type="primary" icon="add">添加版本</Button>

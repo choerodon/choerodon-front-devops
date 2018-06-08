@@ -360,7 +360,7 @@ class Editnetwok extends Component {
           <span className="c7n-external-link-content">
               了解详情
           </span>
-          <span className="icon-open_in_new" />
+          <span className="icon icon-open_in_new" />
         </a>
       </p>
       <Form layout="vertical">
@@ -537,9 +537,9 @@ class Editnetwok extends Component {
                       key={`${index}-${instancess.intanceStatus}`}
                     >
                       {instancess.intanceStatus && instancess.intanceStatus !== 'running' ? <Tooltip title="实例不正常，建议更换实例">
-                        <span className="icon-error status-error-instance status-instance" />
+                        <span className="icon icon-error status-error-instance status-instance" />
                       </Tooltip> : <Tooltip title="正常">
-                        <span className="icon-check_circle status-success-instance status-instance" />
+                        <span className="icon icon-check_circle status-success-instance status-instance" />
                       </Tooltip>}
                       {instancess.code}
                     </Option>
@@ -552,8 +552,8 @@ class Editnetwok extends Component {
             className="c7n-domain-icon-delete"
             onClick={this.removeVersion.bind(this, index)}
           >
-            <span className="icon-delete" />
-          </Button> : <span className="icon-delete c7n-app-icon-disabled" />}
+            <span className="icon icon-delete" />
+          </Button> : <span className="icon icon-delete c7n-app-icon-disabled" />}
         </div>))}
         <div className="c7n-domain-btn-wrapper">
           {addStatus ? <Button className="c7n-domain-btn" onClick={this.addVersion} type="primary" icon="add">添加版本</Button>

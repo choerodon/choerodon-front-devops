@@ -293,7 +293,7 @@ class CreateDomain extends Component {
           <span className="c7n-external-link-content">
               了解详情
           </span>
-          <span className="icon-open_in_new" />
+          <span className="icon icon-open_in_new" />
         </a>
       </p>
       <Form layout="vertical" onSubmit={this.handleSubmit}>
@@ -441,8 +441,8 @@ class CreateDomain extends Component {
             )}
           </FormItem>
           { pathArr.length > 1 ? <Button shape="circle" className="c7n-domain-icon-delete" onClick={this.removeDomain.bind(this, index)}>
-            <span className="icon-delete" />
-          </Button> : <span className="icon-delete c7n-app-icon-disabled" />}
+            <span className="icon icon-delete" />
+          </Button> : <span className="icon icon-delete c7n-app-icon-disabled" />}
         </div>))}
         <div className="c7n-domain-btn-wrapper">
           <Button className="c7n-domain-btn" onClick={this.addPath} type="primary" disabled={!addStatus} icon="add">添加路径</Button>

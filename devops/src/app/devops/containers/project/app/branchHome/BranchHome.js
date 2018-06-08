@@ -119,7 +119,7 @@ class BranchHome extends Component {
                   title={'结束分支'}
                 >
                   <Button shape="circle" onClick={this.confirm.bind(this, record.name, record.type)}>
-                    <span className="icon-power_settings_new" />
+                    <span className="icon icon-power_settings_new" />
                   </Button>
                 </Tooltip>
               </Permission>
@@ -199,7 +199,7 @@ class BranchHome extends Component {
               </div>
             </section>}
           >
-            <span className="icon-help branch-icon-help" />
+            <span className="icon icon-help branch-icon-help" />
           </Popover>
         </div>)}
         pagination={false}
@@ -464,7 +464,7 @@ class BranchHome extends Component {
           <span className="c7n-external-link-content">
             了解详情
           </span>
-          <span className="icon-open_in_new" />
+          <span className="icon icon-open_in_new" />
         </a>
       </p>
       {this.tableBranch}
@@ -487,7 +487,7 @@ class BranchHome extends Component {
                   ghost
                   onClick={this.showSidebar}
                 >
-                  <span className="icon-playlist_add" />
+                  <span className="icon icon-playlist_add" />
                   <span>{Choerodon.languageChange('branch.create')}</span>
                 </Button>
               </Tooltip>
@@ -501,7 +501,7 @@ class BranchHome extends Component {
                 ghost="true"
                 onClick={this.handleRefresh}
               >
-                <span className="icon-refresh" />
+                <span className="icon icon-refresh" />
                 <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>

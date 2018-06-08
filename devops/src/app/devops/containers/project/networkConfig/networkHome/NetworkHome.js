@@ -129,7 +129,7 @@ class NetworkHome extends Component {
         switch (record.commandStatus) {
           case 'failed':
             statusDom = (<Tooltip title={record.error}>
-              <span className="icon-error c7n-status-failed c7n-network-icon" />
+              <span className="icon icon-error c7n-status-failed c7n-network-icon" />
             </Tooltip>);
             break;
           case 'doing':
@@ -184,7 +184,7 @@ class NetworkHome extends Component {
       sorter: true,
       render: record => (
         <React.Fragment>
-          <span className="icon-store_mall_directory c7n-network-icon" />
+          <span className="icon icon-store_mall_directory c7n-network-icon" />
           <MouserOverWrapper text={record.appName || ''} width={60} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
             <span>{record.appName}</span>
           </MouserOverWrapper>
@@ -235,29 +235,29 @@ class NetworkHome extends Component {
         switch (record.status) {
           case 'operating':
             editDom = (<Tooltip trigger="hover" placement="bottom" title={Choerodon.languageChange(`network_${record.commandType}`)}>
-              <span className="icon-mode_edit c7n-app-icon-disabled" />
+              <span className="icon icon-mode_edit c7n-app-icon-disabled" />
             </Tooltip>);
             deletDom = (<Tooltip trigger="hover" placement="bottom" title={Choerodon.languageChange(`network_${record.commandType}`)}>
-              <span className="icon-delete_forever c7n-app-icon-disabled" />
+              <span className="icon icon-delete_forever c7n-app-icon-disabled" />
             </Tooltip>);
             break;
           default:
             editDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
                 <Button shape="circle" funcType="flat" onClick={this.editNetwork.bind(this, record.id)}>
-                  <span className="icon-mode_edit" />
+                  <span className="icon icon-mode_edit" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
-                <span className="icon-mode_edit c7n-app-icon-disabled" />
+                <span className="icon icon-mode_edit c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
             deletDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>删除</div>}>
                 <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
-                  <span className="icon-delete_forever" />
+                  <span className="icon icon-delete_forever" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
-                <span className="icon-delete_forever c7n-app-icon-disabled" />
+                <span className="icon icon-delete_forever c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
         }
@@ -322,7 +322,7 @@ class NetworkHome extends Component {
                 <span className="c7n-external-link-content">
                  了解详情
                 </span>
-                <span className="icon-open_in_new" />
+                <span className="icon icon-open_in_new" />
               </a>
             </p>
             <Table

@@ -116,22 +116,22 @@ class AppHome extends Component {
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>分支管理</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
               {record.active && record.synchro ? <Button shape="circle" onClick={this.linkToBranch.bind(this, record.id, record.name)}>
                 <span className="icon icon-branch" />
-              </Button> : <span className="icon-branch c7n-app-icon-disabled" /> }
+              </Button> : <span className="icon icon-branch c7n-app-icon-disabled" /> }
             </Tooltip>
           </Permission>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>修改</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
               {record.active && record.synchro ? <Button shape="circle" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
-                <span className="icon-mode_edit" />
-              </Button> : <span className="icon-mode_edit c7n-app-icon-disabled" /> }
+                <span className="icon icon-mode_edit" />
+              </Button> : <span className="icon icon-mode_edit c7n-app-icon-disabled" /> }
             </Tooltip>
           </Permission>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>停用</span> : <span>启用</span>}</React.Fragment> }</div>}>
               {record.synchro ? <Button shape="circle" onClick={this.changeAppStatus.bind(this, record.id, record.active)}>
-                {record.active ? <span className="icon-remove_circle_outline" /> : <span className="icon-finished" />}
+                {record.active ? <span className="icon icon-remove_circle_outline" /> : <span className="icon icon-finished" />}
               </Button> : <React.Fragment>
-                {record.active ? <span className="icon-remove_circle_outline c7n-app-icon-disabled" /> : <span className="icon-finished c7n-app-icon-disabled" />}
+                {record.active ? <span className="icon icon-remove_circle_outline c7n-app-icon-disabled" /> : <span className="icon icon-finished c7n-app-icon-disabled" />}
               </React.Fragment> }
               
             </Tooltip>
@@ -329,7 +329,7 @@ class AppHome extends Component {
             <span className="c7n-external-link-content">
             了解详情
             </span>
-            <span className="icon-open_in_new" />
+            <span className="icon icon-open_in_new" />
           </a>
         </p>
       </div> : <div>
@@ -340,7 +340,7 @@ class AppHome extends Component {
             <span className="c7n-external-link-content">
             了解详情
             </span>
-            <span className="icon-open_in_new" />
+            <span className="icon icon-open_in_new" />
           </a>
         </p>
       </div>}
@@ -481,7 +481,7 @@ class AppHome extends Component {
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>
-                <span className="icon-open_in_new" />
+                <span className="icon icon-open_in_new" />
               </a>
             </p>
             {this.state.show && <Sidebar

@@ -223,12 +223,12 @@ class DeploymentAppHome extends Component {
         </p>
         <section className="deployApp-section">
           <div className="deploy-title">
-            <span className="icon-widgets section-title-icon" />
+            <span className="icon icon-widgets section-title-icon" />
             <span className="section-title">选择应用</span>
           </div>
           <div className="deploy-text">
             {this.state.app && <div className="section-text-margin">
-              {this.state.app.publishLevel ? <span className="icon-apps section-text-icon" /> : <span className="icon-project section-text-icon" />}
+              {this.state.app.publishLevel ? <span className="icon icon-apps section-text-icon" /> : <span className="icon icon-project section-text-icon" />}
               <span className="section-text">{this.state.app.name}({this.state.app.code})</span>
             </div>}
             <a
@@ -237,13 +237,13 @@ class DeploymentAppHome extends Component {
               onClick={this.showSideBar}
             >
               打开应用列表
-              <span className="icon-open_in_new" />
+              <span className="icon icon-open_in_new" />
             </a>
           </div>
         </section>
         <section className="deployApp-section">
           <div className="deploy-title">
-            <span className="icon-version section-title-icon " />
+            <span className="icon icon-version section-title-icon " />
             <span className="section-title">选择版本</span>
           </div>
           <Select
@@ -290,7 +290,7 @@ class DeploymentAppHome extends Component {
         </p>
         <section className="deployApp-section">
           <div className="deploy-title">
-            <span className="icon-donut_large section-title-icon " />
+            <span className="icon icon-donut_large section-title-icon " />
             <span className="section-title">选择环境</span>
           </div>
           <Select
@@ -312,7 +312,7 @@ class DeploymentAppHome extends Component {
         </section>
         <section className="deployApp-section">
           <div className="deploy-title">
-            <span className="icon-description section-title-icon " />
+            <span className="icon icon-description section-title-icon " />
             <span className="section-title">配置信息</span>
           </div>
           {data && (<AceForYaml
@@ -351,7 +351,7 @@ class DeploymentAppHome extends Component {
         </p>
         <section className="deployApp-section">
           <div className="deploy-title">
-            <span className="icon-jsfiddle section-title-icon " />
+            <span className="icon icon-jsfiddle section-title-icon " />
             <span className="section-title">选择部署模式</span>
           </div>
           <div className="section-text-margin">
@@ -362,7 +362,7 @@ class DeploymentAppHome extends Component {
             >
               <Radio className="deploy-radio" value={'new'}>新建实例</Radio>
               <Radio className="deploy-radio" value={'replace'} disabled={instances.length === 0}>替换实例
-                <span className="icon-error section-instance-icon" />
+                <span className="icon icon-error section-instance-icon" />
                 <span className="deploy-tip-text">替换实例会更新该实例的镜像及配置信息，请确认要替换的实例选择无误。</span>
               </Radio>
             </RadioGroup>
@@ -410,28 +410,28 @@ class DeploymentAppHome extends Component {
       <section className="deployApp-review">
         <section>
           <div>
-            <div className="deployApp-title"><span className="icon-widgets" />应用名称：</div>
+            <div className="deployApp-title"><span className="icon icon-widgets" />应用名称：</div>
             <div className="deployApp-text">{this.state.app && this.state.app.name}
               <span className="deployApp-value">({this.state.app && this.state.app.code})</span>
             </div>
           </div>
           <div>
-            <div className="deployApp-title"><span className="icon-version" />应用版本：</div>
+            <div className="deployApp-title"><span className="icon icon-version" />应用版本：</div>
             <div className="deployApp-text">{this.state.versionDto && this.state.versionDto.version}</div>
           </div>
           <div>
-            <div className="deployApp-title"><span className="icon-donut_large" />选择环境：</div>
+            <div className="deployApp-title"><span className="icon icon-donut_large" />选择环境：</div>
             <div className="deployApp-text">{this.state.envDto && this.state.envDto.name}
               <span className="deployApp-value">({this.state.envDto && this.state.envDto.code})</span>
             </div>
           </div>
           <div>
-            <div className="deployApp-title"><span className="icon-jsfiddle" />部署模式：</div>
+            <div className="deployApp-title"><span className="icon icon-jsfiddle" />部署模式：</div>
             <div className="deployApp-text">{this.state.mode === 'new' ? '新建实例' : '替换实例'} {this.state.mode === 'replace' &&
             <span className="deployApp-value">({this.state.instanceDto.code})</span>}</div>
           </div>
           <div>
-            <div className="deployApp-title"><span className="icon-description" />配置信息：</div>
+            <div className="deployApp-title"><span className="icon icon-description" />配置信息：</div>
           </div>
           {data && <div>
             {<AceForYaml
@@ -474,7 +474,7 @@ class DeploymentAppHome extends Component {
               <span className="c7n-external-link-content">
                 了解详情
               </span>
-              <span className="icon-open_in_new" />
+              <span className="icon icon-open_in_new" />
             </a>
           </p>
           <div className="deployApp-card">

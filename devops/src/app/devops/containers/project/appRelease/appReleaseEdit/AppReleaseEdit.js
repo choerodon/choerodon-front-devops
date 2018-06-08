@@ -142,7 +142,7 @@ class AppReleaseEdit extends Component {
           <span className="c7n-external-link-content">
               了解详情
           </span>
-          <span className="icon-open_in_new" />
+          <span className="icon icon-open_in_new" />
         </a>
       </p>
       <Form layout="vertical" onSubmit={this.handleSubmit}>
@@ -161,7 +161,7 @@ class AppReleaseEdit extends Component {
               role="none"
             >
               {this.state.showBtn && <div className="c7n-appRelease-img-child">
-                <span className="icon-photo_camera" />
+                <span className="icon icon-photo_camera" />
                 <Input id="file" type="file" onChange={this.selectFile} style={{ display: 'none' }} />
               </div>
               }
