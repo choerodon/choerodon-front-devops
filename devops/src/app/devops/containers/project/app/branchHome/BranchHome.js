@@ -460,7 +460,7 @@ class BranchHome extends Component {
       <p>
         分支是将您的工作从开发主线上分离开来，以免影响开发主线。
         平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。
-        <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/branch-management/" rel="nofollow me noopener noreferrer" className="c7n-external-link">
+        <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/branch-management/" rel="nofollow me noopener noreferrer" className="c7n-external-link">
           <span className="c7n-external-link-content">
             了解详情
           </span>

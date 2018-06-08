@@ -379,7 +379,7 @@ class EnvPipelineHome extends Component {
               <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的环境创建</h2>
               <p>
                 请在下面输入环境编码、名称、描述，创建新环境。新环境默认新增在环境流水线的最后一个节点。
-                <a href="http://choerodon.io/zh/docs/user-guide/deploy/environment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <span className="c7n-external-link-content">
                   了解详情
                   </span>
@@ -445,7 +445,7 @@ class EnvPipelineHome extends Component {
               <h2 className="c7n-space-first">复制环境&quot;{this.state.envName}&quot;的指令</h2>
               <p>
                 复制下文代码至Kubernetes运行，与平台建立链接。
-                <a href="http://choerodon.io/zh/docs/user-guide/deploy/environment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <span className="c7n-external-link-content">
                   了解详情
                   </span>
@@ -471,7 +471,7 @@ class EnvPipelineHome extends Component {
               <h2 className="c7n-space-first">复制环境&quot;{envData ? envData.name : ''}&quot;的指令</h2>
               <p>
                 复制下文代码至Kubernetes运行，与平台建立链接。
-                <a href="http://choerodon.io/zh/docs/user-guide/deploy/environment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <span className="c7n-external-link-content">
                   了解详情
                   </span>
@@ -497,7 +497,7 @@ class EnvPipelineHome extends Component {
               <h2 className="c7n-space-first">对&quot;{envData && envData.code}&quot;环境修改</h2>
               <p>
                 您可在此修改环境名称及描述，也可以复制指令至Kubernetes运行，与平台建立连接。
-                <a href="http://choerodon.io/zh/docs/user-guide/deploy/environment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <span className="c7n-external-link-content">
                   了解详情
                   </span>
@@ -611,7 +611,7 @@ class EnvPipelineHome extends Component {
           <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的环境流水线</h2>
           <p>
             环境是指一个应用可以被部署的地方。常见环境有开发测试环境，预生产环境，生产环境等。平台自动为您的项目生成一条环境流水线，您可在下方拖拽需要调整顺序的环境至目标位置。
-            <a href="http://choerodon.io/zh/docs/user-guide/deploy/environment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>
@@ -623,7 +623,7 @@ class EnvPipelineHome extends Component {
             <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的环境停用区</h2>
             <p>
               您可在此查看已被停用的环境，也可以重新启用这些环境。
-              <a href="http://choerodon.io/zh/docs/user-guide/deploy/environment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>

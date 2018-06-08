@@ -414,7 +414,7 @@ class CiPipelineHome extends Component {
           <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的持续集成</h2>
           <p>
             您可在此查看各应用所有持续集成流水线的运行情况。
-            <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/assembly-line/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/branch-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>

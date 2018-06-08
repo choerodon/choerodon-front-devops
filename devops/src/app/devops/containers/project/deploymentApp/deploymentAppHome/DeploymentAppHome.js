@@ -474,7 +474,7 @@ class DeploymentAppHome extends Component {
           <p>
             应用部署是一个将某版本的应用部署至某环境的操作。您可以在此按指引分步骤完成应用部署。
             <a
-              href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/"
+              href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/"
               className="c7n-external-link"
               rel="nofollow me noopener noreferrer"
               target="_blank"

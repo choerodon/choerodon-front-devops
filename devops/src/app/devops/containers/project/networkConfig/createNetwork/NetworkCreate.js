@@ -308,7 +308,7 @@ class NetworkCreate extends Component {
       <p>
         请选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。
         转发内部网络，则只需定义端口即可，系统会自动为您分配集群内部IP；转发外部网络，则需要定义外部IP及端口。
-        <a href="http://choerodon.io/zh/docs/user-guide/deploy/network-management/" className="c7n-external-link">
+        <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" className="c7n-external-link">
           <span className="c7n-external-link-content">
               了解详情
           </span>
