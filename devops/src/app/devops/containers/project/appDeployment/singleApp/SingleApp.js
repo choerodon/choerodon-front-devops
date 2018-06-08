@@ -428,7 +428,7 @@ class SingleApp extends Component {
     const envID = envId || (envCard.length ? envCard[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
     const appName = (appNames.length ? (<React.Fragment>
-      {appNames[0].publishLevel ? <span className="icon-apps c7n-icon-publish" /> : <span className="icon-project c7n-icon-publish" />}
+      {appNames[0].publishLevel ? <span className="icon icon-apps c7n-icon-publish" /> : <span className="icon icon-project c7n-icon-publish" />}
       {appNames[0].name}</React.Fragment>) : undefined);
     const appVersion = appVer.length ?
       _.map(appVer, d => <Option key={d.id}>{d.version}</Option>) : [];
@@ -456,7 +456,7 @@ class SingleApp extends Component {
               </div>}
             >
               <div className="c7n-option-popover">
-                <span className="icon-apps c7n-icon-publish" />
+                <span className="icon icon-apps c7n-icon-publish" />
                 {d.name}
               </div>
             </Popover>
@@ -477,7 +477,7 @@ class SingleApp extends Component {
               </div>}
             >
               <div className="c7n-option-popover">
-                <span className="icon-project c7n-icon-publish" />
+                <span className="icon icon-project c7n-icon-publish" />
                 {d.name}
               </div>
             </Popover>
@@ -487,11 +487,11 @@ class SingleApp extends Component {
     }
 
     const leftDom = scrollLeft !== 0 ?
-      <div role="none" className="c7n-env-push-left icon-navigate_before" onClick={this.pushScrollRight} />
+      <div role="none" className="c7n-env-push-left icon icon-navigate_before" onClick={this.pushScrollRight} />
       : null;
 
     const rightStyle = classNames({
-      'c7n-env-push-right icon-navigate_next': ((window.innerWidth >= 1680 && window.innerWidth < 1920) && envCard.length >= 6) || (window.innerWidth >= 1920 && envCard.length >= 7) || (window.innerWidth < 1680 && envCard.length >= 5),
+      'c7n-env-push-right icon icon-navigate_next': ((window.innerWidth >= 1680 && window.innerWidth < 1920) && envCard.length >= 6) || (window.innerWidth >= 1920 && envCard.length >= 7) || (window.innerWidth < 1680 && envCard.length >= 5),
       'c7n-push-none': envCard.length <= 4,
     });
 
@@ -554,7 +554,7 @@ class SingleApp extends Component {
           (<div>
             <span className="c7n-deploy-istCode">{record.code}</span>
             <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
-              <span className="icon-error c7n-deploy-ist-operate" />
+              <span className="icon icon-error c7n-deploy-ist-operate" />
             </Tooltip>
           </div>)}
       </div>),
@@ -613,7 +613,7 @@ class SingleApp extends Component {
           (<div>
             <span className="c7n-deploy-istCode">{record.code}</span>
             <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
-              <span className="icon-error c7n-deploy-ist-operate" />
+              <span className="icon icon-error c7n-deploy-ist-operate" />
             </Tooltip>
           </div>)}
       </div>),

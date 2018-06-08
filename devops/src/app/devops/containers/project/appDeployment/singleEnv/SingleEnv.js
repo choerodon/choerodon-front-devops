@@ -400,7 +400,7 @@ class SingleEnvironment extends Component {
       {d.name}</Option>)) : [];
 
     const appNameDom = appNames.length ? _.map(appNames, d => (<div role="none" className={appID === d.id ? 'c7n-deploy-single_card c7n-deploy-single_card-active' : 'c7n-deploy-single_card'} onClick={this.loadDetail.bind(this, this.state.envId, d.id)}>
-      {d.publishLevel ? <span className="icon-apps c7n-icon-publish" /> : <span className="icon-project c7n-icon-publish" />}
+      {d.publishLevel ? <span className="icon icon-apps c7n-icon-publish" /> : <span className="icon icon-project c7n-icon-publish" />}
       <span className="c7n-text-ellipsis"><MouserOverWrapper text={d.name || ''} width={150}>{d.name}</MouserOverWrapper></span>
     </div>)) : (<div className="c7n-deploy-single_card" >
       <div className="c7n-deploy-square"><div>App</div></div>
@@ -446,7 +446,7 @@ class SingleEnvironment extends Component {
           (<div>
             <span className="c7n-deploy-istCode">{record.code}</span>
             <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
-              <span className="icon-error c7n-deploy-ist-operate" />
+              <span className="icon icon-error c7n-deploy-ist-operate" />
             </Tooltip>
           </div>)}
       </div>),

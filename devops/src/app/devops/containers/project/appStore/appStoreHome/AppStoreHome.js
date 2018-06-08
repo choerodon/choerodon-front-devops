@@ -204,7 +204,7 @@ class AppStoreHome extends Component {
                 shape="circle"
                 onClick={this.appDetail.bind(this, record.id)}
               >
-                <span className="icon-insert_drive_file" />
+                <span className="icon icon-insert_drive_file" />
               </Button>
             </Popover>
           </Permission>
@@ -239,7 +239,7 @@ class AppStoreHome extends Component {
               <span className="c7n-external-link-content">
                 了解详情
               </span>
-              <span className="icon-open_in_new" />
+              <span className="icon icon-open_in_new" />
             </a>
           </p>
           <div className="c7n-store-search">

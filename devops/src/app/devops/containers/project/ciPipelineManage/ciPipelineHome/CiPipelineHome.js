@@ -204,7 +204,7 @@ class CiPipelineHome extends Component {
         target="_blank"
         rel="nofollow me noopener noreferrer"
       >
-        <i className={`${ICONS[status].icon} c7n-icon-${status} c7n-icon-sm`} /> 
+        <i className={`icon ${ICONS[status].icon} c7n-icon-${status} c7n-icon-sm`} />
         <span className="c7n-text-status black">{ICONS[status].display}</span>
       </a>
     </div>
@@ -255,7 +255,7 @@ class CiPipelineHome extends Component {
   renderCommit = (sha, record) => (
     <div className="c7n-commit">
       <div className="c7n-title-commit">
-        <i className="icon-branch mr7" />
+        <i className="icon icon-branch mr7" />
         <Tooltip
           placement="top"
           title={record.ref}
@@ -270,7 +270,7 @@ class CiPipelineHome extends Component {
             <span className="black">{record.ref}</span>
           </a>
         </Tooltip>
-        <i className="icon-point m8" />
+        <i className="icon icon-point m8" />
         <Tooltip
           placement="top"
           title={record.sha}
@@ -346,7 +346,7 @@ class CiPipelineHome extends Component {
               rel="nofollow me noopener noreferrer"
             >
               <i
-                className={`${ICONS[jobs[i].status || 'skipped'].icon || ''}
+                className={`icon ${ICONS[jobs[i].status || 'skipped'].icon || ''}
                 c7n-icon-${jobs[i].status} c7n-icon-lg`}
               />
             </a>
@@ -387,7 +387,7 @@ class CiPipelineHome extends Component {
         >
           <Popover placement="bottom" content={<div><span>{(record.status === 'running' || record.status === 'pending') ? 'cancel' : 'retry'}</span></div>}>
             <Button shape="circle" onClick={this.handleAction.bind(this, record)}>
-              <span className={`${ICONS_ACTION[record.status].icon} c7n-icon-action c7n-icon-sm`} />
+              <span className={`icon ${ICONS_ACTION[record.status].icon} c7n-icon-action c7n-icon-sm`} />
             </Button>
           </Popover>
         </Permission>
@@ -417,7 +417,7 @@ class CiPipelineHome extends Component {
               <span className="c7n-external-link-content">
                 了解详情
               </span>
-              <span className="icon-open_in_new" />
+              <span className="icon icon-open_in_new" />
             </a>
           </p>
           {this.filterBar}
