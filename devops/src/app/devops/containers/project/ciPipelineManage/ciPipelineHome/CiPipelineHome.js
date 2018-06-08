@@ -146,6 +146,7 @@ class CiPipelineHome extends Component {
           </div>),
       },
       {
+        width: 64,
         title: '',
         dataIndex: 'gitlabProjectId',
         render: (gitlabProjectId, record) => this.renderAction(record),

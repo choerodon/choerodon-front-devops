@@ -84,6 +84,9 @@ class AppStoreStore {
         this.handleData(data);
         this.changeLoading(false);
       }
+    })
+    .catch((error) => {
+      Choerodon.prompt(error.message);
     });
 
   loadAppStore = (projectId, id) => axios.get(`devops/v1/projects/${projectId}/apps_market/${id}`).then((data) => {
