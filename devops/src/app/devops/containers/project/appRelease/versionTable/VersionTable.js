@@ -60,6 +60,7 @@ class VersionTable extends Component {
       },
     };
     return (<Table
+      filterBarPlaceholder={'过滤表'}
       className="c7n-table-512"
       loading={store.loading}
       pagination={store.versionPage}

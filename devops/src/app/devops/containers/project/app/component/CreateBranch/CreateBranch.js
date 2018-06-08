@@ -8,6 +8,7 @@ import './CreateBranch.scss';
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
 const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -96,18 +97,20 @@ class CreateBranch extends Component {
     const contain = /(\s|~|\^|:|\?|\*|\[|\\|\.\.|@\{|\/{2,}){1}/;
     const single = /^@+$/;
     const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3})$/;
-    if (endWith.test(value)) {
-      callback('不能以"/"、"."、".lock"结尾');
-    } else if (contain.test(value) || single.test(value)) {
-      callback("只能包含字母、数字、'——'、'_'");
-    } else if (this.state.name === 'release') {
+    if (this.state.name === 'release') {
       if (p.test(value)) {
         callback();
       } else {
         callback('名称只能包含数字和".",并且以数字开头和结尾');
       }
     } else {
-      callback();
+      if (endWith.test(value)) {
+        callback('不能以"/"、"."、".lock"结尾');
+      } else if (contain.test(value) || single.test(value)) {
+        callback("只能包含字母、数字、'——'、'_'");
+      } else {
+        callback();
+      }
     }
   };
 
