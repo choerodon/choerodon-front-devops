@@ -48,10 +48,11 @@ class BranchStore {
             pageSize: res.size,
             total: res.totalElements,
           });
-          if (res.content || res.content.length) {
+          if (res.content) {
             this.loadCommits(res.content[0].gitlabProjectId, _.map(res.content, 'sha'));
           }
         }
+        this.setLoading(false);
       })
       .catch((error) => {
         this.setLoading(false);

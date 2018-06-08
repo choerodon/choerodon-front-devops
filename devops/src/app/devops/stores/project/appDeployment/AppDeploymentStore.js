@@ -228,7 +228,7 @@ class AppDeploymentStore {
   };
 
 
-  loadAppNames = projectId => axios.get(`devops/v1/projects/${projectId}/apps`).then((data) => {
+  loadAppNames = projectId => axios.get(`devops/v1/projects/${projectId}/apps/list_all`).then((data) => {
     this.changeLoading(true);
     if (data && data.failed) {
       Choerodon.prompt(data.message);
@@ -250,7 +250,7 @@ class AppDeploymentStore {
     }
   });
 
-  loadAppVersion = (projectId, appId) => axios.get(`devops/v1/projects/${projectId}/apps/${appId}/version/list`).then((data) => {
+  loadAppVersion = (projectId, appId, publish) => axios.get(`devops/v1/projects/${projectId}/apps/${appId}/version/list?is_publish=${publish}`).then((data) => {
     if (data && data.failed) {
       Choerodon.prompt(data.message);
     } else {
