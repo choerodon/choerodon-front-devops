@@ -290,10 +290,10 @@ class BranchHome extends Component {
           }
         });
     } else if (type === 'release分支') {
-      BranchStore.getLatestHotfixVersion(projectId, appId, name)
+      BranchStore.getLatestReleaseVersion(projectId, appId, name)
         .then((version) => {
           if (version !== false) {
-            content = `是否将分支${name}合并到develop分支，并以${version}为版本号？`;
+            content = `是否将分支${name}合并到master，develop分支，并以${version}为版本号？`;
             this.setState({ content });
           }
         });

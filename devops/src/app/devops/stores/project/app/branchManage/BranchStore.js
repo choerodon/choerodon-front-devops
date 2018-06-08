@@ -130,6 +130,7 @@ class BranchStore {
         const res = this.handleProptError(data);
         if (res) {
           this.changeInitVersion(data);
+          return res;
         }
       });
   createBranch =(projectId, appId, name) =>

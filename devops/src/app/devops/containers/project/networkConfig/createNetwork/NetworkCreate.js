@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Select, Input, Tooltip, Modal } from 'choerodon-ui';
+import { Button, Form, Select, Input, Tooltip, Modal, Popover, Icon } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
@@ -536,7 +536,7 @@ class NetworkCreate extends Component {
             }, {
             }],
           })(
-            <Input maxLength={30} label="目标端口" />,
+            <Input maxLength={30} label={"目标端口"} />,
           )}
         </FormItem>
       </Form>

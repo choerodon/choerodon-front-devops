@@ -57,6 +57,7 @@ class EditVersion extends Component {
       rowSelection={rowSelection}
       columns={columns}
       dataSource={data}
+      filterBarPlaceholder={'过滤表'}
       onChange={this.versionTableChange}
       rowKey={record => record.id}
     />);
@@ -76,6 +77,7 @@ class EditVersion extends Component {
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }];
     return (<Table
+      filterBarPlaceholder={'过滤表'}
       loading={EditVersionStore.loading}
       pagination={EditVersionStore.pageInfo}
       columns={columns}
