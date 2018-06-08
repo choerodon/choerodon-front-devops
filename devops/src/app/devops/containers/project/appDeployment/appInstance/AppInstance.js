@@ -317,7 +317,7 @@ class AppInstance extends Component {
         {record.commandStatus === 'doing' ? (<div>
           <span className="c7n-deploy-istCode">{record.code}</span>
           <Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
-            <Progress type="loading" width="15px" />
+            <Progress type="loading" width={15} />
           </Tooltip>
         </div>) :
           (<div>

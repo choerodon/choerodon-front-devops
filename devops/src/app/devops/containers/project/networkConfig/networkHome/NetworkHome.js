@@ -134,7 +134,7 @@ class NetworkHome extends Component {
             break;
           case 'doing':
             statusDom = (<Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
-              <Progress type="loading" width="15px" className="c7n-network-icon" />
+              <Progress type="loading" width={15} className="c7n-network-icon" />
             </Tooltip>);
             break;
           default:

@@ -105,7 +105,7 @@ class DomainHome extends Component {
             break;
           case 'doing':
             statusDom = (<Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
-              <Progress type="loading" width="15px" style={{ marginRight: 5 }} />
+              <Progress type="loading" width={15} style={{ marginRight: 5 }} />
             </Tooltip>);
             break;
           default:
