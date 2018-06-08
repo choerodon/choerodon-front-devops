@@ -231,14 +231,16 @@ class DeploymentAppHome extends Component {
               {this.state.app.publishLevel ? <span className="icon icon-apps section-text-icon" /> : <span className="icon icon-project section-text-icon" />}
               <span className="section-text">{this.state.app.name}({this.state.app.code})</span>
             </div>}
-            <a
-              role="none"
-              className={`${this.state.app ? '' : 'section-text-margin'}`}
-              onClick={this.showSideBar}
-            >
-              打开应用列表
-              <span className="icon icon-open_in_new" />
-            </a>
+            <Permission service={['devops-service.application.pageByOptions','devops-service.application-market.listAllApp']}>
+              <a
+                role="none"
+                className={`${this.state.app ? '' : 'section-text-margin'}`}
+                onClick={this.showSideBar}
+              >
+                打开应用列表
+                <span className="icon icon-open_in_new" />
+              </a>
+            </Permission>
           </div>
         </section>
         <section className="deployApp-section">
@@ -496,7 +498,7 @@ class DeploymentAppHome extends Component {
               />
               <Step
                 title={<span style={{ color: current === 4 ? '#3F51B5' : '', fontSize: 14 }}>确认信息及部署</span>}
-                onClick={(mode === 'new' || (mode === 'replace' && instanceId)) ? this.changeStep.bind(this, 4) : ''}
+                onClick={((mode === 'new' || (mode === 'replace' && instanceId)) && this.state.envId) ? this.changeStep.bind(this, 4) : ''}
                 status={this.getStatus(4)}
               />
             </Steps>

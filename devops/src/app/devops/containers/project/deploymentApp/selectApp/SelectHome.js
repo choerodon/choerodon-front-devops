@@ -70,6 +70,7 @@ class DeployAppHome extends Component {
       filters: [],
     }];
     return (<Table
+      filterBarPlaceholder={'过滤表'}
       rowClassName={'col-check'}
       onRow={(record) => {
         const a = record;
@@ -121,6 +122,7 @@ class DeployAppHome extends Component {
           onClick: this.hanldeSelectApp.bind(this, record),
         };
       }}
+      filterBarPlaceholder={'过滤表'}
       rowClassName={'col-check'}
       onChange={this.tableChange}
       columns={column}

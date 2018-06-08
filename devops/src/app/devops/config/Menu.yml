@@ -72,27 +72,7 @@
         Routes: /devops/deployment-app
         sort: 7
         permission:
-          - 'devops-service.application-instance.listByAppId'
-          - 'devops-service.application-instance.listByAppInstanceId'
-          - 'devops-service.application-instance.queryValue'
           - 'devops-service.application-instance.deploy'
-          - 'devops-service.application-instance.pageInstances'
-          - 'devops-service.application-instance.pageByOptions'
-          - 'devops-service.application-instance.listByAppVersionId'
-          - 'devops-service.application-instance.queryValues'
-          - 'devops-service.application-instance.getPods'
-          - 'devops-service.application-instance.listResources'
-          - 'devops-service.application-instance.listStages'
-          - 'devops-service.application-instance.getValue'
-          - 'devops-service.application-instance.delete'
-          - 'devops-service.application-instance.start'
-          - 'devops-service.application-instance.stop'
-          - 'devops-service.application-instance.upgrade'
-          - 'devops-service.devops-environment.listByProjectId'
-          - 'devops-service.application.listByEnvIdAndStatus'
-          - 'devops-service.devops-pod.queryLog'
-          - 'devops-service.devops-pod.pageByOptions'
-          - 'devops-service.devops-pod.getLogs'
     - "instance":
         icon: instance_outline
         Routes: /devops/instance
