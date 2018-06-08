@@ -384,7 +384,7 @@ class NetworkCreate extends Component {
             </Select>,
           )}
         </FormItem>
-        {versionsArr.map((data, index) => (<div style={{ position: 'relative' }}>
+        {versionsArr.map((data, index) => (<div key={data.versionIndex} style={{ position: 'relative' }}>
           <FormItem
             className="c7n-create-network-formitem-network"
             {...formItemLayout}
@@ -537,7 +537,7 @@ class NetworkCreate extends Component {
             }],
           })(
             <Input
-              maxLength={30}
+              maxLength={10}
               label={'目标端口'}
               suffix={<Popover
                 overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}

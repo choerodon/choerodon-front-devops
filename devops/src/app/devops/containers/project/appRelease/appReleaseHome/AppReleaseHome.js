@@ -52,7 +52,7 @@ class AppReleaseHome extends Component {
         value: 1,
       }],
       render: record => (
-        <span>{Choerodon.languageChange(`${record.publishLevel}`)}</span>
+        <span>{record.publishLevel && Choerodon.languageChange(`${record.publishLevel}`)}</span>
       ),
     }, {
       width: '100px',

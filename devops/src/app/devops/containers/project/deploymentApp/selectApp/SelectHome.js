@@ -267,8 +267,8 @@ class DeployAppHome extends Component {
             </p>
             <Tabs
               tabBarExtraContent={<ButtonGroup>
-                <Button onClick={this.changeView.bind(this, 'list')} className={this.state.view === 'list' && 'c7n-tab-active'}><Icon type="format_list_bulleted" /></Button>
-                <Button onClick={this.changeView.bind(this, 'card')} className={this.state.view === 'card' && 'c7n-tab-active'}><Icon type="dashboard" /></Button>
+                <Button onClick={this.changeView.bind(this, 'list')} className={this.state.view === 'list' ? 'c7n-tab-active' : ''}><Icon type="format_list_bulleted" /></Button>
+                <Button onClick={this.changeView.bind(this, 'card')} className={this.state.view === 'card' ? 'c7n-tab-active' : ''}><Icon type="dashboard" /></Button>
               </ButtonGroup>}
               onChange={this.changeTab}
 
@@ -291,6 +291,7 @@ class DeployAppHome extends Component {
                   <div>
                     {dataSource.length >= 1 && dataSource.map(card => (
                       <div
+                        key={card.id}
                         role="none"
                         className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && 'c7n-card-active'}`}
                         onClick={this.hanldeSelectApp.bind(this, card)}
@@ -338,6 +339,7 @@ class DeployAppHome extends Component {
                   <div>
                     {dataSource.length >= 1 && dataSource.map(card => (
                       <div
+                        key={card.id}
                         role="none"
                         className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && 'c7n-card-active'}`}
                         onClick={this.hanldeSelectApp.bind(this, card)}

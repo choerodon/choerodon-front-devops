@@ -13,9 +13,8 @@ const { Range } = ace.acequire('ace/range');
 /* eslint-disable react/no-string-refs */
 
 class HighlightAce extends Component {
-  static PropTypes = {
-    value: PropTypes.object.isRequired,
-    options: PropTypes.object.isRequired,
+  static propTypes = {
+    value: PropTypes.string.isRequired,
     highlightMarkers: PropTypes.object,
   };
   static defaultProps = {

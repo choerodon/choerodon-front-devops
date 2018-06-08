@@ -13,6 +13,7 @@ import SelectApp from '../selectApp';
 const RadioGroup = Radio.Group;
 const Step = Steps.Step;
 const { AppState } = stores;
+const Option = Select.Option;
 
 @observer
 class DeploymentAppHome extends Component {
@@ -266,7 +267,7 @@ class DeploymentAppHome extends Component {
               .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
           >
-            {versions.map(v => <option value={v.id}>{v.version}</option>)}
+            {versions.map(v => <Option key={v.id} value={v.id}>{v.version}</Option>)}
           </Select>
         </section>
         <section className="deployApp-section">
@@ -312,10 +313,10 @@ class DeploymentAppHome extends Component {
               .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
           >
-            {envs.map(v => (<option value={v.id} disabled={!v.connect}>
+            {envs.map(v => (<Option value={v.id} key={v.id} disabled={!v.connect}>
               {v.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
               {v.name}
-            </option>))}
+            </Option>))}
           </Select>
         </section>
         <section className="deployApp-section">
@@ -385,9 +386,9 @@ class DeploymentAppHome extends Component {
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0}
               filter
             >
-              {instances.map(v => (<option value={v.id}>
+              {instances.map(v => (<Option value={v.id} key={v.id}>
                 {v.code}
-              </option>))}
+              </Option>))}
             </Select>}
           </div>
         </section>
@@ -493,18 +494,21 @@ class DeploymentAppHome extends Component {
                 status={this.getStatus(1)}
               />
               <Step
+                className={!(appId && versionId) ? 'step-disabled' : ''}
                 title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>选择环境及修改配置信息</span>}
-                onClick={(appId && versionId) ? this.changeStep.bind(this, 2) : ''}
+                onClick={this.changeStep.bind(this, 2)}
                 status={this.getStatus(2)}
               />
               <Step
+                className={!(envId && (value || (data && data.yaml))) ? 'step-disabled' : ''}
                 title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>选择部署模式</span>}
-                onClick={(envId && (value || (data && data.yaml))) ? this.changeStep.bind(this, 3) : ''}
+                onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}
               />
               <Step
+                className={!((mode === 'new' || (mode === 'replace' && instanceId)) && this.state.envId)  ? 'step-disabled' : ''}
                 title={<span style={{ color: current === 4 ? '#3F51B5' : '', fontSize: 14 }}>确认信息及部署</span>}
-                onClick={((mode === 'new' || (mode === 'replace' && instanceId)) && this.state.envId) ? this.changeStep.bind(this, 4) : ''}
+                onClick={this.changeStep.bind(this, 4)}
                 status={this.getStatus(4)}
               />
             </Steps>

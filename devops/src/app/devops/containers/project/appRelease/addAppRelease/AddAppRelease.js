@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Select, Button, Spin, Radio, Card, Steps, Table, Tooltip, Form, Input } from 'choerodon-ui';
+import { Button, Radio, Steps, Table, Tooltip, Form, Input } from 'choerodon-ui';
 import _ from 'lodash';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import '../../../main.scss';
@@ -244,7 +244,7 @@ class AddAppRelease extends Component {
    */
   handleRenderApp =() => {
     const { EditReleaseStore } = this.props;
-    const apps = EditReleaseStore.apps;
+    const apps = EditReleaseStore.apps.slice();
     const app = EditReleaseStore.app;
     const column = [{
       key: 'check',
@@ -292,7 +292,7 @@ class AddAppRelease extends Component {
           </div>
         </section>
         <section className="deployAddApp-section">
-          <Button type="primary" funcType="raised" disabled={!(this.state.appId)} onClick={this.state.appId ? this.changeStep.bind(this, 2) : () => {}}>下一步</Button>
+          <Button type="primary" funcType="raised" disabled={!(this.state.appId)} onClick={this.changeStep.bind(this, 2)}>下一步</Button>
           <Button funcType="raised" onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
@@ -345,7 +345,7 @@ class AddAppRelease extends Component {
           </div>
         </section>
         <section className="deployAddApp-section">
-          <Button type="primary" funcType="raised" onClick={data.length > 0 ? this.changeStep.bind(this, 3) : ''} disabled={!(data.length)}>下一步</Button>
+          <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 3)} disabled={!(data.length)}>下一步</Button>
           <Button onClick={this.changeStep.bind(this, 1)} funcType="raised">上一步</Button>
         </section>
       </div>
@@ -486,7 +486,7 @@ class AddAppRelease extends Component {
             <div className="app-release-title">应用版本：</div>
             <div className="deployApp-text">
               {EditReleaseStore.selectData.length && EditReleaseStore.selectData.map(v => (
-                <div>{v.version}</div>
+                <div key={v.id}>{v.version}</div>
               ))}
             </div>
           </div>
@@ -559,23 +559,27 @@ class AddAppRelease extends Component {
                 status={this.getStatus(1)}
               />
               <Step
+                className={appId ? '' : 'step-disabled'}
                 title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>选择发布版本</span>}
-                onClick={appId ? this.changeStep.bind(this, 2) : ''}
+                onClick={this.changeStep.bind(this, 2)}
                 status={this.getStatus(2)}
               />
               <Step
+                className={data && data.length ? '' : 'step-disabled'}
                 title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>选择发布范围</span>}
-                onClick={ data && data.length ? this.changeStep.bind(this, 3) : ''}
+                onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}
               />
               <Step
+                className={data && data.length ? '' : 'step-disabled'}
                 title={<span style={{ color: current === 4 ? '#3F51B5' : '', fontSize: 14 }}>填写应用信息</span>}
-                onClick={data && data.length ? this.changeStep.bind(this, 4) : ''}
+                onClick={this.changeStep.bind(this, 4)}
                 status={this.getStatus(4)}
               />
               <Step
+                className={(category && description && contributor) ? '' : 'step-disabled'}
                 title={<span style={{ color: current === 5 ? '#3F51B5' : '', fontSize: 14 }}>确认信息</span>}
-                onClick={(category && description && contributor) && this.changeStep.bind(this, 5)}
+                onClick={this.changeStep.bind(this, 5)}
                 status={this.getStatus(5)}
               />
             </Steps>

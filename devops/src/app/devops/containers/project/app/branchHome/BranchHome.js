@@ -430,7 +430,7 @@ class BranchHome extends Component {
    * 关闭弹框
    */
   handleCancel =() => {
-    this.setState({ visible: false, name: null, type: null, content: null });
+    this.setState({ visible: false, name: null, type: null, content: null, statusMessage: null });
   };
 
   /**

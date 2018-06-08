@@ -372,7 +372,7 @@ class CreateDomain extends Component {
             />,
           )}
         </FormItem>
-        {pathArr.length >= 1 && pathArr.map((data, index) => (<div>
+        {pathArr.length >= 1 && pathArr.map((data, index) => (<div key={data.pathIndex}>
           <FormItem
             className="c7n-formItem_180"
             {...formItemLayout}

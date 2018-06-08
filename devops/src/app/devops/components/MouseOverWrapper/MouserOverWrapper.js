@@ -8,7 +8,10 @@ import PropTypes from 'prop-types';
 
 export default class MouserOverWrapper extends Component {
   static propTypes = {
-    text: PropTypes.isRequired,
+    text: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+    ]),
     width: PropTypes.number.isRequired,
   };
   static defaultProps = {

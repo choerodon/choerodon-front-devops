@@ -145,7 +145,7 @@ class DomainHome extends Component {
       render: record => (
         <div>
           {_.map(record.pathList, router =>
-            (<div className="c7n-network-col_border">
+            (<div className="c7n-network-col_border" key={router.path}>
               <span>{router.path}</span>
             </div>))}
         </div>
@@ -158,7 +158,7 @@ class DomainHome extends Component {
       render: record => (
         <div>
           {_.map(record.pathList, instance =>
-            (<span>{instance.serviceName}</span>
+            (<span key={instance.serviceName}>{instance.serviceName}</span>
             ))}
         </div>
       ),

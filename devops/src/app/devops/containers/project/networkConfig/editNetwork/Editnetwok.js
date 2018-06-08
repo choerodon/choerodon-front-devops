@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Select, Input, Tooltip, Modal, Progress, Popover } from 'choerodon-ui';
+import { Button, Form, Select, Input, Tooltip, Modal, Progress, Popover, Icon } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
@@ -600,8 +600,8 @@ class Editnetwok extends Component {
             initialValue: SingleData ? SingleData.targetPort : '',
           })(
             <Input
-              maxLength={10} l
-              abel="目标口号"
+              maxLength={10}
+              abel="目标端口"
               suffix={<Popover
                 overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}
                 className="routePop"
