@@ -1,12 +1,8 @@
-/**
- * Created by mading on 2017/11/27.
- */
-import { observable, action, computed, autorun, whyRun } from 'mobx';
-// import axios from 'Axios';
-import axios from 'Axios';
-import store from 'Store';
+import { observable, action, computed } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 import { Observable } from 'rxjs';
-import { List, formJS } from 'immutable';
+
+const height = window.screen.height;
 
 @store('AppVersionStore')
 class AppVersionStore {
@@ -14,7 +10,7 @@ class AppVersionStore {
   @observable isRefresh = false;// 页面的loading
   @observable loading = false; // 打开tab的loading
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: 10,
+    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
 
   @action setPageInfo(page) {
@@ -53,7 +49,7 @@ class AppVersionStore {
     return this.loading;
   }
 
-  loadData = (isRefresh = false, proId, page, pageSize = 10, sort = { field: 'id', order: 'desc' }, datas = {
+  loadData = (isRefresh = false, proId, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
     searchParam: {},
     param: '',
   }) => {
@@ -61,7 +57,7 @@ class AppVersionStore {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/project/${proId}/app_version/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field},${sort.order}`, JSON.stringify(datas)))
+    return Observable.fromPromise(axios.post(`/devops/v1/projects/${proId}/app_version/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field},${sort.order}`, JSON.stringify(datas)))
       .subscribe((data) => {
         const res = this.handleProptError(data);
         if (res) {

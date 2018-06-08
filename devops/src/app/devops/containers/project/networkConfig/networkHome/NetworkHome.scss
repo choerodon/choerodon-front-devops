@@ -1,10 +1,10 @@
 .c7n-network-wrapper {
   .c7n-network-square {
     background-color: rgba(0, 0, 0, 0.08);
-    display: inline-block;
+    display: inherit;
     border-radius: 100px;
     padding: 0 12px;
-    margin: 0 5px;
+    margin: 0 5px 5px 5px;
     line-height: 20px;
     // border-radius: 2px;
     font-size: 10px;
@@ -29,7 +29,7 @@
   }
 
   .c7n-network-circle {
-    background: rgba(255, 177, 0, 0.64);
+    background: rgb(255, 177, 0);
     height: 16px;
     width: 16px;
     font-size: 10px;
@@ -60,7 +60,7 @@
   }
 
   tbody .c7n-network-text_top {
-    vertical-align: top;
+    // vertical-align: top;
   }
 
   .c7n-network-col {
@@ -77,28 +77,10 @@
     width: 512px;
   }
 
-  .c7n-network-status {
-    display: inline-block;
-    width: 50px;
-    height: 16px;
-    font-size: 13px;
-    border-radius: 2px;
-    color: white;
-    text-align: center;
-    line-height: 16px;
-    margin-right: 8px;
-
-    div {
-      transform: scale(0.8);
-    }
-  }
-
-  .status-success {
-    background: #1bc123;
-  }
-
   .status-error {
-    background: #f44336;
+    padding-right: 2px;
+    color: #d50000;
+    vertical-align: middle;
   }
 
   .c7n-app-icon-disabled {
@@ -106,7 +88,72 @@
     color: rgba(0, 0, 0, 0.36);
     width: 32px;
     height: 32px;
+    line-height: 32px;
     text-align: center;
     display: inline-block;
+  }
+
+  .c7n-network-status {
+    display: inline-block;
+    height: 16px;
+    font-size: 13px;
+    border-radius: 2px;
+    color: white;
+    text-align: center;
+    line-height: 16px;
+    vertical-align: middle;
+
+    div {
+      transform: scale(0.8);
+    }
+  }
+
+  .c7n-network-status-running {
+    background: #1bc123;
+  }
+
+  .c7n-network-status-failed {
+    background: #f44336;
+  }
+
+  .c7n-status-failed {
+    color: #f44336;
+    vertical-align: middle;
+  }
+
+  .c7n-network-status-operating {
+    background: #4d90fe;
+  }
+
+  .c7n-network-icon {
+    vertical-align: middle;
+    font-size: 13px;
+    padding-right: 8px;
+  }
+
+  .c7n-network-column-version {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .env-status-success {
+    width: 8px;
+    height: 8px;
+    border-radius: 8px;
+    display: inline-block;
+    background-color: #00bf96;
+    margin-right: 5px;
+  }
+
+  .env-status-error {
+    width: 8px;
+    height: 8px;
+    border-radius: 8px;
+    display: inline-block;
+    background-color: #d50000;
+    margin-right: 5px;
   }
 }

@@ -1,13 +1,9 @@
-/**
- * Created by mading on 2017/11/27.
- */
-import { observable, action, computed, autorun, whyRun } from 'mobx';
-// import axios from 'Axios';
-import axios from 'Axios';
-import store from 'Store';
+import { observable, action, computed } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 import { Observable } from 'rxjs';
-import { List, formJS } from 'immutable';
+import { formJS } from 'immutable';
 
+const height = window.screen.height;
 @store('TemplateStore')
 class TemplateStore {
   @observable allData = [];
@@ -16,7 +12,7 @@ class TemplateStore {
   @observable singleData = null;
   @observable selectData = [];
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: 10,
+    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
 
   @action setPageInfo(page) {
@@ -68,7 +64,7 @@ class TemplateStore {
     this.selectData = data;
   }
 
-  loadData = (isRefresh = false, orgId, page = this.pageInfo.current, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
+  loadData = (isRefresh = false, orgId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
     searchParam: {},
     param: '',
   }) => {
@@ -76,7 +72,7 @@ class TemplateStore {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/organization/${orgId}/app_templates/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(datas)))
+    return Observable.fromPromise(axios.post(`/devops/v1/organizations/${orgId}/app_templates/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(datas)))
       .subscribe((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -93,7 +89,7 @@ class TemplateStore {
     this.setPageInfo(page);
   };
   loadSelectData =orgId =>
-    axios.get(`/devops/v1/organization/${orgId}/app_templates`)
+    axios.get(`/devops/v1/organizations/${orgId}/app_templates`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -102,7 +98,7 @@ class TemplateStore {
       });
 
   loadDataById =(orgId, id) =>
-    axios.get(`/devops/v1/organization/${orgId}/app_templates/${id}`).then((data) => {
+    axios.get(`/devops/v1/organizations/${orgId}/app_templates/${id}`).then((data) => {
       const res = this.handleProptError(data);
       if (res) {
         this.setSingleData(data);
@@ -110,35 +106,35 @@ class TemplateStore {
     });
 
   checkCode =(orgId, code) =>
-    axios.get(`/devops/v1/organization/${orgId}/app_templates/checkCode?code=${code}`)
+    axios.get(`/devops/v1/organizations/${orgId}/app_templates/checkCode?code=${code}`)
       .then((data) => {
         const res = this.handleProptError(data);
         return res;
       });
 
   checkName = (orgId, name) =>
-    axios.get(`/devops/v1/organization/${orgId}/app_templates/checkName?name=${name}`)
+    axios.get(`/devops/v1/organizations/${orgId}/app_templates/checkName?name=${name}`)
       .then((data) => {
         const res = this.handleProptError(data);
         return res;
       });
 
   updateData = (orgId, data) =>
-    axios.put(`/devops/v1/organization/${orgId}/app_templates`, JSON.stringify(data))
+    axios.put(`/devops/v1/organizations/${orgId}/app_templates`, JSON.stringify(data))
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
 
   addData = (orgId, data) =>
-    axios.post(`/devops/v1/organization/${orgId}/app_templates`, JSON.stringify(data))
+    axios.post(`/devops/v1/organizations/${orgId}/app_templates`, JSON.stringify(data))
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });;
 
   deleteData =(orgId, id) =>
-    axios.delete(`/devops/v1/organization/${orgId}/app_templates/${id}`)
+    axios.delete(`/devops/v1/organizations/${orgId}/app_templates/${id}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
@@ -158,7 +154,3 @@ class TemplateStore {
 
 const templateStore = new TemplateStore();
 export default templateStore;
-// autorun(() => {
-//   window.console.log(templateStore.allData.length);
-//   whyRun();
-// });

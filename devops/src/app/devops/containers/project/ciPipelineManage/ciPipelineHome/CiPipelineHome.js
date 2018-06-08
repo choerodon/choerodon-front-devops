@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Table, Tooltip, Popover, Select } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import TimeAgo from 'timeago-react';
-import Permission from 'PerComponent';
 import _ from 'lodash';
 import '../../../main.scss';
 import './CiPipelineHome.scss';
@@ -45,7 +44,7 @@ const ICONS = {
 };
 const ICONS_ACTION = {
   pending: {
-    icon: 'icon-refresh',
+    icon: 'icon-not_interested',
   },
   running: {
     icon: 'icon-not_interested',
@@ -60,7 +59,8 @@ const ICONS_ACTION = {
     icon: 'icon-refresh',
   },
 };
-@inject('AppState')
+const { AppState } = stores;
+
 @observer
 class CiPipelineHome extends Component {
   constructor(props) {
@@ -79,9 +79,11 @@ class CiPipelineHome extends Component {
       <div>
         <Select
           style={{ width: '512px', marginBottom: '16px' }}
-          // mode="multiple"
           value={CiPipelineStore.currentApp.id}
           label="选择应用"
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          filter
           onChange={this.handleChange.bind(this)}
         >
           {
@@ -144,6 +146,7 @@ class CiPipelineHome extends Component {
           </div>),
       },
       {
+        width: 64,
         title: '',
         dataIndex: 'gitlabProjectId',
         render: (gitlabProjectId, record) => this.renderAction(record),
@@ -156,7 +159,7 @@ class CiPipelineHome extends Component {
           size="middle"
           pagination={CiPipelineStore.pagination}
           columns={ciPipelineColumns}
-          dataSource={CiPipelineStore.ciPipelines}
+          dataSource={CiPipelineStore.ciPipelines.slice()}
           rowKey={record => record.id}
           onChange={this.handleTableChange}
         />
@@ -171,7 +174,7 @@ class CiPipelineHome extends Component {
   }
 
   handleAction(record) {
-    if (record.status === 'running') {
+    if (record.status === 'running' || record.status === 'pending') {
       CiPipelineStore.cancelPipeline(record.gitlabProjectId, record.id);
     } else {
       CiPipelineStore.retryPipeline(record.gitlabProjectId, record.id);
@@ -188,7 +191,6 @@ class CiPipelineHome extends Component {
   };
 
   handleRefresh =() => {
-    // window.console.log(CiPipelineStore.pagination);
     CiPipelineStore.setLoading(true);
     CiPipelineStore.loadPipelines(
       CiPipelineStore.currentApp.id,
@@ -203,11 +205,11 @@ class CiPipelineHome extends Component {
         target="_blank"
         rel="nofollow me noopener noreferrer"
       >
-        <i className={`${ICONS[status].icon} c7n-icon-${status} c7n-icon-sm`} /> 
+        <i className={`icon ${ICONS[status].icon} c7n-icon-${status} c7n-icon-sm`} />
         <span className="c7n-text-status black">{ICONS[status].display}</span>
       </a>
     </div>
-  )
+  );
 
   renderSign = (id, record) => (
     <div className="c7n-sign">
@@ -254,7 +256,7 @@ class CiPipelineHome extends Component {
   renderCommit = (sha, record) => (
     <div className="c7n-commit">
       <div className="c7n-title-commit">
-        <i className="icon-branch mr7" />
+        <i className="icon icon-branch mr7" />
         <Tooltip
           placement="top"
           title={record.ref}
@@ -269,7 +271,7 @@ class CiPipelineHome extends Component {
             <span className="black">{record.ref}</span>
           </a>
         </Tooltip>
-        <i className="icon-point m8" />
+        <i className="icon icon-point m8" />
         <Tooltip
           placement="top"
           title={record.sha}
@@ -345,7 +347,7 @@ class CiPipelineHome extends Component {
               rel="nofollow me noopener noreferrer"
             >
               <i
-                className={`${ICONS[jobs[i].status || 'skipped'].icon || ''}
+                className={`icon ${ICONS[jobs[i].status || 'skipped'].icon || ''}
                 c7n-icon-${jobs[i].status} c7n-icon-lg`}
               />
             </a>
@@ -373,7 +375,6 @@ class CiPipelineHome extends Component {
   };
 
   renderAction = (record) => {
-    const { AppState } = this.props;
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
@@ -385,9 +386,9 @@ class CiPipelineHome extends Component {
           projectId={projectId}
           type={type}
         >
-          <Popover placement="bottom" content={<div><span>{record.status === 'running' ? 'cancel' : 'retry'}</span></div>}>
+          <Popover placement="bottom" content={<div><span>{(record.status === 'running' || record.status === 'pending') ? 'cancel' : 'retry'}</span></div>}>
             <Button shape="circle" onClick={this.handleAction.bind(this, record)}>
-              <span className={`${ICONS_ACTION[record.status].icon} c7n-icon-action c7n-icon-sm`} />
+              <span className={`icon ${ICONS_ACTION[record.status].icon} c7n-icon-action c7n-icon-sm`} />
             </Button>
           </Popover>
         </Permission>
@@ -398,34 +399,32 @@ class CiPipelineHome extends Component {
   };
 
   render() {
-    const { AppState } = this.props;
     return (
-      <div className="c7n-region c7n-ciPipeline page-container">
-        <PageHeader title={Choerodon.languageChange('ciPipeline.title')}>
+      <Page className="c7n-region c7n-ciPipeline">
+        <Header title={Choerodon.languageChange('ciPipeline.title')}>
           <Button
             funcType="flat"
-            className="leftBtn"
             onClick={this.handleRefresh}
           >
-            <span className="icon-refresh page-head-icon" />
-            <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+            <span className="icon-refresh icon" />
+            <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
-        </PageHeader>
-        <div className="c7n-under-content c7n-scroll-content page-content">
+        </Header>
+        <Content>
           <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的持续集成</h2>
           <p>
             您可在此查看各应用所有持续集成流水线的运行情况。
-            <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/assembly-line/" className="c7n-external-link">
+            <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/branch-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>
-              <span className="icon-open_in_new" />
+              <span className="icon icon-open_in_new" />
             </a>
           </p>
           {this.filterBar}
           {this.tableCiPipeline} 
-        </div>
-      </div>
+        </Content>
+      </Page>
     );
   }
 }

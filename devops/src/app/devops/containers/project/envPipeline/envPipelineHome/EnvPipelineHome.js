@@ -1,10 +1,9 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Input, Form, Tooltip, Modal, Popover } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
-import Permission from 'PerComponent';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import classNames from 'classnames';
 import CopyToBoard from 'react-copy-to-clipboard';
@@ -21,6 +20,7 @@ let scrollLeft = 0;
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Sidebar } = Modal;
+const { AppState } = stores;
 
 const formItemLayout = {
   labelCol: {
@@ -33,7 +33,6 @@ const formItemLayout = {
   },
 };
 
-@inject('AppState')
 @observer
 class EnvPipelineHome extends Component {
   constructor(props) {
@@ -65,7 +64,7 @@ class EnvPipelineHome extends Component {
    * 加载环境数据
    */
   loadEnvs = () => {
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     EnvPipelineStore.loadEnv(projectId, true);
     EnvPipelineStore.loadEnv(projectId, false);
@@ -78,7 +77,7 @@ class EnvPipelineHome extends Component {
    * @param callback 回调提示
    */
   checkCode = _.debounce((rule, value, callback) => {
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     // eslint-disable-next-line no-useless-escape
     const pa = /^[a-z0-9]([-a-z0-9\.]*[a-z0-9])?$/;
@@ -103,7 +102,7 @@ class EnvPipelineHome extends Component {
    * @param callback 回调提示
    */
   checkName = _.debounce((rule, value, callback) => {
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     const envData = EnvPipelineStore.getEnvData;
     if (envData ? value !== envData.name : value) {
@@ -151,7 +150,7 @@ class EnvPipelineHome extends Component {
    * @param id 环境ID
    */
   actEnv = (id) => {
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     EnvPipelineStore.banEnvById(projectId, id, true)
       .then((data) => {
@@ -168,7 +167,6 @@ class EnvPipelineHome extends Component {
    */
   banCancel = () => {
     const { EnvPipelineStore } = this.props;
-    EnvPipelineStore.setIst([]);
     EnvPipelineStore.setBan(false);
   };
 
@@ -176,22 +174,18 @@ class EnvPipelineHome extends Component {
    * 环境禁用
    */
   banEnv = () => {
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     const envId = EnvPipelineStore.getEnvData.id;
-    const ist = EnvPipelineStore.getIst;
-    if (ist.length > 0) {
-      EnvPipelineStore.setIst([]);
-    } else {
-      EnvPipelineStore.banEnvById(projectId, envId, false)
-        .then((data) => {
-          if (data && data.failed) {
-            Choerodon.prompt(data.message);
-          } else if (data) {
-            this.loadEnvs();
-          }
-        });
-    }
+    EnvPipelineStore.banEnvById(projectId, envId, false)
+      .then((data) => {
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else if (data) {
+          this.loadEnvs();
+        }
+      });
+
     EnvPipelineStore.setBan(false);
   };
 
@@ -212,7 +206,7 @@ class EnvPipelineHome extends Component {
    */
   handleSubmit = (e) => {
     e.preventDefault();
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     const sideType = EnvPipelineStore.getSideType;
     this.setState({
@@ -320,7 +314,7 @@ class EnvPipelineHome extends Component {
   };
 
   render() {
-    const { EnvPipelineStore, AppState } = this.props;
+    const { EnvPipelineStore } = this.props;
     const { getFieldDecorator } = this.props.form;
     const envcardPosition = EnvPipelineStore.getEnvcardPosition;
     const disEnvcardPosition = EnvPipelineStore.getDisEnvcardPosition;
@@ -353,7 +347,7 @@ class EnvPipelineHome extends Component {
                     shape="circle"
                     onClick={this.actEnv.bind(this, env.id)}
                   >
-                    <span className="icon-finished" />
+                    <span className="icon icon-finished" />
                   </Button>
                 </Tooltip>
               </Permission>
@@ -372,7 +366,7 @@ class EnvPipelineHome extends Component {
     const suffix = (<Popover placement="right" trigger="hover" content={this.state.copyMsg}>
       <div onMouseEnter={this.mouseEnter}>
         <CopyToBoard text={shell || this.state.token} onCopy={this.handleCopy}>
-          <span className="icon-library_books" />
+          <span className="icon icon-library_books" />
         </CopyToBoard>
       </div>
     </Popover>);
@@ -385,7 +379,7 @@ class EnvPipelineHome extends Component {
               <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的环境创建</h2>
               <p>
                 请在下面输入环境编码、名称、描述，创建新环境。新环境默认新增在环境流水线的最后一个节点。
-                <a href="http://choerodon.io/zh/docs/user-guide/deploy/environment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <span className="c7n-external-link-content">
                   了解详情
                   </span>
@@ -451,11 +445,11 @@ class EnvPipelineHome extends Component {
               <h2 className="c7n-space-first">复制环境&quot;{this.state.envName}&quot;的指令</h2>
               <p>
                 复制下文代码至Kubernetes运行，与平台建立链接。
-                <a href="http://choerodon.io/zh/docs/user-guide/deploy/environment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <span className="c7n-external-link-content">
                   了解详情
                   </span>
-                  <span className="icon-open_in_new" />
+                  <span className="icon icon-open_in_new" />
                 </a>
               </p>
               <div className="c7n-env-shell-wrap">
@@ -477,11 +471,11 @@ class EnvPipelineHome extends Component {
               <h2 className="c7n-space-first">复制环境&quot;{envData ? envData.name : ''}&quot;的指令</h2>
               <p>
                 复制下文代码至Kubernetes运行，与平台建立链接。
-                <a href="http://choerodon.io/zh/docs/user-guide/deploy/environment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <span className="c7n-external-link-content">
                   了解详情
                   </span>
-                  <span className="icon-open_in_new" />
+                  <span className="icon icon-open_in_new" />
                 </a>
               </p>
               <div className="c7n-env-shell-wrap">
@@ -503,11 +497,11 @@ class EnvPipelineHome extends Component {
               <h2 className="c7n-space-first">对&quot;{envData && envData.code}&quot;环境修改</h2>
               <p>
                 您可在此修改环境名称及描述，也可以复制指令至Kubernetes运行，与平台建立连接。
-                <a href="http://choerodon.io/zh/docs/user-guide/deploy/environment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <span className="c7n-external-link-content">
                   了解详情
                   </span>
-                  <span className="icon-open_in_new" />
+                  <span className="icon icon-open_in_new" />
                 </a>
               </p>
               <Form>
@@ -555,19 +549,19 @@ class EnvPipelineHome extends Component {
       (<Board projectId={projectId} envcardPosition={envcardPosition} />);
 
     const leftDom = scrollLeft !== 0 ?
-      <div role="none" className="c7n-push-left-ban icon-navigate_before" onClick={this.pushScrollRight} />
+      <div role="none" className="c7n-push-left-ban icon icon-navigate_before" onClick={this.pushScrollRight} />
       : null;
 
     const rightStyle = classNames({
-      'c7n-push-right-ban icon-navigate_next': ((window.innerWidth >= 1680 && window.innerWidth < 1920) && disEnvcardPosition.length >= 5) || (window.innerWidth >= 1920 && disEnvcardPosition.length >= 6) || (window.innerWidth < 1680 && disEnvcardPosition.length >= 4),
+      'c7n-push-right-ban icon icon-navigate_next': ((window.innerWidth >= 1680 && window.innerWidth < 1920) && disEnvcardPosition.length >= 5) || (window.innerWidth >= 1920 && disEnvcardPosition.length >= 6) || (window.innerWidth < 1680 && disEnvcardPosition.length >= 4),
       'c7n-push-none': disEnvcardPosition.length <= 4,
     });
 
     const rightDom = this.state.moveBan ? null : <div role="none" className={rightStyle} onClick={this.pushScrollLeft} />;
 
     return (
-      <div className="c7n-region page-container">
-        <PageHeader title={Choerodon.languageChange('envPl.title')}>
+      <Page className="c7n-region">
+        <Header title={Choerodon.languageChange('envPl.title')}>
           <Permission
             service={['devops-service.devops-environment.create']}
             organizationId={organizationId}
@@ -575,24 +569,22 @@ class EnvPipelineHome extends Component {
             type={type}
           >
             <Button
-              className="leftBtn"
               funcType="flat"
               onClick={this.showSideBar.bind(this, 'create')}
             >
-              <span className="icon-playlist_add page-head-icon" />
-              <span className="icon-space">{Choerodon.getMessage('创建环境', 'Create')}</span>
+              <span className="icon-playlist_add icon" />
+              <span>{Choerodon.getMessage('创建环境', 'Create')}</span>
             </Button>
           </Permission>
           <Button
-            className="leftBtn2"
             funcType="flat"
             onClick={this.reload}
           >
-            <span className="icon-refresh page-head-icon" />
-            <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+            <span className="icon-refresh icon" />
+            <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
-        </PageHeader>
-        <div className="page-content">
+        </Header>
+        <Content>
           <Sidebar
             title={this.showTitle(sideType)}
             visible={show}
@@ -619,11 +611,11 @@ class EnvPipelineHome extends Component {
           <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的环境流水线</h2>
           <p>
             环境是指一个应用可以被部署的地方。常见环境有开发测试环境，预生产环境，生产环境等。平台自动为您的项目生成一条环境流水线，您可在下方拖拽需要调整顺序的环境至目标位置。
-            <a href="http://choerodon.io/zh/docs/user-guide/deploy/environment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>
-              <span className="icon-open_in_new" />
+              <span className="icon icon-open_in_new" />
             </a>
           </p>
           {BoardDom}
@@ -631,11 +623,11 @@ class EnvPipelineHome extends Component {
             <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的环境停用区</h2>
             <p>
               您可在此查看已被停用的环境，也可以重新启用这些环境。
-              <a href="http://choerodon.io/zh/docs/user-guide/deploy/environment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>
-                <span className="icon-open_in_new" />
+                <span className="icon icon-open_in_new" />
               </a>
             </p>
             <div className="c7n-outer-container">
@@ -648,8 +640,8 @@ class EnvPipelineHome extends Component {
               {rightDom}
             </div>
           </div>
-        </div>
-      </div>
+        </Content>
+      </Page>
     );
   }
 }

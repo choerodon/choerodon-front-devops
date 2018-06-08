@@ -38,6 +38,7 @@
 
       span {
         font-size: 18px;
+        line-height: 18px;
       }
     }
   }
@@ -72,6 +73,7 @@
 
       span {
         font-size: 18px;
+        line-height: 18px;
       }
     }
   }
@@ -143,7 +145,7 @@
 }
 
 .c7n-env-discontent {
-  margin-top: 60px;
+  margin-top: 32px;
 }
 
 .c7n-env-boardsquare {
@@ -172,6 +174,7 @@
   line-height: 20px;
   padding: 18px 16px;
   white-space: normal;
+  word-break: break-all;
 
   .c7n-env-des-head {
     color: rgba(0, 0, 0, 0.54);

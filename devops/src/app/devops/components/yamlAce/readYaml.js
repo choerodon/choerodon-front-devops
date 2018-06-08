@@ -5,15 +5,15 @@ import React, { Component } from 'react';
 import ReactAce from 'react-ace-editor';
 import ace from 'brace';
 import PropTypes from 'prop-types';
-import { Map, fromJS, getIn, toJS } from 'immutable';
+import _ from 'lodash';
+import { getIn, toJS } from 'immutable';
 import './AceForYaml.scss';
 
 const yaml = require('js-yaml');
 
-const observableDiff = require('deep-diff').observableDiff;
-
 const { Range } = ace.acequire('ace/range');
-/* eslint-disable react/no-string-refs */
+
+const jsdiff = require('diff');
 
 class AceForYaml extends Component {
   static PropTypes = {
@@ -30,124 +30,147 @@ class AceForYaml extends Component {
       mode: 'yaml',
       theme: 'eclipse',
       softWrap: false,
-      number: 1,
     },
   };
   constructor(props) {
     super(props);
     this.state = {
+      number: 0,
+      diffLen: 0,
     };
   }
 
   componentDidMount() {
-    // 第一次加载没有数据
-    // const doc = yaml.safeLoad(fs.readFileSync('./values.yml', 'utf8'));
-    this.ace.editor.setPrintMarginColumn(0);
-    this.ace.editor.setHighlightGutterLine(false);
-    this.ace.editor.setWrapBehavioursEnabled(false);
-    // this.ace.editor.session.setWrapLimitRange(50, 1000);
-    // this.ace.editor.session.setUseWrapMode(true);
-    // this.ace.editor.setShowGutter(false);
-    this.ace.editor.session.setOptions({ wrap: 'off' });
-    const { sourceData, value, showDiff } = this.props;
-    if (sourceData && value && showDiff) {
-      this.handleDataChange();
-    } else if (value && !showDiff) {
-      const datas = yaml.safeDump(value, { lineWidth: 400 });
-      this.ace.editor.setValue(datas);
-      // this.ace.editor.session.setWrapLimit(50, 1000);
-      // this.ace.editor.session.setUseWrapMode(false);
-      // this.ace.editor.session.ajustWraplimit(false);
-      this.ace.editor.clearSelection();
-    }
-  }
-  //
-  // componentWillReceiveProps(nextProps) {
-  //   const { sourceData, value, showDiff } = this.props;
-  //   if (sourceData && value && showDiff) {
-  //     this.handleDataChange();
-  //   } else if (value && !showDiff) {
-  //     this.ace.editor.setValue(yaml.dump(value));
-  //     this.ace.editor.clearSelection();
-  //   }
-  // }
-
-  onChange =(value) => {
-    const a = yaml.safeLoadAll(value);
-    if (this.props.showDiff && this.props.onChange) {
-      const difflen = observableDiff(this.props.value, this.props.sourceData).length;
-      const number = this.state.number;
-      if (number >= difflen) {
-        this.props.onChange(JSON.stringify(a[0]));
-      }
-    } else if (this.props.onChange && !this.props.showDiff) {
-      this.props.onChange(JSON.stringify(a[0]));// window.console.log('jjjdj');
-    }
-  };
-  getRangeObj =(range, length) => new Range(range.start.row, length
-    || range.start.column, range.end.row, range.end.column);
-
-  handleDiff = (data, dataSource) => {
-    const number = this.state.number || 0;
+    this.setOptions();
+    const linw = this.cmpoDiff();
     const editor = this.ace.editor;
-    const pathArr = data.path;
-    const pathLen = pathArr.length;
-    if (data.kind === 'E') {
-      let strLen = 0;
-      if (typeof data.lhs === 'number') {
-        strLen = data.lhs.toString().length;
-      } else if (data.lhs === true) {
-        strLen = 4;
-      } else if (data.lhs === false) {
-        strLen = 5;
+    const str = '# Default values for api-gateway.\n' +
+      '# This is a YAML-formatted file.\n' +
+      '# Declare variables to be passed into your templates.\n' +
+      'replicaCount: 2\n' +
+      '\n' +
+      'replicaCount: 2\n' +
+      '\n' +
+      'image:\n' +
+      '  repository: registry.saas.hand-china.com/choerodon-devops/choerodon-front-devops\n' +
+      '  tag: develop.20180502172827\n' +
+      '  pullPolicy: Always';
+    editor.setValue(str);
+    _.map(linw, (line) => {
+      if(line.lineNumber === line.endLineNumber) {
+        if (line.removed === undefined) {
+          this.handleLineHigh(line);
+        }
       } else {
-        strLen = data.lhs.length;
+        let index = 0;
+        for (let i = line.lineNumber; i <= line.endLineNumber; i += 1) {
+          const data = _.cloneDeep(line);
+          data.endLineNumber = i;
+          data.lineNumber = i;
+          const values = line.value.split('\n');
+          data.value = values[index];
+          this.handleLineHigh(data);
+          index += 1;
+        }
       }
-      const randomStr = this.randomString(strLen);
-      // $$$&&&&
-      const changeData = dataSource.setIn(data.path, randomStr);
-      const datas = changeData.toJS();
-      editor.setValue(yaml.dump(datas));
-      this.handleHighLigth(data, pathLen - 1, randomStr);
-    }
-    this.setState({ number: number + 1 });
-  };
-
-  /**
-   * 生成随机字符串ƒ
-   * @param len 字符串长度
-   * @returns 生成的字符串
-   */
-  randomString =(len) => {
-    const lens = len;
-    const $chars = '$';// yaml文件开头只能是$
-    const maxPos = $chars.length;
-    let res = '';
-    for (let i = 0; i < lens; i += 1) {
-      res += $chars.charAt(Math.floor(Math.random() * maxPos));
-    }
-    return res;
-  };
-
-  handleHighLigth = (data, index, tarStr) => {
-    const { value } = this.props;
+    })
+  }
+  handleLineHigh = (line) => {
     const editor = this.ace.editor;
-    const rangeObj = editor.find(tarStr);
-    // const start = rangeObj.start.column;
-    // const length = start + 2 + data.path[index].length;
-    const range = this.getRangeObj(rangeObj);
-    editor.setValue(yaml.dump(value));
-    this.ace.editor.clearSelection();
-    editor.session.addMarker(range, 'errorHighlight', 'text', false);
+    const row = line.lineNumber;
+    const range = this.getRange(row);
+    editor.session.replace(range, line.value.split('\n')[0]);
+    const newStrLength = line.value.split(':')[1].length - 2;
+    const rangObj = this.getRangeObj(range, newStrLength);
+    editor.session.addMarker(rangObj, 'lineHeight', 'fullLine', false);
+    editor.session.addMarker(rangObj, 'errorHighlight', 'text', false);
+  }
+  getRange = (row, range = null) => {
+    let ranges;
+    const editor = this.ace.editor;
+    const oldValue = editor.session.getLine(row);
+    ranges = editor.find(oldValue, {start: range });
+    if (ranges && ranges.start.row !== row) {
+      return this.getRange(row, ranges)
+    } else if (ranges) {
+      return ranges;
+    }
   };
+  getRangeObj =(range, length) =>
+    new Range(range.start.row, range.end.column - length, range.end.row, range.end.column + 100);
+  cmpoDiff = () => {
+    const str = '# Default values for api-gateway.\n' +
+      '# This is a YAML-formatted file.\n' +
+      '# Declare variables to be passed into your templates.\n' +
+      'replicaCount: 1\n' +
+      '\n' +
+      'replicaCount: 1\n' +
+      '\n' +
+      'pullPolicy: Alwaysssxx\n' +
+      'image:\n' +
+      '  repository: registry.saas.hand-china.com/choerodon-devops/choerodon-front-devops\n' +
+      '  tag: develop.20180502172827cc\n' +
+      '  pullPolicy: Alwaysss\n' +
+      '  name: mading\n' +
+      '  test: 123';
 
-  handleDataChange =() => {
-    const { sourceData, value } = this.props;
-    const dat = yaml.dump(value);
-    this.ace.editor.setValue(yaml.dump(value));
-    this.ace.editor.clearSelection();
-    const dataSource = fromJS(value);
-    observableDiff(sourceData, value, diff => this.handleDiff(diff, dataSource));
+    const newStr = '# Default values for api-gateway.\n' +
+      '# This is a YAML-formatted file.\n' +
+      '# Declare variables to be passed into your templates.\n' +
+      '\n' +
+      'replicaCount: 2\n' +
+      '\n' +
+      'pullPolicy: Alwaysssxx\n' +
+      'image:\n' +
+      '  repository: registry.saas.hand-china.com/choerodon-devops/choerodon-front-devops\n' +
+      '  tag: develop.20180502172827cc\n' +
+      '  pullPolicy: Alwaysss\n' +
+      '  name: mading';
+    const changes = jsdiff.diffChars(newStr, str);
+    window.console.log(changes);
+
+
+    let lineNumber = 1;
+    return changes.reduce((acc, change) => {
+      const findOnLine = acc.find(c => c.lineNumber === lineNumber);
+
+      if (findOnLine) {
+        Object.assign(findOnLine, change, {
+          modified: true,
+          endLineNumber: (lineNumber + change.count) - 1,
+        });
+      } else if ('added' in change || 'removed' in change) {
+        acc.push(Object.assign({}, change, {
+          lineNumber,
+          modified: undefined,
+          endLineNumber: (lineNumber + change.count) - 1,
+        }));
+      }
+
+      if (!change.removed) {
+        lineNumber += change.count;
+      }
+      return acc;
+    }, []);
+  };
+  onChange =(values) => {
+    window.console.log('+++');
+    const number = this.state.number;
+    const diffLen = this.state.diffLen;
+    // window.console.log(this.state);
+    if (number === diffLen && this.props.onChange) {
+      this.props.onChange(values);
+    }
+  };
+  setOptions =() => {
+    const editor = this.ace.editor;
+    // eslint-disable-next-line
+    require('brace/mode/yaml');
+
+    editor.setPrintMarginColumn(0);
+    editor.setHighlightGutterLine(false);
+    editor.setWrapBehavioursEnabled(false);
+    editor.getSession().setMode('ace/mode/yaml');
   };
 
   render() {
@@ -159,7 +182,7 @@ class AceForYaml extends Component {
         showGutter={false}
         setOptions={options}
         onChange={this.onChange}
-        style={{ height: height || '600px', width }}
+        style={{ height: height || '800px', width }}
         ref={(instance) => { this.ace = instance; }} // Let's put things into scope
       />
     );

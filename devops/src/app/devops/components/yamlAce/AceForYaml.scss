@@ -1,9 +1,50 @@
-.errorHighlight {
+.Highlight-line {
   position: absolute;
   z-index: 20;
-  background: #f4b9b7;
+  background: #cdffd8;
+}
+
+.lineHeight-text {
+  background-color: #acf2bd;
+  position: absolute;
+  z-index: 20;
+
+  //&::before {
+  //  content: '+  ';
+  //}
+}
+
+.modifyHighlight-line {
+  position: absolute;
+  z-index: 20;
+  background-color: rgba(188, 188, 247, 0.8);
+}
+
+.modifyHighlight-text {
+  position: absolute;
+  z-index: 20;
+  background: #9c99ff;
+
+  //&::before {
+  //  content: '+  ';
+  //}
+}
+
+.clearLineHeight-line {
+  position: absolute;
+  z-index: 20;
+  background-color: #f9f9f9;
+}
+
+.clearLineHeight-text {
+  position: absolute;
+  background-color: #f9f9f9;
+
+  //&::before {
+  //  content: '+  ';
+  //}
 }
 
 .ace_error {
-  background-image: none !important;
+  // background-image: none !important;
 }

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Table, Button, Input, Form, Tooltip, Select, Popover, Modal, Icon } from 'choerodon-ui';
+import { Table, Button, Input, Form, Tooltip, Select, Modal, Icon } from 'choerodon-ui';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import Permission from 'PerComponent';
-import PageHeader from 'PageHeader';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import { fromJS, is } from 'immutable';
 import { Obversable } from 'rxjs';
@@ -12,7 +11,9 @@ import { commonComponent } from '../../../../components/commonFunction';
 import LoadingBar from '../../../../components/loadingBar';
 import './TemplateHome.scss';
 import '../../../main.scss';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
+const { AppState } = stores;
 const Option = Select.Option;
 const Sidebar = Modal.Sidebar;
 const FormItem = Form.Item;
@@ -28,13 +29,12 @@ const formItemLayout = {
   },
 };
 
-@inject("AppState")
 @commonComponent('TemplateStore')
 @observer
 class TemplateHome extends Component {
   constructor(props) {
     super(props);
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     this.state = {
       id: '',
       organizationId: menu.id,
@@ -71,28 +71,39 @@ class TemplateHome extends Component {
    * @returns {[null,null,null,null,null,null]}
    */
   getColumn = () => {
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { type, id: orgId } = menu;
     return [{
       title: Choerodon.languageChange('template.name'),
-      dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
+      // width: '14%',
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={108}>
+        {record.name}
+      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('template.code'),
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
+      render: (test, record) => (<MouserOverWrapper text={record.code} width={108}>
+        {record.code}
+      </MouserOverWrapper>),
+      // width: '14%',
     }, {
       title: Choerodon.languageChange('template.description'),
       dataIndex: 'description',
       key: 'description',
       sorter: true,
       filters: [],
+      render: (test, record) => (<MouserOverWrapper text={record.description} width={150}>
+        {record.description}
+      </MouserOverWrapper>),
+      // width: '14%',
     }, {
-      width: '30%',
+      // width: '30%',
       title: Choerodon.languageChange('template.url'),
       dataIndex: 'repoUrl',
       key: 'repoUrl',
@@ -100,7 +111,7 @@ class TemplateHome extends Component {
       render: (test, record) => (
         <Tooltip trigger="hover" placement="bottom" title={record.repoUrl}>
           <div className="c7n-template-table">
-            <a href={record.repoUrl} target="_blank" rel="nofollow me noopener noreferrer">{record.repoUrl}</a>
+            <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl}</a>
           </div>
         </Tooltip>
 
@@ -110,6 +121,7 @@ class TemplateHome extends Component {
       dataIndex: 'type',
       key: 'type',
       sorter: true,
+      // width: '15%',
       filters: [{
         text: '预定义',
         value: 1,
@@ -122,25 +134,25 @@ class TemplateHome extends Component {
           : <React.Fragment><Icon type="av_timer" /><span className="c7n-template-column-text">自定义</span> </React.Fragment>
       ),
     }, {
-      width: '96px',
+      width: '100px',
       // className: 'operateIcons',
       key: 'action',
       render: (test, record) => (
         !record.type &&
         <div>
           <Permission type={type} organizationId={orgId} service={['devops-service.application-template.update']} >
-            <Popover trigger="hover" placement="bottom" content={<div>修改模板</div>}>
+            <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
               <Button shape="circle" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
-                <span className="icon-mode_edit" />
+                <span className="icon icon-mode_edit" />
               </Button>
-            </Popover>
+            </Tooltip>
           </Permission>
           <Permission type={type} organizationId={orgId} service={['devops-service.application-template.delete']} >
-            <Popover trigger="hover" placement="bottom" content={<div>删除模板</div>}>
+            <Tooltip trigger="hover" placement="bottom" title={<div>删除</div>}>
               <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
-                <span className="icon-delete_forever" />
+                <span className="icon icon-delete_forever" />
               </Button>
-            </Popover>
+            </Tooltip>
           </Permission>
         </div>
       ),
@@ -311,29 +323,29 @@ class TemplateHome extends Component {
     const { getFieldDecorator } = this.props.form;
     const serviceData = TemplateStore.getAllData;
     const { singleData, selectData } = TemplateStore;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { type, id: orgId } = menu;
     const formContent = (<div className="c7n-region">
       {this.state.type === 'create' ? <div>
         <h2 className="c7n-space-first">{`在组织"${menu.name}"中创建应用模板`}</h2>
         <p>
           请在下面输入应用模板编码、名称、描述，创建默认空白模板。您也可以通过复制于现有模板，以便节省部分操作，提升效率。
-          <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
             <span className="c7n-external-link-content">
             了解详情
             </span>
-            <span className="icon-open_in_new" />
+            <span className="icon icon-open_in_new" />
           </a>
         </p>
       </div> : <div>
         <h2 className="c7n-space-first">对应用模板&quot;{singleData ? singleData.code : ''}&quot;进行修改</h2>
         <p>
           您可在此修改应用名称及描述。
-          <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
             <span className="c7n-external-link-content">
                   了解详情
             </span>
-            <span className="icon-open_in_new" />
+            <span className="icon icon-open_in_new" />
           </a>
         </p>
       </div>}
@@ -352,7 +364,7 @@ class TemplateHome extends Component {
           })(
             <Input
               autoFocus
-              maxLength={32}
+              maxLength={20}
               label={Choerodon.languageChange('template.code')}
               size="default"
             />,
@@ -372,7 +384,7 @@ class TemplateHome extends Component {
             initialValue: singleData ? singleData.name : '',
           })(
             <Input
-              maxLength={32}
+              maxLength={20}
               label={Choerodon.languageChange('template.name')}
               size="default"
             />,
@@ -392,7 +404,7 @@ class TemplateHome extends Component {
             initialValue: singleData ? singleData.description : '',
           })(
             <TextArea
-              maxLength={128}
+              maxLength={50}
               label={Choerodon.languageChange('template.description')}
               autosize={{ minRows: 2, maxRows: 6 }}
             />,
@@ -449,6 +461,7 @@ class TemplateHome extends Component {
     </div>);
     const contentDom = (
       <Table
+        filterBarPlaceholder={'过滤表'}
         loading={TemplateStore.loading}
         pagination={TemplateStore.getPageInfo}
         columns={this.getColumn()}
@@ -457,21 +470,20 @@ class TemplateHome extends Component {
         onChange={this.tableChange}
       />);
     return (
-      <div className="c7n-region page-container c7n-template-wrapper">
+      <Page className="c7n-region page-container c7n-template-wrapper">
         {TemplateStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <PageHeader title={Choerodon.languageChange('template.title')}>
+          <Header title={Choerodon.languageChange('template.title')}>
             <Permission
               service={['devops-service.application-template.create']}
               type={type}
               organizationId={orgId}
             >
               <Button
-                className="leftBtn"
                 funcType="flat"
                 onClick={this.showSideBar.bind(this, 'create')}
               >
-                <span className="icon-playlist_add" />
-                <span className="icon-space">{Choerodon.getMessage('创建应用模板', 'Create')}</span>
+                <span className="icon-playlist_add icon" />
+                <span>{Choerodon.getMessage('创建应用模板', 'Create')}</span>
               </Button>
             </Permission>
             <Permission
@@ -480,24 +492,23 @@ class TemplateHome extends Component {
               organizationId={orgId}
             >
               <Button
-                className="leftBtn2"
                 funcType="flat"
                 onClick={this.handleRefresh}
               >
-                <span className="icon-refresh" />
-                <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+                <span className="con-refresh icon" />
+                <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
-          </PageHeader>
-          <div className="page-content">
+          </Header>
+          <Content>
             <h2 className="c7n-space-first">组织&quot;{menu.name}&quot;的应用模板</h2>
             <p>
               应用模板是将同类型应用的代码库结构整理成模板，用于创建应用时能引用相应模板快速创建初始代码库。您也可以根据实际情况自定义应用模板。
-              <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                 了解详情
                 </span>
-                <span className="icon-open_in_new" />
+                <span className="icon icon-open_in_new" />
               </a>
             </p>
             {this.state.show && <Sidebar
@@ -512,7 +523,7 @@ class TemplateHome extends Component {
               {formContent}
             </Sidebar> }
             {contentDom}
-          </div>
+          </Content>
         </React.Fragment>}
         <Modal
           visible={this.state.openRemove}
@@ -526,7 +537,7 @@ class TemplateHome extends Component {
         >
           <p>确定要删除该应用模板吗？</p>
         </Modal>
-      </div>
+      </Page>
     );
   }
 }

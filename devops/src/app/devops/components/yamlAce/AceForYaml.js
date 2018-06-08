@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import ReactAce from 'react-ace-editor';
 import ace from 'brace';
 import PropTypes from 'prop-types';
-import { Map, fromJS, getIn, toJS } from 'immutable';
+import { fromJS, getIn, toJS } from 'immutable';
 import './AceForYaml.scss';
 
 const yaml = require('js-yaml');
@@ -13,6 +13,8 @@ const yaml = require('js-yaml');
 const observableDiff = require('deep-diff').observableDiff;
 
 const { Range } = ace.acequire('ace/range');
+
+const jsdiff = require('diff');
 /* eslint-disable react/no-string-refs */
 
 class AceForYaml extends Component {
@@ -59,26 +61,25 @@ class AceForYaml extends Component {
   onChange =(values) => {
     const number = this.state.number;
     const diffLen = this.state.diffLen;
-    // window.console.log(this.state);
     if (number === diffLen && this.props.onChange) {
       this.props.onChange(values);
     }
   };
   setOptions =() => {
     const editor = this.ace.editor;
+    // eslint-disable-next-line
+    require('brace/mode/yaml');
+
     editor.setPrintMarginColumn(0);
     editor.setHighlightGutterLine(false);
     editor.setWrapBehavioursEnabled(false);
-    editor.session.setMode('ace/mode/yaml');
-    // editor.session.setNewLineMode('yaml');
-    // editor.session.setOptions({ wrap: 'off' });
+    editor.getSession().setMode('ace/mode/yaml');
   };
 
   getRangeObj =range =>
     new Range(range.start.row, range.start.column, range.end.row, range.end.column + 2);
   // 比较数据函数
   handleDataDiff =() => {
-    const editor = this.ace.editor;
     const { sourceData, value } = this.props;
     try {
       const oldData = yaml.safeLoad(sourceData);
@@ -88,6 +89,7 @@ class AceForYaml extends Component {
       if (diffArr.length && value) {
         this.handleDiff(diffArr);
       } else {
+        this.setState({ diffLen: 0 });
         this.ace.editor.setValue(yaml.safeDump(yaml.safeLoad(sourceData), { lineWidth: 400 }));
         this.ace.editor.clearSelection();
       }
@@ -97,11 +99,10 @@ class AceForYaml extends Component {
   };
 
   handleDiff = (diffArr) => {
-    const number = this.state.number;
     const that = this;
     const len = diffArr.length;
     const editor = this.ace.editor;
-    const { sourceData, value } = this.props;
+    const { sourceData } = this.props;
     let oldData = '';
     try {
       oldData = yaml.safeLoad(sourceData);
@@ -130,17 +131,14 @@ class AceForYaml extends Component {
             oldData = oldData.setIn(data.path, data.rhs);
           } else {
             oldData = oldData.setIn(data.path, randomStr);
-            // showData = showData.setIn(data.path, data.rhs);
             editor.setValue(yaml.safeDump(oldData.toJS(), { lineWidth: 400 }));
             this.handleHighLigth(data, pathLen - 1, randomStr);
             oldData = oldData.setIn(data.path, data.lhs);
           }
           editor.setValue(yaml.safeDump(oldData.toJS(), { lineWidth: 400 }));
-          // editor.setValue(yaml.safeDump(yaml.safeLoad(sourceData), { lineWidth: 400 }));
         }
         if (index === len - 1) {
           editor.setValue(yaml.safeDump(oldData.toJS(), { lineWidth: 400 }));
-          // editor.setValue(yaml.safeDump(yaml.safeLoad(sourceData), { lineWidth: 400 }));
           this.ace.editor.clearSelection();
         }
       });
@@ -169,6 +167,7 @@ class AceForYaml extends Component {
     const editor = this.ace.editor;
     const rangeObj = editor.find(tarStr);
     const range = this.getRangeObj(rangeObj);
+    editor.session.addMarker(range, 'lineHeight', 'fullLine', false);
     editor.session.addMarker(range, 'errorHighlight', 'text', false);
   };
 

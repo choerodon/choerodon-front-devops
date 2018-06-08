@@ -1,6 +1,5 @@
 import { observable, action, computed } from 'mobx';
-import axios from 'Axios';
-import store from 'Store';
+import { axios, store } from 'choerodon-front-boot';
 
 @store('BranchStore')
 class BranchStore {
@@ -16,8 +15,8 @@ class BranchStore {
   @observable createBranchShow = false;
   @observable confirmShow = false;
   @observable pageInfo = {
-    current: 0,
-    total: 1,
+    current: 1,
+    total: 0,
     pageSize: 10,
   };
   @action setPageInfo(page) {
@@ -74,7 +73,7 @@ class BranchStore {
   }
 
   loadBranchData = (projectId, appId) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/branches`)
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/branches`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -82,29 +81,33 @@ class BranchStore {
         }
       });
 
-  loadTagData = (projectId, appId, page = this.pageInfo.current, sizes = this.pageInfo.pageSize) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=${sizes}`)
+  loadTagData = (projectId, appId, page = this.pageInfo.current - 1,
+    sizes = this.pageInfo.pageSize) =>
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=${sizes}`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
-          this.setTagData(data.tagList);
           const { totalElements } = data;
           const number = page;
           const size = sizes;
           const pages = { number, size, totalElements };
           this.setPageInfo(pages);
+          this.setTagData(data.tagList);
         }
       });
-  loadAllData = (projectId, appId, page) => {
+  loadAllData = (projectId, appId, page = this.pageInfo.current - 1,
+    sizes = this.pageInfo.pageSize) => {
     this.changeLoading(true);
     return axios.all([
-      axios.get(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/branches`),
-      axios.get(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=10`)])
+      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/branches`),
+      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=${sizes}`)])
       .then(axios.spread((branch, tag) => {
         if (!branch.failed && !tag.failed) {
           this.setBranchData(branch);
           this.setTagData(tag.tagList);
-          const { number, size, totalElements } = tag;
+          const { totalElements } = tag;
+          const number = page;
+          const size = sizes;
           const pages = { number, size, totalElements };
           this.setPageInfo(pages);
         }
@@ -112,8 +115,8 @@ class BranchStore {
       }));
   }
 
-  getLatestHotfixVersion =(projectId, appId) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/tags/hotfix`)
+  getLatestHotfixVersion =(projectId, appId, branch = '') =>
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags/hotfix?branch=${branch}`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -121,34 +124,35 @@ class BranchStore {
         }
         return res;
       });
-  getLatestReleaseVersion =(projectId, appId) =>
-    axios.get(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/tags/release`)
+  getLatestReleaseVersion =(projectId, appId, branch = '') =>
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags/release?branch=${branch}`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
           this.changeInitVersion(data);
+          return res;
         }
       });
   createBranch =(projectId, appId, name) =>
-    axios.post(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/start?name=${name}`)
+    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/start?name=${name}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
   finishFeature =(projectId, appId, name) =>
-    axios.post(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/finish_feature?branch=${name}`)
+    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/finish_feature?branch=${name}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
   finishBranch =(projectId, appId, name) =>
-    axios.post(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/finish?branch=${name}`)
+    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/finish?branch=${name}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
   getBranchMergeStaus =(projectId, appId, name) =>
-    axios.post(`/devops/v1/project/${projectId}/apps/${appId}/git_flow/update_merge_request_status?branch=${name}`)
+    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/update_merge_request_status?branch=${name}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;

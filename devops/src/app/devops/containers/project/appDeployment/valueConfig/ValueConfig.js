@@ -1,22 +1,17 @@
 /* eslint-disable react/no-string-refs */
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Modal } from 'choerodon-ui';
-import ReactAce from 'react-ace-editor';
+import { Modal } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import yaml from 'js-yaml';
-
-import 'brace/mode/yaml';
-import 'brace/theme/github';
 import Ace from '../../../../components/yamlAce';
 import '../AppDeploy.scss';
 import '../../../main.scss';
-import DeploymentAppStore from '../../../../stores/project/deploymentApp';
-
 
 const { Sidebar } = Modal;
+const { AppState } = stores;
 
-@inject('AppState')
 @observer
 class ValueConfig extends Component {
   constructor(props) {
@@ -33,45 +28,33 @@ class ValueConfig extends Component {
     });
   }
 
-  onLoad = () => {
-    const value = yaml.safeLoad(this.props.store.getValue);
+  /**
+   * 事件处理，修改value值后写入store
+   * @param {*} value 修改后的value值
+   */
+  onChange = (value) => {
     this.setState({
       value,
     });
   };
 
   /**
-   * 事件处理，修改value值后写入store
-   * @param {*} value 修改后的value值
+   * 关闭弹窗
+   * @param res
    */
-  onChange = (value) => {
-    // yaml.safeLoad(value);
-    this.setState({
-      value,
-    });
-  };
-
   onClose = (res) => {
     this.setState({
       value: this.props.store.getValue,
     });
     this.props.onClose(res);
   };
-
+  /**
+   * 修改配置重新部署
+   */
   handleOk = () => {
-    const { store, id, idArr, AppState } = this.props;
+    const { store, id, idArr } = this.props;
     const projectId = AppState.currentMenuType.id;
-    let value = '';
-    if (this.state.value) {
-      try {
-        value = JSON.stringify(yaml.safeLoad(this.state.value));
-      } catch (err) {
-        Choerodon.prompt('yaml文件格式出错');
-        return;
-      }
-    } else {
-      value = JSON.stringify(yaml.safeLoad(this.props.store.getValue[0]));
-    }
+    const value = this.state.value || this.props.store.getValue.yaml;
     const data = {
       values: value,
       appInstanceId: id,
@@ -91,33 +74,25 @@ class ValueConfig extends Component {
   };
 
   render() {
-    const value = this.props.store.getValue;
-    let changData = '';
-    let soure = '';
-    if (value.length === 1) {
-      soure = value[0];
-    } else if (value.length === 2) {
-      soure = value[0];
-      changData = value[1];
-    }
-    const sideDom = (<div>
+    const data = this.props.store.getValue;
+    const sideDom = (<div className="c7n-region">
       <h2 className="c7n-space-first">对&quot;{this.props.name}&quot;进行修改</h2>
       <p>
         对实例配置信息进行修改后重新部署。
-        <a href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+        <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/instance/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
           <span className="c7n-external-link-content">
             了解详情
           </span>
-          <span className="icon-open_in_new" />
+          <span className="icon icon-open_in_new" />
         </a>
       </p>
-      <div className="c7n-section">
+      <div className="c7n-ace-section">
         <div className="c7n-body-section c7n-border-done">
           <div>
-            {value.length >= 1 && <Ace
-              height={500}
-              sourceData={soure}
-              value={changData}
+            {data && <Ace
+              totalLine={data.totalLine}
+              value={data.yaml}
+              highlightMarkers={data.highlightMarkers}
               onChange={this.onChange}
             /> }
           </div>

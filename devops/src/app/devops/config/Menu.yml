@@ -39,7 +39,7 @@
     - "environment":
         icon: linear_scale
         Routes: /devops/env-pipeline
-        sort: 4
+        sort: 5
         permission:
           - 'devops-service.devops-environment.listByProjectIdAndActive'
           - 'devops-service.devops-environment.create'
@@ -50,10 +50,32 @@
           - 'devops-service.devops-environment.query'
           - 'devops-service.devops-environment.activeEnvironment'
           - 'devops-service.devops-environment.queryShell'
+    - "app-release":
+        icon: near_me
+        Routes: /devops/app-release
+        sort: 4
+        permission:
+          - 'devops-service.application-market.create'
+          - 'devops-service.application-market.update'
+          - 'devops-service.application-market.pageListMarketAppsByProjectId'
+          - 'devops-service.application-market.updateVersions'
+    - "appstore":
+        icon: store_mall_directory
+        Routes: /devops/appstore
+        sort: 6
+        permission:
+          - 'devops-service.application-market.queryApp'
+          - 'devops-service.application-market.listAllApp'
     - "deploy":
         icon: jsfiddle
-        Routes: /devops/app-deployment
-        sort: 5
+        Routes: /devops/deployment-app
+        sort: 7
+        permission:
+          - 'devops-service.application-instance.deploy'
+    - "instance":
+        icon: instance_outline
+        Routes: /devops/instance
+        sort: 8
         permission:
           - 'devops-service.application-instance.listByAppId'
           - 'devops-service.application-instance.listByAppInstanceId'
@@ -79,7 +101,7 @@
     - "service":
         icon: router
         Routes: /devops/service
-        sort: 6
+        sort: 9
         permission:
           - 'devops-service.devops-service.create'
           - 'devops-service.devops-service.checkName'
@@ -90,7 +112,7 @@
     - "domain":
         icon: language
         Routes: /devops/domain
-        sort: 7
+        sort: 10
         permission:
           - 'devops-service.devops-ingress.pageByOptions'
           - 'devops-service.devops-ingress.queryDomainId'
@@ -98,7 +120,7 @@
     - "container":
         icon: kubernetes
         Routes: /devops/container
-        sort: 8
+        sort: 11
         permission:
           - 'devops-service.devops-env-pod-container.listByOptions'
           - 'devops-service.devops-env-pod-container.queryLogByPod'

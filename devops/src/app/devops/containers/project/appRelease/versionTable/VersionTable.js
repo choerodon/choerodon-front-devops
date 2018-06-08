@@ -1,34 +1,19 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
+import { Table, Modal } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
+import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
-import './AppReleaseEdit.scss';
-// import './CreateDomain.scss';
+import './../AppRelease.scss';
 
-const Option = Select.Option;
-const RadioGroup = Radio.Group;
-const FormItem = Form.Item;
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 100 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 26 },
-  },
-};
-const { TextArea } = Input;
 const Sidebar = Modal.Sidebar;
-
-@inject('AppState')
+const { AppState } = stores;
 @observer
 class VersionTable extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       id: props.match.params.id || '',
@@ -39,53 +24,125 @@ class VersionTable extends Component {
   }
 
   componentDidMount() {
-    const { store, id, visible } = this.props;
+    const { projectId } = this.state;
+    const app = this.props.store.app;
+    this.handleSelectData();
+    this.props.store.loadAllVersion({ projectId, appId: app.id });
   }
-
-  onSelectChange = (selectedRowKeys) => {
-    // window.console.log('selectedRowKeys changed: ', selectedRowKeys);
-    this.setState({ selectedRowKeys });
-  };
 
 
   /**
+   * 获取未发布版本
+   * @returns {*}
+   */
+  getSidebarTable =() => {
+    const { store } = this.props;
+    const data = store.getVersionData || [{
+      id: 1,
+      appName: 'ssd',
+      creationDate: '2018-05-22 11:19:41',
+    }, {
+      id: 2,
+      appName: 'ssdeee',
+      creationDate: '2018-05-22 11:19:41',
+    }];
+    const columns = [{
+      title: '版本',
+      dataIndex: 'version',
+    }, {
+      title: '生成时间',
+      render: (text, record) => <TimePopover content={record.creationDate} />,
+    }];
+    const rowSelection = {
+      selectedRowKeys: this.state.selectedRowKeys || [],
+      onChange: (selectedRowKeys, selectedRows) => {
+        this.setState({ selectedRows, selectedRowKeys });
+      },
+    };
+    return (<Table
+      filterBarPlaceholder={'过滤表'}
+      className="c7n-table-512"
+      loading={store.loading}
+      pagination={store.versionPage}
+      rowSelection={rowSelection}
+      columns={columns}
+      dataSource={data}
+      rowKey={record => record.id}
+      onChange={this.versionTableChange}
+    />);
+  };
+  /**
+   * table app表格搜索
+   * @param pagination 分页
+   * @param filters 过滤
+   * @param sorter 排序
+   */
+  versionTableChange =(pagination, filters, sorter, paras) => {
+    const { store } = this.props;
+    const app = store.app;
+    const menu = AppState.currentMenuType;
+    const organizationId = menu.id;
+    const sort = { field: 'id', order: 'desc' };
+    if (sorter.column) {
+      sort.field = sorter.field || sorter.columnKey;
+      // sort = sorter;
+      if (sorter.order === 'ascend') {
+        sort.order = 'asc';
+      } else if (sorter.order === 'descend') {
+        sort.order = 'desc';
+      }
+    }
+    let searchParam = {};
+    if (Object.keys(filters).length) {
+      searchParam = filters;
+    }
+    const postData = {
+      searchParam,
+      param: paras.toString(),
+    };
+    store
+      .loadAllVersion({ projectId: organizationId, sorter: sort, postData, appId: app.id });
+  };
+  handleSelectData =() => {
+    const selectData = _.map(this.props.store.selectData, 'id') || [];
+    this.setState({ selectedRowKeys: selectData });
+  }
+  /**
    * 关闭弹框
    */
-  handleClose =() => {
-    const { store } = this.props;
-    this.setState({ show: false });
-    store.setEnv([]);
-    this.props.onClose();
+  handleClose = () => {
+    this.props.store.changeShow(false);
+  }
+  /**
+   * 切换tabs
+   * @param value
+   */
+  changeTabs = (value) => {
+    this.setState({ key: value });
+    this.props.store
+      .loadAllVersion({ projectId: this.state.projectId, appId: this.props.appId, key: value });
+  }
+  /**
+   * 添加版本
+   */
+  handleAddVersion = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows && selectedRows.length) {
+      this.props.store.setSelectData(selectedRows);
+    }
+    this.props.store.changeShow(false);
   };
-
 
   render() {
     const { store } = this.props;
-    const menu = this.props.AppState.currentMenuType;
-    const data = [];
-    const columns = [{
-      title: 'Name',
-      dataIndex: 'name',
-    }, {
-      title: 'Age',
-      dataIndex: 'age',
-    }, {
-      title: 'Address',
-      dataIndex: 'address',
-    }];
-    const rowSelection = {
-      selectedRowKeys: this.state.selectedRowKeys,
-      onChange: this.onSelectChange,
-    };
-
-    const title = this.state.id ? '修改应用发布' : '创建应用发布';
-    const content = this.state.id ? '这些权限会影响此项目及其所有资源修改应用发布' : '这些权限会影响此项目及其所有资源创建应用发布';
-    const contentDom = (<div className="c7n-region c7n-domainCreate-wrapper">
-      <h2 className="c7n-space-first">在项目&quot;{menu.name}&quot;{title}</h2>
+    const menu = AppState.currentMenuType;
+    const content = '您可以在此勾选并添加需要发布的版本。';
+    const contentDom = (<div className="c7n-region version-wrapper">
+      <h2 className="c7n-space-first">添加应用&quot;{store.app && store.app.name}&quot;发布的版本</h2>
       <p>
         {content}
         <a
-          href="http://c7n.saas.hand-china.com/docs/devops/develop/"
+          href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-release/"
           rel="nofollow me noopener noreferrer"
           target="_blank"
           className="c7n-external-link"
@@ -93,26 +150,22 @@ class VersionTable extends Component {
           <span className="c7n-external-link-content">
               了解详情
           </span>
-          <span className="icon-open_in_new" />
+          <span className="icon icon-open_in_new" />
         </a>
       </p>
-      <Table rowSelection={rowSelection} columns={columns} dataSource={data} />
+      {this.getSidebarTable()}
     </div>);
     return (
-      <div className="c7n-region page-container">
-        <Sidebar
-          okText={this.props.type === 'create' ? '创建' : '保存'}
-          cancelText="取消"
-          visible={this.props.visible}
-          title={this.props.title}
-          onCancel={this.handleClose}
-          onOk={this.handleSubmit}
-          className="c7n-podLog-content"
-          confirmloading={this.state.submitting}
-        >
-          {this.props.visible ? contentDom : null}
-        </Sidebar>
-      </div>
+      <Sidebar
+        okText="添加"
+        cancelText="取消"
+        visible={this.props.show}
+        title="添加应用版本"
+        onCancel={this.handleClose}
+        onOk={this.handleAddVersion}
+      >
+        {contentDom}
+      </Sidebar>
     );
   }
 }

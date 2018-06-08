@@ -1,19 +1,14 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { observer, inject } from 'mobx-react';
-import { Modal, Form, DatePicker, Button, Select, Radio, Input } from 'choerodon-ui';
+import { Modal, Form, Radio, Input } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import '../../../../main.scss';
 import './CreateBranch.scss';
 
+const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
-const RadioGroup = Radio.Group;
-const InputGroup = Input.Group;
-const PLACEHOLDER = {
-  feature: '输入Issue号',
-  release: '',
-  hotfix: '输入Hotfix号',
-};
 const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -24,10 +19,10 @@ const formItemLayout = {
     sm: { span: 26 },
   },
 };
-@inject('AppState')
+
 class CreateBranch extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       name: 'feature',
@@ -45,6 +40,7 @@ class CreateBranch extends Component {
   onChange = (e) => {
     const { store, appId } = this.props;
     const projectId = this.state.projectId;
+    this.props.form.resetFields();
     this.setState({
       name: e.target.value,
     });
@@ -100,12 +96,21 @@ class CreateBranch extends Component {
     const endWith = /(\/|\.|\.lock)$/;
     const contain = /(\s|~|\^|:|\?|\*|\[|\\|\.\.|@\{|\/{2,}){1}/;
     const single = /^@+$/;
-    if (endWith.test(value)) {
-      callback('不能以"/"、"."、".lock"结尾');
-    } else if (contain.test(value) || single.test(value)) {
-      callback("只能包含字母、数字、'——'、'_'");
+    const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3})$/;
+    if (this.state.name === 'release') {
+      if (p.test(value)) {
+        callback();
+      } else {
+        callback('名称只能包含数字和".",并且以数字开头和结尾');
+      }
     } else {
-      callback();
+      if (endWith.test(value)) {
+        callback('不能以"/"、"."、".lock"结尾');
+      } else if (contain.test(value) || single.test(value)) {
+        callback("只能包含字母、数字、'——'、'_'");
+      } else {
+        callback();
+      }
     }
   };
 
@@ -117,7 +122,7 @@ class CreateBranch extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const { visible, onClose, onOk } = this.props;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const radioStyle = {
       display: 'block',
       height: '30px',
@@ -138,11 +143,11 @@ class CreateBranch extends Component {
           <h2 className="c7n-space-first">在应用&quot;{this.props.name}&quot;中创建分支</h2>
           <p>
             采用Gitflow工作流模式，请在下面选择分支类型，并填写issue号或版本号，即可创建分支。
-            <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/branch-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/branch-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
               了解详情
               </span>
-              <span className="icon-open_in_new" />
+              <span className="icon icon-open_in_new" />
             </a>
           </p>
           <span className="c7n-title">分支类型</span>
@@ -168,7 +173,6 @@ class CreateBranch extends Component {
                 <Input
                   autoFocus
                   prefix={`${this.state.name}-`}
-                  readOnly={this.state.name === 'release' && !this.state.initValue}
                   maxLength={30}
                 />,
               )}

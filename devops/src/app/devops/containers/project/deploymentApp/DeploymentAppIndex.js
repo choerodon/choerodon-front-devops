@@ -3,14 +3,14 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import nomatch from 'nomatch';
-import asyncRouter from '../../../../../util/asyncRouter';
+import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
-const DeploymentApp = asyncRouter(() => import('./deploymentAppHome'));
+const DeploymentApp = asyncRouter(() => import('./deploymentAppHome'), () => import('../../../stores/project/deploymentApp'));
 
 const DeploymentAppIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={DeploymentApp} />
+    <Route exact path={`${match.url}/:appId/:verId`} component={DeploymentApp} />
     <Route path={'*'} component={nomatch} />
   </Switch>
 );

@@ -87,14 +87,14 @@ class Board extends Component {
     }
 
     const rightStyle = classNames({
-      'c7n-push-right icon-navigate_next': ((window.innerWidth >= 1680 && window.innerWidth < 1920) && envcardPosition.length >= 5) || (window.innerWidth >= 1920 && envcardPosition.length >= 6) || (window.innerWidth < 1680 && envcardPosition.length >= 4),
+      'c7n-push-right icon icon-navigate_next': ((window.innerWidth >= 1680 && window.innerWidth < 1920) && envcardPosition.length >= 5) || (window.innerWidth >= 1920 && envcardPosition.length >= 6) || (window.innerWidth < 1680 && envcardPosition.length >= 4),
       'c7n-push-none': envcardPosition.length <= 4,
     });
 
     return (
       <div className="c7n-outer-container">
         {scrollLeft !== 0 ?
-          <div role="none" className="c7n-push-left icon-navigate_before" onClick={this.pushScrollRight} />
+          <div role="none" className="c7n-push-left icon icon-navigate_before" onClick={this.pushScrollRight} />
           : ''}
         <div className="c7n-inner-container">
           <div className="c7n-env-board">

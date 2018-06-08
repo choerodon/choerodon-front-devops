@@ -1,24 +1,22 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Button, Form, Select, Popover, Modal } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
-import Permission from 'PerComponent';
+import { Table, Button, Form, Tooltip, Modal, Progress } from 'choerodon-ui';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import CreateDomain from '../createDomain';
 import LoadingBar from '../../../../components/loadingBar';
 import './DomainHome.scss';
 import '../../../main.scss';
 import { commonComponent } from '../../../../components/commonFunction';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
+const { AppState } = stores;
 
-@inject('AppState')
 @commonComponent('DomainStore')
 @observer
 class DomainHome extends Component {
   constructor(props, context) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props, context);
     this.state = {
       upDown: -1,
@@ -67,72 +65,100 @@ class DomainHome extends Component {
   render() {
     const { DomainStore } = this.props;
     const data = DomainStore.getAllData;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const projectName = menu.name;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
-      title: '域名',
-      className: 'c7n-network-text_top',
-      // dataIndex: 'name',
+      title: '域名状态',
+      render: (record) => {
+        let statusDom = null;
+        switch (record.status) {
+          case 'failed':
+            statusDom = (<div className="c7n-domain-status c7n-domain-status-failed">
+              <div>失败</div>
+            </div>);
+            break;
+          case 'operating':
+            statusDom = (<div className="c7n-domain-status c7n-domain-status-operating">
+              <div>处理中</div>
+            </div>);
+            break;
+          default:
+            statusDom = (<div className="c7n-domain-status c7n-domain-status-running">
+              <div>运行中</div>
+            </div>);
+        }
+        return (statusDom);
+      },
+    }, {
+      title: '域名名称',
       key: 'name',
       sorter: true,
       filters: [],
-      render: record => (
-        <MouserOverWrapper text={record.name || ''} width={100}>
-          {record.name}</MouserOverWrapper>
-      ),
+      render: (record) => {
+        let statusDom = null;
+        switch (record.commandStatus) {
+          case 'failed':
+            statusDom = (<Tooltip title={record.error}>
+              <span className="icon icon-error c7n-status-failed" />
+            </Tooltip>);
+            break;
+          case 'doing':
+            statusDom = (<Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
+              <Progress type="loading" width={15} style={{ marginRight: 5 }} />
+            </Tooltip>);
+            break;
+          default:
+            statusDom = null;
+        }
+        return (<React.Fragment>
+          {record.name}
+          {statusDom}
+        </React.Fragment>);
+      },
     }, {
       title: '域名地址',
-      className: 'c7n-network-text_top',
-      // dataIndex: 'domain',
       key: 'domain',
-      // sorter: true,
       filters: [],
-      render: record => (
-        <MouserOverWrapper text={record.name || ''} width={120}>
-          {record.name}</MouserOverWrapper>
-      ),
+      dataIndex: 'domain',
     }, {
       title: '环境名称',
-      className: 'c7n-network-text_top',
-      // dataIndex: 'envName',
       key: 'envName',
       sorter: true,
       filters: [],
       render: record => (
-        <MouserOverWrapper text={record.envName || ''} width={120}>
-          <div className={record.envStatus ? 'c7n-network-status status-success' : 'c7n-network-status status-error'}>
-            <div>{record.envStatus ? '运行中' : '未连接'}</div>
-          </div>
-          {record.envName}</MouserOverWrapper>),
+        <React.Fragment>
+          { record.envStatus ? <Tooltip title="已连接">
+            <span className="env-status-success" />
+          </Tooltip> : <Tooltip title="未连接">
+            <span className="env-status-error" />
+          </Tooltip> }
+          {record.name}
+        </React.Fragment>
+      ),
     }, {
       title: '路径',
       className: 'c7n-network-col',
-      width: '100px',
       key: 'path',
       sorter: true,
       filters: [],
       render: record => (
         <div>
-          {_.map(record.devopsIngressPathDTOList, router =>
-            (<div className="c7n-network-col_border">
+          {_.map(record.pathList, router =>
+            (<div className="c7n-network-col_border" key={router.path}>
               <span>{router.path}</span>
             </div>))}
         </div>
       ),
     }, {
       title: '网络',
-      // width: '200px',
       className: 'c7n-network-col',
       key: 'serviceName',
-      // sorter: true,
       filters: [],
       render: record => (
         <div>
-          {_.map(record.devopsIngressPathDTOList, instance =>
-            (<MouserOverWrapper text={instance.serviceName || ''} width={140} className="c7n-network-col_border">
-              <span>{instance.serviceName}</span>
-            </MouserOverWrapper>
+          {_.map(record.pathList, instance =>
+            (<span key={instance.serviceName}>{instance.serviceName}</span>
             ))}
         </div>
       ),
@@ -140,20 +166,46 @@ class DomainHome extends Component {
       key: 'action',
       width: '96px',
       className: 'c7n-network-text_top',
-      render: (test, record) => (
-        <div>
+      render: (record) => {
+        let editDom = null;
+        let deletDom = null;
+        switch (record.status) {
+          case 'operating':
+            editDom = (<Tooltip trigger="hover" placement="bottom" title={Choerodon.languageChange(`domain_${record.commandType}`)}>
+              <span className="icon icon-mode_edit c7n-app-icon-disabled" />
+            </Tooltip>);
+            deletDom = (<Tooltip trigger="hover" placement="bottom" title={Choerodon.languageChange(`domain_${record.commandType}`)}>
+              <span className="icon icon-delete_forever c7n-app-icon-disabled" />
+            </Tooltip>);
+            break;
+          default:
+            editDom = (<React.Fragment>
+              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
+                <Button shape="circle" funcType="flat" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
+                  <span className="icon icon-mode_edit" />
+                </Button>
+              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
+                <span className="icon icon-mode_edit c7n-app-icon-disabled" />
+              </Tooltip>}
+            </React.Fragment>);
+            deletDom = (<React.Fragment>
+              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>删除</div>}>
+                <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
+                  <span className="icon icon-delete_forever" />
+                </Button>
+              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
+                <span className="icon icon-delete_forever c7n-app-icon-disabled" />
+              </Tooltip>}
+            </React.Fragment>);
+        }
+        return (<div>
           <Permission
             service={['devops-service.devops-ingress.update']}
             type={type}
             projectId={projectId}
             organizationId={orgId}
           >
-            {record.envStatus ? <Popover placement="bottom" content={<div><span>修改域名</span></div>}>
-              <Button shape="circle" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
-                <span className="icon-mode_edit" />
-              </Button>
-            </Popover>
-              : <span className="c7n-app-icon-disabled icon-mode_edit" /> }
+            {editDom}
           </Permission>
           <Permission
             service={['devops-service.devops-ingress.delete']}
@@ -161,19 +213,15 @@ class DomainHome extends Component {
             projectId={projectId}
             organizationId={orgId}
           >
-            {record.envStatus ? <Popover placement="bottom" content={<div><span>删除域名</span></div>}>
-              <Button shape="circle" onClick={this.openRemove.bind(this, record.id)}>
-                <span className="icon-delete_forever" />
-              </Button>
-            </Popover> : <span className="c7n-app-icon-disabled icon-delete_forever" /> }
-
+            {deletDom}
           </Permission>
-        </div>),
+        </div>);
+      },
     }];
     return (
-      <div className="c7n-region page-container c7n-domain-wrapper">
+      <Page className="c7n-region c7n-domain-wrapper">
         { DomainStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <PageHeader title="域名管理">
+          <Header title="域名管理">
             <Permission
               service={['devops-service.devops-ingress.create']}
               type={type}
@@ -181,12 +229,11 @@ class DomainHome extends Component {
               organizationId={orgId}
             >
               <Button
-                className="leftBtn"
                 funcType="flat"
                 onClick={this.showSideBar.bind(this, 'create', '')}
               >
-                <span className="icon-playlist_add page-head-icon" />
-                <span className="icon-space">{Choerodon.getMessage('创建域名', 'Create Domain')}</span>
+                <span className="icon icon-playlist_add icon" />
+                <span>{Choerodon.getMessage('创建域名', 'Create Domain')}</span>
               </Button>
             </Permission>
             <Permission
@@ -196,27 +243,27 @@ class DomainHome extends Component {
               organizationId={orgId}
             >
               <Button
-                className="leftBtn2"
                 funcType="flat"
                 onClick={this.loadAllData}
               >
-                <span className="icon-refresh page-head-icon" />
-                <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+                <span className="icon-refresh icon" />
+                <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
-          </PageHeader>
-          <div className="page-content">
+          </Header>
+          <Content>
             <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的域名管理</h2>
             <p>
               域名管理是将您已经预定义好的域名在平台中进行配置，使外部能够通过指定的域名访问到系统内部的实例。
-              <a href="http://choerodon.io/zh/docs/user-guide/deploy/domain-name/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/ingress/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                     了解详情
                 </span>
-                <span className="icon-open_in_new" />
+                <span className="icon icon-open_in_new" />
               </a>
             </p>
             <Table
+              filterBarPlaceholder={'过滤表'}
               loading={DomainStore.loading}
               onChange={this.tableChange}
               pagination={DomainStore.pageInfo}
@@ -225,7 +272,7 @@ class DomainHome extends Component {
               rowKey={record => record.domainId}
             />
 
-          </div>
+          </Content>
         </React.Fragment> }
 
         {this.state.show && <CreateDomain
@@ -248,7 +295,7 @@ class DomainHome extends Component {
         >
           <p>确定要删除吗</p>
         </Modal>
-      </div>
+      </Page>
     );
   }
 }

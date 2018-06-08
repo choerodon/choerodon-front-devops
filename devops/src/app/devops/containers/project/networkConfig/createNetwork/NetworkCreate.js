@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Form, Select, Input, Tooltip, Modal } from 'choerodon-ui';
+import { Button, Form, Select, Input, Tooltip, Modal, Popover, Icon } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-// import Sidebar from '../../../../components/Sidebar';
 import '../../../main.scss';
-// import '../networkHome/NetworkHome.scss';
 import './NetworkCreate.scss';
 
+const { AppState } = stores;
 const { Sidebar } = Modal;
 const Option = Select.Option;
 const FormItem = Form.Item;
@@ -22,11 +22,10 @@ const formItemLayout = {
   },
 };
 
-@inject('AppState')
 @observer
 class NetworkCreate extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       projectId: menu.id,
@@ -56,7 +55,7 @@ class NetworkCreate extends Component {
         instanceOptions = instance[index].options.map(options => (
           <Option key={options.id} value={options.id} title={options.code}>
             <Tooltip title="正常">
-              <span className="icon-check_circle status-success-instance status-instance" />
+              <span className="icon icon-check_circle status-success-instance status-instance" />
             </Tooltip>
             {options.code}
           </Option>
@@ -88,8 +87,9 @@ class NetworkCreate extends Component {
           externalIp,
           name,
           port,
+          targetPort,
         } = data;
-        const postData = { envId, appId, externalIp, port, name, appInstance };
+        const postData = { envId, appId, externalIp, port, name, appInstance, targetPort };
         this.setState({ submitting: true });
         store.addData(projectId, postData)
           .then((res) => {
@@ -143,7 +143,7 @@ class NetworkCreate extends Component {
    * @param options
    */
   selectApp = (value, options) => {
-    const { store, type } = this.props;
+    const { store } = this.props;
     store.loadVersion(this.state.projectId, this.state.envId, value);
     this.setState({ versionsArr: [{ versionIndex: 0, instanceIndex: 0 }],
       versionId: null,
@@ -165,7 +165,6 @@ class NetworkCreate extends Component {
    * @param value
    */
   selectVersion = (value) => {
-    // const selectVersionArr = this.state.selectVersionArr || [];
     const { store } = this.props;
     store.loadInstance(this.state.projectId, this.state.envId, this.state.appId, value);
     const selectVersionArr = this.state.selectVersionArr || [];
@@ -251,7 +250,7 @@ class NetworkCreate extends Component {
     const { store } = this.props;
     const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     if (!pattern.test(value)) {
-      callback(Choerodon.getMessage('编码只能包含字母,数字,\'.\',"-"', 'Code can contain only letters, digits,\'.\',"-"'));
+      callback('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾');
     } else {
       store.checkDomainName(this.state.projectId, this.state.envId, value)
         .then((data) => {
@@ -267,7 +266,7 @@ class NetworkCreate extends Component {
     }
   };
   checkIP =(rule, value, callback) => {
-    const p = /^(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3})$/;
+    const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
     if (value) {
       if (p.test(value)) {
         callback();
@@ -281,7 +280,7 @@ class NetworkCreate extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { store, form } = this.props;
     const app = store.getApp;
     const env = store.getEnv;
@@ -309,11 +308,11 @@ class NetworkCreate extends Component {
       <p>
         请选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。
         转发内部网络，则只需定义端口即可，系统会自动为您分配集群内部IP；转发外部网络，则需要定义外部IP及端口。
-        <a href="http://choerodon.io/zh/docs/user-guide/deploy/network-management/" className="c7n-external-link">
+        <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" className="c7n-external-link">
           <span className="c7n-external-link-content">
               了解详情
           </span>
-          <span className="icon-open_in_new" />
+          <span className="icon icon-open_in_new" />
         </a>
       </p>
       <Form layout="vertical">
@@ -326,29 +325,26 @@ class NetworkCreate extends Component {
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               transform: value => value.toString(),
-            }, {
-              // validator: this.checkCode,
             }],
           })(
             <Select
+              dropdownClassName="c7n-network-env"
               autoFocus
               filter
               showSearch
               className="c7n-create-network-formitem"
               label="环境名称"
               optionFilterProp="children"
-              // onChange={handleChange}
               onSelect={this.selectEnv}
-              filterOption={(input, option) => option.props.children[1]
+              filterOption={(input, option) => option.props.children[2]
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
 
             >
               {env.map(v => (
                 <Option key={v.id} value={v.id} disabled={!v.connect}>
-                  <div className={v.connect ? 'c7n-network-status status-success' : 'c7n-network-status status-error'}>
-                    <div>{v.connect ? '运行中' : '未连接'}</div>
-                  </div>
+                  {!v.connect && <span className="env-status-error" />}
+                  {v.connect && <span className="env-status-success" />}
                   {v.name}
                 </Option>
               ))}
@@ -363,8 +359,6 @@ class NetworkCreate extends Component {
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               transform: value => value.toString(),
-            }, {
-              // gfffcftor: this.checkCode,
             }],
           })(
             <Select
@@ -375,7 +369,6 @@ class NetworkCreate extends Component {
               notFoundContent="该环境下没有应用部署"
               label="应用名称"
               optionFilterProp="children"
-              // onChange={handleChange}
               onSelect={this.selectApp}
               filterOption={(input, option) =>
                 option.props.children.props.children.props.children
@@ -391,7 +384,7 @@ class NetworkCreate extends Component {
             </Select>,
           )}
         </FormItem>
-        {versionsArr.map((data, index) => (<div style={{ position: 'relative' }}>
+        {versionsArr.map((data, index) => (<div key={data.versionIndex} style={{ position: 'relative' }}>
           <FormItem
             className="c7n-create-network-formitem-network"
             {...formItemLayout}
@@ -401,8 +394,6 @@ class NetworkCreate extends Component {
                 required: true,
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
                 transform: value => value.toString(),
-              }, {
-                // gfffcftor: this.checkCode,
               }],
             })(
               <Select
@@ -411,7 +402,6 @@ class NetworkCreate extends Component {
                 disabled={!this.state.appId}
                 label={Choerodon.getMessage('版本', 'version')}
                 showSearch
-                // onBlur={this.handleSelecVersion}
                 onSelect={this.selectVersion}
                 dropdownMatchSelectWidth
                 size="default"
@@ -449,8 +439,6 @@ class NetworkCreate extends Component {
                 required: true,
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
                 transform: value => value.toString(),
-              }, {
-                // gfffcftor: this.checkCode,
               }],
             })(
               <Select
@@ -486,8 +474,8 @@ class NetworkCreate extends Component {
             )}
           </FormItem>
           { versionsArr.length > 1 ? <Button shape="circle" className="c7n-domain-icon-delete" onClick={this.removeVersion.bind(this, index)}>
-            <span className="icon-delete" />
-          </Button> : <span className="icon-delete c7n-app-icon-disabled" />}
+            <span className="icon icon-delete" />
+          </Button> : <span className="icon icon-delete c7n-app-icon-disabled" />}
         </div>))}
         <div className="c7n-domain-btn-wrapper">
           {addStatus ? <Button className="c7n-domain-btn" onClick={this.addVersion} type="primary" icon="add">添加版本</Button>
@@ -506,7 +494,7 @@ class NetworkCreate extends Component {
             }],
             initialValue: this.state.networkValue,
           })(
-            <Input disabled={!this.state.appId} label="网络名称" />,
+            <Input disabled={!this.state.appId} label="网络名称" maxLength={25} />,
           )}
         </FormItem>
         <FormItem
@@ -520,7 +508,7 @@ class NetworkCreate extends Component {
               },
             ],
           })(
-            <Input maxLength={30} label="外部IP" />,
+            <Input maxLength={15} label="外部IP" />,
           )}
         </FormItem>
         <FormItem
@@ -531,12 +519,37 @@ class NetworkCreate extends Component {
             rules: [{
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              // transform: value => value.toString(),
             }, {
-              // validator: this.checkCode,
             }],
           })(
-            <Input maxLength={30} label="端口号" />,
+            <Input maxLength={5} label="端口号" />,
+          )}
+        </FormItem>
+        <FormItem
+          className="c7n-create-network-formitem"
+          {...formItemLayout}
+        >
+          {getFieldDecorator('targetPort', {
+            rules: [{
+              required: true,
+              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+            }, {
+            }],
+          })(
+            <Input
+              maxLength={10}
+              label={'目标端口'}
+              suffix={<Popover
+                overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}
+                className="routePop"
+                placement="right"
+                trigger="hover"
+                content={'网络选择的目标实例所暴露的端口号'}
+              >
+                <Icon type="help" />
+              </Popover>
+              }
+            />,
           )}
         </FormItem>
       </Form>

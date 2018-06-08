@@ -1,29 +1,23 @@
-/**
- *create by mading on 2018/3/15
- */
+import React from 'react';
+import { stores } from 'choerodon-front-boot';
 
-import React, { Component } from 'react';
-import { Modal } from 'choerodon-ui';
-import NewButton from 'NewButton';
+const { AppState } = stores;
 
 /*eslint-disable*/
 export const commonComponent =(storeName) => {
-  // console.log(storeName);
 
   return component => class extends component {
-
-    // 2
 
     static displayName = 'commonComponent';
 
     /***
      * 加载table数据
      */
-    loadAllData = (isRefresh = false, page = 0) => {
+    loadAllData = (isRefresh = false) => {
       const store = this.props[storeName];
-      const menu = this.props.AppState.currentMenuType;
+      const menu = AppState.currentMenuType;
       const organizationId = menu.id;
-      store.loadData(isRefresh,organizationId, page)};
+      store.loadData(isRefresh,organizationId)};
 
     /**
      * 打开删除数据模态框
@@ -39,7 +33,7 @@ export const commonComponent =(storeName) => {
     handleDelete = () => {
       const store = this.props[storeName];
       const { id } = this.state;
-      const menu = this.props.AppState.currentMenuType;
+      const menu = AppState.currentMenuType;
       const organizationId = menu.id;
       const lastDatas = store.getPageInfo.total % 10;
       const page = store.getPageInfo.current;
@@ -71,8 +65,7 @@ export const commonComponent =(storeName) => {
      * 处理刷新函数
      */
     handleRefresh = () => {
-      const store = this.props[storeName];
-      this.loadAllData(true, store.getPageInfo.current - 1);
+      this.loadAllData(true);
     };
 
     /***
@@ -92,7 +85,7 @@ export const commonComponent =(storeName) => {
      */
     tableChange =(pagination, filters, sorter, paras) => {
       const store = this.props[storeName];
-      const menu = this.props.AppState.currentMenuType;
+      const menu = AppState.currentMenuType;
       const organizationId = menu.id;
       let sort = {field: 'id', order: 'desc' };
       if (sorter.column) {
@@ -114,6 +107,24 @@ export const commonComponent =(storeName) => {
       };
       store
         .loadData(false, organizationId, pagination.current - 1, pagination.pageSize, sort, postData);
+    };
+    /**
+     * 获取屏幕的高度
+     * @returns {number}
+     */
+    getHeight = () => {
+      const screenHeight = window.screen.height;
+      let height = 310;
+      if (screenHeight <= 800) {
+        height = 310;
+      } else if (screenHeight > 800 && screenHeight <= 900) {
+        height = 450;
+      } else if (screenHeight > 900 && screenHeight <= 1050) {
+        height = 600;
+      } else {
+        height = 630;
+      }
+      return height;
     };
 
     handleProptError =(error) => {

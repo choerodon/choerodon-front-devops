@@ -40,6 +40,13 @@ const zhCN = {
   ist_delete: '删除中',
   ist_update: '更新中',
 
+  network_create: '网络创建中，请耐心等待',
+  network_delete: '网络删除中，请耐心等待',
+  network_update: '网络更新中，请耐心等待',
+
+  domain_create: '域名创建中，请耐心等待',
+  domain_delete: '域名删除中，请耐心等待',
+  domain_update: '域名更新中，请耐心等待',
   // deploy
   'deploy.title': '应用部署',
   'deploy.status': '容器状态',
@@ -178,11 +185,11 @@ const zhCN = {
   // template
 
   'template.title': '应用模板',
-  'template.name': '应用模板名称',
-  'template.description': '应用模板描述',
-  'template.url': '应用模板地址',
-  'template.code': '应用模板编码',
-  'template.type': '应用模板来源',
+  'template.name': '模板名称',
+  'template.description': '模板描述',
+  'template.url': '模板地址',
+  'template.code': '模板编码',
+  'template.type': '模板来源',
   'template.copyFrom': '复制于现有应用模板',
 
 
@@ -226,7 +233,7 @@ const zhCN = {
   'container.name': '容器名称',
   'container.app': '应用',
   'container.ip': '容器地址',
-  'container.usable': '是否可用',
+  'container.usable': '可用',
   'container.createTime': '已创建',
 
   // version feature
@@ -248,6 +255,8 @@ const zhCN = {
   // app-release
   'app-release.title': '应用发布',
   'app-release.level': '发布层级',
+  organization: '本组织',
+  public: '全平台',
 
 
 };

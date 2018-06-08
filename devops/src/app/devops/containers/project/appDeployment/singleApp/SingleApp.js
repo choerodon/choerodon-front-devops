@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Icon, Select, Button, Form, Dropdown, Menu, Progress, Tooltip } from 'choerodon-ui';
+import { Table, Select, Form, Progress, Tooltip, Popover } from 'choerodon-ui';
+import { stores, Action } from 'choerodon-front-boot';
 import _ from 'lodash';
 import classNames from 'classnames';
-import Action from 'Action';
-import Permission from 'PerComponent';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import ValueConfig from '../valueConfig';
 import '../AppDeploy.scss';
@@ -14,9 +13,9 @@ import '../../../main.scss';
 import DelIst from '../component/delIst/DelIst';
 
 let scrollLeft = 0;
-const Option = Select.Option;
+const { Option, OptGroup } = Select;
 
-@inject('AppState')
+const { AppState } = stores;
 @observer
 class SingleApp extends Component {
   constructor(props, context) {
@@ -36,21 +35,29 @@ class SingleApp extends Component {
   /**
    * 获取应用版本
    */
-  loadAppVer = (id) => {
-    const { store, AppState } = this.props;
+  loadAppVer = (ids) => {
+    const idArr = ids.split(',');
+    const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     const { verId, envId } = this.state;
     const envNames = store.getEnvcard;
-    const envID = envId || envNames[0].id;
+    const appNames = store.getAppNames;
+    const envID = envId || (envNames.length ? envNames[0].id : null);
     this.setState({
-      appId: id,
+      appId: idArr[0],
     });
-    store.setAppId(id);
+    store.setAppId(idArr[0]);
     if (envID) {
-      this.loadInstance(envID, verId, id);
+      this.loadInstance(envID, verId, idArr[0]);
     }
-    if (id) {
-      store.loadAppVersion(projectId, id);
+    if (idArr[0]) {
+      if (idArr[1] === projectId) {
+        store.loadAppVersion(projectId, idArr[0], '');
+      } else {
+        store.loadAppVersion(idArr[1], idArr[0], 'true');
+      }
+    } else {
+      store.setAppVer([]);
     }
   };
 
@@ -98,8 +105,8 @@ class SingleApp extends Component {
    * @param appId 应用id
    */
   loadInstance = (envId, verId, appId) => {
-    const { store, AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id);
     store.loadInstanceAll(projectId, 0, 10, null, envId, verId, appId);
   };
 
@@ -118,11 +125,11 @@ class SingleApp extends Component {
    * @param status 实例状态
    */
   linkDeployDetail = (id, status) => {
-    const { AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const projectName = AppState.currentMenuType.name;
+    const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/app-deployment/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}`);
+    this.linkToChange(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -138,21 +145,6 @@ class SingleApp extends Component {
   };
 
   /**
-   * 条件部署应用
-   * @param envId 环境ID
-   * @param verId 版本ID
-   * @param appId 应用ID
-   */
-  deployApp = (envId, verId, appId) => {
-    const { AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    const projectName = AppState.currentMenuType.name;
-    const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/deployment-app?envId=${envId}&verId=${verId}&appId=${appId}&type=${type}&id=${projectId}&name=${projectName}`);
-  };
-
-
-  /**
    * table 改变的函数
    * @param pagination 分页
    * @param filters 过滤
@@ -160,8 +152,8 @@ class SingleApp extends Component {
    * @param param 搜索
    */
   tableChange =(pagination, filters, sorter, param) => {
-    const { store, AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const { envId, appId, verId } = this.state;
     const envNames = store.getEnvcard;
     const appNames = store.getAppNames;
@@ -194,8 +186,8 @@ class SingleApp extends Component {
    * @param appId
    */
   updateConfig = (name, id, envId, verId, appId) => {
-    const { store, AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id);
     this.setState({
       idArr: [envId, verId, appId],
       name,
@@ -219,8 +211,8 @@ class SingleApp extends Component {
    * @param res 是否重新部署需要重载数据
    */
   handleCancel =(res) => {
-    const { store, AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const { envId, appId, verId, page } = this.state;
     const appNames = store.getAppNames;
     const envCard = store.getEnvcard;
@@ -247,8 +239,8 @@ class SingleApp extends Component {
    * 删除数据
    */
   handleDelete = (id) => {
-    const { store, AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const { envId, appId, verId, page } = this.state;
     const appNames = store.getAppNames;
     const envCard = store.getEnvcard;
@@ -282,8 +274,8 @@ class SingleApp extends Component {
    * @param status 状态
    */
   activeIst = (id, status) => {
-    const { store, AppState } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const { envId, appId, verId, page } = this.state;
     const appNames = store.getAppNames;
     const envCard = store.getEnvcard;
@@ -343,11 +335,98 @@ class SingleApp extends Component {
     scrollLeft += 250;
   };
 
+  /**
+   * action 权限控制
+   * @param record 行数据
+   * @returns {*}
+   */
+  columnAction = (record) => {
+    const projectId = parseInt(AppState.currentMenuType.id);
+    const organizationId = AppState.currentMenuType.organizationId;
+    const type = AppState.currentMenuType.type;
+    if (record.status === 'operating' || !record.connect) {
+      return (<Action
+        data={[
+          {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
+            text: '查看实例详情',
+            action: this.linkDeployDetail.bind(this, record.id, record.status),
+          }]}
+      />);
+    } else if (record.status === 'failed') {
+      return (<Action
+        data={[
+          {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
+            text: '查看实例详情',
+            action: this.linkDeployDetail.bind(this, record.id, record.status),
+          }, {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.application-instance.queryValues'],
+            text: Choerodon.getMessage('修改配置信息', 'Modify configuration information'),
+            action: this.updateConfig.bind(this, record.code, record.id,
+              record.envId, record.appVersionId, record.appId),
+          }, {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.application-instance.delete'],
+            text: Choerodon.getMessage('删除实例', 'Delete the instance'),
+            action: this.handleOpen.bind(this, record.id),
+          },
+        ]}
+      />);
+    } else {
+      return (<Action
+        data={[
+          {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
+            text: '查看实例详情',
+            action: this.linkDeployDetail.bind(this, record.id, record.status),
+          }, {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.application-instance.queryValues'],
+            text: Choerodon.getMessage('修改配置信息', 'Modify configuration information'),
+            action: this.updateConfig.bind(this, record.code, record.id,
+              record.envId, record.appVersionId, record.appId),
+          }, {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.application-instance.start', 'devops-service.application-instance.stop'],
+            text: record.status !== 'stoped' ? Choerodon.getMessage('停止实例', 'Stop the instance') : Choerodon.getMessage('重启实例', 'Start the instance'),
+            action: record.status !== 'stoped' ? this.activeIst.bind(this, record.id, 'stop') : this.activeIst.bind(this, record.id, 'start'),
+          }, {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.application-instance.delete'],
+            text: Choerodon.getMessage('删除实例', 'Delete the instance'),
+            action: this.handleOpen.bind(this, record.id),
+          },
+        ]}
+      />);
+    }
+  };
+
 
   render() {
-    const { store, AppState } = this.props;
+    const { store } = this.props;
     const { envId, verId, appId } = this.state;
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     const appNames = store.getAppNames;
@@ -356,15 +435,71 @@ class SingleApp extends Component {
     const ist = store.getIstAll;
     const envID = envId || (envCard.length ? envCard[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
-    const appName = (appNames.length ? appNames[0].name : undefined);
-    const appNameDom = appNames.length ? _.map(appNames, d => <Option key={d.id}>{d.name}</Option>) : <Option key="null">无</Option>;
-    const appVersion = appVer.length ? _.map(appVer, d => <Option key={d.id}>{d.version}</Option>) : <Option key="null">无</Option>;
+    const appName = (appNames.length ? (<React.Fragment>
+      {appNames[0].projectId === projectId ? <span className="icon icon-project c7n-icon-publish" /> : <span className="icon icon-apps c7n-icon-publish" />}
+      {appNames[0].name}</React.Fragment>) : undefined);
+    const appVersion = appVer.length ?
+      _.map(appVer, d => <Option key={d.id}>{d.version}</Option>) : [];
+    const appProDom = [];
+    const appPubDom = [];
+    if (appNames.length) {
+      _.map(appNames, (d) => {
+        if (d.projectId !== projectId) {
+          appPubDom.push(<Option key={[d.id, d.projectId]}>
+            <Popover
+              placement="right"
+              content={<div>
+                <p>
+                  <span>名称：</span>
+                  <span>{d.name}</span>
+                </p>
+                <p>
+                  <span>贡献者：</span>
+                  <span>{d.contributor}</span>
+                </p>
+                <p>
+                  <span>描述：</span>
+                  <span>{d.description}</span>
+                </p>
+              </div>}
+            >
+              <div className="c7n-option-popover">
+                <span className="icon icon-apps c7n-icon-publish" />
+                {d.name}
+              </div>
+            </Popover>
+          </Option>);
+        } else {
+          appProDom.push(<Option key={[d.id, d.projectId]}>
+            <Popover
+              placement="right"
+              content={<div>
+                <p>
+                  <span>名称：</span>
+                  <span>{d.name}</span>
+                </p>
+                <p>
+                  <span>编码：</span>
+                  <span>{d.code}</span>
+                </p>
+              </div>}
+            >
+              <div className="c7n-option-popover">
+                <span className="icon icon-project c7n-icon-publish" />
+                {d.name}
+              </div>
+            </Popover>
+          </Option>);
+        }
+      });
+    }
+
     const leftDom = scrollLeft !== 0 ?
-      <div role="none" className="c7n-env-push-left icon-navigate_before" onClick={this.pushScrollRight} />
+      <div role="none" className="c7n-env-push-left icon icon-navigate_before" onClick={this.pushScrollRight} />
       : null;
 
     const rightStyle = classNames({
-      'c7n-env-push-right icon-navigate_next': ((window.innerWidth >= 1680 && window.innerWidth < 1920) && envCard.length >= 6) || (window.innerWidth >= 1920 && envCard.length >= 7) || (window.innerWidth < 1680 && envCard.length >= 5),
+      'c7n-env-push-right icon icon-navigate_next': ((window.innerWidth >= 1680 && window.innerWidth < 1920) && envCard.length >= 6) || (window.innerWidth >= 1920 && envCard.length >= 7) || (window.innerWidth < 1680 && envCard.length >= 5),
       'c7n-push-none': envCard.length <= 4,
     });
 
@@ -376,14 +511,6 @@ class SingleApp extends Component {
             {d.connect ? '运行中' : '未连接'}
           </div>
           <div className="c7n-app-name"><MouserOverWrapper text={d.name || ''} width={80}>{d.name}</MouserOverWrapper></div>
-          <Permission
-            service={['devops-service.application-instance.deploy']}
-            organizationId={organizationId}
-            projectId={projectId}
-            type={type}
-          >
-            <span role="none" className="icon-cloud_upload c7n-env-deploy-icon" onClick={this.deployApp.bind(this, d.id, verId, appID)} />
-          </Permission>
         </div>
         <span className="c7n-app-arrow">→</span>
       </div>)) :
@@ -427,16 +554,16 @@ class SingleApp extends Component {
       filters: [],
       render: record => (record.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{record.code}</span> : <div>
         {record.commandStatus === 'doing' ? (<div>
+          <span className="c7n-deploy-istCode">{record.code}</span>
           <Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
             <Progress type="loading" width="15px" />
           </Tooltip>
-          <span className="c7n-deploy-istCode">{record.code}</span>
         </div>) :
           (<div>
-            <Tooltip title={record.error}>
-              <span className="icon-error c7n-deploy-ist-operate" />
-            </Tooltip>
             <span className="c7n-deploy-istCode">{record.code}</span>
+            <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
+              <span className="icon icon-error c7n-deploy-ist-operate" />
+            </Tooltip>
           </div>)}
       </div>),
     }, {
@@ -445,50 +572,14 @@ class SingleApp extends Component {
       filters: [],
       render: record => (
         <div>
-          <span className="c7n-deploy-circle-only">V</span>
           <span>{record.appVersion}</span>
         </div>
       ),
     }, {
-      width: '40px',
+      width: 64,
       className: 'c7n-operate-icon',
       key: 'action',
-      render: (test, record) => (
-        <Action
-          data={[
-            {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
-              text: '查看实例详情',
-              action: this.linkDeployDetail.bind(this, record.id, record.status),
-            }, {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.application-instance.queryValues'],
-              text: Choerodon.getMessage('修改配置信息', 'Modify configuration information'),
-              action: this.updateConfig.bind(this, record.code, record.id,
-                record.envId, record.appVersionId, record.appId),
-            }, {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.application-instance.start', 'devops-service.application-instance.stop'],
-              text: record.status !== 'stoped' ? Choerodon.getMessage('停止实例', 'Stop the instance') : Choerodon.getMessage('重启实例', 'Start the instance'),
-              action: record.status !== 'stoped' ? this.activeIst.bind(this, record.id, 'stop') : this.activeIst.bind(this, record.id, 'start'),
-            }, {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.application-instance.delete'],
-              text: Choerodon.getMessage('删除实例', 'Delete the instance'),
-              action: this.handleOpen.bind(this, record.id),
-            },
-          ]}
-        />
-      ),
+      render: record => this.columnAction(record),
     }];
 
     const columnVersion = [{
@@ -522,58 +613,23 @@ class SingleApp extends Component {
       filters: [],
       render: record => (record.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{record.code}</span> : <div>
         {record.commandStatus === 'doing' ? (<div>
+          <span className="c7n-deploy-istCode">{record.code}</span>
           <Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
             <Progress type="loading" width="15px" />
           </Tooltip>
-          <span className="c7n-deploy-istCode">{record.code}</span>
         </div>) :
           (<div>
-            <Tooltip title={record.error}>
-              <span className="icon-error c7n-deploy-ist-operate" />
-            </Tooltip>
             <span className="c7n-deploy-istCode">{record.code}</span>
+            <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
+              <span className="icon icon-error c7n-deploy-ist-operate" />
+            </Tooltip>
           </div>)}
       </div>),
     }, {
-      width: '40px',
+      width: 64,
       className: 'c7n-operate-icon',
       key: 'action',
-      render: (test, record) => (
-        <Action
-          data={[
-            {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
-              text: '查看实例详情',
-              action: this.linkDeployDetail.bind(this, record.id, record.status),
-            }, {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.application-instance.queryValues'],
-              text: Choerodon.getMessage('修改配置信息', 'Modify configuration information'),
-              action: this.updateConfig.bind(this, record.code, record.id,
-                record.envId, record.appVersionId, record.appId),
-            }, {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.application-instance.start', 'devops-service.application-instance.stop'],
-              text: record.status !== 'stoped' ? Choerodon.getMessage('停止实例', 'Stop the instance') : Choerodon.getMessage('重启实例', 'Start the instance'),
-              action: record.status !== 'stoped' ? this.activeIst.bind(this, record.id, 'stop') : this.activeIst.bind(this, record.id, 'start'),
-            }, {
-              type,
-              organizationId,
-              projectId,
-              service: ['devops-service.application-instance.delete'],
-              text: Choerodon.getMessage('删除实例', 'Delete the instance'),
-              action: this.handleOpen.bind(this, record.id),
-            },
-          ]}
-        />
-      ),
+      render: record => this.columnAction(record),
     }];
 
     const detailDom = (
@@ -584,6 +640,7 @@ class SingleApp extends Component {
               <div className="c7n-deploy-single-wrap">
                 <h2 className="c7n-space-first">实例</h2>
                 <Table
+                  filterBarPlaceholder="过滤表"
                   onChange={this.tableChange}
                   loading={store.getIsLoading}
                   pagination={store.pageInfo}
@@ -598,6 +655,7 @@ class SingleApp extends Component {
               <div className="c7n-deploy-single-wrap">
                 <h2 className="c7n-space-first">实例</h2>
                 <Table
+                  filterBarPlaceholder="过滤表"
                   onChange={this.tableChange}
                   loading={store.getIsLoading}
                   pagination={store.pageInfo}
@@ -619,16 +677,22 @@ class SingleApp extends Component {
         <Select
           defaultValue={appName}
           label="应用名称"
-          className="c7n-app-select_180"
+          className="c7n-app-select_220"
           onChange={this.loadAppVer}
           optionFilterProp="children"
           filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            option.props.children.props.children
+              .props.children[1].toLowerCase().indexOf(input.toLowerCase()) >= 0}
           filter
           allowClear
           showSearch
         >
-          {appNameDom}
+          <OptGroup label="本项目">
+            {appProDom}
+          </OptGroup>
+          <OptGroup label="应用市场">
+            {appPubDom}
+          </OptGroup>
         </Select>
         <Select
           label="应用版本"
@@ -661,7 +725,6 @@ class SingleApp extends Component {
           idArr={this.state.idArr}
           onClose={this.handleCancel}
         />}
-
         <DelIst
           open={this.state.openRemove}
           handleCancel={this.handleClose}

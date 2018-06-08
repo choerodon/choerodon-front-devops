@@ -1,0 +1,161 @@
+.c7n-deployApp-sidebar {
+  button {
+    margin: 0 1px;
+  }
+
+  .c7n-store-search {
+    margin-bottom: 24px;
+
+    .ant-btn-group {
+      float: right;
+      margin-bottom: 10px;
+    }
+
+    .ant-input-wrapper {
+      width: 100%;
+    }
+
+    .ant-input-content {
+      width: 50%;
+      height: 48px;
+      background: #fff;
+      box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    input {
+      font-size: 14px;
+      line-height: 48px;
+    }
+
+    .ant-input-prefix {
+      background-color: #fff;
+      left: 0;
+      z-index: 999;
+      width: 56px;
+      top: 12px;
+      text-align: center;
+
+      i {
+        font-size: 24px;
+        color: black;
+      }
+    }
+
+    .ant-input-suffix {
+      font-size: 14px;
+      line-height: 48px;
+      padding-right: 10px;
+    }
+
+    .ant-input-rendered {
+      margin-bottom: 0 !important;
+    }
+
+    .ant-input-placeholder {
+      z-index: 999;
+      font-size: 14px;
+      line-height: 48px;
+    }
+
+    .ant-input-underline {
+      display: none;
+    }
+  }
+
+  .c7n-store-card {
+    border: 2px solid white;
+    cursor: pointer;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    margin-right: 14px;
+    background-color: white;
+    height: 190px;
+    width: 240px;
+    display: inline-block;
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.12), 0 2px 2px -1px rgba(0, 0, 0, 0.12);
+    border-radius: 2px;
+
+    &:hover {
+      box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    .c7n-store-card-icon {
+      margin-bottom: 8px;
+      border-radius: 50px;
+      height: 50px;
+      width: 50px;
+      background-image: url(../../../../../devops/assets/images/app.png);
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      -moz-background-size: 100% 100%;
+    }
+
+    .c7n-store-card-name {
+      font-size: 15px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .c7n-store-card-source {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.65);
+      margin-bottom: 8px;
+    }
+
+    .c7n-store-card-des-60 {
+      font-size: 13px;
+      text-align: justify;
+      color: rgba(0, 0, 0, 0.65);
+      height: 60px;
+      overflow: hidden;
+    }
+
+    .span-icon-check {
+      position: absolute;
+      font-size: 28px;
+      left: 217px;
+      float: left;
+      margin-top: -28px;
+      background-color: #3f51b5;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      padding-bottom: 8px;
+      display: flex;
+
+      .icon {
+        font-size: 28px !important;
+      }
+    }
+  }
+
+  .c7n-card-active {
+    border: 2px solid #3f51b5;
+    position: relative;
+  }
+
+  .c7n-tab-active {
+    color: #3f51b5;
+    background: rgba(140, 158, 255, 0.2);
+  }
+
+  .icon-select {
+    vertical-align: middle;
+    font-size: 18px;
+    color: #3f51b5;
+  }
+
+  .c7n-deploy-tabpane {
+    padding: 5px;
+  }
+
+  .c7n-store-pagination {
+    float: right;
+  }
+
+  .col-check {
+    height: 32px;
+  }
+}

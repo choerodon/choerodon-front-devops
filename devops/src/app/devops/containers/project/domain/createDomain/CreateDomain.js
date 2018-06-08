@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon } from 'choerodon-ui';
+import { Button, Form, Select, Input, Modal } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
 import './CreateDomain.scss';
@@ -19,12 +20,12 @@ const formItemLayout = {
   },
 };
 const Sidebar = Modal.Sidebar;
+const { AppState } = stores;
 
-@inject('AppState')
 @observer
 class CreateDomain extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       pathArr: [{ pathIndex: 0, networkIndex: 0 }],
@@ -73,7 +74,7 @@ class CreateDomain extends Component {
       if (!err) {
         const keys = Object.keys(data);
         const postData = { domain: data.domain, name: data.name, envId: data.envId };
-        const devopsIngressPathDTOList = [];
+        const pathList = [];
         keys.map((k) => {
           if (k.includes('path')) {
             const index = parseInt(k.split('-')[1], 10);
@@ -85,11 +86,11 @@ class CreateDomain extends Component {
             //   }
             // });
             // window.console.log(ids);
-            devopsIngressPathDTOList.push({ path: `${data[k]}`, serviceId: value });
+            pathList.push({ path: `${data[k]}`, serviceId: value });
           }
-          return devopsIngressPathDTOList;
+          return pathList;
         });
-        postData.devopsIngressPathDTOList = devopsIngressPathDTOList;
+        postData.pathList = pathList;
         // window.console.log(postData);
         if (type === 'create') {
           this.setState({ submitting: true });
@@ -174,6 +175,7 @@ class CreateDomain extends Component {
     const { store } = this.props;
     this.setState({ show: false });
     store.setEnv([]);
+    store.setNetwork([]);
     this.props.onClose();
   };
   /**
@@ -181,6 +183,7 @@ class CreateDomain extends Component {
    * @type {Function}
    */
   checkName =_.debounce((rule, value, callback) => {
+    // const p = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
     const { SingleData } = this.state;
     if (SingleData && SingleData.name === value) {
       callback();
@@ -261,7 +264,7 @@ class CreateDomain extends Component {
   render() {
     const { store } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const network = store.getNetwork;
     const env = store.getEnv;
     const form = this.props.form;
@@ -286,11 +289,11 @@ class CreateDomain extends Component {
       {title}
       <p>
         {content}
-        <a href="http://choerodon.io/zh/docs/user-guide/deploy/domain-name/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+        <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/ingress/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
           <span className="c7n-external-link-content">
               了解详情
           </span>
-          <span className="icon-open_in_new" />
+          <span className="icon icon-open_in_new" />
         </a>
       </p>
       <Form layout="vertical" onSubmit={this.handleSubmit}>
@@ -302,29 +305,25 @@ class CreateDomain extends Component {
             rules: [{
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              transform: value => value.toString(),
-            }, {
-              // validator: this.checkCode,
+              transform: (value) => { return value && value.toString() },
             }],
             initialValue: SingleData ? SingleData.envId : undefined,
           })(
             <Select
-
+              dropdownClassName="c7n-domain-env"
               autoFocus
               filter
               onSelect={this.selectEnv}
               showSearch
               label="环境名称"
               optionFilterProp="children"
-              // onChange={handleChange}
               filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                option.props.children[2].toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
               {env.length && env.map(v => (
                 <Option value={v.id} key={`${v.id}-env`} disabled={!v.connect}>
-                  <div className={v.connect ? 'c7n-ist-status c7n-ist-status_running' : 'c7n-ist-status c7n-ist-status_failed'}>
-                    <div>{v.connect ? '运行中' : '未连接'}</div>
-                  </div>
+                  {!v.connect && <span className="env-status-error" />}
+                  {v.connect && <span className="env-status-success" />}
                   {v.name}
                 </Option>
               ))}
@@ -346,10 +345,9 @@ class CreateDomain extends Component {
             initialValue: SingleData ? SingleData.name : '',
           })(
             <Input
-              maxLength={253}
+              maxLength={30}
               label={Choerodon.getMessage('域名名称', 'name')}
               size="default"
-              // placeholder={Choerodon.getMessage('域名', 'domain')}
             />,
           )}
         </FormItem>
@@ -368,14 +366,13 @@ class CreateDomain extends Component {
             initialValue: SingleData ? SingleData.domain : '',
           })(
             <Input
-              maxLength={253}
+              maxLength={50}
               label={Choerodon.getMessage('域名地址', 'domain')}
               size="default"
-              // placeholder={Choerodon.getMessage('域名路径', 'domain path')}
             />,
           )}
         </FormItem>
-        {pathArr.length >= 1 && pathArr.map((data, index) => (<div>
+        {pathArr.length >= 1 && pathArr.map((data, index) => (<div key={data.pathIndex}>
           <FormItem
             className="c7n-formItem_180"
             {...formItemLayout}
@@ -383,7 +380,6 @@ class CreateDomain extends Component {
             {getFieldDecorator(`path-${data.pathIndex}`, {
               rules: [{
                 required: true,
-                // transform: value => `/${value}`,
               }, {
                 validator: this.checkPath,
               },
@@ -392,12 +388,9 @@ class CreateDomain extends Component {
                 ? dto[index].path : '/',
             })(
               <Input
-                maxLength={20}
-                // prefix={this.props.id ? '/'}
-                // prefix="/"
+                maxLength={10}
                 label={Choerodon.languageChange('domain.path')}
                 size="default"
-                // placeholder={Choerodon.getMessage('路径', 'path')}
               />,
             )}
           </FormItem>
@@ -408,26 +401,20 @@ class CreateDomain extends Component {
             {getFieldDecorator(`network-${data.networkIndex}`, {
               rules: [{
                 required: true,
-                transform: value => value.toString(),
+                transform: (value) => { return value && value.toString() },
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              }, {
-                // validator: this.checkCode,
               }],
               initialValue: SingleData && dto.length > index
                 ? dto[index].serviceId : undefined,
             })(
               <Select
-                // onFocus={this.loadService}
                 filter
-                // disable={!this.state.envId}
                 label={Choerodon.getMessage('网络', 'network')}
                 showSearch
-                // mode="multiple"
                 dropdownMatchSelectWidth
                 size="default"
                 optionFilterProp="children"
                 optionLabelProp="children"
-                // placeholder={Choerodon.getMessage('网络', 'network')}
                 filterOption={
                   (input, option) =>
                     option.props.children[1]
@@ -435,17 +422,27 @@ class CreateDomain extends Component {
                 }
               >
                 {network.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
-                  <div className={datas.serviceStatus && datas.serviceStatus !== 'running' ? 'c7n-ist-status c7n-ist-status_failed' : 'c7n-ist-status c7n-ist-status_running'}>
-                    <div>{datas.serviceStatus && datas.serviceStatus !== 'running' ? '故障' : '正常'}</div>
-                  </div>
+                  {datas.serviceStatus && datas.serviceStatus === 'running' && <div className={datas.serviceStatus && datas.serviceStatus === 'running' && 'c7n-domain-create-status c7n-domain-create-status_running'}>
+                    {datas.serviceStatus && datas.serviceStatus === 'running' && <div>正常</div> }
+                  </div> }
+                  {datas.serviceStatus && datas.serviceStatus === 'deleted' && <div className={datas.serviceStatus && datas.serviceStatus === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
+                    {datas.serviceStatus && datas.serviceStatus === 'deleted' && <div>已删除</div> }
+                  </div> }
+                  {datas.serviceStatus && datas.serviceStatus === 'failed' && <div className={datas.serviceStatus && datas.serviceStatus === 'failed' && 'c7n-domain-create-status c7n-domain-create-status_failed'}>
+                    {datas.serviceStatus && datas.serviceStatus === 'failed' && <div>失败</div> }
+                  </div> }
+                  {datas.serviceStatus && datas.serviceStatus === 'operating' && <div className={datas.serviceStatus && datas.serviceStatus === 'operating' && 'c7n-domain-create-status c7n-domain-create-status_operating'}>
+                    {datas.serviceStatus && datas.serviceStatus === 'operating' && <div>处理中</div> }
+                  </div> }
+
                   {datas.name}</Option>),
                 )}
               </Select>,
             )}
           </FormItem>
           { pathArr.length > 1 ? <Button shape="circle" className="c7n-domain-icon-delete" onClick={this.removeDomain.bind(this, index)}>
-            <span className="icon-delete" />
-          </Button> : <span className="icon-delete c7n-app-icon-disabled" />}
+            <span className="icon icon-delete" />
+          </Button> : <span className="icon icon-delete c7n-app-icon-disabled" />}
         </div>))}
         <div className="c7n-domain-btn-wrapper">
           <Button className="c7n-domain-btn" onClick={this.addPath} type="primary" disabled={!addStatus} icon="add">添加路径</Button>

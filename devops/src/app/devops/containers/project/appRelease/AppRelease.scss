@@ -1,0 +1,232 @@
+.app-release-wrapper {
+  .c7n-app-release-square {
+    background-color: rgba(0, 0, 0, 0.08);
+    display: inline-block;
+    border-radius: 100px;
+    padding: 0 12px;
+    margin: 6px 5px;
+    line-height: 20px;
+    font-size: 10px;
+    width: 115px;
+  }
+
+  .c7n-network-change {
+    font-size: 24px;
+    color: #3f51b5;
+    float: right;
+  }
+}
+
+.c7n-table-512 {
+  width: 512px;
+}
+
+.c7n-deployApp-wrapper {
+  background-color: rgba(0, 0, 0, 0.04);
+
+  .deployApp-card {
+    padding: 32px;
+    background-color: white;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+    margin-bottom: 32px;
+  }
+
+  .deployApp-card-content {
+    margin-left: 36px;
+    padding-top: 32px;
+
+    p {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 20px;
+      text-align: justify;
+    }
+
+    .c7n-appRelease-img-wrap {
+      margin-left: 216px;
+    }
+
+    .c7n-appRelease-img-title {
+      display: block;
+      color: rgba(0, 0, 0, 0.54);
+      font-size: 13px;
+      padding-left: 14px;
+      padding-top: 3px;
+    }
+
+    .c7n-appRelease-img-hover {
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      background-image: url(../../../../devops/assets/images/app.png);
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      -moz-background-size: 100% 100%;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.288);
+      }
+
+      .c7n-appRelease-img-child {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.288);
+        padding-top: 11px;
+        line-height: 53px;
+        text-align: center;
+      }
+
+      span {
+        font-size: 30px;
+        color: white;
+      }
+    }
+
+    .deployAddApp-section {
+      margin: 32px 0;
+      width: 512px;
+
+      a {
+        margin-left: auto;
+      }
+
+      button {
+        margin-right: 12px;
+      }
+
+      .deploy-title {
+        margin-bottom: 16px;
+
+        .section-title {
+          vertical-align: middle;
+          font-size: 16px;
+          color: #000;
+          line-height: 20px;
+        }
+
+        .section-title-icon {
+          vertical-align: middle;
+          font-size: 18px;
+          padding-right: 10px;
+        }
+      }
+
+      .deploy-text {
+        width: 512px;
+        display: flex;
+
+        .section-text {
+          vertical-align: middle;
+          font-size: 13px;
+          color: #000;
+          line-height: 20px;
+        }
+
+        .section-text-icon {
+          vertical-align: middle;
+          font-size: 16px;
+          padding-right: 5px;
+          color: #000;
+        }
+      }
+
+      .section-text-margin {
+        margin-left: 30px;
+
+        .section-instance-icon {
+          vertical-align: text-bottom;
+          font-size: 16px;
+          padding: 0 6px 0 12px;
+          color: #f44336;
+        }
+      }
+    }
+
+    .deployApp-review {
+      .app-release-title {
+        width: 80px;
+        font-size: 13px;
+        color: #000;
+        line-height: 20px;
+        display: inline-block;
+        margin: 0 0 12px 0;
+
+        span {
+          padding-right: 10px;
+        }
+      }
+
+      .deployApp-text {
+        display: inline-block;
+        font-size: 13px;
+        color: rgba(0, 0, 0, 0.65);
+        line-height: 20px;
+        padding-left: 15px;
+      }
+
+      .deployApp-value {
+        font-size: 13px;
+        color: rgba(0, 0, 0, 0.65);
+        text-align: left;
+        line-height: 20px;
+      }
+    }
+  }
+}
+
+.c7n-ist-status_off {
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  display: inline-block;
+  background-color: #d50000;
+  margin-right: 5px;
+}
+
+.release-icon-error {
+  color: #f44336;
+  font-size: 16px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.c7n-ist-status_on {
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  display: inline-block;
+  background-color: #00bf96;
+  margin-right: 5px;
+}
+
+.deploy-radio {
+  display: block;
+  height: 30px;
+  line-height: 30px;
+}
+
+.deploy-tip-text {
+  color: rgba(0, 0, 0, 0.65);
+  vertical-align: middle;
+}
+
+.deploy-select {
+  width: 482px;
+  display: block;
+}
+
+.icon-select {
+  vertical-align: middle;
+  font-size: 18px;
+  color: #3f51b5;
+}
+
+.col-check {
+  height: 32px;
+}
+
+.step-disabled {
+  pointer-events: none;
+}
+

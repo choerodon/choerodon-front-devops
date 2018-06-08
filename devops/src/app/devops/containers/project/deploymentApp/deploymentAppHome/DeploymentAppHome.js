@@ -1,736 +1,215 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Select, Button, Spin, Radio } from 'choerodon-ui';
-import ReactLoading from 'react-loading';
-import axios from 'Axios';
+import { Select, Button, Radio, Steps } from 'choerodon-ui';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import CodeMirror from 'react-codemirror';
-import PageHeader from 'PageHeader';
-import yaml from 'js-yaml';
 import '../../../main.scss';
-import './DeploymentAppHome.scss';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
-import DeploymentAppStore from '../../../../stores/project/deploymentApp';
+import './DeployApp.scss';
 import AceForYaml from '../../../../components/yamlAce';
+import SelectApp from '../selectApp';
 
-const beautify = require('json-beautify');
-require('codemirror/lib/codemirror.css');
-require('codemirror/mode/javascript/javascript');
 
 const RadioGroup = Radio.Group;
+const Step = Steps.Step;
+const { AppState } = stores;
 const Option = Select.Option;
-@inject('AppState')
+
 @observer
 class DeploymentAppHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      appId: undefined,
-      verId: undefined,
+      appId: props.match.params.appId || undefined,
+      versionId: props.match.params.verId || undefined,
+      current: props.match.params.appId ? 2 : 1,
       envId: undefined,
+      storeId: props.match.params.storeId,
+      mode: 'new',
+      markers: null,
     };
   }
 
   componentDidMount() {
-    // 初始化页面，获取应用信息
-    this.getInit();
-    // DeploymentAppStore.loadInitData(this.state.appId, this.state.verId, this.state.envId);
-  }
-
-  /**
-   * 渲染第一块，应用选择界面
-   */
-  get selectApp() {
-    return (
-      <div className="c7n-section">
-        <div className="c7n-header-section">
-          {
-            DeploymentAppStore.getCurrentStage > 1 ? (
-              <div className="c7n-circle-ok">
-                <i className="icon-check" />
-              </div>) : <div className="c7n-circle">1</div>
-          }
-          <p className="c7n-title-section">选择应用</p>
-        </div>
-        {
-          DeploymentAppStore.apps.length > 0 && (
-            <div className={`c7n-body-section ${DeploymentAppStore.getCurrentStage > 1 ? 'c7n-border-done' : 'c7n-border-doing'}`}>
-              {
-                DeploymentAppStore.apps.map(app => (
-                  <span
-                    className={`c7n-block ${app.id === this.state.appId || app.id === DeploymentAppStore.currentApp.id ? 'c7n-block-active' : ''}`}
-                    role="none"
-                    onClick={() => this.handleChangeApp(app)}
-                  >
-                    {
-                      (app.id === DeploymentAppStore.currentApp.id
-                        || app.id === this.state.appId) && (
-                        <span className="c7n-icon-active">
-                          <i className="icon-check" />
-                        </span>
-                      )
-                    }
-                    <p className={`c7n-name-block ${app.id === this.state.appId || app.id === DeploymentAppStore.currentApp.id ? 'c7n-p-active' : ''}`}><MouserOverWrapper text={app.name || ''} width={120}>{app.name}</MouserOverWrapper></p>
-                    <p className={`c7n-des-block ${app.id === this.state.appId || app.id === DeploymentAppStore.currentApp.id ? 'c7n-p-active' : ''}`}><MouserOverWrapper text={app.code || ''} width={120}>{app.code}</MouserOverWrapper></p>
-                  </span>
-                ))
-              }
-            </div>
-          )
-        }
-      </div>
-    );
-  }
-
-  /**
-   * 渲染第二块，版本选择
-   */
-  get selectVersion() {
-    return (
-      <div className="c7n-section">
-        <div className="c7n-header-section">
-          {
-            this.circleTemplate(
-              DeploymentAppStore.loadingArr[1], 
-              DeploymentAppStore.getCurrentStage,
-              2)
-          }
-          <p className="c7n-title-section">选择版本</p>
-        </div>
-        <div className={`c7n-body-section ${DeploymentAppStore.getCurrentStage > 2 ? 'c7n-border-done' : 'c7n-border-doing'}`}>
-          {
-            !DeploymentAppStore.loadingArr[1] && (
-              <div>
-                <Select
-                  value={this.state.verId || DeploymentAppStore.currentVersion.id}
-                  className="c7n-select-version"
-                  label="应用版本 *"
-                  onChange={this.handleChangeVersion}
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                  filter
-                >
-                  {
-                    DeploymentAppStore.versions.map(version => (
-                      <Option key={version.id} value={version.id}>{version.version}</Option>
-                    ))
-                  }
-                </Select>
-                {/* <div className="inline mt14">
-                  <span className="c7n-p-versionButton mr32">
-                    <i className="icon-find_in_page" />
-                    查看提交列表
-                  </span>
-                   <span className="c7n-p-versionButton">
-                    <i className="icon-get_app" />
-                    下载chart
-                  </span>
-                </div> */}
-              </div>
-            )
-          }
-        </div>
-      </div>
-    );
-  }
-
-  /**
-   * 渲染第三块，环境选择
-   */
-  get selectEnv() {
-    return (
-      <div className="c7n-section">
-        <div className="c7n-header-section">
-          {
-            this.circleTemplate(
-              DeploymentAppStore.loadingArr[2], 
-              DeploymentAppStore.getCurrentStage,
-              3)
-          }
-          <p className="c7n-title-section">选择环境</p>
-        </div>
-        <div className={`c7n-body-section ${DeploymentAppStore.getCurrentStage > 3 ? 'c7n-border-done' : 'c7n-border-doing'}`}>
-          {
-            !DeploymentAppStore.loadingArr[2] && (
-              <Select
-                value={this.state.envId || DeploymentAppStore.currentEnv.id}
-                className="c7n-select-version"
-                label="环境 *"
-                onChange={this.handleChangeEnv}
-              >
-                {
-                  DeploymentAppStore.envs.map(env => (
-                    <Option key={env.id} value={env.id}>
-                      <div className={env.connect ? 'c7n-ist-status c7n-ist-status_running' : 'c7n-ist-status c7n-ist-status_failed'}>
-                        <div>{env.connect ? '运行中' : '未连接'}</div>
-                      </div>
-                      {env.name}
-                    </Option>
-                  ))
-                }
-              </Select>
-            )
-          }
-        </div>
-      </div>
-    );
-  }
-
-  /**
-   * 渲染第四块，参数配置
-   */
-  get changeValue() {
-    const options = {
-      lineNumbers: true,
-      mode: {
-        name: 'javascript',
-        json: true,
-      },
-    };
-    const value = DeploymentAppStore.value;
-    let data = '';
-    let source = '';
-    if (value.length === 2) {
-      source = value[1];
-      data = value[0];
-    } else if (value.length === 1) {
-      data = value[0];
+    const { DeploymentAppStore } = this.props;
+    DeploymentAppStore.setValue(null);
+    if (this.state.appId) {
+      DeploymentAppStore.loadApps(this.state.appId)
+        .then((data) => {
+          this.setState({ app: data });
+        });
+      DeploymentAppStore.loadVersion(this.state.appId);
     }
-
-    return (
-      <div className="c7n-section">
-        <div className="c7n-header-section">
-          {
-            this.circleTemplate(
-              DeploymentAppStore.loadingArr[3], 
-              DeploymentAppStore.getCurrentStage,
-              4)
-          }
-          <p className="c7n-title-section">配置信息</p>
-        </div>
-        <div className={`c7n-body-section ${DeploymentAppStore.getCurrentStage > 4 ? 'c7n-border-done' : 'c7n-border-doing'}`}>
-          {
-            !DeploymentAppStore.loadingArr[3] && value && (
-              <div className="">
-                <AceForYaml
-                  sourceData={data}
-                  value={source}
-                  onChange={this.handleChangeValue}
-                />
-              </div>
-            )
-          }
-        </div>
-      </div>
-    );
+    DeploymentAppStore.loadEnv();
+    const card = document.getElementsByClassName('deployApp-card')[0];
+    card.style.minHeight = `${window.innerHeight - 277}px`;
   }
 
   /**
-   * 渲染第五块，部署模式选择
+   * 获取步骤条状态
+   * @param index
+   * @returns {string}
    */
-  get selectMode() {
-    const radioStyle = {
-      display: 'block',
-      height: '30px',
-      lineHeight: '20px',
-      color: '#000',
-    };
-    return (
-      <div className="c7n-section">
-        <div className="c7n-header-section">
-          {
-            this.circleTemplate(
-              DeploymentAppStore.loadingArr[4], 
-              DeploymentAppStore.getCurrentStage,
-              5)
-          }
-          <p className="c7n-title-section">部署模式</p>
-        </div>
-        <div className={`c7n-body-section ${DeploymentAppStore.getCurrentStage > 5 ? 'c7n-border-done' : 'c7n-border-doing'}`}>
-          {
-            !DeploymentAppStore.loadingArr[4] && (
-              <section>
-                <RadioGroup onChange={this.handleChangeMode} value={DeploymentAppStore.currentMode}>
-                  <Radio style={radioStyle} value={'new'}>新建实例</Radio>
-                  <Radio style={radioStyle} value={'replace'}>替换实例</Radio>
-                </RadioGroup>
-                {
-                  DeploymentAppStore.currentMode === 'replace' && (
-                    <div>
-                      <Select
-                        value={DeploymentAppStore.currentInstance.id}
-                        className="c7n-select-version"
-                        label="选择要替换的实例 *"
-                        onChange={this.handleChangeInstance}
-                      >
-                        {
-                          DeploymentAppStore.instances.map(instance => (
-                            <Option key={instance.id} value={instance.id}>
-                              {instance.code}
-                            </Option>
-                          ))
-                        }
-                      </Select>
-                    </div>
-                  )
-                }
-              </section>
-            )
-          }
-        </div>
-      </div>
-    );
-  }
-
-  /**
-   * 渲染第六块完成和部署按钮
-   */
-  get getOk() {
-    return (
-      <div className="c7n-section">
-        <div className="c7n-header-section">
-          <div className="c7n-circle-ok">
-            <i className="icon-check" />
-          </div>
-          <p className="c7n-title-section">完成</p>
-        </div>
-        <div className="mt50">
-          <Button type="primary" funcType="raised" onClick={this.handleDeploy}>部署</Button>
-        </div>
-      </div>
-    );
-  }
-
-  getInit() {
-    this.resetStore();
-    const Request = this.GetRequest(this.props.location.search);
-    // window.console.log(Request);
-    if (JSON.stringify(Request) !== '{}') {
-      this.setState({
-        appId: Request.appId === 'null' || !Request.appId ? undefined : Request.appId * 1,
-        verId: Request.verId === 'null' || !Request.verId ? undefined : Request.verId * 1,
-        envId: Request.envId === 'null' || !Request.envId ? undefined : Request.envId * 1,
-      }, () => {
-        DeploymentAppStore.loadInitData(this.state.appId, this.state.verId, this.state.envId);
-      });
+  getStatus = (index) => {
+    const { current } = this.state;
+    let status = 'process';
+    if (index === current) {
+      status = 'process';
+    } else if (index > current) {
+      status = 'wait';
     } else {
-      DeploymentAppStore.loadInitData();
+      status = 'finish';
     }
-  }
+    return status;
+  };
 
-  GetRequest(url) {
-    const theRequest = {};
-    if (url.indexOf('?') !== -1) {
-      const str = url.split('?')[1];
-      const strs = str.split('&');
-      for (let i = 0; i < strs.length; i += 1) {
-        theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+  /**
+   * 改变步骤条
+   * @param index
+   */
+  changeStep = (index) => {
+    const { DeploymentAppStore } = this.props;
+    const { appId, versionId, envId, mode } = this.state;
+    this.setState({ current: index });
+    if (index === 2 && appId && versionId && envId) {
+      DeploymentAppStore.setValue(null);
+      DeploymentAppStore.loadValue(appId, versionId, envId);
+    }
+  };
+
+  /**
+   * 展开选择应用的弹框
+   */
+  showSideBar = () => {
+    this.setState({ show: true, versionId: undefined, versionDto: null });
+  };
+
+  /**
+   * 关闭弹框
+   */
+  handleCancel = () => {
+    this.setState({ show: false });
+  };
+
+  /**
+   * 弹框确定
+   * @param app 选择的数据
+   * @param key 标明是项目应用还是应用市场应用
+   */
+  handleOk = (app, key) => {
+    const { DeploymentAppStore } = this.props;
+    if (app) {
+      if (key === '1') {
+        DeploymentAppStore.loadVersion(app.id);
+        this.setState({ app, appId: app.id, show: false });
+      } else {
+        DeploymentAppStore.loadVersion(app.appId);
+        this.setState({ app, appId: app.appId, show: false });
       }
-    }
-    return theRequest;
-  }
-
-  resetStore() {
-    DeploymentAppStore.setCurrentApp({});
-    DeploymentAppStore.setCurrentVersion({});
-    DeploymentAppStore.setCurrentEnv({});
-  }
-
-  /**
-   * 渲染标题前圆圈组件，分为loading（转圈），数字（表示正在进行的块），finish（以完成）
-   * @param {*} loading bool，表示是否正在请求数据
-   * @param {*} current 当前最新的值
-   * @param {*} finish 确定的某个值，表示调用该方法时的序号
-   */
-  circleTemplate(loading, current, finish) {
-    if (loading) {
-      return (<ReactLoading
-        type={'spin'}
-        color="#3f51b5"
-        height={30}
-        width={30}
-        delay={0}
-        className="mr28"
-      />);
-    } else if (current > finish) {
-      return (<div className="c7n-circle-ok">
-        <i className="icon-check" />
-      </div>);
     } else {
-      return <div className="c7n-circle">{finish}</div>;
-    }
-  }
-
-  /**
-   * 事件处理，选择一个app后，获取版本信息
-   */
-  // handleChangeAppOld = (app) => {
-  //   const { appId, verId, envId } = this.state;
-  //   if (!appId) {
-  //     DeploymentAppStore.setCurrentEnv({});
-  //     DeploymentAppStore.setCurrentVersion({});
-  //     DeploymentAppStore.setValue('');
-  //     DeploymentAppStore.setCurrentMode('new');
-  //     if (DeploymentAppStore.currentApp.id === app.id) {
-  //       DeploymentAppStore.setCurrentApp({});
-  //       DeploymentAppStore.setShowArr([true, false, false, false, false, false]);
-  //     } else {
-  //       DeploymentAppStore.setCurrentApp(app);
-  //       DeploymentAppStore.setLoadingArr([false, true, false, false, false, false]);
-  //       DeploymentAppStore.setShowArr([true, true, false, false, false, false]);
-  //       DeploymentAppStore.loadVersion(DeploymentAppStore.currentApp.id).then((res) => {
-  //         DeploymentAppStore.setVersions(res);
-  //         DeploymentAppStore.setLoadingArr([false, false, false, false, false, false]);
-  //       });
-  //     }
-  //   } else if (appId && verId && envId) {
-  //     if (app.id === appId) {
-  //       this.setState({
-  //         appId: undefined,
-  //         verId: undefined,
-  //       });
-  //       DeploymentAppStore.setShowArr(Array.from({ length: 5 }, () => false));
-  //     } else {
-  //       this.setState({
-  //         appId: undefined,
-  //         verId: undefined,
-  //       });
-  //       DeploymentAppStore.setCurrentApp(app);
-  //       DeploymentAppStore.setLoadingArr([false, true, false, false, false]);
-  //       DeploymentAppStore.setShowArr([false, true, false, false, false, false]);
-  //       DeploymentAppStore.loadVersion(DeploymentAppStore.currentApp.id).then((res) => {
-  //         DeploymentAppStore.setVersions(res);
-  //         DeploymentAppStore.setLoadingArr([false, false, false, false, false]);
-  //       });
-  //     }
-  //   } else if (appId && envId && !verId) {
-  //     if (app.id === appId) {
-  //       this.setState({
-  //         appId: undefined,
-  //       });
-  //       DeploymentAppStore.setShowArr(Array.from({ length: 5 }, () => false));
-  //     } else {
-  //       this.setState({
-  //         appId: undefined,
-  //       });
-  //       DeploymentAppStore.setCurrentApp(app);
-  //       DeploymentAppStore.setLoadingArr([false, true, false, false, false]);
-  //       DeploymentAppStore.setShowArr([false, true, false, false, false]);
-  //       DeploymentAppStore.loadVersion(DeploymentAppStore.currentApp.id).then((res) => {
-  //         DeploymentAppStore.setVersions(res);
-  //         DeploymentAppStore.setLoadingArr([false, false, false, false, false]);
-  //       });
-  //     }
-  //   }
-  // }
-
-  handleChangeApp = (app) => {
-    const { appId, verId, envId } = this.state;
-    this.setState({
-      appId: undefined,
-      verId: undefined,
-    });
-    DeploymentAppStore.setCurrentVersion({});
-    DeploymentAppStore.setCurrentEnv({});
-    DeploymentAppStore.setValue([]);
-    DeploymentAppStore.setCurrentMode('new');
-    if (app.id === appId || app.id === DeploymentAppStore.currentApp.id) {
-      // 执行取消选中操作
-      DeploymentAppStore.setCurrentApp({});
-      DeploymentAppStore.setShowArr([true, false, false, false, false, false]);
-    } else {
-      // 执行选中操作
-      DeploymentAppStore.setCurrentApp(app);
-      DeploymentAppStore.setShowArr([true, true, false, false, false, false]);
-      DeploymentAppStore.setLoadingArr([false, true, false, false, false, false]);
-      DeploymentAppStore.loadVersion(DeploymentAppStore.currentApp.id)
-        .then((res) => {
-          if (res) {
-            DeploymentAppStore.setVersions(res);
-            DeploymentAppStore.setLoadingArr([false, false, false, false, false, false]);
-          }
-        })
-        .catch((error) => {
-          Choerodon.prompt(error.response.data.message);
-        });
+      this.setState({ show: false });
     }
   };
 
   /**
-   * 事件处理，选择一个版本后，获取环境信息
+   * 选择环境
+   * @param value
    */
-  // handleChangeVersionOld = (versionId) => {
-  //   // this.setState({
-  //   //   verId: undefined,
-  //   // });
-  //   const { appId, verId, envId } = this.state;
-  //   if (!verId && !envId) {
-  //     DeploymentAppStore.setCurrentEnv({});
-  //     DeploymentAppStore.setValue('');
-  //     DeploymentAppStore.setCurrentMode('new');
-  //     const currentVersion = DeploymentAppStore.versions.
-  //       find(version => version.id === versionId);
-  //     DeploymentAppStore.setCurrentVersion(currentVersion);
-  //     DeploymentAppStore.setShowArr([false, true, true, false, false]);
-  //     DeploymentAppStore.setLoadingArr([false, false, true, false, false]);
-  //     DeploymentAppStore.loadEnv().then((res) => {
-  //       DeploymentAppStore.setEnvs(res);
-  //       DeploymentAppStore.setLoadingArr([false, false, false, false, false]);
-  //     });
-  //   } else if (verId && envId) {
-  //     this.setState({
-  //       verId: undefined,
-  //     });
-  //     const currentVersion = DeploymentAppStore.versions
-  //       .find(version => version.id === versionId);
-  //     DeploymentAppStore.setCurrentVersion(currentVersion);
-  //   } else if (envId && !verId) {
-  //     const currentVersion = DeploymentAppStore.versions
-  //       .find(version => version.id === versionId);
-  //     DeploymentAppStore.setCurrentVersion(currentVersion);
-  //     DeploymentAppStore.setShowArr([false, true, true, true, false]);
-  //     DeploymentAppStore.setLoadingArr([false, false, true, true, false]);
-  //     axios
-  //       .all([
-  //         DeploymentAppStore.loadEnv(),
-  //         DeploymentAppStore.loadValue(
-  //           this.state.appId || DeploymentAppStore.currentApp.id,
-  //           this.state.envId || DeploymentAppStore.currentEnv.id,
-  //         ),
-  //       ])
-  //       .then(
-  //         axios.spread((envs, value) => {
-  //           DeploymentAppStore.setEnvs(envs);
-  //           DeploymentAppStore.setValue(beautify(value, null, 2, 100));
-  //           DeploymentAppStore.setShowArr([true, true, true, true, true, true]);
-  //           DeploymentAppStore.setLoadingArr([false, false, false, false, false]);
-  //         }),
-  //       );
-  //   }
-  // }
-
-  handleChangeVersion = (versionId) => {
-    const { verId, envId } = this.state;
-    // this.setState({
-    //   verId: undefined,
-    // });
-    DeploymentAppStore.setCurrentEnv({});
-    DeploymentAppStore.setValue([]);
-    DeploymentAppStore.setCurrentMode('new');
-    const currentVersion = DeploymentAppStore.versions.find(version => version.id === versionId);
-    DeploymentAppStore.setCurrentVersion(currentVersion);
-    if (verId) {
-      this.setState({
-        verId: undefined,
-      });
-    }
-    if (envId) {
-      DeploymentAppStore.setShowArr([true, true, true, true, true, false]);
-      DeploymentAppStore.setLoadingArr([false, false, true, true, true, false]);
-      axios
-        .all([
-          DeploymentAppStore.loadEnv(),
-          DeploymentAppStore.loadValue(
-            this.state.appId || DeploymentAppStore.currentApp.id,
-            versionId,
-            envId,
-          ),
-        ])
-        .then(
-          axios.spread((envs, value) => {
-            if (!(envs.failed && value.failed)) {
-              DeploymentAppStore.setEnvs(envs);
-              DeploymentAppStore.setValue(value);
-              DeploymentAppStore.setShowArr([true, true, true, true, true, true]);
-              DeploymentAppStore.setLoadingArr([false, false, false, false, false, false]);
-            }
-          }),
-        )
-        .catch((error) => {
-          Choerodon.prompt(error.response.data.message);
-        });
-    } else {
-      DeploymentAppStore.setShowArr([true, true, true, false, false, false]);
-      DeploymentAppStore.setLoadingArr([false, false, true, false, false, false]);
-      DeploymentAppStore.loadEnv()
-        .then((res) => {
-          if (res) {
-            DeploymentAppStore.setEnvs(res);
-            DeploymentAppStore.setLoadingArr([false, false, false, false, false, false]);
-          }
-        })
-        .catch((error) => {
-          Choerodon.prompt(error.response.data.message);
-        });
-    }
+  handleSelectEnv = (value) => {
+    const { DeploymentAppStore } = this.props;
+    const envs = DeploymentAppStore.envs;
+    const envDto = _.filter(envs, v => v.id === value)[0];
+    this.setState({ envId: value, envDto, value: null });
+    const { appId, versionId } = this.state;
+    DeploymentAppStore.setValue(null);
+    DeploymentAppStore.loadValue(appId, versionId, value);
+    DeploymentAppStore.loadInstances(this.state.appId, value);
   };
 
   /**
-   * 事件处理，选择一个环境后，获取value值
+   * 选择版本
+   * @param value
    */
-  // handleChangeEnvOld = (enveId) => {
-  //   const { appId, verId, envId } = this.state;
-  //   if (!envId) {
-  //     DeploymentAppStore.setValue('');
-  //     DeploymentAppStore.setCurrentMode('new');
-  //     const currentEnv = DeploymentAppStore.envs.find(env => env.id === enveId);
-  //     DeploymentAppStore.setCurrentEnv(currentEnv);
-  //     DeploymentAppStore.setShowArr([false, true, true, true, false]);
-  //     DeploymentAppStore.setLoadingArr([false, false, false, true, false]);
-  //     DeploymentAppStore.loadValue(
-  //       this.state.appId || DeploymentAppStore.currentApp.id,
-  //       this.state.envId || DeploymentAppStore.currentEnv.id,
-  //     )
-  //       .then((res) => {
-  //         // 格式化json
-  //         DeploymentAppStore.setValue(beautify(res, null, 2, 100));
-  //         DeploymentAppStore.setLoadingArr([false, false, false, false, false]);
-  //         DeploymentAppStore.setShowArr([false, true, true, true, true, true]);
-  //       });
-  //   } else if (envId) {
-  //     this.setState({
-  //       envId: undefined,
-  //     });
-  //     const currentEnv = DeploymentAppStore.envs.find(env => env.id === enveId);
-  //     DeploymentAppStore.setCurrentEnv(currentEnv);
-  //     DeploymentAppStore.setShowArr([false, true, true, true, false]);
-  //     DeploymentAppStore.setLoadingArr([false, false, false, true, false]);
-  //     DeploymentAppStore.loadValue(
-  //       this.state.appId || DeploymentAppStore.currentApp.id,
-  //       DeploymentAppStore.currentEnv.id,
-  //     )
-  //       .then((res) => {
-  //         // 格式化json
-  //         DeploymentAppStore.setValue(beautify(res, null, 2, 100));
-  //         DeploymentAppStore.setLoadingArr([false, false, false, false, false]);
-  //         DeploymentAppStore.setShowArr([false, true, true, true, true, true]);
-  //       });
-  //   }
-  // }
-
-  handleChangeEnv = (enveId) => {
-    const { appId, verId, envId } = this.state;
-    if (envId) {
-      this.setState({
-        envId: undefined,
-      });
-    }
-    DeploymentAppStore.setValue([]);
-    DeploymentAppStore.setCurrentMode('new');
-    const currentEnv = DeploymentAppStore.envs.find(env => env.id === enveId);
-    if (!currentEnv.connect) {
-      Choerodon.prompt('未连接的环境无法部署应用');
-    }
-    DeploymentAppStore.setCurrentEnv(currentEnv);
-    DeploymentAppStore.setShowArr([true, true, true, true, true, false]);
-    DeploymentAppStore.setLoadingArr([false, false, false, true, true, false]);
-    DeploymentAppStore.loadValue(
-      this.state.appId || DeploymentAppStore.currentApp.id,
-      this.state.verId || DeploymentAppStore.currentVersion.id,
-      enveId,
-    )
-      .then((res) => {
-        // 格式化json
-        if (res) {
-          DeploymentAppStore.setValue(res);
-          DeploymentAppStore.setLoadingArr([false, false, false, false, false, false]);
-          DeploymentAppStore.setShowArr([true, true, true, true, true, true]);
-        }
-      })
-      .catch((error) => {
-        Choerodon.prompt(error.response.data.message);
-      });
+  handleSelectVersion = (value) => {
+    const { DeploymentAppStore } = this.props;
+    this.setState({ versionId: value });
+    const versions = DeploymentAppStore.versions;
+    const versionDto = _.filter(versions, v => v.id === value)[0];
+    this.setState({ versionDto });
   };
 
   /**
-   * 事件处理，修改value值后写入store
-   * @param {*} value 修改后的value值
+   * 选择实例
+   * @param value
    */
-  handleChangeValue =(value) => {
-    this.setState({ value });
-    // DeploymentAppStore.setValue(value);
+  handleSelectInstance = (value) => {
+    const { DeploymentAppStore } = this.props;
+    const instance = DeploymentAppStore.currentInstance;
+    const instanceDto = _.filter(instance, v => v.id === value)[0];
+    this.setState({ instanceId: value, instanceDto });
   };
 
-  handleChangeMode = (e) => {
-    const mode = e.target.value;
-    if (mode === 'replace') {
-      DeploymentAppStore.setShowArr([true, true, true, true, true, false]);
-      DeploymentAppStore.loadInstances(
-        this.state.appId || DeploymentAppStore.currentApp.id,
-        this.state.envId || DeploymentAppStore.currentEnv.id,
-      ).then((res) => {
-        if (res) {
-          DeploymentAppStore.setCurrentInstance({});
-          DeploymentAppStore.setInstances(res);
-          DeploymentAppStore.setCurrentMode(mode);
-          DeploymentAppStore.setShowArr([true, true, true, true, true, false]);
-        }
-      })
-        .catch((error) => {
-          Choerodon.prompt(error.response.data.message);
-        });
-    } else {
-      DeploymentAppStore.setShowArr([true, true, true, true, true, true]);
-      DeploymentAppStore.setCurrentInstance({});
-      DeploymentAppStore.setCurrentMode(mode);
-    }
+  /**
+   * 获取values
+   * @param value
+   * @param markers
+   */
+  handleChangeValue = (value, markers) => {
+    this.setState({ value, markers });
   };
 
-  handleChangeInstance(instanceId) {
-    const currentInstance = DeploymentAppStore.instances.find(
-      instance => instance.id === instanceId);
-    DeploymentAppStore.setCurrentInstance(currentInstance);
-    DeploymentAppStore.setShowArr([true, true, true, true, true, true]);
-  }
-
-  // 事件处理，刷新
-  handleRefresh =() => {
-    DeploymentAppStore.loadInitData()
-      .catch((error) => {
-        Choerodon.prompt(error.response.data.message);
-      });
+  /**
+   * 修改实例模式
+   * @param value
+   */
+  handleChangeMode = (value) => {
+    this.setState({ mode: value.target.value });
   };
 
+  /**
+   * 返回到上一级
+   */
   openAppDeployment() {
-    const { AppState } = this.props;
     const projectName = AppState.currentMenuType.name;
     const projectId = AppState.currentMenuType.id;
     const type = AppState.currentMenuType.type;
     this.props.history.push(
-      `/devops/app-deployment?type=${type}&id=${projectId}&name=${projectName}`,
+      `/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
     );
   }
 
   /**
-   * 事件处理，部署应用
+   * 取消第一步
+   */
+  clearStepOne = () => {
+    const { DeploymentAppStore } = this.props;
+    DeploymentAppStore.setVersions([]);
+    this.setState({
+      appId: undefined,
+      app: null,
+      versionId: undefined,
+      versionDto: null,
+    });
+  };
+
+  /**
+   * 部署应用
    */
   handleDeploy = () => {
-    let value = '';
-    if (this.state.value) {
-      try {
-        value = JSON.stringify(yaml.safeLoad(this.state.value));
-      } catch (err) {
-        Choerodon.prompt('yaml文件格式出错');
-        return;
-      }
-    } else {
-      value = JSON.stringify(yaml.safeLoad(DeploymentAppStore.value[0]));
-    }
+    const { DeploymentAppStore } = this.props;
+    const value = this.state.value || DeploymentAppStore.value.yaml;
     const applicationDeployDTO = {
-      appId: this.state.appId || DeploymentAppStore.currentApp.id,
-      appVerisonId: this.state.verId || DeploymentAppStore.currentVersion.id,
-      environmentId: this.state.envId || DeploymentAppStore.currentEnv.id,
+      appId: this.state.appId,
+      appVerisonId: this.state.versionId,
+      environmentId: this.state.envId,
       values: value,
-      type: DeploymentAppStore.currentMode === 'new' ? 'create' : 'update',
-      appInstanceId: DeploymentAppStore.currentMode === 'new' ?
-        null : DeploymentAppStore.currentInstance.id,
+      type: this.state.mode === 'new' ? 'create' : 'update',
+      appInstanceId: this.state.mode === 'new' ?
+        null : this.state.instanceId,
     };
     DeploymentAppStore.deploymentApp(applicationDeployDTO)
       .then((datas) => {
         if (datas) {
-          // Choerodon.prompt('创建成功');
           this.openAppDeployment();
         }
       })
@@ -738,52 +217,319 @@ class DeploymentAppHome extends Component {
         Choerodon.prompt(error.response.data.message);
       });
   };
+  /**
+   * 渲染第一步
+   */
+  handleRenderApp = () => {
+    const { DeploymentAppStore } = this.props;
+    const versions = DeploymentAppStore.versions;
+    return (
+      <div className="deployApp-app">
+        <p>
+          您可以点击“打开应用列表”，选择本项目的应用或来自应用市场的应用，再在此界面选择需要部署的版本。
+        </p>
+        <section className="deployApp-section">
+          <div className="deploy-title">
+            <span className="icon icon-widgets section-title-icon" />
+            <span className="section-title">选择应用</span>
+          </div>
+          <div className="deploy-text">
+            {this.state.app && <div className="section-text-margin">
+              {this.state.app.publishLevel ? <span className="icon icon-apps section-text-icon" /> : <span className="icon icon-project section-text-icon" />}
+              <span className="section-text">{this.state.app.name}({this.state.app.code})</span>
+            </div>}
+            <Permission service={['devops-service.application.pageByOptions', 'devops-service.application-market.listAllApp']}>
+              <a
+                role="none"
+                className={`${this.state.app ? '' : 'section-text-margin'}`}
+                onClick={this.showSideBar}
+              >
+                打开应用列表
+                <span className="icon icon-open_in_new" />
+              </a>
+            </Permission>
+          </div>
+        </section>
+        <section className="deployApp-section">
+          <div className="deploy-title">
+            <span className="icon icon-version section-title-icon " />
+            <span className="section-title">选择版本</span>
+          </div>
+          <Select
+            notFoundContent={'该应用下还未生成版本'}
+            value={this.state.versionId ? parseInt(this.state.versionId, 10) : undefined}
+            label="应用版本"
+            className="section-text-margin"
+            onSelect={this.handleSelectVersion}
+            style={{ width: 482 }}
+            optionFilterProp="children"
+            filterOption={(input, option) => option.props.children
+              .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filter
+          >
+            {versions.map(v => <Option key={v.id} value={v.id}>{v.version}</Option>)}
+          </Select>
+        </section>
+        <section className="deployApp-section">
+          <Button
+            type="primary"
+            funcType="raised"
+            disabled={!(this.state.appId && this.state.versionId)}
+            onClick={this.changeStep.bind(this, 2)}
+          >
+            下一步
+          </Button>
+          <Button funcType="raised" onClick={this.clearStepOne}>取消</Button>
+        </section>
+      </div>
+    );
+  };
+
+  /**
+   * 渲染第二步
+   */
+  handleRenderEnv = () => {
+    const { DeploymentAppStore } = this.props;
+    const envs = DeploymentAppStore.envs;
+    const data = DeploymentAppStore.value;
+    return (
+      <div className="deployApp-env">
+        <p>
+          请在此选择需要部署的环境并修改相关配置信息，平台默认会引用该应用上次在该环境部署的信息。
+        </p>
+        <section className="deployApp-section">
+          <div className="deploy-title">
+            <span className="icon icon-donut_large section-title-icon " />
+            <span className="section-title">选择环境</span>
+          </div>
+          <Select
+            value={this.state.envId}
+            label={<span className="deploy-text">环境</span>}
+            className="section-text-margin"
+            onSelect={this.handleSelectEnv}
+            style={{ width: 482 }}
+            optionFilterProp="children"
+            filterOption={(input, option) => option.props.children[1]
+              .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filter
+          >
+            {envs.map(v => (<Option value={v.id} key={v.id} disabled={!v.connect}>
+              {v.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
+              {v.name}
+            </Option>))}
+          </Select>
+        </section>
+        <section className="deployApp-section">
+          <div className="deploy-title">
+            <span className="icon icon-description section-title-icon " />
+            <span className="section-title">配置信息</span>
+          </div>
+          {data && (<AceForYaml
+            totalLine={data.totalLine}
+            modifyMarkers={this.state.markers}
+            value={this.state.value || data.yaml}
+            highlightMarkers={data.highlightMarkers}
+            onChange={this.handleChangeValue}
+          />)}
+        </section>
+        <section className="deployApp-section">
+          <Button
+            type="primary"
+            funcType="raised"
+            onClick={this.changeStep.bind(this, 3)}
+            disabled={!(this.state.envId && (this.state.value || (data && data.yaml)))}
+          >
+            下一步
+          </Button>
+          <Button onClick={this.changeStep.bind(this, 1)} funcType="raised">上一步</Button>
+        </section>
+      </div>
+    );
+  };
+  /**
+   * 渲染第三步
+   * @returns {*}
+   */
+  handleRenderMode = () => {
+    const { DeploymentAppStore } = this.props;
+    const instances = DeploymentAppStore.currentInstance;
+    return (
+      <div className="deployApp-deploy">
+        <p>
+          平台支持两种部署模式：新建实例和替换实例。新建实例是部署生成新的实例；替换实例是等待新部署生成的副本集通过健康检查后再删除原副本集，但实例不变，只替换其相关参数。
+        </p>
+        <section className="deployApp-section">
+          <div className="deploy-title">
+            <span className="icon icon-jsfiddle section-title-icon " />
+            <span className="section-title">选择部署模式</span>
+          </div>
+          <div className="section-text-margin">
+            <RadioGroup
+              onChange={this.handleChangeMode}
+              value={this.state.mode}
+              label={<span className="deploy-text">部署模式</span>}
+            >
+              <Radio className="deploy-radio" value={'new'}>新建实例</Radio>
+              <Radio className="deploy-radio" value={'replace'} disabled={instances.length === 0}>替换实例
+                <span className="icon icon-error section-instance-icon" />
+                <span className="deploy-tip-text">替换实例会更新该实例的镜像及配置信息，请确认要替换的实例选择无误。</span>
+              </Radio>
+            </RadioGroup>
+            {this.state.mode === 'replace' && <Select
+              onSelect={this.handleSelectInstance}
+              value={this.state.instanceId}
+              label="选择要替换的实例"
+              className="deploy-select"
+              placeholder="Select a person"
+              optionFilterProp="children"
+              filterOption={(input, option) => option.props.children
+                .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              filter
+            >
+              {instances.map(v => (<Option value={v.id} key={v.id}>
+                {v.code}
+              </Option>))}
+            </Select>}
+          </div>
+        </section>
+        <section className="deployApp-section">
+          <Button
+            type="primary"
+            funcType="raised"
+            onClick={this.changeStep.bind(this, 4)}
+            disabled={!(this.state.mode === 'new' || (this.state.mode === 'replace' && this.state.instanceId))}
+          >
+            下一步
+          </Button>
+          <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>上一步</Button>
+        </section>
+      </div>
+    );
+  };
+
+  /**
+   * 渲染第四步
+   * @returns {*}
+   */
+  handleRenderReview = () => {
+    const { DeploymentAppStore } = this.props;
+    const data = DeploymentAppStore.value;
+    const { app, versionId, envId, instanceId, mode } = this.state;
+    return (
+      <section className="deployApp-review">
+        <section>
+          <div>
+            <div className="deployApp-title"><span className="icon icon-widgets" />应用名称：</div>
+            <div className="deployApp-text">{this.state.app && this.state.app.name}
+              <span className="deployApp-value">({this.state.app && this.state.app.code})</span>
+            </div>
+          </div>
+          <div>
+            <div className="deployApp-title"><span className="icon icon-version" />应用版本：</div>
+            <div className="deployApp-text">{this.state.versionDto && this.state.versionDto.version}</div>
+          </div>
+          <div>
+            <div className="deployApp-title"><span className="icon icon-donut_large" />选择环境：</div>
+            <div className="deployApp-text">{this.state.envDto && this.state.envDto.name}
+              <span className="deployApp-value">({this.state.envDto && this.state.envDto.code})</span>
+            </div>
+          </div>
+          <div>
+            <div className="deployApp-title"><span className="icon icon-jsfiddle" />部署模式：</div>
+            <div className="deployApp-text">{this.state.mode === 'new' ? '新建实例' : '替换实例'} {this.state.mode === 'replace' &&
+            <span className="deployApp-value">({this.state.instanceDto.code})</span>}</div>
+          </div>
+          <div>
+            <div className="deployApp-title"><span className="icon icon-description" />配置信息：</div>
+          </div>
+          {data && <div>
+            {<AceForYaml
+              totalLine={data.totalLine + 1}
+              modifyMarkers={this.state.markers}
+              readOnly={this.state.current === 4}
+              value={this.state.value || data.yaml}
+              highlightMarkers={data.highlightMarkers}
+            />}
+          </div>}
+        </section>
+        <section className="deployApp-section">
+          <Permission service={['devops-service.application-instance.deploy']}>
+            <Button type="primary" funcType="raised" disabled={!(app && versionId && envId && mode)} onClick={this.handleDeploy}>部署</Button>
+          </Permission>
+          <Button funcType="raised" onClick={this.changeStep.bind(this, 3)}>上一步</Button>
+        </section>
+      </section>
+    );
+  };
 
   render() {
-    const { AppState } = this.props;
+    const { DeploymentAppStore } = this.props;
+    const data = DeploymentAppStore.value;
     const projectName = AppState.currentMenuType.name;
-    const projectId = AppState.currentMenuType.id;
-    const type = AppState.currentMenuType.type;
+    const { appId, versionId, envId, instanceId, mode, value, current } = this.state;
     return (
-      <div className="c7n-region c7n-deploymentApp page-container">
-        <PageHeader title={Choerodon.languageChange('deploymentApp.title')} backPath={`/devops/app-deployment?type=${type}&id=${projectId}&name=${projectName}`}>
-          <Button
-            funcType="flat"
-            className="leftBtn"
-            onClick={this.handleRefresh}
-          >
-            <span className="icon-refresh page-head-icon" />
-            <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
-          </Button>
-        </PageHeader>
-
-        <div className="page-content" style={{ paddingBottom: '16px' }}>
+      <Page className="c7n-region c7n-deployApp">
+        <Header title={Choerodon.languageChange('deploymentApp.title')} />
+        <Content className="c7n-deployApp-wrapper">
           <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的部署应用</h2>
           <p>
-            部署应用是一个将指定版本的应用部署至指定环境的操作。
-            <a href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/" className="c7n-external-link">
+            应用部署是一个将某版本的应用部署至某环境的操作。您可以在此按指引分步骤完成应用部署。
+            <a
+              href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/"
+              className="c7n-external-link"
+              rel="nofollow me noopener noreferrer"
+              target="_blank"
+            >
               <span className="c7n-external-link-content">
                 了解详情
               </span>
-              <span className="icon-open_in_new" />
+              <span className="icon icon-open_in_new" />
             </a>
           </p>
-          {this.selectApp}
-          {DeploymentAppStore.showArr[1] && this.selectVersion}
-          {DeploymentAppStore.showArr[2] && this.selectEnv}
-          {DeploymentAppStore.showArr[3] && this.changeValue}
-          {DeploymentAppStore.showArr[4] && this.selectMode}
-          {DeploymentAppStore.showArr[5] && (
-            DeploymentAppStore.currentEnv.connect ||
-            (
-              this.state.envId &&
-              _.find(DeploymentAppStore.envs, { id: this.state.envId }) &&
-              _.find(DeploymentAppStore.envs, { id: this.state.envId }).connect
-            )
-          )
-            && this.getOk}
-        </div>
-      </div>
+          <div className="deployApp-card">
+            <Steps current={this.state.current}>
+              <Step
+                title={<span style={{ color: current === 1 ? '#3F51B5' : '', fontSize: 14 }}>选择应用及版本</span>}
+                onClick={this.changeStep.bind(this, 1)}
+                status={this.getStatus(1)}
+              />
+              <Step
+                className={!(appId && versionId) ? 'step-disabled' : ''}
+                title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>选择环境及修改配置信息</span>}
+                onClick={this.changeStep.bind(this, 2)}
+                status={this.getStatus(2)}
+              />
+              <Step
+                className={!(envId && (value || (data && data.yaml))) ? 'step-disabled' : ''}
+                title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>选择部署模式</span>}
+                onClick={this.changeStep.bind(this, 3)}
+                status={this.getStatus(3)}
+              />
+              <Step
+                className={!((mode === 'new' || (mode === 'replace' && instanceId)) && this.state.envId)  ? 'step-disabled' : ''}
+                title={<span style={{ color: current === 4 ? '#3F51B5' : '', fontSize: 14 }}>确认信息及部署</span>}
+                onClick={this.changeStep.bind(this, 4)}
+                status={this.getStatus(4)}
+              />
+            </Steps>
+            <div className="deployApp-card-content">
+              {this.state.current === 1 && this.handleRenderApp()}
+
+              {this.state.current === 2 && this.handleRenderEnv()}
+
+              {this.state.current === 3 && this.handleRenderMode()}
+
+              {this.state.current === 4 && this.handleRenderReview()}
+            </div>
+          </div>
+          {this.state.show && <SelectApp
+            app={this.state.app}
+            show={this.state.show}
+            handleCancel={this.handleCancel}
+            handleOk={this.handleOk}
+          />}
+        </Content>
+      </Page>
     );
   }
 }

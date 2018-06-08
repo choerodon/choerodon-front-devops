@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Form, Select, Input, Tooltip, Modal, Progress } from 'choerodon-ui';
-
+import { Button, Form, Select, Input, Tooltip, Modal, Progress, Popover, Icon } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-// import Sidebar from '../../../../components/Sidebar';
 import '../../../main.scss';
 import '../createNetwork/NetworkCreate.scss';
 
@@ -21,11 +20,12 @@ const formItemLayout = {
     sm: { span: 26 },
   },
 };
-@inject('AppState')
+const { AppState } = stores;
+
 @observer
 class Editnetwok extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       projectId: menu.id,
@@ -41,6 +41,32 @@ class Editnetwok extends Component {
     this.loadData(this.props.id);
     // store.loadEnv(proId);
   }
+  /**
+   * 根据输入框的值判断实例的状态
+   */
+  getInstanceStatus =(index, versionId) => {
+    const { store } = this.props;
+    const instance = store.instance;
+    const value = this.props.form.getFieldValue(`instance-${index}`);
+    const options = _.filter(instance, v => v.id === versionId)[0].options;
+    const status = [];
+    if (value) {
+      value.map((v) => {
+        options.map((opt) => {
+          if (v === opt.id && opt.intanceStatus && opt.intanceStatus !== 'running') {
+            status.push(true);
+          }
+          return status;
+        });
+        return status;
+      });
+    }
+    if (status.includes(true)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
   loadData =(id) => {
     const { store } = this.props;
     const { projectId } = this.state;
@@ -91,8 +117,9 @@ class Editnetwok extends Component {
           externalIp,
           name,
           port,
+          targetPort,
         } = data;
-        const postData = { envId, appId, externalIp, port, name, appInstance };
+        const postData = { envId, appId, externalIp, port, name, appInstance, targetPort };
         this.setState({ submitting: true });
         store.updateData(projectId, id, postData)
           .then((datasss) => {
@@ -209,8 +236,6 @@ class Editnetwok extends Component {
    * 添加版本
    */
   addVersion =() => {
-    const { store } = this.props;
-    // const versionDto = store.getVersionDto;
     const versionsArr = this.state.versionsArr;
     if (versionsArr.length === 0) {
       versionsArr.push({ versionIndex: 0,
@@ -260,7 +285,7 @@ class Editnetwok extends Component {
     const envId = this.state.envId || SingleData.envId;
     const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     if (!pattern.test(value)) {
-      callback('名称只能包含字母、数字、"-"、"."');
+      callback('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾');
     } else if (value !== SingleData.name) {
       store.checkDomainName(this.state.projectId, envId, value)
         .then(() => {
@@ -294,10 +319,9 @@ class Editnetwok extends Component {
     }
   };
 
-
   render() {
     const { getFieldDecorator } = this.props.form;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { store, form } = this.props;
     const { versionsArr, SingleData, projectId, selectVersionArr } = this.state;
     const version = store.getVersions;
@@ -321,13 +345,10 @@ class Editnetwok extends Component {
       tooltipTitle = '该应用下没有可选版本';
     }
     let haveOption = false;
-    let vss = '';
     if (versionsArr.length && instance.length
       && instance.length >= versionsArr.length
       && selectVersionArr.length >= instance.length) {
       haveOption = true;
-      vss = _.map(
-        _.filter(instance, ver => ver.id === selectVersionArr[0])[0].options, 'id');
     }
 
 
@@ -335,11 +356,11 @@ class Editnetwok extends Component {
       <h2 className="c7n-space-first">对网络&quot;{SingleData && SingleData.name}&quot;进行修改</h2>
       <p>
         您可在此修改网络配置信息。
-        <a href="http://choerodon.io/zh/docs/user-guide/deploy/network-management/" className="c7n-external-link">
+        <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" className="c7n-external-link">
           <span className="c7n-external-link-content">
               了解详情
           </span>
-          <span className="icon-open_in_new" />
+          <span className="icon icon-open_in_new" />
         </a>
       </p>
       <Form layout="vertical">
@@ -356,7 +377,7 @@ class Editnetwok extends Component {
             }],
             initialValue: SingleData ? SingleData.name : '',
           })(
-            <Input label="网络名称" />,
+            <Input label="网络名称" maxLength={25} />,
           )}
         </FormItem>
         <FormItem
@@ -368,39 +389,22 @@ class Editnetwok extends Component {
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               transform: value => value.toString(),
             }],
-            initialValue: this.state.envId || (SingleData && SingleData.envId),
+            initialValue: SingleData ? SingleData.envId : undefined,
           })(
             <Select
+              dropdownClassName="c7n-network-env"
               disabled
               filter
               className="c7n-create-network-formitem"
               showSearch
               label="环境名称"
               optionFilterProp="children"
-              filterOption={(input, option) => option.props.children.props.children[2]
+              filterOption={(input, option) => option.props.children[1]
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              {store.loading ? (<Option key={Math.random()}>
-                <Progress type="loading" />
-              </Option>)
-                : env.map(v => (
-                  <Option key={v.id} value={v.id} disabled={!v.connect} >
-                    <div
-                      style={{
-                        display: 'inline-block',
-                        alignItems: 'center',
-                      }}
-                    >
-                      {
-                        v.connect === true && <span className="c7n-network-status status-success">运行中</span>
-                      }
-                      {
-                        v.connect === false && <span className="c7n-network-status status-error">未连接</span>
-                      }
-                      {v.name}
-                    </div>
-                  </Option>
-                ))}
+              <Option
+                value={SingleData ? SingleData.envId : Math.random()}
+              >{SingleData ? SingleData.envName : ''}</Option>
             </Select>,
           )}
         </FormItem>
@@ -423,9 +427,7 @@ class Editnetwok extends Component {
               label="应用名称"
               optionFilterProp="children"
               onFocus={this.loadApp}
-              // onChange={handleChange}
               onSelect={this.selectApp}
-              // onFocus={store.loadApp(projectId, this.state.envId || SingleData.envId)}
               filterOption={(input, option) =>
                 option.props.children.props.children.props.children
                   .toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -460,7 +462,6 @@ class Editnetwok extends Component {
             })(
               <Select
                 filter
-                // disabled={!this.state.appId}
                 notFoundContent="该应用下没有版本生成"
                 label={Choerodon.getMessage('版本', 'version')}
                 showSearch
@@ -503,10 +504,12 @@ class Editnetwok extends Component {
                 required: true,
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
                 transform: value => value.toString(),
+                // validator: this.checkName,
               }],
               initialValue: haveOption ? _.map(SingleData.appVersion[index].appInstance, 'id') : undefined,
             })(
               <Select
+                onSelect={this.selectInstance}
                 dropdownClassName="test"
                 filter
                 label={Choerodon.getMessage('实例', 'instance')}
@@ -517,11 +520,7 @@ class Editnetwok extends Component {
                 size="default"
                 optionFilterProp="children"
                 optionLabelProp="children"
-                // onFocus={this.loadInstance.bind(this, index)}
-                // onFocus={store.loadInstance(projectId,
-                //   this.state.envId || SingleData.envId,
-                //   this.state.appId || SingleData.appId,
-                //   this.state.versionId || versionDto[index].appVersionId)}
+
                 filterOption={
                   (input, option) =>
                     option.props.children[1]
@@ -533,13 +532,14 @@ class Editnetwok extends Component {
                     <Option
                       // disabled={instancess.intanceStatus &&
                       // instancess.intanceStatus !== 'running'}
-                      key={instancess.id}
-                      // value={instancess.id}
+                      value={instancess.id}
+                      // eslint-disable-next-line
+                      key={`${index}-${instancess.intanceStatus}`}
                     >
                       {instancess.intanceStatus && instancess.intanceStatus !== 'running' ? <Tooltip title="实例不正常，建议更换实例">
-                        <span className="icon-error status-error-instance status-instance" />
+                        <span className="icon icon-error status-error-instance status-instance" />
                       </Tooltip> : <Tooltip title="正常">
-                        <span className="icon-check_circle status-success-instance status-instance" />
+                        <span className="icon icon-check_circle status-success-instance status-instance" />
                       </Tooltip>}
                       {instancess.code}
                     </Option>
@@ -552,8 +552,8 @@ class Editnetwok extends Component {
             className="c7n-domain-icon-delete"
             onClick={this.removeVersion.bind(this, index)}
           >
-            <span className="icon-delete" />
-          </Button> : <span className="icon-delete c7n-app-icon-disabled" />}
+            <span className="icon icon-delete" />
+          </Button> : <span className="icon icon-delete c7n-app-icon-disabled" />}
         </div>))}
         <div className="c7n-domain-btn-wrapper">
           {addStatus ? <Button className="c7n-domain-btn" onClick={this.addVersion} type="primary" icon="add">添加版本</Button>
@@ -569,7 +569,7 @@ class Editnetwok extends Component {
             }],
             initialValue: SingleData ? SingleData.externalIp : '',
           })(
-            <Input maxLength={30} label="外部IP" />,
+            <Input maxLength={15} label="外部IP" />,
           )}
         </FormItem>
         <FormItem
@@ -584,7 +584,35 @@ class Editnetwok extends Component {
             }],
             initialValue: SingleData ? SingleData.port : '',
           })(
-            <Input maxLength={30} label="端口号" />,
+            <Input maxLength={5} label="端口号" />,
+          )}
+        </FormItem>
+        <FormItem
+          className="c7n-create-network-formitem"
+          {...formItemLayout}
+        >
+          {getFieldDecorator('targetPort', {
+            rules: [{
+              required: true,
+              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              transform: value => value.toString(),
+            }],
+            initialValue: SingleData ? SingleData.targetPort : '',
+          })(
+            <Input
+              maxLength={10}
+              abel="目标端口"
+              suffix={<Popover
+                overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}
+                className="routePop"
+                placement="right"
+                trigger="hover"
+                content={'网络选择的目标实例所暴露的端口号'}
+              >
+                <Icon type="help" />
+              </Popover>
+              }
+            />,
           )}
         </FormItem>
       </Form>

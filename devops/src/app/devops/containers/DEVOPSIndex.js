@@ -4,9 +4,7 @@ import {
   Switch,
 } from 'react-router-dom';
 import { inject } from 'mobx-react';
-import nomatch from 'nomatch';
-import asyncRouter from '../../../util/asyncRouter';
-import asyncLocaleProvider from '../../../util/asyncLocaleProvider';
+import { asyncRouter, nomatch, asyncLocaleProvider } from 'choerodon-front-boot';
 
 // organization
 const Template = asyncRouter(() => import('./organization/template'));
@@ -21,6 +19,7 @@ const DeploymentApp = asyncRouter(() => import('./project/deploymentApp'));
 const NetworkConfig = asyncRouter(() => import('./project/networkConfig'));
 const Domain = asyncRouter(() => import('./project/domain'));
 const Container = asyncRouter(() => import('./project/container'));
+const AppRelease = asyncRouter(() => import('./project/appRelease'));
 
 @inject('AppState')
 class DEVOPSIndex extends React.Component {
@@ -37,11 +36,12 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/app-version`} component={AppVersion} />
           <Route path={`${match.url}/app`} component={App} />
           <Route path={`${match.url}/appstore`} component={AppStore} />
-          <Route path={`${match.url}/app-deployment`} component={AppDeployment} />
+          <Route path={`${match.url}/instance`} component={AppDeployment} />
           <Route path={`${match.url}/deployment-app`} component={DeploymentApp} />
           <Route path={`${match.url}/service`} component={NetworkConfig} />
           <Route path={`${match.url}/domain`} component={Domain} />
           <Route path={`${match.url}/container`} component={Container} />
+          <Route path={`${match.url}/app-release`} component={AppRelease} />
           <Route path={'*'} component={nomatch} />
         </Switch>
       </IntlProviderAsync>

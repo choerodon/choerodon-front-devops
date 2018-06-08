@@ -4,10 +4,9 @@
 *
 * */
 
-import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
-import { Popover, Select } from 'choerodon-ui';
+import React from 'react';
+import { observer } from 'mobx-react';
+import { Popover } from 'choerodon-ui';
 import './OptionHover.scss';
 
 const OptionHoverRequiredProps = {

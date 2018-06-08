@@ -33,6 +33,14 @@ const enUS = {
   ist_delete: 'deleting',
   ist_update: 'updating',
 
+  network_create: 'Network Creating',
+  network_delete: 'Network deleting',
+  network_update: 'Network updating',
+
+  domain_create: 'Domain Creating',
+  domain_delete: 'Domain deleting',
+  domain_update: 'Domain updating',
+
   // deploy
   'deploy.title': 'Deploy Title',
   'deploy.status': 'Pod Status',
@@ -211,6 +219,8 @@ const enUS = {
   // app-release
   'app-release.title': 'Release',
   'app-release.level': 'Level',
+  organization: 'organization',
+  public: 'public',
 
 
 };

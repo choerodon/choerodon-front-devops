@@ -20,24 +20,15 @@
     }
   }
 
-  .c7n-container-circle {
-    background: rgb(255, 177, 0);
-    height: 16px;
-    width: 16px;
-    font-size: 10px;
-    color: #fff;
-    line-height: 16px;
-    text-align: center;
-    padding: 1px;
-    border-radius: 50%;
-    margin-right: 9px;
-    margin-left: 8px;
-    display: inline-block;
+  .c7n-icon-publish {
+    font-size: 16px;
+    vertical-align: sub;
+    margin-right: 8px;
   }
 
   .c7n-container-title {
     padding-left: 8px;
-    vertical-align: middle;
+    vertical-align: sub;
   }
 
   .c7n-container-table {
@@ -107,3 +98,32 @@
   margin-top: 32px;
 }
 
+.c7n-deploy-text_gray {
+  color: rgba(0, 0, 0, 0.36);
+}
+
+//icon
+.c7n-icon-success,
+.c7n-icon-running {
+  font-size: 18px;
+  color: #00bfa5;
+  vertical-align: middle;
+}
+
+.c7n-icon-failed {
+  font-size: 18px;
+  color: #f44336;
+  vertical-align: middle;
+}
+
+.c7n-icon-help {
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.36);
+  vertical-align: middle;
+}
+
+.c7n-icon-pending {
+  font-size: 18px;
+  color: #ffb100;
+  vertical-align: middle;
+}

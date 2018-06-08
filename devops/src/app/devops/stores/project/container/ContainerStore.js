@@ -1,9 +1,8 @@
-import { observable, action, computed, autorun, whyRun } from 'mobx';
-import axios from 'Axios';
-import store from 'Store';
+import { observable, action, computed } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
 import { Observable } from 'rxjs';
-import { List, formJS } from 'immutable';
 
+const height = window.screen.height;
 @store('ContainerStore')
 class ContainerStore {
   @observable allData = [];
@@ -12,7 +11,7 @@ class ContainerStore {
   @observable show = false;
   @observable logs = '';
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: 10,
+    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
 
   @action setPageInfo(page) {
@@ -28,7 +27,7 @@ class ContainerStore {
     this.show = flag;
   }
   @computed get getAllData() {
-    return this.allData.slice();
+    return this.allData;
   }
 
   @action setAllData(data) {
@@ -59,7 +58,7 @@ class ContainerStore {
   }
 
 
-  loadData = (isRefresh = false, proId, page = this.pageInfo.current, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'asc' }, datas = {
+  loadData = (isRefresh = false, proId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
     searchParam: {},
     param: '',
   }) => {
@@ -67,7 +66,7 @@ class ContainerStore {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/project/${proId}/app_pod/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(datas)))
+    return Observable.fromPromise(axios.post(`/devops/v1/projects/${proId}/app_pod/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(datas)))
       .subscribe((data) => {
         const res = this.handleProptError(datas);
         if (res) {
@@ -86,7 +85,7 @@ class ContainerStore {
   };
 
   loadPodParam(projectId, id) {
-    return axios.get(`devops/v1/project/${projectId}/app_pod/${id}/containers/logs`)
+    return axios.get(`devops/v1/projects/${projectId}/app_pod/${id}/containers/logs`)
       .then(datas => this.handleProptError(datas));
   }
   handleProptError =(error) => {

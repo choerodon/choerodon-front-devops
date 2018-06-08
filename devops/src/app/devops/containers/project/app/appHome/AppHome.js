@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Table, Tootip, Button, Spin, message, Radio, Input, Form, Modal, Tooltip, Select, Popover, Pagination } from 'choerodon-ui';
+import { Table, Tootip, Button, Input, Form, Modal, Tooltip, Select } from 'choerodon-ui';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import Permission from 'PerComponent';
-import PageHeader from 'PageHeader';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import { fromJS, is } from 'immutable';
 import { commonComponent } from '../../../../components/commonFunction';
@@ -12,6 +11,7 @@ import './AppHome.scss';
 import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
+const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
 const Option = Select.Option;
 const FormItem = Form.Item;
@@ -26,13 +26,11 @@ const formItemLayout = {
   },
 };
 
-
-@inject('AppState')
 @commonComponent('AppStore')
 @observer
 class AppHome extends Component {
   constructor(props) {
-    const menu = props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
       page: 0,
@@ -68,7 +66,7 @@ class AppHome extends Component {
   };
 
   getColumn = () => {
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { type, id: projectId, organizationId: orgId } = menu;
     return [{
       title: Choerodon.languageChange('app.name'),
@@ -76,32 +74,23 @@ class AppHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={150}>
-        {record.name}
-      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('app.code'),
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.code} width={150}>
-        {record.code}
-      </MouserOverWrapper>),
     }, {
-      // width: '55%',
       title: Choerodon.languageChange('app.url'),
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={300}>
-        <a href={record.repoUrl} target="_blank" rel="nofollow me noopener noreferrer">{record.repoUrl}</a>
+      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={480}>
+        <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl}</a>
       </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('app.active'),
       dataIndex: 'active',
       key: 'active',
-      // width: '10%',
-      // sorter: true,
       filters: [{
         text: '停用',
         value: 0,
@@ -119,33 +108,33 @@ class AppHome extends Component {
         </React.Fragment>
       ),
     }, {
-      width: '144px',
+      width: '128px',
       key: 'action',
       render: (test, record) => (
         <div>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.git-flow.listByAppId', 'devops-service.git-flow.queryTags']} >
-            <Popover placement="bottom" content={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>分支管理</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
+            <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>分支管理</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
               {record.active && record.synchro ? <Button shape="circle" onClick={this.linkToBranch.bind(this, record.id, record.name)}>
-                <span className="icon-branch" />
-              </Button> : <span className="icon-branch c7n-app-icon-disabled" /> }
-            </Popover>
+                <span className="icon icon-branch" />
+              </Button> : <span className="icon icon-branch c7n-app-icon-disabled" /> }
+            </Tooltip>
           </Permission>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']} >
-            <Popover placement="bottom" content={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>修改应用</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
+            <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>修改</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
               {record.active && record.synchro ? <Button shape="circle" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
-                <span className="icon-mode_edit" />
-              </Button> : <span className="icon-mode_edit c7n-app-icon-disabled" /> }
-            </Popover>
+                <span className="icon icon-mode_edit" />
+              </Button> : <span className="icon icon-mode_edit c7n-app-icon-disabled" /> }
+            </Tooltip>
           </Permission>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']} >
-            <Popover placement="bottom" content={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>停用应用</span> : <span>启用应用</span>}</React.Fragment> }</div>}>
+            <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>停用</span> : <span>启用</span>}</React.Fragment> }</div>}>
               {record.synchro ? <Button shape="circle" onClick={this.changeAppStatus.bind(this, record.id, record.active)}>
-                {record.active ? <span className="icon-remove_circle_outline" /> : <span className="icon-finished" />}
+                {record.active ? <span className="icon icon-remove_circle_outline" /> : <span className="icon icon-finished" />}
               </Button> : <React.Fragment>
-                {record.active ? <span className="icon-remove_circle_outline c7n-app-icon-disabled" /> : <span className="icon-finished c7n-app-icon-disabled" />}
+                {record.active ? <span className="icon icon-remove_circle_outline c7n-app-icon-disabled" /> : <span className="icon icon-finished c7n-app-icon-disabled" />}
               </React.Fragment> }
               
-            </Popover>
+            </Tooltip>
           </Permission>
         </div>
       ),
@@ -157,7 +146,8 @@ class AppHome extends Component {
    * @param id 应用id
    */
   linkToBranch =(id, name) => {
-    this.linkToChange(`/devops/app/${name}/${id}/branch?type=project&id=${this.props.AppState.currentMenuType.id}&name=${this.props.AppState.currentMenuType.name}`);
+    const menu = AppState.currentMenuType;
+    this.linkToChange(`/devops/app/${name}/${id}/branch?type=project&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`);
   };
 
   /**
@@ -309,7 +299,7 @@ class AppHome extends Component {
     this.props.form.resetFields();
     const { AppStore } = this.props;
     const { projectId } = this.state;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     if (type === 'create') {
       AppStore.setSingleData(null);
@@ -328,29 +318,29 @@ class AppHome extends Component {
     const { getFieldDecorator } = this.props.form;
     const serviceData = AppStore.getAllData;
     const { singleData, selectData } = AppStore;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { type, id: projectId, organizationId: orgId } = menu;
     const formContent = (<div className="c7n-region">
       {this.state.type === 'create' ? <div>
         <h2 className="c7n-space-first">在项目&quot;{menu.name}&quot;中创建应用</h2>
         <p>
           请在下面输入应用编码及名称，也可以选择某个应用模板，快速创建应用。平台会为您自动创建对应的git库以便管理该应用代码。
-          <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
             <span className="c7n-external-link-content">
             了解详情
             </span>
-            <span className="icon-open_in_new" />
+            <span className="icon icon-open_in_new" />
           </a>
         </p>
       </div> : <div>
         <h2 className="c7n-space-first">对&quot;{singleData ? singleData.code : ''}&quot;进行修改</h2>
         <p>
           您可在此修改应用名称。
-          <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
             <span className="c7n-external-link-content">
             了解详情
             </span>
-            <span className="icon-open_in_new" />
+            <span className="icon icon-open_in_new" />
           </a>
         </p>
       </div>}
@@ -369,7 +359,8 @@ class AppHome extends Component {
             }],
           })(
             <Input
-              maxLength={30}
+              autoFocus
+              maxLength={20}
               label={Choerodon.languageChange('app.code')}
               size="default"
             />,
@@ -389,7 +380,7 @@ class AppHome extends Component {
             initialValue: singleData ? singleData.name : '',
           })(
             <Input
-              maxLength={30}
+              maxLength={20}
               label={Choerodon.languageChange('app.name')}
               size="default"
             />,
@@ -449,6 +440,7 @@ class AppHome extends Component {
     </div>);
     const contentDom = (
       <Table
+        filterBarPlaceholder={'过滤表'}
         pagination={AppStore.getPageInfo}
         loading={AppStore.loading}
         columns={this.getColumn()}
@@ -458,9 +450,9 @@ class AppHome extends Component {
       />);
 
     return (
-      <div className="c7n-region page-container c7n-app-wrapper">
+      <Page className="c7n-region c7n-app-wrapper">
         { AppStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <PageHeader title={Choerodon.languageChange('app.title')}>
+          <Header title={Choerodon.languageChange('app.title')}>
             <Permission
               service={['devops-service.application.create']}
               type={type}
@@ -468,32 +460,28 @@ class AppHome extends Component {
               organizationId={orgId}
             >
               <Button
-                className="leftBtn"
-                funcType="flat"
                 onClick={this.showSideBar.bind(this, 'create')}
               >
-                <span className="icon-playlist_add page-head-icon" />
-                <span className="icon-space">{Choerodon.getMessage('创建应用', 'Create')}</span>
+                <span className="icon-playlist_add icon" />
+                <span>{Choerodon.getMessage('创建应用', 'Create')}</span>
               </Button>
             </Permission>
             <Button
-              funcType="flat"
-              className="leftBtn2"
               onClick={this.handleRefresh}
             >
-              <span className="icon-refresh page-head-icon" />
-              <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+              <span className="icon-refresh icon" />
+              <span>{Choerodon.languageChange('refresh')}</span>
             </Button>
-          </PageHeader>
-          <div className="page-content">
+          </Header>
+          <Content>
             <h2 className="c7n-space-first">项目&quot;{menu.name}&quot;的应用管理</h2>
             <p>
               应用是满足用户某些需求的程序代码的集合，可以是某个解耦的微服务或是某个单体应用。您可在此创建应用、修改应用名称、停用应用、启用应用及分支管理。
-              <a className="c7n-external-link" href="http://choerodon.io/zh/docs/user-guide/assembly-line/application-management/" rel="nofollow me noopener noreferrer" target="_blank">
+              <a className="c7n-external-link" href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-management/" rel="nofollow me noopener noreferrer" target="_blank">
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>
-                <span className="icon-open_in_new" />
+                <span className="icon icon-open_in_new" />
               </a>
             </p>
             {this.state.show && <Sidebar
@@ -508,11 +496,11 @@ class AppHome extends Component {
               {formContent}
             </Sidebar>}
             {contentDom}
-          </div>
+          </Content>
         </React.Fragment>}
 
 
-      </div>
+      </Page>
     );
   }
 }

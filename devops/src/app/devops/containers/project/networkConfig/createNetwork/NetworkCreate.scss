@@ -42,28 +42,16 @@
   }
 }
 
-.c7n-network-status {
-  display: inline-block;
-  width: 50px;
-  height: 16px;
-  font-size: 13px;
-  border-radius: 2px;
-  color: white;
-  text-align: center;
-  line-height: 16px;
-  margin-right: 8px;
-
-  div {
-    transform: scale(0.8);
+.c7n-network-env {
+  .status-success {
+    padding-right: 15px;
   }
-}
 
-.status-success {
-  background: #1bc123;
-}
-
-.status-error {
-  background: #f44336;
+  .status-error {
+    padding-right: 2px;
+    color: #d50000;
+    vertical-align: middle;
+  }
 }
 
 .status-success-instance {
@@ -87,6 +75,7 @@
   padding: 0 12px;
   margin: 0 5px;
   line-height: 20px;
+  text-align: center;
   // border-radius: 2px;
   font-size: 10px;
   // width: 115px;
@@ -95,4 +84,22 @@
 .c7n-create-network-test .ant-select-tags .ant-select-selection--multiple .ant-select-selection__choice {
   background-color: rgba(0, 0, 0, 0.08) !important;
   color: #0f0f0f;
+}
+
+.env-status-success {
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  display: inline-block;
+  background-color: #00bf96;
+  margin-right: 5px;
+}
+
+.env-status-error {
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  display: inline-block;
+  background-color: #d50000;
+  margin-right: 5px;
 }

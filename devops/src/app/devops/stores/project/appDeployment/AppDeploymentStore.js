@@ -1,7 +1,6 @@
 import { observable, action, computed } from 'mobx';
-import { Observable } from 'rxjs';
-import axios from 'Axios';
-import store from 'Store';
+import { axios, store } from 'choerodon-front-boot';
+
 
 
 @store('AppDeploymentStore')
@@ -20,6 +19,9 @@ class AppDeploymentStore {
   @observable alertType = '';
   @observable value = [];
   @observable pageInfo = {};
+  @observable appPageInfo = {};
+  @observable appPage = 0;
+  @observable appPageSize = 1;
   @observable tabActive = 'instance';
   @observable envId = false;
   @observable verId = false;
@@ -31,6 +33,14 @@ class AppDeploymentStore {
 
   @computed get getPageInfo() {
     return this.pageInfo;
+  }
+
+  @action setAppPageInfo(page) {
+    this.appPageInfo = { current: page.number + 1, total: page.totalElements, pageSize: page.size };
+  }
+
+  @computed get getAppPageInfo() {
+    return this.appPageInfo;
   }
 
   @action changeShow(flag) {
@@ -145,6 +155,22 @@ class AppDeploymentStore {
     this.value = data;
   }
 
+  @computed get getAppPage() {
+    return this.appPage;
+  }
+
+  @action setAppPage(appPage) {
+    this.appPage = appPage;
+  }
+
+  @computed get getAppPageSize() {
+    return this.appPageSize;
+  }
+
+  @action setAppPageSize(appPageSize) {
+    this.appPageSize = appPageSize;
+  }
+
   @action setAlertType(data) {
     this.alertType = data;
   }
@@ -155,7 +181,7 @@ class AppDeploymentStore {
   }) => {
     this.changeLoading(true);
     if (versionId && appId && envId) {
-      return axios.post(`devops/v1/project/${projectId}/app_instances/list_by_options?versionId=${versionId}&envId=${envId}&appId=${appId}&page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
+      return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?versionId=${versionId}&envId=${envId}&appId=${appId}&page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
         if (data && data.failed) {
           Choerodon.prompt(data.message);
         } else {
@@ -164,7 +190,7 @@ class AppDeploymentStore {
         }
       });
     } else if (appId && envId) {
-      return axios.post(`devops/v1/project/${projectId}/app_instances/list_by_options?envId=${envId}&appId=${appId}&page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
+      return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?envId=${envId}&appId=${appId}&page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
         if (data && data.failed) {
           Choerodon.prompt(data.message);
         } else {
@@ -173,7 +199,7 @@ class AppDeploymentStore {
         }
       });
     } else if (envId) {
-      return axios.post(`devops/v1/project/${projectId}/app_instances/list_by_options?envId=${envId}&page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
+      return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?envId=${envId}&page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
         if (data && data.failed) {
           Choerodon.prompt(data.message);
         } else {
@@ -182,7 +208,7 @@ class AppDeploymentStore {
         }
       });
     } else {
-      return axios.post(`devops/v1/project/${projectId}/app_instances/list_by_options?page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
+      return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
         if (data && data.failed) {
           Choerodon.prompt(data.message);
         } else {
@@ -202,7 +228,7 @@ class AppDeploymentStore {
   };
 
 
-  loadAppNames = projectId => axios.get(`devops/v1/project/${projectId}/apps`).then((data) => {
+  loadAppNames = projectId => axios.get(`devops/v1/projects/${projectId}/apps/list_all`).then((data) => {
     this.changeLoading(true);
     if (data && data.failed) {
       Choerodon.prompt(data.message);
@@ -213,10 +239,10 @@ class AppDeploymentStore {
   });
 
   loadVersionFeature(projectId, id) {
-    return axios.get(`devops/v1/project/${projectId}/app_instances/${id}/version_features`);
+    return axios.get(`devops/v1/projects/${projectId}/app_instances/${id}/version_features`);
   }
 
-  loadActiveEnv = projectId => axios.get(`devops/v1/project/${projectId}/envs?active=true`).then((data) => {
+  loadActiveEnv = projectId => axios.get(`devops/v1/projects/${projectId}/envs?active=true`).then((data) => {
     if (data && data.failed) {
       Choerodon.prompt(data.message);
     } else {
@@ -224,7 +250,7 @@ class AppDeploymentStore {
     }
   });
 
-  loadAppVersion = (projectId, appId) => axios.get(`devops/v1/project/${projectId}/apps/${appId}/version/list`).then((data) => {
+  loadAppVersion = (projectId, appId, publish) => axios.get(`devops/v1/projects/${projectId}/apps/${appId}/version/list?is_publish=${publish}`).then((data) => {
     if (data && data.failed) {
       Choerodon.prompt(data.message);
     } else {
@@ -232,17 +258,20 @@ class AppDeploymentStore {
     }
   });
 
-  loadAppNameByEnv = (projectId, envId) => axios.get(`devops/v1/project/${projectId}/apps/options?envId=${envId}&status=nodelete`).then((data) => {
+  loadAppNameByEnv = (projectId, envId, page, appPageSize) => axios.get(`devops/v1/projects/${projectId}/apps/pages?envId=${envId}&page=${page}&size=${appPageSize}`).then((data) => {
     this.changeLoading(true);
     if (data && data.failed) {
       Choerodon.prompt(data.message);
     } else {
-      this.setAppNameByEnv(data);
+      this.setAppNameByEnv(data.content);
+      const { number, size, totalElements } = data;
+      const pageInfo = { number, size, totalElements };
+      this.setAppPageInfo(pageInfo);
       this.changeLoading(false);
     }
   });
 
-  loadMutiData = projectId => axios.get(`devops/v1/project/${projectId}/app_instances/all`).then((data) => {
+  loadMutiData = projectId => axios.get(`devops/v1/projects/${projectId}/app_instances/all`).then((data) => {
     this.changeLoading(true);
     if (data && data.failed) {
       Choerodon.prompt(data.message);
@@ -253,7 +282,7 @@ class AppDeploymentStore {
   });
 
   loadValue(projectId, appId, envId, verId) {
-    return axios.get(`devops/v1/project/${projectId}/app_instances/value?appId=${appId}&envId=${envId}&appVersionId=${verId}`)
+    return axios.get(`devops/v1/projects/${projectId}/app_instances/value?appId=${appId}&envId=${envId}&appVersionId=${verId}`)
       .then((data) => {
         if (data) {
           this.setValue(data);
@@ -263,15 +292,15 @@ class AppDeploymentStore {
   }
 
   changeIstActive(projectId, istId, active) {
-    return axios.put(`devops/v1/project/${projectId}/app_instances/${istId}/${active}`);
+    return axios.put(`devops/v1/projects/${projectId}/app_instances/${istId}/${active}`);
   }
 
   reDeploy(projectId, data) {
-    return axios.post(`devops/v1/project/${projectId}/app_instances`, JSON.stringify(data));
+    return axios.post(`devops/v1/projects/${projectId}/app_instances`, JSON.stringify(data));
   }
 
   deleteIst(projectId, istId) {
-    return axios.delete(`devops/v1/project/${projectId}/app_instances/${istId}/delete`);
+    return axios.delete(`devops/v1/projects/${projectId}/app_instances/${istId}/delete`);
   }
 }
 

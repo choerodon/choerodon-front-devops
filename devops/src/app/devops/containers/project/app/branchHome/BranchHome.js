@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Tooltip, Spin, Modal, Table, Popover, Progress } from 'choerodon-ui';
-import PageHeader from 'PageHeader';
-import Permission from 'PerComponent';
+import { Button, Tooltip, Modal, Table, Popover, Progress } from 'choerodon-ui';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import '../../../main.scss';
 import './BranchHome.scss';
@@ -13,13 +12,13 @@ import Loadingbar from '../../../../components/loadingBar';
 import { devConflictMessage, masterConflictMessage, bothConflictMessage } from './CommonConst';
 
 // import BranchStore from '../../../../stores/project/app/branchManage';
+const { AppState } = stores;
 
-@inject('AppState')
 @observer
 class BranchHome extends Component {
   constructor(props) {
     super(props);
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     this.state = {
       projectId: menu.id,
       appId: props.match.params.id,
@@ -68,7 +67,7 @@ class BranchHome extends Component {
    */
   get tableBranch() {
     const { BranchStore } = this.props;
-    const menu = this.props.AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const { type, organizationId: orgId } = menu;
     const branchColumns = [
       {
@@ -108,21 +107,21 @@ class BranchHome extends Component {
         render: (text, record) => <TimePopover content={record.commit.committedDate} />,
       },
       {
-        width: '40px',
+        width: 64,
         className: 'operateIcons',
         key: 'action',
         render: (test, record) => (
           <div>
             {record.type !== '开发分支' && record.type !== '主分支' ?
               <Permission projectId={this.state.projectId} organizationId={orgId} type={type} service={record.type === 'feature分支' ? ['devops-service.git-flow.finishFeatureEvent'] : ['devops-service.git-flow.finishEvent']}>
-                <Popover
+                <Tooltip
                   placement="bottom"
-                  content={'结束分支'}
+                  title={'结束分支'}
                 >
                   <Button shape="circle" onClick={this.confirm.bind(this, record.name, record.type)}>
-                    <span className="icon-power_settings_new" />
+                    <span className="icon icon-power_settings_new" />
                   </Button>
-                </Popover>
+                </Tooltip>
               </Permission>
 
               : null
@@ -200,7 +199,7 @@ class BranchHome extends Component {
               </div>
             </section>}
           >
-            <span className="icon-help branch-icon-help" />
+            <span className="icon icon-help branch-icon-help" />
           </Popover>
         </div>)}
         pagination={false}
@@ -210,6 +209,24 @@ class BranchHome extends Component {
       />
     );
   }
+  /**
+   * 获取屏幕的高度
+   * @returns {number}
+   */
+  getHeight = () => {
+    const screenHeight = window.screen.height;
+    let height = 310;
+    if (screenHeight <= 800) {
+      height = 310;
+    } else if (screenHeight > 800 && screenHeight <= 900) {
+      height = 450;
+    } else if (screenHeight > 900 && screenHeight <= 1050) {
+      height = 600;
+    } else {
+      height = 630;
+    }
+    return height;
+  };
 
   /**
    * 获取标记列表
@@ -221,12 +238,11 @@ class BranchHome extends Component {
       {
         title: Choerodon.languageChange('branch.tag'),
         dataIndex: 'name',
-        sorter: true,
       },
       {
         title: Choerodon.languageChange('branch.code'),
         dataIndex: 'commit.id',
-        render: (text, record) => (<a href={record.commit.url}>{record.commit.id.slice(0, 8)}</a>),
+        render: (text, record) => (<a href={record.commit.url} rel="nofollow me noopener noreferrer" target="_blank">{record.commit.id.slice(0, 8)}</a>),
       },
       {
         title: Choerodon.languageChange('branch.des'),
@@ -245,7 +261,7 @@ class BranchHome extends Component {
     ];
     return (
       <Table
-        onChnage={this.tableChange}
+        onChange={this.tableChange}
         pagination={BranchStore.pageInfo}
         filterBar={false}
         title={() => <span className="c7n-header-table">标记列表</span>}
@@ -266,7 +282,7 @@ class BranchHome extends Component {
     const { projectId, appId } = this.state;
     let content = `是否将分支${name}合并到develop分支？`;
     if (type === 'hotfix分支') {
-      BranchStore.getLatestHotfixVersion(projectId, appId)
+      BranchStore.getLatestHotfixVersion(projectId, appId, name)
         .then((version) => {
           if (version !== false) {
             content = `是否将分支${name}合并到master，develop分支，并以${version}为版本号？`;
@@ -274,8 +290,13 @@ class BranchHome extends Component {
           }
         });
     } else if (type === 'release分支') {
-      content = `是否将分支${name}合并到master、develop分支？`;
-      this.setState({ content });
+      BranchStore.getLatestReleaseVersion(projectId, appId, name)
+        .then((version) => {
+          if (version !== false) {
+            content = `是否将分支${name}合并到master，develop分支，并以${version}为版本号？`;
+            this.setState({ content });
+          }
+        });
     } else {
       this.setState({ content });
     }
@@ -291,7 +312,7 @@ class BranchHome extends Component {
     const { projectId, appId } = this.state;
     this.setState({ page: pagination.current });
     BranchStore
-      .loadTagData(projectId, pagination.current - 1, appId, pagination.pageSize);
+      .loadTagData(projectId, appId, pagination.current - 1, pagination.pageSize);
   };
   /**
    * 获取分支和标记列表
@@ -299,7 +320,7 @@ class BranchHome extends Component {
   loadData = () => {
     const { appId, projectId, page } = this.state;
     const { BranchStore } = this.props;
-    BranchStore.loadAllData(projectId, appId, page);
+    BranchStore.loadAllData(projectId, appId, 0);
   };
 
   /**
@@ -369,8 +390,8 @@ class BranchHome extends Component {
   finishBranch =(name, type) => {
     const { BranchStore } = this.props;
     const { appId, projectId } = this.state;
+    this.setState({ submitting: true });
     if (type === 'feature分支') {
-      this.setState({ submitting: true });
       BranchStore.finishFeature(projectId, appId, name)
         .then((d) => {
           if (d !== false) {
@@ -409,7 +430,7 @@ class BranchHome extends Component {
    * 关闭弹框
    */
   handleCancel =() => {
-    this.setState({ visible: false, name: null, type: null, content: null });
+    this.setState({ visible: false, name: null, type: null, content: null, statusMessage: null });
   };
 
   /**
@@ -433,67 +454,58 @@ class BranchHome extends Component {
 
   render() {
     const { BranchStore } = this.props;
-    const menu = this.props.AppState.currentMenuType;
-    const content = (<div className="page-content">
+    const menu = AppState.currentMenuType;
+    const content = (<Content className="page-content">
       <h2 className="c7n-space-first">应用&quot;{this.state.appName}&quot;的分支管理</h2>
       <p>
         分支是将您的工作从开发主线上分离开来，以免影响开发主线。
         平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。
-        <a href="http://choerodon.io/zh/docs/user-guide/assembly-line/branch-management/" rel="nofollow me noopener noreferrer" className="c7n-external-link">
+        <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/branch-management/" rel="nofollow me noopener noreferrer" className="c7n-external-link">
           <span className="c7n-external-link-content">
             了解详情
           </span>
-          <span className="icon-open_in_new" />
+          <span className="icon icon-open_in_new" />
         </a>
       </p>
       {this.tableBranch}
       {this.tableTag}
-    </div>);
-    const { type, id: projectId, organizationId: orgId } = this.props.AppState.currentMenuType;
+    </Content>);
     return (
-      <div className="c7n-region c7n-branch page-container">
+      <Page className="c7n-region c7n-branch page-container">
         { BranchStore.loading ? <Loadingbar display /> : (<React.Fragment>
-          <PageHeader title={Choerodon.languageChange('branch.title')} backPath={`/devops/app?type=project&id=${this.props.AppState.currentMenuType.id}&name=${this.props.AppState.currentMenuType.name}`}>
-            <Tooltip
-              title={<div>
-                采用gitflow分支模型，可创建feature、release、hotfix等分支，结束分支时自动触发分支合并和特有的持续集成流水线。
-              </div>}
-              placement="rightTop"
+          <Header title={Choerodon.languageChange('branch.title')} backPath={`/devops/app?type=project&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`}>
+            <Permission
+              service={['devops-service.git-flow.start']}
             >
-              <Permission
-                service={['devops-service.git-flow.start']}
-                type={type}
-                projectId={projectId}
-                organizationId={orgId}
+              <Tooltip
+                title={<div>
+                  采用gitflow分支模型，可创建feature、release、hotfix等分支，结束分支时自动触发分支合并和特有的持续集成流水线。
+                </div>}
+                placement="rightTop"
               >
                 <Button
-                  funcType="flat"
-                  className="leftBtn"
                   ghost
                   onClick={this.showSidebar}
                 >
-                  <span className="icon-playlist_add" />
-                  <span className="icon-space">{Choerodon.languageChange('branch.create')}</span>
+                  <span className="icon icon-playlist_add" />
+                  <span>{Choerodon.languageChange('branch.create')}</span>
                 </Button>
-              </Permission>
-            </Tooltip>
+              </Tooltip>
+            </Permission>
+
             <Permission
               service={['devops-service.git-flow.listByAppId']}
-              type={type}
-              projectId={projectId}
-              organizationId={orgId}
             >
               <Button
                 funcType="flat"
-                className="leftBtn2"
                 ghost="true"
                 onClick={this.handleRefresh}
               >
-                <span className="icon-refresh" />
-                <span className="icon-space">{Choerodon.languageChange('refresh')}</span>
+                <span className="icon icon-refresh" />
+                <span>{Choerodon.languageChange('refresh')}</span>
               </Button>
             </Permission>
-          </PageHeader>
+          </Header>
           {content}
         </React.Fragment>) }
         <Modal
@@ -502,7 +514,7 @@ class BranchHome extends Component {
           })}
           maskClosable={false}
           closable={false}
-          title={this.state.content && <span style={{ frontSize: 20 }}>结束分支</span>}
+          title={this.state.content && <span style={{ color: 'rgba(0, 0, 0, 0.85)', fontWeight: 500 }}>结束分支</span>}
           confirmLoading={this.state.submitting}
           visible={this.state.visible}
           onOk={this.checkBranchStatus}
@@ -531,7 +543,7 @@ class BranchHome extends Component {
           visible={BranchStore.createBranchShow}
           onClose={this.hideSidebar}
         /> }
-      </div>
+      </Page>
     );
   }
 }

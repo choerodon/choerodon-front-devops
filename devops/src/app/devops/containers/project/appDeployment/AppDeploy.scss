@@ -25,9 +25,14 @@
   text-align: center;
   padding: 1px;
   border-radius: 50%;
-  margin-right: 9px;
-  margin-left: 8px;
+  margin: 0 8px;
   display: inline-block;
+}
+
+.c7n-icon-publish {
+  font-size: 16px;
+  vertical-align: sub;
+  margin-right: 8px;
 }
 
 .c7n-deploy-circle-only {
@@ -45,35 +50,36 @@
 }
 
 .c7n-deploy-text_gray {
-  color: rgba(0, 0, 0, 0.26);
+  color: rgba(0, 0, 0, 0.36);
 }
 
 .c7n-deploy-muti_card {
   text-align: left;
   display: flex;
   align-items: center;
-  width: 230px;
+  width: 200px;
   height: 28px;
   background: #fff;
   box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
   border-radius: 2px;
-  padding-right: 8px;
+  padding: 0 8px;
 
   .c7n-deploy-istname {
     width: 160px;
   }
 
   .c7n-multi-ist {
-    display: none;
-  }
+    background-color: rgba(0, 0, 0, 0.08);
+    display: inline-block;
+    font-size: 13px;
+    line-height: 16px;
+    width: 16px;
+    height: 16px;
+    align-items: center;
+    margin-right: 8px;
 
-  &:hover {
-    .c7n-multi-ist {
-      display: inline-block;
-      width: 22px;
-      height: 22px;
-      align-items: center;
-      margin-left: auto;
+    div {
+      transform: scale(0.8);
     }
   }
 }
@@ -130,6 +136,12 @@
 
 .c7n-app-select_180 {
   width: 180px;
+  margin-bottom: 32px;
+  margin-right: 20px;
+}
+
+.c7n-app-select_220 {
+  width: 220px;
   margin-bottom: 32px;
   margin-right: 20px;
 }
@@ -287,17 +299,9 @@
   margin-bottom: 16px;
 
   button {
-    border-radius: 0;
     font-size: 13px;
     color: #3f51b5;
-
-    &:hover {
-      background: rgba(140, 158, 255, 0.2);
-    }
-
-    &:focus {
-      background: rgba(140, 158, 255, 0.2);
-    }
+    margin: 0 1px;
   }
 }
 
@@ -639,6 +643,24 @@
   background: rgba(0, 0, 0, 0.36);
 }
 
+.c7n-ist-status_off {
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  display: inline-block;
+  background-color: #d50000;
+  margin-right: 5px;
+}
+
+.c7n-ist-status_on {
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  display: inline-block;
+  background-color: #00bf96;
+  margin-right: 5px;
+}
+
 .c7n-ist-status_failed,
 .c7n-ist-status_install_failed,
 .c7n-ist-status_upgrade_failed,
@@ -652,11 +674,19 @@
 }
 
 .c7n-deploy-istCode {
-  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .c7n-deploy-ist-operate {
   font-size: 15px;
   color: #f44336;
-  vertical-align: middle;
+  vertical-align: text-top;
+}
+
+.c7n-store-pagination {
+  float: right;
+}
+
+.c7n-ace-section {
+  margin-top: 20px;
 }

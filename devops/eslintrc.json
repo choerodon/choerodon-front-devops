@@ -5,7 +5,6 @@
     "browser": true,
     "node": true,
     "es6": true
-    // "worker": true
   },
   "parserOptions": {
     "ecmaVersion": 6,
@@ -33,6 +32,7 @@
       }
     ],
     "no-control-regex": "off",
+    "no-param-reassign": "off",
     "import/no-duplicates": "off",
     "import/no-named-as-default": "off",
     "import/no-named-as-default-member": "off",

@@ -12,6 +12,14 @@
   background-color: rgba(0, 0, 0, 0.04);
 }
 
+.c7n-store-select {
+  width: 260px;
+
+  .ant-select-underline {
+    display: none;
+  }
+}
+
 .c7n-store-img-wrap {
   width: 120px;
   border: white 24px solid;
@@ -23,6 +31,7 @@
   .c7n-store-img {
     height: 72px;
     width: 72px;
+    border-radius: 72px;
     background-image: url(../../../../../devops/assets/images/app.png);
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -68,3 +77,57 @@
 .c7n-store-deploy {
   margin-left: 40px;
 }
+
+.c7n-store-detail-left {
+  width: 12%;
+  min-width: 152px;
+}
+
+.c7n-store-detail-right {
+  width: 100%;
+
+  .c7n-store-detail-overview {
+    margin-bottom: 40px;
+
+    div {
+      white-space: pre-wrap;
+      text-align: justify;
+      max-width: 830px;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 22px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin-bottom: 16px;
+    }
+  }
+}
+
+.c7n-store-detail {
+  padding: 32px 24px;
+  display: flex;
+
+  .c7n-store-key {
+    font-size: 13px;
+    color: #000;
+    line-height: 20px;
+    font-weight: bolder;
+  }
+
+  .c7n-store-type {
+    font-size: 13px;
+    color: #3f51b5;
+    line-height: 20px;
+    margin-bottom: 32px;
+    font-weight: 300;
+  }
+
+  .c7n-store-time {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.65);
+    line-height: 20px;
+  }
+}
+
