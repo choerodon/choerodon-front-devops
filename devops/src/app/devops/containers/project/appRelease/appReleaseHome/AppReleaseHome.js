@@ -18,7 +18,7 @@ class AppReleaseHome extends Component {
       openRemove: false,
       show: false,
       projectId: menu.id,
-      key: props.match.params.key ? '2' : '1',
+      key: props.match.params.key === '2' ? '2' : '1',
     };
   }
   componentDidMount() {

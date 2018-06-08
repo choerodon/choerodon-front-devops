@@ -40,6 +40,8 @@ class DeploymentAppHome extends Component {
       DeploymentAppStore.loadVersion(this.state.appId);
     }
     DeploymentAppStore.loadEnv();
+    const card = document.getElementsByClassName('deployApp-card')[0];
+    card.style.minHeight = `${window.innerHeight - 277}px`;
   }
 
   /**

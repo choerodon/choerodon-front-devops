@@ -212,8 +212,8 @@ class EditReleaseStore {
         const res = this.handleProptError(datas);
         return res;
       });
-  uploadFile = (orgId, backName = 'devops-service', fileName, img) =>
-    axios.post(`/file/v1/organization/${orgId}/file/backetName/${backName}?fileName=${fileName}`, img, {
+  uploadFile = (backName = 'devops-service', fileName, img) =>
+    axios.post(`/file/v1/files?bucket_name=${backName}&file_name=${fileName}`, img, {
       header: { 'Content-Type': 'multipart/form-data' },
     })
       .then((datas) => {

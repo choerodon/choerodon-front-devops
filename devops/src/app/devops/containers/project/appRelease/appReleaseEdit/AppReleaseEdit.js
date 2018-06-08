@@ -101,12 +101,11 @@ class AppReleaseEdit extends Component {
    * @param e
    */
   selectFile =(e) => {
-    const menu = AppState.currentMenuType;
     const { EditReleaseStore } = this.props;
     const formdata = new FormData();
     const img = e.target.files[0];
     formdata.append('file', e.target.files[0]);
-    EditReleaseStore.uploadFile(menu.organizationId, 'devops-service', img.name.split('.')[0], formdata)
+    EditReleaseStore.uploadFile('devops-service', img.name.split('.')[0], formdata)
       .then((data) => {
         if (data) {
           this.setState({ img: data });
