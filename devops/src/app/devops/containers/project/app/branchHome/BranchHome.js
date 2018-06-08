@@ -390,8 +390,8 @@ class BranchHome extends Component {
   finishBranch =(name, type) => {
     const { BranchStore } = this.props;
     const { appId, projectId } = this.state;
+    this.setState({ submitting: true });
     if (type === 'feature分支') {
-      this.setState({ submitting: true });
       BranchStore.finishFeature(projectId, appId, name)
         .then((d) => {
           if (d !== false) {
