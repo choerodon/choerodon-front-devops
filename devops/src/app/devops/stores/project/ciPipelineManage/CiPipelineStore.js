@@ -55,6 +55,7 @@ class BranchStore {
       })
       .catch((error) => {
         this.setLoading(false);
+        Choerodon.prompt(error.message);
       });
   }
 
@@ -70,6 +71,7 @@ class BranchStore {
       })
       .catch((error) => {
         this.setLoading(false);
+        Choerodon.prompt(error.message);
       });
   }
 
