@@ -142,9 +142,9 @@ class NetworkHome extends Component {
             statusDom = null;
         }
         return (<React.Fragment>
-          {statusDom}
           <MouserOverWrapper text={record.name || ''} width={100} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
             {record.name}</MouserOverWrapper>
+          {statusDom}
         </React.Fragment>);
       },
     }, {
