@@ -227,6 +227,7 @@ class DeploymentAppHome extends Component {
   handleRenderApp = () => {
     const { DeploymentAppStore } = this.props;
     const versions = DeploymentAppStore.versions;
+    const proId = parseInt(AppState.currentMenuType.id, 10);
     return (
       <div className="deployApp-app">
         <p>
@@ -239,7 +240,7 @@ class DeploymentAppHome extends Component {
           </div>
           <div className="deploy-text">
             {this.state.app && <div className="section-text-margin">
-              {this.state.app.publishLevel ? <span className={`icon ${this.state.app.projectId ? 'icon-project' : 'icon-apps'} section-text-icon`} /> : <span className="icon icon-project section-text-icon" />}
+              <span className={`icon ${this.state.app.projectId === proId ? 'icon-project' : 'icon-apps'} section-text-icon`} />
               <span className="section-text">{this.state.app.name}({this.state.app.code})</span>
             </div>}
             <Permission service={['devops-service.application.pageByOptions', 'devops-service.application-market.listAllApp']}>
