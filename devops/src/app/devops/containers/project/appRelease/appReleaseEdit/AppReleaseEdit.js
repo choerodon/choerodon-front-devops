@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio, Popover } from 'choerodon-ui';
+import { Button, Form, Input } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import '../../../main.scss';
 import './AppReleaseEdit.scss';
@@ -221,7 +221,7 @@ class AppReleaseEdit extends Component {
           })(
             <TextArea
               maxLength={50}
-              label={Choerodon.languageChange('template.description')}
+              label={'描述'}
               autosize={{ minRows: 2, maxRows: 6 }}
             />,
           )}

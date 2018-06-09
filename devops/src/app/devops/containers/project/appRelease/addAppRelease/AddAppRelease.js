@@ -229,15 +229,23 @@ class AddAppRelease extends Component {
       }
     }
     let searchParam = {};
+    let page = pagination.current - 1;
     if (Object.keys(filters).length) {
       searchParam = filters;
+      page = 0;
     }
     const postData = {
       searchParam,
       param: paras.toString(),
     };
     EditReleaseStore
-      .loadApps({ projectId: organizationId, sorter: sort, postData });
+      .loadApps({
+        projectId: organizationId,
+        sorter: sort,
+        postData,
+        page,
+        size: pagination.pageSize,
+      });
   };
   /**
    * 渲染第一步

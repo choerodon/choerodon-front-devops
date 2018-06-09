@@ -3,12 +3,12 @@ let env;
 switch (process.env.NODE_ENV) {
     case ('development'):
         env = {
-            'process.env.DEVOPS_HOST': JSON.stringify('devops-service.staging.saas.hand-china.com')
+            'process.env.DEVOPS_HOST': JSON.stringify(process.env.DEVOPS_HOST || 'devops-service.staging.saas.hand-china.com')
         };
         break;
     case ('production'):
         env = {
-            'process.env.DEVOPS_HOST': JSON.stringify('devops-service.staging.saas.hand-china.com')
+            'process.env.DEVOPS_HOST': JSON.stringify(process.env.DEVOPS_HOST || 'devops-service.staging.saas.hand-china.com')
         };
         break;
     default:

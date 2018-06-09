@@ -89,7 +89,7 @@ class AppDetail extends Component {
     const projectId = AppState.currentMenuType.id;
     AppStoreStore.loadAppStore(projectId, id).then((app) => {
       if (app) {
-        const ver = app.appVersions ? _.reverse(_.slice(app.appVersions)) : [];
+        const ver = app.appVersions ? _.slice(app.appVersions) : [];
         this.loadReadmes(verId || ver[0].id);
       }
     });
@@ -114,7 +114,7 @@ class AppDetail extends Component {
     const type = AppState.currentMenuType.type;
     const app = AppStoreStore.getApp;
     const readme = AppStoreStore.getReadme || '# 暂无';
-    const appVers = app.appVersions ? _.reverse(_.slice(app.appVersions)) : [];
+    const appVers = app.appVersions ? _.slice(app.appVersions) : [];
     const appVersion = _.map(appVers, d => <Option key={d.id}>{d.version}</Option>);
     const imgDom = app.imgUrl ? <div className="c7n-store-img" style={{ backgroundImage: `url(${app.imgUrl}` }} /> : <div className="c7n-store-img" />;
 

@@ -216,36 +216,37 @@ class CreateDomain extends Component {
     const domain = this.props.form.getFieldValue('domain');
     const index = parseInt(rule.field.split('-')[1], 10);
     const p = /^\//;
-    let check = true;
-    if (pathArr.length) {
-      for (let i = 0; i < pathArr.length; i += 1) {
-        const paths = this.props.form.getFieldValue(`path-${pathArr[i].pathIndex}`);
-        if (paths === value && i !== index) {
-          callback('路径在该域名路径下已存在，请更改域名路径或者路径');
-          check = false;
-          return;
-        }
-      }
-    }
-    if (check && domain && p.test(value) && !dto.length) {
-      const { store } = this.props;
-      store.checkPath(this.state.projectId, domain, value)
-        .then((data) => {
-          if (data) {
-            callback();
-          } else {
-            callback('路径在该域名路径下已存在，请更改域名路径或者路径');
+    if (domain) {
+      if (p.test(value)) {
+        let isRepeat = false;
+        for (let i = 0; i < pathArr.length; i += 1) {
+          const paths = this.props.form.getFieldValue(`path-${pathArr[i].pathIndex}`);
+          if (paths === value && i !== index) {
+            isRepeat = true;
+            return;
           }
-        })
-        .catch((error) => {
+        }
+        if (isRepeat) {
           callback();
-        });
-    } else if (!domain) {
-      callback('请先填域名路径');
-    } else if (!p.test(value)) {
-      callback('路径必须以/开头');
+        } else {
+          const { store } = this.props;
+          store.checkPath(this.state.projectId, domain, value)
+            .then((data) => {
+              if (data) {
+                callback('路径在该域名路径下已存在，请更改域名路径或者路径');
+              } else {
+                callback();
+              }
+            })
+            .catch((error) => {
+              callback();
+            });
+        }
+      } else {
+        callback('路径必须以/开头');
+      }
     } else {
-      callback();
+      callback('请先填域名路径');
     }
   }, 1000);
   /**
@@ -381,7 +382,7 @@ class CreateDomain extends Component {
               rules: [{
                 required: true,
               }, {
-                validator: this.checkPath,
+                // validator: this.checkPath,
               },
               ],
               initialValue: SingleData && dto.length > index
@@ -401,7 +402,7 @@ class CreateDomain extends Component {
             {getFieldDecorator(`network-${data.networkIndex}`, {
               rules: [{
                 required: true,
-                transform: (value) => { return value && value.toString() },
+                // transform: (value) => { return value && value.toString() },
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               }],
               initialValue: SingleData && dto.length > index
@@ -417,7 +418,7 @@ class CreateDomain extends Component {
                 optionLabelProp="children"
                 filterOption={
                   (input, option) =>
-                    option.props.children[1]
+                    option.props.children[4]
                       .toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >

@@ -133,7 +133,7 @@ class DomainHome extends Component {
           </Tooltip> : <Tooltip title="未连接">
             <span className="env-status-error" />
           </Tooltip> }
-          {record.name}
+          {record.envName}
         </React.Fragment>
       ),
     }, {
@@ -158,7 +158,7 @@ class DomainHome extends Component {
       render: record => (
         <div>
           {_.map(record.pathList, instance =>
-            (<span key={instance.serviceName}>{instance.serviceName}</span>
+            (<div className="c7n-network-col_border" key={instance.serviceName}>{instance.serviceName}</div>
             ))}
         </div>
       ),
