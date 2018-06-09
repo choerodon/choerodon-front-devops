@@ -93,15 +93,24 @@ class VersionTable extends Component {
       }
     }
     let searchParam = {};
+    let page = pagination.current - 1;
     if (Object.keys(filters).length) {
       searchParam = filters;
+      page = 0;
     }
     const postData = {
       searchParam,
       param: paras.toString(),
     };
     store
-      .loadAllVersion({ projectId: organizationId, sorter: sort, postData, appId: app.id });
+      .loadAllVersion({
+        projectId: organizationId,
+        sorter: sort,
+        postData,
+        appId: app.id,
+        page,
+        size: pagination.pageSize,
+      });
   };
   handleSelectData =() => {
     const selectData = _.map(this.props.store.selectData, 'id') || [];

@@ -8,7 +8,6 @@ import '../../../main.scss';
 import '../createNetwork/NetworkCreate.scss';
 
 const { Sidebar } = Modal;
-const Option = Select.Option;
 const FormItem = Form.Item;
 const formItemLayout = {
   labelCol: {
@@ -21,6 +20,7 @@ const formItemLayout = {
   },
 };
 const { AppState } = stores;
+const { Option, OptGroup } = Select;
 
 @observer
 class Editnetwok extends Component {
@@ -41,32 +41,6 @@ class Editnetwok extends Component {
     this.loadData(this.props.id);
     // store.loadEnv(proId);
   }
-  /**
-   * 根据输入框的值判断实例的状态
-   */
-  getInstanceStatus =(index, versionId) => {
-    const { store } = this.props;
-    const instance = store.instance;
-    const value = this.props.form.getFieldValue(`instance-${index}`);
-    const options = _.filter(instance, v => v.id === versionId)[0].options;
-    const status = [];
-    if (value) {
-      value.map((v) => {
-        options.map((opt) => {
-          if (v === opt.id && opt.intanceStatus && opt.intanceStatus !== 'running') {
-            status.push(true);
-          }
-          return status;
-        });
-        return status;
-      });
-    }
-    if (status.includes(true)) {
-      return true;
-    } else {
-      return false;
-    }
-  };
   loadData =(id) => {
     const { store } = this.props;
     const { projectId } = this.state;
@@ -212,6 +186,7 @@ class Editnetwok extends Component {
     if (selectVersionArr.includes(id)) {
       Choerodon.prompt('该版本已经选过，请更换应用版本');
     } else if (this.state.versionsArr.length === 1) {
+      store.setInstance([]);
       if (selectVersionArr.length === 1) {
         selectVersionArr.pop();
         selectVersionArr.push(id);
@@ -432,16 +407,26 @@ class Editnetwok extends Component {
                 option.props.children.props.children.props.children
                   .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              {store.loading ? (<Option key={Math.random()}>
-                <Progress type="loading" />
-              </Option>)
-                : app.map(v => (
-                  <Option value={v.id} key={v.id}>
+              <OptGroup label="本项目">
+                {app && _.filter(app, a => a.projectId === (parseInt(menu.id, 10))).map(v => (
+                  <Option value={v.id} key={v.code}>
                     <Tooltip title={v.code} placement="right" trigger="hover">
+                      <span className="icon icon-project" />
                       <span style={{ display: 'inline-block', width: '100%' }}>{v.name}</span>
                     </Tooltip>
-                  </Option>))
-              }
+                  </Option>
+                ))}
+              </OptGroup>
+              <OptGroup label="应用市场">
+                {app && _.filter(app, a => a.projectId !== (parseInt(menu.id, 10))).map(v => (
+                  <Option value={v.id} key={v.code}>
+                    <Tooltip title={v.code} placement="right" trigger="hover">
+                      <span className="icon icon-apps" />
+                      <span style={{ display: 'inline-block', width: '100%' }}>{v.name}</span>
+                    </Tooltip>
+                  </Option>
+                ))}
+              </OptGroup>
             </Select>,
           )}
         </FormItem>
@@ -530,10 +515,7 @@ class Editnetwok extends Component {
                 {haveOption ? _.filter(instance, ver => ver.id === selectVersionArr[index])[0]
                   .options.map(instancess => (
                     <Option
-                      // disabled={instancess.intanceStatus &&
-                      // instancess.intanceStatus !== 'running'}
                       value={instancess.id}
-                      // eslint-disable-next-line
                       key={`${index}-${instancess.intanceStatus}`}
                     >
                       {instancess.intanceStatus && instancess.intanceStatus !== 'running' ? <Tooltip title="实例不正常，建议更换实例">

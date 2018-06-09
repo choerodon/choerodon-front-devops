@@ -110,8 +110,10 @@ class EditVersion extends Component {
       }
     }
     let searchParam = {};
+    let page = pagination.current - 1;
     if (Object.keys(filters).length) {
       searchParam = filters;
+      page = 0;
     }
     const postData = {
       searchParam,
@@ -119,6 +121,8 @@ class EditVersion extends Component {
     };
     EditVersionStore
       .loadData({
+        page,
+        size: pagination.pageSize,
         projectId: organizationId,
         sorter: sort,
         postData,

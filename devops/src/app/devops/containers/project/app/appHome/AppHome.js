@@ -360,7 +360,7 @@ class AppHome extends Component {
           })(
             <Input
               autoFocus
-              maxLength={20}
+              maxLength={30}
               label={Choerodon.languageChange('app.code')}
               size="default"
             />,
@@ -380,7 +380,7 @@ class AppHome extends Component {
             initialValue: singleData ? singleData.name : '',
           })(
             <Input
-              maxLength={20}
+              maxLength={10}
               label={Choerodon.languageChange('app.name')}
               size="default"
             />,

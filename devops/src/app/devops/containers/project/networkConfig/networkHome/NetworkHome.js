@@ -184,7 +184,7 @@ class NetworkHome extends Component {
       sorter: true,
       render: record => (
         <React.Fragment>
-          <span className="icon icon-store_mall_directory c7n-network-icon" />
+          <span className={`icon ${record.appProjectId === parseInt(menu.id, 10) ? 'icon-project' : 'icon-apps'} c7n-network-icon'`} />
           <MouserOverWrapper text={record.appName || ''} width={60} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
             <span>{record.appName}</span>
           </MouserOverWrapper>

@@ -9,7 +9,6 @@ import './NetworkCreate.scss';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
-const Option = Select.Option;
 const FormItem = Form.Item;
 const formItemLayout = {
   labelCol: {
@@ -21,6 +20,7 @@ const formItemLayout = {
     sm: { span: 26 },
   },
 };
+const { Option, OptGroup } = Select;
 
 @observer
 class NetworkCreate extends Component {
@@ -374,13 +374,26 @@ class NetworkCreate extends Component {
                 option.props.children.props.children.props.children
                   .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              {app.map(v => (
-                <Option value={v.id} key={v.code}>
-                  <Tooltip title={v.code} placement="right" trigger="hover">
-                    <span style={{ display: 'inline-block', width: '100%' }}>{v.name}</span>
-                  </Tooltip>
-                </Option>
-              ))}
+              <OptGroup label="本项目">
+                {app && _.filter(app, a => a.projectId === (parseInt(menu.id, 10))).map(v => (
+                  <Option value={v.id} key={v.code}>
+                    <Tooltip title={v.code} placement="right" trigger="hover">
+                      <span className="icon icon-project" />
+                      <span style={{ display: 'inline-block', width: '100%' }}>{v.name}</span>
+                    </Tooltip>
+                  </Option>
+                ))}
+              </OptGroup>
+              <OptGroup label="应用市场">
+                {app && _.filter(app, a => a.projectId !== (parseInt(menu.id, 10))).map(v => (
+                  <Option value={v.id} key={v.code}>
+                    <Tooltip title={v.code} placement="right" trigger="hover">
+                      <span className="icon icon-apps" />
+                      <span style={{ display: 'inline-block', width: '100%' }}>{v.name}</span>
+                    </Tooltip>
+                  </Option>
+                ))}
+              </OptGroup>
             </Select>,
           )}
         </FormItem>

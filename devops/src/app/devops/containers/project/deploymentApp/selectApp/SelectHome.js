@@ -196,7 +196,9 @@ class DeployAppHome extends Component {
       }
     }
     let searchParam = {};
+    let page = pagination.current - 1;
     if (Object.keys(filters).length) {
+      page = 0;
       searchParam = filters;
     }
     const postData = {
@@ -208,12 +210,16 @@ class DeployAppHome extends Component {
         projectId: organizationId,
         sorter: sort,
         postData,
+        page,
+        pageSize: pagination.pageSize,
       });
     } else {
       SelectAppStore.loadApp({
         projectId: organizationId,
         sorter: sort,
         postData,
+        page,
+        pageSize: pagination.pageSize,
       });
     }
   };
