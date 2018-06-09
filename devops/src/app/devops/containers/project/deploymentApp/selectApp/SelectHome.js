@@ -222,6 +222,7 @@ class DeployAppHome extends Component {
    * @param key
    */
   changeTab =(key) => {
+    SelectAppStore.setAllData([]);
     if (key === '1') {
       SelectAppStore.loadData({
         projectId: this.state.projectId, page: 0, size: 10 });

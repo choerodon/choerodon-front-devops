@@ -601,7 +601,7 @@ class Editnetwok extends Component {
           })(
             <Input
               maxLength={10}
-              abel="目标端口"
+              label="目标端口"
               suffix={<Popover
                 overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}
                 className="routePop"
