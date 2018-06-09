@@ -25,7 +25,6 @@ jobs:
             - config.yml
             - devops/dist
             - devops/node_modules/choerodon-front-boot/structure
-            - devops/devops-structure
   docker_build:
     machine: true
     steps:
@@ -34,8 +33,8 @@ jobs:
           at: .
       - run: |
           mv devops/dist ./dist
-          cp -r devops/node_modules/choerodon-front-boot/structure structure
-          cp -r devops/devops-structure devops-structure
+          mv devops/node_modules/choerodon-front-boot/structure structure
+          mv devops/devops-structure devops-structure
           sed -i "s/registry.cn-hangzhou.aliyuncs.com\/choerodon-tools/choerodon/g" Dockerfile
           export CI_COMMIT_TAG=$CIRCLE_TAG
           docker login -u ${REGISTRY_USER} -p ${REGISTRY_PASSWORD}
