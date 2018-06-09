@@ -47,9 +47,10 @@ class HighlightAce extends Component {
     }
     if (this.props.modifyMarkers) {
       Object.values(this.props.modifyMarkers).map((marker) => {
-        if (marker.clazz === 'modifyHighlight-text' || marker.clazz === 'modifyHighlight-line' || marker.clazz === 'clearLineHeight-line' || marker.clazz === 'clearLineHeight-text') {
+        if (marker.clazz === 'modifyHighlight-text' || marker.clazz === 'modifyHighlight-line') {
           editor.session.addMarker(marker.range, 'modifyHighlight-line', 'fullLine', false);
           editor.session.addMarker(marker.range, 'modifyHighlight-text', 'text', false);
+        } else if (marker.clazz === 'clearLineHeight-line' || marker.clazz === 'clearLineHeight-text') {
           editor.session.addMarker(marker.range, 'clearLineHeight-line', 'fullLine', false);
           editor.session.addMarker(marker.range, 'clearLineHeight-text', 'text', false);
         }

@@ -175,16 +175,25 @@ class AppReleaseHome extends Component {
         sort.order = 'desc';
       }
     }
+    let page = pagination.current - 1;
     let searchParam = {};
     if (Object.keys(filters).length) {
       searchParam = filters;
+      page = 0;
     }
     const postData = {
       searchParam,
       param: paras.toString(),
     };
     AppReleaseStore
-      .loadData({ projectId: organizationId, sorter: sort, postData, key: this.state.key });
+      .loadData({
+        projectId: organizationId,
+        sorter: sort,
+        postData,
+        key: this.state.key,
+        page,
+        size: pagination.pageSize,
+      });
   };
   handleRefresh =() => {
     const { AppReleaseStore } = this.props;

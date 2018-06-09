@@ -38,7 +38,11 @@ class DeploymentAppHome extends Component {
         .then((data) => {
           this.setState({ app: data });
         });
-      DeploymentAppStore.loadVersion(this.state.appId);
+      const versionId = parseInt(this.state.versionId, 10);
+      DeploymentAppStore.loadVersion(this.state.appId)
+        .then((data) => {
+          this.setState({ versionDto: _.filter(data, v => v.id === versionId)[0] });
+        });
     }
     DeploymentAppStore.loadEnv();
     const card = document.getElementsByClassName('deployApp-card')[0];
@@ -223,6 +227,7 @@ class DeploymentAppHome extends Component {
   handleRenderApp = () => {
     const { DeploymentAppStore } = this.props;
     const versions = DeploymentAppStore.versions;
+    const proId = parseInt(AppState.currentMenuType.id, 10);
     return (
       <div className="deployApp-app">
         <p>
@@ -235,7 +240,7 @@ class DeploymentAppHome extends Component {
           </div>
           <div className="deploy-text">
             {this.state.app && <div className="section-text-margin">
-              {this.state.app.publishLevel ? <span className="icon icon-apps section-text-icon" /> : <span className="icon icon-project section-text-icon" />}
+              <span className={`icon ${this.state.app.projectId === proId ? 'icon-project' : 'icon-apps'} section-text-icon`} />
               <span className="section-text">{this.state.app.name}({this.state.app.code})</span>
             </div>}
             <Permission service={['devops-service.application.pageByOptions', 'devops-service.application-market.listAllApp']}>
@@ -408,7 +413,7 @@ class DeploymentAppHome extends Component {
   };
 
   /**
-   * 渲染第四步
+   * 渲染第四步预览
    * @returns {*}
    */
   handleRenderReview = () => {

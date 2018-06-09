@@ -60,7 +60,7 @@
           - 'devops-service.application-market.pageListMarketAppsByProjectId'
           - 'devops-service.application-market.updateVersions'
     - "appstore":
-        icon: store_mall_directory
+        icon: apps
         Routes: /devops/appstore
         sort: 6
         permission:

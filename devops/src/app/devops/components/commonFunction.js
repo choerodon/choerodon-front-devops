@@ -98,15 +98,17 @@ export const commonComponent =(storeName) => {
         }
       }
       let searchParam = {};
+      let page = pagination.current - 1;
       if (Object.keys(filters).length) {
         searchParam = filters;
+        page = 0;
       }
       const postData = {
         searchParam,
         param: paras.toString(),
       };
       store
-        .loadData(false, organizationId, pagination.current - 1, pagination.pageSize, sort, postData);
+        .loadData(false, organizationId, page, pagination.pageSize, sort, postData);
     };
     /**
      * 获取屏幕的高度

@@ -113,20 +113,20 @@
 
     .span-icon-check {
       position: absolute;
-      font-size: 28px;
-      left: 217px;
-      float: left;
+      left: 220px;
       margin-top: -28px;
       background-color: #3f51b5;
       color: white;
-      width: 28px;
-      height: 28px;
+      width: 25px;
+      height: 25px;
       border-radius: 50%;
-      padding-bottom: 8px;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
       display: flex;
 
       .icon {
-        font-size: 28px !important;
+        font-size: 25px !important;
       }
     }
   }

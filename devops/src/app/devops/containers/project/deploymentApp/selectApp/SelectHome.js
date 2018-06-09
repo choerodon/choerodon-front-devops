@@ -196,7 +196,9 @@ class DeployAppHome extends Component {
       }
     }
     let searchParam = {};
+    let page = pagination.current - 1;
     if (Object.keys(filters).length) {
+      page = 0;
       searchParam = filters;
     }
     const postData = {
@@ -208,12 +210,16 @@ class DeployAppHome extends Component {
         projectId: organizationId,
         sorter: sort,
         postData,
+        page,
+        pageSize: pagination.pageSize,
       });
     } else {
       SelectAppStore.loadApp({
         projectId: organizationId,
         sorter: sort,
         postData,
+        page,
+        pageSize: pagination.pageSize,
       });
     }
   };
@@ -222,6 +228,7 @@ class DeployAppHome extends Component {
    * @param key
    */
   changeTab =(key) => {
+    SelectAppStore.setAllData([]);
     if (key === '1') {
       SelectAppStore.loadData({
         projectId: this.state.projectId, page: 0, size: 10 });
