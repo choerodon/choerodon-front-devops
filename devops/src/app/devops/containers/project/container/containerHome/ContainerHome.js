@@ -56,7 +56,7 @@ class ContainerHome extends Component {
    *
    */
   getColumn = () => {
-    const projectId = AppState.currentMenuType.id;
+    const projectId = parseInt(AppState.currentMenuType.id);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     return [{
@@ -119,7 +119,7 @@ class ContainerHome extends Component {
       filterMultiple: false,
       render: (text, record) => (<div>
         <div className="c7n-container-col-inside">
-          {record.publishLevel ? <Tooltip title="应用市场"><span className="icon icon-apps c7n-icon-publish" /></Tooltip> : <Tooltip title="本项目"><span className="icon icon-project c7n-icon-publish" /></Tooltip>}
+          {record.projectId === projectId ? <Tooltip title="本项目"><span className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title="应用市场"><span className="icon icon-apps c7n-icon-publish" /></Tooltip>}
           <span>{record.appName}</span>
         </div>
         <div>
