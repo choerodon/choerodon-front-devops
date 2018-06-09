@@ -97,8 +97,9 @@ class NetworkHome extends Component {
     const data = NetworkConfigStore.getAllData;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
-      title: '网络状态',
+      title: '状态',
       key: 'status',
+      width: 70,
       render: (record) => {
         let statusDom = null;
         switch (record.status) {
@@ -120,7 +121,7 @@ class NetworkHome extends Component {
         return (statusDom);
       },
     }, {
-      title: '网络名称',
+      title: '名称',
       key: 'name',
       sorter: true,
       filters: [],
@@ -142,7 +143,7 @@ class NetworkHome extends Component {
         }
         return (<React.Fragment>
           {statusDom}
-          <MouserOverWrapper text={record.name || ''} width={80} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+          <MouserOverWrapper text={record.name || ''} width={100} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
             {record.name}</MouserOverWrapper>
         </React.Fragment>);
       },
@@ -156,8 +157,7 @@ class NetworkHome extends Component {
           { record.envStatus ? <Tooltip title="已连接"> <span className="env-status-success" /></Tooltip> : <Tooltip title="未连接">
             <span className="env-status-error" />
           </Tooltip> }
-          <MouserOverWrapper text={record.envName || ''} width={64} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
-            {record.envName}</MouserOverWrapper>
+          {record.envName}
         </React.Fragment>
       ),
     }, {
@@ -165,7 +165,7 @@ class NetworkHome extends Component {
       key: 'ip',
       filters: [],
       render: record => (
-        <MouserOverWrapper text={record.externalIp || ''} width={50}>
+        <MouserOverWrapper text={record.externalIp || ''} width={40}>
           {record.externalIp}</MouserOverWrapper>
       ),
     }, {
@@ -184,8 +184,10 @@ class NetworkHome extends Component {
       sorter: true,
       render: record => (
         <React.Fragment>
-          <span className={`icon ${record.appProjectId === parseInt(menu.id, 10) ? 'icon-project' : 'icon-apps'} c7n-network-icon'`} />
-          <MouserOverWrapper text={record.appName || ''} width={60} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
+          <Tooltip title={`${record.appProjectId === parseInt(menu.id, 10) ? '本项目' : '应用市场'}`}>
+            <span className={`icon ${record.appProjectId === parseInt(menu.id, 10) ? 'icon-project' : 'icon-apps'} c7n-network-icon`} />
+          </Tooltip>
+          <MouserOverWrapper text={record.appName || ''} width={100} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
             <span>{record.appName}</span>
           </MouserOverWrapper>
         </React.Fragment>
@@ -200,7 +202,7 @@ class NetworkHome extends Component {
         <React.Fragment>
           {_.map(record.appVersion, versions =>
             (<div key={versions.id} className={`c7n-network-col_border col-${record.id}-${versions.id}`}>
-              <MouserOverWrapper text={versions.version || ''} width={51} className="c7n-network-column-version" >
+              <MouserOverWrapper text={versions.version || ''} width={100} className="c7n-network-column-version" >
                 <span>{versions.version}</span>
               </MouserOverWrapper>
             </div>))}

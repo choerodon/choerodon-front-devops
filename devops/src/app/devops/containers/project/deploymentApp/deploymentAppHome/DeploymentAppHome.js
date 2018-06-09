@@ -412,7 +412,7 @@ class DeploymentAppHome extends Component {
   };
 
   /**
-   * 渲染第四步
+   * 渲染第四步预览
    * @returns {*}
    */
   handleRenderReview = () => {

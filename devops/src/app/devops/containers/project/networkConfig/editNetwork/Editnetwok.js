@@ -46,6 +46,7 @@ class Editnetwok extends Component {
     const { projectId } = this.state;
     store.loadDataById(projectId, id)
       .then((data) => {
+        store.loadApp(this.state.projectId, data.envId);
         this.initVersionsArr(data.appVersion.slice().length);
         this.setState({ SingleData: data });
         // store.loadApp(projectId, data.envId);
@@ -404,26 +405,54 @@ class Editnetwok extends Component {
               onFocus={this.loadApp}
               onSelect={this.selectApp}
               filterOption={(input, option) =>
-                option.props.children.props.children.props.children
+                option.props.children.props.children[1].props.children
                   .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
               <OptGroup label="本项目">
                 {app && _.filter(app, a => a.projectId === (parseInt(menu.id, 10))).map(v => (
                   <Option value={v.id} key={v.code}>
-                    <Tooltip title={v.code} placement="right" trigger="hover">
+                    <Popover
+                      placement="right"
+                      content={<div>
+                        <p>
+                          <span>名称：</span>
+                          <span>{v.name}</span>
+                        </p>
+                        <p>
+                          <span>编码：</span>
+                          <span>{v.code}</span>
+                        </p>
+                      </div>}
+                    >
                       <span className="icon icon-project" />
-                      <span style={{ display: 'inline-block', width: '100%' }}>{v.name}</span>
-                    </Tooltip>
+                      <span style={{ display: 'inline-block', width: '100%', paddingLeft: 8 }}>{v.name}</span>
+                    </Popover>
                   </Option>
                 ))}
               </OptGroup>
               <OptGroup label="应用市场">
                 {app && _.filter(app, a => a.projectId !== (parseInt(menu.id, 10))).map(v => (
                   <Option value={v.id} key={v.code}>
-                    <Tooltip title={v.code} placement="right" trigger="hover">
+                    <Popover
+                      placement="right"
+                      content={<div>
+                        <p>
+                          <span>名称：</span>
+                          <span>{v.name}</span>
+                        </p>
+                        <p>
+                          <span>贡献者：</span>
+                          <span>{v.contributor}</span>
+                        </p>
+                        <p>
+                          <span>描述：</span>
+                          <span>{v.description}</span>
+                        </p>
+                      </div>}
+                    >
                       <span className="icon icon-apps" />
-                      <span style={{ display: 'inline-block', width: '100%' }}>{v.name}</span>
-                    </Tooltip>
+                      <span style={{ display: 'inline-block', width: '100%', paddingLeft: 8 }}>{v.name}</span>
+                    </Popover>
                   </Option>
                 ))}
               </OptGroup>
