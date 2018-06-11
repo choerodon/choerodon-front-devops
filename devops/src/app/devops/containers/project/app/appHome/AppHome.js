@@ -230,14 +230,13 @@ class AppHome extends Component {
     const { AppStore } = this.props;
     const { projectId, id, type, page, copyFrom } = this.state;
     if (type === 'create') {
-      this.setState({
-        submitting: true,
-      });
       this.props.form.validateFieldsAndScroll((err, data) => {
         if (!err) {
           const postData = data;
           postData.projectId = projectId;
-          // postData.applictionTemplateId = copyFrom;
+          this.setState({
+            submitting: true,
+          });
           AppStore.addData(projectId, postData)
             .then((res) => {
               if (res) {

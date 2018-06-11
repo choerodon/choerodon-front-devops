@@ -1,3 +1,3 @@
-import NetworkCreate from './Editnetwok';
+import NetworkCreate from './EditService';
 
 export default NetworkCreate;
