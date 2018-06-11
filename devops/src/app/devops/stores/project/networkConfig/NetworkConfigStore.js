@@ -192,29 +192,6 @@ class NetworkConfigStore {
       const res = this.handleProptError(data);
       if (res) {
         this.setSingleData(data);
-        this.setEnv([{ id: data.envId, name: data.envName, connect: '' }]);
-        this.setApp([{ id: data.appId, name: data.appName, code: '' }]);
-        this.setVersions(
-          _.map(data.appVersion, env => ({ version: env.version, id: env.id })));
-        this.setVersionDto('add', '', data.appVersion);
-        _.map(data.appVersion,
-          (ins) => {
-            axios.get(`/devops/v1/projects/${projectId}/app_instances/options?envId=${res.envId}&appId=${res.appId}&appVersionId=${ins.id}`)
-              .then((inss) => {
-                const a = this.handleProptError(inss);
-                if (a) {
-                  let instance = inss;
-                  ins.appInstance.map((objj, index) => {
-                    if (objj.intanceStatus !== 'running') {
-                      instance = instance.concat((ins.appInstance[index]));
-                    }
-                    const instances = { id: ins.id, options: instance };
-                    this.setInstance('add', '', instances);
-                    return inss;
-                  });
-                }
-              });
-          });
         return data;
       }
       this.changeLoading(false);
@@ -253,35 +230,38 @@ class NetworkConfigStore {
 
   loadEnv = (projectId) => {
     this.changEnvLoading(true);
-    axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
+    return axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
           this.setEnv(data);
         }
         this.changEnvLoading(false);
+        return res;
       });
   };
   loadApp = (projectId, envId) => {
     this.changeLoading(true);
-    axios.get(`/devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=running`)
+    return axios.get(`/devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=running`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
           this.setApp(data);
         }
         this.changeLoading(false);
+        return res;
       });
   };
   loadVersion = (projectId, envId, appId) => {
     this.changeLoading(true);
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version?envId=${envId}`)
+    return axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version?envId=${envId}`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
           this.setVersions(data);
         }
         this.changeLoading(false);
+        return res;
       });
   };
 
@@ -294,6 +274,7 @@ class NetworkConfigStore {
           this.setInstance('add', '', { id: versionId, options: data });
         }
         this.changeLoading(false);
+        return res;
       });
   };
   handleProptError =(error) => {
