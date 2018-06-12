@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import { Table, Button } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, stores } from 'choerodon-front-boot';
 import { fromJS, is } from 'immutable';
-import { Obversable } from 'rxjs';
-
 import { commonComponent } from '../../../../components/commonFunction';
 import TimePopover from '../../../../components/timePopover';
 import Loadingbar from '../../../../components/loadingBar';
@@ -52,7 +50,7 @@ class ApplicationVersion extends Component {
   getColumn = () => {
     const { type, id: orgId } = AppState.currentMenuType;
     return [{
-      title: Choerodon.languageChange('app.version'),
+      title: Choerodon.languageChange('app.appVersion'),
       dataIndex: 'version',
       key: 'version',
       sorter: true,

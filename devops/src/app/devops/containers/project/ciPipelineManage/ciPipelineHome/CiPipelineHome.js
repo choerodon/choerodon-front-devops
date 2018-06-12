@@ -78,7 +78,7 @@ class CiPipelineHome extends Component {
     return (
       <div>
         <Select
-          style={{ width: '512px', marginBottom: '16px' }}
+          className="c7n-app-select_512"
           value={CiPipelineStore.currentApp.id}
           label="选择应用"
           filterOption={(input, option) =>

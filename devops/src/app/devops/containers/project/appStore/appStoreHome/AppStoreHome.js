@@ -181,7 +181,7 @@ class AppStoreHome extends Component {
       dataIndex: 'name',
       key: 'name',
     }, {
-      title: Choerodon.getMessage('应用分类', 'Category'),
+      title: Choerodon.getMessage('分类', 'Category'),
       dataIndex: 'category',
       key: 'category',
     }, {

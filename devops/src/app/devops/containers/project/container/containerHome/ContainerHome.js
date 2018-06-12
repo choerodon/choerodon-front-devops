@@ -111,6 +111,9 @@ class ContainerHome extends Component {
       sorter: true,
       filters: [],
       filterMultiple: false,
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={300}>
+        {record.name}
+      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('container.app'),
       dataIndex: 'app',
@@ -123,7 +126,9 @@ class ContainerHome extends Component {
           <span>{record.appName}</span>
         </div>
         <div>
-          <span className="c7n-deploy-text_gray">{record.appVersion}</span>
+          <MouserOverWrapper text={record.appVersion} width={200}>
+            <span className="c7n-deploy-text_gray">{record.appVersion}</span>
+          </MouserOverWrapper>
         </div>
       </div>),
     }, {
@@ -134,6 +139,7 @@ class ContainerHome extends Component {
       filters: [],
       filterMultiple: false,
     }, {
+      width: 58,
       title: Choerodon.languageChange('container.usable'),
       dataIndex: 'ready',
       key: 'ready',
@@ -149,6 +155,7 @@ class ContainerHome extends Component {
         {record.ready ? <span className="icon icon-done" /> : <span className="icon icon-close" />}
       </div>),
     }, {
+      width: 93,
       title: Choerodon.languageChange('container.createTime'),
       dataIndex: 'creationDate',
       key: 'creationDate',

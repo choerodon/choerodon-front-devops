@@ -74,20 +74,27 @@ class AppHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={95}>
+        {record.name}
+      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('app.code'),
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
+      render: (test, record) => (<MouserOverWrapper text={record.code} width={145}>
+        {record.code}
+      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('app.url'),
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={480}>
+      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={450}>
         <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl}</a>
       </MouserOverWrapper>),
     }, {
+      width: '75px',
       title: Choerodon.languageChange('app.active'),
       dataIndex: 'active',
       key: 'active',

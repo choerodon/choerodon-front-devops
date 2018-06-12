@@ -69,7 +69,7 @@ class DomainHome extends Component {
     const projectName = menu.name;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
-      title: '域名状态',
+      title: '状态',
       render: (record) => {
         let statusDom = null;
         switch (record.status) {
@@ -117,7 +117,7 @@ class DomainHome extends Component {
         </React.Fragment>);
       },
     }, {
-      title: '域名地址',
+      title: '地址',
       key: 'domain',
       filters: [],
       dataIndex: 'domain',
