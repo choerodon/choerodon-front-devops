@@ -364,7 +364,7 @@ class AddService extends Component {
             >
               <OptGroup label="本项目" key={'project'}>
                 {_.filter(app, a => a.projectId === (parseInt(menu.id, 10))).map(v => (
-                  <Option key={v.id}>
+                  <Option value={v.id} key={v.code}>
                     <Popover
                       placement="right"
                       content={<div>
@@ -386,7 +386,7 @@ class AddService extends Component {
               </OptGroup>
               <OptGroup label="应用市场" key={'markert'}>
                 {_.filter(app, a => a.projectId !== (parseInt(menu.id, 10))).map(v => (
-                  <Option key={v.id}>
+                  <Option value={v.id} key={v.code}>
                     <Popover
                       placement="right"
                       content={<div>

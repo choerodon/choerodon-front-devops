@@ -158,7 +158,7 @@ class DomainHome extends Component {
       render: record => (
         <div>
           {_.map(record.pathList, instance =>
-            (<div className="c7n-network-col_border" key={instance.serviceName}>{instance.serviceName}</div>
+            (<div className="c7n-network-col_border" key={`${instance.path}-${instance.serviceId}`}>{instance.serviceName}</div>
             ))}
         </div>
       ),
@@ -269,7 +269,7 @@ class DomainHome extends Component {
               pagination={DomainStore.pageInfo}
               columns={columns}
               dataSource={data}
-              rowKey={record => record.domainId}
+              rowKey={record => record.id}
             />
 
           </Content>

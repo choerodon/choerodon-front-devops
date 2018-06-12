@@ -124,29 +124,30 @@ class DomainStore {
       const res = this.handleProptError(data);
       if (res) {
         this.setSingleData(data);
-        this.setDto(data.pathList);
-        const serviseDto = _.map(data.pathList, service =>
-          ({
-            id: service.serviceId,
-            name: service.serviceName,
-            serviceStatus: service.serviceStatus,
-          }));
-        axios.get(`/devops/v1/projects/${projectId}/service?envId=${res.envId}`)
-          .then((datass) => {
-            const ress = this.handleProptError(datass);
-            if (ress) {
-              let resss = ress;
-              serviseDto.map((s, index) => {
-                if (s.serviceStatus !== 'running') {
-                  resss = resss.concat(serviseDto[index]);
-                }
-                this.setNetwork(resss);
-                return ress;
-              });
-            }
-          });
-        return data;
       }
+      //   this.setDto(data.pathList);
+      //   const serviseDto = _.map(data.pathList, service =>
+      //     ({
+      //       id: service.serviceId,
+      //       name: service.serviceName,
+      //       serviceStatus: service.serviceStatus,
+      //     }));
+      //   axios.get(`/devops/v1/projects/${projectId}/service?envId=${res.envId}`)
+      //     .then((datass) => {
+      //       const ress = this.handleProptError(datass);
+      //       if (ress) {
+      //         let resss = ress;
+      //         serviseDto.map((s, index) => {
+      //           if (s.serviceStatus !== 'running') {
+      //             resss = resss.concat(serviseDto[index]);
+      //           }
+      //           this.setNetwork(resss);
+      //           return ress;
+      //         });
+      //       }
+      //     });
+      //   return data;
+      // }
       return res;
     });
 
@@ -157,6 +158,7 @@ class DomainStore {
         if (res) {
           this.setEnv(data);
         }
+        return res;
       });
 
 
@@ -201,6 +203,7 @@ class DomainStore {
         if (res) {
           this.setNetwork(data);
         }
+        return res;
       });
 
   handleProptError =(error) => {
