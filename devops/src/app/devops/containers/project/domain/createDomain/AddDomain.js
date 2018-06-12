@@ -245,17 +245,36 @@ class CreateDomain extends Component {
       callback('路径在该域名路径下已存在，请更改域名路径或者路径');
     } else {
       const { store } = this.props;
-      store.checkPath(this.state.projectId, domain, `/${value}`)
-        .then((data) => {
-          if (data) {
+      if (this.props.type === 'create') {
+        store.checkPath(this.state.projectId, domain, `/${value}`)
+          .then((data) => {
+            if (data) {
+              callback();
+            } else {
+              callback('路径在该域名路径下已存在，请更改域名路径或者路径');
+            }
+          })
+          .catch((error) => {
             callback();
-          } else {
-            callback('路径在该域名路径下已存在，请更改域名路径或者路径');
-          }
-        })
-        .catch((error) => {
+          });
+      } else {
+        const v = this.state.SingleData.pathList[index].path.slice(1,this.state.SingleData.pathList[index].path.length);
+        if (v!==value) {
+          store.checkPath(this.state.projectId, domain, `/${value}`)
+            .then((data) => {
+              if (data) {
+                callback();
+              } else {
+                callback('路径在该域名路径下已存在，请更改域名路径或者路径');
+              }
+            })
+            .catch((error) => {
+              callback();
+            });
+        } else {
           callback();
-        });
+        }
+      }
     }
   }, 1000);
   /**
@@ -383,10 +402,12 @@ class CreateDomain extends Component {
           <FormItem
             className="c7n-formItem_180"
             {...formItemLayout}
+            key={data.pathIndex}
           >
             {getFieldDecorator(`path-${data.pathIndex}`, {
               rules: [{
                 required: true,
+                message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               }, {
                 validator: this.checkPath,
               },

@@ -220,7 +220,7 @@ class NetworkHome extends Component {
             (<div key={versions.version} role="none" className={`c7n-network-col_border col-${record.id}-${versions.id}`} onClick={this.showChange.bind(this, record.id, versions.id, versions.appInstance.length)}>
               {versions.appInstance && versions.appInstance.length > 1
               && <span className={_.indexOf(upDown, record.id) !== -1
-                ? 'c7n-network-change icon-keyboard_arrow_up' : 'c7n-network-change icon-keyboard_arrow_down'}
+                ? 'c7n-network-change icon icon-keyboard_arrow_up' : 'c7n-network-change icon icon-keyboard_arrow_down'}
               />
               }
               {_.map(versions.appInstance, datas =>

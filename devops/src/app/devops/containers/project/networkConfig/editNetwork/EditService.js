@@ -288,8 +288,6 @@ class EditService extends Component {
     if (version.length <= 1 && this.state.versionId) {
       tooltipTitle = '该应用下没有可选版本';
     }
-   window.console.log(versionsArr);
-    window.console.log(this.state.initVersionIndex);
     return (
       <div className="c7n-region">
         <Sidebar
