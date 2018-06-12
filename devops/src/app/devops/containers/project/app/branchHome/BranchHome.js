@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Tooltip, Modal, Table, Popover, Progress } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
@@ -11,7 +11,6 @@ import TimePopover from '../../../../components/timePopover';
 import Loadingbar from '../../../../components/loadingBar';
 import { devConflictMessage, masterConflictMessage, bothConflictMessage } from './CommonConst';
 
-// import BranchStore from '../../../../stores/project/app/branchManage';
 const { AppState } = stores;
 
 @observer
@@ -73,7 +72,6 @@ class BranchHome extends Component {
       {
         title: Choerodon.languageChange('branch.name'),
         dataIndex: 'name',
-        // sorter: (a, b) => a.name.localeCompare(b.name, 'zh-Hans-CN', { sensitivity: 'accent' }),
         render: (text, record) => (<div>
           {this.getIcon(record.type)}
           <span>{record.name}</span>
@@ -85,14 +83,12 @@ class BranchHome extends Component {
       },
       {
         title: Choerodon.languageChange('branch.code'),
-        // width: '25%',
         dataIndex: 'commit.id',
         render: (text, record) => (<Tooltip title={record.commit.id} trigger="hover" placement="bottom">
           <a href={record.commit.url} rel="nofollow me noopener noreferrer" target="_blank">{record.commit.id.slice(0, 8)}</a></Tooltip>),
       },
       {
         title: Choerodon.languageChange('branch.des'),
-        // width: '25%',
         dataIndex: 'commit.message',
         render: (text, record) => <Tooltip title={record.commit.message} trigger="hover" placement="bottom"><div className="c7n-table-column">{record.commit.message}</div></Tooltip>,
       },
@@ -123,7 +119,6 @@ class BranchHome extends Component {
                   </Button>
                 </Tooltip>
               </Permission>
-
               : null
             }
           </div>
@@ -138,7 +133,6 @@ class BranchHome extends Component {
         title={() => (<div>
           <span className="c7n-header-table">分支列表</span>
           <Popover
-            // trigger="click"
             overlayClassName="branch-popover"
             placement="rightTop"
             content={<section>

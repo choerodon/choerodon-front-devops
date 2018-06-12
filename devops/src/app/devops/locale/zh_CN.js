@@ -82,10 +82,10 @@ const zhCN = {
   'app.title': '应用管理',
   'app.appDetail': '应用详情',
   'app.id': '标识',
-  'app.name': '应用名称',
+  'app.name': '名称',
   'app.type': '应用类型',
   'app.url': '仓库地址',
-  'app.active': '应用状态',
+  'app.active': '状态',
   'app.delete.tip': '这将会删除gitlab代码库，请确认是否删除？',
   'app.detail': '详情',
 
@@ -107,9 +107,10 @@ const zhCN = {
 
   // 应用版本
   'app.version': '应用版本',
+  'app.appVersion': '版本',
   'app.commit': '提交',
   'app.group': '应用组',
-  'app.code': '应用编码',
+  'app.code': '编码',
   'app.createTime': '创建时间',
 
   // user
@@ -185,19 +186,19 @@ const zhCN = {
   // template
 
   'template.title': '应用模板',
-  'template.name': '模板名称',
-  'template.description': '模板描述',
-  'template.url': '模板地址',
-  'template.code': '模板编码',
-  'template.type': '模板来源',
+  'template.name': '名称',
+  'template.description': '描述',
+  'template.url': '地址',
+  'template.code': '编码',
+  'template.type': '来源',
   'template.copyFrom': '复制于现有应用模板',
 
 
   // branch
   'branch.create': '创建分支',
   'branch.title': '分支管理',
-  'branch.name': '分支名称',
-  'branch.type': '分支类型',
+  'branch.name': '名称',
+  'branch.type': '类型',
   'branch.code': '提交编码',
   'branch.des': '提交描述',
   'branch.owner': '提交者',
