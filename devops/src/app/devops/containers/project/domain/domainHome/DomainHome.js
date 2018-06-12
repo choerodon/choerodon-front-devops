@@ -269,7 +269,7 @@ class DomainHome extends Component {
               pagination={DomainStore.pageInfo}
               columns={columns}
               dataSource={data}
-              rowKey={record => record.domainId}
+              rowKey={record => record.id}
             />
 
           </Content>

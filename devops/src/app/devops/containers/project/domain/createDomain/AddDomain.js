@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Select, Input, Modal } from 'choerodon-ui';
+import { Button, Form, Select, Input, Modal, Tooltip } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
@@ -28,28 +28,45 @@ class CreateDomain extends Component {
     const menu = AppState.currentMenuType;
     super(props);
     this.state = {
-      pathArr: [{ pathIndex: 0, networkIndex: 0 }],
+      pathArr: [{pathIndex: 0, networkIndex: 0}],
       projectId: menu.id,
       show: false,
-    };
+      0: { deletedService: []},
+      env: { loading: false, dataSource: [] },
+      initServiceLen: 0,
+    }
   }
   componentDidMount() {
     const { store, id, visible } = this.props;
     if (id && visible) {
       store.loadDataById(this.state.projectId, id)
         .then((data) => {
-          this.initPathArr();
-          // 存在一个异步
-          // store.loadNetwork(this.state.projectId, data.envId);
           this.setState({ SingleData: data });
+          const len = data.pathList.length;
+          for(let i = 0; i < len; i += 1){
+            const list = data.pathList[i];
+            if (list.serviceStatus !== 'running') {
+              this.setState({ [i]: {deletedService: [{ name: list.serviceName, id: list.serviceId, status: list.serviceStatus }]} })
+            } else {
+              this.setState({ [i]: { deletedService: [] } });
+            }
+          }
+          this.setState({ initServiceLen: len });
+          this.initPathArr(data.pathList.length);
+          store.loadNetwork(this.state.projectId, data.envId);
         });
     }
-    store.loadEnv(this.state.projectId);
+    store.loadEnv(this.state.projectId)
+      .then((data) => {
+        this.setState({ env: { loading: false, dataSource: data } });
+      });
   }
 
-  initPathArr = () => {
-    const { store } = this.props;
-    const length = store.getDto.slice().length;
+  /**
+   * 初始化数组
+   * @param length
+   */
+  initPathArr = (length) => {
     const pathArr = [];
     for (let i = 0; i < length; i += 1) {
       pathArr.push({
@@ -59,8 +76,17 @@ class CreateDomain extends Component {
     }
     this.setState({ pathArr });
   };
-
-
+  /**
+   * 加载环境
+   */
+  loadEnv = () => {
+  const { store } = this.props;
+  this.setState({ env: { loading: true, dataSource: [] } });
+  store.loadEnv(this.state.projectId)
+    .then((data) => {
+      this.setState({ env: { loading: false, dataSource: data } });
+    });
+};
   /**
    * 提交数据
    * @param e
@@ -79,19 +105,11 @@ class CreateDomain extends Component {
           if (k.includes('path')) {
             const index = parseInt(k.split('-')[1], 10);
             const value = data[`network-${index}`];
-            // let ids;
-            // _.map(service, (s) => {
-            //   if (s.name === name) {
-            //     ids = s.id;
-            //   }
-            // });
-            // window.console.log(ids);
-            pathList.push({ path: `${data[k]}`, serviceId: value });
+            pathList.push({ path: `/${data[k]}`, serviceId: value });
           }
           return pathList;
         });
         postData.pathList = pathList;
-        // window.console.log(postData);
         if (type === 'create') {
           this.setState({ submitting: true });
           store.addData(projectId, postData)
@@ -101,9 +119,9 @@ class CreateDomain extends Component {
               }
               this.setState({ submitting: false });
             }).catch(() => {
-              this.setState({ submitting: false });
-              Choerodon.prompt(err.response.data.message);
-            });
+            this.setState({ submitting: false });
+            Choerodon.prompt(err.response.data.message);
+          });
         } else {
           postData.domainId = id;
           this.setState({ submitting: true });
@@ -114,9 +132,9 @@ class CreateDomain extends Component {
               }
               this.setState({ submitting: false });
             }).catch(() => {
-              this.setState({ submitting: false });
-              Choerodon.prompt(err.response.data.message);
-            });
+            this.setState({ submitting: false });
+            Choerodon.prompt(err.response.data.message);
+          });
         }
       }
     });
@@ -126,37 +144,32 @@ class CreateDomain extends Component {
    * 添加路径
    */
   addPath =() => {
-    const { store } = this.props;
-    const data = store.getDto;
     const pathArr = this.state.pathArr;
+    let index = 0;
     if (pathArr.length) {
+      index = pathArr[pathArr.length - 1].pathIndex + 1;
       pathArr.push(
         {
           pathIndex: pathArr[pathArr.length - 1].pathIndex + 1,
           networkIndex: pathArr[pathArr.length - 1].pathIndex + 1,
         });
     } else {
+      index = 0;
       pathArr.push({
         pathIndex: 0,
         networkIndex: 0,
       });
     }
-    this.setState({ pathArr });
+    this.setState({ pathArr, [index]: { deletedService: this.state[index -1].deletedService } });
   };
   /**
    * 删除路径
    * @param index 路径数组的索引
    */
-  removeDomain =(index) => {
-    const { store } = this.props;
-    const data = store.getDto;
-    if (data.length === 1) {
-      store.setDto([]);
-    }
+  removePath =(index) => {
     const pathArr = this.state.pathArr;
-    // const pathArr = data.length ? data : this.state.pathArr;
     pathArr.splice(index, 1);
-    this.setState({ pathArr });
+    this.setState({ pathArr, initServiceLen: this.state.initServiceLen - 1 });
   };
   /**
    * 选择环境
@@ -166,6 +179,13 @@ class CreateDomain extends Component {
     this.setState({ envId: value });
     const { store } = this.props;
     store.loadNetwork(this.state.projectId, value);
+    this.props.form.resetFields();
+    this.setState({
+      pathArr: [{pathIndex: 0, networkIndex: 0}],
+      0: { deletedService: []},
+      initServiceLen: 0,
+      SingleData: null,
+    });
   };
 
   /**
@@ -212,41 +232,30 @@ class CreateDomain extends Component {
    */
   checkPath =_.debounce((rule, value, callback) => {
     const { pathArr } = this.state;
-    const dto = this.props.store.getDto;
     const domain = this.props.form.getFieldValue('domain');
     const index = parseInt(rule.field.split('-')[1], 10);
-    const p = /^\//;
-    if (domain) {
-      if (p.test(value)) {
-        let isRepeat = false;
-        for (let i = 0; i < pathArr.length; i += 1) {
-          const paths = this.props.form.getFieldValue(`path-${pathArr[i].pathIndex}`);
-          if (paths === value && i !== index) {
-            isRepeat = true;
-            return;
-          }
-        }
-        if (isRepeat) {
-          callback();
-        } else {
-          const { store } = this.props;
-          store.checkPath(this.state.projectId, domain, value)
-            .then((data) => {
-              if (data) {
-                callback('路径在该域名路径下已存在，请更改域名路径或者路径');
-              } else {
-                callback();
-              }
-            })
-            .catch((error) => {
-              callback();
-            });
-        }
-      } else {
-        callback('路径必须以/开头');
+    const paths = [];
+    for (let i = 0; i < pathArr.length; i += 1) {
+      const p = this.props.form.getFieldValue(`path-${pathArr[i].pathIndex}`);
+      if (i !== index) {
+        paths.push(p);
       }
+    }
+    if (paths.includes(value)) {
+      callback('路径在该域名路径下已存在，请更改域名路径或者路径');
     } else {
-      callback('请先填域名路径');
+      const { store } = this.props;
+      store.checkPath(this.state.projectId, domain, `/${value}`)
+        .then((data) => {
+          if (data) {
+            callback();
+          } else {
+            callback('路径在该域名路径下已存在，请更改域名路径或者路径');
+          }
+        })
+        .catch((error) => {
+          callback();
+        });
     }
   }, 1000);
   /**
@@ -267,21 +276,15 @@ class CreateDomain extends Component {
     const { getFieldDecorator } = this.props.form;
     const menu = AppState.currentMenuType;
     const network = store.getNetwork;
-    const env = store.getEnv;
-    const form = this.props.form;
-    const dto = store.getDto;
-    let hasPath = false;
-    let addStatus = false;
     const { pathArr, SingleData } = this.state;
+    const form = this.props.form;
+    let addStatus = true;
     // 判断path是否有值
-    if (this.state.pathArr.length) {
-      const hasValue = form.getFieldValue(`path-${this.state.pathArr[this.state.pathArr.length - 1].pathIndex}`);
+    if (pathArr.length) {
+      const hasValue = form.getFieldValue(`path-${pathArr[pathArr.length - 1].pathIndex}`) || (SingleData && SingleData.pathList);
       if (hasValue) {
-        hasPath = true;
+        addStatus = false;
       }
-    }
-    if (hasPath || pathArr.length === 0) {
-      addStatus = true;
     }
     const title = this.props.type === 'create' ? <h2 className="c7n-space-first">在项目&quot;{menu.name}&quot;中创建域名</h2> : <h2 className="c7n-space-first">对域名&quot;{SingleData && SingleData.name}&quot;进行修改</h2>;
     const content = this.props.type === 'create' ? '请选择环境，填写网络名称、地址、路径，并选择网络配置域名访问规则' :
@@ -312,7 +315,8 @@ class CreateDomain extends Component {
           })(
             <Select
               dropdownClassName="c7n-domain-env"
-              autoFocus
+              onFocus={this.loadEnv}
+              loading={this.state.env.loading}
               filter
               onSelect={this.selectEnv}
               showSearch
@@ -321,7 +325,7 @@ class CreateDomain extends Component {
               filterOption={(input, option) =>
                 option.props.children[2].toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              {env.length && env.map(v => (
+              {this.state.env.dataSource.map(v => (
                 <Option value={v.id} key={`${v.id}-env`} disabled={!v.connect}>
                   {!v.connect && <span className="env-status-error" />}
                   {v.connect && <span className="env-status-success" />}
@@ -346,6 +350,7 @@ class CreateDomain extends Component {
             initialValue: SingleData ? SingleData.name : '',
           })(
             <Input
+              disabled={!(this.props.form.getFieldValue('envId'))}
               maxLength={30}
               label={Choerodon.getMessage('域名名称', 'name')}
               size="default"
@@ -367,6 +372,7 @@ class CreateDomain extends Component {
             initialValue: SingleData ? SingleData.domain : '',
           })(
             <Input
+              disabled={!(this.props.form.getFieldValue('envId'))}
               maxLength={50}
               label={Choerodon.getMessage('域名地址', 'domain')}
               size="default"
@@ -382,13 +388,15 @@ class CreateDomain extends Component {
               rules: [{
                 required: true,
               }, {
-                // validator: this.checkPath,
+                validator: this.checkPath,
               },
               ],
-              initialValue: SingleData && dto.length > index
-                ? dto[index].path : '/',
+              initialValue: SingleData && this.state.initServiceLen > index
+                ? SingleData.pathList[index].path .slice(1,SingleData.pathList[index].path.length): '',
             })(
               <Input
+                prefix={"/"}
+                disabled={!(this.props.form.getFieldValue('domain'))}
                 maxLength={10}
                 label={Choerodon.languageChange('domain.path')}
                 size="default"
@@ -402,13 +410,13 @@ class CreateDomain extends Component {
             {getFieldDecorator(`network-${data.networkIndex}`, {
               rules: [{
                 required: true,
-                // transform: (value) => { return value && value.toString() },
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               }],
-              initialValue: SingleData && dto.length > index
-                ? dto[index].serviceId : undefined,
+              initialValue: SingleData && this.state.initServiceLen > index
+                ? SingleData.pathList[index].serviceId : undefined,
             })(
               <Select
+                disabled={!(this.props.form.getFieldValue('envId'))}
                 filter
                 label={Choerodon.getMessage('网络', 'network')}
                 showSearch
@@ -422,31 +430,39 @@ class CreateDomain extends Component {
                       .toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
-                {netwo.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
-                  {datas.serviceStatus && datas.serviceStatus === 'running' && <div className={datas.serviceStatus && datas.serviceStatus === 'running' && 'c7n-domain-create-status c7n-domain-create-status_running'}>
-                    {datas.serviceStatus && datas.serviceStatus === 'running' && <div>正常</div> }
+                {this.state[data.pathIndex].deletedService.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
+                  {datas.status && datas.status === 'running' && <div className={datas.status && datas.status === 'running' && 'c7n-domain-create-status c7n-domain-create-status_running'}>
+                    {datas.status && datas.status === 'running' && <div>正常</div> }
                   </div> }
-                  {datas.serviceStatus && datas.serviceStatus === 'deleted' && <div className={datas.serviceStatus && datas.serviceStatus === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
-                    {datas.serviceStatus && datas.serviceStatus === 'deleted' && <div>已删除</div> }
+                  {datas.status && datas.status === 'deleted' && <div className={datas.status && datas.status === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
+                    {datas.status && datas.status === 'deleted' && <div>已删除</div> }
                   </div> }
-                  {datas.serviceStatus && datas.serviceStatus === 'failed' && <div className={datas.serviceStatus && datas.serviceStatus === 'failed' && 'c7n-domain-create-status c7n-domain-create-status_failed'}>
-                    {datas.serviceStatus && datas.serviceStatus === 'failed' && <div>失败</div> }
+                  {datas.status && datas.status === 'failed' && <div className={datas.status && datas.status === 'failed' && 'c7n-domain-create-status c7n-domain-create-status_failed'}>
+                    {datas.status && datas.status === 'failed' && <div>失败</div> }
                   </div> }
-                  {datas.serviceStatus && datas.serviceStatus === 'operating' && <div className={datas.serviceStatus && datas.serviceStatus === 'operating' && 'c7n-domain-create-status c7n-domain-create-status_operating'}>
-                    {datas.serviceStatus && datas.serviceStatus === 'operating' && <div>处理中</div> }
+                  {datas.status && datas.status === 'operating' && <div className={datas.status && datas.status === 'operating' && 'c7n-domain-create-status c7n-domain-create-status_operating'}>
+                    {datas.status && datas.status === 'operating' && <div>处理中</div> }
                   </div> }
 
+                  {datas.name}</Option>),
+                )}
+                {network.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
+                   <div className={'c7n-domain-create-status c7n-domain-create-status_running'}>
+                    <div>正常</div>
+                  </div>
                   {datas.name}</Option>),
                 )}
               </Select>,
             )}
           </FormItem>
-          { pathArr.length > 1 ? <Button shape="circle" className="c7n-domain-icon-delete" onClick={this.removeDomain.bind(this, index)}>
+          { pathArr.length > 1 ? <Button shape="circle" className="c7n-domain-icon-delete" onClick={this.removePath.bind(this, index)}>
             <span className="icon icon-delete" />
           </Button> : <span className="icon icon-delete c7n-app-icon-disabled" />}
         </div>))}
         <div className="c7n-domain-btn-wrapper">
-          <Button className="c7n-domain-btn" onClick={this.addPath} type="primary" disabled={!addStatus} icon="add">添加路径</Button>
+          <Tooltip title={addStatus ? '请先填写路径' : ''}>
+            <Button className="c7n-domain-btn" onClick={this.addPath} type="primary" disabled={addStatus} icon="add">添加路径</Button>
+          </Tooltip>
         </div>
       </Form>
     </div>) : null;
