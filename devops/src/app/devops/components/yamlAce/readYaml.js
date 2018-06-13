@@ -173,6 +173,7 @@ class HighlightAce extends Component {
         <div className="ace-error">
           <span className="deployApp-config-block deployApp-config-lastModify" /> <span className="deployApp-config-title">上次部署修改</span>
           <span className="deployApp-config-block deployApp-config-modify" /> <span className='deployApp-config-title'>本次修改</span>
+          <span className="deployApp-config-error" /><span className='deployApp-config-title'>yaml格式错误</span>
         </div>
         <ReactAce
           mode="yaml"
