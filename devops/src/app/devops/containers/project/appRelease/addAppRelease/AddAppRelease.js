@@ -301,7 +301,7 @@ class AddAppRelease extends Component {
         </section>
         <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" disabled={!(this.state.appId)} onClick={this.changeStep.bind(this, 2)}>下一步</Button>
-          <Button funcType="raised" onClick={this.clearStepOne}>取消</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -354,7 +354,8 @@ class AddAppRelease extends Component {
         </section>
         <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 3)} disabled={!(data.length)}>下一步</Button>
-          <Button onClick={this.changeStep.bind(this, 1)} funcType="raised">上一步</Button>
+          <Button onClick={this.changeStep.bind(this, 1)} style={{ color: 'rgb(63, 81, 181)' }} funcType="raised">上一步</Button>
+          <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -390,7 +391,8 @@ class AddAppRelease extends Component {
         </section>
         <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 4)}>下一步</Button>
-          <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>上一步</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.changeStep.bind(this, 2)}>上一步</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -469,7 +471,8 @@ class AddAppRelease extends Component {
         </section>
         <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" disabled={!(category && contributor && description)} onClick={this.changeStep.bind(this, 5)}>下一步</Button>
-          <Button funcType="raised" onClick={this.changeStep.bind(this, 3)}>上一步</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.changeStep.bind(this, 3)}>上一步</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -522,7 +525,8 @@ class AddAppRelease extends Component {
           <Permission service={['devops-service.application-market.create']}>
             <Button type="primary" loading={this.state.submitting} funcType="raised" onClick={this.handleSubmit}>发布</Button>
           </Permission>
-          <Button funcType="raised" onClick={this.changeStep.bind(this, 4)}>上一步</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.changeStep.bind(this, 4)}>上一步</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>取消</Button>
         </section>
       </section>
     );

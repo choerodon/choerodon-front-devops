@@ -228,7 +228,7 @@ class AppReleaseHome extends Component {
               <span className="icon icon-open_in_new" />
             </a>
           </p>
-          <Tabs defaultActiveKey={this.state.key} onChange={this.handleChangeTabs}>
+          <Tabs defaultActiveKey={this.state.key} onChange={this.handleChangeTabs} animated={false}>
             <TabPane tab="未发布应用" key="1">
               {this.showProjectTable()}
             </TabPane>

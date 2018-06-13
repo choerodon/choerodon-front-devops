@@ -273,6 +273,7 @@ class DeployAppHome extends Component {
               </a>
             </p>
             <Tabs
+              animated={false}
               tabBarExtraContent={<ButtonGroup>
                 <Button onClick={this.changeView.bind(this, 'list')} className={this.state.view === 'list' ? 'c7n-tab-active' : ''}><Icon type="format_list_bulleted" /></Button>
                 <Button onClick={this.changeView.bind(this, 'card')} className={this.state.view === 'card' ? 'c7n-tab-active' : ''}><Icon type="dashboard" /></Button>
@@ -309,7 +310,7 @@ class DeployAppHome extends Component {
                         <div className="c7n-store-card-name">
                           {card.name}
                         </div>
-                        <div className="c7n-store-card-source">
+                        <div className="c7n-store-card-des-60">
                           {card.code}
                         </div>
                       </div>

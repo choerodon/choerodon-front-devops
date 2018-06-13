@@ -69,7 +69,7 @@ class SelectAppStore {
     param: '',
   } }) => {
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/list_by_options?active=true&page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
+    return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/list_by_options?active=true&page=${page}&size=${size}&sort=${sort.field},${sort.order}&has_version=true`, JSON.stringify(postData)))
       .subscribe((data) => {
         const res = this.handleProptError(data);
         if (res) {
