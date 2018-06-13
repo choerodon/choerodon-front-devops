@@ -1,3 +1,3 @@
-import AceForYaml from './HighlightAce';
+import AceForYaml from './readYaml';
 
 export default AceForYaml;

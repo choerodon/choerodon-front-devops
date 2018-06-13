@@ -49,6 +49,7 @@ class DeploymentAppHome extends Component {
     card.style.minHeight = `${window.innerHeight - 277}px`;
   }
 
+
   /**
    * 获取步骤条状态
    * @param index
@@ -77,7 +78,10 @@ class DeploymentAppHome extends Component {
     this.setState({ current: index });
     if (index === 2 && appId && versionId && envId) {
       DeploymentAppStore.setValue(null);
-      DeploymentAppStore.loadValue(appId, versionId, envId);
+      DeploymentAppStore.loadValue(appId, versionId, envId)
+        .then((data) => {
+          this.setState({ errorLine: data.errorLines });
+        });
     }
   };
 
@@ -126,7 +130,11 @@ class DeploymentAppHome extends Component {
     this.setState({ envId: value, envDto, value: null });
     const { appId, versionId } = this.state;
     DeploymentAppStore.setValue(null);
-    DeploymentAppStore.loadValue(appId, versionId, value);
+    this.setState({ value: null, markers: [] });
+    DeploymentAppStore.loadValue(appId, versionId, value)
+      .then((data) => {
+        this.setState({ errorLine: data.errorLines });
+      });
     DeploymentAppStore.loadInstances(this.state.appId, value);
   };
 
@@ -140,6 +148,8 @@ class DeploymentAppHome extends Component {
     const versions = DeploymentAppStore.versions;
     const versionDto = _.filter(versions, v => v.id === value)[0];
     this.setState({ versionDto });
+    DeploymentAppStore.setValue(null);
+    this.setState({ value: null, markers: [] });
   };
 
   /**
@@ -159,8 +169,14 @@ class DeploymentAppHome extends Component {
    * @param markers
    */
   handleChangeValue = (value, markers) => {
+    const { DeploymentAppStore } = this.props;
     this.setState({ value, markers });
+    DeploymentAppStore.checkYaml(value)
+      .then((data) => {
+      this.setState({ errorLine: data });
+    })
   };
+
 
   /**
    * 修改实例模式
@@ -330,7 +346,10 @@ class DeploymentAppHome extends Component {
             <span className="section-title">配置信息</span>
           </div>
           {data && (<AceForYaml
+            isFileError={!!data.errorLines}
             totalLine={data.totalLine}
+            errorLines={this.state.errorLine}
+            errMessage={data.errorMsg}
             modifyMarkers={this.state.markers}
             value={this.state.value || data.yaml}
             highlightMarkers={data.highlightMarkers}
@@ -342,7 +361,7 @@ class DeploymentAppHome extends Component {
             type="primary"
             funcType="raised"
             onClick={this.changeStep.bind(this, 3)}
-            disabled={!(this.state.envId && (this.state.value || (data && data.yaml)))}
+            disabled={!(this.state.envId && data && data.errorLines === null && (this.state.errorLine === '' || this.state.errorLine === null)  && (this.state.value || (data && data.yaml)))}
           >
             下一步
           </Button>
@@ -505,7 +524,7 @@ class DeploymentAppHome extends Component {
                 status={this.getStatus(2)}
               />
               <Step
-                className={!(envId && (value || (data && data.yaml))) ? 'step-disabled' : ''}
+                className={!(envId && data && data.errorLines === null && (this.state.errorLine === ''  || this.state.errorLine === null) && (value || (data && data.yaml))) ? 'step-disabled' : ''}
                 title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>选择部署模式</span>}
                 onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}

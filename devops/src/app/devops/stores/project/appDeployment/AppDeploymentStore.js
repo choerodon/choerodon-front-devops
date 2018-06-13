@@ -300,6 +300,10 @@ class AppDeploymentStore {
       });
   }
 
+  checkYaml = (value, projectId)=> {
+    return axios.post(`/devops/v1/projects/${projectId}/app_instances/value_format`, { yaml: value })
+  };
+
   changeIstActive(projectId, istId, active) {
     return axios.put(`devops/v1/projects/${projectId}/app_instances/${istId}/${active}`);
   }

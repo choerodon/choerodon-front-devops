@@ -33,6 +33,12 @@ class ValueConfig extends Component {
    * @param {*} value 修改后的value值
    */
   onChange = (value) => {
+    const { store } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    store.checkYaml(value, projectId)
+      .then((data) => {
+        this.setState({ errorLine: data });
+      });
     this.setState({
       value,
     });
@@ -63,18 +69,30 @@ class ValueConfig extends Component {
       appId: idArr[2],
       type: 'update',
     };
-    store.reDeploy(projectId, data)
-      .then((res) => {
-        if (res && res.failed) {
-          Choerodon.prompt(res.message);
+    store.checkYaml(value, projectId)
+      .then((datas) => {
+        this.setState({ errorLine: datas });
+        if(datas === '' && !(this.props.store.getValue.errorLines)) {
+          store.reDeploy(projectId, data)
+            .then((res) => {
+              if (res && res.failed) {
+                Choerodon.prompt(res.message);
+              } else {
+                this.onClose(res);
+              }
+            });
         } else {
-          this.onClose(res);
+          Choerodon.prompt('请先更改yaml格式错误行或者修改value文件的yaml格式错误');
         }
       });
   };
 
   render() {
     const data = this.props.store.getValue;
+    let error = data.errorLines;
+    if(this.state.errorLine !== undefined) {
+     error = this.state.errorLine;
+    }
     const sideDom = (<div className="c7n-region">
       <h2 className="c7n-space-first">对&quot;{this.props.name}&quot;进行修改</h2>
       <p>
@@ -90,6 +108,8 @@ class ValueConfig extends Component {
         <div className="c7n-body-section c7n-border-done">
           <div>
             {data && <Ace
+              isFileError={!!data.errorLines}
+              errorLines={error}
               totalLine={data.totalLine}
               value={data.yaml}
               highlightMarkers={data.highlightMarkers}

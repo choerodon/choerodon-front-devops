@@ -8,6 +8,8 @@ import PropTypes from 'prop-types';
 import { getIn, toJS } from 'immutable';
 import _ from 'lodash';
 import './AceForYaml.scss';
+import 'brace/mode/yaml';
+import 'brace/theme/dawn';
 
 const { Range } = ace.acequire('ace/range');
 /* eslint-disable react/no-string-refs */
@@ -57,12 +59,30 @@ class HighlightAce extends Component {
         return marker;
       });
     }
+    if (this.props.errorLines) {
+      // this.handleError();
+    }
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.readOnly) {
       this.ace.editor.setReadOnly(true);
     }
   }
+  componentWillUpdate(){
+    if (this.props.errorLines) {
+      this.handleError();
+    }
+  }
+  handleError =() => {
+    const error = this.props.errorLines;
+    const eles = document.getElementsByClassName('ace_gutter-cell');
+    if(eles.length) {
+      for (let i = 0; i < error.length; i += 1){
+        eles[error[i].lineNumber - 1].className = 'ace_gutter-cell ace_error';
+        eles[error[i].lineNumber - 1].title = error[i].errorMsg;
+      }
+    }
+  };
   onChange =_.debounce((values, options) => {
     const { isTriggerChange } = this.state;
     const editor = this.ace.editor;
@@ -98,19 +118,20 @@ class HighlightAce extends Component {
   setOptions =() => {
     const editor = this.ace.editor;
     // eslint-disable-next-line
-    require('brace/mode/yaml');
+    // require('brace/mode/yaml');
     // eslint-disable-next-line
-    require('brace/theme/dawn');
+    // require('brace/theme/dawn');
 
     editor.setPrintMarginColumn(0);
-    editor.setHighlightGutterLine(false);
-    editor.setWrapBehavioursEnabled(false);
-    editor.getSession().setMode('ace/mode/yaml');
-    editor.setTheme('ace/theme/dawn');
+    //editor.setHighlightGutterLine(false);
+    //editor.setWrapBehavioursEnabled(false);
+    // editor.getSession().setMode('ace/mode/yaml');
+    // editor.setTheme('ace/theme/dawn');
   };
   handleLoad =() => {
     const editor = this.ace.editor;
     this.setState({ isTriggerChange: false });
+    editor.renderer.setAnnotations([{ row: 6, column: 1, type: 'error', text: 'Some error.'}]);
     editor.setValue(this.props.value);
     if (this.props.highlightMarkers && this.props.highlightMarkers.length) {
       this.handleHighLight();
@@ -135,17 +156,27 @@ class HighlightAce extends Component {
   }
 
   render() {
-    const { value, width, options, className, totalLine } = this.props;
+    const { value, width, options, className, totalLine, errorLines } = this.props;
     return (
-      <ReactAce
-        className={className}
-        value={value}
-        showGutter={false}
-        setOptions={options}
-        onChange={this.onChange}
-        style={{ height: totalLine ? `${totalLine * 16}px` : '500px', width }}
-        ref={(instance) => { this.ace = instance; }} // Let's put things into scope
-      />
+      <div>
+        <div className="ace-error">
+          <span className="deployApp-config-block deployApp-config-lastModify" /> <span className="deployApp-config-title">上次部署修改</span>
+          <span className="deployApp-config-block deployApp-config-modify" /> <span className='deployApp-config-title'>本次修改</span>
+        </div>
+        <ReactAce
+          annotations={[{ row: 6, column: 1, type: 'error', text: 'Some error.'}]}
+          mode="yaml"
+          theme="dawn"
+          showGutter
+          className={className}
+          value={value}
+          setOptions={options}
+          onChange={this.onChange}
+          style={{ height: totalLine ? `${totalLine * 16}px` : '500px', width }}
+          ref={(instance) => { this.ace = instance; }} // Let's put things into scope
+        />
+      </div>
+
     );
   }
 }
