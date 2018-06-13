@@ -99,7 +99,7 @@ class NetworkHome extends Component {
     const columns = [{
       title: '状态',
       key: 'status',
-      width: 70,
+      width: 72,
       render: (record) => {
         let statusDom = null;
         switch (record.status) {

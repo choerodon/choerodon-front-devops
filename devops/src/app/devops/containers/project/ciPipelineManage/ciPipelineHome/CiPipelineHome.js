@@ -8,6 +8,7 @@ import _ from 'lodash';
 import '../../../main.scss';
 import './CiPipelineHome.scss';
 import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
+import Loadingbar from '../../../../components/loadingBar';
 
 const Option = Select.Option;
 const ICONS = {
@@ -422,7 +423,8 @@ class CiPipelineHome extends Component {
             </a>
           </p>
           {this.filterBar}
-          {this.tableCiPipeline} 
+          {(CiPipelineStore.ciPipelines.slice().length && CiPipelineStore.commits.length) ?
+            this.tableCiPipeline : <Loadingbar display />}
         </Content>
       </Page>
     );
