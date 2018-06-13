@@ -78,7 +78,6 @@ class DeploymentAppHome extends Component {
     this.setState({ current: index });
     if (index === 2 && appId && versionId && envId) {
       DeploymentAppStore.setValue(null);
-      this.setState({ value: null, markers: [] });
       DeploymentAppStore.loadValue(appId, versionId, envId)
         .then((data) => {
           this.setState({ errorLine: data.errorLines });
@@ -149,6 +148,8 @@ class DeploymentAppHome extends Component {
     const versions = DeploymentAppStore.versions;
     const versionDto = _.filter(versions, v => v.id === value)[0];
     this.setState({ versionDto });
+    DeploymentAppStore.setValue(null);
+    this.setState({ value: null, markers: [] });
   };
 
   /**
@@ -345,6 +346,7 @@ class DeploymentAppHome extends Component {
             <span className="section-title">配置信息</span>
           </div>
           {data && (<AceForYaml
+            isFileError={!!data.errorLines}
             totalLine={data.totalLine}
             errorLines={this.state.errorLine}
             errMessage={data.errorMsg}
@@ -359,7 +361,7 @@ class DeploymentAppHome extends Component {
             type="primary"
             funcType="raised"
             onClick={this.changeStep.bind(this, 3)}
-            disabled={!(this.state.envId && (this.state.errorLine === ''  || this.state.errorLine === null) && (this.state.value || (data && data.yaml)))}
+            disabled={!(this.state.envId && data && data.errorLines && (this.state.errorLine === ''  || this.state.errorLine === null) && (this.state.value || (data && data.yaml)))}
           >
             下一步
           </Button>
@@ -522,7 +524,7 @@ class DeploymentAppHome extends Component {
                 status={this.getStatus(2)}
               />
               <Step
-                className={!(envId && (this.state.errorLine === ''  || this.state.errorLine === null) && (value || (data && data.yaml))) ? 'step-disabled' : ''}
+                className={!(envId && data && data.errorLines && (this.state.errorLine === ''  || this.state.errorLine === null) && (value || (data && data.yaml))) ? 'step-disabled' : ''}
                 title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>选择部署模式</span>}
                 onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}

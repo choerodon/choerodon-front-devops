@@ -166,7 +166,7 @@ class HighlightAce extends Component {
   }
 
   render() {
-    const { value,totalLine, errorLines } = this.props;
+    const { value,totalLine, errorLines, isFileError } = this.props;
     this.handleError();
     return (
       <div>
@@ -183,6 +183,9 @@ class HighlightAce extends Component {
           style={{ height: totalLine ? `${totalLine * 16}px` : '500px' }}
           ref={(instance) => { this.ace = instance; }} // Let's put things into scope
         />
+        {isFileError && <div className="ace-error-message">
+          <span className='icon icon-error config-icon-error'/> <span className='config-error-mes'>Values文件yaml格式错误，请在应用代码中修改错误并重新生成正确的应用版本。</span>
+        </div>}
       </div>
     );
   }

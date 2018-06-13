@@ -72,7 +72,7 @@ class ValueConfig extends Component {
     store.checkYaml(value, projectId)
       .then((datas) => {
         this.setState({ errorLine: datas });
-        if(datas === '') {
+        if(datas === '' && !(this.props.store.getValue.errorLines)) {
           store.reDeploy(projectId, data)
             .then((res) => {
               if (res && res.failed) {
@@ -82,7 +82,7 @@ class ValueConfig extends Component {
               }
             });
         } else {
-          Choerodon.prompt('请先更改yaml格式错误行');
+          Choerodon.prompt('请先更改yaml格式错误行或者修改value文件的yaml格式错误');
         }
       });
   };
@@ -108,6 +108,7 @@ class ValueConfig extends Component {
         <div className="c7n-body-section c7n-border-done">
           <div>
             {data && <Ace
+              isFileError={!!data.errorLines}
               errorLines={error}
               totalLine={data.totalLine}
               value={data.yaml}

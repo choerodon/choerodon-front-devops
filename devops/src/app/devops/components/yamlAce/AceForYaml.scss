@@ -67,7 +67,10 @@
   }
 
   .deployApp-config-error {
-    background:  rgba(244,67,54,0.64);;
+    height: 16px;
+    background-image: url('./error.png');
+    background-repeat: no-repeat;
+    background-position: 2px center;
   }
 
   .deployApp-config-title {
