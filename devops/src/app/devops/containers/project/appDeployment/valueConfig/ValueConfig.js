@@ -37,7 +37,6 @@ class ValueConfig extends Component {
     const projectId = AppState.currentMenuType.id;
     store.checkYaml(value, projectId)
       .then((data) => {
-        window.console.log(data);
         this.setState({ errorLine: data });
       });
     this.setState({

@@ -489,7 +489,6 @@ class DeploymentAppHome extends Component {
     const data = DeploymentAppStore.value;
     const projectName = AppState.currentMenuType.name;
     const { appId, versionId, envId, instanceId, mode, value, current } = this.state;
-    window.console.log(this.state.errorLine);
     return (
       <Page className="c7n-region c7n-deployApp">
         <Header title={Choerodon.languageChange('deploymentApp.title')} />

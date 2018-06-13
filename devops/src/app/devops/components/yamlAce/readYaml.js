@@ -61,7 +61,6 @@ class HighlightAce extends Component {
       const eless = document.getElementsByClassName('ace_gutter-cell ace_error');
       if(eless.length) {
         const len = eless.length;
-        window.console.log(eless.length);
         for (let j = 0; j < len; j += 1){
           eless[0].title = null;
           eless[0].className = 'ace_gutter-cell';
