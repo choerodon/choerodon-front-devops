@@ -33,6 +33,12 @@ class ValueConfig extends Component {
    * @param {*} value 修改后的value值
    */
   onChange = (value) => {
+    const { store } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    store.checkYaml(value, projectId)
+      .then((data) => {
+        this.setState({ errorLine: data });
+      });
     this.setState({
       value,
     });
@@ -63,12 +69,20 @@ class ValueConfig extends Component {
       appId: idArr[2],
       type: 'update',
     };
-    store.reDeploy(projectId, data)
-      .then((res) => {
-        if (res && res.failed) {
-          Choerodon.prompt(res.message);
+    store.checkYaml(value, projectId)
+      .then((datas) => {
+        this.setState({ errorLine: datas });
+        if(datas === '') {
+          store.reDeploy(projectId, data)
+            .then((res) => {
+              if (res && res.failed) {
+                Choerodon.prompt(res.message);
+              } else {
+                this.onClose(res);
+              }
+            });
         } else {
-          this.onClose(res);
+          Choerodon.prompt('请先更改yaml格式错误行');
         }
       });
   };
@@ -90,6 +104,7 @@ class ValueConfig extends Component {
         <div className="c7n-body-section c7n-border-done">
           <div>
             {data && <Ace
+              errorLines={this.state.errorLine || data.errorLines}
               totalLine={data.totalLine}
               value={data.yaml}
               highlightMarkers={data.highlightMarkers}

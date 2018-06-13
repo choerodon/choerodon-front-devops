@@ -80,7 +80,7 @@ class EnvPipelineHome extends Component {
     const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     // eslint-disable-next-line no-useless-escape
-    const pa = /^[a-z0-9]([-a-z0-9\.]*[a-z0-9])?$/;
+    const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     if (value && pa.test(value)) {
       EnvPipelineStore.loadCode(projectId, value)
         .then((error) => {
@@ -91,7 +91,7 @@ class EnvPipelineHome extends Component {
           }
         });
     } else {
-      callback(Choerodon.getMessage('编码只能包含小写字母，数字，下划线，空格， \'_\', \'.\', "——",只能以字母，数字，下划线开头', 'Code can contain only letters, digits, emojis, \'_\', \'.\', dash, space. It must start with letter, digit, emoji or \'_\'.'));
+      callback(Choerodon.getMessage('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾', 'Code can contain only lowercase letters, digits,"-", must start with lowercase letters and will not end with "-"'));
     }
   }, 1000);
 

@@ -49,6 +49,7 @@ class DeploymentAppHome extends Component {
     card.style.minHeight = `${window.innerHeight - 277}px`;
   }
 
+
   /**
    * 获取步骤条状态
    * @param index
@@ -77,7 +78,11 @@ class DeploymentAppHome extends Component {
     this.setState({ current: index });
     if (index === 2 && appId && versionId && envId) {
       DeploymentAppStore.setValue(null);
-      DeploymentAppStore.loadValue(appId, versionId, envId);
+      this.setState({ value: null, markers: [] });
+      DeploymentAppStore.loadValue(appId, versionId, envId)
+        .then((data) => {
+          this.setState({ errorLine: data.errorLines });
+        });
     }
   };
 
@@ -126,7 +131,11 @@ class DeploymentAppHome extends Component {
     this.setState({ envId: value, envDto, value: null });
     const { appId, versionId } = this.state;
     DeploymentAppStore.setValue(null);
-    DeploymentAppStore.loadValue(appId, versionId, value);
+    this.setState({ value: null, markers: [] });
+    DeploymentAppStore.loadValue(appId, versionId, value)
+      .then((data) => {
+        this.setState({ errorLine: data.errorLines });
+      });
     DeploymentAppStore.loadInstances(this.state.appId, value);
   };
 
@@ -159,8 +168,14 @@ class DeploymentAppHome extends Component {
    * @param markers
    */
   handleChangeValue = (value, markers) => {
+    const { DeploymentAppStore } = this.props;
     this.setState({ value, markers });
+    DeploymentAppStore.checkYaml(value)
+      .then((data) => {
+      this.setState({ errorLine: data });
+    })
   };
+
 
   /**
    * 修改实例模式
@@ -331,6 +346,8 @@ class DeploymentAppHome extends Component {
           </div>
           {data && (<AceForYaml
             totalLine={data.totalLine}
+            errorLines={this.state.errorLine}
+            errMessage={data.errorMsg}
             modifyMarkers={this.state.markers}
             value={this.state.value || data.yaml}
             highlightMarkers={data.highlightMarkers}
@@ -342,7 +359,7 @@ class DeploymentAppHome extends Component {
             type="primary"
             funcType="raised"
             onClick={this.changeStep.bind(this, 3)}
-            disabled={!(this.state.envId && (this.state.value || (data && data.yaml)))}
+            disabled={!(this.state.envId && (this.state.errorLine === ''  || this.state.errorLine === null) && (this.state.value || (data && data.yaml)))}
           >
             下一步
           </Button>
@@ -472,6 +489,7 @@ class DeploymentAppHome extends Component {
     const data = DeploymentAppStore.value;
     const projectName = AppState.currentMenuType.name;
     const { appId, versionId, envId, instanceId, mode, value, current } = this.state;
+    window.console.log(this.state.errorLine);
     return (
       <Page className="c7n-region c7n-deployApp">
         <Header title={Choerodon.languageChange('deploymentApp.title')} />
@@ -505,7 +523,7 @@ class DeploymentAppHome extends Component {
                 status={this.getStatus(2)}
               />
               <Step
-                className={!(envId && (value || (data && data.yaml))) ? 'step-disabled' : ''}
+                className={!(envId && (this.state.errorLine === ''  || this.state.errorLine === null) && (value || (data && data.yaml))) ? 'step-disabled' : ''}
                 title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>选择部署模式</span>}
                 onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}

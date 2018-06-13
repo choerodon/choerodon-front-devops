@@ -5,188 +5,186 @@ import React, { Component } from 'react';
 import ReactAce from 'react-ace-editor';
 import ace from 'brace';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import { getIn, toJS } from 'immutable';
+import _ from 'lodash';
 import './AceForYaml.scss';
-
-const yaml = require('js-yaml');
+import 'brace/mode/yaml';
+import 'brace/theme/dawn';
 
 const { Range } = ace.acequire('ace/range');
+/* eslint-disable react/no-string-refs */
 
-const jsdiff = require('diff');
-
-class AceForYaml extends Component {
-  static PropTypes = {
-    sourceData: PropTypes.object,
-    value: PropTypes.object.isRequired,
-    options: PropTypes.object.isRequired,
-    showDiff: PropTypes.bool,
+class HighlightAce extends Component {
+  static propTypes = {
+    value: PropTypes.string.isRequired,
+    highlightMarkers: PropTypes.object,
   };
   static defaultProps = {
-    showDiff: true,
     options: {
       gutter: false,
       readOnly: false,
       mode: 'yaml',
-      theme: 'eclipse',
+      theme: 'dawn',
       softWrap: false,
     },
   };
   constructor(props) {
     super(props);
     this.state = {
-      number: 0,
-      diffLen: 0,
+      isTriggerChange: false,
     };
   }
 
   componentDidMount() {
+    // 第一次加载没有数据
     this.setOptions();
-    const linw = this.cmpoDiff();
     const editor = this.ace.editor;
-    const str = '# Default values for api-gateway.\n' +
-      '# This is a YAML-formatted file.\n' +
-      '# Declare variables to be passed into your templates.\n' +
-      'replicaCount: 2\n' +
-      '\n' +
-      'replicaCount: 2\n' +
-      '\n' +
-      'image:\n' +
-      '  repository: registry.saas.hand-china.com/choerodon-devops/choerodon-front-devops\n' +
-      '  tag: develop.20180502172827\n' +
-      '  pullPolicy: Always';
-    editor.setValue(str);
-    _.map(linw, (line) => {
-      if(line.lineNumber === line.endLineNumber) {
-        if (line.removed === undefined) {
-          this.handleLineHigh(line);
-        }
-      } else {
-        let index = 0;
-        for (let i = line.lineNumber; i <= line.endLineNumber; i += 1) {
-          const data = _.cloneDeep(line);
-          data.endLineNumber = i;
-          data.lineNumber = i;
-          const values = line.value.split('\n');
-          data.value = values[index];
-          this.handleLineHigh(data);
-          index += 1;
+    if (this.props.value) {
+      this.handleSetValue();
+      editor.clearSelection();
+    }
+    if (this.props.modifyMarkers) {
+     this.handleClearMarkers();
+    }
+  }
+  handleError =() => {
+    const error = this.props.errorLines;
+    if(error && error.length) {
+      const eles = document.getElementsByClassName('ace_gutter-cell');
+      if(eles.length) {
+        for (let i = 0; i < error.length; i += 1){
+          eles[error[i].lineNumber - 1].className = 'ace_gutter-cell ace_error';
+          eles[error[i].lineNumber - 1].title = error[i].errorMsg;
         }
       }
-    })
-  }
-  handleLineHigh = (line) => {
-    const editor = this.ace.editor;
-    const row = line.lineNumber;
-    const range = this.getRange(row);
-    editor.session.replace(range, line.value.split('\n')[0]);
-    const newStrLength = line.value.split(':')[1].length - 2;
-    const rangObj = this.getRangeObj(range, newStrLength);
-    editor.session.addMarker(rangObj, 'lineHeight', 'fullLine', false);
-    editor.session.addMarker(rangObj, 'errorHighlight', 'text', false);
-  }
-  getRange = (row, range = null) => {
-    let ranges;
-    const editor = this.ace.editor;
-    const oldValue = editor.session.getLine(row);
-    ranges = editor.find(oldValue, {start: range });
-    if (ranges && ranges.start.row !== row) {
-      return this.getRange(row, ranges)
-    } else if (ranges) {
-      return ranges;
+    } else {
+      const eless = document.getElementsByClassName('ace_gutter-cell ace_error');
+      if(eless.length) {
+        const len = eless.length;
+        window.console.log(eless.length);
+        for (let j = 0; j < len; j += 1){
+          eless[0].title = null;
+          eless[0].className = 'ace_gutter-cell';
+        }
+      }
     }
   };
-  getRangeObj =(range, length) =>
-    new Range(range.start.row, range.end.column - length, range.end.row, range.end.column + 100);
-  cmpoDiff = () => {
-    const str = '# Default values for api-gateway.\n' +
-      '# This is a YAML-formatted file.\n' +
-      '# Declare variables to be passed into your templates.\n' +
-      'replicaCount: 1\n' +
-      '\n' +
-      'replicaCount: 1\n' +
-      '\n' +
-      'pullPolicy: Alwaysssxx\n' +
-      'image:\n' +
-      '  repository: registry.saas.hand-china.com/choerodon-devops/choerodon-front-devops\n' +
-      '  tag: develop.20180502172827cc\n' +
-      '  pullPolicy: Alwaysss\n' +
-      '  name: mading\n' +
-      '  test: 123';
 
-    const newStr = '# Default values for api-gateway.\n' +
-      '# This is a YAML-formatted file.\n' +
-      '# Declare variables to be passed into your templates.\n' +
-      '\n' +
-      'replicaCount: 2\n' +
-      '\n' +
-      'pullPolicy: Alwaysssxx\n' +
-      'image:\n' +
-      '  repository: registry.saas.hand-china.com/choerodon-devops/choerodon-front-devops\n' +
-      '  tag: develop.20180502172827cc\n' +
-      '  pullPolicy: Alwaysss\n' +
-      '  name: mading';
-    const changes = jsdiff.diffChars(newStr, str);
-    window.console.log(changes);
-
-
-    let lineNumber = 1;
-    return changes.reduce((acc, change) => {
-      const findOnLine = acc.find(c => c.lineNumber === lineNumber);
-
-      if (findOnLine) {
-        Object.assign(findOnLine, change, {
-          modified: true,
-          endLineNumber: (lineNumber + change.count) - 1,
-        });
-      } else if ('added' in change || 'removed' in change) {
-        acc.push(Object.assign({}, change, {
-          lineNumber,
-          modified: undefined,
-          endLineNumber: (lineNumber + change.count) - 1,
-        }));
+  /**
+   * 清除更改的高亮
+   */
+  handleClearMarkers = () => {
+    const editor = this.ace.editor;
+    const markers = this.props.modifyMarkers;
+    Object.values(markers).map((marker) => {
+      if (marker.clazz === 'modifyHighlight-text' || marker.clazz === 'modifyHighlight-line') {
+        editor.session.addMarker(marker.range, 'modifyHighlight-line', 'fullLine', false);
+        editor.session.addMarker(marker.range, 'modifyHighlight-text', 'text', false);
+      } else if (marker.clazz === 'clearLineHeight-line' || marker.clazz === 'clearLineHeight-text') {
+        editor.session.addMarker(marker.range, 'clearLineHeight-line', 'fullLine', false);
+        editor.session.addMarker(marker.range, 'clearLineHeight-text', 'text', false);
       }
-
-      if (!change.removed) {
-        lineNumber += change.count;
-      }
-      return acc;
-    }, []);
+      return marker;
+    });
   };
-  onChange =(values) => {
-    window.console.log('+++');
-    const number = this.state.number;
-    const diffLen = this.state.diffLen;
-    // window.console.log(this.state);
-    if (number === diffLen && this.props.onChange) {
-      this.props.onChange(values);
+  /**
+   * 显示报错行
+   */
+  onChange =_.debounce((values, options) => {
+    const { isTriggerChange } = this.state;
+    if (isTriggerChange) {
+      this.handleModifyHighLight(values, options);
+    } else {
+      this.setState({ isTriggerChange: true });
     }
-  };
+  }, 1000);
+  /**
+   * 设置本次修改的高亮
+   */
+  handleModifyHighLight =(values, options) => {
+    const editor = this.ace.editor;
+    const lines = editor.session.getLength();
+    const prevLineLength = this.state.lines || lines;
+    const { sourceData } = this.state;
+    const start = options.start;
+    const end = options.end;
+    const newValue = editor.session.getLine(start.row);
+    const oldValue = sourceData[start.row];
+    const value = editor.session.getLine(start.row);
+    const range = new Range(start.row, value.split(':')[0].length + 2, end.row, end.column);
+    if (newValue !== oldValue) {
+      if (options.action === 'insert' || (options.action === 'remove' && end.row === start.row && prevLineLength === lines)) {
+        editor.session.addMarker(range, 'modifyHighlight-line', 'fullLine', false);
+        editor.session.addMarker(range, 'modifyHighlight-text', 'text', false);
+      }
+    } else {
+      editor.session.addMarker(range, 'clearLineHeight-line', 'fullLine', false);
+      editor.session.addMarker(range, 'clearLineHeight-text', 'text', false);
+    }
+    this.setState({ lines });
+    const modifyMarkers = editor.session.getMarkers();
+    this.props.onChange(values, modifyMarkers);
+  }
+  /**
+   * 设置属性
+   */
   setOptions =() => {
     const editor = this.ace.editor;
-    // eslint-disable-next-line
-    require('brace/mode/yaml');
-
+    if (this.props.readOnly) {
+      this.ace.editor.setReadOnly(true);
+    }
     editor.setPrintMarginColumn(0);
-    editor.setHighlightGutterLine(false);
-    editor.setWrapBehavioursEnabled(false);
-    editor.getSession().setMode('ace/mode/yaml');
+    // editor.getSession().setMode('ace/mode/yaml');
+    // editor.setTheme('ace/theme/dawn');
   };
+  /**
+   * 初始化值和高亮
+   */
+  handleSetValue =() => {
+    const editor = this.ace.editor;
+    this.setState({ isTriggerChange: false });
+    editor.setValue(this.props.value);
+    if (this.props.highlightMarkers && this.props.highlightMarkers.length) {
+      this.handleHighLight();
+    }
+    const sourceData = this.props.value.split('\n');
+    this.setState({ sourceData });
+  };
+  /**
+   * 设置高亮
+   */
+  handleHighLight = () => {
+    const editor = this.ace.editor;
+    const diff = this.props.highlightMarkers;
+    diff.map((line) => {
+      const range = new Range(line.line, line.startColumn, line.line, line.endColumn);
+      editor.session.addMarker(range, 'Highlight-line', 'fullLine', false);
+      editor.session.addMarker(range, 'lineHeight-text', 'text', false);
+      return diff;
+    });
+  }
 
   render() {
-    const { value, height, width, options, className } = this.props;
+    const { value,totalLine, errorLines } = this.props;
+    this.handleError();
     return (
-      <ReactAce
-        className={className}
-        value={value}
-        showGutter={false}
-        setOptions={options}
-        onChange={this.onChange}
-        style={{ height: height || '800px', width }}
-        ref={(instance) => { this.ace = instance; }} // Let's put things into scope
-      />
+      <div>
+        <div className="ace-error">
+          <span className="deployApp-config-block deployApp-config-lastModify" /> <span className="deployApp-config-title">上次部署修改</span>
+          <span className="deployApp-config-block deployApp-config-modify" /> <span className='deployApp-config-title'>本次修改</span>
+        </div>
+        <ReactAce
+          mode="yaml"
+          theme="dawn"
+          showGutter
+          value={value}
+          onChange={this.onChange}
+          style={{ height: totalLine ? `${totalLine * 16}px` : '500px' }}
+          ref={(instance) => { this.ace = instance; }} // Let's put things into scope
+        />
+      </div>
     );
   }
 }
 
-export default AceForYaml;
+export default HighlightAce;
