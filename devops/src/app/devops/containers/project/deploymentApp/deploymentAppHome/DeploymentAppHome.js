@@ -204,11 +204,19 @@ class DeploymentAppHome extends Component {
   clearStepOne = () => {
     const { DeploymentAppStore } = this.props;
     DeploymentAppStore.setVersions([]);
+    DeploymentAppStore.setValue(null);
     this.setState({
+      current: 1,
       appId: undefined,
       app: null,
       versionId: undefined,
       versionDto: null,
+      envId: undefined,
+      envDto: null,
+      value: null,
+      markers: [],
+      mode: 'new',
+      instanceId: undefined,
     });
   };
 
@@ -300,7 +308,7 @@ class DeploymentAppHome extends Component {
           >
             下一步
           </Button>
-          <Button funcType="raised" onClick={this.clearStepOne}>取消</Button>
+          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -366,6 +374,7 @@ class DeploymentAppHome extends Component {
             下一步
           </Button>
           <Button onClick={this.changeStep.bind(this, 1)} funcType="raised">上一步</Button>
+          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -426,6 +435,7 @@ class DeploymentAppHome extends Component {
             下一步
           </Button>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>上一步</Button>
+          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -481,6 +491,7 @@ class DeploymentAppHome extends Component {
             <Button type="primary" funcType="raised" disabled={!(app && versionId && envId && mode)} onClick={this.handleDeploy}>部署</Button>
           </Permission>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 3)}>上一步</Button>
+          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>取消</Button>
         </section>
       </section>
     );

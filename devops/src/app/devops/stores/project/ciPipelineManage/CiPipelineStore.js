@@ -37,6 +37,7 @@ class BranchStore {
   }
 
   loadPipelines(appId, page = 0, size = 10, projectId = AppState.currentMenuType.id) {
+    this.setCiPipelines([]);
     this.setLoading(true);
     axios.get(`/devops/v1/projects/${projectId}/applications/${appId}/pipelines?page=${page}&size=${size}`)
       .then((res) => {
@@ -61,6 +62,7 @@ class BranchStore {
   }
 
   loadCommits(gitlabProjectId, shas, projectId = AppState.currentMenuType.id) {
+    this.setCommits([]);
     axios.post(`/devops/v1/projects/${projectId}/gitlab_projects/${gitlabProjectId}/commit_sha`, shas)
       .then((res) => {
         const response = this.handleProptError(res);

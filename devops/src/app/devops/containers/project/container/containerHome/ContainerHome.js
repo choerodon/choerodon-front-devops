@@ -51,12 +51,18 @@ class ContainerHome extends Component {
     return true;
   };
 
+  componentWillUnmount() {
+    if (this.state.ws) {
+      this.closeSidebar();
+    }
+  }
+
   /**
    * 获取行
    *
    */
   getColumn = () => {
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     return [{
