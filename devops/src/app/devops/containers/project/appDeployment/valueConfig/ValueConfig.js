@@ -37,6 +37,7 @@ class ValueConfig extends Component {
     const projectId = AppState.currentMenuType.id;
     store.checkYaml(value, projectId)
       .then((data) => {
+        window.console.log(data);
         this.setState({ errorLine: data });
       });
     this.setState({
@@ -89,6 +90,10 @@ class ValueConfig extends Component {
 
   render() {
     const data = this.props.store.getValue;
+    let error = data.errorLines;
+    if(this.state.errorLine !== undefined) {
+     error = this.state.errorLine;
+    }
     const sideDom = (<div className="c7n-region">
       <h2 className="c7n-space-first">对&quot;{this.props.name}&quot;进行修改</h2>
       <p>
@@ -104,7 +109,7 @@ class ValueConfig extends Component {
         <div className="c7n-body-section c7n-border-done">
           <div>
             {data && <Ace
-              errorLines={this.state.errorLine || data.errorLines}
+              errorLines={error}
               totalLine={data.totalLine}
               value={data.yaml}
               highlightMarkers={data.highlightMarkers}
