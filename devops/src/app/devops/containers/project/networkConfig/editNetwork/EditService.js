@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Form, Select, Input, Tooltip, Modal, Progress, Popover, Icon } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
+import classnames from 'classnames';
 import _ from 'lodash';
 import '../../../main.scss';
 import '../createNetwork/NetworkCreate.scss';
@@ -39,6 +40,7 @@ class EditService extends Component {
       0: { versions: [], instances: [], deletedIns: [] },
       instanceLoading: false,
       initVersionlength: 0,// 版本默认值
+      deletedInstance: [],
     };
   }
   componentDidMount() {
@@ -61,10 +63,12 @@ class EditService extends Component {
           app: { loading: false, id: data.appId, dataSource: [{ id: data.appId, name: data.appName, projectId: data.appProjectId }] },
         });
         const length = data.appVersion.length;
+        let deletedInstance = this.state.deletedInstance;
         for(let j = 0; j < length; j += 1) {
-          const instances = _.filter(data.appVersion[j].appInstance, (v) => v.intanceStatus !== 'deleted');
-          const deletedIns = _.filter(data.appVersion[j].appInstance, (v) => v.intanceStatus === 'deleted');
-          this.setState({ [j]: { versions: [data.appVersion[j]], instances, deletedIns } })
+          const instances = _.filter(data.appVersion[j].appInstance, (v) => v.intanceStatus === 'running');
+          const deletedIns = _.filter(data.appVersion[j].appInstance, (v) => v.intanceStatus !== 'running');
+          deletedInstance = deletedInstance.concat(deletedIns);
+          this.setState({ [j]: { versions: [data.appVersion[j]], instances, deletedIns }, deletedInstance })
         }
         this.initVersionsArr(data.appVersion.slice().length);
         this.setState({ SingleData: data, initVersionlength: length });
@@ -264,6 +268,15 @@ class EditService extends Component {
     } else {
       callback();
     }
+  };
+  handleRenderInstance =(liNode, value) => {
+    const { deletedInstance } = this.state;
+    const deleIns = _.map(deletedInstance, 'id');
+    return React.cloneElement(liNode, {
+      className: classnames(liNode.props.className, {
+        'instance-status-disable': deleIns.includes(value),
+      })
+    })
   };
 
   render() {
@@ -490,6 +503,7 @@ class EditService extends Component {
                     initialValue: SingleData && this.state.initVersionlength > index ? _.map(SingleData.appVersion[data.versionIndex].appInstance, 'id') : undefined,
                   })(
                     <Select
+                      key={data.instanceIndex}
                       disabled={!(this.props.form.getFieldValue(`version-${data.versionIndex}`))}
                       onFocus={this.loadInstance.bind(this, data.instanceIndex)}
                       filter
@@ -502,27 +516,30 @@ class EditService extends Component {
                       size="default"
                       optionFilterProp="children"
                       optionLabelProp="children"
-
+                      choiceRender={this.handleRenderInstance}
                       filterOption={
                         (input, option) =>
-                          option.props.children[1]
+                          option.props.children.props.children.props.children
                             .toLowerCase().indexOf(input.toLowerCase()) >= 0
                       }
                     >
                       {this.state[data.instanceIndex].deletedIns.map(opt => (
                         <Option value={opt.id}>
-                          <Tooltip title="实例不正常，建议更换实例">
-                            <span className="icon icon-error status-error-instance status-instance" />
+                          <Tooltip title={Choerodon.languageChange(opt.intanceStatus|| 'null')} placement="right">
+                            <div style={{ display: 'inline-block', width: '98%' }}>
+                              {opt.code}
+                            </div>
                           </Tooltip>
-                          {opt.code}
+
                         </Option>
                       ))}
                       {this.state[data.instanceIndex].instances.map(instancess => (
                         <Option value={instancess.id}>
-                          <Tooltip title="正常">
-                            <span className="icon icon-check_circle status-success-instance status-instance" />
+                          <Tooltip title={'运行中'} placement="right">
+                            <div style={{ display: 'inline-block', width: '98%'  }}>
+                              {instancess.code}
+                            </div>
                           </Tooltip>
-                          {instancess.code}
                         </Option>
                       ))}
                     </Select>,

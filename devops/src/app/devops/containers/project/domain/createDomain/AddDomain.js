@@ -246,7 +246,7 @@ class CreateDomain extends Component {
     } else {
       const { store } = this.props;
       if (this.props.type === 'create') {
-        store.checkPath(this.state.projectId, domain, `/${value}`)
+        store.checkPath(this.state.projectId, domain, `/${value}`, this.state.SingleData.id )
           .then((data) => {
             if (data) {
               callback();

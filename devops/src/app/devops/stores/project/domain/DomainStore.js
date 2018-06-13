@@ -168,8 +168,8 @@ class DomainStore {
       return res;
     });
 
-  checkPath =(projectId, domain, value) =>
-    axios.get(`/devops/v1/projects/${projectId}/ingress/check_domain?domain=${domain}&path=${value}`)
+  checkPath =(projectId, domain, value, id) =>
+    axios.get(`/devops/v1/projects/${projectId}/ingress/check_domain?domain=${domain}&path=${value}&id=${id}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
