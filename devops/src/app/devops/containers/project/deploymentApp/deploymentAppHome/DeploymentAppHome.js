@@ -5,6 +5,7 @@ import { Select, Button, Radio, Steps } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
+import '../../../../components/yamlAce/AceForYaml.scss';
 import './DeployApp.scss';
 import AceForYaml from '../../../../components/yamlAce';
 import SelectApp from '../selectApp';

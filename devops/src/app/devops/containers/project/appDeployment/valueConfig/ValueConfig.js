@@ -8,6 +8,7 @@ import yaml from 'js-yaml';
 import Ace from '../../../../components/yamlAce';
 import '../AppDeploy.scss';
 import '../../../main.scss';
+import '../../../../components/yamlAce/AceForYaml.scss';
 
 const { Sidebar } = Modal;
 const { AppState } = stores;
