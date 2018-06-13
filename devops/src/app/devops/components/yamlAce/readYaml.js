@@ -91,6 +91,7 @@ class HighlightAce extends Component {
    * 显示报错行
    */
   onChange =_.debounce((values, options) => {
+    const editor = this.ace.editor;
     const { isTriggerChange } = this.state;
     if (isTriggerChange) {
       this.handleModifyHighLight(values, options);
@@ -130,6 +131,7 @@ class HighlightAce extends Component {
    */
   setOptions =() => {
     const editor = this.ace.editor;
+    editor.$blockScrolling = Infinity;
     if (this.props.readOnly) {
       this.ace.editor.setReadOnly(true);
     }
