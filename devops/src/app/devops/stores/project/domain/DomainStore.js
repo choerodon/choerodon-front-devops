@@ -125,29 +125,6 @@ class DomainStore {
       if (res) {
         this.setSingleData(data);
       }
-      //   this.setDto(data.pathList);
-      //   const serviseDto = _.map(data.pathList, service =>
-      //     ({
-      //       id: service.serviceId,
-      //       name: service.serviceName,
-      //       serviceStatus: service.serviceStatus,
-      //     }));
-      //   axios.get(`/devops/v1/projects/${projectId}/service?envId=${res.envId}`)
-      //     .then((datass) => {
-      //       const ress = this.handleProptError(datass);
-      //       if (ress) {
-      //         let resss = ress;
-      //         serviseDto.map((s, index) => {
-      //           if (s.serviceStatus !== 'running') {
-      //             resss = resss.concat(serviseDto[index]);
-      //           }
-      //           this.setNetwork(resss);
-      //           return ress;
-      //         });
-      //       }
-      //     });
-      //   return data;
-      // }
       return res;
     });
 
@@ -168,7 +145,7 @@ class DomainStore {
       return res;
     });
 
-  checkPath =(projectId, domain, value, id) =>
+  checkPath =(projectId, domain, value, id = '') =>
     axios.get(`/devops/v1/projects/${projectId}/ingress/check_domain?domain=${domain}&path=${value}&id=${id}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
