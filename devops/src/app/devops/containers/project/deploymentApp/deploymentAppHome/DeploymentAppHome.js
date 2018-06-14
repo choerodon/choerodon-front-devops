@@ -44,6 +44,7 @@ class DeploymentAppHome extends Component {
           this.setState({ versionDto: _.filter(data, v => v.id === versionId)[0] });
         });
     }
+    DeploymentAppStore.setVersions([]);
     DeploymentAppStore.loadEnv();
     const card = document.getElementsByClassName('deployApp-card')[0];
     card.style.minHeight = `${window.innerHeight - 277}px`;
