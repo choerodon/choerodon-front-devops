@@ -443,17 +443,17 @@ class AddService extends Component {
                 }
               >
                 {this.state[data.versionIndex].versions.map(datas => (<Option
-                    value={datas.id}
-                    key={datas.id}
+                  value={datas.id}
+                  key={datas.id}
+                >
+                  <Tooltip
+                    placement="right"
+                    trigger="hover"
+                    title={<p>{datas.version}</p>}
                   >
-                    <Tooltip
-                      placement="right"
-                      trigger="hover"
-                      title={<p>{datas.version}</p>}
-                    >
-                      <span style={{ display: 'inline-block', width: '100%' }}>{datas.version}</span>
-                    </Tooltip>
-                  </Option>),
+                    <span style={{ display: 'inline-block', width: '100%' }}>{datas.version}</span>
+                  </Tooltip>
+                </Option>),
                 )}
               </Select>,
             )}
@@ -489,13 +489,13 @@ class AddService extends Component {
                 }
               >
                 { this.state[data.instanceIndex].instances.map(instancess => (
-                      <Option
-                        key={instancess.id}
-                        value={instancess.id}
-                      >
-                        {instancess.code}
-                      </Option>
-                    ))}
+                  <Option
+                    key={instancess.id}
+                    value={instancess.id}
+                  >
+                    {instancess.code}
+                  </Option>
+                ))}
               </Select>,
             )}
           </FormItem>
@@ -544,6 +544,8 @@ class AddService extends Component {
           {getFieldDecorator('port', {
             rules: [{
               required: true,
+              len: 5,
+              type: 'number',
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
             }, {
             }],
@@ -558,12 +560,14 @@ class AddService extends Component {
           {getFieldDecorator('targetPort', {
             rules: [{
               required: true,
+              len: 5,
+              type: 'number',
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
             }, {
             }],
           })(
             <Input
-              maxLength={10}
+              maxLength={5}
               label={'目标端口'}
               suffix={<Popover
                 overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}

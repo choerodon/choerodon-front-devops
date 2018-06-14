@@ -209,25 +209,29 @@ class CreateDomain extends Component {
    * @type {Function}
    */
   checkName =_.debounce((rule, value, callback) => {
-    // const p = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
+    const p = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)$/;
     const { SingleData } = this.state;
     if (SingleData && SingleData.name === value) {
       callback();
     } else {
-      const { store } = this.props;
-      const envId = this.props.form.getFieldValue('envId');
-      if (envId) {
-        store.checkName(this.state.projectId, value, envId)
-          .then((data) => {
-            if (data) {
-              callback();
-            } else {
-              callback('名称已存在');
-            }
-          })
-          .catch(() => callback());
+      if (p.test(value)) {
+        const { store } = this.props;
+        const envId = this.props.form.getFieldValue('envId');
+        if (envId) {
+          store.checkName(this.state.projectId, value, envId)
+            .then((data) => {
+              if (data) {
+                callback();
+              } else {
+                callback('名称已存在');
+              }
+            })
+            .catch(() => callback());
+        } else {
+          callback('请先选环境');
+        }
       } else {
-        callback('请先选环境');
+        callback('由小写字母、数字、\'-\'或\'.\'组成，并且必须以字母、数字开始和结束');
       }
     }
   }, 1000);
@@ -289,7 +293,7 @@ class CreateDomain extends Component {
    * @type {Function}
    */
   checkDomain =_.debounce((rule, value, callback) => {
-    const p = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
+    const p = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*?/;
     if (p.test(value)) {
       callback();
     } else {
@@ -418,8 +422,6 @@ class CreateDomain extends Component {
               required: true,
               whitespace: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-            }, {
-              validator: this.checkDomain,
             }],
             initialValue: SingleData ? SingleData.domain : '',
           })(
@@ -488,7 +490,7 @@ class CreateDomain extends Component {
               >
                 {this.state[data.pathIndex].deletedService.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
                   {datas.status && datas.status === 'running' && <div className={datas.status && datas.status === 'running' && 'c7n-domain-create-status c7n-domain-create-status_running'}>
-                    {datas.status && datas.status === 'running' && <div>正常</div> }
+                    {datas.status && datas.status === 'running' && <div>运行中</div> }
                   </div> }
                   {datas.status && datas.status === 'deleted' && <div className={datas.status && datas.status === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
                     {datas.status && datas.status === 'deleted' && <div>已删除</div> }
@@ -504,7 +506,7 @@ class CreateDomain extends Component {
                 )}
                 {network.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
                   <div className={'c7n-domain-create-status c7n-domain-create-status_running'}>
-                    <div>正常</div>
+                    <div>运行中</div>
                   </div>
                   {datas.name}</Option>),
                 )}

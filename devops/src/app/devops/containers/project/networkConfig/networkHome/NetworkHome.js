@@ -224,7 +224,7 @@ class NetworkHome extends Component {
               />
               }
               {_.map(versions.appInstance, datas =>
-                (<MouserOverWrapper key={datas.id} width={115} className="c7n-network-square" text={datas.code}>{datas.code}</MouserOverWrapper>))}
+                (<MouserOverWrapper key={datas.id} width={115} className={`${datas.intanceStatus !== 'running' ? 'c7n-network-status-error' : ''} c7n-network-square`} text={datas.code}>{datas.code}</MouserOverWrapper>))}
             </div>))}
         </React.Fragment>
       ),

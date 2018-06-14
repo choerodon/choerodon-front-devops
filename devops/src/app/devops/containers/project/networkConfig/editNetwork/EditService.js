@@ -68,7 +68,7 @@ class EditService extends Component {
           const instances = _.filter(data.appVersion[j].appInstance, (v) => v.intanceStatus === 'running');
           const deletedIns = _.filter(data.appVersion[j].appInstance, (v) => v.intanceStatus !== 'running');
           deletedInstance = deletedInstance.concat(deletedIns);
-          this.setState({ [j]: { versions: [data.appVersion[j]], instances, deletedIns }, deletedInstance })
+          this.setState({ [j]: { versions: [data.appVersion[j]], instances, deletedIns }, deletedInstance });
         }
         this.initVersionsArr(data.appVersion.slice().length);
         this.setState({ SingleData: data, initVersionlength: length });
@@ -335,9 +335,9 @@ class EditService extends Component {
             <p>
               您可在此修改网络配置信息。
               <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" className="c7n-external-link">
-          <span className="c7n-external-link-content">
-              了解详情
-          </span>
+                <span className="c7n-external-link-content">
+                    了解详情
+                </span>
                 <span className="icon icon-open_in_new" />
               </a>
             </p>
@@ -597,6 +597,8 @@ class EditService extends Component {
                 {getFieldDecorator('port', {
                   rules: [{
                     required: true,
+                    len: 5,
+                    type: 'number',
                     message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
                     transform: value => value.toString(),
                   }],
@@ -612,13 +614,15 @@ class EditService extends Component {
                 {getFieldDecorator('targetPort', {
                   rules: [{
                     required: true,
+                    len: 5,
+                    type: 'number',
                     message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
                     transform: value => value.toString(),
                   }],
                   initialValue: SingleData ? SingleData.targetPort : '',
                 })(
                   <Input
-                    maxLength={10}
+                    maxLength={5}
                     label="目标端口"
                     suffix={<Popover
                       overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}

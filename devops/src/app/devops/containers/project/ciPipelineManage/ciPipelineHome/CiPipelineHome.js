@@ -423,8 +423,7 @@ class CiPipelineHome extends Component {
             </a>
           </p>
           {this.filterBar}
-          {(CiPipelineStore.ciPipelines.slice().length && CiPipelineStore.commits.length) ?
-            this.tableCiPipeline : <Loadingbar display />}
+          {this.tableCiPipeline}
         </Content>
       </Page>
     );
