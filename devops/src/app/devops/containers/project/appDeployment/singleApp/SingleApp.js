@@ -29,8 +29,8 @@ class SingleApp extends Component {
       openRemove: false,
       alertType: '',
       loading: false,
-      selectPubPage: 1,
-      selectProPage: 1,
+      selectPubPage: 0,
+      selectProPage: 0,
       appPubLength: 0,
       appProLength: 0,
       appPubDom: [],
@@ -461,6 +461,8 @@ class SingleApp extends Component {
     const appProDom = [];
     let pubLength = 0;
     let proLength = 0;
+    const proPageSize = (10 * pageArr[0]) + 3;
+    const pubPageSize = (10 * pageArr[1]) + 3;
     if (filterValue) {
       allItems = allItems.filter(item =>
         item.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0);
@@ -472,7 +474,7 @@ class SingleApp extends Component {
         } else {
           proLength += 1;
         }
-        if (d.projectId !== projectId && appPubDom.length < 3 * pageArr[1]) {
+        if (d.projectId !== projectId && appPubDom.length < pubPageSize) {
           appPubDom.push(<Option key={[d.id, d.projectId]}>
             <Popover
               placement="right"
@@ -497,7 +499,7 @@ class SingleApp extends Component {
               </div>
             </Popover>
           </Option>);
-        } else if (appProDom.length < 3 * pageArr[0]) {
+        } else if (appProDom.length < proPageSize) {
           appProDom.push(<Option key={[d.id, d.projectId]}>
             <Popover
               placement="right"
@@ -534,10 +536,10 @@ class SingleApp extends Component {
     const { store } = this.props;
     store.setFilterValue(value);
     this.setState({
-      selectPubPage: 1,
-      selectProPage: 1,
+      selectPubPage: 0,
+      selectProPage: 0,
     });
-    this.loadSelectData([1, 1], value);
+    this.loadSelectData([0, 0], value);
   };
 
 
@@ -735,6 +737,9 @@ class SingleApp extends Component {
       </div>
     );
 
+    const proPageSize = (10 * this.state.selectProPage) + 3;
+    const pubPageSize = (10 * this.state.selectPubPage) + 3;
+
     return (
       <div className="c7n-region">
         <Select
@@ -750,7 +755,7 @@ class SingleApp extends Component {
         >
           <OptGroup label="本项目" key="proGroup">
             {this.state.appProDom}
-            { 3 * this.state.selectProPage < this.state.appProLength && (<Option key="more">
+            { proPageSize < this.state.appProLength && (<Option key="more">
               <div role="none" onClick={this.appDomMore.bind(this, 'pro')} className="c7n-option-popover c7n-dom-more">
                 展开更多
               </div>
@@ -758,7 +763,7 @@ class SingleApp extends Component {
           </OptGroup>
           <OptGroup label="应用市场" key="pubGroup">
             {this.state.appPubDom}
-            { 3 * this.state.selectPubPage < this.state.appPubLength && (<Option key="pubMore">
+            { pubPageSize < this.state.appPubLength && (<Option key="pubMore">
               <div role="none" onClick={this.appDomMore.bind(this, 'pub')} className="c7n-option-popover c7n-dom-more">
                 展开更多
               </div>
