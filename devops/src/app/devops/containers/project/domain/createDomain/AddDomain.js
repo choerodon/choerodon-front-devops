@@ -28,13 +28,13 @@ class CreateDomain extends Component {
     const menu = AppState.currentMenuType;
     super(props);
     this.state = {
-      pathArr: [{pathIndex: 0, networkIndex: 0}],
+      pathArr: [{ pathIndex: 0, networkIndex: 0 }],
       projectId: menu.id,
       show: false,
-      0: { deletedService: []},
+      0: { deletedService: [] },
       env: { loading: false, dataSource: [] },
       initServiceLen: 0,
-    }
+    };
   }
   componentDidMount() {
     const { store, id, visible } = this.props;
@@ -43,10 +43,16 @@ class CreateDomain extends Component {
         .then((data) => {
           this.setState({ SingleData: data });
           const len = data.pathList.length;
-          for(let i = 0; i < len; i += 1){
+          for (let i = 0; i < len; i += 1) {
             const list = data.pathList[i];
             if (list.serviceStatus !== 'running') {
-              this.setState({ [i]: {deletedService: [{ name: list.serviceName, id: list.serviceId, status: list.serviceStatus }]} })
+              this.setState({
+                [i]: {
+                  deletedService: [{
+                    name: list.serviceName,
+                    id: list.serviceId,
+                    status: list.serviceStatus,
+                  }] } });
             } else {
               this.setState({ [i]: { deletedService: [] } });
             }
@@ -80,13 +86,13 @@ class CreateDomain extends Component {
    * 加载环境
    */
   loadEnv = () => {
-  const { store } = this.props;
-  this.setState({ env: { loading: true, dataSource: [] } });
-  store.loadEnv(this.state.projectId)
-    .then((data) => {
-      this.setState({ env: { loading: false, dataSource: data } });
-    });
-};
+    const { store } = this.props;
+    this.setState({ env: { loading: true, dataSource: [] } });
+    store.loadEnv(this.state.projectId)
+      .then((data) => {
+        this.setState({ env: { loading: false, dataSource: data } });
+      });
+  };
   /**
    * 提交数据
    * @param e
@@ -119,9 +125,9 @@ class CreateDomain extends Component {
               }
               this.setState({ submitting: false });
             }).catch(() => {
-            this.setState({ submitting: false });
-            Choerodon.prompt(err.response.data.message);
-          });
+              this.setState({ submitting: false });
+              Choerodon.prompt(err.response.data.message);
+            });
         } else {
           postData.domainId = id;
           this.setState({ submitting: true });
@@ -132,9 +138,9 @@ class CreateDomain extends Component {
               }
               this.setState({ submitting: false });
             }).catch(() => {
-            this.setState({ submitting: false });
-            Choerodon.prompt(err.response.data.message);
-          });
+              this.setState({ submitting: false });
+              Choerodon.prompt(err.response.data.message);
+            });
         }
       }
     });
@@ -160,7 +166,7 @@ class CreateDomain extends Component {
         networkIndex: 0,
       });
     }
-    this.setState({ pathArr, [index]: { deletedService: this.state[index -1].deletedService } });
+    this.setState({ pathArr, [index]: { deletedService: this.state[index - 1].deletedService } });
   };
   /**
    * 删除路径
@@ -181,8 +187,8 @@ class CreateDomain extends Component {
     store.loadNetwork(this.state.projectId, value);
     this.props.form.resetFields();
     this.setState({
-      pathArr: [{pathIndex: 0, networkIndex: 0}],
-      0: { deletedService: []},
+      pathArr: [{ pathIndex: 0, networkIndex: 0 }],
+      0: { deletedService: [] },
       initServiceLen: 0,
       SingleData: null,
     });
@@ -242,30 +248,31 @@ class CreateDomain extends Component {
       }
     }
     if (paths.includes(value)) {
-      callback('路径在该域名路径下已存在，请更改域名路径或者路径');
+      callback('路径在该域名路径下已存在，请更改路径或者域名路径');
     } else {
       const { store } = this.props;
       if (this.props.type === 'create') {
-        store.checkPath(this.state.projectId, domain, `/${value}`, this.state.SingleData.id )
+        store.checkPath(this.state.projectId, domain, `/${value}`)
           .then((data) => {
             if (data) {
               callback();
             } else {
-              callback('路径在该域名路径下已存在，请更改域名路径或者路径');
+              callback('路径在该域名路径下已存在，请更改路径或者域名路径');
             }
           })
           .catch((error) => {
             callback();
           });
       } else {
-        const v = this.state.SingleData.pathList[index].path.slice(1,this.state.SingleData.pathList[index].path.length);
-        if (v!==value) {
-          store.checkPath(this.state.projectId, domain, `/${value}`)
+        const v = this.state.SingleData.pathList[index].path
+          .slice(1, this.state.SingleData.pathList[index].path.length);
+        if (v !== value) {
+          store.checkPath(this.state.projectId, domain, `/${value}`, this.state.SingleData.id)
             .then((data) => {
               if (data) {
                 callback();
               } else {
-                callback('路径在该域名路径下已存在，请更改域名路径或者路径');
+                callback('路径在该域名路径下已存在，请更改路径或者域名路径');
               }
             })
             .catch((error) => {
@@ -276,7 +283,7 @@ class CreateDomain extends Component {
         }
       }
     }
-  }, 1000);
+  }, 500);
   /**
    * 检查域名是否符合规则
    * @type {Function}
@@ -288,7 +295,33 @@ class CreateDomain extends Component {
     } else {
       callback('域名只能包含小写字母，数字、"-"、".",且以小写字母或数字开头');
     }
+    const { pathArr } = this.state;
+    const fields = [];
+    pathArr.map((path) => {
+      fields.push(`path-${path.pathIndex}`);
+      return fields;
+    });
+    this.props.form.validateFields(fields, { force: true });
   }, 500);
+  /**
+   * 校验网络是否可用
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkService = (rule, value, callback) => {
+    if (this.props.type === 'create') {
+      callback();
+    } else {
+      const index = parseInt(rule.field.split('-')[1], 10);
+      const deletedIns = _.map(this.state[index].deletedService, 'id');
+      if (deletedIns.includes(value)) {
+        callback('请移除不可用的网络');
+      } else {
+        callback();
+      }
+    }
+  };
 
   render() {
     const { store } = this.props;
@@ -328,7 +361,7 @@ class CreateDomain extends Component {
             rules: [{
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              transform: (value) => { return value && value.toString() },
+              transform: value => value && value.toString(),
             }],
             initialValue: SingleData ? SingleData.envId : undefined,
           })(
@@ -413,10 +446,10 @@ class CreateDomain extends Component {
               },
               ],
               initialValue: SingleData && this.state.initServiceLen > index
-                ? SingleData.pathList[index].path .slice(1,SingleData.pathList[index].path.length): '',
+                ? SingleData.pathList[index].path.slice(1, SingleData.pathList[index].path.length) : '',
             })(
               <Input
-                prefix={"/"}
+                prefix={'/'}
                 disabled={!(this.props.form.getFieldValue('domain'))}
                 maxLength={10}
                 label={Choerodon.languageChange('domain.path')}
@@ -432,6 +465,8 @@ class CreateDomain extends Component {
               rules: [{
                 required: true,
                 message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              }, {
+                validator: this.checkService,
               }],
               initialValue: SingleData && this.state.initServiceLen > index
                 ? SingleData.pathList[index].serviceId : undefined,
@@ -468,7 +503,7 @@ class CreateDomain extends Component {
                   {datas.name}</Option>),
                 )}
                 {network.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
-                   <div className={'c7n-domain-create-status c7n-domain-create-status_running'}>
+                  <div className={'c7n-domain-create-status c7n-domain-create-status_running'}>
                     <div>正常</div>
                   </div>
                   {datas.name}</Option>),

@@ -73,6 +73,7 @@ class EditService extends Component {
         this.initVersionsArr(data.appVersion.slice().length);
         this.setState({ SingleData: data, initVersionlength: length });
       });
+    //
   };
   /**
    * 初始化版本数组
@@ -278,6 +279,23 @@ class EditService extends Component {
       })
     })
   };
+  /**
+   * 校验实例是否可用
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkInstance = (rule, value, callback) => {
+    const index = parseInt(rule.field.split('-')[1], 10);
+    const deletedIns = _.map(this.state[index].deletedIns, 'id');
+    value.map((v) => {
+      if(deletedIns.includes(v)){
+        callback('请移除不可用的实例');
+      } else {
+        callback();
+      }
+    })
+  };
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -347,7 +365,7 @@ class EditService extends Component {
                   rules: [{
                     required: true,
                     message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-                    transform: value => value.toString(),
+                    // transform: value => value.toString(),
                   }],
                   initialValue: SingleData ? SingleData.envId : undefined,
                 })(
@@ -376,7 +394,7 @@ class EditService extends Component {
                   rules: [{
                     required: true,
                     message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-                    transform: value => value.toString(),
+                    // transform: value => value.toString(),
                   }],
                   initialValue: SingleData ? SingleData.appId : undefined,
                 })(
@@ -453,7 +471,7 @@ class EditService extends Component {
                     rules: [{
                       required: true,
                       message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-                      transform: value => value.toString(),
+                      // transform: value => value.toString(),
                     }],
                     initialValue: SingleData && this.state.initVersionlength > index ? SingleData.appVersion[data.versionIndex].id : undefined,
                   })(
@@ -498,7 +516,9 @@ class EditService extends Component {
                     rules: [{
                       required: true,
                       message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-                      transform: value => value.toString(),
+                      // transform: value => value.toString(),
+                    }, {
+                      validator: this.checkInstance
                     }],
                     initialValue: SingleData && this.state.initVersionlength > index ? _.map(SingleData.appVersion[data.versionIndex].appInstance, 'id') : undefined,
                   })(
@@ -524,7 +544,7 @@ class EditService extends Component {
                       }
                     >
                       {this.state[data.instanceIndex].deletedIns.map(opt => (
-                        <Option value={opt.id}>
+                        <Option value={opt.id} key={`${index}-${opt.id}`}>
                           <Tooltip title={Choerodon.languageChange(opt.intanceStatus|| 'null')} placement="right">
                             <div style={{ display: 'inline-block', width: '98%' }}>
                               {opt.code}
@@ -534,7 +554,7 @@ class EditService extends Component {
                         </Option>
                       ))}
                       {this.state[data.instanceIndex].instances.map(instancess => (
-                        <Option value={instancess.id}>
+                        <Option value={instancess.id} key={`${index}-${instancess.id}`}>
                           <Tooltip title={'运行中'} placement="right">
                             <div style={{ display: 'inline-block', width: '98%'  }}>
                               {instancess.code}
