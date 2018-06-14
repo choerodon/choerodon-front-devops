@@ -383,7 +383,7 @@ class EnvPipelineHome extends Component {
                   <span className="c7n-external-link-content">
                   了解详情
                   </span>
-                  <span className="icon-open_in_new" />
+                  <span className="icon-open_in_new icon" />
                 </a>
               </p>
               <Form className="c7n-sidebar-form" layout="vertical">

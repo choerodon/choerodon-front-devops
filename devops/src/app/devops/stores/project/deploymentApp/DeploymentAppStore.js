@@ -16,7 +16,7 @@ class DeploymentAppStore {
   @observable currentInstance = {};
 
   loadApps(id, projectId = AppState.currentMenuType.id) {
-    return axios.get(`/devops/v1/projects/${projectId}/apps/${id}`).then((data) => {
+    return axios.get(`/devops/v1/projects/${projectId}/apps/${id}/detail`).then((data) => {
       const res = this.handleProptError(data);
       return res;
     });
