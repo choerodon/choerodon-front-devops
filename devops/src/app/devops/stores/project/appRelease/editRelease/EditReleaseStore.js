@@ -228,7 +228,7 @@ class EditReleaseStore {
         return res;
       });
   loadApp = (projectId, id) => {
-    axios.get(`/devops/v1/projects/${projectId}/apps/${id}`)
+    axios.get(`/devops/v1/projects/${projectId}/apps/${id}/detail`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {

@@ -309,7 +309,7 @@ class DeployAppHome extends Component {
                         <div className="c7n-store-card-name">
                           {card.name}
                         </div>
-                        <div className="c7n-store-card-source">
+                        <div className="c7n-store-card-des-60">
                           {card.code}
                         </div>
                       </div>
