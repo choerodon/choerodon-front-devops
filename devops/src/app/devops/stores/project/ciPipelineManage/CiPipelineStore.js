@@ -43,17 +43,17 @@ class BranchStore {
       .then((res) => {
         const response = this.handleProptError(res);
         if (response) {
-          this.setCiPipelines(res.content || []);
           this.setPagination({
             current: res.number + 1,
             pageSize: res.size,
             total: res.totalElements,
           });
           if (res.content) {
-            this.loadCommits(res.content[0].gitlabProjectId, _.map(res.content, 'sha'));
+            this.loadCommits(res.content, _.map(res.content, 'sha'));
+          } else {
+            this.setLoading(false);
           }
         }
-        this.setLoading(false);
       })
       .catch((error) => {
         this.setLoading(false);
@@ -61,14 +61,14 @@ class BranchStore {
       });
   }
 
-  loadCommits(gitlabProjectId, shas, projectId = AppState.currentMenuType.id) {
+  loadCommits(content, shas, projectId = AppState.currentMenuType.id) {
     this.setCommits([]);
-    axios.post(`/devops/v1/projects/${projectId}/gitlab_projects/${gitlabProjectId}/commit_sha`, shas)
+    axios.post(`/devops/v1/projects/${projectId}/gitlab_projects/${content[0].gitlabProjectId}/commit_sha`, shas)
       .then((res) => {
         const response = this.handleProptError(res);
         if (response) {
           this.setCommits(res);
-          this.setCiPipelines(this.ciPipelines.slice());
+          this.setCiPipelines(content);
         }
         this.setLoading(false);
       })
