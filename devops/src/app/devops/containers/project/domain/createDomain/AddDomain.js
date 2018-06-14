@@ -251,22 +251,12 @@ class CreateDomain extends Component {
       callback('路径在该域名路径下已存在，请更改路径或者域名路径');
     } else {
       const { store } = this.props;
-      if (this.props.type === 'create') {
-        store.checkPath(this.state.projectId, domain, `/${value}`)
-          .then((data) => {
-            if (data) {
-              callback();
-            } else {
-              callback('路径在该域名路径下已存在，请更改路径或者域名路径');
-            }
-          })
-          .catch((error) => {
-            callback();
-          });
-      } else {
+      if (this.props.type === 'edit' && this.state.initServiceLen > index) {
         const v = this.state.SingleData.pathList[index].path
           .slice(1, this.state.SingleData.pathList[index].path.length);
-        if (v !== value) {
+        if (v === value && domain === this.state.SingleData.domain) {
+          callback();
+        } else {
           store.checkPath(this.state.projectId, domain, `/${value}`, this.state.SingleData.id)
             .then((data) => {
               if (data) {
@@ -278,9 +268,19 @@ class CreateDomain extends Component {
             .catch((error) => {
               callback();
             });
-        } else {
-          callback();
         }
+      } else {
+        store.checkPath(this.state.projectId, domain, `/${value}`)
+          .then((data) => {
+            if (data) {
+              callback();
+            } else {
+              callback('路径在该域名路径下已存在，请更改路径或者域名路径');
+            }
+          })
+          .catch((error) => {
+            callback();
+          });
       }
     }
   }, 500);
@@ -439,8 +439,8 @@ class CreateDomain extends Component {
           >
             {getFieldDecorator(`path-${data.pathIndex}`, {
               rules: [{
-                required: true,
-                message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                // required: true,
+                // message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               }, {
                 validator: this.checkPath,
               },
