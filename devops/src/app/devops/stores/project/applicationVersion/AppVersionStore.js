@@ -10,7 +10,7 @@ class AppVersionStore {
   @observable isRefresh = false;// 页面的loading
   @observable loading = false; // 打开tab的loading
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
+    current: 1, total: 0, pageSize: height <= 900 ? 1 : 1,
   };
 
   @action setPageInfo(page) {

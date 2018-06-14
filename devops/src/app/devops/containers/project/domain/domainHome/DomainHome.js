@@ -158,7 +158,12 @@ class DomainHome extends Component {
       render: record => (
         <div>
           {_.map(record.pathList, instance =>
-            (<div className="c7n-network-col_border" key={`${instance.path}-${instance.serviceId}`}>{instance.serviceName}</div>
+            (<div className="c7n-network-col_border" key={`${instance.path}-${instance.serviceId}`}>
+              <Tooltip title={Choerodon.languageChange(instance.serviceStatus || 'null')} placement="top">
+                <span className={instance.serviceStatus === 'running' ? 'env-status-success' : 'env-status-error'} />
+              </Tooltip>
+              {instance.serviceName}
+            </div>
             ))}
         </div>
       ),
