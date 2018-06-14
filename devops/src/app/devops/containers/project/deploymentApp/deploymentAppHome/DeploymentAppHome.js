@@ -761,7 +761,7 @@ class DeploymentAppHome extends Component {
           <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的部署应用</h2>
           <p>
             部署应用是一个将指定版本的应用部署至指定环境的操作。
-            <a href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/" className="c7n-external-link">
+            <a href="http://v0-5.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>

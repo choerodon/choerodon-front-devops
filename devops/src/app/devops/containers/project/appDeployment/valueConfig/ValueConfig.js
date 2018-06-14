@@ -104,7 +104,7 @@ class ValueConfig extends Component {
       <h2 className="c7n-space-first">对&quot;{this.props.name}&quot;进行修改</h2>
       <p>
         对实例配置信息进行修改后重新部署。
-        <a href="http://choerodon.io/zh/docs/user-guide/deploy/application-deployment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+        <a href="http://v0-5.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
           <span className="c7n-external-link-content">
             了解详情
           </span>

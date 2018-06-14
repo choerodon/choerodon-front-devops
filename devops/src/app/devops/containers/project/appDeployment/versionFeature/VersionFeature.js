@@ -104,7 +104,7 @@ class VersionFeature extends Component {
           <h2 className="c7n-space-first">查看版本&quot;{this.props.version}&quot;的特性</h2>
           <p>
             这些权限会影响此项目及其所有资源。
-            <a href="http://choerodon.io/zh/docs/user-guide/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://v0-5.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">了解详情</span>
             </a>
           </p>

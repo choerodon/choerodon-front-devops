@@ -209,7 +209,7 @@ class DomainHome extends Component {
             <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的域名管理</h2>
             <p>
               域名管理是将您已经预定义好的域名在平台中进行配置，使外部能够通过指定的域名访问到系统内部的实例。
-              <a href="http://choerodon.io/zh/docs/user-guide/deploy/domain-name/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <a href="http://v0-5.choerodon.io/zh/docs/user-guide/deployment-pipeline/ingress/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                     了解详情
                 </span>

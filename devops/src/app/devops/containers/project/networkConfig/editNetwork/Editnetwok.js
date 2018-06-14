@@ -335,7 +335,7 @@ class Editnetwok extends Component {
       <h2 className="c7n-space-first">对网络&quot;{SingleData && SingleData.name}&quot;进行修改</h2>
       <p>
         您可在此修改网络配置信息。
-        <a href="http://choerodon.io/zh/docs/user-guide/deploy/network-management/" className="c7n-external-link">
+        <a href="http://v0-5.choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" className="c7n-external-link">
           <span className="c7n-external-link-content">
               了解详情
           </span>
