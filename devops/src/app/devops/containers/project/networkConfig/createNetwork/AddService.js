@@ -72,10 +72,10 @@ class AddService extends Component {
       this.setState({ 0: { versions, instances: [] } });
     } else {
       const dataSource = _.cloneDeep(versions);
-      for(let j = 0; j < index; j += 1) {
-        const id = parseInt(this.props.form.getFieldValue(`version-${j}`));
-        _.remove(dataSource, (v) => v.id === id);
-        this.setState({ [index]: {versions: dataSource, instances: [] } });
+      for (let j = 0; j < index; j += 1) {
+        const id = parseInt(this.props.form.getFieldValue(`version-${j}`), 10);
+        _.remove(dataSource, v => v.id === id);
+        this.setState({ [index]: { versions: dataSource, instances: [] } });
       }
     }
   };
@@ -91,12 +91,10 @@ class AddService extends Component {
     this.setState({ instanceLoading: true });
     store.loadInstance(this.state.projectId, envId, appId, versionId)
       .then((data) => {
-        this.setState({ [index]: {versions: versions, instances: data } });
+        this.setState({ [index]: { versions, instances: data } });
         this.setState({ instanceLoading: false });
-      })
+      });
   };
-
-
 
   handleSubmit =(e) => {
     e.preventDefault();
@@ -130,9 +128,9 @@ class AddService extends Component {
             }
             this.setState({ submitting: false });
           }).catch((errs) => {
-          this.setState({ submitting: false });
-          Choerodon.prompt(errs.response.data.message);
-        });
+            this.setState({ submitting: false });
+            Choerodon.prompt(errs.response.data.message);
+          });
       }
     });
   };
@@ -175,7 +173,9 @@ class AddService extends Component {
     const { store } = this.props;
     const envId = this.props.form.getFieldValue('envId');
     store.loadVersion(this.state.projectId, envId, value);
-    this.setState({ versionsArr: [{ versionIndex: 0, instanceIndex: 0 }], 0: { versions: [], instances: [] }});
+    this.setState({
+      versionsArr: [{ versionIndex: 0, instanceIndex: 0 }], 0: { versions: [], instances: [] },
+    });
     const str = this.randomString(4);
     const networkValue = `${options.key}-${str}`;
     this.props.form.setFieldsValue({ 'version-0': undefined, 'instance-0': undefined });
@@ -252,6 +252,12 @@ class AddService extends Component {
         });
     }
   };
+  /**
+   * 验证ip
+   * @param rule
+   * @param value
+   * @param callback
+   */
   checkIP =(rule, value, callback) => {
     const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
     if (value) {
@@ -259,6 +265,24 @@ class AddService extends Component {
         callback();
       } else {
         callback('请输入正确的ip类似 (0-255).(0-255).(0-255).(0-255)');
+      }
+    } else {
+      callback();
+    }
+  };
+  /**
+   * 验证端口号
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkPort = (rule, value, callback) => {
+    const p = /^[1-9]\d*$/;
+    if (value) {
+      if (p.test(value) && parseInt(value, 10) >= 1 && parseInt(value, 10) <= 65535) {
+        callback();
+      } else {
+        callback('该字段必须是数字且大小在0-65535之间');
       }
     } else {
       callback();
@@ -544,10 +568,9 @@ class AddService extends Component {
           {getFieldDecorator('port', {
             rules: [{
               required: true,
-              len: 5,
-              type: 'number',
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
             }, {
+              validator: this.checkPort,
             }],
           })(
             <Input maxLength={5} label="端口号" />,
@@ -560,10 +583,9 @@ class AddService extends Component {
           {getFieldDecorator('targetPort', {
             rules: [{
               required: true,
-              len: 5,
-              type: 'number',
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
             }, {
+              validator: this.checkPort,
             }],
           })(
             <Input

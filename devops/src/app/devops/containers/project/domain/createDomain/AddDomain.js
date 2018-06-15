@@ -240,7 +240,7 @@ class CreateDomain extends Component {
    * 检查域名和路径组合的唯一性
    * @type {Function}
    */
-  checkPath =_.debounce((rule, value, callback) => {
+  checkPath =(rule, value, callback) => {
     const { pathArr } = this.state;
     const domain = this.props.form.getFieldValue('domain');
     const index = parseInt(rule.field.split('-')[1], 10);
@@ -287,18 +287,12 @@ class CreateDomain extends Component {
           });
       }
     }
-  }, 500);
+  };
   /**
    * 检查域名是否符合规则
    * @type {Function}
    */
   checkDomain =_.debounce((rule, value, callback) => {
-    const p = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*?/;
-    if (p.test(value)) {
-      callback();
-    } else {
-      callback('域名只能包含小写字母，数字、"-"、".",且以小写字母或数字开头');
-    }
     const { pathArr } = this.state;
     const fields = [];
     pathArr.map((path) => {
@@ -365,7 +359,7 @@ class CreateDomain extends Component {
             rules: [{
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              transform: value => value && value.toString(),
+              // transform: value => value && value.toString(),
             }],
             initialValue: SingleData ? SingleData.envId : undefined,
           })(
@@ -422,6 +416,8 @@ class CreateDomain extends Component {
               required: true,
               whitespace: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+            }, {
+              validator: this.checkDomain,
             }],
             initialValue: SingleData ? SingleData.domain : '',
           })(
