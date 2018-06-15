@@ -188,7 +188,7 @@ class EditVersion extends Component {
           <h2 className="c7n-space-first">查看应用&quot;{this.state.name}&quot;的版本 </h2>
           <p>
             您可以在此查看未发布及已发布的版本，且可以发布未发布的版本。
-            <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>

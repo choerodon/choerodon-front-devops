@@ -143,7 +143,7 @@ class CreateBranch extends Component {
           <h2 className="c7n-space-first">在应用&quot;{this.props.name}&quot;中创建分支</h2>
           <p>
             采用Gitflow工作流模式，请在下面选择分支类型，并填写issue号或版本号，即可创建分支。
-            <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/branch-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/branch-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
               了解详情
               </span>

@@ -221,7 +221,7 @@ class AppReleaseHome extends Component {
           <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的应用发布 </h2>
           <p>
             应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。
-            <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>

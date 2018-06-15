@@ -189,7 +189,7 @@ class AppDetail extends Component {
                   </div>
                 </div>
                 <h1>教程和文档</h1>
-                <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/application-market/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-market/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <span className="c7n-external-link-content">
                     了解详情
                   </span>
