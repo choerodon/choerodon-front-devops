@@ -5,7 +5,6 @@ import React, { Component } from 'react';
 import ReactAce from 'react-ace-editor';
 import ace from 'brace';
 import PropTypes from 'prop-types';
-import { getIn, toJS } from 'immutable';
 import _ from 'lodash';
 import './AceForYaml.scss';
 import 'brace/mode/yaml';

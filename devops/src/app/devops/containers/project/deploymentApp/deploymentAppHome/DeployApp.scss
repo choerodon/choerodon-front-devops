@@ -51,6 +51,10 @@
         width: 512px;
         display: flex;
 
+        .icon-small {
+          font-size: 13px !important;
+        }
+
         .section-text {
           vertical-align: middle;
           font-size: 13px;
@@ -70,7 +74,7 @@
         margin-left: 30px;
 
         .icon {
-          font-size: 13px !important;
+          // font-size: 13px !important;
         }
 
         .section-instance-icon {

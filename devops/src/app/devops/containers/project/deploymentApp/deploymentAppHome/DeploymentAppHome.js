@@ -275,7 +275,7 @@ class DeploymentAppHome extends Component {
                 onClick={this.showSideBar}
               >
                 打开应用列表
-                <span className="icon icon-open_in_new" />
+                <span className="icon icon-open_in_new icon-small" />
               </a>
             </Permission>
           </div>
