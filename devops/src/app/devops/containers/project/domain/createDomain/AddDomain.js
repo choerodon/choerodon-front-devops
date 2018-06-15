@@ -293,12 +293,6 @@ class CreateDomain extends Component {
    * @type {Function}
    */
   checkDomain =_.debounce((rule, value, callback) => {
-    const p = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*?/;
-    if (p.test(value)) {
-      callback();
-    } else {
-      callback('域名只能包含小写字母，数字、"-"、".",且以小写字母或数字开头');
-    }
     const { pathArr } = this.state;
     const fields = [];
     pathArr.map((path) => {
@@ -422,6 +416,8 @@ class CreateDomain extends Component {
               required: true,
               whitespace: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+            },{
+              validator: this.checkDomain,
             }],
             initialValue: SingleData ? SingleData.domain : '',
           })(
