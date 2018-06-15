@@ -181,7 +181,7 @@ class DeployHome extends Component {
           <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的实例</h2>
           <p>
             您可在此用四种方式查看该项目下应用的实例情况。
-            <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/instance/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/instance/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>

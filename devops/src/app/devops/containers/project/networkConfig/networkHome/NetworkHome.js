@@ -320,7 +320,7 @@ class NetworkHome extends Component {
             <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的网络配置</h2>
             <p>
               网络管理是定义了一种访问网络的策略，是指内部的负载均衡以及网络转发，会将网络流量定向转发到指定的单个或者多个实例容器组。
-              <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                  了解详情
                 </span>

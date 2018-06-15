@@ -349,7 +349,7 @@ class CreateDomain extends Component {
       {title}
       <p>
         {content}
-        <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/ingress/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+        <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/ingress/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
           <span className="c7n-external-link-content">
               了解详情
           </span>

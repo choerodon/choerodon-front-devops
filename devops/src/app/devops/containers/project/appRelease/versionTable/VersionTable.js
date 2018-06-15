@@ -151,7 +151,7 @@ class VersionTable extends Component {
       <p>
         {content}
         <a
-          href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-release/"
+          href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-release/"
           rel="nofollow me noopener noreferrer"
           target="_blank"
           className="c7n-external-link"
