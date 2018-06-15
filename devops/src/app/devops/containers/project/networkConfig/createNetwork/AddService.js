@@ -252,6 +252,12 @@ class AddService extends Component {
         });
     }
   };
+  /**
+   * 验证ip
+   * @param rule
+   * @param value
+   * @param callback
+   */
   checkIP =(rule, value, callback) => {
     const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
     if (value) {
@@ -259,6 +265,24 @@ class AddService extends Component {
         callback();
       } else {
         callback('请输入正确的ip类似 (0-255).(0-255).(0-255).(0-255)');
+      }
+    } else {
+      callback();
+    }
+  };
+  /**
+   * 验证端口号
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkPort = (rule, value, callback) => {
+    const p = /^[1-9]\d*$/;
+    if (value) {
+      if (p.test(value)) {
+        callback();
+      } else {
+        callback('该字段必须是数字');
       }
     } else {
       callback();
@@ -544,10 +568,9 @@ class AddService extends Component {
           {getFieldDecorator('port', {
             rules: [{
               required: true,
-              len: 5,
-              type: 'number',
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
             }, {
+              validator: this.checkPort,
             }],
           })(
             <Input maxLength={5} label="端口号" />,
@@ -560,10 +583,9 @@ class AddService extends Component {
           {getFieldDecorator('targetPort', {
             rules: [{
               required: true,
-              len: 5,
-              type: 'number',
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
             }, {
+              validator: this.checkPort,
             }],
           })(
             <Input

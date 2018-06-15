@@ -297,6 +297,25 @@ class EditService extends Component {
     })
   };
 
+  /**
+   * 验证端口号
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkPort = (rule, value, callback) => {
+    const p = /^[1-9]\d*$/;
+    if (value) {
+      if (p.test(value)) {
+        callback();
+      } else {
+        callback('该字段必须是数字');
+      }
+    } else {
+      callback();
+    }
+  };
+
   render() {
     const { getFieldDecorator } = this.props.form;
     const menu = AppState.currentMenuType;
@@ -597,10 +616,10 @@ class EditService extends Component {
                 {getFieldDecorator('port', {
                   rules: [{
                     required: true,
-                    len: 5,
-                    type: 'number',
                     message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
                     transform: value => value.toString(),
+                  }, {
+                    validator: this.checkPort,
                   }],
                   initialValue: SingleData ? SingleData.port : '',
                 })(
@@ -614,10 +633,10 @@ class EditService extends Component {
                 {getFieldDecorator('targetPort', {
                   rules: [{
                     required: true,
-                    len: 5,
-                    type: 'number',
                     message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
                     transform: value => value.toString(),
+                  }, {
+                    validator: this.checkPort,
                   }],
                   initialValue: SingleData ? SingleData.targetPort : '',
                 })(
