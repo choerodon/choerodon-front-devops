@@ -113,7 +113,7 @@ class EditVersion extends Component {
     let page = pagination.current - 1;
     if (Object.keys(filters).length) {
       searchParam = filters;
-      page = 0;
+      // page = 0;
     }
     const postData = {
       searchParam,

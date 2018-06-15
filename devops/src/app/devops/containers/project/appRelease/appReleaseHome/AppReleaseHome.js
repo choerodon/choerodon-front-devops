@@ -179,7 +179,7 @@ class AppReleaseHome extends Component {
     let searchParam = {};
     if (Object.keys(filters).length) {
       searchParam = filters;
-      page = 0;
+      // page = 0;
     }
     const postData = {
       searchParam,

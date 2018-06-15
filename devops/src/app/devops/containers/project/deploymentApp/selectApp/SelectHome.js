@@ -198,7 +198,7 @@ class DeployAppHome extends Component {
     let searchParam = {};
     let page = pagination.current - 1;
     if (Object.keys(filters).length) {
-      page = 0;
+      // page = 0;
       searchParam = filters;
     }
     const postData = {
