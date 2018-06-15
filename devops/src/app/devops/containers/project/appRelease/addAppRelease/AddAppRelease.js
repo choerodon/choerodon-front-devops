@@ -229,10 +229,10 @@ class AddAppRelease extends Component {
       }
     }
     let searchParam = {};
-    let page = pagination.current - 1;
+    const page = pagination.current - 1;
     if (Object.keys(filters).length) {
       searchParam = filters;
-      page = 0;
+      // page = 0;
     }
     const postData = {
       searchParam,
@@ -301,7 +301,7 @@ class AddAppRelease extends Component {
         </section>
         <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" disabled={!(this.state.appId)} onClick={this.changeStep.bind(this, 2)}>下一步</Button>
-          <Button funcType="raised" onClick={this.clearStepOne}>取消</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -354,7 +354,8 @@ class AddAppRelease extends Component {
         </section>
         <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 3)} disabled={!(data.length)}>下一步</Button>
-          <Button onClick={this.changeStep.bind(this, 1)} funcType="raised">上一步</Button>
+          <Button onClick={this.changeStep.bind(this, 1)} style={{ color: 'rgb(63, 81, 181)' }} funcType="raised">上一步</Button>
+          <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -390,7 +391,8 @@ class AddAppRelease extends Component {
         </section>
         <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 4)}>下一步</Button>
-          <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>上一步</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.changeStep.bind(this, 2)}>上一步</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -469,7 +471,8 @@ class AddAppRelease extends Component {
         </section>
         <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" disabled={!(category && contributor && description)} onClick={this.changeStep.bind(this, 5)}>下一步</Button>
-          <Button funcType="raised" onClick={this.changeStep.bind(this, 3)}>上一步</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.changeStep.bind(this, 3)}>上一步</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -522,7 +525,8 @@ class AddAppRelease extends Component {
           <Permission service={['devops-service.application-market.create']}>
             <Button type="primary" loading={this.state.submitting} funcType="raised" onClick={this.handleSubmit}>发布</Button>
           </Permission>
-          <Button funcType="raised" onClick={this.changeStep.bind(this, 4)}>上一步</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.changeStep.bind(this, 4)}>上一步</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>取消</Button>
         </section>
       </section>
     );
@@ -552,7 +556,7 @@ class AddAppRelease extends Component {
           <h2 className="c7n-space-first">在项目&quot;{projectName}&quot;中进行应用发布</h2>
           <p>
             您可以在此按指引分步骤完成应用发布。
-            <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" className="c7n-external-link">
+            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>

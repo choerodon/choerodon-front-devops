@@ -40,7 +40,7 @@ class AppInstance extends Component {
    * @param status 实例状态
    */
   linkDeployDetail = (id, status) => {
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const projectName = AppState.currentMenuType.name;
     const type = AppState.currentMenuType.type;
     const organizationId = AppState.currentMenuType.organizationId;
@@ -72,7 +72,7 @@ class AppInstance extends Component {
    */
   updateConfig = (name, id, envId, verId, appId) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
       idArr: [envId, verId, appId],
       name,
@@ -98,7 +98,7 @@ class AppInstance extends Component {
    */
   activeIst = (id, status) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     store.changeIstActive(projectId, id, status)
       .then((error) => {
         if (error && error.failed) {
@@ -118,7 +118,7 @@ class AppInstance extends Component {
    */
   tableChange =(pagination, filters, sorter, param) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const sort = {};
     if (sorter.column) {
       const { field, order } = sorter;
@@ -143,7 +143,7 @@ class AppInstance extends Component {
    */
   handleCancel =(res) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
       visible: false,
     });
@@ -166,7 +166,7 @@ class AppInstance extends Component {
    */
   handleDelete = (id) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
       loading: true,
     });
@@ -197,7 +197,7 @@ class AppInstance extends Component {
    * @returns {*}
    */
   columnAction = (record) => {
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     if (record.status === 'operating' || !record.connect) {
@@ -281,9 +281,8 @@ class AppInstance extends Component {
   render() {
     const { store } = this.props;
     const ist = store.getIstAll;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const pageInfo = store.getPageInfo;
-
 
     const columns = [{
       title: Choerodon.languageChange('deploy.status'),

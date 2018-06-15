@@ -29,35 +29,47 @@ class SingleApp extends Component {
       openRemove: false,
       alertType: '',
       loading: false,
+      selectPubPage: 0,
+      selectProPage: 0,
+      appPubLength: 0,
+      appProLength: 0,
+      appPubDom: [],
+      appProDom: [],
+      filterValue: '',
     };
+  }
+
+  componentDidMount() {
+    this.loadSelectData([this.state.selectProPage, this.state.selectPubPage], '');
   }
 
   /**
    * 获取应用版本
    */
   loadAppVer = (ids) => {
-    const idArr = ids.split(',');
-    const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    const { verId, envId } = this.state;
-    const envNames = store.getEnvcard;
-    const appNames = store.getAppNames;
-    const envID = envId || (envNames.length ? envNames[0].id : null);
-    this.setState({
-      appId: idArr[0],
-    });
-    store.setAppId(idArr[0]);
-    if (envID) {
-      this.loadInstance(envID, verId, idArr[0]);
-    }
-    if (idArr[0]) {
-      if (idArr[1] === projectId) {
-        store.loadAppVersion(projectId, idArr[0], '');
-      } else {
-        store.loadAppVersion(idArr[1], idArr[0], 'true');
+    if (ids && ids !== 'more') {
+      const idArr = ids.split(',');
+      const { store } = this.props;
+      const projectId = AppState.currentMenuType.id;
+      const { verId, envId } = this.state;
+      const envNames = store.getEnvcard;
+      const envID = envId || (envNames.length ? envNames[0].id : null);
+      this.setState({
+        appId: idArr[0],
+      });
+      store.setAppId(idArr[0]);
+      if (envID) {
+        this.loadInstance(envID, verId, idArr[0]);
       }
-    } else {
-      store.setAppVer([]);
+      if (idArr[0]) {
+        if (idArr[1] === projectId) {
+          store.loadAppVersion(projectId, idArr[0], '');
+        } else {
+          store.loadAppVersion(idArr[1], idArr[0], 'true');
+        }
+      } else {
+        store.setAppVer([]);
+      }
     }
   };
 
@@ -106,7 +118,7 @@ class SingleApp extends Component {
    */
   loadInstance = (envId, verId, appId) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     store.loadInstanceAll(projectId, 0, 10, null, envId, verId, appId);
   };
 
@@ -125,7 +137,7 @@ class SingleApp extends Component {
    * @param status 实例状态
    */
   linkDeployDetail = (id, status) => {
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const projectName = AppState.currentMenuType.name;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
@@ -153,7 +165,7 @@ class SingleApp extends Component {
    */
   tableChange =(pagination, filters, sorter, param) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const { envId, appId, verId } = this.state;
     const envNames = store.getEnvcard;
     const appNames = store.getAppNames;
@@ -187,7 +199,7 @@ class SingleApp extends Component {
    */
   updateConfig = (name, id, envId, verId, appId) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
       idArr: [envId, verId, appId],
       name,
@@ -212,7 +224,7 @@ class SingleApp extends Component {
    */
   handleCancel =(res) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const { envId, appId, verId, page } = this.state;
     const appNames = store.getAppNames;
     const envCard = store.getEnvcard;
@@ -240,7 +252,7 @@ class SingleApp extends Component {
    */
   handleDelete = (id) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const { envId, appId, verId, page } = this.state;
     const appNames = store.getAppNames;
     const envCard = store.getEnvcard;
@@ -275,7 +287,7 @@ class SingleApp extends Component {
    */
   activeIst = (id, status) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const { envId, appId, verId, page } = this.state;
     const appNames = store.getAppNames;
     const envCard = store.getEnvcard;
@@ -341,7 +353,7 @@ class SingleApp extends Component {
    * @returns {*}
    */
   columnAction = (record) => {
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     if (record.status === 'operating' || !record.connect) {
@@ -422,29 +434,47 @@ class SingleApp extends Component {
     }
   };
 
-
-  render() {
+  appDomMore = (type, e) => {
+    e.stopPropagation();
     const { store } = this.props;
-    const { envId, verId, appId } = this.state;
-    const projectId = parseInt(AppState.currentMenuType.id);
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
-    const appNames = store.getAppNames;
-    const appVer = store.getAppVer;
-    const envCard = store.getEnvcard;
-    const ist = store.getIstAll;
-    const envID = envId || (envCard.length ? envCard[0].id : null);
-    const appID = appId || (appNames.length ? appNames[0].id : null);
-    const appName = (appNames.length ? (<React.Fragment>
-      {appNames[0].projectId === projectId ? <span className="icon icon-project c7n-icon-publish" /> : <span className="icon icon-apps c7n-icon-publish" />}
-      {appNames[0].name}</React.Fragment>) : undefined);
-    const appVersion = appVer.length ?
-      _.map(appVer, d => <Option key={d.id}>{d.version}</Option>) : [];
-    const appProDom = [];
+    const filterValue = store.getFilterValue;
+    if (type === 'pro') {
+      const temp = this.state.selectProPage + 1;
+      this.setState({
+        selectProPage: temp,
+      });
+      this.loadSelectData([temp, this.state.selectPubPage], filterValue);
+    } else {
+      const temp = this.state.selectPubPage + 1;
+      this.setState({
+        selectPubPage: temp,
+      });
+      this.loadSelectData([this.state.selectProPage, temp], filterValue);
+    }
+  };
+
+  loadSelectData = (pageArr, filterValue) => {
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    let allItems = store.getAppNames;
     const appPubDom = [];
-    if (appNames.length) {
-      _.map(appNames, (d) => {
+    const appProDom = [];
+    let pubLength = 0;
+    let proLength = 0;
+    const proPageSize = (10 * pageArr[0]) + 3;
+    const pubPageSize = (10 * pageArr[1]) + 3;
+    if (filterValue) {
+      allItems = allItems.filter(item =>
+        item.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0);
+    }
+    if (allItems.length) {
+      _.map(allItems, (d) => {
         if (d.projectId !== projectId) {
+          pubLength += 1;
+        } else {
+          proLength += 1;
+        }
+        if (d.projectId !== projectId && appPubDom.length < pubPageSize) {
           appPubDom.push(<Option key={[d.id, d.projectId]}>
             <Popover
               placement="right"
@@ -469,7 +499,7 @@ class SingleApp extends Component {
               </div>
             </Popover>
           </Option>);
-        } else {
+        } else if (appProDom.length < proPageSize) {
           appProDom.push(<Option key={[d.id, d.projectId]}>
             <Popover
               placement="right"
@@ -493,6 +523,41 @@ class SingleApp extends Component {
         }
       });
     }
+    this.setState({
+      appPubDom,
+      appProDom,
+      appPubLength: pubLength,
+      appProLength: proLength,
+      filterValue,
+    });
+  };
+
+  handleFilter = (value) => {
+    const { store } = this.props;
+    store.setFilterValue(value);
+    this.setState({
+      selectPubPage: 0,
+      selectProPage: 0,
+    });
+    this.loadSelectData([0, 0], value);
+  };
+
+
+  render() {
+    const { store } = this.props;
+    const { envId, verId, appId } = this.state;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    const appNames = store.getAppNames;
+    const appVer = store.getAppVer;
+    const envCard = store.getEnvcard;
+    const ist = store.getIstAll;
+    const envID = envId || (envCard.length ? envCard[0].id : null);
+    const appID = appId || (appNames.length ? appNames[0].id : null);
+    const appName = (appNames.length ? (<React.Fragment>
+      {appNames[0].projectId === projectId ? <span className="icon icon-project c7n-icon-publish" /> : <span className="icon icon-apps c7n-icon-publish" />}
+      {appNames[0].name}</React.Fragment>) : undefined);
+    const appVersion = appVer.length ?
+      _.map(appVer, d => <Option key={d.id}>{d.version}</Option>) : [];
 
     const leftDom = scrollLeft !== 0 ?
       <div role="none" className="c7n-env-push-left icon icon-navigate_before" onClick={this.pushScrollRight} />
@@ -672,6 +737,9 @@ class SingleApp extends Component {
       </div>
     );
 
+    const proPageSize = (10 * this.state.selectProPage) + 3;
+    const pubPageSize = (10 * this.state.selectPubPage) + 3;
+
     return (
       <div className="c7n-region">
         <Select
@@ -680,18 +748,26 @@ class SingleApp extends Component {
           className="c7n-app-select_220"
           onChange={this.loadAppVer}
           optionFilterProp="children"
-          filterOption={(input, option) =>
-            option.props.children.props.children
-              .props.children[1].toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          filterOption={false}
+          onFilterChange={this.handleFilter}
           filter
           allowClear
-          showSearch
         >
-          <OptGroup label="本项目">
-            {appProDom}
+          <OptGroup label="本项目" key="proGroup">
+            {this.state.appProDom}
+            { proPageSize < this.state.appProLength && (<Option key="more">
+              <div role="none" onClick={this.appDomMore.bind(this, 'pro')} className="c7n-option-popover c7n-dom-more">
+                展开更多
+              </div>
+            </Option>)}
           </OptGroup>
-          <OptGroup label="应用市场">
-            {appPubDom}
+          <OptGroup label="应用市场" key="pubGroup">
+            {this.state.appPubDom}
+            { pubPageSize < this.state.appPubLength && (<Option key="pubMore">
+              <div role="none" onClick={this.appDomMore.bind(this, 'pub')} className="c7n-option-popover c7n-dom-more">
+                展开更多
+              </div>
+            </Option>)}
           </OptGroup>
         </Select>
         <Select

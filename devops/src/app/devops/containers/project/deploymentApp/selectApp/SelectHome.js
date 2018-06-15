@@ -198,7 +198,7 @@ class DeployAppHome extends Component {
     let searchParam = {};
     let page = pagination.current - 1;
     if (Object.keys(filters).length) {
-      page = 0;
+      // page = 0;
       searchParam = filters;
     }
     const postData = {
@@ -265,7 +265,7 @@ class DeployAppHome extends Component {
             <h2 className="c7n-space-first">项目&quot;{projectName}&quot;部署选择应用</h2>
             <p>
               您可以在此灵活选择来源于本项目及应用市场的应用，且有列表式及卡片式两种展示方式可以切换。
-              <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/" className="c7n-external-link">
+              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>
@@ -273,6 +273,7 @@ class DeployAppHome extends Component {
               </a>
             </p>
             <Tabs
+              animated={false}
               tabBarExtraContent={<ButtonGroup>
                 <Button onClick={this.changeView.bind(this, 'list')} className={this.state.view === 'list' ? 'c7n-tab-active' : ''}><Icon type="format_list_bulleted" /></Button>
                 <Button onClick={this.changeView.bind(this, 'card')} className={this.state.view === 'card' ? 'c7n-tab-active' : ''}><Icon type="dashboard" /></Button>

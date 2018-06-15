@@ -99,7 +99,7 @@ class NetworkHome extends Component {
     const columns = [{
       title: '状态',
       key: 'status',
-      width: 70,
+      width: 72,
       render: (record) => {
         let statusDom = null;
         switch (record.status) {
@@ -174,8 +174,17 @@ class NetworkHome extends Component {
       sorter: true,
       filters: [],
       render: record => (
-        <MouserOverWrapper text={record.port || ''} width={50}>
+        <MouserOverWrapper text={record.port || ''} width={40}>
           {record.port}</MouserOverWrapper>
+      ),
+    }, {
+      title: '目标端口',
+      key: 'targetPort',
+      sorter: true,
+      filters: [],
+      render: record => (
+        <MouserOverWrapper text={record.targetPort || ''} width={40}>
+          {record.targetPort}</MouserOverWrapper>
       ),
     }, {
       title: '应用',
@@ -220,11 +229,11 @@ class NetworkHome extends Component {
             (<div key={versions.version} role="none" className={`c7n-network-col_border col-${record.id}-${versions.id}`} onClick={this.showChange.bind(this, record.id, versions.id, versions.appInstance.length)}>
               {versions.appInstance && versions.appInstance.length > 1
               && <span className={_.indexOf(upDown, record.id) !== -1
-                ? 'c7n-network-change icon-keyboard_arrow_up' : 'c7n-network-change icon-keyboard_arrow_down'}
+                ? 'c7n-network-change icon icon-keyboard_arrow_up' : 'c7n-network-change icon icon-keyboard_arrow_down'}
               />
               }
               {_.map(versions.appInstance, datas =>
-                (<MouserOverWrapper key={datas.id} width={115} className="c7n-network-square" text={datas.code}>{datas.code}</MouserOverWrapper>))}
+                (<MouserOverWrapper key={datas.id} width={115} className={`${datas.intanceStatus !== 'running' ? 'c7n-network-status-error' : ''} c7n-network-square`} text={datas.code}>{datas.code}</MouserOverWrapper>))}
             </div>))}
         </React.Fragment>
       ),
@@ -320,7 +329,7 @@ class NetworkHome extends Component {
             <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的网络配置</h2>
             <p>
               网络管理是定义了一种访问网络的策略，是指内部的负载均衡以及网络转发，会将网络流量定向转发到指定的单个或者多个实例容器组。
-              <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                  了解详情
                 </span>

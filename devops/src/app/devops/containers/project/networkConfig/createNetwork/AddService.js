@@ -23,7 +23,7 @@ const formItemLayout = {
 const { Option, OptGroup } = Select;
 
 @observer
-class NetworkCreate extends Component {
+class AddService extends Component {
   constructor(props) {
     const menu = AppState.currentMenuType;
     super(props);
@@ -31,40 +31,70 @@ class NetworkCreate extends Component {
       projectId: menu.id,
       versionsArr: [{ versionIndex: 0, instanceIndex: 0 }],
       show: false,
-      selectVersionArr: [],
+      env: { loading: false, id: '', dataSource: [] },
+      app: { loading: false, id: '', dataSource: [] },
+      versions: [],
+      0: { versions: [], instances: [] },
+      instanceLoading: false,
     };
   }
-  componentDidMount() {
-    const { store, visible } = this.props;
-    if (visible) {
-      store.loadEnv(this.state.projectId);
-    }
-  }
-
   /**
-   * 获取实例的options
+   * 加载环境数据
    */
-  getInstanceOptions =(versionId) => {
+  loadEnv = () => {
     const { store } = this.props;
-    const instance = store.getInstance;
-    let instanceOptions = null;
-    let index;
-    if (instance.length && versionId) {
-      index = _.findIndex(instance, ins => ins.id === versionId);
-      if (index !== -1) {
-        instanceOptions = instance[index].options.map(options => (
-          <Option key={options.id} value={options.id} title={options.code}>
-            <Tooltip title="正常">
-              <span className="icon icon-check_circle status-success-instance status-instance" />
-            </Tooltip>
-            {options.code}
-          </Option>
-        ));
-      }
-    }
-    return instanceOptions;
+    this.setState({ env: { loading: true, id: '', dataSource: [] } });
+    store.loadEnv(this.state.projectId)
+      .then((data) => {
+        this.setState({ env: { loading: false, id: '', dataSource: data } });
+      });
   };
 
+  /**
+   * 加载应用数据
+   */
+  loadApp = () => {
+    const { store } = this.props;
+    this.setState({ app: { loading: true, id: '', dataSource: [] } });
+    const envId = this.props.form.getFieldValue('envId');
+    store.loadApp(this.state.projectId, envId)
+      .then((data) => {
+        this.setState({ app: { loading: false, id: '', dataSource: data } });
+      });
+  };
+  /**
+   * 加载版本数据
+   */
+  loadVersion = (index) => {
+    const { store } = this.props;
+    const versions = store.getVersions;
+    if (index === 0) {
+      this.setState({ 0: { versions, instances: [] } });
+    } else {
+      const dataSource = _.cloneDeep(versions);
+      for (let j = 0; j < index; j += 1) {
+        const id = parseInt(this.props.form.getFieldValue(`version-${j}`), 10);
+        _.remove(dataSource, v => v.id === id);
+        this.setState({ [index]: { versions: dataSource, instances: [] } });
+      }
+    }
+  };
+  /**
+   * 加载实例数据
+   */
+  loadInstance = (index) => {
+    const { store } = this.props;
+    const versionId = this.props.form.getFieldValue(`version-${index}`);
+    const envId = this.props.form.getFieldValue('envId');
+    const appId = this.props.form.getFieldValue('appId');
+    const versions = this.state[index].versions;
+    this.setState({ instanceLoading: true });
+    store.loadInstance(this.state.projectId, envId, appId, versionId)
+      .then((data) => {
+        this.setState({ [index]: { versions, instances: data } });
+        this.setState({ instanceLoading: false });
+      });
+  };
 
   handleSubmit =(e) => {
     e.preventDefault();
@@ -128,11 +158,8 @@ class NetworkCreate extends Component {
     const { store } = this.props;
     store.loadApp(this.state.projectId, value);
     this.setState({ versionsArr: [{ versionIndex: 0, instanceIndex: 0 }],
-      versionId: null,
-      instanceId: null,
-      appId: null,
-      envId: value,
-      selectVersionArr: [],
+      app: { loading: false, id: '', dataSource: [] },
+      0: { versions: [], instances: [] },
       networkValue: '',
     });
     this.props.form.resetFields();
@@ -144,60 +171,16 @@ class NetworkCreate extends Component {
    */
   selectApp = (value, options) => {
     const { store } = this.props;
-    store.loadVersion(this.state.projectId, this.state.envId, value);
-    this.setState({ versionsArr: [{ versionIndex: 0, instanceIndex: 0 }],
-      versionId: null,
-      instanceId: null,
+    const envId = this.props.form.getFieldValue('envId');
+    store.loadVersion(this.state.projectId, envId, value);
+    this.setState({
+      versionsArr: [{ versionIndex: 0, instanceIndex: 0 }], 0: { versions: [], instances: [] },
     });
-    store.setInstance([]);
     const str = this.randomString(4);
     const networkValue = `${options.key}-${str}`;
     this.props.form.setFieldsValue({ 'version-0': undefined, 'instance-0': undefined });
     this.setState({
       networkValue,
-      appId: value,
-      selectVersionArr: [],
-    });
-  };
-
-  /**
-   * 选择版本
-   * @param value
-   */
-  selectVersion = (value) => {
-    const { store } = this.props;
-    store.loadInstance(this.state.projectId, this.state.envId, this.state.appId, value);
-    const selectVersionArr = this.state.selectVersionArr || [];
-    if (selectVersionArr.includes(value)) {
-      Choerodon.prompt('该版本已经选过，请更换应用版本');
-    } else if (this.state.versionsArr.length === 1) {
-      if (selectVersionArr.length === 1) {
-        selectVersionArr.pop();
-        selectVersionArr.push(value);
-      } else {
-        selectVersionArr.push(value);
-      }
-    } else {
-      selectVersionArr.push(value);
-    }
-    this.setState({
-      selectVersionArr,
-      versionId: value,
-    });
-  };
-  /**
-   * 选中version的回调
-   * @param value
-   */
-  handleSelecVersion =(value) => {
-    const selectVersionArr = this.state.selectVersionArr || [];
-    if (selectVersionArr.includes(value)) {
-      Choerodon.prompt('该版本已经选过，请更换应用版本');
-    } else {
-      selectVersionArr.push(value);
-    }
-    this.setState({
-      selectVersionArr,
     });
   };
 
@@ -206,7 +189,9 @@ class NetworkCreate extends Component {
    */
   addVersion =() => {
     const versionsArr = this.state.versionsArr;
+    let index;
     if (versionsArr.length) {
+      index = versionsArr[versionsArr.length - 1].versionIndex + 1;
       versionsArr.push(
         { versionIndex: versionsArr[versionsArr.length - 1].versionIndex + 1,
           instanceIndex: versionsArr[versionsArr.length - 1].versionIndex + 1 });
@@ -214,8 +199,9 @@ class NetworkCreate extends Component {
       versionsArr.push(
         { versionIndex: 0,
           instanceIndex: 0 });
+      index = 0;
     }
-    this.setState({ versionsArr });
+    this.setState({ versionsArr, [index]: { versions: [], instances: [] } });
   };
   /**
    * 删除版本
@@ -249,10 +235,11 @@ class NetworkCreate extends Component {
   checkName = (rule, value, callback) => {
     const { store } = this.props;
     const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
+    const envId = this.props.form.getFieldValue('envId');
     if (!pattern.test(value)) {
       callback('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾');
     } else {
-      store.checkDomainName(this.state.projectId, this.state.envId, value)
+      store.checkDomainName(this.state.projectId, envId, value)
         .then((data) => {
           if (data) {
             callback();
@@ -265,6 +252,12 @@ class NetworkCreate extends Component {
         });
     }
   };
+  /**
+   * 验证ip
+   * @param rule
+   * @param value
+   * @param callback
+   */
   checkIP =(rule, value, callback) => {
     const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
     if (value) {
@@ -277,22 +270,38 @@ class NetworkCreate extends Component {
       callback();
     }
   };
+  /**
+   * 验证端口号
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkPort = (rule, value, callback) => {
+    const p = /^[1-9]\d*$/;
+    if (value) {
+      if (p.test(value) && parseInt(value, 10) >= 1 && parseInt(value, 10) <= 65535) {
+        callback();
+      } else {
+        callback('该字段必须是数字且大小在0-65535之间');
+      }
+    } else {
+      callback();
+    }
+  };
 
   render() {
     const { getFieldDecorator } = this.props.form;
     const menu = AppState.currentMenuType;
     const { store, form } = this.props;
-    const app = store.getApp;
-    const env = store.getEnv;
+    const app = this.state.app.dataSource;
+    const env = this.state.env.dataSource;
     const version = store.getVersions;
-    const instance = store.getInstance;
     let hasPath = false;
     let addStatus = false;
     let tooltipTitle = '请先选择一个版本';
     if (version.length <= 1 && this.state.versionId) {
       tooltipTitle = '该应用下没有可选版本';
     }
-    const { selectVersionArr } = this.state;
     const { versionsArr } = this.state;
     if (versionsArr.length) {
       const hasValue = form.getFieldValue(`version-${versionsArr[versionsArr.length - 1].versionIndex}`);
@@ -308,7 +317,7 @@ class NetworkCreate extends Component {
       <p>
         请选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。
         转发内部网络，则只需定义端口即可，系统会自动为您分配集群内部IP；转发外部网络，则需要定义外部IP及端口。
-        <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" className="c7n-external-link">
+        <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" className="c7n-external-link">
           <span className="c7n-external-link-content">
               了解详情
           </span>
@@ -328,8 +337,9 @@ class NetworkCreate extends Component {
             }],
           })(
             <Select
+              onFocus={this.loadEnv}
+              loading={this.state.env.loading}
               dropdownClassName="c7n-network-env"
-              autoFocus
               filter
               showSearch
               className="c7n-create-network-formitem"
@@ -362,9 +372,11 @@ class NetworkCreate extends Component {
             }],
           })(
             <Select
+              disabled={!(this.props.form.getFieldValue('envId'))}
+              onFocus={this.loadApp}
+              loading={this.state.app.loading}
               filter
               className="c7n-create-network-formitem"
-              disabled={!this.state.envId}
               showSearch
               notFoundContent="该环境下没有应用部署"
               label="应用名称"
@@ -374,8 +386,8 @@ class NetworkCreate extends Component {
                 option.props.children.props.children[1].props.children
                   .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              <OptGroup label="本项目">
-                {app && _.filter(app, a => a.projectId === (parseInt(menu.id, 10))).map(v => (
+              <OptGroup label="本项目" key={'project'}>
+                {_.filter(app, a => a.projectId === (parseInt(menu.id, 10))).map(v => (
                   <Option value={v.id} key={v.code}>
                     <Popover
                       placement="right"
@@ -391,13 +403,13 @@ class NetworkCreate extends Component {
                       </div>}
                     >
                       <span className="icon icon-project" />
-                      <span style={{ display: 'inline-block', width: '100%', paddingLeft: 8 }}>{v.name}</span>
+                      <span style={{ display: 'inline-block', paddingLeft: 8 }}>{v.name}</span>
                     </Popover>
                   </Option>
                 ))}
               </OptGroup>
-              <OptGroup label="应用市场">
-                {app && _.filter(app, a => a.projectId !== (parseInt(menu.id, 10))).map(v => (
+              <OptGroup label="应用市场" key={'markert'}>
+                {_.filter(app, a => a.projectId !== (parseInt(menu.id, 10))).map(v => (
                   <Option value={v.id} key={v.code}>
                     <Popover
                       placement="right"
@@ -438,12 +450,12 @@ class NetworkCreate extends Component {
               }],
             })(
               <Select
+                onFocus={this.loadVersion.bind(this, data.versionIndex)}
                 filter
                 notFoundContent="该应用下没有版本生成"
-                disabled={!this.state.appId}
+                disabled={!(this.props.form.getFieldValue('appId'))}
                 label={Choerodon.getMessage('版本', 'version')}
                 showSearch
-                onSelect={this.selectVersion}
                 dropdownMatchSelectWidth
                 size="default"
                 optionFilterProp="children"
@@ -454,10 +466,9 @@ class NetworkCreate extends Component {
                       .toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
-                {version.map(datas => (<Option
+                {this.state[data.versionIndex].versions.map(datas => (<Option
                   value={datas.id}
                   key={datas.id}
-                  disabled={this.state.selectVersionArr.includes(datas.id)}
                 >
                   <Tooltip
                     placement="right"
@@ -483,8 +494,10 @@ class NetworkCreate extends Component {
               }],
             })(
               <Select
+                loading={this.state.instanceLoading}
+                onFocus={this.loadInstance.bind(this, data.instanceIndex)}
                 filter
-                disabled={!this.state.versionId}
+                disabled={!(this.props.form.getFieldValue(`version-${data.versionIndex}`))}
                 label={Choerodon.getMessage('实例', 'instance')}
                 showSearch
                 notFoundContent="该版本下还没有实例"
@@ -499,18 +512,14 @@ class NetworkCreate extends Component {
                       .toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
-                { (instance.length && selectVersionArr.length
-                && instance.length >= versionsArr.length
-                && selectVersionArr.length >= instance.length)
-                  ? _.filter(instance, ver => ver.id === selectVersionArr[index])[0]
-                    .options.map(instancess => (
-                      <Option
-                        key={instancess.id}
-                        value={instancess.id}
-                      >
-                        {instancess.code}
-                      </Option>
-                    )) : <Option key={Math.random().toString()} />}
+                { this.state[data.instanceIndex].instances.map(instancess => (
+                  <Option
+                    key={instancess.id}
+                    value={instancess.id}
+                  >
+                    {instancess.code}
+                  </Option>
+                ))}
               </Select>,
             )}
           </FormItem>
@@ -535,7 +544,7 @@ class NetworkCreate extends Component {
             }],
             initialValue: this.state.networkValue,
           })(
-            <Input disabled={!this.state.appId} label="网络名称" maxLength={25} />,
+            <Input disabled={!(this.props.form.getFieldValue('appId'))} label="网络名称" maxLength={25} />,
           )}
         </FormItem>
         <FormItem
@@ -561,6 +570,7 @@ class NetworkCreate extends Component {
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
             }, {
+              validator: this.checkPort,
             }],
           })(
             <Input maxLength={5} label="端口号" />,
@@ -575,10 +585,11 @@ class NetworkCreate extends Component {
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
             }, {
+              validator: this.checkPort,
             }],
           })(
             <Input
-              maxLength={10}
+              maxLength={5}
               label={'目标端口'}
               suffix={<Popover
                 overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}
@@ -613,4 +624,4 @@ class NetworkCreate extends Component {
   }
 }
 
-export default Form.create({})(withRouter(NetworkCreate));
+export default Form.create({})(withRouter(AddService));

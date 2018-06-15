@@ -69,7 +69,7 @@ class DomainHome extends Component {
     const projectName = menu.name;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
-      title: '域名状态',
+      title: '状态',
       render: (record) => {
         let statusDom = null;
         switch (record.status) {
@@ -117,7 +117,7 @@ class DomainHome extends Component {
         </React.Fragment>);
       },
     }, {
-      title: '域名地址',
+      title: '地址',
       key: 'domain',
       filters: [],
       dataIndex: 'domain',
@@ -158,7 +158,12 @@ class DomainHome extends Component {
       render: record => (
         <div>
           {_.map(record.pathList, instance =>
-            (<div className="c7n-network-col_border" key={instance.serviceName}>{instance.serviceName}</div>
+            (<div className="c7n-network-col_border" key={`${instance.path}-${instance.serviceId}`}>
+              <Tooltip title={Choerodon.languageChange(instance.serviceStatus || 'null')} placement="top">
+                <span className={instance.serviceStatus === 'running' ? 'env-status-success' : 'env-status-error'} />
+              </Tooltip>
+              {instance.serviceName}
+            </div>
             ))}
         </div>
       ),
@@ -255,7 +260,7 @@ class DomainHome extends Component {
             <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的域名管理</h2>
             <p>
               域名管理是将您已经预定义好的域名在平台中进行配置，使外部能够通过指定的域名访问到系统内部的实例。
-              <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/ingress/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/ingress/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                     了解详情
                 </span>
@@ -269,7 +274,7 @@ class DomainHome extends Component {
               pagination={DomainStore.pageInfo}
               columns={columns}
               dataSource={data}
-              rowKey={record => record.domainId}
+              rowKey={record => record.id}
             />
 
           </Content>

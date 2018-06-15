@@ -181,7 +181,7 @@ class AppStoreHome extends Component {
       dataIndex: 'name',
       key: 'name',
     }, {
-      title: Choerodon.getMessage('应用分类', 'Category'),
+      title: Choerodon.getMessage('分类', 'Category'),
       dataIndex: 'category',
       key: 'category',
     }, {
@@ -235,7 +235,7 @@ class AppStoreHome extends Component {
           <h2 className="c7n-space-first">应用市场</h2>
           <p>
             您可以在此查看已发布的应用及其详细信息，并选择版本进行部署。
-            <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/application-market/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-market/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>

@@ -73,6 +73,9 @@ class SingleEnvironment extends Component {
       this.loadInstance(envID, verId, appId);
     } else {
       store.setAppId(false);
+      this.setState({
+        appId: null,
+      });
       this.loadInstance(envID, verId);
     }
   };
@@ -83,7 +86,7 @@ class SingleEnvironment extends Component {
    * @param status 实例状态
    */
   linkDeployDetail = (id, status) => {
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const projectName = AppState.currentMenuType.name;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
@@ -108,7 +111,7 @@ class SingleEnvironment extends Component {
    */
   loadSingleEnv = (id) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const { pageSize, appId } = this.state;
     const envNames = store.getEnvcard;
     const envID = id || envNames[0].id;
@@ -128,7 +131,7 @@ class SingleEnvironment extends Component {
    */
   loadInstance = (envId, verId, appId) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const { pageSize } = this.state;
     store.loadInstanceAll(projectId, 0, pageSize, null, envId, verId, appId);
   };
@@ -142,7 +145,7 @@ class SingleEnvironment extends Component {
    */
   tableChange =(pagination, filters, sorter, param) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const { envId, appId, verId } = this.state;
     const envNames = store.getEnvcard;
     const envID = envId || envNames[0].id;
@@ -174,7 +177,7 @@ class SingleEnvironment extends Component {
    */
   updateConfig = (name, id, envId, verId, appId) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
       idArr: [envId, verId, appId],
       name,
@@ -227,7 +230,7 @@ class SingleEnvironment extends Component {
   handleDelete = (id) => {
     const { store } = this.props;
     const { envId, appId, page } = this.state;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const envNames = store.getEnvcard;
     const envID = envId || (envNames.length ? envNames[0].id : null);
     this.setState({
@@ -259,7 +262,7 @@ class SingleEnvironment extends Component {
    */
   activeIst = (id, status) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const { envId, appId, page } = this.state;
     const envNames = store.getEnvcard;
     const envID = envId || (envNames.length ? envNames[0].id : null);
@@ -286,7 +289,7 @@ class SingleEnvironment extends Component {
    * @returns {*}
    */
   columnAction = (record) => {
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     if (record.status === 'operating' || !record.connect) {
@@ -374,7 +377,7 @@ class SingleEnvironment extends Component {
     const appNames = store.getAppNameByEnv;
     const appID = store.appId;
     const appPageInfo = store.getAppPageInfo;
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
 

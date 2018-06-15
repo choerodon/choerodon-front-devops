@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { Button, Popover, Tooltip } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import LoadingBar from '../../../../components/loadingBar';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import '../../../main.scss';
 import '../AppDeploy.scss';
 import './MutiDeployment.scss';
+
+const { AppState } = stores;
 
 @observer
 class MutiDeployment extends Component {
@@ -28,6 +32,7 @@ class MutiDeployment extends Component {
     const { store } = this.props;
     const appList = store.getMutiData;
     const envNames = store.getEnvcard;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
 
     const trDom = [];
     let envDom = [];
@@ -64,7 +69,9 @@ class MutiDeployment extends Component {
                         </div>
                       </Button>
                     </Popover>
-                    <span className="c7n-deploy-istname c7n-text-ellipsis">{version.version}</span>
+                    <MouserOverWrapper text={version.version} width={160}>
+                      {version.version}
+                    </MouserOverWrapper>
                   </div>
                 </div>))}
               </td>);
@@ -78,13 +85,17 @@ class MutiDeployment extends Component {
 
         trDom.push(<tr>
           <td>
-            {app.publishLevel ? <Tooltip title="应用市场"><span className="icon icon-apps c7n-icon-publish" /></Tooltip> : <Tooltip title="本项目"><span className="icon icon-project c7n-icon-publish" /></Tooltip>}
-            {app.applicationName}
+            <MouserOverWrapper text={app.applicationName} width={150}>
+              {app.projectId === projectId ? <Tooltip title="本项目"><span className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title="应用市场"><span className="icon icon-apps c7n-icon-publish" /></Tooltip>}
+              {app.applicationName}
+            </MouserOverWrapper>
           </td>
           <td><React.Fragment>
             <div className="c7n-deploy-muti-row">
               <div className="c7n-deploy-muti_card">
-                <span className="c7n-deploy-istname c7n-text-ellipsis">{app.latestVersion}</span>
+                <MouserOverWrapper text={app.latestVersion} width={160}>
+                  {app.latestVersion}
+                </MouserOverWrapper>
               </div>
             </div>
           </React.Fragment></td><React.Fragment>{tdDom}</React.Fragment>

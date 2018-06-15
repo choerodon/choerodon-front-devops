@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import { Table, Button } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, stores } from 'choerodon-front-boot';
 import { fromJS, is } from 'immutable';
-import { Obversable } from 'rxjs';
-
 import { commonComponent } from '../../../../components/commonFunction';
 import TimePopover from '../../../../components/timePopover';
 import Loadingbar from '../../../../components/loadingBar';
@@ -52,7 +50,7 @@ class ApplicationVersion extends Component {
   getColumn = () => {
     const { type, id: orgId } = AppState.currentMenuType;
     return [{
-      title: Choerodon.languageChange('app.version'),
+      title: Choerodon.languageChange('app.appVersion'),
       dataIndex: 'version',
       key: 'version',
       sorter: true,
@@ -112,7 +110,7 @@ class ApplicationVersion extends Component {
             <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的应用版本管理</h2>
             <p>
               这些权限会影响此项目及其所有资源。
-              <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-version/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-version/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>

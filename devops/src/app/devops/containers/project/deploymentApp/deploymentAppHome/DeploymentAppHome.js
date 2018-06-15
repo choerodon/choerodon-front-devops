@@ -44,6 +44,7 @@ class DeploymentAppHome extends Component {
           this.setState({ versionDto: _.filter(data, v => v.id === versionId)[0] });
         });
     }
+    DeploymentAppStore.setVersions([]);
     DeploymentAppStore.loadEnv();
     const card = document.getElementsByClassName('deployApp-card')[0];
     card.style.minHeight = `${window.innerHeight - 277}px`;
@@ -173,8 +174,8 @@ class DeploymentAppHome extends Component {
     this.setState({ value, markers });
     DeploymentAppStore.checkYaml(value)
       .then((data) => {
-      this.setState({ errorLine: data });
-    })
+        this.setState({ errorLine: data });
+      });
   };
 
 
@@ -204,11 +205,19 @@ class DeploymentAppHome extends Component {
   clearStepOne = () => {
     const { DeploymentAppStore } = this.props;
     DeploymentAppStore.setVersions([]);
+    DeploymentAppStore.setValue(null);
     this.setState({
+      current: 1,
       appId: undefined,
       app: null,
       versionId: undefined,
       versionDto: null,
+      envId: undefined,
+      envDto: null,
+      value: null,
+      markers: [],
+      mode: 'new',
+      instanceId: undefined,
     });
   };
 
@@ -266,7 +275,7 @@ class DeploymentAppHome extends Component {
                 onClick={this.showSideBar}
               >
                 打开应用列表
-                <span className="icon icon-open_in_new" />
+                <span className="icon icon-open_in_new icon-small" />
               </a>
             </Permission>
           </div>
@@ -300,7 +309,7 @@ class DeploymentAppHome extends Component {
           >
             下一步
           </Button>
-          <Button funcType="raised" onClick={this.clearStepOne}>取消</Button>
+          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -361,11 +370,12 @@ class DeploymentAppHome extends Component {
             type="primary"
             funcType="raised"
             onClick={this.changeStep.bind(this, 3)}
-            disabled={!(this.state.envId && data && data.errorLines === null && (this.state.errorLine === '' || this.state.errorLine === null)  && (this.state.value || (data && data.yaml)))}
+            disabled={!(this.state.envId && data && data.errorLines === null && (this.state.errorLine === '' || this.state.errorLine === null) && (this.state.value || (data && data.yaml)))}
           >
             下一步
           </Button>
           <Button onClick={this.changeStep.bind(this, 1)} funcType="raised">上一步</Button>
+          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -426,6 +436,7 @@ class DeploymentAppHome extends Component {
             下一步
           </Button>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>上一步</Button>
+          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>取消</Button>
         </section>
       </div>
     );
@@ -481,6 +492,7 @@ class DeploymentAppHome extends Component {
             <Button type="primary" funcType="raised" disabled={!(app && versionId && envId && mode)} onClick={this.handleDeploy}>部署</Button>
           </Permission>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 3)}>上一步</Button>
+          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>取消</Button>
         </section>
       </section>
     );
@@ -499,7 +511,7 @@ class DeploymentAppHome extends Component {
           <p>
             应用部署是一个将某版本的应用部署至某环境的操作。您可以在此按指引分步骤完成应用部署。
             <a
-              href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/"
+              href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/"
               className="c7n-external-link"
               rel="nofollow me noopener noreferrer"
               target="_blank"
@@ -524,13 +536,13 @@ class DeploymentAppHome extends Component {
                 status={this.getStatus(2)}
               />
               <Step
-                className={!(envId && data && data.errorLines === null && (this.state.errorLine === ''  || this.state.errorLine === null) && (value || (data && data.yaml))) ? 'step-disabled' : ''}
+                className={!(envId && data && data.errorLines === null && (this.state.errorLine === '' || this.state.errorLine === null) && (value || (data && data.yaml))) ? 'step-disabled' : ''}
                 title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>选择部署模式</span>}
                 onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}
               />
               <Step
-                className={!((mode === 'new' || (mode === 'replace' && instanceId)) && this.state.envId)  ? 'step-disabled' : ''}
+                className={!((mode === 'new' || (mode === 'replace' && instanceId)) && this.state.envId) ? 'step-disabled' : ''}
                 title={<span style={{ color: current === 4 ? '#3F51B5' : '', fontSize: 14 }}>确认信息及部署</span>}
                 onClick={this.changeStep.bind(this, 4)}
                 status={this.getStatus(4)}

@@ -82,8 +82,8 @@
 }
 
 .c7n-create-network-test .ant-select-tags .ant-select-selection--multiple .ant-select-selection__choice {
-  background-color: rgba(0, 0, 0, 0.08) !important;
-  color: #0f0f0f;
+  // background-color: rgba(0, 0, 0, 0.08) !important;
+  // color: #0f0f0f;
 }
 
 .env-status-success {
@@ -102,4 +102,9 @@
   display: inline-block;
   background-color: #d50000;
   margin-right: 5px;
+}
+
+.instance-status-disable {
+  line-height: 20px;
+  background-color: #d50000!important
 }

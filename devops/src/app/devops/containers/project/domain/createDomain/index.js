@@ -1,3 +1,3 @@
-import CreateDomain from './CreateDomain';
+import CreateDomain from './AddDomain';
 
 export default CreateDomain;

@@ -51,12 +51,18 @@ class ContainerHome extends Component {
     return true;
   };
 
+  componentWillUnmount() {
+    if (this.state.ws) {
+      this.closeSidebar();
+    }
+  }
+
   /**
    * 获取行
    *
    */
   getColumn = () => {
-    const projectId = parseInt(AppState.currentMenuType.id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     return [{
@@ -111,6 +117,9 @@ class ContainerHome extends Component {
       sorter: true,
       filters: [],
       filterMultiple: false,
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={300}>
+        {record.name}
+      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('container.app'),
       dataIndex: 'app',
@@ -123,7 +132,9 @@ class ContainerHome extends Component {
           <span>{record.appName}</span>
         </div>
         <div>
-          <span className="c7n-deploy-text_gray">{record.appVersion}</span>
+          <MouserOverWrapper text={record.appVersion} width={200}>
+            <span className="c7n-deploy-text_gray">{record.appVersion}</span>
+          </MouserOverWrapper>
         </div>
       </div>),
     }, {
@@ -134,6 +145,7 @@ class ContainerHome extends Component {
       filters: [],
       filterMultiple: false,
     }, {
+      width: 58,
       title: Choerodon.languageChange('container.usable'),
       dataIndex: 'ready',
       key: 'ready',
@@ -149,6 +161,7 @@ class ContainerHome extends Component {
         {record.ready ? <span className="icon icon-done" /> : <span className="icon icon-close" />}
       </div>),
     }, {
+      width: 93,
       title: Choerodon.languageChange('container.createTime'),
       dataIndex: 'creationDate',
       key: 'creationDate',
@@ -182,7 +195,7 @@ class ContainerHome extends Component {
   loadLog = () => {
     const authToken = document.cookie.split('=')[1];
     const logs = [];
-    const ws = new WebSocket(`ws://POD_WEBSOCKET_URL/ws/log?key=env:${this.state.namespace}.envId:${this.state.envId}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}`);
+    const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${this.state.namespace}.envId:${this.state.envId}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}`);
     const editor = this.ace.editor;
     this.setState({
       ws,
@@ -266,7 +279,7 @@ class ContainerHome extends Component {
         <p>
           容器管理便于您查看和管理Kubernetes中应用实例生成的容器，
           可以实时查看相关容器的地址、创建时间、状态，确定容器是否正常运行且通过健康检查，并且可以查看容器日志进行错误定位和状态监控。
-          <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/container/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/container/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
             <span className="c7n-external-link-content">
               了解详情
             </span>
@@ -299,7 +312,7 @@ class ContainerHome extends Component {
           <h2 className="c7n-space-first">查看容器&quot;{containerName}&quot;的日志</h2>
           <p>
             您可在此查看该容器的日志进行错误定位和状态监控。
-            <a href="http://choerodon.io/zh/docs/user-guide/deployment-pipeline/container/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/container/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>

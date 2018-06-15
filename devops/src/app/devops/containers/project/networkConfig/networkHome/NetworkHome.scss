@@ -1,7 +1,4 @@
 .c7n-network-wrapper {
-  .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
-    padding: 5px 10px!important;
-  }
   .c7n-network-square {
     background-color: rgba(0, 0, 0, 0.08);
     display: inherit;
@@ -131,7 +128,7 @@
   .c7n-network-icon {
     vertical-align: middle;
     font-size: 13px;
-    padding-right: 8px;
+    padding-left: 5px;
   }
 
   .c7n-network-column-version {
@@ -158,5 +155,10 @@
     display: inline-block;
     background-color: #d50000;
     margin-right: 5px;
+  }
+
+  .c7n-network-status-error {
+    color: white !important;
+    background-color: #d50000 !important;
   }
 }

@@ -78,7 +78,6 @@ class TemplateHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      // width: '14%',
       render: (test, record) => (<MouserOverWrapper text={record.name} width={108}>
         {record.name}
       </MouserOverWrapper>),
@@ -91,7 +90,6 @@ class TemplateHome extends Component {
       render: (test, record) => (<MouserOverWrapper text={record.code} width={108}>
         {record.code}
       </MouserOverWrapper>),
-      // width: '14%',
     }, {
       title: Choerodon.languageChange('template.description'),
       dataIndex: 'description',
@@ -101,13 +99,10 @@ class TemplateHome extends Component {
       render: (test, record) => (<MouserOverWrapper text={record.description} width={150}>
         {record.description}
       </MouserOverWrapper>),
-      // width: '14%',
     }, {
-      // width: '30%',
       title: Choerodon.languageChange('template.url'),
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      // sorter: true,
       render: (test, record) => (
         <Tooltip trigger="hover" placement="bottom" title={record.repoUrl}>
           <div className="c7n-template-table">
@@ -121,7 +116,6 @@ class TemplateHome extends Component {
       dataIndex: 'type',
       key: 'type',
       sorter: true,
-      // width: '15%',
       filters: [{
         text: '预定义',
         value: 1,
@@ -134,8 +128,7 @@ class TemplateHome extends Component {
           : <React.Fragment><Icon type="av_timer" /><span className="c7n-template-column-text">自定义</span> </React.Fragment>
       ),
     }, {
-      width: '100px',
-      // className: 'operateIcons',
+      width: '96px',
       key: 'action',
       render: (test, record) => (
         !record.type &&
@@ -233,7 +226,6 @@ class TemplateHome extends Component {
         if (!err) {
           const postData = data;
           postData.organizationId = organizationId;
-          // postData.copyFrom = copyFrom;
           this.setState({
             submitting: true,
           });
@@ -310,14 +302,7 @@ class TemplateHome extends Component {
       this.setState({ show: true, type, id });
     }
   };
-  /**
-   * 选择模板
-   * @param value 模板id
-   * @param option
-   */
-  selectTemplate =(value, option) => {
-    this.setState({ copyFrom: option.key });
-  };
+
   render() {
     const { TemplateStore } = this.props;
     const { getFieldDecorator } = this.props.form;
@@ -398,8 +383,6 @@ class TemplateHome extends Component {
               required: true,
               whitespace: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-            }, {
-              // validator: this.checkName,
             }],
             initialValue: singleData ? singleData.description : '',
           })(
@@ -427,13 +410,10 @@ class TemplateHome extends Component {
               label={'复制于'}
               allowClear
               key="service"
-              // showSearch
               filter
               dropdownMatchSelectWidth
-              // onSelect={this.selectTemplate}
               size="default"
               optionFilterProp="children"
-              // optionLabelProp="value"
               filterOption={
                 (input, option) =>
                   option.props.children.props.children.props.children

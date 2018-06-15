@@ -23,6 +23,7 @@ class AppDeploymentStore {
   @observable appPage = 0;
   @observable appPageSize = 1;
   @observable tabActive = 'instance';
+  @observable filterValue = '';
   @observable envId = false;
   @observable verId = false;
   @observable appId = false;
@@ -49,6 +50,14 @@ class AppDeploymentStore {
 
   @computed get getShow() {
     return this.show;
+  }
+
+  @action setFilterValue(filterValue) {
+    this.filterValue = filterValue;
+  }
+
+  @computed get getFilterValue() {
+    return this.filterValue;
   }
 
   @action setTabActive(tabActive) {

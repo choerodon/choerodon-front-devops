@@ -74,20 +74,27 @@ class AppHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={95}>
+        {record.name}
+      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('app.code'),
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
+      render: (test, record) => (<MouserOverWrapper text={record.code} width={145}>
+        {record.code}
+      </MouserOverWrapper>),
     }, {
       title: Choerodon.languageChange('app.url'),
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={480}>
+      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={450}>
         <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl}</a>
       </MouserOverWrapper>),
     }, {
+      width: '75px',
       title: Choerodon.languageChange('app.active'),
       dataIndex: 'active',
       key: 'active',
@@ -230,14 +237,13 @@ class AppHome extends Component {
     const { AppStore } = this.props;
     const { projectId, id, type, page, copyFrom } = this.state;
     if (type === 'create') {
-      this.setState({
-        submitting: true,
-      });
       this.props.form.validateFieldsAndScroll((err, data) => {
         if (!err) {
           const postData = data;
           postData.projectId = projectId;
-          // postData.applictionTemplateId = copyFrom;
+          this.setState({
+            submitting: true,
+          });
           AppStore.addData(projectId, postData)
             .then((res) => {
               if (res) {
@@ -325,7 +331,7 @@ class AppHome extends Component {
         <h2 className="c7n-space-first">在项目&quot;{menu.name}&quot;中创建应用</h2>
         <p>
           请在下面输入应用编码及名称，也可以选择某个应用模板，快速创建应用。平台会为您自动创建对应的git库以便管理该应用代码。
-          <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
             <span className="c7n-external-link-content">
             了解详情
             </span>
@@ -336,7 +342,7 @@ class AppHome extends Component {
         <h2 className="c7n-space-first">对&quot;{singleData ? singleData.code : ''}&quot;进行修改</h2>
         <p>
           您可在此修改应用名称。
-          <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
             <span className="c7n-external-link-content">
             了解详情
             </span>
@@ -477,7 +483,7 @@ class AppHome extends Component {
             <h2 className="c7n-space-first">项目&quot;{menu.name}&quot;的应用管理</h2>
             <p>
               应用是满足用户某些需求的程序代码的集合，可以是某个解耦的微服务或是某个单体应用。您可在此创建应用、修改应用名称、停用应用、启用应用及分支管理。
-              <a className="c7n-external-link" href="http://choerodon.io/zh/docs/user-guide/development-pipeline/application-management/" rel="nofollow me noopener noreferrer" target="_blank">
+              <a className="c7n-external-link" href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-management/" rel="nofollow me noopener noreferrer" target="_blank">
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>

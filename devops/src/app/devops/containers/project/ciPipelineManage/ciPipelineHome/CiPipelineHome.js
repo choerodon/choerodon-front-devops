@@ -8,6 +8,7 @@ import _ from 'lodash';
 import '../../../main.scss';
 import './CiPipelineHome.scss';
 import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
+import Loadingbar from '../../../../components/loadingBar';
 
 const Option = Select.Option;
 const ICONS = {
@@ -78,7 +79,7 @@ class CiPipelineHome extends Component {
     return (
       <div>
         <Select
-          style={{ width: '512px', marginBottom: '16px' }}
+          className="c7n-app-select_512"
           value={CiPipelineStore.currentApp.id}
           label="选择应用"
           filterOption={(input, option) =>
@@ -414,7 +415,7 @@ class CiPipelineHome extends Component {
           <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的持续集成</h2>
           <p>
             您可在此查看各应用所有持续集成流水线的运行情况。
-            <a href="http://choerodon.io/zh/docs/user-guide/development-pipeline/continuous-integration/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/continuous-integration/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 了解详情
               </span>
@@ -422,7 +423,7 @@ class CiPipelineHome extends Component {
             </a>
           </p>
           {this.filterBar}
-          {this.tableCiPipeline} 
+          {this.tableCiPipeline}
         </Content>
       </Page>
     );

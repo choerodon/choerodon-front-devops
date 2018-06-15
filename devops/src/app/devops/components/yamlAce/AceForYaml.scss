@@ -59,7 +59,7 @@
   }
 
   .deployApp-config-lastModify {
-    background:  #7Bfe94;
+    background: #7Bfe94;
   }
 
   .deployApp-config-modify {
@@ -77,7 +77,7 @@
 
   .deployApp-config-title {
     font-size: 13px;
-    color: #000000;
+    color: #000;
     padding-right: 86px;
   }
 
@@ -95,10 +95,15 @@
 
   .config-error-mes {
     font-size: 12px;
-    color: rgba(0,0,0,0.65);
+    color: rgba(0, 0, 0, 0.65);
     text-align: left;
     line-height: 20px;
     vertical-align: middle;
   }
+
+  .ace_gutter-cell {
+    height: 16px !important;
+  }
+
 }
 
