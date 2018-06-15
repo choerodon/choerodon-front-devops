@@ -39,7 +39,7 @@ class EditService extends Component {
       versions: [],
       0: { versions: [], instances: [], deletedIns: [] },
       instanceLoading: false,
-      initVersionlength: 0,// 版本默认值
+      initVersionlength: 0, // 版本默认值
       deletedInstance: [],
     };
   }
@@ -59,16 +59,24 @@ class EditService extends Component {
         store.loadApp(this.state.projectId, data.envId);
         store.loadVersion(projectId, data.envId, data.appId);
         this.setState({
-          env: { loading: false, id: data.envId, dataSource: [{ id: data.envId, name: data.envName }] },
-          app: { loading: false, id: data.appId, dataSource: [{ id: data.appId, name: data.appName, projectId: data.appProjectId }] },
+          env: {
+            loading: false,
+            id: data.envId,
+            dataSource: [{ id: data.envId, name: data.envName }] },
+          app: {
+            loading: false,
+            id: data.appId,
+            dataSource: [{ id: data.appId, name: data.appName, projectId: data.appProjectId }],
+          },
         });
         const length = data.appVersion.length;
         let deletedInstance = this.state.deletedInstance;
-        for(let j = 0; j < length; j += 1) {
-          const instances = _.filter(data.appVersion[j].appInstance, (v) => v.intanceStatus === 'running');
-          const deletedIns = _.filter(data.appVersion[j].appInstance, (v) => v.intanceStatus !== 'running');
+        for (let j = 0; j < length; j += 1) {
+          const instances = _.filter(data.appVersion[j].appInstance, v => v.intanceStatus === 'running');
+          const deletedIns = _.filter(data.appVersion[j].appInstance, v => v.intanceStatus !== 'running');
           deletedInstance = deletedInstance.concat(deletedIns);
-          this.setState({ [j]: { versions: [data.appVersion[j]], instances, deletedIns }, deletedInstance });
+          this.setState({
+            [j]: { versions: [data.appVersion[j]], instances, deletedIns }, deletedInstance });
         }
         this.initVersionsArr(data.appVersion.slice().length);
         this.setState({ SingleData: data, initVersionlength: length });
@@ -108,15 +116,15 @@ class EditService extends Component {
   loadVersion = (index) => {
     const { store } = this.props;
     const versions = store.getVersions;
-    const { instances, deletedIns }= this.state[index];
+    const { instances, deletedIns } = this.state[index];
     if (index === 0) {
       this.setState({ 0: { versions, instances, deletedIns } });
     } else {
       const dataSource = _.cloneDeep(versions);
-      for(let j = 0; j < index; j += 1) {
-        const id = parseInt(this.props.form.getFieldValue(`version-${j}`));
-        _.remove(dataSource, (v) => v.id === id);
-        this.setState({ [index]: {versions: dataSource, instances, deletedIns  } });
+      for (let j = 0; j < index; j += 1) {
+        const id = parseInt(this.props.form.getFieldValue(`version-${j}`), 10);
+        _.remove(dataSource, v => v.id === id);
+        this.setState({ [index]: { versions: dataSource, instances, deletedIns } });
       }
     }
   };
@@ -128,13 +136,13 @@ class EditService extends Component {
     const versionId = this.props.form.getFieldValue(`version-${index}`);
     const envId = this.props.form.getFieldValue('envId');
     const appId = this.props.form.getFieldValue('appId');
-    const { versions, deletedIns }= this.state[index];
+    const { versions, deletedIns } = this.state[index];
     this.setState({ instanceLoading: true });
     store.loadInstance(this.state.projectId, envId, appId, versionId)
       .then((data) => {
-        this.setState({ [index]: {versions: versions, instances: data, deletedIns } });
+        this.setState({ [index]: { versions, instances: data, deletedIns } });
         this.setState({ instanceLoading: false });
-      })
+      });
   };
 
   handleSubmit =(e) => {
@@ -170,9 +178,9 @@ class EditService extends Component {
             }
             this.setState({ submitting: false });
           }).catch((errs) => {
-          this.setState({ submitting: false });
-          Choerodon.prompt(errs.response.data.message);
-        });
+            this.setState({ submitting: false });
+            Choerodon.prompt(errs.response.data.message);
+          });
       }
     });
   };
@@ -185,7 +193,11 @@ class EditService extends Component {
     const { store } = this.props;
     const envId = this.props.form.getFieldValue('envId');
     store.loadVersion(this.state.projectId, envId, value);
-    this.setState({ versionsArr: [{ versionIndex: 0, instanceIndex: 0 }], 0: { versions: [], instances: [], deletedIns: [] }});
+    this.setState({
+      versionsArr: [
+        { versionIndex: 0, instanceIndex: 0 }],
+      0: { versions: [], instances: [], deletedIns: [] },
+    });
     this.props.form.setFieldsValue({ 'version-0': undefined, 'instance-0': undefined });
   };
 
@@ -214,7 +226,7 @@ class EditService extends Component {
    */
   removeVersion =(index) => {
     const versionsArr = this.state.versionsArr;
-    _.remove(versionsArr, (v) => v.versionIndex === index);
+    _.remove(versionsArr, v => v.versionIndex === index);
     this.setState({ versionsArr, initVersionlength: this.state.initVersionlength - 1 });
   };
   /**
@@ -276,8 +288,8 @@ class EditService extends Component {
     return React.cloneElement(liNode, {
       className: classnames(liNode.props.className, {
         'instance-status-disable': deleIns.includes(value),
-      })
-    })
+      }),
+    });
   };
   /**
    * 校验实例是否可用
@@ -289,12 +301,13 @@ class EditService extends Component {
     const index = parseInt(rule.field.split('-')[1], 10);
     const deletedIns = _.map(this.state[index].deletedIns, 'id');
     value.map((v) => {
-      if(deletedIns.includes(v)){
+      if (deletedIns.includes(v)) {
         callback('请移除不可用的实例');
       } else {
         callback();
       }
-    })
+      return deletedIns;
+    });
   };
 
   /**
@@ -374,7 +387,7 @@ class EditService extends Component {
                   }],
                   initialValue: SingleData ? SingleData.name : '',
                 })(
-                  <Input label="网络名称" maxLength={25} />,
+                  <Input label="网络名称" maxLength={25} readOnly />,
                 )}
               </FormItem>
               <FormItem
@@ -472,7 +485,7 @@ class EditService extends Component {
                             </div>}
                           >
                             <span className="icon icon-apps" />
-                            <span style={{ display: 'inline-block', width: '100%', paddingLeft: 8 }}>{v.name}</span>
+                            <span style={{ display: 'inline-block', paddingLeft: 8 }}>{v.name}</span>
                           </Popover>
                         </Option>
                       ))}
@@ -492,7 +505,8 @@ class EditService extends Component {
                       message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
                       // transform: value => value.toString(),
                     }],
-                    initialValue: SingleData && this.state.initVersionlength > index ? SingleData.appVersion[data.versionIndex].id : undefined,
+                    initialValue: SingleData && this.state.initVersionlength > index
+                      ? SingleData.appVersion[data.versionIndex].id : undefined,
                   })(
                     <Select
                       disabled={!(this.props.form.getFieldValue('appId'))}
@@ -537,7 +551,7 @@ class EditService extends Component {
                       message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
                       // transform: value => value.toString(),
                     }, {
-                      validator: this.checkInstance
+                      validator: this.checkInstance,
                     }],
                     initialValue: SingleData && this.state.initVersionlength > index ? _.map(SingleData.appVersion[data.versionIndex].appInstance, 'id') : undefined,
                   })(
@@ -563,8 +577,8 @@ class EditService extends Component {
                       }
                     >
                       {this.state[data.instanceIndex].deletedIns.map(opt => (
-                        <Option value={opt.id} key={`${index}-${opt.id}`}>
-                          <Tooltip title={Choerodon.languageChange(opt.intanceStatus|| 'null')} placement="right">
+                        <Option value={opt.id} key={`${data.versionIndex}-${opt.id}`}>
+                          <Tooltip title={Choerodon.languageChange(opt.intanceStatus || 'null')} placement="right">
                             <div style={{ display: 'inline-block', width: '98%' }}>
                               {opt.code}
                             </div>
@@ -573,9 +587,9 @@ class EditService extends Component {
                         </Option>
                       ))}
                       {this.state[data.instanceIndex].instances.map(instancess => (
-                        <Option value={instancess.id} key={`${index}-${instancess.id}`}>
+                        <Option value={instancess.id} key={`${data.versionIndex}-${instancess.id}`}>
                           <Tooltip title={'运行中'} placement="right">
-                            <div style={{ display: 'inline-block', width: '98%'  }}>
+                            <div style={{ display: 'inline-block', width: '98%' }}>
                               {instancess.code}
                             </div>
                           </Tooltip>

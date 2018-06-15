@@ -174,8 +174,8 @@ class DeploymentAppHome extends Component {
     this.setState({ value, markers });
     DeploymentAppStore.checkYaml(value)
       .then((data) => {
-      this.setState({ errorLine: data });
-    })
+        this.setState({ errorLine: data });
+      });
   };
 
 
@@ -370,7 +370,7 @@ class DeploymentAppHome extends Component {
             type="primary"
             funcType="raised"
             onClick={this.changeStep.bind(this, 3)}
-            disabled={!(this.state.envId && data && data.errorLines === null && (this.state.errorLine === '' || this.state.errorLine === null)  && (this.state.value || (data && data.yaml)))}
+            disabled={!(this.state.envId && data && data.errorLines === null && (this.state.errorLine === '' || this.state.errorLine === null) && (this.state.value || (data && data.yaml)))}
           >
             下一步
           </Button>
@@ -536,13 +536,13 @@ class DeploymentAppHome extends Component {
                 status={this.getStatus(2)}
               />
               <Step
-                className={!(envId && data && data.errorLines === null && (this.state.errorLine === ''  || this.state.errorLine === null) && (value || (data && data.yaml))) ? 'step-disabled' : ''}
+                className={!(envId && data && data.errorLines === null && (this.state.errorLine === '' || this.state.errorLine === null) && (value || (data && data.yaml))) ? 'step-disabled' : ''}
                 title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>选择部署模式</span>}
                 onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}
               />
               <Step
-                className={!((mode === 'new' || (mode === 'replace' && instanceId)) && this.state.envId)  ? 'step-disabled' : ''}
+                className={!((mode === 'new' || (mode === 'replace' && instanceId)) && this.state.envId) ? 'step-disabled' : ''}
                 title={<span style={{ color: current === 4 ? '#3F51B5' : '', fontSize: 14 }}>确认信息及部署</span>}
                 onClick={this.changeStep.bind(this, 4)}
                 status={this.getStatus(4)}

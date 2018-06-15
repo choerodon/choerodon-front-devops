@@ -229,7 +229,7 @@ class AddAppRelease extends Component {
       }
     }
     let searchParam = {};
-    let page = pagination.current - 1;
+    const page = pagination.current - 1;
     if (Object.keys(filters).length) {
       searchParam = filters;
       // page = 0;

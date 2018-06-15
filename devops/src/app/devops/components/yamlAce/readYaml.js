@@ -6,9 +6,10 @@ import ReactAce from 'react-ace-editor';
 import ace from 'brace';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import './AceForYaml.scss';
 import 'brace/mode/yaml';
 import 'brace/theme/dawn';
+import './AceForYaml.scss';
+
 
 const { Range } = ace.acequire('ace/range');
 /* eslint-disable react/no-string-refs */
@@ -16,7 +17,7 @@ const { Range } = ace.acequire('ace/range');
 class HighlightAce extends Component {
   static propTypes = {
     value: PropTypes.string.isRequired,
-    highlightMarkers: PropTypes.object,
+    highlightMarkers: PropTypes.array,
   };
   static defaultProps = {
     options: {
@@ -43,30 +44,9 @@ class HighlightAce extends Component {
       editor.clearSelection();
     }
     if (this.props.modifyMarkers) {
-     this.handleClearMarkers();
+      this.handleClearMarkers();
     }
   }
-  handleError =() => {
-    const error = this.props.errorLines;
-    if(error && error.length) {
-      const eles = document.getElementsByClassName('ace_gutter-cell');
-      if(eles.length) {
-        for (let i = 0; i < error.length; i += 1){
-          eles[error[i].lineNumber - 1].className = 'ace_gutter-cell ace_error';
-          eles[error[i].lineNumber - 1].title = error[i].errorMsg;
-        }
-      }
-    } else {
-      const eless = document.getElementsByClassName('ace_gutter-cell ace_error');
-      if(eless.length) {
-        const len = eless.length;
-        for (let j = 0; j < len; j += 1){
-          eless[0].title = null;
-          eless[0].className = 'ace_gutter-cell';
-        }
-      }
-    }
-  };
 
   /**
    * 清除更改的高亮
@@ -138,6 +118,30 @@ class HighlightAce extends Component {
     // editor.setTheme('ace/theme/dawn');
   };
   /**
+   * 处理yaml格式错误显示
+   */
+  handleError =() => {
+    const error = this.props.errorLines;
+    if (error && error.length) {
+      const eles = document.getElementsByClassName('ace_gutter-cell');
+      if (eles.length) {
+        for (let i = 0; i < error.length; i += 1) {
+          eles[error[i].lineNumber - 1].className = 'ace_gutter-cell ace_error';
+          eles[error[i].lineNumber - 1].title = error[i].errorMsg;
+        }
+      }
+    } else {
+      const eless = document.getElementsByClassName('ace_gutter-cell ace_error');
+      if (eless.length) {
+        const len = eless.length;
+        for (let j = 0; j < len; j += 1) {
+          eless[0].title = null;
+          eless[0].className = 'ace_gutter-cell';
+        }
+      }
+    }
+  };
+  /**
    * 初始化值和高亮
    */
   handleSetValue =() => {
@@ -165,15 +169,15 @@ class HighlightAce extends Component {
   }
 
   render() {
-    const { value,totalLine, errorLines, isFileError } = this.props;
+    const { value, totalLine, errorLines, isFileError } = this.props;
     this.handleError();
     return (
       <div>
-        <div className="ace-error">
+        { !this.props.readOnly && <div className="ace-error">
           <span className="deployApp-config-block deployApp-config-lastModify" /> <span className="deployApp-config-title">上次部署修改</span>
-          <span className="deployApp-config-block deployApp-config-modify" /> <span className='deployApp-config-title'>本次修改</span>
-          <span className="deployApp-config-error" /><span className='deployApp-config-title'>yaml格式错误</span>
-        </div>
+          <span className="deployApp-config-block deployApp-config-modify" /> <span className="deployApp-config-title">本次修改</span>
+          <span className="deployApp-config-error" /><span className="deployApp-config-title">yaml格式错误</span>
+        </div> }
         <ReactAce
           mode="yaml"
           theme="dawn"
@@ -184,7 +188,7 @@ class HighlightAce extends Component {
           ref={(instance) => { this.ace = instance; }} // Let's put things into scope
         />
         {isFileError && <div className="ace-error-message">
-          <span className='icon icon-error config-icon-error'/> <span className='config-error-mes'>Values文件yaml格式错误，请在应用代码中修改错误并重新生成正确的应用版本。</span>
+          <span className="icon icon-error config-icon-error" /> <span className="config-error-mes">Values文件yaml格式错误，请在应用代码中修改错误并重新生成正确的应用版本。</span>
         </div>}
       </div>
     );

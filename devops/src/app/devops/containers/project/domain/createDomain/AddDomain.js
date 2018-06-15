@@ -416,7 +416,7 @@ class CreateDomain extends Component {
               required: true,
               whitespace: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-            },{
+            }, {
               validator: this.checkDomain,
             }],
             initialValue: SingleData ? SingleData.domain : '',

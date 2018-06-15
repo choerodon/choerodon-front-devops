@@ -72,10 +72,10 @@ class AddService extends Component {
       this.setState({ 0: { versions, instances: [] } });
     } else {
       const dataSource = _.cloneDeep(versions);
-      for(let j = 0; j < index; j += 1) {
-        const id = parseInt(this.props.form.getFieldValue(`version-${j}`));
-        _.remove(dataSource, (v) => v.id === id);
-        this.setState({ [index]: {versions: dataSource, instances: [] } });
+      for (let j = 0; j < index; j += 1) {
+        const id = parseInt(this.props.form.getFieldValue(`version-${j}`), 10);
+        _.remove(dataSource, v => v.id === id);
+        this.setState({ [index]: { versions: dataSource, instances: [] } });
       }
     }
   };
@@ -91,12 +91,10 @@ class AddService extends Component {
     this.setState({ instanceLoading: true });
     store.loadInstance(this.state.projectId, envId, appId, versionId)
       .then((data) => {
-        this.setState({ [index]: {versions: versions, instances: data } });
+        this.setState({ [index]: { versions, instances: data } });
         this.setState({ instanceLoading: false });
-      })
+      });
   };
-
-
 
   handleSubmit =(e) => {
     e.preventDefault();
@@ -130,9 +128,9 @@ class AddService extends Component {
             }
             this.setState({ submitting: false });
           }).catch((errs) => {
-          this.setState({ submitting: false });
-          Choerodon.prompt(errs.response.data.message);
-        });
+            this.setState({ submitting: false });
+            Choerodon.prompt(errs.response.data.message);
+          });
       }
     });
   };
@@ -175,7 +173,9 @@ class AddService extends Component {
     const { store } = this.props;
     const envId = this.props.form.getFieldValue('envId');
     store.loadVersion(this.state.projectId, envId, value);
-    this.setState({ versionsArr: [{ versionIndex: 0, instanceIndex: 0 }], 0: { versions: [], instances: [] }});
+    this.setState({
+      versionsArr: [{ versionIndex: 0, instanceIndex: 0 }], 0: { versions: [], instances: [] },
+    });
     const str = this.randomString(4);
     const networkValue = `${options.key}-${str}`;
     this.props.form.setFieldsValue({ 'version-0': undefined, 'instance-0': undefined });
