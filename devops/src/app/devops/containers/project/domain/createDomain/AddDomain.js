@@ -240,7 +240,7 @@ class CreateDomain extends Component {
    * 检查域名和路径组合的唯一性
    * @type {Function}
    */
-  checkPath =_.debounce((rule, value, callback) => {
+  checkPath =(rule, value, callback) => {
     const { pathArr } = this.state;
     const domain = this.props.form.getFieldValue('domain');
     const index = parseInt(rule.field.split('-')[1], 10);
@@ -287,7 +287,7 @@ class CreateDomain extends Component {
           });
       }
     }
-  }, 500);
+  };
   /**
    * 检查域名是否符合规则
    * @type {Function}
@@ -365,7 +365,7 @@ class CreateDomain extends Component {
             rules: [{
               required: true,
               message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              transform: value => value && value.toString(),
+              // transform: value => value && value.toString(),
             }],
             initialValue: SingleData ? SingleData.envId : undefined,
           })(
