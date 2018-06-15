@@ -306,10 +306,10 @@ class EditService extends Component {
   checkPort = (rule, value, callback) => {
     const p = /^[1-9]\d*$/;
     if (value) {
-      if (p.test(value)) {
+      if (p.test(value) && parseInt(value, 10) >= 1 && parseInt(value, 10) <= 65535) {
         callback();
       } else {
-        callback('该字段必须是数字');
+        callback('该字段必须是数字且值在1-65535之间');
       }
     } else {
       callback();

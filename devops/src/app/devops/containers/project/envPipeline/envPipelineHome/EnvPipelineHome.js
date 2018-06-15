@@ -400,7 +400,7 @@ class EnvPipelineHome extends Component {
                     initialValue: envData ? envData.code : '',
                   })(
                     <Input
-                      maxLength={10}
+                      maxLength={20}
                       label={Choerodon.getMessage('环境编码', 'Environment Code')}
                     />,
                   )}
