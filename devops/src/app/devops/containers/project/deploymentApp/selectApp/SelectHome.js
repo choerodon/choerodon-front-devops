@@ -265,7 +265,7 @@ class DeployAppHome extends Component {
             <h2 className="c7n-space-first">项目&quot;{projectName}&quot;部署选择应用</h2>
             <p>
               您可以在此灵活选择来源于本项目及应用市场的应用，且有列表式及卡片式两种展示方式可以切换。
-              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/" className="c7n-external-link">
+              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                   了解详情
                 </span>
