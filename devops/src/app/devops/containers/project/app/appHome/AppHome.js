@@ -91,7 +91,7 @@ class AppHome extends Component {
       dataIndex: 'repoUrl',
       key: 'repoUrl',
       render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={450}>
-        <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl}</a>
+        <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}</a>
       </MouserOverWrapper>),
     }, {
       width: '75px',
