@@ -1,4 +1,3 @@
-/* eslint-disable react/no-string-refs */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
@@ -72,7 +71,7 @@ class ValueConfig extends Component {
     store.checkYaml(value, projectId)
       .then((datas) => {
         this.setState({ errorLine: datas });
-        if (datas === '') {
+        if (datas === '' && !(this.props.store.getValue.errorLines)) {
           store.reDeploy(projectId, data)
             .then((res) => {
               if (res && res.failed) {
