@@ -101,6 +101,28 @@ class AppStoreHome extends Component {
   };
 
   /**
+   * 跳转导入chart界面
+   */
+  importChart = () => {
+    const projectId = AppState.currentMenuType.id;
+    const organizationId = AppState.currentMenuType.organizationId;
+    const projectName = AppState.currentMenuType.name;
+    const type = AppState.currentMenuType.type;
+    this.linkToChange(`/devops/appstore/import?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+  };
+
+  /**
+   * 跳转导出chart界面
+   */
+  exportChart = () => {
+    const projectId = AppState.currentMenuType.id;
+    const organizationId = AppState.currentMenuType.organizationId;
+    const projectName = AppState.currentMenuType.name;
+    const type = AppState.currentMenuType.type;
+    this.linkToChange(`/devops/appstore/export?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+  };
+
+  /**
    * 加载应用卡片
    */
   loadAppCards = () => {
@@ -223,6 +245,20 @@ class AppStoreHome extends Component {
     return (
       <Page className="c7n-region page-container">
         <Header title={Choerodon.languageChange('appstore.title')}>
+          <Button
+            funcType="flat"
+            onClick={this.importChart}
+          >
+            <span className="icon icon-get_app" />
+            <span>{Choerodon.getMessage('导入', 'Import')}</span>
+          </Button>
+          <Button
+            funcType="flat"
+            onClick={this.exportChart}
+          >
+            <span className="icon-file_upload icon" />
+            <span>{Choerodon.getMessage('导出', 'Export')}</span>
+          </Button>
           <Button
             funcType="flat"
             onClick={this.reload}
