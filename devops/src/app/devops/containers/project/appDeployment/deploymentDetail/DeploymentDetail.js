@@ -179,7 +179,7 @@ class DeploymentDetail extends Component {
           <h2 className="c7n-space-first">查看应用&quot;{projectName}&quot;的实例详情</h2>
           <p>
             您可在此查看该实例的运行详情及部署详情。运行详情包括各资源对象的基本信息；部署详情包括配置信息及部署阶段及日志。
-            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/instance/" className="c7n-external-link">
+            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/instance/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">了解详情</span>
               <span className="icon icon-open_in_new" />
             </a>
