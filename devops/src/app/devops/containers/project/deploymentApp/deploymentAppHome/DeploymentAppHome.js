@@ -20,6 +20,7 @@ class DeploymentAppHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      is_project: !props.match.params.appId,
       appId: props.match.params.appId || undefined,
       versionId: props.match.params.verId || undefined,
       current: props.match.params.appId ? 2 : 1,
@@ -27,6 +28,7 @@ class DeploymentAppHome extends Component {
       storeId: props.match.params.storeId,
       mode: 'new',
       markers: null,
+      projectId: AppState.currentMenuType.id,
     };
   }
 
@@ -39,7 +41,7 @@ class DeploymentAppHome extends Component {
           this.setState({ app: data });
         });
       const versionId = parseInt(this.state.versionId, 10);
-      DeploymentAppStore.loadVersion(this.state.appId)
+      DeploymentAppStore.loadVersion(this.state.appId, this.state.projectId, true)
         .then((data) => {
           this.setState({ versionDto: _.filter(data, v => v.id === versionId)[0] });
         });
@@ -109,11 +111,11 @@ class DeploymentAppHome extends Component {
     const { DeploymentAppStore } = this.props;
     if (app) {
       if (key === '1') {
-        DeploymentAppStore.loadVersion(app.id);
-        this.setState({ app, appId: app.id, show: false });
+        DeploymentAppStore.loadVersion(app.id, this.state.projectId, '');
+        this.setState({ app, appId: app.id, show: false, is_project: true });
       } else {
-        DeploymentAppStore.loadVersion(app.appId);
-        this.setState({ app, appId: app.appId, show: false });
+        DeploymentAppStore.loadVersion(app.appId, this.state.projectId, true);
+        this.setState({ app, appId: app.appId, show: false, is_project: false });
       }
     } else {
       this.setState({ show: false });
@@ -265,7 +267,7 @@ class DeploymentAppHome extends Component {
           </div>
           <div className="deploy-text">
             {this.state.app && <div className="section-text-margin">
-              <span className={`icon ${this.state.app.projectId === proId ? 'icon-project' : 'icon-apps'} section-text-icon`} />
+              <span className={`icon ${this.state.is_project ? 'icon-project' : 'icon-apps'} section-text-icon`} />
               <span className="section-text">{this.state.app.name}({this.state.app.code})</span>
             </div>}
             <Permission service={['devops-service.application.pageByOptions', 'devops-service.application-market.listAllApp']}>

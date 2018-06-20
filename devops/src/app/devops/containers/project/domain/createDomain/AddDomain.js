@@ -256,12 +256,13 @@ class CreateDomain extends Component {
     } else {
       const { store } = this.props;
       if (this.props.type === 'edit' && this.state.initServiceLen > index) {
+        const id = this.state.SingleData.id;
         const v = this.state.SingleData.pathList[index].path
           .slice(1, this.state.SingleData.pathList[index].path.length);
         if (v === value && domain === this.state.SingleData.domain) {
           callback();
         } else {
-          store.checkPath(this.state.projectId, domain, `/${value}`, this.state.SingleData.id)
+          store.checkPath(this.state.projectId, domain, `/${value}`, id)
             .then((data) => {
               if (data) {
                 callback();
@@ -300,6 +301,7 @@ class CreateDomain extends Component {
       return fields;
     });
     this.props.form.validateFields(fields, { force: true });
+    callback();
   }, 500);
   /**
    * 校验网络是否可用
@@ -337,7 +339,7 @@ class CreateDomain extends Component {
       }
     }
     const title = this.props.type === 'create' ? <h2 className="c7n-space-first">在项目&quot;{menu.name}&quot;中创建域名</h2> : <h2 className="c7n-space-first">对域名&quot;{SingleData && SingleData.name}&quot;进行修改</h2>;
-    const content = this.props.type === 'create' ? '请选择环境，填写网络名称、地址、路径，并选择网络配置域名访问规则' :
+    const content = this.props.type === 'create' ? '请选择环境，填写域名名称、地址、路径，并选择网络配置域名访问规则' :
       '您可在此修改域名配置信息';
     const contentDom = this.props.visible ? (<div className="c7n-region c7n-domainCreate-wrapper">
       {title}

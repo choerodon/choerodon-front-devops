@@ -152,9 +152,16 @@ class DeployAppHome extends Component {
    */
   handleSearch =(e) => {
     this.setState({ val: e.target.value });
-    SelectAppStore.loadData({
-      projectId: this.state.projectId, postData: { param: e.target.value, searchParam: {} } });
-  }
+    if (this.state.activeTab === '1') {
+      SelectAppStore.loadData({
+        projectId: this.state.projectId, postData: { param: e.target.value, searchParam: {} } });
+    } else {
+      SelectAppStore.loadApps({
+        projectId: this.state.projectId,
+        postData: { param: e.target.value, searchParam: {} },
+      });
+    }
+  };
   /**
    * 清空搜索框数据
    */
@@ -196,7 +203,7 @@ class DeployAppHome extends Component {
       }
     }
     let searchParam = {};
-    let page = pagination.current - 1;
+    const page = pagination.current - 1;
     if (Object.keys(filters).length) {
       // page = 0;
       searchParam = filters;
@@ -214,7 +221,7 @@ class DeployAppHome extends Component {
         pageSize: pagination.pageSize,
       });
     } else {
-      SelectAppStore.loadApp({
+      SelectAppStore.loadApps({
         projectId: organizationId,
         sorter: sort,
         postData,

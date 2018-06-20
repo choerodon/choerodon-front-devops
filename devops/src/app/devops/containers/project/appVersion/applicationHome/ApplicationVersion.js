@@ -109,7 +109,7 @@ class ApplicationVersion extends Component {
           <Content>
             <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的应用版本管理</h2>
             <p>
-              这些权限会影响此项目及其所有资源。
+              应用版本是应用迭代升级生成的版本。您可在此查看版本号、应用编码、应用名称以及版本生成时间。
               <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-version/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                   了解详情

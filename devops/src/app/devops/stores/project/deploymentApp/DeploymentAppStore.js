@@ -1,5 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
+
 const { AppState } = stores;
 
 @store('DeploymentAppStore')
@@ -22,8 +23,8 @@ class DeploymentAppStore {
     });
   }
 
-  loadVersion(appId, projectId = AppState.currentMenuType.id) {
-    return axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version/list`)
+  loadVersion(appId, projectId, flag = '') {
+    return axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version/list?is_publish=${flag}`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -54,8 +55,8 @@ class DeploymentAppStore {
         return res;
       });
   }
-  checkYaml = (value, projectId = AppState.currentMenuType.id)=> {
-    return axios.post(`/devops/v1/projects/${projectId}/app_instances/value_format`, { yaml: value })
+  checkYaml = (value, projectId = AppState.currentMenuType.id) => {
+    return axios.post(`/devops/v1/projects/${projectId}/app_instances/value_format`, { yaml: value });
   };
 
   loadInstances(appId, envId, projectId = AppState.currentMenuType.id) {
