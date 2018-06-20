@@ -8,7 +8,7 @@ import { asyncRouter, nomatch } from 'choerodon-front-boot';
 const AppStoreHome = asyncRouter(() => import('./appStoreHome'), () => import('../../../stores/project/appStore'));
 const AppDetail = asyncRouter(() => import('./appDetail'), () => import('../../../stores/project/appStore'));
 const ImportChart = asyncRouter(() => import('./importChart'), () => import('../../../stores/project/appStore'));
-const ExportChart = asyncRouter(() => import('./exportChart'), () => import('../../../stores/project/appStore'));
+const ExportChart = asyncRouter(() => import('./exportChart'), () => import('../../../stores/project/appStore/exportChart'));
 
 const AppStoreIndex = ({ match }) => (
   <Switch>

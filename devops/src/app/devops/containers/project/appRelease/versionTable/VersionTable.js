@@ -37,15 +37,7 @@ class VersionTable extends Component {
    */
   getSidebarTable =() => {
     const { store } = this.props;
-    const data = store.getVersionData || [{
-      id: 1,
-      appName: 'ssd',
-      creationDate: '2018-05-22 11:19:41',
-    }, {
-      id: 2,
-      appName: 'ssdeee',
-      creationDate: '2018-05-22 11:19:41',
-    }];
+    const data = store.getVersionData;
     const columns = [{
       title: '版本',
       dataIndex: 'version',

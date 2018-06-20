@@ -1,0 +1,86 @@
+import { observable, action, computed } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
+
+@store('ExportChartStore')
+class ExportChartStore {
+  @observable isLoading = true;
+  @observable app = [];
+  @observable pageInfo = {};
+  @observable versions = {};
+
+  @action setPageInfo(page) {
+    this.pageInfo = { current: page.number + 1, total: page.totalElements, pageSize: page.size };
+  }
+
+  @computed get getPageInfo() {
+    return this.pageInfo;
+  }
+
+
+  @action
+  setApp(app) {
+    this.app = app;
+  }
+
+  @computed
+  get getApp() {
+    return this.app;
+  }
+
+  @action
+  changeLoading(flag) {
+    this.isLoading = flag;
+  }
+
+  @computed
+  get getIsLoading() {
+    return this.isLoading;
+  }
+  @action setVersions(data) {
+    this.versions = data;
+  }
+
+
+  loadApps = ({ projectId, page = 0, size = 10, sorter = { id: 'asc' }, datas = {
+    searchParam: {},
+    param: '',
+  } }) => axios.post(`devops/v1/projects/${projectId}/apps_market/list_all?page=${page}&size=${size}`, JSON.stringify(datas))
+    .then((data) => {
+      this.changeLoading(true);
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.handleData(data);
+        this.changeLoading(false);
+      }
+    })
+    .catch((error) => {
+      Choerodon.prompt(error.message);
+    });
+
+  loadVersionsByAppId =(appId, projectId) => {
+    this.changeLoading(true);
+    return axios.get(`/devops/v1/projects/${projectId}/apps_market/${appId}/versions`)
+      .then((datas) => {
+        this.changeLoading(true);
+        if (datas && datas.failed) {
+          Choerodon.prompt(datas.message);
+        } else {
+          this.changeLoading(false);
+          // this.setVersions(datas);
+          this.changeLoading(false);
+        }
+        return datas;
+      });
+  };
+
+  handleData =(data) => {
+    this.setApp(data.content);
+    const { number, size, totalElements } = data;
+    const page = { number, size, totalElements };
+    this.setPageInfo(page);
+  };
+}
+
+const exportChartStore = new ExportChartStore();
+export default exportChartStore;
