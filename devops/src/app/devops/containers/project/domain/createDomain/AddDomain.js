@@ -292,7 +292,7 @@ class CreateDomain extends Component {
    * 检查域名是否符合规则
    * @type {Function}
    */
-  checkDomain =_.debounce((rule, value, callback) => {
+  checkDomain =(rule, value, callback) => {
     const { pathArr } = this.state;
     const fields = [];
     pathArr.map((path) => {
@@ -300,7 +300,8 @@ class CreateDomain extends Component {
       return fields;
     });
     this.props.form.validateFields(fields, { force: true });
-  }, 500);
+    callback();
+  };
   /**
    * 校验网络是否可用
    * @param rule

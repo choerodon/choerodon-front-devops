@@ -51,6 +51,7 @@
 
 .ace-error {
   margin-bottom: 16px;
+
   .deployApp-config-block {
     width: 16px;
     height: 13px;
@@ -59,7 +60,7 @@
   }
 
   .deployApp-config-lastModify {
-    background: #7Bfe94;
+    background: #7bfe94;
   }
 
   .deployApp-config-modify {
@@ -80,7 +81,6 @@
     color: #000;
     padding-right: 86px;
   }
-
 }
 
 .ace-error-message {
@@ -104,6 +104,5 @@
   .ace_gutter-cell {
     height: 16px !important;
   }
-
 }
 

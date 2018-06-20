@@ -242,8 +242,12 @@ class DeployAppHome extends Component {
    * 确定选择数据
    */
   handleOk =() => {
-    this.props.handleOk(this.state.app, this.state.activeTab);
-  }
+    if (this.state.app) {
+      this.props.handleOk(this.state.app, this.state.activeTab);
+    } else {
+      Choerodon.prompt('请先选择应用');
+    }
+  };
 
   render() {
     const dataSource = SelectAppStore.getAllData;

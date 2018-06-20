@@ -286,7 +286,7 @@ class DeploymentAppHome extends Component {
             <span className="section-title">选择版本</span>
           </div>
           <Select
-            notFoundContent={'该应用下还未生成版本'}
+            notFoundContent={'请先选择应用'}
             value={this.state.versionId ? parseInt(this.state.versionId, 10) : undefined}
             label="应用版本"
             className="section-text-margin"
