@@ -82,5 +82,6 @@ class ExportChartStore {
   };
 }
 
+
 const exportChartStore = new ExportChartStore();
 export default exportChartStore;
