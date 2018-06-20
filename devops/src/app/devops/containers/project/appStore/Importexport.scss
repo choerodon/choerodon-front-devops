@@ -1,7 +1,6 @@
-.c7n-store-content {
+.c7n-store-content-wrap {
   flex-grow: 1;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.04);
   padding: 20px 24px;
   margin: 0 !important;
 }
@@ -56,4 +55,23 @@
   p {
     color: rgba(0, 0, 0, 0.65) !important;
   }
+}
+
+// importChart
+
+.c7n-step-section-upload {
+  margin: 32px 0;
+  width: 512px;
+}
+
+.c7n-step-radio {
+  display: block;
+  height: 30px;
+  line-height: 30px;
+}
+
+.c7n-step-section-waring {
+  margin: 0 5px 0 8px;
+  color: #ffb100;
+  vertical-align: text-bottom;
 }
