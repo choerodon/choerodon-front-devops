@@ -45,8 +45,9 @@ class DeploymentAppHome extends Component {
         .then((data) => {
           this.setState({ versionDto: _.filter(data, v => v.id === versionId)[0] });
         });
+    } else {
+      DeploymentAppStore.setVersions([]);
     }
-    DeploymentAppStore.setVersions([]);
     DeploymentAppStore.loadEnv();
     const card = document.getElementsByClassName('deployApp-card')[0];
     card.style.minHeight = `${window.innerHeight - 277}px`;
@@ -99,7 +100,7 @@ class DeploymentAppHome extends Component {
    * 关闭弹框
    */
   handleCancel = () => {
-    this.setState({ show: false });
+    this.setState({ show: false, versionId: this.props.match.params.verId });
   };
 
   /**
@@ -112,10 +113,20 @@ class DeploymentAppHome extends Component {
     if (app) {
       if (key === '1') {
         DeploymentAppStore.loadVersion(app.id, this.state.projectId, '');
-        this.setState({ app, appId: app.id, show: false, is_project: true });
+        this.setState({
+          app,
+          appId: app.id,
+          show: false,
+          is_project: true,
+          versionId: this.props.match.params.verId });
       } else {
         DeploymentAppStore.loadVersion(app.appId, this.state.projectId, true);
-        this.setState({ app, appId: app.appId, show: false, is_project: false });
+        this.setState({
+          app,
+          appId: app.appId,
+          show: false,
+          is_project: false,
+          versionId: this.props.match.params.verId });
       }
     } else {
       this.setState({ show: false });
@@ -561,6 +572,7 @@ class DeploymentAppHome extends Component {
             </div>
           </div>
           {this.state.show && <SelectApp
+            isMarket={!this.state.is_project}
             app={this.state.app}
             show={this.state.show}
             handleCancel={this.handleCancel}
