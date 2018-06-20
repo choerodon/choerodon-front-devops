@@ -72,7 +72,7 @@ class ValueConfig extends Component {
     store.checkYaml(value, projectId)
       .then((datas) => {
         this.setState({ errorLine: datas });
-        if(datas === '' && !(this.props.store.getValue.errorLines)) {
+        if (datas === '') {
           store.reDeploy(projectId, data)
             .then((res) => {
               if (res && res.failed) {
@@ -82,7 +82,7 @@ class ValueConfig extends Component {
               }
             });
         } else {
-          Choerodon.prompt('请先更改yaml格式错误行或者修改value文件的yaml格式错误');
+          Choerodon.prompt('请先修改yaml格式错误');
         }
       });
   };
@@ -90,8 +90,8 @@ class ValueConfig extends Component {
   render() {
     const data = this.props.store.getValue;
     let error = data.errorLines;
-    if(this.state.errorLine !== undefined) {
-     error = this.state.errorLine;
+    if (this.state.errorLine !== undefined) {
+      error = this.state.errorLine;
     }
     const sideDom = (<div className="c7n-region">
       <h2 className="c7n-space-first">对&quot;{this.props.name}&quot;进行修改</h2>
