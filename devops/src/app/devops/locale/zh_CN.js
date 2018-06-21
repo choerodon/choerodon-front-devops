@@ -111,7 +111,7 @@ const zhCN = {
   'app.commit': '提交',
   'app.group': '应用组',
   'app.code': '编码',
-  'app.createTime': '创建时间',
+  'app.createTime': '生成时间',
 
   // user
   'user.password.update': '修改密码',
