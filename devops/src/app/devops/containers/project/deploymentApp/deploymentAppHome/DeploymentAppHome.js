@@ -93,7 +93,11 @@ class DeploymentAppHome extends Component {
    * 展开选择应用的弹框
    */
   showSideBar = () => {
-    this.setState({ show: true, versionId: undefined, versionDto: null });
+    if (this.props.match.params.appId) {
+      this.setState({ show: true });
+    } else {
+      this.setState({ show: true, versionId: undefined, versionDto: null });
+    }
   };
 
   /**
@@ -118,6 +122,8 @@ class DeploymentAppHome extends Component {
           appId: app.id,
           show: false,
           is_project: true,
+          versionId: undefined,
+          versionDto: null,
         });
       } else {
         DeploymentAppStore.loadVersion(app.appId, this.state.projectId, true);
@@ -126,6 +132,8 @@ class DeploymentAppHome extends Component {
           appId: app.appId,
           show: false,
           is_project: false,
+          versionId: undefined,
+          versionDto: null,
           // versionId: this.props.match.params.verId
         });
       }
