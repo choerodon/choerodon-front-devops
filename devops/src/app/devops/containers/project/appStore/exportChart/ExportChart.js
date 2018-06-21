@@ -53,21 +53,16 @@ class ExportChart extends Component {
    * @param index
    */
   changeStep = (index) => {
-    this.setState({ current: index });
+    const { ExportChartStore } = this.props;
     if (index === 2) {
       const selectedRows = this.state.selectedRows;
       selectedRows.map((app, indexs) => {
-        const versions = this.state[indexs] ? this.state[indexs].versions : [];
-        selectedRows[indexs].versions = ('versions' in selectedRows[indexs]) ? selectedRows[indexs].versions : [];
-        this.setState({ [indexs]: {
-          versions,
-          app: selectedRows[indexs],
-          selectVersion: [],
-          selectedRows,
-        } });
-        return versions;
+        selectedRows[indexs].versions = ('versions' in selectedRows[indexs]) ? selectedRows[indexs].versions : [this.state[indexs].versions[0]];
+        this.setState({ selectedRows });
+        return index;
       });
     }
+    this.setState({ current: index });
   };
   /**
    * table app表格搜索
@@ -122,6 +117,11 @@ class ExportChart extends Component {
         }
       });
   };
+  /**
+   * 选择版本
+   * @param index
+   * @param value
+   */
   handleSelectVersion = (index, value) => {
     const selectedRows = this.state.selectedRows;
     const version = selectedRows[index].versions || [];
@@ -208,17 +208,11 @@ class ExportChart extends Component {
     });
     ExportChartStore.exportChart(this.state.projectId, data)
       .then((res) => {
-        // const body = document.getElementById('down');
-        // const fileDownload = require('react-file-download');
         const blob = new Blob([res], { type: 'application/zip;charset=utf-8' });
         const a = document.createElement('a');
         a.href = window.URL.createObjectURL(blob);
         a.click();
-
-        // body.appendChild(a);
-        // fileDownload(data, 'config.zip', 'application/x-gzip');
       });
-    window.console.log(data);
   };
   /**
    * 渲染第一步
@@ -246,6 +240,15 @@ class ExportChart extends Component {
     const rowSelection = {
       selectedRowKeys: this.state.selectedRowKeys || [],
       onChange: (selectedRowKeys, selectedRows) => {
+        selectedRowKeys.map((s, indexs) => {
+          ExportChartStore.loadVersionsByAppId(s, this.state.projectId)
+            .then((datas) => {
+              if (datas) {
+                this.setState({ [indexs]: { versions: datas } });
+              }
+            });
+          return indexs;
+        });
         this.setState({ selectedRows, selectedRowKeys });
       },
     };
@@ -291,6 +294,7 @@ class ExportChart extends Component {
   renderStepTwo = () => {
     const selectedRows = this.state.selectedRows;
     const { ExportChartStore } = this.props;
+    // window.console.log([this.state[0].versions[0].id.toString()]);
     return (
       <div className="c7n-step-section-wrap">
         <p>
@@ -341,7 +345,7 @@ class ExportChart extends Component {
             type="primary"
             funcType="raised"
             className="c7n-step-button"
-            disabled={this.checkDisable()}
+            // disabled={this.checkDisable()}
             onClick={this.changeStep.bind(this, 3)}
           >
             下一步
@@ -447,7 +451,7 @@ class ExportChart extends Component {
                 status={this.getStatus(2)}
               />
               <Step
-                className={`${this.checkDisable() ? 'c7n-step-disabled' : ''}`}
+                // className={`${this.checkDisable() ? 'c7n-step-disabled' : ''}`}
                 title={<span className={current === 3 ? 'c7n-step-active' : ''}>确认信息</span>}
                 onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}

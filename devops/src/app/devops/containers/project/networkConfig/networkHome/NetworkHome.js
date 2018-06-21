@@ -171,8 +171,6 @@ class NetworkHome extends Component {
     }, {
       title: '端口',
       key: 'port',
-      sorter: true,
-      filters: [],
       render: record => (
         <MouserOverWrapper text={record.port || ''} width={40}>
           {record.port}</MouserOverWrapper>
@@ -180,8 +178,6 @@ class NetworkHome extends Component {
     }, {
       title: '目标端口',
       key: 'targetPort',
-      sorter: true,
-      filters: [],
       render: record => (
         <MouserOverWrapper text={record.targetPort || ''} width={40}>
           {record.targetPort}</MouserOverWrapper>

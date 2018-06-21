@@ -387,7 +387,7 @@ class EditService extends Component {
                   }],
                   initialValue: SingleData ? SingleData.name : '',
                 })(
-                  <Input label="网络名称" maxLength={25} readOnly />,
+                  <Input label="网络名称" maxLength={25} disabled />,
                 )}
               </FormItem>
               <FormItem
