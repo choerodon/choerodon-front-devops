@@ -60,7 +60,7 @@ class ExportChartStore {
 
   loadVersionsByAppId =(appId, projectId) => {
     this.changeLoading(true);
-    return axios.get(`/devops/v1/projects/${projectId}/apps_market/${appId}/versions`)
+    return axios.get(`/devops/v1/projects/${projectId}/apps_market/${appId}/versions?is_publish=true`)
       .then((datas) => {
         this.changeLoading(true);
         if (datas && datas.failed) {
@@ -73,7 +73,9 @@ class ExportChartStore {
         return datas;
       });
   };
-
+  exportChart = (proId, data) => {
+    return axios.post(`/devops/v1/projects/${proId}/apps_market/export`, data, { responseType: 'blob' });
+  };
   handleData =(data) => {
     this.setApp(data.content);
     const { number, size, totalElements } = data;
