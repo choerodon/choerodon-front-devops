@@ -21,6 +21,7 @@ class ExportChart extends Component {
       projectId: AppState.currentMenuType.id,
       0: { versions: [] },
       upDown: [],
+      selectedRows: [],
     };
   }
 
@@ -133,6 +134,17 @@ class ExportChart extends Component {
     this.setState({ selectedRows });
   };
   /**
+   * 取消选择版本
+   * @param index
+   */
+  clearVersions =(index, value) => {
+    const selectedRows = this.state.selectedRows;
+    const version = selectedRows[index].versions;
+    _.remove(version, v => v.version === value || v.id === parseInt(value, 10));
+    selectedRows[index].versions = version;
+    this.setState({ selectedRows });
+  };
+  /**
    * 展开/收起实例
    */
   handleChangeStatus = (id, length) => {
@@ -174,7 +186,7 @@ class ExportChart extends Component {
     const selectedRows = this.state.selectedRows;
     let disabled = true;
     selectedRows.map((s, index) => {
-      if (s.versions.length && index === selectedRows.length - 1) {
+      if ('versions' in s && s.versions.length && index === selectedRows.length - 1) {
         disabled = false;
       } else {
         disabled = true;
@@ -183,13 +195,29 @@ class ExportChart extends Component {
     });
     return disabled;
   };
+  /**
+   * 导出文件
+   */
   handleOk =() => {
+    const { ExportChartStore } = this.props;
     const selectedRows = this.state.selectedRows;
     const data = [];
     selectedRows.map((s, index) => {
-      data.push({ app_marketId: s.id, appVersionIds: _.map(s.versions, 'id') });
+      data.push({ appMarketId: s.id, appVersionIds: _.map(s.versions, 'id') });
       return data;
     });
+    ExportChartStore.exportChart(this.state.projectId, data)
+      .then((res) => {
+        // const body = document.getElementById('down');
+        // const fileDownload = require('react-file-download');
+        const blob = new Blob([res], { type: 'application/zip;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = window.URL.createObjectURL(blob);
+        a.click();
+
+        // body.appendChild(a);
+        // fileDownload(data, 'config.zip', 'application/x-gzip');
+      });
     window.console.log(data);
   };
   /**
@@ -269,40 +297,43 @@ class ExportChart extends Component {
           您可以在此选择想要导出的版本。
         </p>
         {selectedRows.map((app, index) => (
-          <div className="c7n-step-section" key={app.id}>
-            <div className="c7n-step-label">应用名称</div>
-            <span>{app.name}</span>
-            <Select
-              defaultValue={_.map(this.state.selectedRows[index].versions, 'version')}
-              onSelect={this.handleSelectVersion.bind(this, index)}
-              className={'c7n-step-select'}
-              loading={ExportChartStore.isLoading}
-              onFocus={this.loadVersion.bind(this, app.id, index)}
-              filter
-              label={Choerodon.getMessage('应用版本', 'version')}
-              showSearch
-              mode="tags"
-              dropdownMatchSelectWidth
-              size="default"
-              optionFilterProp="children"
-              optionLabelProp="children"
-              notFoundContent="该应用下没有版本生成"
-              filterOption={
-                (input, option) =>
-                  option.props.children
-                    .toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              { this.state[index].versions.map(v => (
-                <Option
-                  key={v.id}
-                  value={v.id.toString()}
-                >
-                  {v.version}
-                </Option>
-              ))}
-            </Select>
-          </div>
+          <React.Fragment key={app.id}>
+            <div className="c7n-step-section">
+              <div className="c7n-step-label">应用名称</div>
+              <span>{app.name}</span>
+            </div>
+            <div className="c7n-step-section" key={app.id}>
+              <Select
+                onDeselect={this.clearVersions.bind(this, index)}
+                defaultValue={_.map(_.map(this.state.selectedRows[index].versions, 'id'), v => v.toString())}
+                onSelect={this.handleSelectVersion.bind(this, index)}
+                className={'c7n-step-select'}
+                loading={ExportChartStore.isLoading}
+                onFocus={this.loadVersion.bind(this, app.id, index)}
+                filter
+                label={Choerodon.getMessage('应用版本', 'version')}
+                showSearch
+                mode="tags"
+                dropdownMatchSelectWidth
+                size="default"
+                optionFilterProp="children"
+                optionLabelProp="children"
+                notFoundContent="该应用下没有版本生成"
+                filterOption={
+                  (input, option) =>
+                    option.props.children
+                      .toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                { this.state[index].versions.map(v => (
+                  <Option key={v.version} value={v.id.toString()}>
+                    {v.version}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+          </React.Fragment>
+
         ))
         }
         <div className="c7n-step-section">
@@ -361,15 +392,17 @@ class ExportChart extends Component {
           />
         </div>
         <div className="c7n-step-section">
-          <Button
-            type="primary"
-            funcType="raised"
-            className="c7n-step-button"
-            // disabled={selectedRows.length === 0}
-            onClick={this.handleOk}
-          >
-            导出
-          </Button>
+          <Permission service={['devops-service.application-market.importApps']}>
+            <Button
+              type="primary"
+              funcType="raised"
+              className="c7n-step-button"
+              // disabled={selectedRows.length === 0}
+              onClick={this.handleOk}
+            >
+              导出
+            </Button>
+          </Permission>
           <Button funcType="raised" className="c7n-step-clear c7n-step-button" onClick={this.changeStep.bind(this, 2)}>上一步</Button>
           <Button funcType="raised" className="c7n-step-clear" onClick={this.handleBack}>取消</Button>
         </div>
@@ -389,7 +422,7 @@ class ExportChart extends Component {
     return (
       <Page className="c7n-region">
         <Header title="导出" backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
-        <div className="c7n-store-content">
+        <Content>
           <h2 className="c7n-space-first">导出应用</h2>
           <p>
             您可以在此选择相应的应用，并选择版本进行导出。
@@ -408,11 +441,13 @@ class ExportChart extends Component {
                 status={this.getStatus(1)}
               />
               <Step
+                className={`${this.state.selectedRows.length ? '' : 'c7n-step-disabled'}`}
                 title={<span className={current === 2 ? 'c7n-step-active' : ''}>选择版本</span>}
                 onClick={this.changeStep.bind(this, 2)}
                 status={this.getStatus(2)}
               />
               <Step
+                className={`${this.checkDisable() ? 'c7n-step-disabled' : ''}`}
                 title={<span className={current === 3 ? 'c7n-step-active' : ''}>确认信息</span>}
                 onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}
@@ -422,7 +457,7 @@ class ExportChart extends Component {
             {current === 2 && this.renderStepTwo()}
             {current === 3 && this.renderStepThree()}
           </div>
-        </div>
+        </Content>
       </Page>
     );
   }
