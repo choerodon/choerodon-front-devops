@@ -100,7 +100,7 @@ class DeploymentAppHome extends Component {
    * 关闭弹框
    */
   handleCancel = () => {
-    this.setState({ show: false, versionId: this.props.match.params.verId });
+    this.setState({ show: false });
   };
 
   /**
@@ -118,7 +118,7 @@ class DeploymentAppHome extends Component {
           appId: app.id,
           show: false,
           is_project: true,
-          versionId: this.props.match.params.verId });
+        });
       } else {
         DeploymentAppStore.loadVersion(app.appId, this.state.projectId, true);
         this.setState({
@@ -126,7 +126,8 @@ class DeploymentAppHome extends Component {
           appId: app.appId,
           show: false,
           is_project: false,
-          versionId: this.props.match.params.verId });
+          // versionId: this.props.match.params.verId
+        });
       }
     } else {
       this.setState({ show: false });
