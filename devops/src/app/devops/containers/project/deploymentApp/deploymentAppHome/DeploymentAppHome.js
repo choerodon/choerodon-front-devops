@@ -20,6 +20,7 @@ class DeploymentAppHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      is_project: !props.match.params.appId,
       appId: props.match.params.appId || undefined,
       versionId: props.match.params.verId || undefined,
       current: props.match.params.appId ? 2 : 1,
@@ -27,6 +28,7 @@ class DeploymentAppHome extends Component {
       storeId: props.match.params.storeId,
       mode: 'new',
       markers: null,
+      projectId: AppState.currentMenuType.id,
     };
   }
 
@@ -39,12 +41,13 @@ class DeploymentAppHome extends Component {
           this.setState({ app: data });
         });
       const versionId = parseInt(this.state.versionId, 10);
-      DeploymentAppStore.loadVersion(this.state.appId)
+      DeploymentAppStore.loadVersion(this.state.appId, this.state.projectId, true)
         .then((data) => {
           this.setState({ versionDto: _.filter(data, v => v.id === versionId)[0] });
         });
+    } else {
+      DeploymentAppStore.setVersions([]);
     }
-    DeploymentAppStore.setVersions([]);
     DeploymentAppStore.loadEnv();
     const card = document.getElementsByClassName('deployApp-card')[0];
     card.style.minHeight = `${window.innerHeight - 277}px`;
@@ -90,7 +93,11 @@ class DeploymentAppHome extends Component {
    * 展开选择应用的弹框
    */
   showSideBar = () => {
-    this.setState({ show: true, versionId: undefined, versionDto: null });
+    if (this.props.match.params.appId) {
+      this.setState({ show: true });
+    } else {
+      this.setState({ show: true, versionId: undefined, versionDto: null });
+    }
   };
 
   /**
@@ -109,11 +116,26 @@ class DeploymentAppHome extends Component {
     const { DeploymentAppStore } = this.props;
     if (app) {
       if (key === '1') {
-        DeploymentAppStore.loadVersion(app.id);
-        this.setState({ app, appId: app.id, show: false });
+        DeploymentAppStore.loadVersion(app.id, this.state.projectId, '');
+        this.setState({
+          app,
+          appId: app.id,
+          show: false,
+          is_project: true,
+          versionId: undefined,
+          versionDto: null,
+        });
       } else {
-        DeploymentAppStore.loadVersion(app.appId);
-        this.setState({ app, appId: app.appId, show: false });
+        DeploymentAppStore.loadVersion(app.appId, this.state.projectId, true);
+        this.setState({
+          app,
+          appId: app.appId,
+          show: false,
+          is_project: false,
+          versionId: undefined,
+          versionDto: null,
+          // versionId: this.props.match.params.verId
+        });
       }
     } else {
       this.setState({ show: false });
@@ -265,7 +287,7 @@ class DeploymentAppHome extends Component {
           </div>
           <div className="deploy-text">
             {this.state.app && <div className="section-text-margin">
-              <span className={`icon ${this.state.app.projectId === proId ? 'icon-project' : 'icon-apps'} section-text-icon`} />
+              <span className={`icon ${this.state.is_project ? 'icon-project' : 'icon-apps'} section-text-icon`} />
               <span className="section-text">{this.state.app.name}({this.state.app.code})</span>
             </div>}
             <Permission service={['devops-service.application.pageByOptions', 'devops-service.application-market.listAllApp']}>
@@ -559,6 +581,7 @@ class DeploymentAppHome extends Component {
             </div>
           </div>
           {this.state.show && <SelectApp
+            isMarket={!this.state.is_project}
             app={this.state.app}
             show={this.state.show}
             handleCancel={this.handleCancel}

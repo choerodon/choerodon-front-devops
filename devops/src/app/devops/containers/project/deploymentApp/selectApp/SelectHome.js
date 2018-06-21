@@ -53,7 +53,7 @@ class DeployAppHome extends Component {
       key: 'check',
       width: '50px',
       render: record => (
-        this.state.app && record.id === this.state.app.id && <span className="icon icon-check icon-select" />
+        this.state.app && record.id === this.state.app.id && !this.state.isMarket && <span className="icon icon-check icon-select" />
       ),
 
     }, {
@@ -95,7 +95,7 @@ class DeployAppHome extends Component {
       key: 'check',
       width: '50px',
       render: record => (
-        this.state.app && record.id === this.state.app.id && <span className="icon icon-check icon-select" />
+        this.state.app && this.state.isMarket && record.appId === this.state.app.appId && <span className="icon icon-check icon-select" />
       ),
 
     }, {
@@ -136,7 +136,11 @@ class DeployAppHome extends Component {
    */
   handleSelectData =() => {
     if (this.props.app) {
-      this.setState({ app: this.props.app });
+      if (this.props.isMarket) {
+        const app = this.props.app;
+        app.appId = app.id;
+      }
+      this.setState({ app: this.props.app, isMarket: this.props.isMarket });
     }
   };
   /**
@@ -152,9 +156,16 @@ class DeployAppHome extends Component {
    */
   handleSearch =(e) => {
     this.setState({ val: e.target.value });
-    SelectAppStore.loadData({
-      projectId: this.state.projectId, postData: { param: e.target.value, searchParam: {} } });
-  }
+    if (this.state.activeTab === '1') {
+      SelectAppStore.loadData({
+        projectId: this.state.projectId, postData: { param: e.target.value, searchParam: {} } });
+    } else {
+      SelectAppStore.loadApps({
+        projectId: this.state.projectId,
+        postData: { param: e.target.value, searchParam: {} },
+      });
+    }
+  };
   /**
    * 清空搜索框数据
    */
@@ -168,11 +179,13 @@ class DeployAppHome extends Component {
    * @param record
    */
   hanldeSelectApp = (record) => {
-    if (this.state.app && this.state.app.id === record.id) {
-      this.setState({ app: null });
-    } else {
-      this.setState({ app: record });
-    }
+    // if ((this.state.app && this.state.app.id === record.id) ||
+    //   (this.state.app && this.state.app.appId === record.appId)) {
+    //   this.setState({ app: null, isMarket: this.state.activeTab === '2' });
+    // } else {
+    //   this.setState({ app: record, isMarket: this.state.activeTab === '2' });
+    // }
+    this.setState({ app: record, isMarket: this.state.activeTab === '2' });
   };
 
   /**
@@ -196,7 +209,7 @@ class DeployAppHome extends Component {
       }
     }
     let searchParam = {};
-    let page = pagination.current - 1;
+    const page = pagination.current - 1;
     if (Object.keys(filters).length) {
       // page = 0;
       searchParam = filters;
@@ -214,7 +227,7 @@ class DeployAppHome extends Component {
         pageSize: pagination.pageSize,
       });
     } else {
-      SelectAppStore.loadApp({
+      SelectAppStore.loadApps({
         projectId: organizationId,
         sorter: sort,
         postData,
@@ -231,12 +244,12 @@ class DeployAppHome extends Component {
     SelectAppStore.setAllData([]);
     if (key === '1') {
       SelectAppStore.loadData({
-        projectId: this.state.projectId, page: 0, size: 10 });
+        projectId: this.state.projectId, page: 0, size: SelectAppStore.pageInfo.pageSize });
     } else {
       SelectAppStore.loadApps({
-        projectId: this.state.projectId, page: 0, size: 10 });
+        projectId: this.state.projectId, page: 0, size: SelectAppStore.pageInfo.pageSize });
     }
-    this.setState({ activeTab: key, page: 0, size: 10 });
+    this.setState({ activeTab: key, page: 0, size: SelectAppStore.pageInfo.pageSize });
   }
   /**
    * 确定选择数据
@@ -305,10 +318,10 @@ class DeployAppHome extends Component {
                       <div
                         key={card.id}
                         role="none"
-                        className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && 'c7n-card-active'}`}
+                        className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && !this.state.isMarket && 'c7n-card-active'}`}
                         onClick={this.hanldeSelectApp.bind(this, card)}
                       >
-                        {this.state.app && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon icon-check" /></span> }
+                        {this.state.app && !this.state.isMarket && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon icon-check" /></span> }
                         {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
                           : <div className="c7n-store-card-icon" />}
                         <div className="c7n-store-card-name">
@@ -353,10 +366,10 @@ class DeployAppHome extends Component {
                       <div
                         key={card.id}
                         role="none"
-                        className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && 'c7n-card-active'}`}
+                        className={`c7n-store-card ${this.state.app && this.state.isMarket && this.state.app.appId === card.appId && 'c7n-card-active'}`}
                         onClick={this.hanldeSelectApp.bind(this, card)}
                       >
-                        {this.state.app && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon icon-check " /></span> }
+                        {this.state.app && this.state.app.appId === card.appId && this.state.isMarket && <span className="span-icon-check" ><i className="icon icon-check " /></span> }
                         {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
                           : <div className="c7n-store-card-icon" />}
                         <div title={card.name} className="c7n-store-card-name">

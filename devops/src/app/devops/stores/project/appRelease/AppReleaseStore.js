@@ -88,7 +88,7 @@ class AppReleaseStore {
     return this.singleData;
   }
 
-  loadData = ({ isRefresh = false, projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
+  loadData = ({ isRefresh = false, projectId, page = 0, size = 10, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
     param: '' }, key = '1' }) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
