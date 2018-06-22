@@ -204,15 +204,36 @@ class ExportChart extends Component {
       data.push({ appMarketId: s.id, appVersionIds: _.map(s.versions, 'id') });
       return data;
     });
+    this.setState({ submitting: true });
     ExportChartStore.exportChart(this.state.projectId, data)
       .then((res) => {
         const blob = new Blob([res], { type: 'application/zip;charset=utf-8' });
         const a = document.createElement('a');
         a.href = window.URL.createObjectURL(blob);
         a.click();
+        this.setState({ submitting: false });
         Choerodon.prompt('导出成功');
         this.handleBack();
       });
+  };
+  /**
+   * 取所有的版本
+   */
+  handleLoadAllVersion = () => {
+    const { ExportChartStore } = this.props;
+    const selectedRowKeys = this.state.selectedRowKeys;
+    selectedRowKeys.map((s, indexs) => {
+      ExportChartStore.loadVersionsByAppId(s, this.state.projectId)
+        .then((datas) => {
+          if (datas) {
+            this.setState({ [indexs]: { versions: datas.reverse() } });
+          }
+          if (indexs === selectedRowKeys.length - 1) {
+            this.changeStep(2);
+          }
+        });
+      return indexs;
+    });
   };
   /**
    * 渲染第一步
@@ -251,12 +272,12 @@ class ExportChart extends Component {
             if (!ids.includes(s)) {
               selectRow.push(_.filter(rows, v => v.id === s)[0]);// 取消勾选
             }
-            ExportChartStore.loadVersionsByAppId(s, this.state.projectId)
-              .then((datas) => {
-                if (datas) {
-                  this.setState({ [indexs]: { versions: datas.reverse() } });
-                }
-              });
+            // ExportChartStore.loadVersionsByAppId(s, this.state.projectId)
+            //   .then((datas) => {
+            //     if (datas) {
+            //       this.setState({ [indexs]: { versions: datas.reverse() } });
+            //     }
+            //   });
             return indexs;
           });
           // rows = rows.concat(selectedRows[selectedRows.length - 1]);
@@ -293,7 +314,7 @@ class ExportChart extends Component {
             funcType="raised"
             className="c7n-step-button"
             disabled={selectedRows.length === 0}
-            onClick={this.changeStep.bind(this, 2)}
+            onClick={this.handleLoadAllVersion}
           >
             下一步
           </Button>
@@ -416,6 +437,7 @@ class ExportChart extends Component {
         <div className="c7n-step-section">
           <Permission service={['devops-service.application-market.importApps']}>
             <Button
+              loading={this.state.submitting}
               type="primary"
               funcType="raised"
               className="c7n-step-button"
