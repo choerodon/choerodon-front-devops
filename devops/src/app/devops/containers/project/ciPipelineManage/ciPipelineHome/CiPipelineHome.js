@@ -8,7 +8,6 @@ import _ from 'lodash';
 import '../../../main.scss';
 import './CiPipelineHome.scss';
 import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
-import Loadingbar from '../../../../components/loadingBar';
 
 const Option = Select.Option;
 const ICONS = {
@@ -73,6 +72,10 @@ class CiPipelineHome extends Component {
 
   componentDidMount() {
     CiPipelineStore.loadInitData();
+  }
+
+  componentWillUnmount() {
+    CiPipelineStore.setCurrentApp({});
   }
 
   get filterBar() {
