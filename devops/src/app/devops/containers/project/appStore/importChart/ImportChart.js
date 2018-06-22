@@ -130,11 +130,20 @@ class ImportChart extends Component {
    * 取消
    */
   handleBack = () => {
+    const { AppStoreStore } = this.props;
     const projectName = AppState.currentMenuType.name;
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     this.props.history.push(`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    if (this.state.fileCode) {
+      AppStoreStore.uploadCancel(projectId, this.state.fileCode)
+        .then(() => {
+          this.setState({
+            fileCode: false,
+          });
+        });
+    }
   };
 
   importChart = (fileCode) => {
