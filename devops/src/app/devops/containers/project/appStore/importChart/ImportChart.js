@@ -82,9 +82,9 @@ class ImportChart extends Component {
    * @param index
    */
   changeStep = (index) => {
-    if (index === 2) {
-      const projectId = parseInt(AppState.currentMenuType.id, 10);
-      const { AppStoreStore } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    const { AppStoreStore } = this.props;
+    if (index === 2 && this.state.current === 1) {
       const formdata = new FormData();
       formdata.append('file', this.state.fileList);
       AppStoreStore.uploadChart(projectId, formdata)
@@ -96,6 +96,16 @@ class ImportChart extends Component {
             });
           }
         });
+    } else if (index === 1 && this.state.current === 2) {
+      if (this.state.fileCode) {
+        AppStoreStore.uploadCancel(projectId, this.state.fileCode)
+          .then(() => {
+            this.setState({
+              fileCode: false,
+            });
+          });
+      }
+      this.setState({ current: index });
     } else {
       this.setState({ current: index });
     }
