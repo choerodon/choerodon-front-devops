@@ -140,7 +140,7 @@ class ExportChart extends Component {
   clearVersions =(index, value) => {
     const selectedRows = this.state.selectedRows;
     const version = selectedRows[index].versions;
-    _.remove(version, v => v.version === value || v.id === parseInt(value, 10));
+    _.remove(version, v => v.id === parseInt(value, 10));
     selectedRows[index].versions = version;
     this.setState({ selectedRows });
   };
@@ -184,15 +184,13 @@ class ExportChart extends Component {
    */
   checkDisable =() => {
     const selectedRows = this.state.selectedRows;
-    let disabled = true;
-    selectedRows.map((s, index) => {
-      if ('versions' in s && s.versions.length && index === selectedRows.length - 1) {
-        disabled = false;
-      } else {
+    let disabled = false;
+    for (let i = 0; i < selectedRows.length; i += 1) {
+      if ('versions' in selectedRows[i] && selectedRows[i].versions.length === 0) {
         disabled = true;
+        return disabled;
       }
-      return disabled;
-    });
+    }
     return disabled;
   };
   /**
@@ -212,6 +210,8 @@ class ExportChart extends Component {
         const a = document.createElement('a');
         a.href = window.URL.createObjectURL(blob);
         a.click();
+        Choerodon.prompt('导出成功');
+        this.handleBack();
       });
   };
   /**
@@ -240,19 +240,28 @@ class ExportChart extends Component {
     const rowSelection = {
       selectedRowKeys: this.state.selectedRowKeys || [],
       onChange: (selectedRowKeys, selectedRows) => {
-        selectedRowKeys.map((s, indexs) => {
-          ExportChartStore.loadVersionsByAppId(s, this.state.projectId)
-            .then((datas) => {
-              if (datas) {
-                this.setState({ [indexs]: { versions: datas } });
-              }
-            });
-          return indexs;
-        });
-        this.setState({ selectedRows, selectedRowKeys });
+        let rows = [];
+        let key = [];
+        if (selectedRows.length && data.length) {
+          key = selectedRowKeys;
+          selectedRowKeys.map((s, indexs) => {
+            rows = rows.concat(_.filter(data, d => d.id === parseInt(s, 10)));
+            ExportChartStore.loadVersionsByAppId(s, this.state.projectId)
+              .then((datas) => {
+                if (datas) {
+                  this.setState({ [indexs]: { versions: datas } });
+                }
+              });
+            return indexs;
+          });
+          // rows = rows.concat(selectedRows[selectedRows.length - 1]);
+        } else {
+          key = [];
+        }
+        this.setState({ selectedRows: rows, selectedRowKeys: key });
       },
     };
-    const selectedRows = this.state.selectedRows || [];
+    const selectedRows = this.state.selectedRowKeys || [];
 
     return (
       <div className="c7n-step-section-wrap">
@@ -345,7 +354,7 @@ class ExportChart extends Component {
             type="primary"
             funcType="raised"
             className="c7n-step-button"
-            // disabled={this.checkDisable()}
+            disabled={this.checkDisable()}
             onClick={this.changeStep.bind(this, 3)}
           >
             下一步
@@ -451,7 +460,7 @@ class ExportChart extends Component {
                 status={this.getStatus(2)}
               />
               <Step
-                // className={`${this.checkDisable() ? 'c7n-step-disabled' : ''}`}
+                className={`${this.checkDisable() ? 'c7n-step-disabled' : ''}`}
                 title={<span className={current === 3 ? 'c7n-step-active' : ''}>确认信息</span>}
                 onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}
