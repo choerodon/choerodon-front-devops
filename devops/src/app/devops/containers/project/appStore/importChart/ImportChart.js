@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Select, Steps, Icon, Upload, Radio, Table } from 'choerodon-ui';
-import { Content, Header, Page, Permission, stores, message } from 'choerodon-front-boot';
-import LoadingBar from '../../../../components/loadingBar';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import _ from 'lodash';
 import '../Importexport.scss';
 import '../../../main.scss';
 
@@ -23,11 +23,11 @@ class ImportChart extends Component {
       publish: '否',
       level: '本组织',
       visible: false,
+      fileList: false,
+      defaultFileList: [],
+      fileCode: false,
+      upDown: [],
     };
-  }
-
-  componentDidMount() {
-    const { AppStoreStore } = this.props;
   }
 
   /**
@@ -35,7 +35,6 @@ class ImportChart extends Component {
    * @param e
    */
   onChangePublish = (e) => {
-    console.log('radio checked', e.target.value);
     this.setState({
       publish: e.target.value,
     });
@@ -55,7 +54,6 @@ class ImportChart extends Component {
    * @param e
    */
   onChangeLevel = (e) => {
-    console.log('radio checked', e.target.value);
     this.setState({
       level: e.target.value,
     });
@@ -84,7 +82,76 @@ class ImportChart extends Component {
    * @param index
    */
   changeStep = (index) => {
-    this.setState({ current: index });
+    if (index === 2) {
+      const projectId = parseInt(AppState.currentMenuType.id, 10);
+      const { AppStoreStore } = this.props;
+      const formdata = new FormData();
+      formdata.append('file', this.state.fileList);
+      AppStoreStore.uploadChart(projectId, formdata)
+        .then((data) => {
+          if (!data.failed) {
+            this.setState({
+              current: index,
+              fileCode: data.fileCode,
+            });
+          }
+        });
+    } else {
+      this.setState({ current: index });
+    }
+  };
+
+  /**
+   * 展开/收起实例
+   */
+  handleChangeStatus = (id, length) => {
+    const { upDown } = this.state;
+    const cols = document.getElementsByClassName(`col-${id}`);
+    if (_.indexOf(upDown, id) === -1) {
+      for (let i = 0; i < cols.length; i += 1) {
+        cols[i].style.height = `${Math.ceil(length / 4) * 31}px`;
+      }
+      upDown.push(id);
+      this.setState({
+        upDown,
+      });
+    } else {
+      for (let i = 0; i < cols.length; i += 1) {
+        cols[i].style.height = '31px';
+      }
+      _.pull(upDown, id);
+      this.setState({
+        upDown,
+      });
+    }
+  };
+
+  /**
+   * 取消
+   */
+  handleBack = () => {
+    const projectName = AppState.currentMenuType.name;
+    const projectId = AppState.currentMenuType.id;
+    const organizationId = AppState.currentMenuType.organizationId;
+    const type = AppState.currentMenuType.type;
+    this.props.history.push(`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+  };
+
+  importChart = (fileCode) => {
+    const { publish, level } = this.state;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    const { AppStoreStore } = this.props;
+    if (publish === '是') {
+      AppStoreStore.importPublishStep(projectId, fileCode, level)
+        .then((data) => {
+          if (data === true) {
+            Choerodon.prompt('导入成功');
+            this.handleBack();
+          }
+        });
+    } else {
+      AppStoreStore.importStep(projectId, fileCode);
+    }
   };
 
   /**
@@ -92,19 +159,59 @@ class ImportChart extends Component {
    */
   renderStepOne = () => {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
+    const { AppStoreStore } = this.props;
+    const { fileList, defaultFileList, fileCode } = this.state;
     const props = {
       name: 'file',
-      multiple: true,
       action: '//jsonplaceholder.typicode.com/posts/',
-      onChange(info) {
+      multiple: false,
+      disabled: Boolean(fileList),
+      fileList: defaultFileList,
+      onChange: (info) => {
         const status = info.file.status;
-        if (status !== 'uploading') {
-          console.log(info.file, info.fileList);
-        }
         if (status === 'done') {
-          message.success(`${info.file.name} file uploaded successfully.`);
+          Choerodon.prompt(`${info.file.name} file uploaded successfully.`);
+          this.setState({
+            defaultFileList: info.fileList,
+          });
         } else if (status === 'error') {
-          message.error(`${info.file.name} file upload failed.`);
+          this.setState({
+            defaultFileList: info.fileList,
+          });
+        }
+      },
+      beforeUpload: (file) => {
+        if (file.size > 1024 * 1024) {
+          const tmp = file;
+          tmp.status = 'error';
+          this.setState({ fileList: file });
+          Choerodon.prompt('文件大小不能超过1M');
+          return false;
+        } else if (file.type !== 'application/zip') {
+          const tmp = file;
+          tmp.status = 'error';
+          this.setState({ fileList: file });
+          Choerodon.prompt('文件格式错误');
+          return false;
+        } else {
+          const tmp = file;
+          tmp.status = 'done';
+          this.setState({ fileList: file });
+        }
+        return false;
+      },
+      onRemove: () => {
+        this.setState({
+          fileList: false,
+          defaultFileList: [],
+        });
+        if (fileCode) {
+          AppStoreStore.uploadCancel(projectId, fileCode)
+            .then(() => {
+              this.setState({
+                fileCode: false,
+              });
+            });
         }
       },
     };
@@ -127,12 +234,12 @@ class ImportChart extends Component {
             type="primary"
             funcType="raised"
             className="c7n-step-button"
-            // disabled={!(this.state.appId && this.state.versionId)}
+            disabled={!(fileList.status === 'done')}
             onClick={this.changeStep.bind(this, 2)}
           >
             下一步
           </Button>
-          <Button funcType="raised" className="c7n-step-clear" onClick={this.clearStep}>取消</Button>
+          <Button funcType="raised" className="c7n-step-clear" onClick={this.handleBack}>取消</Button>
         </div>
       </div>
     );
@@ -162,8 +269,8 @@ class ImportChart extends Component {
         </div>
         {visible && (<div className="c7n-step-section">
           <RadioGroup label="发布范围" onChange={this.onChangeLevel} value={this.state.level}>
-            <Radio value="本组织" className="c7n-step-radio">本组织</Radio>
-            <Radio value="全平台" className="c7n-step-radio">全平台</Radio>
+            <Radio value="false" className="c7n-step-radio">本组织</Radio>
+            <Radio value="true" className="c7n-step-radio">全平台</Radio>
           </RadioGroup>
         </div>)}
         <div className="c7n-step-section">
@@ -171,7 +278,6 @@ class ImportChart extends Component {
             type="primary"
             funcType="raised"
             className="c7n-step-button"
-            // disabled={!(this.state.appId && this.state.versionId)}
             onClick={this.changeStep.bind(this, 3)}
           >
             下一步
@@ -179,12 +285,11 @@ class ImportChart extends Component {
           <Button
             funcType="raised"
             className="c7n-step-button"
-            // disabled={!(this.state.appId && this.state.versionId)}
             onClick={this.changeStep.bind(this, 1)}
           >
             上一步
           </Button>
-          <Button funcType="raised" className="c7n-step-clear" onClick={this.clearStep}>取消</Button>
+          <Button funcType="raised" className="c7n-step-clear" onClick={this.handleBack}>取消</Button>
         </div>
       </div>
     );
@@ -195,27 +300,27 @@ class ImportChart extends Component {
    */
   renderStepThree = () => {
     const { AppStoreStore } = this.props;
+    const { upDown } = this.state;
+    const data = AppStoreStore.getImpApp;
     const columns = [{
-      title: '应用名称',
+      title: Choerodon.languageChange('app.name'),
       dataIndex: 'name',
       key: 'name',
     }, {
       title: '应用版本',
-      dataIndex: 'age',
-      key: 'age',
-    }];
-    const data = [{
-      key: '1',
-      name: 'Devops 服务',
-      age: '0.7.0-dev.20180619203359',
-    }, {
-      key: '2',
-      name: '敏捷管理后端服务',
-      age: '0.6.6-hotfix-ss.20180619135642',
-    }, {
-      key: '3',
-      name: '前端Devops库',
-      age: '0.7.0-dev.20180619203359',
+      key: 'version',
+      render: record => (<div>
+        <div role={'none'} className={`c7n-step-table-column col-${record.id}`} onClick={this.handleChangeStatus.bind(this, record.id, record.appVersions.length)}>
+          {record.appVersions && document.getElementsByClassName(`${record.id}-col-parent`)[0] && parseInt(window.getComputedStyle(document.getElementsByClassName(`${record.id}-col-parent`)[0]).height, 10) > 31
+          && <span className={_.indexOf(upDown, record.id) !== -1
+            ? 'icon icon-keyboard_arrow_up c7n-step-table-icon' : 'icon icon-keyboard_arrow_down c7n-step-table-icon'}
+          />
+          }
+          <div className={`${record.id}-col-parent`}>
+            {_.map(record.appVersions, v => <div key={v.id} className="c7n-step-col-circle">{v.version}</div>)}
+          </div>
+        </div>
+      </div>),
     }];
     return (
       <div className="c7n-step-section-wrap">
@@ -231,40 +336,35 @@ class ImportChart extends Component {
             <span>发布范围：</span>
             <span>{this.state.level}</span>
           </p>)}
-          <Table columns={columns} dataSource={data} />
+          <Table
+            filterBar={false}
+            pagination={false}
+            columns={columns}
+            dataSource={data.appMarketList}
+            rowKey={record => record.id}
+          />
         </div>
         <div className="c7n-step-section">
           <Button
             type="primary"
             funcType="raised"
             className="c7n-step-button"
-            // disabled={!(this.state.appId && this.state.versionId)}
-            onClick={this.changeStep.bind(this, 3)}
+            disabled={!(this.state.fileList.status === 'done')}
+            onClick={this.importChart.bind(this, data.fileCode)}
           >
             导入
           </Button>
           <Button
             funcType="raised"
             className="c7n-step-button"
-            // disabled={!(this.state.appId && this.state.versionId)}
             onClick={this.changeStep.bind(this, 2)}
           >
             上一步
           </Button>
-          <Button funcType="raised" className="c7n-step-clear" onClick={this.clearStep}>取消</Button>
+          <Button funcType="raised" className="c7n-step-clear" onClick={this.handleBack}>取消</Button>
         </div>
       </div>
     );
-  };
-
-  /**
-   * 清除输入并返回第一步
-   */
-  clearStep = () => {
-    this.setState({
-      current: 1,
-      publish: '否',
-    });
   };
 
   render() {
@@ -297,11 +397,13 @@ class ImportChart extends Component {
                 status={this.getStatus(1)}
               />
               <Step
+                className={!this.state.defaultFileList.length ? 'c7n-step-disabled' : ''}
                 title={<span className={current === 2 ? 'c7n-step-active' : ''}>是否发布</span>}
                 onClick={this.changeStep.bind(this, 2)}
                 status={this.getStatus(2)}
               />
               <Step
+                className={!this.state.defaultFileList.length ? 'c7n-step-disabled' : ''}
                 title={<span className={current === 3 ? 'c7n-step-active' : ''}>确认信息</span>}
                 onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}
