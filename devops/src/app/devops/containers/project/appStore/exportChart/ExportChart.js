@@ -113,7 +113,7 @@ class ExportChart extends Component {
     ExportChartStore.loadVersionsByAppId(appId, this.state.projectId)
       .then((data) => {
         if (data) {
-          this.setState({ [index]: { versions: data } });
+          this.setState({ [index]: { versions: data.reverse() } });
         }
       });
   };
@@ -249,7 +249,7 @@ class ExportChart extends Component {
             ExportChartStore.loadVersionsByAppId(s, this.state.projectId)
               .then((datas) => {
                 if (datas) {
-                  this.setState({ [indexs]: { versions: datas } });
+                  this.setState({ [indexs]: { versions: datas.reverse() } });
                 }
               });
             return indexs;
@@ -381,12 +381,14 @@ class ExportChart extends Component {
       key: 'version',
       render: record => (<div>
         <div role={'none'} className={`c7n-step-table-column col-${record.id}`} onClick={this.handleChangeStatus.bind(this, record.id, record.versions.length)}>
-          {record.versions && record.versions.length > 4
+          {record.versions && document.getElementsByClassName(`${record.id}-col-parent`)[0] && parseInt(window.getComputedStyle(document.getElementsByClassName(`${record.id}-col-parent`)[0]).height, 10) > 31
           && <span className={_.indexOf(upDown, record.id) !== -1
             ? 'icon icon-keyboard_arrow_up c7n-step-table-icon' : 'icon icon-keyboard_arrow_down c7n-step-table-icon'}
           />
           }
-          {_.map(record.versions, v => <div key={v.id} className="c7n-step-col-circle">{v.version}</div>)}
+          <div className={`${record.id}-col-parent`}>
+            {_.map(record.versions, v => <div key={v.id} className="c7n-step-col-circle">{v.version}</div>)}
+          </div>
         </div>
       </div>),
     }];
