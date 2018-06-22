@@ -240,12 +240,17 @@ class ExportChart extends Component {
     const rowSelection = {
       selectedRowKeys: this.state.selectedRowKeys || [],
       onChange: (selectedRowKeys, selectedRows) => {
-        let rows = [];
+        let rows = this.state.selectedRows || [];
+        let selectRow = [];
         let key = [];
-        if (selectedRows.length && data.length) {
+        rows = rows.concat(selectedRows);
+        if (selectedRowKeys.length && data.length) {
           key = selectedRowKeys;
           selectedRowKeys.map((s, indexs) => {
-            rows = rows.concat(_.filter(data, d => d.id === parseInt(s, 10)));
+            const ids = _.map(selectRow, 'id');
+            if (!ids.includes(s)) {
+              selectRow.push(_.filter(rows, v => v.id === s)[0]);// 取消勾选
+            }
             ExportChartStore.loadVersionsByAppId(s, this.state.projectId)
               .then((datas) => {
                 if (datas) {
@@ -257,8 +262,10 @@ class ExportChart extends Component {
           // rows = rows.concat(selectedRows[selectedRows.length - 1]);
         } else {
           key = [];
+          rows = [];
+          selectRow = [];
         }
-        this.setState({ selectedRows: rows, selectedRowKeys: key });
+        this.setState({ selectedRows: selectRow, selectedRowKeys: key });
       },
     };
     const selectedRows = this.state.selectedRowKeys || [];
