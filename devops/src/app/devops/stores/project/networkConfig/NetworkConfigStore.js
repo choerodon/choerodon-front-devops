@@ -229,7 +229,6 @@ class NetworkConfigStore {
 
 
   loadEnv = (projectId) => {
-    this.changEnvLoading(true);
     return axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
       .then((data) => {
         const res = this.handleProptError(data);
@@ -241,7 +240,6 @@ class NetworkConfigStore {
       });
   };
   loadApp = (projectId, envId) => {
-    this.changeLoading(true);
     return axios.get(`/devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=running`)
       .then((data) => {
         const res = this.handleProptError(data);
@@ -253,7 +251,6 @@ class NetworkConfigStore {
       });
   };
   loadVersion = (projectId, envId, appId) => {
-    this.changeLoading(true);
     return axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version?envId=${envId}`)
       .then((data) => {
         const res = this.handleProptError(data);

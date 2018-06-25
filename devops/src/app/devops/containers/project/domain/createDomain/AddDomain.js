@@ -67,6 +67,18 @@ class CreateDomain extends Component {
         this.setState({ env: { loading: false, dataSource: data } });
       });
   }
+  componentDidUpdate() {
+    if (this.state.pathChange) {
+      const { pathArr } = this.state;
+      const fields = [];
+      pathArr.map((path) => {
+        fields.push(`path-${path.pathIndex}`);
+        return fields;
+      });
+      this.props.form.validateFields(fields, { force: true });
+      this.checkAllPath(false);
+    }
+  }
 
   /**
    * 初始化数组
@@ -159,6 +171,7 @@ class CreateDomain extends Component {
           pathIndex: pathArr[pathArr.length - 1].pathIndex + 1,
           networkIndex: pathArr[pathArr.length - 1].pathIndex + 1,
         });
+      this.checkAllPath(true);
     } else {
       index = 0;
       pathArr.push({
@@ -235,7 +248,13 @@ class CreateDomain extends Component {
       }
     }
   }, 1000);
-
+  /**
+   * 级联验证path
+   * @param flag
+   */
+  checkAllPath = (flag) => {
+    this.setState({ pathChange: flag });
+  }
   /**
    * 检查域名和路径组合的唯一性
    * @type {Function}
@@ -262,7 +281,7 @@ class CreateDomain extends Component {
         if (v === value && domain === this.state.SingleData.domain) {
           callback();
         } else {
-          store.checkPath(this.state.projectId, domain, `/${value}`, id)
+          store.checkPath(this.state.projectId, domain, `${value}`, id)
             .then((data) => {
               if (data) {
                 callback();
@@ -275,7 +294,7 @@ class CreateDomain extends Component {
             });
         }
       } else {
-        store.checkPath(this.state.projectId, domain, `/${value}`)
+        store.checkPath(this.state.projectId, domain, `${value}`)
           .then((data) => {
             if (data) {
               callback();
@@ -370,6 +389,7 @@ class CreateDomain extends Component {
               onFocus={this.loadEnv}
               loading={this.state.env.loading}
               filter
+              getPopupContainer={triggerNode => triggerNode.parentNode}
               onSelect={this.selectEnv}
               showSearch
               label="环境名称"
@@ -439,17 +459,18 @@ class CreateDomain extends Component {
           >
             {getFieldDecorator(`path-${data.pathIndex}`, {
               rules: [{
-                // required: true,
-                // message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                required: true,
+                message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
               }, {
                 validator: this.checkPath,
               },
               ],
               initialValue: SingleData && this.state.initServiceLen > index
-                ? SingleData.pathList[index].path.slice(1, SingleData.pathList[index].path.length) : '',
+                ? SingleData.pathList[index].path : '/',
             })(
               <Input
-                prefix={'/'}
+                // prefix={'/'}
+                onChange={this.checkAllPath.bind(this, true)}
                 disabled={!(this.props.form.getFieldValue('domain'))}
                 maxLength={10}
                 label={Choerodon.languageChange('domain.path')}
@@ -472,6 +493,7 @@ class CreateDomain extends Component {
                 ? SingleData.pathList[index].serviceId : undefined,
             })(
               <Select
+                getPopupContainer={triggerNode => triggerNode.parentNode}
                 disabled={!(this.props.form.getFieldValue('envId'))}
                 filter
                 label={Choerodon.getMessage('网络', 'network')}

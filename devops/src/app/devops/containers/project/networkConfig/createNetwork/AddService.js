@@ -337,6 +337,7 @@ class AddService extends Component {
             }],
           })(
             <Select
+              getPopupContainer={triggerNode => triggerNode.parentNode}
               onFocus={this.loadEnv}
               loading={this.state.env.loading}
               dropdownClassName="c7n-network-env"
@@ -372,6 +373,7 @@ class AddService extends Component {
             }],
           })(
             <Select
+              getPopupContainer={triggerNode => triggerNode.parentNode}
               disabled={!(this.props.form.getFieldValue('envId'))}
               onFocus={this.loadApp}
               loading={this.state.app.loading}
@@ -450,6 +452,7 @@ class AddService extends Component {
               }],
             })(
               <Select
+                getPopupContainer={triggerNode => triggerNode.parentNode}
                 onFocus={this.loadVersion.bind(this, data.versionIndex)}
                 filter
                 notFoundContent="该应用下没有版本生成"
@@ -494,6 +497,7 @@ class AddService extends Component {
               }],
             })(
               <Select
+                getPopupContainer={triggerNode => triggerNode.parentNode}
                 loading={this.state.instanceLoading}
                 onFocus={this.loadInstance.bind(this, data.instanceIndex)}
                 filter
@@ -501,7 +505,7 @@ class AddService extends Component {
                 label={Choerodon.getMessage('实例', 'instance')}
                 showSearch
                 notFoundContent="该版本下还没有实例"
-                mode="tags"
+                mode="multiple"
                 dropdownMatchSelectWidth
                 size="default"
                 optionFilterProp="children"
