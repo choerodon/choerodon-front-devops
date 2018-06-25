@@ -299,15 +299,19 @@ class EditService extends Component {
    */
   checkInstance = (rule, value, callback) => {
     const index = parseInt(rule.field.split('-')[1], 10);
+    let mes = '';
     const deletedIns = _.map(this.state[index].deletedIns, 'id');
-    value.map((v) => {
-      if (deletedIns.includes(v)) {
-        callback('请移除不可用的实例');
-      } else {
-        callback();
+    for (let i = 0; i < value.length; i += 1) {
+      if (deletedIns.includes(value[i])) {
+        mes = '请移除不可用的实例';
+        break;
       }
-      return deletedIns;
-    });
+    }
+    if (mes) {
+      callback(mes);
+    } else {
+      callback();
+    }
   };
 
   /**
@@ -402,6 +406,7 @@ class EditService extends Component {
                   initialValue: SingleData ? SingleData.envId : undefined,
                 })(
                   <Select
+                    getPopupContainer={triggerNode => triggerNode.parentNode}
                     dropdownClassName="c7n-network-env"
                     disabled
                     filter
@@ -431,6 +436,7 @@ class EditService extends Component {
                   initialValue: SingleData ? SingleData.appId : undefined,
                 })(
                   <Select
+                    getPopupContainer={triggerNode => triggerNode.parentNode}
                     onSelect={this.selectApp}
                     filter
                     showSearch
@@ -509,6 +515,7 @@ class EditService extends Component {
                       ? SingleData.appVersion[data.versionIndex].id : undefined,
                   })(
                     <Select
+                      getPopupContainer={triggerNode => triggerNode.parentNode}
                       disabled={!(this.props.form.getFieldValue('appId'))}
                       filter
                       notFoundContent="该应用下没有版本生成"
@@ -556,6 +563,7 @@ class EditService extends Component {
                     initialValue: SingleData && this.state.initVersionlength > index ? _.map(SingleData.appVersion[data.versionIndex].appInstance, 'id') : undefined,
                   })(
                     <Select
+                      getPopupContainer={triggerNode => triggerNode.parentNode}
                       key={data.instanceIndex}
                       disabled={!(this.props.form.getFieldValue(`version-${data.versionIndex}`))}
                       onFocus={this.loadInstance.bind(this, data.instanceIndex)}
@@ -564,7 +572,7 @@ class EditService extends Component {
                       label={Choerodon.getMessage('实例', 'instance')}
                       showSearch
                       notFoundContent="该版本下还没有实例"
-                      mode="tags"
+                      mode="multiple"
                       dropdownMatchSelectWidth
                       size="default"
                       optionFilterProp="children"
