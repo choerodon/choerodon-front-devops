@@ -358,7 +358,7 @@ class AppInstance extends Component {
         </div>
       ),
     }, {
-      width: 64,
+      width: 56,
       className: 'c7n-operate-icon',
       key: 'action',
       render: record => this.columnAction(record),

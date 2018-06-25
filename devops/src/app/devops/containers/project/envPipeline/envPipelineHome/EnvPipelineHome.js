@@ -560,7 +560,21 @@ class EnvPipelineHome extends Component {
     const rightDom = this.state.moveBan ? null : <div role="none" className={rightStyle} onClick={this.pushScrollLeft} />;
 
     return (
-      <Page className="c7n-region">
+      <Page
+        className="c7n-region"
+        service={[
+          'devops-service.devops-environment.listByProjectIdAndActive',
+          'devops-service.devops-environment.create',
+          'devops-service.devops-environment.update',
+          'devops-service.devops-environment.checkCode',
+          'devops-service.devops-environment.checkName',
+          'devops-service.devops-environment.sort',
+          'devops-service.devops-environment.queryByEnvIdAndActive',
+          'devops-service.devops-environment.queryShell',
+          'devops-service.devops-environment.query',
+          'devops-service.application-instance.pageByOptions',
+        ]}
+      >
         <Header title={Choerodon.languageChange('envPl.title')}>
           <Permission
             service={['devops-service.devops-environment.create']}

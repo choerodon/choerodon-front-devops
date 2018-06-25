@@ -150,8 +150,7 @@ class CiPipelineHome extends Component {
           </div>),
       },
       {
-        width: 64,
-        title: '',
+        width: 56,
         dataIndex: 'gitlabProjectId',
         render: (gitlabProjectId, record) => this.renderAction(record),
       },
@@ -391,7 +390,11 @@ class CiPipelineHome extends Component {
           type={type}
         >
           <Popover placement="bottom" content={<div><span>{(record.status === 'running' || record.status === 'pending') ? 'cancel' : 'retry'}</span></div>}>
-            <Button shape="circle" onClick={this.handleAction.bind(this, record)}>
+            <Button
+              size="small"
+              shape="circle"
+              onClick={this.handleAction.bind(this, record)}
+            >
               <span className={`icon ${ICONS_ACTION[record.status].icon} c7n-icon-action c7n-icon-sm`} />
             </Button>
           </Popover>
@@ -404,7 +407,16 @@ class CiPipelineHome extends Component {
 
   render() {
     return (
-      <Page className="c7n-region c7n-ciPipeline">
+      <Page
+        className="c7n-region c7n-ciPipeline"
+        service={[
+          'devops-service.project-pipeline.list',
+          'devops-service.application.listByActive',
+          'devops-service.gitlab-commit.list',
+          'devops-service.project-pipeline.cancel',
+          'devops-service.project-pipeline.retry',
+        ]}
+      >
         <Header title={Choerodon.languageChange('ciPipeline.title')}>
           <Button
             funcType="flat"

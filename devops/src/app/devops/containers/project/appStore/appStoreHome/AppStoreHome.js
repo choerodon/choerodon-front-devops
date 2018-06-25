@@ -211,7 +211,7 @@ class AppStoreHome extends Component {
       dataIndex: 'description',
       key: 'description',
     }, {
-      width: 64,
+      width: 56,
       key: 'action',
       render: (test, record) => (
         <div>
@@ -223,6 +223,7 @@ class AppStoreHome extends Component {
           >
             <Popover placement="bottom" content={<div><span>应用详情</span></div>}>
               <Button
+                size="small"
                 shape="circle"
                 onClick={this.appDetail.bind(this, record.id)}
               >
@@ -243,7 +244,14 @@ class AppStoreHome extends Component {
     />);
 
     return (
-      <Page className="c7n-region page-container">
+      <Page
+        className="c7n-region page-container"
+        service={[
+          'devops-service.application-market.listAllApp',
+          'devops-service.application-market.queryApp',
+          'devops-service.application-market.queryAppVersionReadme',
+        ]}
+      >
         <Header title={Choerodon.languageChange('appstore.title')}>
           <Button
             funcType="flat"
