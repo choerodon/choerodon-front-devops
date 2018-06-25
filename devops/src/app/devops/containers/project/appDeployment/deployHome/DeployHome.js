@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button } from 'choerodon-ui';
-import { Header, stores } from 'choerodon-front-boot';
+import { Content, Header, Page, stores } from 'choerodon-front-boot';
 import SingleApp from '../singleApp';
 import SingleEnv from '../singleEnv';
 import AppInstance from '../appInstance';
@@ -167,7 +167,23 @@ class DeployHome extends Component {
     const tabActive = AppDeploymentStore.getTabActive;
 
     return (
-      <div className="c7n-region page-container">
+      <Page
+        className="c7n-region"
+        service={[
+          'devops-service.application-instance.pageByOptions',
+          'devops-service.application.listAll',
+          'devops-service.application.pageByEnvIdAndStatus',
+          'devops-service.devops-environment.listByProjectIdAndActive',
+          'devops-service.application-version.queryByAppId',
+          'devops-service.application-instance.listByAppId',
+          'devops-service.application-instance.queryValues',
+          'devops-service.application-instance.formatValue',
+          'devops-service.application-instance.stop',
+          'devops-service.application-instance.start',
+          'devops-service.application-instance.deploy',
+          'devops-service.application-instance.delete',
+        ]}
+      >
         <Header title={Choerodon.getMessage('实例', 'Instance')}>
           <Button
             funcType="flat"
@@ -177,7 +193,7 @@ class DeployHome extends Component {
             <span>{Choerodon.languageChange('refresh')}</span>
           </Button>
         </Header>
-        <div className="page-content">
+        <Content className="page-content">
           <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的实例</h2>
           <p>
             您可在此用四种方式查看该项目下应用的实例情况。
@@ -225,8 +241,8 @@ class DeployHome extends Component {
           {tabActive === 'singleApp' && <SingleApp key="singleApp" store={AppDeploymentStore} />}
           {tabActive === 'singleEnv' && <SingleEnv key="singleEnv" store={AppDeploymentStore} />}
           {tabActive === 'instance' && <AppInstance key="instance" store={AppDeploymentStore} />}
-        </div>
-      </div>
+        </Content>
+      </Page>
     );
   }
 }

@@ -1,8 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 
-
-
 @store('AppDeploymentStore')
 class AppDeploymentStore {
   @observable isLoading = true;

@@ -166,12 +166,12 @@ class DeploymentDetail extends Component {
 
     return (
       <Page
+        className="c7n-region c7n-deployDetail-wrapper"
         service={[
           'devops-service.application-instance.listStages',
+          'devops-service.application-instance.queryValues',
           'devops-service.application-instance.listResources',
-          'devops-service.application-instance.queryValue',
         ]}
-        className="c7n-region c7n-deployDetail-wrapper"
       >
         <Header title={Choerodon.getMessage('查看实例详情', ' Instance Detail')} backPath={`/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <Button

@@ -168,7 +168,7 @@ class ContainerHome extends Component {
       sorter: true,
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }, {
-      width: 64,
+      width: 56,
       key: 'action',
       render: (test, record) => (
         <div>
@@ -180,6 +180,7 @@ class ContainerHome extends Component {
           >
             <Popover placement="bottom" content={<div><span>容器日志</span></div>}>
               <Button
+                size="small"
                 shape="circle"
                 onClick={this.showLog.bind(this, record)}
               >
@@ -299,7 +300,13 @@ class ContainerHome extends Component {
     </React.Fragment>);
 
     return (
-      <Page className="c7n-region page-container c7n-container-wrapper">
+      <Page
+        className="c7n-region"
+        service={[
+          'devops-service.devops-env-pod.pageByOptions',
+          'devops-service.devops-env-pod-container.queryLogByPod',
+        ]}
+      >
         {contentDom}
         <Sidebar
           visible={ContainerStore.show}

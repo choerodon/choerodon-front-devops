@@ -395,7 +395,14 @@ class ImportChart extends Component {
     const type = AppState.currentMenuType.type;
 
     return (
-      <Page className="c7n-region">
+      <Page
+        className="c7n-region"
+        service={[
+          'devops-service.application-market.uploadApps',
+          'devops-service.application-market.deleteZip',
+          'devops-service.application-market.importApps',
+        ]}
+      >
         <Header title="导入" backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
         <div className="c7n-store-content-wrap">
           <h2 className="c7n-space-first">导入应用</h2>

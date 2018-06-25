@@ -641,7 +641,7 @@ class SingleApp extends Component {
         </div>
       ),
     }, {
-      width: 64,
+      width: 56,
       className: 'c7n-operate-icon',
       key: 'action',
       render: record => this.columnAction(record),
@@ -691,7 +691,7 @@ class SingleApp extends Component {
           </div>)}
       </div>),
     }, {
-      width: 64,
+      width: 56,
       className: 'c7n-operate-icon',
       key: 'action',
       render: record => this.columnAction(record),
