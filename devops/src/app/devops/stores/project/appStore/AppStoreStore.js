@@ -165,7 +165,7 @@ class AppStoreStore {
       Choerodon.prompt(error.message);
     });
 
-  importPublishStep = (projectId, fileCode, publish) => axios.post(`devops/v1/projects/${projectId}/apps_market/import?file_name=${fileCode}&publish=${publish}`)
+  importPublishStep = (projectId, fileCode, publish) => axios.post(`devops/v1/projects/${projectId}/apps_market/import?file_name=${fileCode}&public=${publish}`)
     .then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
