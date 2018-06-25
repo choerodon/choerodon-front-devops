@@ -526,7 +526,20 @@ class DeploymentAppHome extends Component {
     const projectName = AppState.currentMenuType.name;
     const { appId, versionId, envId, instanceId, mode, value, current } = this.state;
     return (
-      <Page className="c7n-region c7n-deployApp">
+      <Page
+        service={[
+          'devops-service.application.queryByAppId',
+          'devops-service.application-version.queryByAppId',
+          'devops-service.devops-environment.listByProjectIdAndActive',
+          'devops-service.application-instance.queryValues',
+          'devops-service.application-instance.formatValue',
+          'devops-service.application-instance.listByAppVersionId',
+          'devops-service.application-instance.deploy',
+          'devops-service.application.pageByOptions',
+          'devops-service.application-market.listAllApp',
+        ]}
+        className="c7n-region c7n-deployApp"
+      >
         <Header title={Choerodon.languageChange('deploymentApp.title')} />
         <Content className="c7n-deployApp-wrapper">
           <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的部署应用</h2>

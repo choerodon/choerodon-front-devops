@@ -103,7 +103,7 @@ class BranchHome extends Component {
         render: (text, record) => <TimePopover content={record.commit.committedDate} />,
       },
       {
-        width: 64,
+        align: 'right',
         className: 'operateIcons',
         key: 'action',
         render: (test, record) => (
@@ -114,7 +114,7 @@ class BranchHome extends Component {
                   placement="bottom"
                   title={'结束分支'}
                 >
-                  <Button shape="circle" onClick={this.confirm.bind(this, record.name, record.type)}>
+                  <Button size={'small'} shape="circle" onClick={this.confirm.bind(this, record.name, record.type)}>
                     <span className="icon icon-power_settings_new" />
                   </Button>
                 </Tooltip>
@@ -465,7 +465,19 @@ class BranchHome extends Component {
       {this.tableTag}
     </Content>);
     return (
-      <Page className="c7n-region c7n-branch page-container">
+      <Page
+        className="c7n-region c7n-branch"
+        service={[
+          'devops-service.git-flow.listByAppId',
+          'devops-service.git-flow.finishEvent',
+          'devops-service.git-flow.finishFeatureEvent',
+          'devops-service.git-flow.start',
+          'devops-service.git-flow.queryTags',
+          'devops-service.git-flow.queryHotfixNumber',
+          'devops-service.git-flow.queryReleaseNumber',
+          'devops-service.git-flow.finish',
+        ]}
+      >
         { BranchStore.loading ? <Loadingbar display /> : (<React.Fragment>
           <Header title={Choerodon.languageChange('branch.title')} backPath={`/devops/app?type=project&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`}>
             <Permission

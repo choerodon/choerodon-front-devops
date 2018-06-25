@@ -96,7 +96,12 @@ class ApplicationVersion extends Component {
       />);
 
     return (
-      <Page className="c7n-region c7n-appVersion-wrapper">
+      <Page
+        className="c7n-region c7n-appVersion-wrapper"
+        service={[
+          'devops-service.application-version.pageByOptions',
+        ]}
+      >
         {AppVersionStore.isRefresh ? <Loadingbar display /> : <React.Fragment>
           <Header title={Choerodon.languageChange('app.version')}>
             <Button

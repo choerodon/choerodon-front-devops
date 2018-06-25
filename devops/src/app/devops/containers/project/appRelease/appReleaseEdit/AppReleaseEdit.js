@@ -252,7 +252,13 @@ class AppReleaseEdit extends Component {
       </Form>
     </div>);
     return (
-      <Page className="c7n-region">
+      <Page
+        service={[
+          'devops-service.application-market.queryAppInProject',
+          'devops-service.application-market.update',
+        ]}
+        className="c7n-region"
+      >
         <Header title="修改应用信息" backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
         <Content className="page-content c7n-appRelease-wrapper">
           {contentDom}

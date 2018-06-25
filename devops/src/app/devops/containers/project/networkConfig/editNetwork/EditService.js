@@ -583,7 +583,6 @@ class EditService extends Component {
                               {opt.code}
                             </div>
                           </Tooltip>
-
                         </Option>
                       ))}
                       {this.state[data.instanceIndex].instances.map(instancess => (

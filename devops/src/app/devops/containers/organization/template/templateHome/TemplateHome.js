@@ -128,21 +128,22 @@ class TemplateHome extends Component {
           : <React.Fragment><Icon type="av_timer" /><span className="c7n-template-column-text">自定义</span> </React.Fragment>
       ),
     }, {
-      width: '96px',
+      align: 'right',
+      // width: '96px',
       key: 'action',
       render: (test, record) => (
         !record.type &&
         <div>
           <Permission type={type} organizationId={orgId} service={['devops-service.application-template.update']} >
             <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
-              <Button shape="circle" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
+              <Button shape="circle" size={'small'} onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                 <span className="icon icon-mode_edit" />
               </Button>
             </Tooltip>
           </Permission>
           <Permission type={type} organizationId={orgId} service={['devops-service.application-template.delete']} >
             <Tooltip trigger="hover" placement="bottom" title={<div>删除</div>}>
-              <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
+              <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
                 <span className="icon icon-delete_forever" />
               </Button>
             </Tooltip>
@@ -450,7 +451,19 @@ class TemplateHome extends Component {
         onChange={this.tableChange}
       />);
     return (
-      <Page className="c7n-region page-container c7n-template-wrapper">
+      <Page
+        service={[
+          'devops-service.application-template.create',
+          'devops-service.application-template.update',
+          'devops-service.application-template.delete',
+          'devops-service.application-template.checkCode',
+          'devops-service.application-template.checkName',
+          'devops-service.application-template.listByOptions',
+          'devops-service.application-template.listByOrgId',
+          'devops-service.application-template.queryByAppTemplateId',
+        ]}
+        className="c7n-region c7n-template-wrapper"
+      >
         {TemplateStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
           <Header title={Choerodon.languageChange('template.title')}>
             <Permission

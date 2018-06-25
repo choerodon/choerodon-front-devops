@@ -92,21 +92,6 @@ class AddAppRelease extends Component {
   }
 
   /**
-   * 取消返回到第一步
-   */
-  clearAll = () => {
-    const { EditReleaseStore } = this.props;
-    EditReleaseStore.setVersions([]);
-    EditReleaseStore.setValue(null);
-    EditReleaseStore.setCurrentInstance([]);
-    this.setState({
-      appId: undefined,
-      app: null,
-      mode: 'organization',
-      current: 1,
-    });
-  }
-  /**
    * 取消第一步
    */
   clearStepOne = () => {
@@ -550,7 +535,15 @@ class AddAppRelease extends Component {
     const { id, type } = AppState.currentMenuType;
     const { appId, mode, current, category, description, contributor } = this.state;
     return (
-      <Page className="c7n-region">
+      <Page
+        service={[
+          'devops-service.application.listByActiveAndPubAndVersion',
+          'devops-service.application.queryByAppId',
+          'devops-service.application-market.create',
+          'devops-service.application-version.pageByOptions',
+        ]}
+        className="c7n-region"
+      >
         <Header title={'应用发布'} backPath={`/devops/app-release/1?type=${type}&id=${id}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`} />
         <Content className="c7n-deployApp-wrapper" style={{ paddingBottom: '16px' }}>
           <h2 className="c7n-space-first">在项目&quot;{projectName}&quot;中进行应用发布</h2>
