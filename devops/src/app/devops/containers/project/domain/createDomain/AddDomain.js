@@ -482,24 +482,22 @@ class CreateDomain extends Component {
                 optionLabelProp="children"
                 filterOption={
                   (input, option) =>
-                    option.props.children[4]
+                    option.props.children[1]
                       .toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
                 {this.state[data.pathIndex].deletedService.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
-                  {datas.status && datas.status === 'running' && <div className={datas.status && datas.status === 'running' && 'c7n-domain-create-status c7n-domain-create-status_running'}>
-                    {datas.status && datas.status === 'running' && <div>运行中</div> }
-                  </div> }
-                  {datas.status && datas.status === 'deleted' && <div className={datas.status && datas.status === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
-                    {datas.status && datas.status === 'deleted' && <div>已删除</div> }
-                  </div> }
-                  {datas.status && datas.status === 'failed' && <div className={datas.status && datas.status === 'failed' && 'c7n-domain-create-status c7n-domain-create-status_failed'}>
-                    {datas.status && datas.status === 'failed' && <div>失败</div> }
-                  </div> }
-                  {datas.status && datas.status === 'operating' && <div className={datas.status && datas.status === 'operating' && 'c7n-domain-create-status c7n-domain-create-status_operating'}>
-                    {datas.status && datas.status === 'operating' && <div>处理中</div> }
-                  </div> }
-
+                  {<React.Fragment>
+                    {datas.status && datas.status === 'deleted' ? <div className={datas.status && datas.status === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
+                      {datas.status && datas.status === 'deleted' && <div>已删除</div>}
+                    </div> : <React.Fragment>
+                      {datas.status && datas.status === 'failed' ? <div className={datas.status && datas.status === 'failed' && 'c7n-domain-create-status c7n-domain-create-status_failed'}>
+                        {datas.status && datas.status === 'failed' && <div>失败</div> }
+                      </div> : <div className={datas.status && datas.status === 'operating' && 'c7n-domain-create-status c7n-domain-create-status_operating'}>
+                        {datas.status && datas.status === 'operating' && <div>处理中</div>}
+                      </div> }
+                    </React.Fragment> }
+                  </React.Fragment>}
                   {datas.name}</Option>),
                 )}
                 {network.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>

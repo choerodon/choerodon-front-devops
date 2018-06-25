@@ -169,7 +169,8 @@ class DomainHome extends Component {
       ),
     }, {
       key: 'action',
-      width: '96px',
+      align: 'right',
+      // width: '96px',
       className: 'c7n-network-text_top',
       render: (record) => {
         let editDom = null;
@@ -186,7 +187,7 @@ class DomainHome extends Component {
           default:
             editDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
-                <Button shape="circle" funcType="flat" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
+                <Button shape="circle" size={'small'} funcType="flat" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                   <span className="icon icon-mode_edit" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
@@ -195,7 +196,7 @@ class DomainHome extends Component {
             </React.Fragment>);
             deletDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>删除</div>}>
-                <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
+                <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
                   <span className="icon icon-delete_forever" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
@@ -224,7 +225,20 @@ class DomainHome extends Component {
       },
     }];
     return (
-      <Page className="c7n-region c7n-domain-wrapper">
+      <Page
+        className="c7n-region c7n-domain-wrapper"
+        service={[
+          'devops-service.devops-ingress.create',
+          'devops-service.devops-ingress.checkDomain',
+          'devops-service.devops-ingress.checkName',
+          'devops-service.devops-ingress.pageByOptions',
+          'devops-service.devops-ingress.queryDomainId',
+          'devops-service.devops-ingress.update',
+          'devops-service.devops-ingress.delete',
+          'devops-service.devops-service.listByEnvId',
+          'devops-service.devops-environment.listByProjectIdAndActive',
+        ]}
+      >
         { DomainStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
           <Header title="域名管理">
             <Permission

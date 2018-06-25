@@ -55,20 +55,20 @@ class AppReleaseHome extends Component {
         <span>{record.publishLevel && Choerodon.languageChange(`${record.publishLevel}`)}</span>
       ),
     }, {
-      width: '100px',
+      align: 'right',
       key: 'action',
       render: record => (
         <div>
           <Permission service={['devops-service.application-market.update']}>
             <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
-              <Button shape="circle" onClick={this.handleEdit.bind(this, record.id)}>
+              <Button shape="circle" size={'small'} onClick={this.handleEdit.bind(this, record.id)}>
                 <Icon type="mode_edit" />
               </Button>
             </Tooltip>
           </Permission>
           <Permission service={['devops-service.application-market.updateVersions']}>
             <Tooltip trigger="hover" placement="bottom" title={<div>版本控制</div>}>
-              <Button shape="circle" onClick={this.handleEditVersion.bind(this, record)}>
+              <Button shape="circle" size={'small'} onClick={this.handleEditVersion.bind(this, record)}>
                 <Icon type="versionline" />
               </Button>
             </Tooltip>
@@ -208,7 +208,15 @@ class AppReleaseHome extends Component {
     const { AppReleaseStore } = this.props;
     const data = AppReleaseStore.allData.slice();
     return (
-      <Page className="c7n-region app-release-wrapper">
+      <Page
+        service={[
+          'devops-service.application-market.pageListMarketAppsByProjectId',
+          'devops-service.application.listByActiveAndPubAndVersion',
+          'devops-service.application-market.updateVersions',
+          'devops-service.application-market.update',
+        ]}
+        className="c7n-region app-release-wrapper"
+      >
         <Header title="应用发布">
           <Button
             onClick={this.handleRefresh}

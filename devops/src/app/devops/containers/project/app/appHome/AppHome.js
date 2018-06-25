@@ -115,27 +115,27 @@ class AppHome extends Component {
         </React.Fragment>
       ),
     }, {
-      width: '128px',
+      align: 'right',
       key: 'action',
       render: (test, record) => (
         <div>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.git-flow.listByAppId', 'devops-service.git-flow.queryTags']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>分支管理</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
-              {record.active && record.synchro ? <Button shape="circle" onClick={this.linkToBranch.bind(this, record.id, record.name)}>
+              {record.active && record.synchro ? <Button shape="circle" size={'small'} onClick={this.linkToBranch.bind(this, record.id, record.name)}>
                 <span className="icon icon-branch" />
               </Button> : <span className="icon icon-branch c7n-app-icon-disabled" /> }
             </Tooltip>
           </Permission>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>修改</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
-              {record.active && record.synchro ? <Button shape="circle" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
+              {record.active && record.synchro ? <Button shape="circle" size={'small'} onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                 <span className="icon icon-mode_edit" />
               </Button> : <span className="icon icon-mode_edit c7n-app-icon-disabled" /> }
             </Tooltip>
           </Permission>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>停用</span> : <span>启用</span>}</React.Fragment> }</div>}>
-              {record.synchro ? <Button shape="circle" onClick={this.changeAppStatus.bind(this, record.id, record.active)}>
+              {record.synchro ? <Button shape="circle" size={'small'} onClick={this.changeAppStatus.bind(this, record.id, record.active)}>
                 {record.active ? <span className="icon icon-remove_circle_outline" /> : <span className="icon icon-finished" />}
               </Button> : <React.Fragment>
                 {record.active ? <span className="icon icon-remove_circle_outline c7n-app-icon-disabled" /> : <span className="icon icon-finished c7n-app-icon-disabled" />}
@@ -456,7 +456,21 @@ class AppHome extends Component {
       />);
 
     return (
-      <Page className="c7n-region c7n-app-wrapper">
+      <Page
+        className="c7n-region c7n-app-wrapper"
+        service={[
+          'devops-service.application.create',
+          'devops-service.application.update',
+          'devops-service.application.checkCode',
+          'devops-service.application.checkName',
+          'devops-service.application.pageByOptions',
+          'devops-service.application.listTemplate',
+          'devops-service.application.queryByAppIdAndActive',
+          'devops-service.git-flow.listByAppId',
+          'devops-service.git-flow.queryTags',
+          'devops-service.application.queryByAppId',
+        ]}
+      >
         { AppStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
           <Header title={Choerodon.languageChange('app.title')}>
             <Permission

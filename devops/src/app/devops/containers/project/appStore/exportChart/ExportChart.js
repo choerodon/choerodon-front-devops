@@ -464,7 +464,14 @@ class ExportChart extends Component {
     const type = AppState.currentMenuType.type;
 
     return (
-      <Page className="c7n-region">
+      <Page
+        service={[
+          'devops-service.application-market.listAllApp',
+          'devops-service.application-market.queryAppVersionsInProject',
+          'devops-service.application-market.exportFile',
+        ]}
+        className="c7n-region"
+      >
         <Header title="导出" backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
         <Content>
           <h2 className="c7n-space-first">导出应用</h2>

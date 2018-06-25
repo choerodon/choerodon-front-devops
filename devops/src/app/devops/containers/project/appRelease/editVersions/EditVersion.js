@@ -182,7 +182,13 @@ class EditVersion extends Component {
     const menu = AppState.currentMenuType;
     const { key } = this.state;
     return (
-      <Page className="c7n-region">
+      <Page
+        className="c7n-region"
+        service={[
+          'devops-service.application-market.queryAppVersionsInProject',
+          'devops-service.application-market.updateVersions',
+        ]}
+      >
         <Header title="查看应用版本" backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
         <Content>
           <h2 className="c7n-space-first">查看应用&quot;{this.state.name}&quot;的版本 </h2>

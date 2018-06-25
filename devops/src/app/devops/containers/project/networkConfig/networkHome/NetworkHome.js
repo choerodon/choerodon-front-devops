@@ -251,7 +251,7 @@ class NetworkHome extends Component {
           default:
             editDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
-                <Button shape="circle" funcType="flat" onClick={this.editNetwork.bind(this, record.id)}>
+                <Button shape="circle" size={'small'} funcType="flat" onClick={this.editNetwork.bind(this, record.id)}>
                   <span className="icon icon-mode_edit" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
@@ -260,7 +260,7 @@ class NetworkHome extends Component {
             </React.Fragment>);
             deletDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>删除</div>}>
-                <Button shape="circle" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
+                <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
                   <span className="icon icon-delete_forever" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
@@ -289,7 +289,22 @@ class NetworkHome extends Component {
       },
     }];
     return (
-      <Page className="c7n-region c7n-network-wrapper">
+      <Page
+        service={[
+          'devops-service.devops-service.create',
+          'devops-service.devops-service.checkName',
+          'devops-service.devops-service.pageByOptions',
+          'devops-service.devops-service.query',
+          'devops-service.devops-service.update',
+          'devops-service.devops-service.delete',
+          'devops-service.devops-service.listByEnvId',
+          'devops-service.devops-environment.listByProjectIdAndActive',
+          'devops-service.application.listByEnvIdAndStatus',
+          'devops-service.application-version.queryByAppIdAndEnvId',
+          'devops-service.application-instance.listByAppVersionId',
+        ]}
+        className="c7n-region c7n-network-wrapper"
+      >
         {NetworkConfigStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
           <Header title="网络配置">
             <Permission
