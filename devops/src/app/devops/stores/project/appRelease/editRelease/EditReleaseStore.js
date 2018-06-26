@@ -189,16 +189,6 @@ class EditReleaseStore {
       }
     });
 
-  checkCode =(projectId, code) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/checkCode?code=${code}`);
-
-  checkName = (projectId, name) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/checkName?name=${name}`)
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
-
   updateData = (projectId, id, data) =>
     axios.put(`/devops/v1/projects/${projectId}/apps_market/${id}`, JSON.stringify(data))
       .then((datas) => {
@@ -217,9 +207,14 @@ class EditReleaseStore {
       header: { 'Content-Type': 'multipart/form-data' },
     })
       .then((datas) => {
+        let url;
         const res = this.handleProptError(datas);
-        return res;
-      });;
+        if (res) {
+          const index = datas.indexOf('devops-service');
+          url = res.substr(index, datas.length);
+        }
+        return url;
+      });
 
   deleteData =(projectId, id) =>
     axios.post(`devops/v1/projects/${projectId}/apps_market/${id}/unpublish`)
