@@ -9,6 +9,6 @@ find /usr/share/nginx/html -name '*.js' | xargs sed -i "s localhost:headertitlen
 find /usr/share/nginx/html -name '*.js' | xargs sed -i "s localhost:cookieServer $PRO_COOKIE_SERVER g"
 find /usr/share/nginx/html -name '*.html' | xargs sed -i "s localhost:titlename $PRO_TITLE_NAME g"
 find /usr/share/nginx/html -name '*.js' | xargs sed -i "s POD_WEBSOCKET_URL $PRO_DEVOPS_HOST g"
-find /usr/share/nginx/html -name '*.html' | xargs sed -i "s localhost:fileserver $PRO_FILE_SERVER g"
+find /usr/share/nginx/html -name '*.html' | xargs sed -i "s localhost:fileServer $PRO_FILE_SERVER g"
 
 exec "$@"
