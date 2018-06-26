@@ -1,3 +1,21 @@
+// zh_CN.js
+// 文档地址前缀
+const docServer = 'http://v0-6.choerodon.io/zh/docs';
+// 界面标题描述统一管理
+const pageDetail = {
+  // network
+  'network.title': '项目"{name}"的网络配置',
+  'network.description': '网络管理是定义了一种访问网络的策略，是指内部的负载均衡以及网络转发，会将网络流量定向转发到指定的单个或者多个实例容器组',
+  'network.link': `${docServer}/user-guide/deployment-pipeline/service/`,
+  'network.create.title': '项目"{name}"中创建网络',
+  'network.create.description': '请选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。\n' +
+  '        转发内部网络，则只需定义端口即可，系统会自动为您分配集群内部IP；转发外部网络，则需要定义外部IP及端口。',
+  'network.create.link': `${docServer}/user-guide/deployment-pipeline/service/`,
+  'network.update.title': '对网络"{name}"进行修改',
+  'network.update.description': '您可在此修改网络配置信息。',
+  'network.update.link': `${docServer}/user-guide/deployment-pipeline/service/`,
+};
+
 const zhCN = {
   // public
   refresh: '刷新',
@@ -5,7 +23,7 @@ const zhCN = {
   operate: '操作',
   save: '保存',
   active: '启用',
-  edit: '编辑',
+  edit: '修改',
   cancel: '取消',
   delete: '删除',
   'confirm.delete': '确认删除',
@@ -32,6 +50,15 @@ const zhCN = {
   deploy_failed: '部署失败',
   rollback_failed: '回滚失败',
   null: '无',
+  learnmore: '了解更多',
+  required: '该字段是必输的',
+  connect: '已连接',
+  disconnect: '未连接',
+  project: '本项目',
+  market: '应用市场',
+  organization: '本组织',
+  public: '全平台',
+  filter: '过滤表',
 
   // ist
   ist_create: '创建中',
@@ -39,10 +66,44 @@ const zhCN = {
   ist_restart: '重启中',
   ist_delete: '删除中',
   ist_update: '更新中',
+  // network
 
   network_create: '网络创建中，请耐心等待',
   network_delete: '网络删除中，请耐心等待',
   network_update: '网络更新中，请耐心等待',
+  'network.header.title': '网络管理',
+  'network.header.create': '创建网络',
+  'network.header.update': '修改网络',
+  'network.column.name': '名称',
+  'network.column.status': '状态',
+  'network.column.env': '环境名称',
+  'network.column.ip': '外部IP',
+  'network.column.port': '端口',
+  'network.column.targetPort': '目标端口',
+  'network.column.app': '应用',
+  'network.column.version': '版本',
+  'network.column.instance': '部署实例',
+  'network.delete': '删除网络',
+  'network.delete.tooltip': '删除网络后，需要您再去修改相关的域名信息。确定要删除该网络吗',
+  'network.env.tooltip': '请先连接环境',
+  'network.form.name': '网络名称',
+  'network.form.ip': '外部IP',
+  'network.form.port': '端口',
+  'network.form.targetPort': '目标端口',
+  'network.form.app': '应用名称',
+  'network.form.instance': '实例',
+  'network.name.check.failed': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
+  'network.name.check.exist': '名称已存在',
+  'network.ip.check.failed': '请输入正确的ip类似 (0-255).(0-255).(0-255).(0-255)',
+  'network.instance.check.failed': '请移除不可用实例',
+  'network.port.check.failed': '该字段必须是数字且大小在0-65535之间',
+  'network.form.version.null': '请先选择一个版本',
+  'network.form.version.checked': '该应用下没有多余的可用版本',
+  'network.form.app.disable': '请先选择环境',
+  'network.form.version.disable': '请先选择应用',
+  'network.form.instance.disable': '请先选择版本',
+  'network.btn.add': '添加版本',
+  'network.form.targetPort.help': '网络选择的目标实例所暴露的端口号',
 
   domain_create: '域名创建中，请耐心等待',
   domain_delete: '域名删除中，请耐心等待',
@@ -252,13 +313,15 @@ const zhCN = {
 
   // appstore
   'appstore.title': '应用市场',
+  'appstore.name': '名称',
+  'appstore.contributor': '贡献者',
+  'appstore.description': '描述',
 
   // app-release
   'app-release.title': '应用发布',
   'app-release.level': '发布层级',
-  organization: '本组织',
-  public: '全平台',
 
+  ...pageDetail,
 
 };
 export default zhCN;

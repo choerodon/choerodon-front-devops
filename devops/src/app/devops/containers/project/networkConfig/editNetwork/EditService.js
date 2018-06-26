@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Form, Select, Input, Tooltip, Modal, Progress, Popover, Icon } from 'choerodon-ui';
-import { stores } from 'choerodon-front-boot';
+import { stores, Content } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import _ from 'lodash';
 import '../../../main.scss';
@@ -155,9 +156,7 @@ class EditService extends Component {
         const keys = Object.keys(data);
         keys.map((k) => {
           if (k.includes('instance')) {
-            // const index = parseInt(k.split('-')[1], 10);
             appInstance = appInstance.concat(data[k]);
-            // appVersion.push({ appVersionId: data[k], appInstance: data[`instance-${index}`] });
           }
           return appInstance;
         });
@@ -244,12 +243,12 @@ class EditService extends Component {
    * @param callback
    */
   checkName = _.debounce((rule, value, callback) => {
-    const { store } = this.props;
+    const { store, intl } = this.props;
     const { SingleData } = this.state;
     const envId = this.state.envId || SingleData.envId;
     const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     if (!pattern.test(value)) {
-      callback('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾');
+      callback(intl.formatMessage('network.name.check.failed'));
     } else if (value !== SingleData.name) {
       store.checkDomainName(this.state.projectId, envId, value)
         .then(() => {
@@ -257,7 +256,7 @@ class EditService extends Component {
         })
         .catch((error) => {
           if (error.response.message.status === 400) {
-            callback('名称已存在');
+            callback(intl.formatMessage('network.name.check.exist'));
           }
         });
     } else {
@@ -272,11 +271,12 @@ class EditService extends Component {
    */
   checkIP =(rule, value, callback) => {
     const p = /^(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3})$/;
+    const { intl } = this.props;
     if (value) {
       if (p.test(value)) {
         callback();
       } else {
-        callback('请输入正确的ip类似 (0-255).(0-255).(0-255).(0-255)');
+        callback(intl.formatMessage('network.ip.failed'));
       }
     } else {
       callback();
@@ -298,12 +298,13 @@ class EditService extends Component {
    * @param callback
    */
   checkInstance = (rule, value, callback) => {
+    const { intl } = this.props;
     const index = parseInt(rule.field.split('-')[1], 10);
     let mes = '';
     const deletedIns = _.map(this.state[index].deletedIns, 'id');
     for (let i = 0; i < value.length; i += 1) {
       if (deletedIns.includes(value[i])) {
-        mes = '请移除不可用的实例';
+        mes = intl.formatMessage('network.instance.check.failed');
         break;
       }
     }
@@ -322,11 +323,12 @@ class EditService extends Component {
    */
   checkPort = (rule, value, callback) => {
     const p = /^[1-9]\d*$/;
+    const { intl } = this.props;
     if (value) {
       if (p.test(value) && parseInt(value, 10) >= 1 && parseInt(value, 10) <= 65535) {
         callback();
       } else {
-        callback('该字段必须是数字且值在1-65535之间');
+        callback(intl.formatMessage('network.port.check.failed'));
       }
     } else {
       callback();
@@ -336,7 +338,7 @@ class EditService extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const menu = AppState.currentMenuType;
-    const { store, form } = this.props;
+    const { store, form, intl } = this.props;
     const { versionsArr, SingleData } = this.state;
     const version = store.getVersions;
     const app = this.state.app.dataSource;
@@ -351,32 +353,22 @@ class EditService extends Component {
     if ((hasPath && version.length > versionsArr.length) || versionsArr.length === 0) {
       addStatus = true;
     }
-    let tooltipTitle = '请先选择一个版本';
+    let tooltipTitle = intl.formatMessage({ id: 'network.form.version.null' });
     if (version.length <= 1 && this.state.versionId) {
-      tooltipTitle = '该应用下没有可选版本';
+      tooltipTitle = intl.formatMessage({ id: 'network.form.version.checked' });
     }
     return (
       <div className="c7n-region">
         <Sidebar
-          title="修改网络"
+          title={<FormattedMessage id={'network.header.update'} />}
           visible={this.props.visible}
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
           loading={this.state.submitting}
-          cancelText="取消"
-          okText="确定"
+          cancelText={<FormattedMessage id={'cancel'} />}
+          okText={<FormattedMessage id={'save'} />}
         >
-          <div className="c7n-region c7n-network-create">
-            <h2 className="c7n-space-first">对网络&quot;{SingleData && SingleData.name}&quot;进行修改</h2>
-            <p>
-              您可在此修改网络配置信息。
-              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" className="c7n-external-link" rel="nofollow me noopener noreferrer" target="_blank">
-                <span className="c7n-external-link-content">
-                    了解详情
-                </span>
-                <span className="icon icon-open_in_new" />
-              </a>
-            </p>
+          <Content code={'network.update'} values={{ name: SingleData && SingleData.name }} className="c7n-network-create sidebar-content">
             <Form layout="vertical">
               <FormItem
                 className="c7n-create-network-formitem"
@@ -385,13 +377,13 @@ class EditService extends Component {
                 {getFieldDecorator('name', {
                   rules: [{
                     required: true,
-                    message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                    message: intl.formatMessage({ id: 'required' }),
                   }, {
                     validator: this.checkName,
                   }],
                   initialValue: SingleData ? SingleData.name : '',
                 })(
-                  <Input label="网络名称" maxLength={25} disabled />,
+                  <Input label={<FormattedMessage id={'network.form.name'} />} maxLength={25} disabled />,
                 )}
               </FormItem>
               <FormItem
@@ -400,7 +392,7 @@ class EditService extends Component {
                 {getFieldDecorator('envId', {
                   rules: [{
                     required: true,
-                    message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                    message: intl.formatMessage({ id: 'required' }),
                     // transform: value => value.toString(),
                   }],
                   initialValue: SingleData ? SingleData.envId : undefined,
@@ -412,7 +404,7 @@ class EditService extends Component {
                     filter
                     className="c7n-create-network-formitem"
                     showSearch
-                    label="环境名称"
+                    label={<FormattedMessage id={'network.column.env'} />}
                     optionFilterProp="children"
                     filterOption={(input, option) => option.props.children[1]
                       .toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -430,7 +422,7 @@ class EditService extends Component {
                 {getFieldDecorator('appId', {
                   rules: [{
                     required: true,
-                    message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                    message: intl.formatMessage({ id: 'required' }),
                     // transform: value => value.toString(),
                   }],
                   initialValue: SingleData ? SingleData.appId : undefined,
@@ -440,26 +432,26 @@ class EditService extends Component {
                     onSelect={this.selectApp}
                     filter
                     showSearch
-                    notFoundContent="该环境下没有应用部署"
-                    label="应用名称"
+                    notFoundContent={intl.formatMessage({ id: 'network.form.app.disable' })}
+                    label={<FormattedMessage id={'network.form.app'} />}
                     optionFilterProp="children"
                     onFocus={this.loadApp}
                     filterOption={(input, option) =>
                       option.props.children.props.children[1].props.children
                         .toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   >
-                    <OptGroup label="本项目" key={'project'}>
+                    <OptGroup label={<FormattedMessage id={'project'} />} key={'project'}>
                       {app && _.filter(app, a => a.projectId === (parseInt(menu.id, 10))).map(v => (
                         <Option value={v.id} key={v.code}>
                           <Popover
                             placement="right"
                             content={<div>
                               <p>
-                                <span>名称：</span>
+                                <FormattedMessage id={'app.name'} />
                                 <span>{v.name}</span>
                               </p>
                               <p>
-                                <span>编码：</span>
+                                <FormattedMessage id={'app.code'} />
                                 <span>{v.code}</span>
                               </p>
                             </div>}
@@ -470,22 +462,22 @@ class EditService extends Component {
                         </Option>
                       ))}
                     </OptGroup>
-                    <OptGroup label="应用市场" key={'market'}>
+                    <OptGroup label={<FormattedMessage id={'market'} />} key={'market'}>
                       {app && _.filter(app, a => a.projectId !== (parseInt(menu.id, 10))).map(v => (
                         <Option value={v.id} key={v.code}>
                           <Popover
                             placement="right"
                             content={<div>
                               <p>
-                                <span>名称：</span>
+                                <FormattedMessage id={'appstore.name'} />
                                 <span>{v.name}</span>
                               </p>
                               <p>
-                                <span>贡献者：</span>
+                                <FormattedMessage id={'appstore.contributor'} />
                                 <span>{v.contributor}</span>
                               </p>
                               <p>
-                                <span>描述：</span>
+                                <FormattedMessage id={'appstore.description'} />
                                 <span>{v.description}</span>
                               </p>
                             </div>}
@@ -508,7 +500,7 @@ class EditService extends Component {
                   {getFieldDecorator(`version-${data.versionIndex}`, {
                     rules: [{
                       required: true,
-                      message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                      message: intl.formatMessage({ id: 'required' }),
                       // transform: value => value.toString(),
                     }],
                     initialValue: SingleData && this.state.initVersionlength > index
@@ -518,8 +510,8 @@ class EditService extends Component {
                       getPopupContainer={triggerNode => triggerNode.parentNode}
                       disabled={!(this.props.form.getFieldValue('appId'))}
                       filter
-                      notFoundContent="该应用下没有版本生成"
-                      label={Choerodon.getMessage('版本', 'version')}
+                      notFoundContent={intl.formatMessage({ id: 'network.form.version.disable' })}
+                      label={<FormattedMessage id={'network.column.version'} />}
                       showSearch
                       onSelect={this.selectVersion}
                       dropdownMatchSelectWidth
@@ -555,7 +547,7 @@ class EditService extends Component {
                   {getFieldDecorator(`instance-${index}`, {
                     rules: [{
                       required: true,
-                      message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                      message: intl.formatMessage({ id: 'required' }),
                       // transform: value => value.toString(),
                     }, {
                       validator: this.checkInstance,
@@ -569,9 +561,9 @@ class EditService extends Component {
                       onFocus={this.loadInstance.bind(this, data.instanceIndex)}
                       filter
                       loading={this.state.instanceLoading}
-                      label={Choerodon.getMessage('实例', 'instance')}
+                      label={<FormattedMessage id={'network.form.instance'} />}
                       showSearch
-                      notFoundContent="该版本下还没有实例"
+                      notFoundContent={intl.formatMessage({ id: 'network.form.instance.disable' })}
                       mode="multiple"
                       dropdownMatchSelectWidth
                       size="default"
@@ -586,7 +578,7 @@ class EditService extends Component {
                     >
                       {this.state[data.instanceIndex].deletedIns.map(opt => (
                         <Option value={opt.id} key={`${data.versionIndex}-${opt.id}`}>
-                          <Tooltip title={Choerodon.languageChange(opt.intanceStatus || 'null')} placement="right">
+                          <Tooltip title={<FormattedMessage id={'opt.intanceStatus'} />} placement="right">
                             <div style={{ display: 'inline-block', width: '98%' }}>
                               {opt.code}
                             </div>
@@ -595,7 +587,7 @@ class EditService extends Component {
                       ))}
                       {this.state[data.instanceIndex].instances.map(instancess => (
                         <Option value={instancess.id} key={`${data.versionIndex}-${instancess.id}`}>
-                          <Tooltip title={'运行中'} placement="right">
+                          <Tooltip title={<FormattedMessage id={'running'} />} placement="right">
                             <div style={{ display: 'inline-block', width: '98%' }}>
                               {instancess.code}
                             </div>
@@ -614,8 +606,8 @@ class EditService extends Component {
                 </Button> : <span className="icon icon-delete c7n-app-icon-disabled" />}
               </div>))}
               <div className="c7n-domain-btn-wrapper">
-                {addStatus ? <Button className="c7n-domain-btn" onClick={this.addVersion} type="primary" icon="add">添加版本</Button>
-                  : <Tooltip title={tooltipTitle}><Button className="c7n-domain-btn c7n-domain-icon-delete-disabled" icon="add">添加版本</Button></Tooltip>}
+                {addStatus ? <Button className="c7n-domain-btn" onClick={this.addVersion} type="primary" icon="add"><FormattedMessage id={'network.btn.add'} /></Button>
+                  : <Tooltip title={tooltipTitle}><Button className="c7n-domain-btn c7n-domain-icon-delete-disabled" icon="add"><FormattedMessage id={'network.btn.add'} /></Button></Tooltip>}
               </div>
               <FormItem
                 className="c7n-create-network-formitem"
@@ -627,7 +619,7 @@ class EditService extends Component {
                   }],
                   initialValue: SingleData ? SingleData.externalIp : '',
                 })(
-                  <Input maxLength={15} label="外部IP" />,
+                  <Input maxLength={15} label={<FormattedMessage id={'network.column.ip'} />} />,
                 )}
               </FormItem>
               <FormItem
@@ -637,14 +629,14 @@ class EditService extends Component {
                 {getFieldDecorator('port', {
                   rules: [{
                     required: true,
-                    message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                    message: intl.formatMessage({ id: 'required' }),
                     transform: value => value.toString(),
                   }, {
                     validator: this.checkPort,
                   }],
                   initialValue: SingleData ? SingleData.port : '',
                 })(
-                  <Input maxLength={5} label="端口号" />,
+                  <Input maxLength={5} label={<FormattedMessage id={'network.column.port'} />} />,
                 )}
               </FormItem>
               <FormItem
@@ -654,7 +646,7 @@ class EditService extends Component {
                 {getFieldDecorator('targetPort', {
                   rules: [{
                     required: true,
-                    message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                    message: intl.formatMessage({ id: 'required' }),
                     transform: value => value.toString(),
                   }, {
                     validator: this.checkPort,
@@ -663,13 +655,13 @@ class EditService extends Component {
                 })(
                   <Input
                     maxLength={5}
-                    label="目标端口"
+                    label={<FormattedMessage id={'network.column.targetPort'} />}
                     suffix={<Popover
                       overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}
                       className="routePop"
                       placement="right"
                       trigger="hover"
-                      content={'网络选择的目标实例所暴露的端口号'}
+                      content={intl.formatMessage({ id: 'network.form.targetPort.help' })}
                     >
                       <Icon type="help" />
                     </Popover>
@@ -679,11 +671,11 @@ class EditService extends Component {
               </FormItem>
             </Form>
 
-          </div>
+          </Content>
         </Sidebar>
       </div>
     );
   }
 }
 
-export default Form.create({})(withRouter(EditService));
+export default Form.create({})(withRouter(injectIntl(EditService)));

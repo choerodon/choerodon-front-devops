@@ -151,7 +151,7 @@ class AppReleaseEdit extends Component {
         >
           <div className="c7n-appRelease-img">
             <div
-              style={{ backgroundImage: SingleData && SingleData.imgUrl !== null ? `url(http://minio.${Choerodon.fileServer(SingleData.imgUrl)})` : '' }}
+              style={{ backgroundImage: SingleData && SingleData.imgUrl !== null ? `url(${Choerodon.fileServer(SingleData.imgUrl)})` : '' }}
               className="c7n-appRelease-img-hover"
               id="img"
               onMouseLeave={this.state.isClick ? () => {} : this.hideBth}
