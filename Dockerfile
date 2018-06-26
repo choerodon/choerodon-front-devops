@@ -8,6 +8,7 @@ ENV PRO_TITLE_NAME Choerodon
 ENV PRO_HEADER_TITLE_NAME Choerodon
 ENV PRO_COOKIE_SERVER choerodon.com.cn
 ENV PRO_HTTP http
+ENV PRO_FILE_SERVER choerodon.com.cn
 
 RUN echo "Asia/shanghai" > /etc/timezone;
 ADD dist /usr/share/nginx/html

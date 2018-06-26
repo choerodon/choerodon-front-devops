@@ -322,8 +322,7 @@ class DeployAppHome extends Component {
                         onClick={this.hanldeSelectApp.bind(this, card)}
                       >
                         {this.state.app && !this.state.isMarket && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon icon-check" /></span> }
-                        {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
-                          : <div className="c7n-store-card-icon" />}
+                        <div className="c7n-store-card-icon" />
                         <div className="c7n-store-card-name">
                           {card.name}
                         </div>
@@ -370,7 +369,7 @@ class DeployAppHome extends Component {
                         onClick={this.hanldeSelectApp.bind(this, card)}
                       >
                         {this.state.app && this.state.app.appId === card.appId && this.state.isMarket && <span className="span-icon-check" ><i className="icon icon-check " /></span> }
-                        {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
+                        {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(http://minio.${Choerodon.fileServer(card.imgUrl)})` }} />
                           : <div className="c7n-store-card-icon" />}
                         <div title={card.name} className="c7n-store-card-name">
                           {card.name}

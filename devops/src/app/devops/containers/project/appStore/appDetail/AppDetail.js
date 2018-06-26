@@ -116,7 +116,7 @@ class AppDetail extends Component {
     const readme = AppStoreStore.getReadme || '# 暂无';
     const appVers = app.appVersions ? _.slice(app.appVersions) : [];
     const appVersion = _.map(appVers, d => <Option key={d.id}>{d.version}</Option>);
-    const imgDom = app.imgUrl ? <div className="c7n-store-img" style={{ backgroundImage: `url(${app.imgUrl}` }} /> : <div className="c7n-store-img" />;
+    const imgDom = app.imgUrl ? <div className="c7n-store-img" style={{ backgroundImage: `url(http://minio.${Choerodon.fileServer(app.imgUrl)})` }} /> : <div className="c7n-store-img" />;
 
     return (
       <Page
