@@ -21,7 +21,7 @@ class ImportChart extends Component {
     this.state = {
       current: 1,
       publish: '否',
-      level: '本组织',
+      level: 'false',
       visible: false,
       fileList: false,
       defaultFileList: [],
