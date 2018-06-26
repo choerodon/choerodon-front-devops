@@ -5,7 +5,7 @@ const docServer = 'http://v0-6.choerodon.io/zh/docs';
 const pageDetail = {
   // network
   'network.title': '项目"{name}"的网络配置',
-  'network.description': '网络管理是定义了一种访问网络的策略，是指内部的负载均衡以及网络转发，会将网络流量定向转发到指定的单个或者多个实例容器组',
+  'network.description': '网络管理是定义了一种访问网络的策略，是指内部的负载均衡以及网络转发，会将网络流量定向转发到指定的单个或者多个实例容器组。',
   'network.link': `${docServer}/user-guide/deployment-pipeline/service/`,
   'network.create.title': '项目"{name}"中创建网络',
   'network.create.description': '请选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。\n' +
@@ -14,6 +14,20 @@ const pageDetail = {
   'network.update.title': '对网络"{name}"进行修改',
   'network.update.description': '您可在此修改网络配置信息。',
   'network.update.link': `${docServer}/user-guide/deployment-pipeline/service/`,
+
+  // 环境
+  'env.title': '项目"{name}"的环境流水线',
+  'env.description': '环境是指一个应用可以被部署的地方。常见环境有开发测试环境，预生产环境，生产环境等。平台自动为您的项目生成一条环境流水线，您可在下方拖拽需要调整顺序的环境至目标位置。',
+  'env.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
+  'env.create.title': '项目"{name}"的环境创建',
+  'env.create.description': '请在下面输入环境编码、名称、描述，创建新环境。新环境默认新增在环境流水线的最后一个节点。',
+  'env.create.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
+  'env.update.title': '对"{name}"环境修改',
+  'env.update.description': '您可在此修改环境名称及描述，也可以复制指令至Kubernetes运行，与平台建立连接。',
+  'env.update.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
+  'env.token.title': '复制环境"{name}"的指令',
+  'env.token.description': '复制下文代码至Kubernetes运行，与平台建立链接。',
+  'env.token.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
 };
 
 const zhCN = {
@@ -50,7 +64,7 @@ const zhCN = {
   deploy_failed: '部署失败',
   rollback_failed: '回滚失败',
   null: '无',
-  learnmore: '了解更多',
+  learnmore: '了解详情',
   required: '该字段是必输的',
   connect: '已连接',
   disconnect: '未连接',
@@ -59,6 +73,7 @@ const zhCN = {
   organization: '本组织',
   public: '全平台',
   filter: '过滤表',
+  stop: '停用',
 
   // ist
   ist_create: '创建中',
@@ -122,6 +137,29 @@ const zhCN = {
   'envPl.title': '环境流水线',
   'envPl.create': '创建环境',
   'envPl.edit': '修改环境',
+  'envPl.update': '修改环境',
+  'envPl.form.name': '环境名称',
+  'envPl.form.code': '环境编码',
+  'envPl.form.description': '环境描述',
+  'envPl.close': '关闭',
+  'envPl.confirm.disable': '确认禁用',
+  'envPl.confirm.content.hasInstance': '该环境下存在实例，不可禁用',
+  'envPl.confirm.content.noInstance': '当你点击确认后，该环境将被禁用',
+  'envPl.code.copy.tooltip': '复制下文代码至Kubernetes运行，与平台建立链接',
+  'envPl.code.check.failed': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
+  'envPl.code.check.exist': '编码已存在',
+  'envPl.name.check.exist': '编码已存在',
+  'envPl.token.copy.tooltip': '复制指令',
+  'envPl.status.stop': '暂无停用环境',
+  'envPl.status.restart': '重启环境',
+  'envPl.status.stopped': '已停用',
+  'envPl.description': '描述:',
+  'envPl.token': '指令',
+  'envPl.status.update': '版本过低，请更新',
+  'envPl.active': '激活环境',
+  'envPl.stop': '停用环境',
+  'envPl.add': '请添加一个环境',
+
 
   // form
   'form.required': '该字段是必输的',
