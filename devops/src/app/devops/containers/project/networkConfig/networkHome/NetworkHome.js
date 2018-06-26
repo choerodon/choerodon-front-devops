@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Table, Button, Form, Tooltip, Modal, Progress } from 'choerodon-ui';
 import { Permission, Content, Header, Page, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
@@ -90,14 +91,14 @@ class NetworkHome extends Component {
     this.setState({ showEdit: true, id });
   };
   render() {
-    const { NetworkConfigStore } = this.props;
+    const { NetworkConfigStore, intl } = this.props;
     const menu = AppState.currentMenuType;
     const projectName = menu.name;
     const { upDown } = this.state;
     const data = NetworkConfigStore.getAllData;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
-      title: '状态',
+      title: <FormattedMessage id={'network.column.status'} />,
       key: 'status',
       width: 72,
       render: (record) => {
@@ -105,23 +106,23 @@ class NetworkHome extends Component {
         switch (record.status) {
           case 'failed':
             statusDom = (<div className="c7n-network-status c7n-network-status-failed">
-              <div>失败</div>
+              <div>{<FormattedMessage id />}</div>
             </div>);
             break;
           case 'operating':
             statusDom = (<div className="c7n-network-status c7n-network-status-operating">
-              <div>处理中</div>
+              <div>{<FormattedMessage id={'operating'} />}</div>
             </div>);
             break;
           default:
             statusDom = (<div className="c7n-network-status c7n-network-status-running">
-              <div>运行中</div>
+              <div>{<FormattedMessage id={'running'} />}</div>
             </div>);
         }
         return (statusDom);
       },
     }, {
-      title: '名称',
+      title: <FormattedMessage id={'network.column.name'} />,
       key: 'name',
       sorter: true,
       filters: [],
@@ -134,7 +135,7 @@ class NetworkHome extends Component {
             </Tooltip>);
             break;
           case 'doing':
-            statusDom = (<Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
+            statusDom = (<Tooltip title={<FormattedMessage id={`ist_${record.commandType}`} />}>
               <Progress type="loading" width={15} className="c7n-network-icon" />
             </Tooltip>);
             break;
@@ -148,20 +149,20 @@ class NetworkHome extends Component {
         </React.Fragment>);
       },
     }, {
-      title: '环境名称',
+      title: <FormattedMessage id={'network.column.env'} />,
       key: 'envName',
       sorter: true,
       filters: [],
       render: record => (
         <React.Fragment>
-          { record.envStatus ? <Tooltip title="已连接"> <span className="env-status-success" /></Tooltip> : <Tooltip title="未连接">
+          { record.envStatus ? <Tooltip title={<FormattedMessage id={'connect'} />}> <span className="env-status-success" /></Tooltip> : <Tooltip title={<FormattedMessage id={'disconnect'} />}>
             <span className="env-status-error" />
           </Tooltip> }
           {record.envName}
         </React.Fragment>
       ),
     }, {
-      title: '外部IP',
+      title: <FormattedMessage id={'network.column.ip'} />,
       key: 'ip',
       filters: [],
       render: record => (
@@ -169,27 +170,27 @@ class NetworkHome extends Component {
           {record.externalIp}</MouserOverWrapper>
       ),
     }, {
-      title: '端口',
+      title: <FormattedMessage id={'network.column.port'} />,
       key: 'port',
       render: record => (
         <MouserOverWrapper text={record.port || ''} width={40}>
           {record.port}</MouserOverWrapper>
       ),
     }, {
-      title: '目标端口',
+      title: <FormattedMessage id={'network.column.targetPort'} />,
       key: 'targetPort',
       render: record => (
         <MouserOverWrapper text={record.targetPort || ''} width={40}>
           {record.targetPort}</MouserOverWrapper>
       ),
     }, {
-      title: '应用',
+      title: <FormattedMessage id={'network.column.app'} />,
       key: 'appName',
       filters: [],
       sorter: true,
       render: record => (
         <React.Fragment>
-          <Tooltip title={`${record.appProjectId === parseInt(menu.id, 10) ? '本项目' : '应用市场'}`}>
+          <Tooltip title={`${record.appProjectId === parseInt(menu.id, 10) ? <FormattedMessage id={'project'} /> : <FormattedMessage id={'market'} />}`}>
             <span className={`icon ${record.appProjectId === parseInt(menu.id, 10) ? 'icon-project' : 'icon-apps'} c7n-network-icon`} />
           </Tooltip>
           <MouserOverWrapper text={record.appName || ''} width={100} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
@@ -198,7 +199,7 @@ class NetworkHome extends Component {
         </React.Fragment>
       ),
     }, {
-      title: '版本',
+      title: <FormattedMessage id={'network.column.version'} />,
       className: 'c7n-network-col',
       key: 'version',
       sorter: true,
@@ -215,7 +216,7 @@ class NetworkHome extends Component {
       ),
     }, {
       width: 150,
-      title: '部署实例',
+      title: <FormattedMessage id={'network.column.instance'} />,
       className: 'c7n-network-col',
       key: 'code',
       filters: [],
@@ -241,29 +242,29 @@ class NetworkHome extends Component {
         let deletDom = null;
         switch (record.status) {
           case 'operating':
-            editDom = (<Tooltip trigger="hover" placement="bottom" title={Choerodon.languageChange(`network_${record.commandType}`)}>
+            editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={`network_${record.commandType}`} />}>
               <span className="icon icon-mode_edit c7n-app-icon-disabled" />
             </Tooltip>);
-            deletDom = (<Tooltip trigger="hover" placement="bottom" title={Choerodon.languageChange(`network_${record.commandType}`)}>
+            deletDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={`network_${record.commandType}`} />}>
               <span className="icon icon-delete_forever c7n-app-icon-disabled" />
             </Tooltip>);
             break;
           default:
             editDom = (<React.Fragment>
-              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
+              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'edit'} />}>
                 <Button shape="circle" size={'small'} funcType="flat" onClick={this.editNetwork.bind(this, record.id)}>
                   <span className="icon icon-mode_edit" />
                 </Button>
-              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
+              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'network.env.tooltip'} />}>
                 <span className="icon icon-mode_edit c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
             deletDom = (<React.Fragment>
-              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>删除</div>}>
+              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'delete'} />}>
                 <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
                   <span className="icon icon-delete_forever" />
                 </Button>
-              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
+              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'network.env.tooltip'} />}>
                 <span className="icon icon-delete_forever c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
@@ -306,7 +307,7 @@ class NetworkHome extends Component {
         className="c7n-region c7n-network-wrapper"
       >
         {NetworkConfigStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <Header title="网络配置">
+          <Header title={<FormattedMessage id={'network.header.title'} />}>
             <Permission
               service={['devops-service.devops-service.create']}
               type={type}
@@ -318,7 +319,7 @@ class NetworkHome extends Component {
                 onClick={this.showSideBar}
               >
                 <span className="icon-playlist_add icon" />
-                <span>{Choerodon.getMessage('创建网络', 'Create Network')}</span>
+                <span><FormattedMessage id={'network.header.create'} /></span>
               </Button>
             </Permission>
             <Permission
@@ -332,23 +333,13 @@ class NetworkHome extends Component {
                 onClick={this.handleRefresh}
               >
                 <span className="icon-refresh icon" />
-                <span>{Choerodon.languageChange('refresh')}</span>
+                <span><FormattedMessage id={'refresh'} /></span>
               </Button>
             </Permission>
           </Header>
-          <Content>
-            <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的网络配置</h2>
-            <p>
-              网络管理是定义了一种访问网络的策略，是指内部的负载均衡以及网络转发，会将网络流量定向转发到指定的单个或者多个实例容器组。
-              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                <span className="c7n-external-link-content">
-                 了解详情
-                </span>
-                <span className="icon icon-open_in_new" />
-              </a>
-            </p>
+          <Content code="network" values={{ name: projectName }}>
             <Table
-              filterBarPlaceholder={'过滤表'}
+              filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
               loading={NetworkConfigStore.loading}
               pagination={NetworkConfigStore.getPageInfo}
               columns={columns}
@@ -373,19 +364,19 @@ class NetworkHome extends Component {
         /> }
         <Modal
           visible={this.state.openRemove}
-          title="删除网络"
+          title={<FormattedMessage id={'network.delete'} />}
           footer={[
-            <Button key="back" onClick={this.closeRemove}>取消</Button>,
+            <Button key="back" onClick={this.closeRemove}><FormattedMessage id={'cancel'} /></Button>,
             <Button key="submit" type="danger" onClick={this.handleDelete}>
-              删除
+              <FormattedMessage id={'delete'} />
             </Button>,
           ]}
         >
-          <p>删除网络后，需要您再去修改相关的域名信息。确定要删除该网络吗？</p>
+          <p><FormattedMessage id={'network.delete.tooltip'} />？</p>
         </Modal>
       </Page>
     );
   }
 }
 
-export default Form.create({})(withRouter(NetworkHome));
+export default Form.create({})(withRouter(injectIntl(NetworkHome)));
