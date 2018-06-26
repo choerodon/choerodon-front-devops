@@ -185,7 +185,7 @@ class AppStoreHome extends Component {
         className="c7n-store-card"
         onClick={this.appDetail.bind(this, card.id)}
       >
-        {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(http://minio.${Choerodon.fileServer(card.imgUrl)})` }} />
+        {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${Choerodon.fileServer(card.imgUrl)})` }} />
           : <div className="c7n-store-card-icon" />}
         <div title={card.name} className="c7n-store-card-name">
           {card.name}
