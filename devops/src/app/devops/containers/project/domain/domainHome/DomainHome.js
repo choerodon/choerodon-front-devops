@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Table, Button, Form, Tooltip, Modal, Progress } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import CreateDomain from '../createDomain';
@@ -69,29 +70,29 @@ class DomainHome extends Component {
     const projectName = menu.name;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
-      title: '状态',
+      title: this.props.intl.formatMessage({ id: 'domain.column.status' }),
       render: (record) => {
         let statusDom = null;
         switch (record.status) {
           case 'failed':
             statusDom = (<div className="c7n-domain-status c7n-domain-status-failed">
-              <div>失败</div>
+              <div>{this.props.intl.formatMessage({ id: 'failed' })}</div>
             </div>);
             break;
           case 'operating':
             statusDom = (<div className="c7n-domain-status c7n-domain-status-operating">
-              <div>处理中</div>
+              <div>{this.props.intl.formatMessage({ id: 'operating' })}</div>
             </div>);
             break;
           default:
             statusDom = (<div className="c7n-domain-status c7n-domain-status-running">
-              <div>运行中</div>
+              <div>{this.props.intl.formatMessage({ id: 'running' })}</div>
             </div>);
         }
         return (statusDom);
       },
     }, {
-      title: '域名名称',
+      title: this.props.intl.formatMessage({ id: 'domain.column.name' }),
       key: 'name',
       sorter: true,
       filters: [],
@@ -117,27 +118,27 @@ class DomainHome extends Component {
         </React.Fragment>);
       },
     }, {
-      title: '地址',
+      title: this.props.intl.formatMessage({ id: 'domain.column.domain' }),
       key: 'domain',
       filters: [],
       dataIndex: 'domain',
     }, {
-      title: '环境名称',
+      title: this.props.intl.formatMessage({ id: 'domain.column.env' }),
       key: 'envName',
       sorter: true,
       filters: [],
       render: record => (
         <React.Fragment>
-          { record.envStatus ? <Tooltip title="已连接">
+          { record.envStatus ? <Tooltip title={<FormattedMessage id={'connect'} />}>
             <span className="env-status-success" />
-          </Tooltip> : <Tooltip title="未连接">
+          </Tooltip> : <Tooltip title={<FormattedMessage id={'disconnect'} />}>
             <span className="env-status-error" />
           </Tooltip> }
           {record.envName}
         </React.Fragment>
       ),
     }, {
-      title: '路径',
+      title: this.props.intl.formatMessage({ id: 'domain.column.path' }),
       className: 'c7n-network-col',
       key: 'path',
       sorter: true,
@@ -151,7 +152,7 @@ class DomainHome extends Component {
         </div>
       ),
     }, {
-      title: '网络',
+      title: this.props.intl.formatMessage({ id: 'domain.column.network' }),
       className: 'c7n-network-col',
       key: 'serviceName',
       filters: [],
@@ -186,20 +187,20 @@ class DomainHome extends Component {
             break;
           default:
             editDom = (<React.Fragment>
-              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
+              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'edit' })}</div>}>
                 <Button shape="circle" size={'small'} funcType="flat" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                   <span className="icon icon-mode_edit" />
                 </Button>
-              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
+              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
                 <span className="icon icon-mode_edit c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
             deletDom = (<React.Fragment>
-              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>删除</div>}>
+              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'delete' })}</div>}>
                 <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
                   <span className="icon icon-delete_forever" />
                 </Button>
-              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>请先连接环境</div>}>
+              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
                 <span className="icon icon-delete_forever c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
@@ -240,7 +241,7 @@ class DomainHome extends Component {
         ]}
       >
         { DomainStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <Header title="域名管理">
+          <Header title={this.props.intl.formatMessage({ id: 'domain.header.title' })}>
             <Permission
               service={['devops-service.devops-ingress.create']}
               type={type}
@@ -252,7 +253,7 @@ class DomainHome extends Component {
                 onClick={this.showSideBar.bind(this, 'create', '')}
               >
                 <span className="icon icon-playlist_add icon" />
-                <span>{Choerodon.getMessage('创建域名', 'Create Domain')}</span>
+                <FormattedMessage id={'domain.header.create'} />
               </Button>
             </Permission>
             <Permission
@@ -266,23 +267,13 @@ class DomainHome extends Component {
                 onClick={this.loadAllData}
               >
                 <span className="icon-refresh icon" />
-                <span>{Choerodon.languageChange('refresh')}</span>
+                <FormattedMessage id={'refresh'} />
               </Button>
             </Permission>
           </Header>
-          <Content>
-            <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的域名管理</h2>
-            <p>
-              域名管理是将您已经预定义好的域名在平台中进行配置，使外部能够通过指定的域名访问到系统内部的实例。
-              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/ingress/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                <span className="c7n-external-link-content">
-                    了解详情
-                </span>
-                <span className="icon icon-open_in_new" />
-              </a>
-            </p>
+          <Content code={'domain'} values={{ name: projectName }}>
             <Table
-              filterBarPlaceholder={'过滤表'}
+              filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
               loading={DomainStore.loading}
               onChange={this.tableChange}
               pagination={DomainStore.pageInfo}
@@ -304,19 +295,19 @@ class DomainHome extends Component {
         />}
         <Modal
           visible={this.state.openRemove}
-          title="删除域名"
+          title={<FormattedMessage id={'domain.header.delete'} />}
           footer={[
-            <Button key="back" onClick={this.closeRemove}>取消</Button>,
+            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
             <Button key="submit" type="danger" onClick={this.handleDelete}>
-              确定
+              {this.props.intl.formatMessage({ id: 'delete' })}
             </Button>,
           ]}
         >
-          <p>确定要删除吗</p>
+          <p>{this.props.intl.formatMessage({ id: 'confirm.delete' })}</p>
         </Modal>
       </Page>
     );
   }
 }
 
-export default Form.create({})(withRouter(DomainHome));
+export default Form.create({})(withRouter(injectIntl(DomainHome)));

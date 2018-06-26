@@ -28,6 +28,17 @@ const pageDetail = {
   'env.token.title': '复制环境"{name}"的指令',
   'env.token.description': '复制下文代码至Kubernetes运行，与平台建立链接。',
   'env.token.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
+
+  // domain
+  'domain.title': '项目"{name}"的域名管理',
+  'domain.description': '域名管理是将您已经预定义好的域名在平台中进行配置，使外部能够通过指定的域名访问到系统内部的实例。',
+  'domain.link': `${docServer}/user-guide/deployment-pipeline/ingress`,
+  'domain.create.title': '在项目"{name}"中创建域名',
+  'domain.create.description': '请选择环境，填写域名名称、地址、路径，并选择网络配置域名访问规则。',
+  'domain.create.link': `${docServer}/user-guide/deployment-pipeline/service/`,
+  'domain.update.title': '对域名"{name}"进行修改',
+  'domain.update.description': '您可在此修改域名配置信息。',
+  'domain.update.link': `${docServer}/user-guide/deployment-pipeline/service/`,
 };
 
 const zhCN = {
@@ -40,7 +51,7 @@ const zhCN = {
   edit: '修改',
   cancel: '取消',
   delete: '删除',
-  'confirm.delete': '确认删除',
+  'confirm.delete': '确认删除吗？',
   'confirm.delete.tip': '当你点击删除后，该条数据将被永久删除，不可恢复!',
   MicroApp: '微应用',
   MicroAppUI: 'Web前端',
@@ -74,6 +85,7 @@ const zhCN = {
   public: '全平台',
   filter: '过滤表',
   stop: '停用',
+  confirm: '确认',
 
   // ist
   ist_create: '创建中',
@@ -120,9 +132,6 @@ const zhCN = {
   'network.btn.add': '添加版本',
   'network.form.targetPort.help': '网络选择的目标实例所暴露的端口号',
 
-  domain_create: '域名创建中，请耐心等待',
-  domain_delete: '域名删除中，请耐心等待',
-  domain_update: '域名更新中，请耐心等待',
   // deploy
   'deploy.title': '应用部署',
   'deploy.status': '容器状态',
@@ -343,11 +352,27 @@ const zhCN = {
   'version.createTime': '时间',
 
   // domain
-  'domain.title': '域名管理',
-  'domain.name': '域名',
-  'domain.network': '网络',
-  'domain.path': '路径',
 
+  'domain.header.title': '域名管理',
+  'domain.header.create': '创建域名',
+  'domain.header.update': '修改域名',
+  'domain.header.delete': '删除域名',
+  'domain.column.name': '域名名称',
+  'domain.column.status': '状态',
+  'domain.column.env': '环境名称',
+  'domain.column.network': '网络',
+  'domain.column.path': '路径',
+  'domain.column.domain': '地址',
+  'domain.form.domain': '域名地址',
+  domain_create: '域名创建中，请耐心等待',
+  domain_delete: '域名删除中，请耐心等待',
+  domain_update: '域名更新中，请耐心等待',
+  'domain.name.check.exist': '名称已存在',
+  'domain.name.check.failed': '由小写字母、数字、\'-\'或\'.\'组成，并且必须以字母、数字开始和结束',
+  'domain.path.check.exist': '路径在该域名路径下已存在，请更改路径或者域名路径',
+  'domain.network.check.failed': '请移除不可用的网络',
+  'domain.path.add': '添加路径',
+  'domain.path.isnull': '请先填写路径',
 
   // appstore
   'appstore.title': '应用市场',
