@@ -281,7 +281,7 @@ class AppStoreHome extends Component {
             <FormattedMessage id="appstore.title" />
           </h2>
           <p>
-            <FormattedMessage id="appstore.description" />
+            <FormattedMessage id="appstore.headDes" />
             <a href={intl.formatMessage({ id: 'appstore.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 <FormattedMessage id="learnmore" />

@@ -110,7 +110,7 @@ const pageDetail = {
   'ist.link': `${docServer}/user-guide/development-pipeline/instance/`,
 
   // appstore
-  'appstore.description': '您可以在此查看已发布的应用及其详细信息，并选择版本进行部署。',
+  'appstore.headDes': '您可以在此查看已发布的应用及其详细信息，并选择版本进行部署。',
   'appstore.exportDes': '您可以在此选择相应的应用，并选择版本进行导出。',
   'appstore.importDes': '您可以在此选择相应的应用，上传文件后并进行导入。',
   'appstore.exportStep1': '您可以在此选择想要导出的应用，您可以一次选择多个应用。',

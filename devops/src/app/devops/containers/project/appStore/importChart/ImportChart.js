@@ -367,7 +367,7 @@ class ImportChart extends Component {
           </p>
           {this.state.visible && (<p>
             <span>{intl.formatMessage({ id: 'release.column.level' })}：</span>
-            <span>{this.state.level}</span>
+            <span>{this.state.level === 'false' ? intl.formatMessage({ id: 'organization' }) : intl.formatMessage({ id: 'public' })}</span>
           </p>)}
           <Table
             filterBar={false}
@@ -385,14 +385,14 @@ class ImportChart extends Component {
             disabled={!(this.state.fileList.status === 'done')}
             onClick={this.importChart.bind(this, data.fileCode)}
           >
-            导入
+            {intl.formatMessage({ id: 'importApp' })}
           </Button>
           <Button
             funcType="raised"
             className="c7n-step-button"
             onClick={this.changeStep.bind(this, 2)}
           >
-            上一步
+            {intl.formatMessage({ id: 'previous' })}
           </Button>
           <Button funcType="raised" className="c7n-step-clear" onClick={this.handleBack}>
             {intl.formatMessage({ id: 'cancel' })}
