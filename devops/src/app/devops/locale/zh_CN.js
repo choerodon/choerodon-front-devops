@@ -41,13 +41,25 @@ const pageDetail = {
   'domain.update.link': `${docServer}/user-guide/deployment-pipeline/service/`,
 
   // deploymentApp
-
   'deploy.title': '项目"{name}"的部署应用',
   'deploy.description': '应用部署是一个将某版本的应用部署至某环境的操作。您可以在此按指引分步骤完成应用部署。',
   'deploy.link': `${docServer}/user-guide/deployment-pipeline/application-deployment/`,
   'deploy.sidebar.title': '项目"{name}"的部署选择应用',
   'deploy.sidebar.description': '您可以在此灵活选择来源于本项目及应用市场的应用，且有列表式及卡片式两种展示方式可以切换。',
   'deploy.sidebar.link': `${docServer}/user-guide/deployment-pipeline/application-deployment/`,
+
+  // appRelease
+  'release.title': '项目"{name}"的应用发布',
+  'release.description': '应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。',
+  'release.link': `${docServer}/user-guide/development-pipeline/application-release/`,
+  'release.add.title': '项目"{name}"的应用发布',
+  'release.add.description': '应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。',
+  'release.edit.title': '修改应用"{name}"的信息',
+  'release.edit.description': '您可以在此修改应用发布的展示信息，包括贡献者、分类及应用描述。',
+  'release.editVersion.title': '查看应用"{name}"的版本',
+  'release.editVersion.description': '您可以在此查看未发布及已发布的版本，且可以发布未发布的版本。',
+  'release.addVersion.title': '添加应用"{name}"发布的版本',
+  'release.addVersion.description': '您可以在此勾选并添加需要发布的版本。',
 };
 
 const zhCN = {
@@ -435,8 +447,38 @@ const zhCN = {
   'appstore.description': '描述',
 
   // app-release
-  'app-release.title': '应用发布',
-  'app-release.level': '发布层级',
+  'release.home.header.title': '应用发布',
+  'release.home.app.publish': '已发布应用',
+  'release.home.app.unpublish': '未发布应用',
+  'release.column.level': '发布范围',
+  'release.action.version': '版本控制',
+  'release.action.publish': '发布应用',
+  'release.add.step.one.title': '选择应用',
+  'release.add.step.one.description': '您可以在此选择需要发布的应用。',
+  'release.add.step.two.title': '选择发布版本',
+  'release.add.step.two.description': '您可以在此点击添加版本选择添加需要发布的版本。',
+  'release.add.step.two.btn.add': '添加版本',
+  'release.add.step.three.title': '选择发布范围',
+  'release.add.step.three.description': '请在此选择应用发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。',
+  'release.add.step.three.tooltip': '请注意：发布后不可修改发布范围。',
+  'release.add.step.four.description': '您可以在此上传应用图标，填写贡献者、分类及应用描述，维护应用展示信息。',
+  'release.add.step.four.title': '填写应用信息。',
+  'release.add.step.four.tooltip': '请注意：平台将会提取发布的应用版本中Readme文件展示在应用市场的应用详情页，请先维护好对应的Readme文件后再发布。',
+  'release.add.step.four.app.icon': '应用图标',
+  'release.add.step.five.title': '确认信息',
+  'release.add.step.five.description': '您可以在此确认应用发布的信息，如需修改请返回相应步骤。',
+  'release.add.step.five.tooltip': '请注意：该版本发布后不可取消发布，且不可修改发布范围。',
+  'release.add.step.five.btn.confirm': '发布',
+  'release.edit.header.title': '修改应用信息',
+  'release.editVersion.publishTime': '发布时间',
+  'release.editVersion.header.title': '查看应用版本',
+  'release.editVersion.version.publish': '已发布版本',
+  'release.editVersion.version.unpublish': '未发布版本',
+  'release.editVersion.modal.title': '确认发布版本',
+  'release.editVersion.modal.content': '版本发布后不可取消，确定要发布吗?',
+  'release.addVersion.header.title': '添加应用版本',
+  'release.addVersion.btn.confirm': '添加',
+
 
   // yaml file
   'yaml.lastModify': '上次修改',

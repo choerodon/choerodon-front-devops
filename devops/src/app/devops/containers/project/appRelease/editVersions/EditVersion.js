@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Table, Form, Select, Input, Tooltip, Modal, Icon, Upload, Radio, Tabs } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
+import { Button, Table, Modal, Tabs } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
@@ -39,10 +40,10 @@ class EditVersion extends Component {
     const { EditVersionStore } = this.props;
     const data = EditVersionStore.allData;
     const columns = [{
-      title: '版本',
+      title: <FormattedMessage id={'deploy.ver'} />,
       dataIndex: 'version',
     }, {
-      title: '生成时间',
+      title: <FormattedMessage id={'app.createTime'} />,
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }];
     const rowSelection = {
@@ -57,7 +58,7 @@ class EditVersion extends Component {
       rowSelection={rowSelection}
       columns={columns}
       dataSource={data}
-      filterBarPlaceholder={'过滤表'}
+      filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
       onChange={this.versionTableChange}
       rowKey={record => record.id}
     />);
@@ -70,17 +71,17 @@ class EditVersion extends Component {
     const { EditVersionStore } = this.props;
     const data = EditVersionStore.allData;
     const columns = [{
-      title: '版本',
+      title: <FormattedMessage id={'deploy.ver'} />,
       dataIndex: 'version',
     }, {
-      title: '生成时间',
+      title: <FormattedMessage id={'app.createTime'} />,
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }, {
-      title: '发布时间',
+      title: <FormattedMessage id={'release.editVersion.publishTime'} />,
       render: (text, record) => <TimePopover content={record.updatedDate} />,
     }];
     return (<Table
-      filterBarPlaceholder={'过滤表'}
+      filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
       loading={EditVersionStore.loading}
       pagination={EditVersionStore.pageInfo}
       columns={columns}
@@ -189,25 +190,15 @@ class EditVersion extends Component {
           'devops-service.application-market.updateVersions',
         ]}
       >
-        <Header title="查看应用版本" backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
-        <Content>
-          <h2 className="c7n-space-first">查看应用&quot;{this.state.name}&quot;的版本 </h2>
-          <p>
-            您可以在此查看未发布及已发布的版本，且可以发布未发布的版本。
-            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                了解详情
-              </span>
-              <span className="icon icon-open_in_new" />
-            </a>
-          </p>
+        <Header title={<FormattedMessage id={'release.editVersion.header.title'} />} backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
+        <Content code={'release.editVersion'} values={{ name: this.state.name }}>
           <Tabs defaultActiveKey={this.state.key || '1'} onChange={this.changeTabs}>
-            <TabPane tab="未发布版本" key="1">
+            <TabPane tab={<FormattedMessage id={'release.editVersion.version.unpublish'} />} key="1">
               <div className="version-table-wrap">
                 {this.getSidebarTable()}
               </div>
             </TabPane>
-            <TabPane tab="已发布版本" key="2">
+            <TabPane tab={<FormattedMessage id={'release.editVersion.version.publish'} />} key="2">
               <div className="version-table-wrap">
                 {this.getPublishTable()}
               </div>
@@ -216,26 +207,26 @@ class EditVersion extends Component {
           {key === '1' ? <React.Fragment>
             <div className="c7n-appRelease-hr" />
             <Permission service={['devops-service.application-market.updateVersions']}>
-              <Button className="release-button-margin" type="primary" funcType="raised" onClick={this.handleOpen}>发布</Button>
+              <Button className="release-button-margin" type="primary" funcType="raised" onClick={this.handleOpen}>{this.props.intl.formatMessage({ id: 'release.add.step.five.btn.confirm' })}</Button>
             </Permission>
-            <Button funcType="raised" onClick={this.handleBack}>取消</Button>
+            <Button funcType="raised" onClick={this.handleBack}>{this.props.intl.formatMessage({ id: 'cancel' })}</Button>
           </React.Fragment> : null}
         </Content>
         <Modal
           visible={this.state.visible}
-          title="确认发布版本"
+          title={this.props.intl.formatMessage({ id: 'release.editVersion.modal.title' })}
           footer={[
-            <Button key="back" disabled={this.state.submitting} onClick={this.handleClose}>取消</Button>,
+            <Button key="back" disabled={this.state.submitting} onClick={this.handleClose}>{this.props.intl.formatMessage({ id: 'cancel' })}</Button>,
             <Button key="submit" loading={this.state.submitting} type="primary" onClick={this.handleOk}>
-              发布
+              {this.props.intl.formatMessage({ id: 'release.add.step.five.btn.confirm' })}
             </Button>,
           ]}
         >
-          <p>版本发布后不可取消，确定要发布吗？</p>
+          <p>{this.props.intl.formatMessage({ id: 'release.editVersion.modal.content' })}？</p>
         </Modal>
       </Page>
     );
   }
 }
 
-export default withRouter(EditVersion);
+export default withRouter(injectIntl(EditVersion));
