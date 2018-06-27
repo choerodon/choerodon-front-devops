@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Table, Modal } from 'choerodon-ui';
-import { stores } from 'choerodon-front-boot';
+import { stores, Content } from 'choerodon-front-boot';
 import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
@@ -39,10 +40,10 @@ class VersionTable extends Component {
     const { store } = this.props;
     const data = store.getVersionData;
     const columns = [{
-      title: '版本',
+      title: <FormattedMessage id={'deploy.ver'} />,
       dataIndex: 'version',
     }, {
-      title: '生成时间',
+      title: <FormattedMessage id={'app.createTime'} />,
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }];
     const rowSelection = {
@@ -52,7 +53,7 @@ class VersionTable extends Component {
       },
     };
     return (<Table
-      filterBarPlaceholder={'过滤表'}
+      filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
       className="c7n-table-512"
       loading={store.loading}
       pagination={store.versionPage}
@@ -136,32 +137,15 @@ class VersionTable extends Component {
 
   render() {
     const { store } = this.props;
-    const menu = AppState.currentMenuType;
-    const content = '您可以在此勾选并添加需要发布的版本。';
-    const contentDom = (<div className="c7n-region version-wrapper">
-      <h2 className="c7n-space-first">添加应用&quot;{store.app && store.app.name}&quot;发布的版本</h2>
-      <p>
-        {content}
-        <a
-          href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-release/"
-          rel="nofollow me noopener noreferrer"
-          target="_blank"
-          className="c7n-external-link"
-        >
-          <span className="c7n-external-link-content">
-              了解详情
-          </span>
-          <span className="icon icon-open_in_new" />
-        </a>
-      </p>
+    const contentDom = (<Content className="c7n-region version-wrapper sidebar-content" code={'release.addVersion'} values={{ name: store.app && store.app.name }}>
       {this.getSidebarTable()}
-    </div>);
+    </Content>);
     return (
       <Sidebar
-        okText="添加"
-        cancelText="取消"
+        okText={this.props.intl.formatMessage({ id: 'release.addVersion.btn.confirm' })}
+        cancelText={this.props.intl.formatMessage({ id: 'cancel' })}
         visible={this.props.show}
-        title="添加应用版本"
+        title={<FormattedMessage id={'release.addVersion.header.title'} />}
         onCancel={this.handleClose}
         onOk={this.handleAddVersion}
       >
@@ -171,4 +155,4 @@ class VersionTable extends Component {
   }
 }
 
-export default withRouter(VersionTable);
+export default withRouter(injectIntl(VersionTable));

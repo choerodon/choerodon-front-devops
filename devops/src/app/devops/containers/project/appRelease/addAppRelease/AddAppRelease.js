@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Radio, Steps, Table, Tooltip, Form, Input } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import '../../../main.scss';
@@ -35,7 +36,7 @@ class AddAppRelease extends Component {
     EditReleaseStore.loadApp(this.state.projectId, this.state.appId);
     EditReleaseStore.setSelectData([]);
     const card = document.getElementsByClassName('deployApp-card')[0];
-    card.style.minHeight = `${window.innerHeight - 247}px`;
+    // card.style.minHeight = `${window.innerHeight - 247}px`;
   }
 
   /**
@@ -236,7 +237,8 @@ class AddAppRelease extends Component {
    * 渲染第一步
    */
   handleRenderApp =() => {
-    const { EditReleaseStore } = this.props;
+    const { EditReleaseStore, intl } = this.props;
+    const { formatMessage } = intl;
     const apps = EditReleaseStore.apps.slice();
     const app = EditReleaseStore.app;
     const column = [{
@@ -247,13 +249,13 @@ class AddAppRelease extends Component {
       ),
 
     }, {
-      title: Choerodon.languageChange('app.name'),
+      title: <FormattedMessage id={'app.name'} />,
       dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
     }, {
-      title: Choerodon.languageChange('app.code'),
+      title: <FormattedMessage id={'app.code'} />,
       dataIndex: 'code',
       key: 'code',
       sorter: true,
@@ -262,13 +264,13 @@ class AddAppRelease extends Component {
     return (
       <div className="deployApp-app">
         <p>
-          您可以在此选择需要发布的应用。
+          {formatMessage({ id: 'release.add.step.one.description' })}
         </p>
         <section className="deployAddApp-section">
           <div>
             <Table
               rowClassName={'col-check'}
-              filterBarPlaceholder={'过滤表'}
+              filterBarPlaceholder={formatMessage({ id: 'filter' })}
               className="c7n-table-512"
               onRow={(record) => {
                 const { isClick } = this.state;
@@ -285,8 +287,8 @@ class AddAppRelease extends Component {
           </div>
         </section>
         <section className="deployAddApp-section">
-          <Button type="primary" funcType="raised" disabled={!(this.state.appId)} onClick={this.changeStep.bind(this, 2)}>下一步</Button>
-          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>取消</Button>
+          <Button type="primary" funcType="raised" disabled={!(this.state.appId)} onClick={this.changeStep.bind(this, 2)}>{formatMessage({ id: 'next' })}</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>{formatMessage({ id: 'cancel' })}</Button>
         </section>
       </div>
     );
@@ -298,10 +300,10 @@ class AddAppRelease extends Component {
     const { EditReleaseStore } = this.props;
     const data = EditReleaseStore.selectData;
     const columns = [{
-      title: '版本',
+      title: <FormattedMessage id={'deploy.ver'} />,
       dataIndex: 'version',
     }, {
-      title: '生成时间',
+      title: <FormattedMessage id={'app.createTime'} />,
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }, {
       width: 64,
@@ -309,7 +311,7 @@ class AddAppRelease extends Component {
       className: 'c7n-network-text_top',
       render: record => (
         <div>
-          <Tooltip trigger="hover" placement="bottom" content={<div>删除</div>}>
+          <Tooltip trigger="hover" placement="bottom" content={<div>{this.props.intl.formatMessage({ id: 'delete' })}</div>}>
             <Button shape="circle" funcType="flat" onClick={this.removeVersion.bind(this, record.id)}>
               <span className="icon icon-delete" />
             </Button>
@@ -320,11 +322,11 @@ class AddAppRelease extends Component {
     return (
       <div className="deployApp-env">
         <p>
-          您可以在此点击添加版本选择添加需要发布的版本。
+          {this.props.intl.formatMessage({ id: 'release.add.step.two.description' })}
         </p>
         <section className="deployAddApp-section">
           <Permission service={['devops-service.application-version.pageByApp']}>
-            <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.handleAddVersion}><span className="icon icon-add" />添加版本</Button>
+            <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.handleAddVersion}><span className="icon icon-add" />{this.props.intl.formatMessage({ id: 'release.add.step.two.btn.add' })}</Button>
           </Permission>
         </section>
         <section className="deployAddApp-section">
@@ -338,9 +340,9 @@ class AddAppRelease extends Component {
           </div>
         </section>
         <section className="deployAddApp-section">
-          <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 3)} disabled={!(data.length)}>下一步</Button>
-          <Button onClick={this.changeStep.bind(this, 1)} style={{ color: 'rgb(63, 81, 181)' }} funcType="raised">上一步</Button>
-          <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.clearStepOne}>取消</Button>
+          <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 3)} disabled={!(data.length)}>{this.props.intl.formatMessage({ id: 'next' })}</Button>
+          <Button onClick={this.changeStep.bind(this, 1)} style={{ color: 'rgb(63, 81, 181)' }} funcType="raised">{this.props.intl.formatMessage({ id: 'previous' })}</Button>
+          <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.clearStepOne}>{this.props.intl.formatMessage({ id: 'cancel' })}</Button>
         </section>
       </div>
     );
@@ -359,25 +361,24 @@ class AddAppRelease extends Component {
     return (
       <div className="deployApp-deploy">
         <p>
-          请在此选择应用发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。
+          {this.props.intl.formatMessage({ id: 'release.add.step.three.description' })}
         </p>
         <section className="deployAddApp-section">
           <div className="section-text-margin">
-            <RadioGroup onChange={this.handleChangeMode} value={this.state.mode} label={<span className="deploy-text">选择发布范围</span>}>
-              <Radio style={radioStyle} value={'organization'}>本组织</Radio>
-              <Radio style={radioStyle} value={'public'}>全平台
-              </Radio>
+            <RadioGroup onChange={this.handleChangeMode} value={this.state.mode} label={<span className="deploy-text">{this.props.intl.formatMessage({ id: 'release.add.step.three.title' })}</span>}>
+              <Radio style={radioStyle} value={'organization'}>{this.props.intl.formatMessage({ id: 'organization' })}</Radio>
+              <Radio style={radioStyle} value={'public'}>{this.props.intl.formatMessage({ id: 'public' })}</Radio>
             </RadioGroup>
           </div>
           <p style={{ marginLeft: 30, marginTop: 24 }}>
             <span className="icon icon-error release-icon-error" />
-            <span className="deploy-tip-text">请注意：发布后不可修改发布范围。</span>
+            <span className="deploy-tip-text">{this.props.intl.formatMessage({ id: 'release.add.step.three.tooltip' })}。</span>
           </p>
         </section>
         <section className="deployAddApp-section">
-          <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 4)}>下一步</Button>
-          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.changeStep.bind(this, 2)}>上一步</Button>
-          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>取消</Button>
+          <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 4)}>{this.props.intl.formatMessage({ id: 'next' })}</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.changeStep.bind(this, 2)}>{this.props.intl.formatMessage({ id: 'previous' })}</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>{this.props.intl.formatMessage({ id: 'cancel' })}</Button>
         </section>
       </div>
     );
@@ -392,7 +393,7 @@ class AddAppRelease extends Component {
     return (
       <div className="deployApp-deploy">
         <p>
-          您可以在此上传应用图标，填写贡献者、分类及应用描述，维护应用展示信息。
+          {this.props.intl.formatMessage({ id: 'release.add.step.four.description' })}
         </p>
         <section className="deployAddApp-section">
           <div className="c7n-appRelease-img-wrap">
@@ -412,7 +413,7 @@ class AddAppRelease extends Component {
                 </div>
                 }
               </div>
-              <span className="c7n-appRelease-img-title">应用图标</span>
+              <span className="c7n-appRelease-img-title">{this.props.intl.formatMessage({ id: 'release.add.step.four.app.icon' })}</span>
             </div>
           </div>
         </section>
@@ -422,9 +423,8 @@ class AddAppRelease extends Component {
             onChange={(value) => { this.setState({ contributor: value.target.value }); }}
             style={{ width: 512 }}
             maxLength={30}
-            label={Choerodon.getMessage('贡献者', 'contributor')}
+            label={<FormattedMessage id={'appstore.contributor'} />}
             size="default"
-            // placeholder={Choerodon.getMessage('域名路径', 'domain path')}
           />
         </section>
         <section className="deployAddApp-section">
@@ -433,9 +433,8 @@ class AddAppRelease extends Component {
             style={{ width: 512 }}
             onChange={(value) => { this.setState({ category: value.target.value }); }}
             maxLength={10}
-            label={Choerodon.getMessage('分类', 'category')}
+            label={<FormattedMessage id={'appstore.category'} />}
             size="default"
-            // placeholder={Choerodon.getMessage('域名路径', 'domain path')}
           />
         </section>
         <section className="deployAddApp-section">
@@ -444,20 +443,20 @@ class AddAppRelease extends Component {
             onChange={(value) => { this.setState({ description: value.target.value }); }}
             style={{ width: 512 }}
             maxLength={50}
-            label={'应用描述'}
+            label={<FormattedMessage id={'appstore.description'} />}
             autosize={{ minRows: 2, maxRows: 6 }}
           />
         </section>
         <section className="deployAddApp-section">
           <p>
             <span className="icon icon-error release-icon-error" />
-            <span className="deploy-tip-text">请注意：平台将会提取发布的应用版本中Readme文件展示在应用市场的应用详情页，请先维护好对应的Readme文件后再发布。</span>
+            <span className="deploy-tip-text">{this.props.intl.formatMessage({ id: 'release.add.step.four.tooltip' })}</span>
           </p>
         </section>
         <section className="deployAddApp-section">
-          <Button type="primary" funcType="raised" disabled={!(category && contributor && description)} onClick={this.changeStep.bind(this, 5)}>下一步</Button>
-          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.changeStep.bind(this, 3)}>上一步</Button>
-          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>取消</Button>
+          <Button type="primary" funcType="raised" disabled={!(category && contributor && description)} onClick={this.changeStep.bind(this, 5)}>{this.props.intl.formatMessage({ id: 'next' })}</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.changeStep.bind(this, 3)}>{this.props.intl.formatMessage({ id: 'previous' })}</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>{this.props.intl.formatMessage({ id: 'cancel' })}</Button>
         </section>
       </div>
     );
@@ -472,14 +471,14 @@ class AddAppRelease extends Component {
     const data = EditReleaseStore.value;
     return (
       <section className="deployApp-review">
-        <p>您可以在此确认应用发布的信息，如需修改请返回相应步骤。</p>
+        <p>{this.props.intl.formatMessage({ id: 'release.add.step.five.description' })}</p>
         <section>
           <div>
-            <div className="app-release-title">应用名称：</div>
+            <div className="app-release-title">{this.props.intl.formatMessage({ id: 'network.form.app' })}：</div>
             <div className="deployApp-text">{EditReleaseStore.app && EditReleaseStore.app.name}</div>
           </div>
           <div>
-            <div className="app-release-title">应用版本：</div>
+            <div className="app-release-title">{this.props.intl.formatMessage({ id: 'deploy.step.one.version' })}：</div>
             <div className="deployApp-text">
               {EditReleaseStore.selectData.length && EditReleaseStore.selectData.map(v => (
                 <div key={v.id}>{v.version}</div>
@@ -487,31 +486,31 @@ class AddAppRelease extends Component {
             </div>
           </div>
           <div>
-            <div className="app-release-title">贡献者：</div>
+            <div className="app-release-title">{this.props.intl.formatMessage({ id: 'deploy.step.one.version' })}：</div>
             <div className="deployApp-text">{this.state.contributor}</div>
           </div>
           <div>
-            <div className="app-release-title">分类：</div>
+            <div className="app-release-title">{this.props.intl.formatMessage({ id: 'appstore.category' })}：</div>
             <div className="deployApp-text">{this.state.category}</div>
           </div>
           <div>
-            <div className="app-release-title">描述：</div>
+            <div className="app-release-title">{this.props.intl.formatMessage({ id: 'appstore.description' })}：</div>
             <div className="deployApp-text">{this.state.description}</div>
           </div>
           <div>
-            <div className="app-release-title">发布范围：</div>
-            <div className="deployApp-text">{this.state.mode === 'organization' ? '本组织' : '全平台'}</div>
+            <div className="app-release-title">{this.props.intl.formatMessage({ id: 'release.column.level' })}：</div>
+            <div className="deployApp-text">{this.state.mode === 'organization' ? this.props.intl.formatMessage({ id: 'organization' }) : this.props.intl.formatMessage({ id: 'public' })}</div>
           </div>
         </section>
         <section>
-          <span className="icon icon-error release-icon-error" /><span>请注意：该版本发布后不可取消发布，且不可修改发布范围。</span>
+          <span className="icon icon-error release-icon-error" /><span>{this.props.intl.formatMessage({ id: 'release.add.step.five.tooltip' })}</span>
         </section>
         <section className="deployAddApp-section">
           <Permission service={['devops-service.application-market.create']}>
-            <Button type="primary" loading={this.state.submitting} funcType="raised" onClick={this.handleSubmit}>发布</Button>
+            <Button type="primary" loading={this.state.submitting} funcType="raised" onClick={this.handleSubmit}>{this.props.intl.formatMessage({ id: 'release.add.step.five.btn.confirm' })}</Button>
           </Permission>
-          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.changeStep.bind(this, 4)}>上一步</Button>
-          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>取消</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.changeStep.bind(this, 4)}>{this.props.intl.formatMessage({ id: 'previous' })}</Button>
+          <Button funcType="raised" style={{ color: 'rgb(63, 81, 181)' }} onClick={this.clearStepOne}>{this.props.intl.formatMessage({ id: 'cancel' })}</Button>
         </section>
       </section>
     );
@@ -532,6 +531,7 @@ class AddAppRelease extends Component {
     const { EditReleaseStore } = this.props;
     const data = EditReleaseStore.selectData;
     const projectName = AppState.currentMenuType.name;
+    const { formatMessage } = this.props.intl;
     const { id, type } = AppState.currentMenuType;
     const { appId, mode, current, category, description, contributor } = this.state;
     return (
@@ -544,46 +544,36 @@ class AddAppRelease extends Component {
         ]}
         className="c7n-region"
       >
-        <Header title={'应用发布'} backPath={`/devops/app-release/1?type=${type}&id=${id}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`} />
-        <Content className="c7n-deployApp-wrapper" style={{ paddingBottom: '16px' }}>
-          <h2 className="c7n-space-first">在项目&quot;{projectName}&quot;中进行应用发布</h2>
-          <p>
-            您可以在此按指引分步骤完成应用发布。
-            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                了解详情
-              </span>
-              <span className="icon icon-open_in_new" />
-            </a>
-          </p>
+        <Header title={<FormattedMessage id={'release.home.header.title'} />} backPath={`/devops/app-release/1?type=${type}&id=${id}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`} />
+        <Content className="c7n-deployApp-wrapper" style={{ paddingBottom: '16px' }} code={'release.add'} values={{ name: projectName }}>
           <div className="deployApp-card">
             <Steps current={this.state.current}>
               <Step
-                title={<span style={{ color: current === 1 ? '#3F51B5' : '', fontSize: 14 }}>选择应用</span>}
+                title={<span style={{ color: current === 1 ? '#3F51B5' : '', fontSize: 14 }}>{formatMessage({ id: 'release.add.step.one.title' })}</span>}
                 onClick={this.changeStep.bind(this, 1)}
                 status={this.getStatus(1)}
               />
               <Step
                 className={appId ? '' : 'step-disabled'}
-                title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>选择发布版本</span>}
+                title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>{formatMessage({ id: 'release.add.step.two.title' })}</span>}
                 onClick={this.changeStep.bind(this, 2)}
                 status={this.getStatus(2)}
               />
               <Step
                 className={data && data.length ? '' : 'step-disabled'}
-                title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>选择发布范围</span>}
+                title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>{formatMessage({ id: 'release.add.step.three.title' })}</span>}
                 onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}
               />
               <Step
                 className={data && data.length ? '' : 'step-disabled'}
-                title={<span style={{ color: current === 4 ? '#3F51B5' : '', fontSize: 14 }}>填写应用信息</span>}
+                title={<span style={{ color: current === 4 ? '#3F51B5' : '', fontSize: 14 }}>{formatMessage({ id: 'release.add.step.four.title' })}</span>}
                 onClick={this.changeStep.bind(this, 4)}
                 status={this.getStatus(4)}
               />
               <Step
                 className={(category && description && contributor) ? '' : 'step-disabled'}
-                title={<span style={{ color: current === 5 ? '#3F51B5' : '', fontSize: 14 }}>确认信息</span>}
+                title={<span style={{ color: current === 5 ? '#3F51B5' : '', fontSize: 14 }}>{formatMessage({ id: 'release.add.step.five.title' })}</span>}
                 onClick={this.changeStep.bind(this, 5)}
                 status={this.getStatus(5)}
               />
@@ -611,4 +601,4 @@ class AddAppRelease extends Component {
   }
 }
 
-export default Form.create({})(withRouter(AddAppRelease));
+export default Form.create({})(withRouter(injectIntl(AddAppRelease)));

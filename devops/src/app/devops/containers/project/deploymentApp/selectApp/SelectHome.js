@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Tabs, Icon, Modal, Input, Table, Pagination } from 'choerodon-ui';
-import { stores } from 'choerodon-front-boot';
+import { stores, Content } from 'choerodon-front-boot';
 import '../../../main.scss';
 import './SelectApp.scss';
 import SelectAppStore from '../../../../stores/project/deploymentApp/SelectAppStore';
@@ -57,20 +58,20 @@ class DeployAppHome extends Component {
       ),
 
     }, {
-      title: Choerodon.languageChange('app.name'),
+      title: <FormattedMessage id={'app.name'} />,
       dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
     }, {
-      title: Choerodon.languageChange('app.code'),
+      title: <FormattedMessage id={'app.code'} />,
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
     }];
     return (<Table
-      filterBarPlaceholder={'过滤表'}
+      filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
       rowClassName={'col-check'}
       onRow={(record) => {
         const a = record;
@@ -99,19 +100,19 @@ class DeployAppHome extends Component {
       ),
 
     }, {
-      title: Choerodon.languageChange('app.name'),
+      title: <FormattedMessage id={'appstore.name'} />,
       dataIndex: 'name',
       key: 'name',
     }, {
-      title: '贡献者',
+      title: <FormattedMessage id={'appstore.contributor'} />,
       dataIndex: 'contributor',
       key: 'contributor',
     }, {
-      title: Choerodon.getMessage('应用分类', 'Category'),
+      title: <FormattedMessage id={'appstore.category'} />,
       dataIndex: 'category',
       key: 'category',
     }, {
-      title: Choerodon.getMessage('描述', 'Description'),
+      title: <FormattedMessage id={'appstore.description'} />,
       dataIndex: 'description',
       key: 'description',
     }];
@@ -122,7 +123,7 @@ class DeployAppHome extends Component {
           onClick: this.hanldeSelectApp.bind(this, record),
         };
       }}
-      filterBarPlaceholder={'过滤表'}
+      filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
       rowClassName={'col-check'}
       onChange={this.tableChange}
       columns={column}
@@ -179,12 +180,6 @@ class DeployAppHome extends Component {
    * @param record
    */
   hanldeSelectApp = (record) => {
-    // if ((this.state.app && this.state.app.id === record.id) ||
-    //   (this.state.app && this.state.app.appId === record.appId)) {
-    //   this.setState({ app: null, isMarket: this.state.activeTab === '2' });
-    // } else {
-    //   this.setState({ app: record, isMarket: this.state.activeTab === '2' });
-    // }
     this.setState({ app: record, isMarket: this.state.activeTab === '2' });
   };
 
@@ -258,11 +253,12 @@ class DeployAppHome extends Component {
     if (this.state.app) {
       this.props.handleOk(this.state.app, this.state.activeTab);
     } else {
-      Choerodon.prompt('请先选择应用');
+      Choerodon.prompt(this.props.intl.formatMessage({ id: 'network.form.version.disable' }));
     }
   };
 
   render() {
+    const { formatMessage } = this.props.intl;
     const dataSource = SelectAppStore.getAllData;
     const pageInfo = SelectAppStore.pageInfo;
     const projectName = AppState.currentMenuType.name;
@@ -270,25 +266,15 @@ class DeployAppHome extends Component {
     const suffix = this.state.val ? <Icon type="close" onClick={this.clearInputValue} /> : null;
     return (
       <SideBar
-        title={'选择应用'}
+        title={<FormattedMessage id={'deploy.step.one.app'} />}
         visible={this.props.show}
         onOk={this.handleOk}
-        okText="确定"
-        cancelText="取消"
+        okText={formatMessage({ id: 'ok' })}
+        cancelText={formatMessage({ id: 'cancel' })}
         onCancel={this.props.handleCancel}
       >
-        <div className="c7n-region c7n-deployApp-sidebar">
+        <Content className="c7n-deployApp-sidebar sidebar-content" code={'deploy.sidebar'} value={projectName}>
           <div>
-            <h2 className="c7n-space-first">项目&quot;{projectName}&quot;部署选择应用</h2>
-            <p>
-              您可以在此灵活选择来源于本项目及应用市场的应用，且有列表式及卡片式两种展示方式可以切换。
-              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                <span className="c7n-external-link-content">
-                  了解详情
-                </span>
-                <span className="icon icon-open_in_new" />
-              </a>
-            </p>
             <Tabs
               animated={false}
               tabBarExtraContent={<ButtonGroup>
@@ -298,7 +284,7 @@ class DeployAppHome extends Component {
               onChange={this.changeTab}
 
             >
-              <TabPane className="c7n-deploy-tabpane" tab="项目应用" key="1">
+              <TabPane className="c7n-deploy-tabpane" tab={formatMessage({ id: 'deploy.sidebar.project' })} key="1">
                 {this.state.view === 'list' && this.getProjectTable()}
                 {this.state.view === 'card' && <React.Fragment>
                   <div className="c7n-store-search">
@@ -308,7 +294,7 @@ class DeployAppHome extends Component {
                       suffix={suffix}
                       onChange={this.handleSearch}
                       onPressEnter={this.handleSearch}
-                      placeholder="搜索应用"
+                      placeholder={formatMessage({ id: 'deploy.sidebar.search' })}
                       // eslint-disable-next-line no-return-assign
                       ref={node => this.searchInput = node}
                     />
@@ -345,12 +331,12 @@ class DeployAppHome extends Component {
                 </React.Fragment> }
 
               </TabPane>
-              <TabPane className="c7n-deploy-tabpane" tab="应用市场" key="2">
+              <TabPane className="c7n-deploy-tabpane" tab={formatMessage({ id: 'deploy.sidebar.market' })} key="2">
                 {this.state.view === 'list' && this.getMarketTable()}
                 {this.state.view === 'card' && <React.Fragment>
                   <div className="c7n-store-search">
                     <Input
-                      placeholder="搜索应用"
+                      placeholder={formatMessage({ id: 'deploy.sidebar.search' })}
                       value={this.state.val}
                       prefix={prefix}
                       suffix={suffix}
@@ -397,9 +383,9 @@ class DeployAppHome extends Component {
               </TabPane>
             </Tabs>
           </div>
-        </div>
+        </Content>
       </SideBar>);
   }
 }
 
-export default withRouter(DeployAppHome);
+export default withRouter(injectIntl(DeployAppHome));

@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { Table, Button, Modal, Tooltip, Popover } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { fromJS, is } from 'immutable';
@@ -66,7 +67,7 @@ class ContainerHome extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     return [{
-      title: Choerodon.languageChange('container.status'),
+      title: <FormattedMessage id={'container.status'} />,
       dataIndex: 'status',
       key: 'status',
       width: 110,
@@ -111,7 +112,7 @@ class ContainerHome extends Component {
         return dom;
       },
     }, {
-      title: Choerodon.languageChange('container.name'),
+      title: <FormattedMessage id={'container.name'} />,
       key: 'name',
       dataIndex: 'name',
       sorter: true,
@@ -121,14 +122,14 @@ class ContainerHome extends Component {
         {record.name}
       </MouserOverWrapper>),
     }, {
-      title: Choerodon.languageChange('container.app'),
+      title: <FormattedMessage id={'container.app'} />,
       dataIndex: 'app',
       key: 'app',
       filters: [],
       filterMultiple: false,
       render: (text, record) => (<div>
         <div className="c7n-container-col-inside">
-          {record.projectId === projectId ? <Tooltip title="本项目"><span className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title="应用市场"><span className="icon icon-apps c7n-icon-publish" /></Tooltip>}
+          {record.projectId === projectId ? <Tooltip title={<FormattedMessage id={'project'} />}><span className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id={'market'} />}><span className="icon icon-apps c7n-icon-publish" /></Tooltip>}
           <span>{record.appName}</span>
         </div>
         <div>
@@ -138,7 +139,7 @@ class ContainerHome extends Component {
         </div>
       </div>),
     }, {
-      title: Choerodon.languageChange('container.ip'),
+      title: <FormattedMessage id={'container.ip'} />,
       dataIndex: 'ip',
       key: 'ip',
       sorter: true,
@@ -146,14 +147,14 @@ class ContainerHome extends Component {
       filterMultiple: false,
     }, {
       width: 58,
-      title: Choerodon.languageChange('container.usable'),
+      title: <FormattedMessage id={'container.usable'} />,
       dataIndex: 'ready',
       key: 'ready',
       filters: [{
-        text: '可用',
+        text: this.props.intl.formatMessage({ id: 'container.usable' }),
         value: '1',
       }, {
-        text: '不可用',
+        text: this.props.intl.formatMessage({ id: 'container.disable' }),
         value: '0',
       }],
       filterMultiple: false,
@@ -162,7 +163,7 @@ class ContainerHome extends Component {
       </div>),
     }, {
       width: 93,
-      title: Choerodon.languageChange('container.createTime'),
+      title: <FormattedMessage id={'container.createTime'} />,
       dataIndex: 'creationDate',
       key: 'creationDate',
       sorter: true,
@@ -178,7 +179,7 @@ class ContainerHome extends Component {
             projectId={projectId}
             type={type}
           >
-            <Popover placement="bottom" content={<div><span>容器日志</span></div>}>
+            <Popover placement="bottom" content={<div><FormattedMessage id={'container.log'} /></div>}>
               <Button
                 size="small"
                 shape="circle"
@@ -267,7 +268,7 @@ class ContainerHome extends Component {
     const serviceData = ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
-      <Header title={Choerodon.languageChange('container.title')}>
+      <Header title={<FormattedMessage id={'container.header.title'} />} >
         <Button
           onClick={this.handleRefresh}
         >
@@ -275,20 +276,9 @@ class ContainerHome extends Component {
           <span>{Choerodon.languageChange('refresh')}</span>
         </Button>
       </Header>
-      <Content className="page-content">
-        <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的容器管理</h2>
-        <p>
-          容器管理便于您查看和管理Kubernetes中应用实例生成的容器，
-          可以实时查看相关容器的地址、创建时间、状态，确定容器是否正常运行且通过健康检查，并且可以查看容器日志进行错误定位和状态监控。
-          <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/container/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-            <span className="c7n-external-link-content">
-              了解详情
-            </span>
-            <span className="icon icon-open_in_new" />
-          </a>
-        </p>
+      <Content className="page-content" code={'container'} values={{ name: projectName }}>
         <Table
-          filterBarPlaceholder="过滤表"
+          filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
           loading={ContainerStore.loading}
           pagination={ContainerStore.pageInfo}
           columns={this.getColumn()}
@@ -310,37 +300,28 @@ class ContainerHome extends Component {
         {contentDom}
         <Sidebar
           visible={ContainerStore.show}
-          title="查看容器日志"
+          title={<FormattedMessage id={'container.log.header.title'} />}
           onOk={this.closeSidebar}
           className="c7n-podLog-content c7n-region"
-          okText="取消"
+          okText={<FormattedMessage id={'cancel'} />}
           okCancel={false}
         >
-          <h2 className="c7n-space-first">查看容器&quot;{containerName}&quot;的日志</h2>
-          <p>
-            您可在此查看该容器的日志进行错误定位和状态监控。
-            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/container/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                了解详情
-              </span>
-              <span className="icon icon-open_in_new" />
-            </a>
-          </p>
-          <section className="c7n-podLog-section">
-            <ReactAce
-              mode="text"
-              theme="terminal"
-              setReadOnly
-              setShowPrintMargin={false}
-              style={{ height: '500px' }}
-              ref={(instance) => { this.ace = instance; }}
-            />
-          </section>
+          <Content className="sidebar-content" code={'container.log'} values={{ name: containerName }}>
+            <section className="c7n-podLog-section">
+              <ReactAce
+                mode="text"
+                theme="terminal"
+                setReadOnly
+                setShowPrintMargin={false}
+                style={{ height: '500px' }}
+                ref={(instance) => { this.ace = instance; }}
+              />
+            </section>
+          </Content>
         </Sidebar>
-
       </Page>
     );
   }
 }
 
-export default withRouter(ContainerHome);
+export default withRouter(injectIntl(ContainerHome));

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { DragSource } from 'react-dnd';
@@ -69,7 +70,7 @@ class EnvCard extends Component {
     });
     return connectDragSource(
       <div className={envCardStyle}>
-        <Tooltip placement="bottom" title={cardData.update ? '版本过低，请更新！' : null}>
+        <Tooltip placement="bottom" title={cardData.update ? <FormattedMessage id={'envPl.status.update'} /> : null}>
           <div className="c7n-env-card-header">
             {cardData ?
               (<React.Fragment>
@@ -81,7 +82,7 @@ class EnvCard extends Component {
                     projectId={projectId}
                     type={type}
                   >
-                    <Tooltip title="激活环境">
+                    <Tooltip title={<FormattedMessage id={'envPl.active'} />}>
                       <Button
                         funcType="flat"
                         shape="circle"
@@ -97,7 +98,7 @@ class EnvCard extends Component {
                     projectId={projectId}
                     type={type}
                   >
-                    <Tooltip title="修改环境">
+                    <Tooltip title={<FormattedMessage id={'envPl.edit'} />}>
                       <Button
                         funcType="flat"
                         shape="circle"
@@ -113,7 +114,7 @@ class EnvCard extends Component {
                     projectId={projectId}
                     type={type}
                   >
-                    <Tooltip title="停用环境">
+                    <Tooltip title={<FormattedMessage id={'envPl.stop'} />}>
                       <Button
                         funcType="flat"
                         shape="circle"
@@ -125,17 +126,17 @@ class EnvCard extends Component {
                   </Permission>
                 </div>
               </React.Fragment>)
-              : '请添加一个环境'}
+              : this.props.intl.formatMessage({ id: 'envPl.add' })}
           </div>
           {cardData ? <div>
             <div className={envStatusStyle}>
-              {cardData.connect ? '运行中' : '未连接'}
+              {cardData.connect ? this.props.intl.formatMessage({ id: 'running' }) : this.props.intl.formatMessage({ id: 'disconnect' })}
             </div>
             <div className="c7n-env-des">
-              <span className="c7n-env-des-head">描述：</span>
+              <span className="c7n-env-des-head">{this.props.intl.formatMessage({ id: 'envPl.description' })}</span>
               {cardData.description}
             </div>
-          </div> : '请添加一个环境'}</Tooltip></div>,
+          </div> : this.props.intl.formatMessage({ id: 'envPl.add' }) }</Tooltip></div>,
     );
   }
 }
@@ -149,4 +150,4 @@ EnvCard.propTypes = {
   ).isRequired,
 };
 
-export default DragSource(ItemTypes.ENVCARD, envCardSource, collect)(EnvCard);
+export default DragSource(ItemTypes.ENVCARD, envCardSource, collect)(injectIntl(EnvCard));

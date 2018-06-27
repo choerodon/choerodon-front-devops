@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Table, Popover, Modal, Tabs, Tooltip, Icon } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import '../../../main.scss';
@@ -29,30 +30,30 @@ class AppReleaseHome extends Component {
   getColumn = () => {
     const { type, id: orgId } = AppState.currentMenuType;
     return [{
-      title: Choerodon.languageChange('app.name'),
+      title: <FormattedMessage id={'app.name'} />,
       dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
     }, {
-      title: Choerodon.languageChange('app.code'),
+      title: <FormattedMessage id={'app.code'} />,
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
     }, {
-      title: '发布范围',
+      title: <FormattedMessage id={'release.column.level'} />,
       key: 'publishLevel',
       sorter: true,
       filters: [{
-        text: '全平台',
+        text: this.props.intl.formatMessage({ id: 'public' }),
         value: 2,
       }, {
-        text: '本组织',
+        text: this.props.intl.formatMessage({ id: 'organization' }),
         value: 1,
       }],
       render: record => (
-        <span>{record.publishLevel && Choerodon.languageChange(`${record.publishLevel}`)}</span>
+        <span>{record.publishLevel && <FormattedMessage id={`${record.publishLevel}`} />}</span>
       ),
     }, {
       align: 'right',
@@ -60,14 +61,14 @@ class AppReleaseHome extends Component {
       render: record => (
         <div>
           <Permission service={['devops-service.application-market.update']}>
-            <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
+            <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'edit' })}</div>}>
               <Button shape="circle" size={'small'} onClick={this.handleEdit.bind(this, record.id)}>
                 <Icon type="mode_edit" />
               </Button>
             </Tooltip>
           </Permission>
           <Permission service={['devops-service.application-market.updateVersions']}>
-            <Tooltip trigger="hover" placement="bottom" title={<div>版本控制</div>}>
+            <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'release.action.version' })}</div>}>
               <Button shape="circle" size={'small'} onClick={this.handleEditVersion.bind(this, record)}>
                 <Icon type="versionline" />
               </Button>
@@ -127,7 +128,7 @@ class AppReleaseHome extends Component {
       render: (test, record) => (
         <div>
           <Permission service={['devops-service.application-market.create']}>
-            <Tooltip placement="bottom" title={'发布应用'}>
+            <Tooltip placement="bottom" title={<FormattedMessage id={'release.action.publish'} />}>
               <Button shape="circle" onClick={this.handleCreate.bind(this, record)}><Icon type="publish2" /></Button>
             </Tooltip>
           </Permission>
@@ -135,7 +136,7 @@ class AppReleaseHome extends Component {
     }];
     return (
       <Table
-        filterBarPlaceholder={'过滤表'}
+        filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
         loading={AppReleaseStore.loading}
         pagination={AppReleaseStore.pageInfo}
         columns={column}
@@ -175,7 +176,7 @@ class AppReleaseHome extends Component {
         sort.order = 'desc';
       }
     }
-    let page = pagination.current - 1;
+    const page = pagination.current - 1;
     let searchParam = {};
     if (Object.keys(filters).length) {
       searchParam = filters;
@@ -217,32 +218,22 @@ class AppReleaseHome extends Component {
         ]}
         className="c7n-region app-release-wrapper"
       >
-        <Header title="应用发布">
+        <Header title={<FormattedMessage id={'release.home.header.title'} />}>
           <Button
             onClick={this.handleRefresh}
           >
             <span className="icon-refresh icon" />
-            <span>刷新</span>
+            <FormattedMessage id={'refresh'} />
           </Button>
         </Header>
-        <Content>
-          <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的应用发布 </h2>
-          <p>
-            应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。
-            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                了解详情
-              </span>
-              <span className="icon icon-open_in_new" />
-            </a>
-          </p>
+        <Content code={'release'} values={{ name: AppState.currentMenuType.name }}>
           <Tabs defaultActiveKey={this.state.key} onChange={this.handleChangeTabs} animated={false}>
-            <TabPane tab="未发布应用" key="1">
+            <TabPane tab={<FormattedMessage id={'release.home.app.unpublish'} />} key="1">
               {this.showProjectTable()}
             </TabPane>
-            <TabPane tab="已发布应用" key="2">
+            <TabPane tab={<FormattedMessage id={'release.home.app.publish'} />} key="2">
               <Table
-                filterBarPlaceholder={'过滤表'}
+                filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
                 loading={AppReleaseStore.loading}
                 pagination={AppReleaseStore.pageInfo}
                 columns={this.getColumn()}
@@ -259,4 +250,4 @@ class AppReleaseHome extends Component {
   }
 }
 
-export default withRouter(AppReleaseHome);
+export default withRouter(injectIntl(AppReleaseHome));
