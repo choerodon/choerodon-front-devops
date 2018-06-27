@@ -60,6 +60,13 @@ const pageDetail = {
   'release.editVersion.description': '您可以在此查看未发布及已发布的版本，且可以发布未发布的版本。',
   'release.addVersion.title': '添加应用"{name}"发布的版本',
   'release.addVersion.description': '您可以在此勾选并添加需要发布的版本。',
+
+  // container
+  'container.title': '项目"{name}"的容器管理',
+  'container.description': '容器管理便于您查看和管理Kubernetes中应用实例生成的容器， 可以实时查看相关容器的地址、创建时间、状态，确定容器是否正常运行且通过健康检查，并且可以查看容器日志进行错误定位和状态监控。',
+  'container.link': `${docServer}/user-guide/deployment-pipeline/container/`,
+  'container.log.title': '查看容器"{name}"的日志',
+  'container.log.description': '您可在此查看该容器的日志进行错误定位和状态监控。',
 };
 
 const zhCN = {
@@ -398,13 +405,16 @@ const zhCN = {
   'resource.type': '资源类型',
 
   // container
-  'container.title': '容器管理',
+  'container.header.title': '容器管理',
   'container.status': '状态',
   'container.name': '容器名称',
   'container.app': '应用',
   'container.ip': '容器地址',
   'container.usable': '可用',
+  'container.disable': '不可用',
   'container.createTime': '已创建',
+  'container.log': '容器日志',
+  'container.log.header.title': '查看容器日志',
 
   // version feature
   'version.feature': '特性',
