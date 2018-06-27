@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import { fromJS, is } from 'immutable';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { commonComponent } from '../../../../components/commonFunction';
 import LoadingBar from '../../../../components/loadingBar';
 import './AppHome.scss';
@@ -66,10 +67,11 @@ class AppHome extends Component {
   };
 
   getColumn = () => {
+    const { intl } = this.props;
     const menu = AppState.currentMenuType;
     const { type, id: projectId, organizationId: orgId } = menu;
     return [{
-      title: Choerodon.languageChange('app.name'),
+      title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
       key: 'name',
       sorter: true,
@@ -78,7 +80,7 @@ class AppHome extends Component {
         {record.name}
       </MouserOverWrapper>),
     }, {
-      title: Choerodon.languageChange('app.code'),
+      title: <FormattedMessage id="app.code" />,
       dataIndex: 'code',
       key: 'code',
       sorter: true,
@@ -87,54 +89,55 @@ class AppHome extends Component {
         {record.code}
       </MouserOverWrapper>),
     }, {
-      title: Choerodon.languageChange('app.url'),
+      title: <FormattedMessage id="app.url" />,
       dataIndex: 'repoUrl',
       key: 'repoUrl',
       render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={450}>
-        <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}</a>
+        <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">../{record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}</a>
       </MouserOverWrapper>),
     }, {
-      width: '75px',
-      title: Choerodon.languageChange('app.active'),
+      width: 75,
+      title: <FormattedMessage id="app.active" />,
       dataIndex: 'active',
       key: 'active',
       filters: [{
-        text: '停用',
+        text: intl.formatMessage({ id: 'app.stop' }),
         value: 0,
       }, {
-        text: '启用',
+        text: intl.formatMessage({ id: 'app.run' }),
         value: 1,
       }, {
-        text: '创建中',
+        text: intl.formatMessage({ id: 'app.creating' }),
         value: -1,
       }],
       render: (test, record) => (
         <React.Fragment>
-          {record.synchro && <span>{record.active ? '启用' : '停用'}</span>}
-          {(!record.synchro) && <span>创建中</span>}
+          {record.synchro && <span>{record.active ? intl.formatMessage({ id: 'app.run' }) : intl.formatMessage({ id: 'app.stop' })}</span>}
+          {(!record.synchro) && <FormattedMessage id="app.creating" />}
         </React.Fragment>
       ),
     }, {
       align: 'right',
+      width: 104,
       key: 'action',
       render: (test, record) => (
         <div>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.git-flow.listByAppId', 'devops-service.git-flow.queryTags']} >
-            <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>分支管理</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
+            <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="app.branchManage" /> : <FormattedMessage id="app.start" />}</React.Fragment>}</div>}>
               {record.active && record.synchro ? <Button shape="circle" size={'small'} onClick={this.linkToBranch.bind(this, record.id, record.name)}>
                 <span className="icon icon-branch" />
               </Button> : <span className="icon icon-branch c7n-app-icon-disabled" /> }
             </Tooltip>
           </Permission>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']} >
-            <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>修改</span> : <span>请先启用应用</span>}</React.Fragment> }</div>}>
+            <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="edit" /> : <FormattedMessage id="app.start" />}</React.Fragment>}</div>}>
               {record.active && record.synchro ? <Button shape="circle" size={'small'} onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                 <span className="icon icon-mode_edit" />
               </Button> : <span className="icon icon-mode_edit c7n-app-icon-disabled" /> }
             </Tooltip>
           </Permission>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']} >
-            <Tooltip placement="bottom" title={<div>{!record.synchro ? <span>应用同步中</span> : <React.Fragment>{record.active ? <span>停用</span> : <span>启用</span>}</React.Fragment> }</div>}>
+            <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="app.stop" /> : <FormattedMessage id="app.run" />}</React.Fragment>}</div>}>
               {record.synchro ? <Button shape="circle" size={'small'} onClick={this.changeAppStatus.bind(this, record.id, record.active)}>
                 {record.active ? <span className="icon icon-remove_circle_outline" /> : <span className="icon icon-finished" />}
               </Button> : <React.Fragment>
@@ -195,13 +198,13 @@ class AppHome extends Component {
    * @type 隔断时间提交验证数据
    */
   postName =_.debounce((projectId, value, callback) => {
-    const { AppStore } = this.props;
+    const { AppStore, intl } = this.props;
     AppStore.checkName(projectId, value)
       .then((data) => {
         if (data) {
           callback();
         } else {
-          callback('名称已存在');
+          callback(intl.formatMessage({ id: 'template.checkName' }));
         }
       });
   }, 1000);
@@ -212,20 +215,20 @@ class AppHome extends Component {
    * @param callback
    */
   checkCode =_.debounce((rule, value, callback) => {
+    const { AppStore, intl } = this.props;
     // eslint-disable-next-line no-useless-escape
     const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     if (value && pa.test(value)) {
-      const { AppStore } = this.props;
       AppStore.checkCode(this.state.projectId, value)
         .then((data) => {
           if (data) {
             callback();
           } else {
-            callback('编码已存在');
+            callback(intl.formatMessage({ id: 'template.checkCode' }));
           }
         });
     } else {
-      callback('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾');
+      callback(intl.formatMessage({ id: 'template.checkCodeReg' }));
     }
   }, 1000);
   /**
@@ -320,7 +323,7 @@ class AppHome extends Component {
     this.setState({ copyFrom: option.key });
   };
   render() {
-    const { AppStore } = this.props;
+    const { AppStore, intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const serviceData = AppStore.getAllData;
     const { singleData, selectData } = AppStore;
@@ -328,23 +331,37 @@ class AppHome extends Component {
     const { type, id: projectId, organizationId: orgId } = menu;
     const formContent = (<div className="c7n-region">
       {this.state.type === 'create' ? <div>
-        <h2 className="c7n-space-first">在项目&quot;{menu.name}&quot;中创建应用</h2>
+        <h2 className="c7n-space-first">
+          <FormattedMessage
+            id="app.createApp"
+            values={{
+              name: `${menu.name}`,
+            }}
+          />
+        </h2>
         <p>
-          请在下面输入应用编码及名称，也可以选择某个应用模板，快速创建应用。平台会为您自动创建对应的git库以便管理该应用代码。
-          <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <FormattedMessage id="app.createDescription" />
+          <a href={intl.formatMessage({ id: 'app.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
             <span className="c7n-external-link-content">
-            了解详情
+              <FormattedMessage id="learnmore" />
             </span>
             <span className="icon icon-open_in_new" />
           </a>
         </p>
       </div> : <div>
-        <h2 className="c7n-space-first">对&quot;{singleData ? singleData.code : ''}&quot;进行修改</h2>
+        <h2 className="c7n-space-first">
+          <FormattedMessage
+            id="app.editApp"
+            values={{
+              name: `${singleData ? singleData.code : ''}`,
+            }}
+          />
+        </h2>
         <p>
-          您可在此修改应用名称。
-          <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <FormattedMessage id="app.editDescription" />
+          <a href={intl.formatMessage({ id: 'app.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
             <span className="c7n-external-link-content">
-            了解详情
+              <FormattedMessage id="learnmore" />
             </span>
             <span className="icon icon-open_in_new" />
           </a>
@@ -359,7 +376,7 @@ class AppHome extends Component {
               required: true,
               whitespace: true,
               max: 47,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: intl.formatMessage({ id: 'required' }),
             }, {
               validator: this.checkCode,
             }],
@@ -367,7 +384,7 @@ class AppHome extends Component {
             <Input
               autoFocus
               maxLength={30}
-              label={Choerodon.languageChange('app.code')}
+              label={<FormattedMessage id="app.code" />}
               size="default"
             />,
           )}
@@ -379,7 +396,7 @@ class AppHome extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: intl.formatMessage({ id: 'required' }),
             }, {
               validator: this.checkName,
             }],
@@ -387,7 +404,7 @@ class AppHome extends Component {
           })(
             <Input
               maxLength={10}
-              label={Choerodon.languageChange('app.name')}
+              label={<FormattedMessage id="app.name" />}
               size="default"
             />,
           )}
@@ -398,7 +415,7 @@ class AppHome extends Component {
           {getFieldDecorator('applictionTemplateId', {
             rules: [{
               // required: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: intl.formatMessage({ id: 'required' }),
               transform: (value) => {
                 if (value) {
                   return value.toString();
@@ -410,15 +427,12 @@ class AppHome extends Component {
             <Select
               key="service"
               allowClear
-              label={Choerodon.getMessage('选择应用模板', 'choose template')}
-              // showSearch
+              label={<FormattedMessage id="app.chooseTem" />}
               filter
-              // getPopupContainer={triggerNode => triggerNode.parentNode}
               dropdownMatchSelectWidth
               onSelect={this.selectTemplate}
               size="default"
               optionFilterProp="children"
-              // optionLabelProp="value"
               filterOption={
                 (input, option) =>
                   option.props.children.props.children.props.children
@@ -446,7 +460,7 @@ class AppHome extends Component {
     </div>);
     const contentDom = (
       <Table
-        filterBarPlaceholder={'过滤表'}
+        filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
         pagination={AppStore.getPageInfo}
         loading={AppStore.loading}
         columns={this.getColumn()}
@@ -472,7 +486,7 @@ class AppHome extends Component {
         ]}
       >
         { AppStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <Header title={Choerodon.languageChange('app.title')}>
+          <Header title={<FormattedMessage id="app.title" />}>
             <Permission
               service={['devops-service.application.create']}
               type={type}
@@ -483,33 +497,40 @@ class AppHome extends Component {
                 onClick={this.showSideBar.bind(this, 'create')}
               >
                 <span className="icon-playlist_add icon" />
-                <span>{Choerodon.getMessage('创建应用', 'Create')}</span>
+                <FormattedMessage id="app.create" />
               </Button>
             </Permission>
             <Button
               onClick={this.handleRefresh}
             >
               <span className="icon-refresh icon" />
-              <span>{Choerodon.languageChange('refresh')}</span>
+              <FormattedMessage id="refresh" />
             </Button>
           </Header>
           <Content>
-            <h2 className="c7n-space-first">项目&quot;{menu.name}&quot;的应用管理</h2>
+            <h2 className="c7n-space-first">
+              <FormattedMessage
+                id="app.head"
+                values={{
+                  name: `${menu.name}`,
+                }}
+              />
+            </h2>
             <p>
-              应用是满足用户某些需求的程序代码的集合，可以是某个解耦的微服务或是某个单体应用。您可在此创建应用、修改应用名称、停用应用、启用应用及分支管理。
-              <a className="c7n-external-link" href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-management/" rel="nofollow me noopener noreferrer" target="_blank">
+              <FormattedMessage id="app.description" />
+              <a className="c7n-external-link" href={intl.formatMessage({ id: 'app.link' })} rel="nofollow me noopener noreferrer" target="_blank">
                 <span className="c7n-external-link-content">
-                  了解详情
+                  <FormattedMessage id="learnmore" />
                 </span>
                 <span className="icon icon-open_in_new" />
               </a>
             </p>
             {this.state.show && <Sidebar
-              title={this.state.type === 'create' ? '创建应用' : '修改应用'}
+              title={<FormattedMessage id={this.state.type === 'create' ? 'app.create' : 'app.edit'} />}
               visible={this.state.show}
               onOk={this.handleSubmit}
-              okText={this.state.type === 'create' ? '创建' : '保存'}
-              cancelText="取消"
+              okText={<FormattedMessage id={this.state.type === 'create' ? 'create' : 'save'} />}
+              cancelText={<FormattedMessage id="cancel" />}
               confirmLoading={this.state.submitting}
               onCancel={this.hideSidebar}
             >
@@ -525,4 +546,4 @@ class AppHome extends Component {
   }
 }
 
-export default Form.create({})(withRouter(AppHome));
+export default Form.create({})(withRouter(injectIntl(AppHome)));

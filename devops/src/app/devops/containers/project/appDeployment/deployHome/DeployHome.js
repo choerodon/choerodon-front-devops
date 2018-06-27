@@ -3,6 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button } from 'choerodon-ui';
 import { Content, Header, Page, stores } from 'choerodon-front-boot';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import SingleApp from '../singleApp';
 import SingleEnv from '../singleEnv';
 import AppInstance from '../appInstance';
@@ -162,8 +163,8 @@ class DeployHome extends Component {
   };
 
   render() {
-    const { AppDeploymentStore } = this.props;
-    const projectName = AppState.currentMenuType.name;
+    const { AppDeploymentStore, intl } = this.props;
+    const menu = AppState.currentMenuType;
     const tabActive = AppDeploymentStore.getTabActive;
 
     return (
@@ -184,56 +185,63 @@ class DeployHome extends Component {
           'devops-service.application-instance.delete',
         ]}
       >
-        <Header title={Choerodon.getMessage('实例', 'Instance')}>
+        <Header title={<FormattedMessage id="ist.title" />}>
           <Button
             funcType="flat"
             onClick={this.reload}
           >
             <span className="icon-refresh icon" />
-            <span>{Choerodon.languageChange('refresh')}</span>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content className="page-content">
-          <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的实例</h2>
+          <h2 className="c7n-space-first">
+            <FormattedMessage
+              id="ist.head"
+              values={{
+                name: `${menu.name}`,
+              }}
+            />
+          </h2>
           <p>
-            您可在此用四种方式查看该项目下应用的实例情况。
-            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/instance/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <FormattedMessage id="ist.description" />
+            <a href={intl.formatMessage({ id: 'ist.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
-                了解详情
+                <FormattedMessage id="learnmore" />
               </span>
               <span className="icon icon-open_in_new" />
             </a>
           </p>
           <div className="c7n-deploy-tab">
-            <span>查看视图：</span>
+            <FormattedMessage id="ist.view" />
             <ButtonGroup>
               <Button
                 funcType="flat"
                 className={tabActive === 'instance' && 'c7n-tab-active'}
                 onClick={this.changeTabs.bind(this, 'instance')}
               >
-                部署实例
+                <FormattedMessage id="ist.instance" />
               </Button>
               <Button
                 funcType="flat"
                 className={tabActive === 'singleEnv' && 'c7n-tab-active'}
                 onClick={this.changeTabs.bind(this, 'singleEnv')}
               >
-                单环境
+                <FormattedMessage id="ist.singleEnv" />
               </Button>
               <Button
                 funcType="flat"
                 className={tabActive === 'singleApp' && 'c7n-tab-active'}
                 onClick={this.changeTabs.bind(this, 'singleApp')}
               >
-                单应用
+                <FormattedMessage id="ist.singleApp" />
               </Button>
               <Button
                 funcType="flat"
                 className={tabActive === 'multiApp' && 'c7n-tab-active'}
                 onClick={this.changeTabs.bind(this, 'multiApp')}
               >
-                多应用
+                <FormattedMessage id="ist.multiApp" />
               </Button>
             </ButtonGroup>
           </div>
@@ -247,4 +255,4 @@ class DeployHome extends Component {
   }
 }
 
-export default withRouter(DeployHome);
+export default withRouter(injectIntl(DeployHome));

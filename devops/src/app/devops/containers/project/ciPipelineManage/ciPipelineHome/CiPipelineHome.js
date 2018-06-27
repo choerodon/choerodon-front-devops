@@ -3,6 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Table, Tooltip, Popover, Select } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import TimeAgo from 'timeago-react';
 import _ from 'lodash';
 import '../../../main.scss';
@@ -84,7 +85,7 @@ class CiPipelineHome extends Component {
         <Select
           className="c7n-app-select_512"
           value={CiPipelineStore.currentApp.id}
-          label="选择应用"
+          label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
           filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           filter
@@ -103,27 +104,27 @@ class CiPipelineHome extends Component {
   get tableCiPipeline() {
     const ciPipelineColumns = [
       {
-        title: Choerodon.languageChange('ciPipeline.status'),
+        title: <FormattedMessage id="ciPipeline.status" />,
         dataIndex: 'status',
         render: (status, record) => this.renderStatus(status, record),
       },
       {
-        title: Choerodon.languageChange('ciPipeline.sign'),
+        title: <FormattedMessage id="ciPipeline.sign" />,
         dataIndex: 'id',
         render: (id, record) => this.renderSign(id, record),
       },
       {
-        title: Choerodon.languageChange('ciPipeline.commit'),
+        title: <FormattedMessage id="ciPipeline.commit" />,
         dataIndex: 'sha',
         render: (sha, record) => this.renderCommit(sha, record),
       },
       {
-        title: Choerodon.languageChange('ciPipeline.jobs'),
+        title: <FormattedMessage id="ciPipeline.jobs" />,
         dataIndex: 'jobs',
         render: (jobs, record) => this.renderJobs(jobs, record),
       },
       {
-        title: Choerodon.languageChange('ciPipeline.time'),
+        title: <FormattedMessage id="ciPipeline.time" />,
         dataIndex: 'time',
         render: (time, record) => (
           <span>
@@ -132,19 +133,19 @@ class CiPipelineHome extends Component {
         ),
       },
       {
-        title: Choerodon.languageChange('ciPipeline.createdAt'),
+        title: <FormattedMessage id="ciPipeline.createdAt" />,
         dataIndex: 'createdAt',
         render: (createdAt, record) => (
           <div>
             <Popover
               rowKey="creationDate"
-              title={Choerodon.getMessage('创建时间', 'Create Time')}
+              title={<FormattedMessage id="ciPipeline.createdAt" />}
               content={createdAt}
               placement="left"
             >
               <TimeAgo
                 datetime={createdAt}
-                locale={Choerodon.getMessage('zh_CN', 'en')}
+                locale={this.props.intl.formatMessage({ id: 'language' })}
               />
             </Popover> 
           </div>),
@@ -367,10 +368,10 @@ class CiPipelineHome extends Component {
 
   renderTime = (time, record) => {
     if (time) {
-      const day = time[0] ? `${time[0]}${Choerodon.getMessage('天', 'day')}` : '';
-      const hour = time[1] ? `${time[1]}${Choerodon.getMessage('时', 'hour')}` : '';
-      const minute = time[2] ? `${time[2]}${Choerodon.getMessage('分', 'minute')}` : '';
-      const second = time[3] ? `${time[3]}${Choerodon.getMessage('秒', 'second')}` : '';
+      const day = time[0] ? `${time[0]}${this.props.intl.formatMessage({ id: 'ist.day' })}` : '';
+      const hour = time[1] ? `${time[1]}${this.props.intl.formatMessage({ id: 'ist.hour' })}` : '';
+      const minute = time[2] ? `${time[2]}${this.props.intl.formatMessage({ id: 'ist.min' })}` : '';
+      const second = time[3] ? `${time[3]}${this.props.intl.formatMessage({ id: 'ist.sec' })}` : '';
       return `${day}${hour}${minute}${second}`;
     } else {
       return '--';
@@ -417,22 +418,29 @@ class CiPipelineHome extends Component {
           'devops-service.project-pipeline.retry',
         ]}
       >
-        <Header title={Choerodon.languageChange('ciPipeline.title')}>
+        <Header title={<FormattedMessage id="ciPipeline.title" />}>
           <Button
             funcType="flat"
             onClick={this.handleRefresh}
           >
             <span className="icon-refresh icon" />
-            <span>{Choerodon.languageChange('refresh')}</span>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content>
-          <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的持续集成</h2>
+          <h2 className="c7n-space-first">
+            <FormattedMessage
+              id="ciPipeline.head"
+              values={{
+                name: `${AppState.currentMenuType.name}`,
+              }}
+            />
+          </h2>
           <p>
-            您可在此查看各应用所有持续集成流水线的运行情况。
-            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/continuous-integration/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <FormattedMessage id="ciPipeline.description" />
+            <a href={this.props.intl.formatMessage({ id: 'ciPipeline.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
-                了解详情
+                <FormattedMessage id="learnmore" />
               </span>
               <span className="icon icon-open_in_new" />
             </a>
@@ -445,4 +453,4 @@ class CiPipelineHome extends Component {
   }
 }
 
-export default withRouter(CiPipelineHome);
+export default withRouter(injectIntl(CiPipelineHome));

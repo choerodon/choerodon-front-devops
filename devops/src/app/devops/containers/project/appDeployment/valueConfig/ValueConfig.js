@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { Modal } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import yaml from 'js-yaml';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import Ace from '../../../../components/yamlAce';
 import '../AppDeploy.scss';
 import '../../../main.scss';
@@ -57,7 +58,7 @@ class ValueConfig extends Component {
    * 修改配置重新部署
    */
   handleOk = () => {
-    const { store, id, idArr } = this.props;
+    const { store, id, idArr, intl } = this.props;
     const projectId = AppState.currentMenuType.id;
     const value = this.state.value || this.props.store.getValue.yaml;
     const data = {
@@ -81,24 +82,32 @@ class ValueConfig extends Component {
               }
             });
         } else {
-          Choerodon.prompt('请先修改yaml格式错误');
+          Choerodon.prompt(intl.formatMessage({ id: 'ist.yamlErr' }));
         }
       });
   };
 
   render() {
+    const { intl } = this.props;
     const data = this.props.store.getValue;
     let error = data.errorLines;
     if (this.state.errorLine !== undefined) {
       error = this.state.errorLine;
     }
     const sideDom = (<div className="c7n-region">
-      <h2 className="c7n-space-first">对&quot;{this.props.name}&quot;进行修改</h2>
+      <h2 className="c7n-space-first">
+        <FormattedMessage
+          id="ist.editHead"
+          values={{
+            name: `${this.props.name}`,
+          }}
+        />
+      </h2>
       <p>
-        对实例配置信息进行修改后重新部署。
-        <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/instance/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+        <FormattedMessage id="ist.editDes" />
+        <a href={intl.formatMessage({ id: 'ist.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
           <span className="c7n-external-link-content">
-            了解详情
+            <FormattedMessage id="learnmore" />
           </span>
           <span className="icon icon-open_in_new" />
         </a>
@@ -119,16 +128,16 @@ class ValueConfig extends Component {
       </div>
     </div>);
     return (<Sidebar
-      title={Choerodon.getMessage('修改配置信息', 'Modify configuration information')}
+      title={intl.formatMessage({ id: 'ist.values' })}
       visible={this.props.visible}
       onOk={this.handleOk}
       onCancel={this.onClose.bind(this, false)}
-      cancelText={Choerodon.languageChange('cancel')}
-      okText={Choerodon.getMessage('重新部署', 'Redeploy')}
+      cancelText={intl.formatMessage({ id: 'cancel' })}
+      okText={intl.formatMessage({ id: 'ist.reDeploy' })}
     >
       {sideDom}
     </Sidebar>);
   }
 }
 
-export default withRouter(ValueConfig);
+export default withRouter(injectIntl(ValueConfig));
