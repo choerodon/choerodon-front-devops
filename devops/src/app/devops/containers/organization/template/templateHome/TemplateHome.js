@@ -6,7 +6,7 @@ import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot'
 import _ from 'lodash';
 import { fromJS, is } from 'immutable';
 import { Obversable } from 'rxjs';
-
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { commonComponent } from '../../../../components/commonFunction';
 import LoadingBar from '../../../../components/loadingBar';
 import './TemplateHome.scss';
@@ -71,10 +71,11 @@ class TemplateHome extends Component {
    * @returns {[null,null,null,null,null,null]}
    */
   getColumn = () => {
+    const { intl } = this.props;
     const menu = AppState.currentMenuType;
     const { type, id: orgId } = menu;
     return [{
-      title: Choerodon.languageChange('template.name'),
+      title: <FormattedMessage id="template.name" />,
       key: 'name',
       sorter: true,
       filters: [],
@@ -82,7 +83,7 @@ class TemplateHome extends Component {
         {record.name}
       </MouserOverWrapper>),
     }, {
-      title: Choerodon.languageChange('template.code'),
+      title: <FormattedMessage id="template.code" />,
       dataIndex: 'code',
       key: 'code',
       sorter: true,
@@ -91,7 +92,7 @@ class TemplateHome extends Component {
         {record.code}
       </MouserOverWrapper>),
     }, {
-      title: Choerodon.languageChange('template.description'),
+      title: <FormattedMessage id="template.des" />,
       dataIndex: 'description',
       key: 'description',
       sorter: true,
@@ -100,49 +101,49 @@ class TemplateHome extends Component {
         {record.description}
       </MouserOverWrapper>),
     }, {
-      title: Choerodon.languageChange('template.url'),
+      title: <FormattedMessage id="template.url" />,
       dataIndex: 'repoUrl',
       key: 'repoUrl',
       render: (test, record) => (
         <Tooltip trigger="hover" placement="bottom" title={record.repoUrl}>
           <div className="c7n-template-table">
-            <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}</a>
+            <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">../{record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}</a>
           </div>
         </Tooltip>
 
       ),
     }, {
-      title: Choerodon.languageChange('template.type'),
+      title: <FormattedMessage id="template.type" />,
       dataIndex: 'type',
       key: 'type',
       sorter: true,
       filters: [{
-        text: '预定义',
+        text: intl.formatMessage({ id: 'template.preDefine' }),
         value: 1,
       }, {
-        text: '自定义',
+        text: intl.formatMessage({ id: 'template.perDefine' }),
         value: 0,
       }],
       render: (text, record) => (
-        record.type ? <React.Fragment><Icon type="brightness_high" /> <span className="c7n-template-column-text">预定义</span> </React.Fragment>
-          : <React.Fragment><Icon type="av_timer" /><span className="c7n-template-column-text">自定义</span> </React.Fragment>
+        record.type ? <React.Fragment><Icon type="brightness_high" /> <span className="c7n-template-column-text"><FormattedMessage id="template.preDefine" /></span> </React.Fragment>
+          : <React.Fragment><Icon type="av_timer" /><span className="c7n-template-column-text"><FormattedMessage id="template.perDefine" /></span> </React.Fragment>
       ),
     }, {
       align: 'right',
-      // width: '96px',
+      width: 80,
       key: 'action',
       render: (test, record) => (
         !record.type &&
         <div>
           <Permission type={type} organizationId={orgId} service={['devops-service.application-template.update']} >
-            <Tooltip trigger="hover" placement="bottom" title={<div>修改</div>}>
+            <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="edit" />}>
               <Button shape="circle" size={'small'} onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                 <span className="icon icon-mode_edit" />
               </Button>
             </Tooltip>
           </Permission>
           <Permission type={type} organizationId={orgId} service={['devops-service.application-template.delete']} >
-            <Tooltip trigger="hover" placement="bottom" title={<div>删除</div>}>
+            <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="delete" />}>
               <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
                 <span className="icon icon-delete_forever" />
               </Button>
@@ -160,22 +161,22 @@ class TemplateHome extends Component {
    * @param callback
    */
   checkCode = _.debounce((rule, value, callback) => {
+    const { TemplateStore, intl } = this.props;
     // eslint-disable-next-line no-useless-escape
     const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     if (value && pa.test(value)) {
-      const { TemplateStore } = this.props;
       TemplateStore.checkCode(this.state.organizationId, value)
         .then((data) => {
           if (data) {
             callback();
           } else {
-            callback('编码已存在');
+            callback(intl.formatMessage({ id: 'template.checkCode' }));
           }
         }).catch((error) => {
           Choerodon.prompt(error.response.data.message);
         });
     } else {
-      callback('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾');
+      callback(intl.formatMessage({ id: 'template.checkCodeReg' }));
     }
   }, 1000);
   /**
@@ -185,7 +186,7 @@ class TemplateHome extends Component {
    * @param callback
    */
   checkName = _.debounce((rule, value, callback) => {
-    const { TemplateStore } = this.props;
+    const { TemplateStore, intl } = this.props;
     const singleData = TemplateStore.singleData;
     if (singleData && value !== singleData.name) {
       TemplateStore.checkName(this.state.organizationId, value)
@@ -193,7 +194,7 @@ class TemplateHome extends Component {
           if (data) {
             callback();
           } else {
-            callback('名称已存在');
+            callback(intl.formatMessage({ id: 'template.checkName' }));
           }
         }).catch((error) => {
           Choerodon.prompt(error.response.data.message);
@@ -204,7 +205,7 @@ class TemplateHome extends Component {
           if (data) {
             callback();
           } else {
-            callback('名称已存在');
+            callback(intl.formatMessage({ id: 'template.checkName' }));
           }
         }).catch((error) => {
           Choerodon.prompt(error.response.data.message);
@@ -305,7 +306,7 @@ class TemplateHome extends Component {
   };
 
   render() {
-    const { TemplateStore } = this.props;
+    const { TemplateStore, intl } = this.props;
     const { getFieldDecorator } = this.props.form;
     const serviceData = TemplateStore.getAllData;
     const { singleData, selectData } = TemplateStore;
@@ -313,23 +314,37 @@ class TemplateHome extends Component {
     const { type, id: orgId } = menu;
     const formContent = (<div className="c7n-region">
       {this.state.type === 'create' ? <div>
-        <h2 className="c7n-space-first">{`在组织"${menu.name}"中创建应用模板`}</h2>
+        <h2 className="c7n-space-first">
+          <FormattedMessage
+            id="template.createHead"
+            values={{
+              name: `${menu.name}`,
+            }}
+          />
+        </h2>
         <p>
-          请在下面输入应用模板编码、名称、描述，创建默认空白模板。您也可以通过复制于现有模板，以便节省部分操作，提升效率。
-          <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <FormattedMessage id="template.createDescription" />
+          <a href={intl.formatMessage({ id: 'template.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
             <span className="c7n-external-link-content">
-            了解详情
+              <FormattedMessage id="learnmore" />
             </span>
             <span className="icon icon-open_in_new" />
           </a>
         </p>
       </div> : <div>
-        <h2 className="c7n-space-first">对应用模板&quot;{singleData ? singleData.code : ''}&quot;进行修改</h2>
+        <h2 className="c7n-space-first">
+          <FormattedMessage
+            id="template.edit"
+            values={{
+              name: `${singleData ? singleData.code : ''}`,
+            }}
+          />
+        </h2>
         <p>
-          您可在此修改应用名称及描述。
-          <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <FormattedMessage id="template.editDescription" />
+          <a href={intl.formatMessage({ id: 'template.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
             <span className="c7n-external-link-content">
-                  了解详情
+              <FormattedMessage id="learnmore" />
             </span>
             <span className="icon icon-open_in_new" />
           </a>
@@ -343,7 +358,7 @@ class TemplateHome extends Component {
             rules: [{
               required: this.state.type === 'create',
               whitespace: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: intl.formatMessage({ id: 'required' }),
             }, {
               validator: this.checkCode,
             }],
@@ -351,7 +366,7 @@ class TemplateHome extends Component {
             <Input
               autoFocus
               maxLength={20}
-              label={Choerodon.languageChange('template.code')}
+              label={<FormattedMessage id="template.code" />}
               size="default"
             />,
           )}
@@ -363,7 +378,7 @@ class TemplateHome extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: intl.formatMessage({ id: 'required' }),
             }, {
               validator: this.checkName,
             }],
@@ -371,7 +386,7 @@ class TemplateHome extends Component {
           })(
             <Input
               maxLength={20}
-              label={Choerodon.languageChange('template.name')}
+              label={<FormattedMessage id="template.name" />}
               size="default"
             />,
           )}
@@ -383,13 +398,13 @@ class TemplateHome extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: intl.formatMessage({ id: 'required' }),
             }],
             initialValue: singleData ? singleData.description : '',
           })(
             <TextArea
               maxLength={50}
-              label={Choerodon.languageChange('template.description')}
+              label={<FormattedMessage id="template.des" />}
               autosize={{ minRows: 2, maxRows: 6 }}
             />,
           )}
@@ -408,7 +423,7 @@ class TemplateHome extends Component {
             }],
           })(
             <Select
-              label={'复制于'}
+              label={<FormattedMessage id="template.copy" />}
               allowClear
               key="service"
               filter
@@ -442,7 +457,7 @@ class TemplateHome extends Component {
     </div>);
     const contentDom = (
       <Table
-        filterBarPlaceholder={'过滤表'}
+        filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
         loading={TemplateStore.loading}
         pagination={TemplateStore.getPageInfo}
         columns={this.getColumn()}
@@ -465,7 +480,7 @@ class TemplateHome extends Component {
         className="c7n-region c7n-template-wrapper"
       >
         {TemplateStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <Header title={Choerodon.languageChange('template.title')}>
+          <Header title={<FormattedMessage id="template.title" />}>
             <Permission
               service={['devops-service.application-template.create']}
               type={type}
@@ -476,7 +491,7 @@ class TemplateHome extends Component {
                 onClick={this.showSideBar.bind(this, 'create')}
               >
                 <span className="icon-playlist_add icon" />
-                <span>{Choerodon.getMessage('创建应用模板', 'Create')}</span>
+                <FormattedMessage id="template.create" />
               </Button>
             </Permission>
             <Permission
@@ -489,25 +504,32 @@ class TemplateHome extends Component {
                 onClick={this.handleRefresh}
               >
                 <span className="con-refresh icon" />
-                <span>{Choerodon.languageChange('refresh')}</span>
+                <FormattedMessage id="refresh" />
               </Button>
             </Permission>
           </Header>
           <Content>
-            <h2 className="c7n-space-first">组织&quot;{menu.name}&quot;的应用模板</h2>
+            <h2 className="c7n-space-first">
+              <FormattedMessage
+                id="template.head"
+                values={{
+                  name: `${menu.name}`,
+                }}
+              />
+            </h2>
             <p>
-              应用模板是将同类型应用的代码库结构整理成模板，用于创建应用时能引用相应模板快速创建初始代码库。您也可以根据实际情况自定义应用模板。
-              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-template/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <FormattedMessage id="template.description" />
+              <a href={intl.formatMessage({ id: 'template.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
-                了解详情
+                  <FormattedMessage id="learnmore" />
                 </span>
                 <span className="icon icon-open_in_new" />
               </a>
             </p>
             {this.state.show && <Sidebar
-              okText={this.state.type === 'create' ? '创建' : '保存'}
-              cancelText="取消"
-              title={this.state.type === 'create' ? '创建应用模板' : '修改应用模板'}
+              okText={<FormattedMessage id={this.state.type === 'create' ? 'create' : 'save'} />}
+              cancelText={<FormattedMessage id="cancel" />}
+              title={<FormattedMessage id={this.state.type === 'create' ? 'template.create' : 'template.create'} />}
               visible={this.state.show}
               onOk={this.handleSubmit}
               onCancel={this.hideSidebar}
@@ -520,19 +542,21 @@ class TemplateHome extends Component {
         </React.Fragment>}
         <Modal
           visible={this.state.openRemove}
-          title="删除模板"
+          title={<FormattedMessage id="template.del" />}
           footer={[
-            <Button key="back" onClick={this.closeRemove}>取消</Button>,
+            <Button key="back" onClick={this.closeRemove}><FormattedMessage id="cancel" /></Button>,
             <Button key="submit" type="danger" onClick={this.handleDelete}>
-              删除
+              <FormattedMessage id="delete" />
             </Button>,
           ]}
         >
-          <p>确定要删除该应用模板吗？</p>
+          <p>
+            <FormattedMessage id="template.delDescription" />
+          </p>
         </Modal>
       </Page>
     );
   }
 }
 
-export default Form.create({})(withRouter(TemplateHome));
+export default Form.create({})(withRouter(injectIntl(TemplateHome)));

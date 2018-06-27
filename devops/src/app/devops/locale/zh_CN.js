@@ -3,6 +3,7 @@
 const docServer = 'http://v0-6.choerodon.io/zh/docs';
 // 界面标题描述统一管理
 const pageDetail = {
+
   // network
   'network.title': '项目"{name}"的网络配置',
   'network.description': '网络管理是定义了一种访问网络的策略，是指内部的负载均衡以及网络转发，会将网络流量定向转发到指定的单个或者多个实例容器组。',
@@ -67,6 +68,69 @@ const pageDetail = {
   'container.link': `${docServer}/user-guide/deployment-pipeline/container/`,
   'container.log.title': '查看容器"{name}"的日志',
   'container.log.description': '您可在此查看该容器的日志进行错误定位和状态监控。',
+
+  // template
+  'template.head': '组织\"{name}\"的应用模板',
+  'template.createHead': '在组织\"{name}\"中创建应用模板',
+  'template.edit': '对应用模板\"{name}\"进行修改',
+  'template.editDescription': '您可在此修改应用名称及描述。',
+  'template.delDescription': '确定要删除该应用模板吗？',
+  'template.createDescription': '请在下面输入应用模板编码、名称、描述，创建默认空白模板。您也可以通过复制于现有模板，以便节省部分操作，提升效率。',
+  'template.description': '应用模板是将同类型应用的代码库结构整理成模板，用于创建应用时能引用相应模板快速创建初始代码库。您也可以根据实际情况自定义应用模板。',
+  'template.link': `${docServer}/user-guide/development-pipeline/application-template/`,
+
+  // app
+  'app.head': '项目\"{name}\"的应用管理',
+  'app.createApp': '在项目\"{name}\"中创建应用',
+  'app.editApp': '对应用\"{name}\"进行修改',
+  'app.editDescription': '您可在此修改应用名称。',
+  'app.description': '应用是满足用户某些需求的程序代码的集合，可以是某个解耦的微服务或是某个单体应用。您可在此创建应用、修改应用名称、停用应用、启用应用及分支管理。',
+  'app.createDescription': '请在下面输入应用编码及名称，也可以选择某个应用模板，快速创建应用。平台会为您自动创建对应的git库以便管理该应用代码。',
+  'app.link': `${docServer}/user-guide/development-pipeline/application-management/`,
+
+  // branch
+  'branch.head': '应用\"{name}\"的分支管理',
+  'branch.createHead': '在应用\"{name}\"中创建分支',
+  'branch.createDes': '采用Gitflow工作流模式，请在下面选择分支类型，并填写issue号或版本号，即可创建分支。',
+  'branch.mergeDev': '是否将分支\"{name}\"合并到develop分支？',
+  'branch.noCommitDev': '是否将分支\"{name}\"分支无提交，是否删除？',
+  'branch.noCommit': '是否将分支\"{name}\"分支无提交，不生成版本号，是否删除？',
+  'branch.mergeDevMas': '是否将分支\"{name}\"合并到master，develop分支，并以为\"{version}\"版本号？',
+  'branch.description': '分支是将您的工作从开发主线上分离开来，以免影响开发主线。平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。',
+  'branch.createTip': '采用gitflow分支模型，可创建feature、release、hotfix等分支，结束分支时自动触发分支合并和特有的持续集成流水线。',
+  'branch.link': `${docServer}/user-guide/development-pipeline/branch-management/`,
+
+  // ist
+  'ist.head': '项目\"{name}\"的实例',
+  'ist.editHead': '对\"{name}\"进行修改',
+  'ist.editDes': '对实例配置信息进行修改后重新部署。',
+  'ist.isthead': '查看应用\"{name}\"的实例详情',
+  'ist.istDes': '您可在此查看该实例的运行详情及部署详情。运行详情包括各资源对象的基本信息；部署详情包括配置信息及部署阶段及日志。',
+  'ist.description': '您可在此用四种方式查看该项目下应用的实例情况。',
+  'ist.link': `${docServer}/user-guide/development-pipeline/instance/`,
+
+  // appstore
+  'appstore.description': '您可以在此查看已发布的应用及其详细信息，并选择版本进行部署。',
+  'appstore.exportDes': '您可以在此选择相应的应用，并选择版本进行导出。',
+  'appstore.importDes': '您可以在此选择相应的应用，上传文件后并进行导入。',
+  'appstore.exportStep1': '您可以在此选择想要导出的应用，您可以一次选择多个应用。',
+  'appstore.exportStep2': '您可以在此选择想要导出的版本。',
+  'appstore.exportStep3': '您可以在此确认应用发布的信息，如需修改请返回相应步骤。',
+  'appstore.importStep1': '您可以在此选择相应的文件，并进行上传。',
+  'appstore.importStep2': '您可以在此选择是否发布，如果发布还可以选择发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。',
+  'appstore.importStep3': '您可以在此确认上传应用的信息，如需修改请返回上一步。',
+  'appstore.link': `${docServer}/user-guide/development-pipeline/application-market/`,
+
+  // appVersion
+  'appVer.head': '项目\"{name}\"的应用版本管理',
+  'appVer.description': '应用版本是应用迭代升级生成的版本。您可在此查看版本号、应用编码、应用名称以及版本生成时间。',
+  'appVer.link': `${docServer}/user-guide/development-pipeline/application-version/`,
+
+  // ci-pipeline
+  'ciPipeline.head': '项目\"{name}\"的持续集成',
+  'ciPipeline.description': '您可在此查看各应用所有持续集成流水线的运行情况。',
+  'ciPipeline.link': `${docServer}/user-guide/development-pipeline/continuous-integration/`,
+
 };
 
 const zhCN = {
@@ -113,11 +177,11 @@ const zhCN = {
   public: '全平台',
   filter: '过滤表',
   stop: '停用',
-  confirm: '确认',
   previous: '上一步',
   next: '下一步',
   finish: '结束',
   ok: '确定',
+  language: 'zh_CN',
 
   // ist
   ist_create: '创建中',
@@ -125,8 +189,42 @@ const zhCN = {
   ist_restart: '重启中',
   ist_delete: '删除中',
   ist_update: '更新中',
-  // network
+  'ist.title': '实例',
+  'ist.name': '名称：',
+  'ist.ctr': '贡献者：',
+  'ist.des': '描述：',
+  'ist.code': '编码：',
+  'ist.sec': '秒',
+  'ist.min': '分',
+  'ist.hour': '时',
+  'ist.day': '天',
+  'ist.time': '时间',
+  'ist.view': '查看视图：',
+  'ist.instance': '部署实例',
+  'ist.singleEnv': '单环境',
+  'ist.singleApp': '单应用',
+  'ist.multiApp': '多应用',
+  'ist.detail': '查看实例详情',
+  'ist.values': '修改配置信息',
+  'ist.del': '删除实例',
+  'ist.stop': '停止实例',
+  'ist.noIst': '暂无实例',
+  'ist.y': '可用',
+  'ist.n': '不可用',
+  'ist.noAdd': '未添加',
+  'ist.noAddEnv': '未添加环境',
+  'ist.run': '重启实例',
+  'ist.reDeploy': '重新部署',
+  'ist.nolog': '没有日志信息。',
+  'ist.noApp': '暂无应用',
+  'ist.runDetial': '运行详情',
+  'ist.lastVer': '最新版本',
+  'ist.noChoose': '请先选择应用和环境',
+  'ist.more': '展开更多',
+  'ist.yamlErr': '请先修改yaml格式错误',
+  'ist.delDes': '删除实例将不可恢复，其配置网络同时失效，确定要删除该实例吗？',
 
+  // network
   network_create: '网络创建中，请耐心等待',
   network_delete: '网络删除中，请耐心等待',
   network_update: '网络更新中，请耐心等待',
@@ -165,7 +263,6 @@ const zhCN = {
   'network.form.targetPort.help': '网络选择的目标实例所暴露的端口号',
 
   // deploymentApp
-
   'deploy.title': '应用部署',
   'deploy.detail': '部署详情',
   'deploy.info': '部署信息',
@@ -234,23 +331,6 @@ const zhCN = {
   'envPl.stop': '停用环境',
   'envPl.add': '请添加一个环境',
 
-
-  // form
-  'form.required': '该字段是必输的',
-  'form.save': '保存',
-  'form.create': '创建',
-  'form.update': '编辑',
-  'form.cancel': '取消',
-  'form.return': '返回',
-
-  // project
-  'project.id': '标识',
-  'project.title': '项目管理',
-  'project.create': '创建项目',
-  'project.edit': '编辑项目',
-  'project.name': '项目名称',
-  'project.code': '项目编码',
-
   // app
   'app.title': '应用管理',
   'app.appDetail': '应用详情',
@@ -293,67 +373,6 @@ const zhCN = {
   'app.code': '编码',
   'app.createTime': '生成时间',
 
-  // user
-  'user.password.update': '修改密码',
-  'user.password.origin': '原始密码',
-  'user.password.origin.required': '原始密码是必须的',
-  'user.password.new': '新密码',
-  'user.password.new.required': '新密码是必须的',
-  'user.password.confirm': '确认密码',
-  'user.password.required': '密码是必须的',
-  'user.userName': '用户名',
-  'user.detail': '用户详情',
-  'user.email': '邮箱',
-  'user.emailInvalid': '邮箱格式不合法，请输入正确的邮箱！',
-  'user.fieldRequired': '该字段是必输的！',
-  'user.language': '语言',
-  'user.timeZone': '时区',
-  'user.source': '认证来源',
-  'user.ldap': 'LDAP 用户',
-  'user.noLdap': '非LDAP用户',
-  'user.statue': '状态',
-  'user.statue.enable': '启用',
-  'user.statue.disable': '未启用',
-  'user.locked': '是否锁住',
-  'user.locked.ok': '锁住',
-  'user.locked.no': '未锁住',
-  'user.addtionInfo': '附加信息',
-  user: '用户管理',
-  'user.create': '创建用户',
-  'user.organization': '组织名称',
-  'user.password': '密码',
-  'user.edit': '编辑用户',
-  'user.userInfo': '个人信息',
-
-  // organizationMember
-
-  'organizationMemberRole.type': '类型',
-  'organizationMemberRole.member': '成员',
-  'organizationMemberRole.user': '用户',
-  'organizationMemberRole.organization': '组织',
-  'organizationMemberRole.role': '角色',
-  'organizationMemberRole.operate': '操作',
-  'organizationMemberRole.cancel': '删除',
-  'organizationMemberRole.MemberRoleOrganization': '成员角色管理',
-  'organizationMemberRole.add': '添加',
-  'organizationMemberRole.lookMethod': '查看方式',
-  'organizationMemberRole.refresh': '刷新',
-  'organizationMemberRole.save': '保存',
-
-  // projectMemberRole
-
-  'projectMemberRole.type': '类型',
-  'projectMemberRole.member': '成员',
-  'projectMemberRole.user': '用户',
-  'projectMemberRole.organization': '组织',
-  'projectMemberRole.role': '角色',
-  'projectMemberRole.operate': '操作',
-  'projectMemberRole.cancel': '删除',
-  'projectMemberRole.MemberRoleOrganization': '成员角色管理',
-  'projectMemberRole.add': '添加',
-  'projectMemberRole.lookMethod': '查看方式',
-  'projectMemberRole.refresh': '刷新',
-
   // environment
   'environment.title': '环境管理',
   'environment.name': '环境名称',
@@ -364,19 +383,30 @@ const zhCN = {
   'environment.description': '环境描述',
 
   // template
-
   'template.title': '应用模板',
   'template.name': '名称',
-  'template.description': '描述',
+  'template.des': '描述',
+  'template.create': '创建应用模板',
+  'template.edit': '修改应用模板',
+  'template.del': '删除模板',
+  'template.copy': '复制于',
   'template.url': '地址',
   'template.code': '编码',
   'template.type': '来源',
   'template.copyFrom': '复制于现有应用模板',
+  'template.preDefine': '预定义',
+  'template.perDefine': '自定义',
+  'template.checkCode': '编码已存在',
+  'template.checkName': '名称已存在',
+  'template.checkCodeReg': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
 
 
   // branch
   'branch.create': '创建分支',
   'branch.title': '分支管理',
+  'branch.branchType': '分支类型',
+  'branch.list': '分支列表',
+  'branch.tagList': '标记列表',
   'branch.name': '名称',
   'branch.type': '类型',
   'branch.code': '提交编码',
@@ -384,9 +414,86 @@ const zhCN = {
   'branch.owner': '提交者',
   'branch.time': '提交时间',
   'branch.tag': '标记',
+  'branch.over': '结束分支',
+  'branch.checkName': '名称只能包含数字和".",并且以数字开头和结尾',
+  'branch.checkNameEnd': '不能以"/"、"."、".lock"结尾',
+  'branch.check': '只能包含字母、数字、\'——\'、\'_\'',
+  'branch.master': 'master分支',
+  'branch.develop': 'develop分支',
+  'branch.feature': 'feature分支',
+  'branch.release': 'release分支',
+  'branch.hotfix': 'hotfix分支',
+  'branch.masterDes': '即主分支，用于版本持续发布。在开发的整个阶段一直存在，平时不在此分支开发，因此代码比较稳定。',
+  'branch.developDes': '即开发分支，用于日常开发持续集成。在开发的整个阶段一直存在，在feature分支、release分支和hotfix分支开发后都会将代码合并到此分支上。',
+  'branch.featureDes': '即特性分支，用于日常开发时切出分支进行单功能开发。基于develop分支创建，结束分支时合并至develop分支。',
+  'branch.releaseDes': '即发布分支，用于产品发布、产品迭代。基于develop分支创建，结束分支时合并到develop分支和master分支。',
+  'branch.hotfixDes': ' 即热修分支，用于产品发布后修复缺陷。基于master分支创建，结束分支时合并到master分支和develop分支。',
+  'branch.devConflictMes': '\"{name}\"合并到develop分支冲突，请在本地查看并合并。\n' +
+  '\n' +
+  '步骤 1. 获取并切换到\"{name}\"分支\n' +
+  'git checkout develop\n' +
+  'git fetch origin \"{name}\":\"{name}\"\n' +
+  'git checkout \"{name}\"\n' +
+  '\n' +
+  '步骤 2. 检查修改\n' +
+  '\n' +
+  '步骤 3. 合并\"{name}\"分支到develop，解决冲突并提交到本地仓库\n' +
+  'git checkout develop\n' +
+  'git pull origin develop\n' +
+  'git merge --no-ff \"{name}\"\n' +
+  '\n' +
+  '步骤 4. 推送develop分支到远程仓库\n' +
+  'git push origin develop\n' +
+  '\n' +
+  '点击取消关闭弹窗或解决冲突后再点击结束。',
+
+  'branch.masterConflictMes': '\"{name}\"合并到master分支冲突，请在本地查看并合并。\n' +
+  '\n' +
+  '步骤 1. 获取并切换到\"{name}\"分支\n' +
+  'git checkout master\n' +
+  'git fetch origin \"{name}\":\"{name}\"\n' +
+  'git checkout \"{name}\"\n' +
+  '\n' +
+  '步骤 2. 检查修改\n' +
+  '\n' +
+  '步骤 3. 合并\"{name}\"分支到master，解决冲突并提交到本地仓库\n' +
+  'git checkout master\n' +
+  'git pull origin master\n' +
+  'git merge --no-ff \"{name}\"\n' +
+  '\n' +
+  '步骤 4. 推送master分支到远程仓库\n' +
+  'git push origin master\n' +
+  '\n' +
+  '点击取消关闭弹窗或解决冲突后再点击结束。',
+
+  'branch.bothConflictMes': '\"{name}\"合并到develop分支和master分支均有冲突，请在本地查看并合并。\n' +
+  '\n' +
+  '步骤 1. 获取并切换到\"{name}\"分支\n' +
+  'git checkout develop\n' +
+  'git fetch origin \"{name}\":\"{name}\"\n' +
+  'git checkout \"{name}\"\n' +
+  '\n' +
+  '步骤 2. 检查修改\n' +
+  '\n' +
+  '步骤 3. 合并\"{name}\"分支到master，解决冲突并提交到本地仓库\n' +
+  'git checkout master\n' +
+  'git pull origin master\n' +
+  'git merge --no-ff \"{name}\"\n' +
+  '\n' +
+  '步骤 4. 推送master分支到远程仓库\n' +
+  'git push origin master\n' +
+  '\n' +
+  '步骤 5. 合并\"{name}\"分支到develop，解决冲突并提交到本地仓库\n' +
+  'git checkout develop\n' +
+  'git pull origin develop\n' +
+  'git merge --no-ff \"{name}\"\n' +
+  '\n' +
+  '步骤 6. 推送develop分支到远程仓库\n' +
+  'git push origin develop\n' +
+  '\n' +
+  '点击取消关闭弹窗或解决冲突后再点击结束。',
 
   // ciPipeline
-
   'ciPipeline.title': '持续集成',
   'ciPipeline.status': '状态',
   'ciPipeline.sign': '标识',
@@ -398,7 +505,6 @@ const zhCN = {
   'ciPipeline.createdAt': '创建时间',
 
   // resource
-  
   'resource.title': '资源管理',
   'resource.name': '资源名称',
   'resource.description': '资源描述',
@@ -423,7 +529,6 @@ const zhCN = {
   'version.createTime': '时间',
 
   // domain
-
   'domain.header.title': '域名管理',
   'domain.header.create': '创建域名',
   'domain.header.update': '修改域名',
@@ -455,6 +560,23 @@ const zhCN = {
   'appstore.name': '名称',
   'appstore.contributor': '贡献者',
   'appstore.description': '描述',
+  'appstore.noReleaseApp': '暂无已发布应用',
+  'appstore.noVer': '该应用下没有版本生成',
+  'appstore.import': '应用导入',
+  'appstore.importSucc': '导入成功',
+  'appstore.export': '应用导出',
+  'appstore.search': '搜索应用名称或类型',
+  'appstore.exportSucc': '导出成功',
+  'appstore.exportApp': '导出应用',
+  'appstore.importApp': '导入应用',
+  'appstore.confirm': '确认信息',
+  'appstore.fileSize': '文件大小不能超过1M',
+  'appstore.fileType': '文件格式错误',
+  'appstore.ynRelease': '是否发布',
+  'appstore.N': '否',
+  'appstore.Y': '是',
+  'appstore.reTip': '提示：本次不发布，之后还可以重新发布，但本次版本信息不会保留。',
+  'appstore.ChooseFile': '选择文件',
 
   // app-release
   'release.home.header.title': '应用发布',
@@ -467,7 +589,7 @@ const zhCN = {
   'release.add.step.one.description': '您可以在此选择需要发布的应用。',
   'release.add.step.two.title': '选择发布版本',
   'release.add.step.two.description': '您可以在此点击添加版本选择添加需要发布的版本。',
-  'release.add.step.two.btn.add': '添加版本',
+  'release.add.step.two.btn.add': '添加版本。',
   'release.add.step.three.title': '选择发布范围',
   'release.add.step.three.description': '请在此选择应用发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。',
   'release.add.step.three.tooltip': '请注意：发布后不可修改发布范围。',
@@ -496,8 +618,7 @@ const zhCN = {
   'yaml.yaml.error': 'yaml 格式错误',
   'yaml.error.tooltip': 'Values文件yaml格式错误，请在应用代码中修改错误并重新生成正确的应用版本。',
 
-
   ...pageDetail,
-
 };
+
 export default zhCN;

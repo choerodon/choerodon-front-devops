@@ -3,6 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Input, Icon, Card, Select } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import MDReactComponent from 'markdown-react-js';
 import _ from 'lodash';
 import LoadingBar from '../../../../components/loadingBar';
@@ -107,13 +108,13 @@ class AppDetail extends Component {
   };
 
   render() {
-    const { AppStoreStore } = this.props;
+    const { AppStoreStore, intl } = this.props;
     const projectName = AppState.currentMenuType.name;
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     const app = AppStoreStore.getApp;
-    const readme = AppStoreStore.getReadme || '# 暂无';
+    const readme = AppStoreStore.getReadme || intl.formatMessage({ id: 'appstore.noMD' });
     const appVers = app.appVersions ? _.slice(app.appVersions) : [];
     const appVersion = _.map(appVers, d => <Option key={d.id}>{d.version}</Option>);
     const imgDom = app.imgUrl ? <div className="c7n-store-img" style={{ backgroundImage: `url(${Choerodon.fileServer(app.imgUrl)})` }} /> : <div className="c7n-store-img" />;
@@ -126,13 +127,13 @@ class AppDetail extends Component {
           'devops-service.application-market.queryAppVersionReadme',
         ]}
       >
-        <Header title="应用详情" backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+        <Header title={intl.formatMessage({ id: 'app.appDetail' })} backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <Button
             funcType="flat"
             onClick={this.reload}
           >
             <span className="icon-refresh icon" />
-            <span>{Choerodon.languageChange('refresh')}</span>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         {AppStoreStore.isLoading ? <LoadingBar display /> :
@@ -145,7 +146,9 @@ class AppDetail extends Component {
               </div>
               <div className="c7n-store-detail-right">
                 <div className="c7n-store-name">{app.name}</div>
-                <div className="c7n-store-contributor">贡献者：{app.contributor}</div>
+                <div className="c7n-store-contributor">
+                  <FormattedMessage id="ist.ctr" />
+                  {app.contributor}</div>
                 <div className="c7n-store-des">{app.description}</div>
                 <div>
                   <span className="c7n-store-circle">V</span>
@@ -174,7 +177,7 @@ class AppDetail extends Component {
                       funcType="raised"
                       onClick={this.deployApp.bind(this, app.id, app.appId)}
                     >
-                      部署
+                      <FormattedMessage id="appstore.deploy" />
                     </Button>
                   </Permission>
                 </div>
@@ -182,9 +185,9 @@ class AppDetail extends Component {
             </div>
             <div className="c7n-store-detail">
               <div className="c7n-store-detail-left">
-                <div className="c7n-store-key">分类</div>
+                <div className="c7n-store-key"><FormattedMessage id="appstore.category" /></div>
                 <div className="c7n-store-type">{app.category}</div>
-                <div className="c7n-store-key">上次更新日期</div>
+                <div className="c7n-store-key"><FormattedMessage id="appstore.lastDate" /></div>
                 <div className="c7n-store-time">{app.lastUpdatedDate || 'xx-xx-xx'}</div>
               </div>
               <div className="c7n-store-detail-right">
@@ -194,10 +197,10 @@ class AppDetail extends Component {
                     <MDReactComponent text={readme} />
                   </div>
                 </div>
-                <h1>教程和文档</h1>
-                <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-market/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <h1><FormattedMessage id="appstore.doc" /></h1>
+                <a href={intl.formatMessage({ id: 'template.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <span className="c7n-external-link-content">
-                    了解详情
+                    <FormattedMessage id="learnmore" />
                   </span>
                   <span className="icon icon-open_in_new" />
                 </a>
@@ -209,4 +212,4 @@ class AppDetail extends Component {
   }
 }
 
-export default withRouter(AppDetail);
+export default withRouter(injectIntl(AppDetail));

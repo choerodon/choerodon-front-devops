@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Select, Steps, Table } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, message, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../Importexport.scss';
@@ -197,7 +198,7 @@ class ExportChart extends Component {
    * 导出文件
    */
   handleOk =() => {
-    const { ExportChartStore } = this.props;
+    const { ExportChartStore, intl } = this.props;
     const selectedRows = this.state.selectedRows;
     const data = [];
     selectedRows.map((s, index) => {
@@ -212,7 +213,7 @@ class ExportChart extends Component {
         a.href = window.URL.createObjectURL(blob);
         a.click();
         this.setState({ submitting: false });
-        Choerodon.prompt('导出成功');
+        Choerodon.prompt(intl.formatMessage({ id: 'appstore.exportSucc' }));
         this.handleBack();
       });
   };
@@ -239,22 +240,22 @@ class ExportChart extends Component {
    * 渲染第一步
    */
   renderStepOne = () => {
-    const { ExportChartStore } = this.props;
+    const { ExportChartStore, intl } = this.props;
     const data = ExportChartStore.app.slice();
     const column = [{
-      title: Choerodon.languageChange('app.name'),
+      title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
       key: 'name',
     }, {
-      title: '贡献者',
+      title: <FormattedMessage id="appstore.contributor" />,
       dataIndex: 'contributor',
       key: 'contributor',
     }, {
-      title: Choerodon.getMessage('应用分类', 'Category'),
+      title: <FormattedMessage id="appstore.category" />,
       dataIndex: 'category',
       key: 'category',
     }, {
-      title: Choerodon.getMessage('描述', 'Description'),
+      title: <FormattedMessage id="appstore.description" />,
       dataIndex: 'description',
       key: 'description',
     }];
@@ -272,15 +273,8 @@ class ExportChart extends Component {
             if (!ids.includes(s)) {
               selectRow.push(_.filter(rows, v => v.id === s)[0]);// 取消勾选
             }
-            // ExportChartStore.loadVersionsByAppId(s, this.state.projectId)
-            //   .then((datas) => {
-            //     if (datas) {
-            //       this.setState({ [indexs]: { versions: datas.reverse() } });
-            //     }
-            //   });
             return indexs;
           });
-          // rows = rows.concat(selectedRows[selectedRows.length - 1]);
         } else {
           key = [];
           rows = [];
@@ -294,11 +288,11 @@ class ExportChart extends Component {
     return (
       <div className="c7n-step-section-wrap">
         <p>
-          您可以在此选择想要导出的应用，您可以一次选择多个应用。
+          <FormattedMessage id="appstore.exportDes" />
         </p>
         <div className="c7n-step-section">
           <Table
-            filterBarPlaceholder={'过滤表'}
+            filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
             loading={ExportChartStore.isLoading}
             pagination={ExportChartStore.pageInfo}
             rowSelection={rowSelection}
@@ -316,7 +310,7 @@ class ExportChart extends Component {
             disabled={selectedRows.length === 0}
             onClick={this.handleLoadAllVersion}
           >
-            下一步
+            {intl.formatMessage({ id: 'next' })}
           </Button>
           <Button funcType="raised" className="c7n-step-clear" onClick={this.handleBack}>取消</Button>
         </div>
@@ -330,17 +324,16 @@ class ExportChart extends Component {
    */
   renderStepTwo = () => {
     const selectedRows = this.state.selectedRows;
-    const { ExportChartStore } = this.props;
-    // window.console.log([this.state[0].versions[0].id.toString()]);
+    const { ExportChartStore, intl } = this.props;
     return (
       <div className="c7n-step-section-wrap">
         <p>
-          您可以在此选择想要导出的版本。
+          <FormattedMessage id="appstore.exportStep2" />
         </p>
         {selectedRows.map((app, index) => (
           <React.Fragment key={app.id}>
             <div className="c7n-step-section">
-              <div className="c7n-step-label">应用名称</div>
+              <div className="c7n-step-label"><FormattedMessage id="app.name" /></div>
               <span>{app.name}</span>
             </div>
             <div className="c7n-step-section" key={app.id}>
@@ -352,14 +345,14 @@ class ExportChart extends Component {
                 loading={ExportChartStore.isLoading}
                 onFocus={this.loadVersion.bind(this, app.id, index)}
                 filter
-                label={Choerodon.getMessage('应用版本', 'version')}
+                label={intl.formatMessage({ id: 'app.version' })}
                 showSearch
                 mode="tags"
                 dropdownMatchSelectWidth
                 size="default"
                 optionFilterProp="children"
                 optionLabelProp="children"
-                notFoundContent="该应用下没有版本生成"
+                notFoundContent={intl.formatMessage({ id: 'appstore.noVer' })}
                 filterOption={
                   (input, option) =>
                     option.props.children
@@ -385,10 +378,14 @@ class ExportChart extends Component {
             disabled={this.checkDisable()}
             onClick={this.changeStep.bind(this, 3)}
           >
-            下一步
+            {intl.formatMessage({ id: 'next' })}
           </Button>
-          <Button funcType="raised" className="c7n-step-clear c7n-step-button" onClick={this.changeStep.bind(this, 1)}>上一步</Button>
-          <Button funcType="raised" className="c7n-step-clear" onClick={this.handleBack}>取消</Button>
+          <Button funcType="raised" className="c7n-step-clear c7n-step-button" onClick={this.changeStep.bind(this, 1)}>
+            {intl.formatMessage({ id: 'previous' })}
+          </Button>
+          <Button funcType="raised" className="c7n-step-clear" onClick={this.handleBack}>
+            {intl.formatMessage({ id: 'cancel' })}
+          </Button>
         </div>
       </div>
     );
@@ -398,14 +395,15 @@ class ExportChart extends Component {
    * @returns {*}
    */
   renderStepThree = () => {
+    const { intl } = this.props;
     const { upDown } = this.state;
     const column = [{
-      title: Choerodon.languageChange('app.name'),
+      title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
       key: 'name',
       width: 150,
     }, {
-      title: '应用版本',
+      title: intl.formatMessage({ id: 'app.version' }),
       key: 'version',
       render: record => (<div>
         <div role={'none'} className={`c7n-step-table-column col-${record.id}`} onClick={this.handleChangeStatus.bind(this, record.id, record.versions.length)}>
@@ -423,7 +421,7 @@ class ExportChart extends Component {
     return (
       <div className="c7n-step-section-wrap">
         <p>
-          您可以在此确认应用发布的信息，如需修改请返回相应步骤。
+          <FormattedMessage id="appstore.exportStep3" />
         </p>
         <div className="c7n-step-section">
           <Table
@@ -444,11 +442,15 @@ class ExportChart extends Component {
               // disabled={selectedRows.length === 0}
               onClick={this.handleOk}
             >
-              导出
+              <FormattedMessage id="appstore.export" />
             </Button>
           </Permission>
-          <Button funcType="raised" className="c7n-step-clear c7n-step-button" onClick={this.changeStep.bind(this, 2)}>上一步</Button>
-          <Button funcType="raised" className="c7n-step-clear" onClick={this.handleBack}>取消</Button>
+          <Button funcType="raised" className="c7n-step-clear c7n-step-button" onClick={this.changeStep.bind(this, 2)}>
+            {intl.formatMessage({ id: 'previous' })}
+          </Button>
+          <Button funcType="raised" className="c7n-step-clear" onClick={this.handleBack}>
+            {intl.formatMessage({ id: 'cancel' })}
+          </Button>
         </div>
       </div>
     );
@@ -456,7 +458,7 @@ class ExportChart extends Component {
   
 
   render() {
-    const { ExportChartStore } = this.props;
+    const { intl } = this.props;
     const { current } = this.state;
     const projectName = AppState.currentMenuType.name;
     const projectId = AppState.currentMenuType.id;
@@ -472,14 +474,16 @@ class ExportChart extends Component {
         ]}
         className="c7n-region"
       >
-        <Header title="导出" backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
+        <Header title={intl.formatMessage({ id: 'appstore.export' })} backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
         <Content>
-          <h2 className="c7n-space-first">导出应用</h2>
+          <h2 className="c7n-space-first">
+            <FormattedMessage id="appstore.exportApp" />
+          </h2>
           <p>
-            您可以在此选择相应的应用，并选择版本进行导出。
-            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-market/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <FormattedMessage id="appstore.exportDes" />
+            <a href={intl.formatMessage({ id: 'appstore.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
-                了解详情
+                <FormattedMessage id="learnmore" />
               </span>
               <span className="icon icon-open_in_new" />
             </a>
@@ -487,19 +491,25 @@ class ExportChart extends Component {
           <div className="c7n-store-card-wrap" style={{ minHeight: window.innerHeight - 277 }}>
             <Steps current={current}>
               <Step
-                title={<span className={current === 1 ? 'c7n-step-active' : ''}>选择应用</span>}
+                title={<span className={current === 1 ? 'c7n-step-active' : ''}>
+                  {intl.formatMessage({ id: 'deploy.step.one.app' })}
+                </span>}
                 onClick={this.changeStep.bind(this, 1)}
                 status={this.getStatus(1)}
               />
               <Step
                 className={`${this.state.selectedRows.length ? '' : 'c7n-step-disabled'}`}
-                title={<span className={current === 2 ? 'c7n-step-active' : ''}>选择版本</span>}
+                title={<span className={current === 2 ? 'c7n-step-active' : ''}>
+                  {intl.formatMessage({ id: 'deploy.step.one.version.title' })}
+                </span>}
                 onClick={this.changeStep.bind(this, 2)}
                 status={this.getStatus(2)}
               />
               <Step
                 className={`${this.checkDisable() ? 'c7n-step-disabled' : ''}`}
-                title={<span className={current === 3 ? 'c7n-step-active' : ''}>确认信息</span>}
+                title={<span className={current === 3 ? 'c7n-step-active' : ''}>
+                  {intl.formatMessage({ id: 'appstore.confirm' })}
+                </span>}
                 onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}
               />
@@ -514,4 +524,4 @@ class ExportChart extends Component {
   }
 }
 
-export default withRouter(ExportChart);
+export default withRouter(injectIntl(ExportChart));

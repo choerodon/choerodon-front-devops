@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Modal, Form, Radio, Input } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import '../../../../main.scss';
 import './CreateBranch.scss';
 
@@ -98,16 +99,18 @@ class CreateBranch extends Component {
     const single = /^@+$/;
     const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3})$/;
     if (this.state.name === 'release') {
+      const { intl } = this.props;
       if (p.test(value)) {
         callback();
       } else {
-        callback('名称只能包含数字和".",并且以数字开头和结尾');
+        callback(intl.formatMessage({ id: 'branch.checkName' }));
       }
     } else {
+      const { intl } = this.props;
       if (endWith.test(value)) {
-        callback('不能以"/"、"."、".lock"结尾');
+        callback(intl.formatMessage({ id: 'branch.checkNameEnd' }));
       } else if (contain.test(value) || single.test(value)) {
-        callback("只能包含字母、数字、'——'、'_'");
+        callback(intl.formatMessage({ id: 'branch.check' }));
       } else {
         callback();
       }
@@ -121,7 +124,7 @@ class CreateBranch extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { visible, onClose, onOk } = this.props;
+    const { visible, intl } = this.props;
     const menu = AppState.currentMenuType;
     const radioStyle = {
       display: 'block',
@@ -131,30 +134,37 @@ class CreateBranch extends Component {
     };
     return (
       <Sidebar
-        title={'创建分支'}
+        title={<FormattedMessage id="branch.create" />}
         visible={visible}
         onOk={this.handleOk}
         onCancel={this.handleClose}
-        okText="创建"
-        cancelText="取消"
+        okText={<FormattedMessage id="create" />}
+        cancelText={<FormattedMessage id="cancel" />}
         confirmLoading={this.state.submitting}
       >
         <div className="c7n-region c7n-createBranch">
-          <h2 className="c7n-space-first">在应用&quot;{this.props.name}&quot;中创建分支</h2>
+          <h2 className="c7n-space-first">
+            <FormattedMessage
+              id="branch.createHead"
+              values={{
+                name: `${this.props.name}`,
+              }}
+            />
+          </h2>
           <p>
-            采用Gitflow工作流模式，请在下面选择分支类型，并填写issue号或版本号，即可创建分支。
-            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/branch-management/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <FormattedMessage id="branch.createDes" />
+            <a href={intl.formatMessage({ id: 'branch.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
-              了解详情
+                <FormattedMessage id="learnmore" />
               </span>
               <span className="icon icon-open_in_new" />
             </a>
           </p>
-          <span className="c7n-title">分支类型</span>
+          <span className="c7n-title"><FormattedMessage id="branch.branchType" /></span>
           <RadioGroup onChange={this.onChange} value={this.state.name}>
-            <Radio style={radioStyle} value={'feature'}>创建feature分支</Radio>
-            <Radio style={radioStyle} value={'release'}>创建release分支</Radio>
-            <Radio style={radioStyle} value={'hotfix'}>创建hotfix分支</Radio>
+            <Radio style={radioStyle} value={'feature'}>{intl.formatMessage({ id: 'create' })}{intl.formatMessage({ id: 'branch.feature' })}</Radio>
+            <Radio style={radioStyle} value={'release'}>{intl.formatMessage({ id: 'create' })}{intl.formatMessage({ id: 'branch.release' })}</Radio>
+            <Radio style={radioStyle} value={'hotfix'}>{intl.formatMessage({ id: 'create' })}{intl.formatMessage({ id: 'branch.hotfix' })}</Radio>
           </RadioGroup>
           <Form layout="vertical" onSubmit={this.handleOk} className="c7n-sidebar-form">
             <FormItem
@@ -164,7 +174,7 @@ class CreateBranch extends Component {
                 rules: [{
                   required: true,
                   whitespace: true,
-                  message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                  message: intl.formatMessage({ id: 'required' }),
                 }, {
                   validator: this.checkName,
                 }],
@@ -183,4 +193,4 @@ class CreateBranch extends Component {
     );
   }
 }
-export default Form.create({})(withRouter(CreateBranch));
+export default Form.create({})(withRouter(injectIntl(CreateBranch)));
