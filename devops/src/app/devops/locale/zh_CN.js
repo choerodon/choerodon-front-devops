@@ -39,6 +39,15 @@ const pageDetail = {
   'domain.update.title': '对域名"{name}"进行修改',
   'domain.update.description': '您可在此修改域名配置信息。',
   'domain.update.link': `${docServer}/user-guide/deployment-pipeline/service/`,
+
+  // deploymentApp
+
+  'deploy.title': '项目"{name}"的部署应用',
+  'deploy.description': '应用部署是一个将某版本的应用部署至某环境的操作。您可以在此按指引分步骤完成应用部署。',
+  'deploy.link': `${docServer}/user-guide/deployment-pipeline/application-deployment/`,
+  'deploy.sidebar.title': '项目"{name}"的部署选择应用',
+  'deploy.sidebar.description': '您可以在此灵活选择来源于本项目及应用市场的应用，且有列表式及卡片式两种展示方式可以切换。',
+  'deploy.sidebar.link': `${docServer}/user-guide/deployment-pipeline/application-deployment/`,
 };
 
 const zhCN = {
@@ -86,6 +95,10 @@ const zhCN = {
   filter: '过滤表',
   stop: '停用',
   confirm: '确认',
+  previous: '上一步',
+  next: '下一步',
+  finish: '结束',
+  ok: '确定',
 
   // ist
   ist_create: '创建中',
@@ -132,15 +145,48 @@ const zhCN = {
   'network.btn.add': '添加版本',
   'network.form.targetPort.help': '网络选择的目标实例所暴露的端口号',
 
-  // deploy
+  // deploymentApp
+
   'deploy.title': '应用部署',
+  'deploy.detail': '部署详情',
+  'deploy.info': '部署信息',
+  'deploy.stage': '阶段及日志',
   'deploy.status': '容器状态',
   'deploy.istStatus': '实例状态',
+  'deploy.appName': '应用名称',
   'deploy.instance': '实例名称',
+  'deploy.envName': '环境名称',
   'deploy.app': '应用',
   'deploy.ver': '版本',
   'deploy.env': '环境',
   'deploy.cNumber': '容器数量',
+  'deploy.header.title': '部署应用',
+  'deploy.step.one.title': '选择应用及版本',
+  'deploy.step.one.description': '您可以点击“打开应用列表”，选择本项目的应用或来自应用市场的应用，再在此界面选择需要部署的版本。',
+  'deploy.app.add': '打开应用列表',
+  'deploy.step.one.app': '选择应用',
+  'deploy.step.one.version.title': '选择版本',
+  'deploy.step.one.version': '应用版本',
+  'deploy.step.two.title': '选择环境及修改配置信息',
+  'deploy.step.two.description': '请在此选择需要部署的环境并修改相关配置信息，平台默认会引用该应用上次在该环境部署的信息。',
+  'deploy.step.two.env.title': '选择环境',
+  'deploy.step.two.env': '环境',
+  'deploy.step.two.config': '配置信息',
+  'deploy.step.three.title': '选择部署模式',
+  'deploy.step.three.description': '平台支持两种部署模式：新建实例和替换实例。新建实例是部署生成新的实例；替换实例是等待新部署生成的副本集通过健康检查后再删除原副本集，但实例不变，只替换其相关参数。',
+  'deploy.step.three.mode.title': '选择部署模式',
+  'deploy.step.three.mode': '部署模式',
+  'deploy.step.three.mode.new': '新建实例',
+  'deploy.step.three.mode.replace': '替换实例',
+  'deploy.step.three.mode.replace.label': '选择要的替换实例',
+  'deploy.step.three.mode.help': '替换实例会更新该实例的镜像及配置信息，请确认要替换的实例选择无误。',
+  'deploy.step.four.title': '确认信息及部署',
+  'deploy.step.four.app': '应用名称',
+  'deploy.step.four.version': '应用版本',
+  'deploy.btn.deploy': '部署',
+  'deploy.sidebar.project': '项目应用',
+  'deploy.sidebar.market': '应用市场',
+  'deploy.sidebar.search': '搜索应用',
 
   // envPipeline
   'envPl.title': '环境流水线',
@@ -196,13 +242,20 @@ const zhCN = {
   'app.active': '状态',
   'app.delete.tip': '这将会删除gitlab代码库，请确认是否删除？',
   'app.detail': '详情',
-
+  'app.stop': '停用',
+  'app.run': '启用',
+  'app.creating': '创建中',
+  'app.synch': '应用同步中',
+  'app.start': '请先启用应用',
+  'app.create': '创建应用',
+  'app.edit': '修改应用',
+  'app.chooseTem': '选择应用模板',
   'app.image': '镜像',
-
   'app.env': '发布环境',
   'app.publish': '发布',
   'app.branchName': '分支名称',
   'app.branch': '分支',
+  'app.branchManage': '分支管理',
   'app.branchType': '分支类型',
   'app.commitCode': '提交编码',
   'app.commitDescription': '提交描述',
@@ -332,10 +385,6 @@ const zhCN = {
   'resource.description': '资源描述',
   'resource.type': '资源类型',
 
-  // deploymentApp
-
-  'deploymentApp.title': '部署应用',
-
   // container
   'container.title': '容器管理',
   'container.status': '状态',
@@ -376,6 +425,11 @@ const zhCN = {
 
   // appstore
   'appstore.title': '应用市场',
+  'appstore.noMD': '# 暂无',
+  'appstore.deploy': '部署',
+  'appstore.category': '分类',
+  'appstore.lastDate': '上次更新日期',
+  'appstore.doc': '教程和文档',
   'appstore.name': '名称',
   'appstore.contributor': '贡献者',
   'appstore.description': '描述',
@@ -383,6 +437,13 @@ const zhCN = {
   // app-release
   'app-release.title': '应用发布',
   'app-release.level': '发布层级',
+
+  // yaml file
+  'yaml.lastModify': '上次修改',
+  'yaml.modify': '本次修改',
+  'yaml.yaml.error': 'yaml 格式错误',
+  'yaml.error.tooltip': 'Values文件yaml格式错误，请在应用代码中修改错误并重新生成正确的应用版本。',
+
 
   ...pageDetail,
 
