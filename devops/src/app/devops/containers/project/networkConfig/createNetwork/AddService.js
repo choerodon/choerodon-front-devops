@@ -238,9 +238,9 @@ class AddService extends Component {
     const { store } = this.props;
     const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     const envId = this.props.form.getFieldValue('envId');
-    if (!pattern.test(value)) {
+    if (value && !pattern.test(value)) {
       callback(intl.formatMessage({ id: 'network.name.check.failed' }));
-    } else {
+    } else if (value && pattern.test(value)) {
       store.checkDomainName(this.state.projectId, envId, value)
         .then((data) => {
           if (data) {
@@ -252,6 +252,8 @@ class AddService extends Component {
             callback(intl.formatMessage({ id: 'network.name.check.exist' }));
           }
         });
+    } else {
+      callback();
     }
   };
   /**
@@ -326,7 +328,7 @@ class AddService extends Component {
             rules: [{
               required: true,
               message: intl.formatMessage({ id: 'required' }),
-              transform: value => value.toString(),
+              // transform: value => value.toString(),
             }],
           })(
             <Select
@@ -362,7 +364,7 @@ class AddService extends Component {
             rules: [{
               required: true,
               message: intl.formatMessage({ id: 'required' }),
-              transform: value => value.toString(),
+              // transform: value => value.toString(),
             }],
           })(
             <Select
@@ -388,11 +390,11 @@ class AddService extends Component {
                       placement="right"
                       content={<div>
                         <p>
-                          <FormattedMessage id={'app.name'} />
+                          <FormattedMessage id={'app.name'} />:
                           <span>{v.name}</span>
                         </p>
                         <p>
-                          <FormattedMessage id={'app.code'} />
+                          <FormattedMessage id={'app.code'} />:
                           <span>{v.code}</span>
                         </p>
                       </div>}
@@ -410,7 +412,7 @@ class AddService extends Component {
                       placement="right"
                       content={<div>
                         <p>
-                          <FormattedMessage id={'appstore.name'} />
+                          <FormattedMessage id={'appstore.name'} />:
                           <span>{v.name}</span>
                         </p>
                         <p>
@@ -418,7 +420,7 @@ class AddService extends Component {
                           <span>{v.contributor}</span>
                         </p>
                         <p>
-                          <FormattedMessage id={'appstore.description'} />
+                          <FormattedMessage id={'appstore.description'} />:
                           <span>{v.description}</span>
                         </p>
                       </div>}
@@ -441,7 +443,7 @@ class AddService extends Component {
               rules: [{
                 required: true,
                 message: intl.formatMessage({ id: 'required' }),
-                transform: value => value.toString(),
+                // transform: value => value.toString(),
               }],
             })(
               <Select
@@ -486,7 +488,7 @@ class AddService extends Component {
               rules: [{
                 required: true,
                 message: intl.formatMessage({ id: 'required' }),
-                transform: value => value.toString(),
+                // transform: value => value.toString(),
               }],
             })(
               <Select

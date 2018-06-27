@@ -115,21 +115,21 @@ class CreateDomain extends Component {
     const { store, id, type } = this.props;
     const { projectId } = this.state;
     const service = store.getNetwork;
-    this.props.form.validateFieldsAndScroll((err, data) => {
-      if (!err) {
-        const keys = Object.keys(data);
-        const postData = { domain: data.domain, name: data.name, envId: data.envId };
-        const pathList = [];
-        keys.map((k) => {
-          if (k.includes('path')) {
-            const index = parseInt(k.split('-')[1], 10);
-            const value = data[`network-${index}`];
-            pathList.push({ path: `/${data[k]}`, serviceId: value });
-          }
-          return pathList;
-        });
-        postData.pathList = pathList;
-        if (type === 'create') {
+    this.props.form.validateFieldsAndScroll((err, data, modify) => {
+      if (type === 'create') {
+        if (!err) {
+          const keys = Object.keys(data);
+          const postData = { domain: data.domain, name: data.name, envId: data.envId };
+          const pathList = [];
+          keys.map((k) => {
+            if (k.includes('path')) {
+              const index = parseInt(k.split('-')[1], 10);
+              const value = data[`network-${index}`];
+              pathList.push({ path: `${data[k]}`, serviceId: value });
+            }
+            return pathList;
+          });
+          postData.pathList = pathList;
           this.setState({ submitting: true });
           store.addData(projectId, postData)
             .then((datasss) => {
@@ -141,7 +141,21 @@ class CreateDomain extends Component {
               this.setState({ submitting: false });
               Choerodon.prompt(err.response.data.message);
             });
-        } else {
+        }
+      } else {
+        if (!err && modify) {
+          const keys = Object.keys(data);
+          const postData = { domain: data.domain, name: data.name, envId: data.envId };
+          const pathList = [];
+          keys.map((k) => {
+            if (k.includes('path')) {
+              const index = parseInt(k.split('-')[1], 10);
+              const value = data[`network-${index}`];
+              pathList.push({ path: `${data[k]}`, serviceId: value });
+            }
+            return pathList;
+          });
+          postData.pathList = pathList;
           postData.domainId = id;
           this.setState({ submitting: true });
           store.updateData(projectId, id, postData)
@@ -154,6 +168,8 @@ class CreateDomain extends Component {
               this.setState({ submitting: false });
               Choerodon.prompt(err.response.data.message);
             });
+        } else if (!modify) {
+          this.handleClose();
         }
       }
     });

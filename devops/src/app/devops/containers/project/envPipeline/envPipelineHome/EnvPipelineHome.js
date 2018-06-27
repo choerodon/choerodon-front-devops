@@ -91,8 +91,10 @@ class EnvPipelineHome extends Component {
             callback();
           }
         });
-    } else {
+    } else if (value && !pa.test(value)) {
       callback(this.props.intl.formatMessage({ id: 'envPl.code.check.failed' }));
+    } else {
+      callback();
     }
   }, 1000);
 
@@ -330,7 +332,7 @@ class EnvPipelineHome extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     const projectName = AppState.currentMenuType.name;
-    let DisEnvDom = (<FormattedMessage id={'envPl.status.stop'} />);
+    let DisEnvDom = (<span className={'c7n-none-des'}>{this.props.intl.formatMessage({ id: 'envPl.status.stop' })}</span>);
     if (disEnvcardPosition.length) {
       DisEnvDom = _.map(disEnvcardPosition, env =>
         (<div className="c7n-env-card c7n-env-card-ban">
@@ -392,7 +394,7 @@ class EnvPipelineHome extends Component {
                   {getFieldDecorator('code', {
                     rules: [{
                       required: true,
-                      message: <FormattedMessage id={'required'} />,
+                      message: this.props.intl.formatMessage({ id: 'required' }),
                     }, {
                       validator: this.checkCode,
                     }],
@@ -410,7 +412,7 @@ class EnvPipelineHome extends Component {
                   {getFieldDecorator('name', {
                     rules: [{
                       required: true,
-                      message: <FormattedMessage id={'required'} />,
+                      message: this.props.intl.formatMessage({ id: 'required' }),
                     }, {
                       validator: this.checkName,
                     }],
@@ -503,7 +505,7 @@ class EnvPipelineHome extends Component {
                   {getFieldDecorator('name', {
                     rules: [{
                       required: true,
-                      message: <FormattedMessage id={'required'} />,
+                      message: this.props.intl.formatMessage({ id: 'required' }),
                     }, {
                       validator: this.checkName,
                     }],
@@ -635,7 +637,7 @@ class EnvPipelineHome extends Component {
           <div className="c7n-env-discontent">
             <h2 className="c7n-space-first">
               <FormattedMessage
-                id="env.title"
+                id="env.stop.title"
                 values={{
                   name: `${projectName}`,
                 }}
@@ -643,7 +645,7 @@ class EnvPipelineHome extends Component {
             </h2>
             <p>
               <FormattedMessage
-                id="env.description"
+                id="env.stop.description"
               />
               <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <FormattedMessage
