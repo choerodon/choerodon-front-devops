@@ -29,6 +29,8 @@ const pageDetail = {
   'env.token.title': '复制环境"{name}"的指令',
   'env.token.description': '复制下文代码至Kubernetes运行，与平台建立链接。',
   'env.token.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
+  'env.stop.title': '项目"{name}"的环境停用区',
+  'env.stop.description': '您可在此查看已被停用的环境，也可以重新启用这些环境',
 
   // domain
   'domain.title': '项目"{name}"的域名管理',

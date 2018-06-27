@@ -249,8 +249,8 @@ class TemplateHome extends Component {
         }
       });
     } else if (type === 'edit') {
-      this.props.form.validateFieldsAndScroll((err, data) => {
-        if (!err) {
+      this.props.form.validateFieldsAndScroll((err, data, modify) => {
+        if (!err && modify) {
           const formData = data;
           formData.id = id;
           formData.objectVersionNumber = TemplateStore.singleData.objectVersionNumber;
@@ -272,6 +272,8 @@ class TemplateHome extends Component {
                 submitting: false,
               });
             });
+        } else if (!modify) {
+          this.setState({ show: false });
         }
       });
     }

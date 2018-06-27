@@ -150,8 +150,8 @@ class EditService extends Component {
     e.preventDefault();
     const { store, id } = this.props;
     const { projectId } = this.state;
-    this.props.form.validateFieldsAndScroll((err, data) => {
-      if (!err) {
+    this.props.form.validateFieldsAndScroll((err, data, modify) => {
+      if (!err && modify) {
         let appInstance = [];
         const keys = Object.keys(data);
         keys.map((k) => {
@@ -180,6 +180,8 @@ class EditService extends Component {
             this.setState({ submitting: false });
             Choerodon.prompt(errs.response.data.message);
           });
+      } else if (!modify) {
+        this.handleClose();
       }
     });
   };

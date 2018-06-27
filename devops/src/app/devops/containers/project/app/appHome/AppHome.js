@@ -92,11 +92,10 @@ class AppHome extends Component {
       title: <FormattedMessage id="app.url" />,
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={450}>
-        <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">../{record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}</a>
+      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={100}>
+        <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl ? `../${record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}` : ''}</a>
       </MouserOverWrapper>),
     }, {
-      width: 75,
       title: <FormattedMessage id="app.active" />,
       dataIndex: 'active',
       key: 'active',
@@ -122,13 +121,13 @@ class AppHome extends Component {
       key: 'action',
       render: (test, record) => (
         <div>
-          <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.git-flow.listByAppId', 'devops-service.git-flow.queryTags']} >
+          {record.repoUrl ? <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.git-flow.listByAppId', 'devops-service.git-flow.queryTags']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="app.branchManage" /> : <FormattedMessage id="app.start" />}</React.Fragment>}</div>}>
-              {record.active && record.synchro ? <Button shape="circle" size={'small'} onClick={this.linkToBranch.bind(this, record.id, record.name)}>
+              {record.active && record.synchro && record.repoUrl !== null ? <Button shape="circle" size={'small'} onClick={this.linkToBranch.bind(this, record.id, record.name)}>
                 <span className="icon icon-branch" />
               </Button> : <span className="icon icon-branch c7n-app-icon-disabled" /> }
             </Tooltip>
-          </Permission>
+          </Permission> : null }
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="edit" /> : <FormattedMessage id="app.start" />}</React.Fragment>}</div>}>
               {record.active && record.synchro ? <Button shape="circle" size={'small'} onClick={this.showSideBar.bind(this, 'edit', record.id)}>
@@ -265,8 +264,8 @@ class AppHome extends Component {
         }
       });
     } else if (type === 'edit') {
-      this.props.form.validateFieldsAndScroll((err, data) => {
-        if (!err) {
+      this.props.form.validateFieldsAndScroll((err, data, modify) => {
+        if (!err && modify) {
           const formData = data;
           formData.id = id;
           this.setState({
@@ -287,6 +286,8 @@ class AppHome extends Component {
                 submitting: false,
               });
             });
+        } else if (!modify) {
+          this.setState({ show: false });
         }
       });
     }

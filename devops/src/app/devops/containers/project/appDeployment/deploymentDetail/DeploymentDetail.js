@@ -362,7 +362,7 @@ class DeploymentDetail extends Component {
                 <Steps current={this.state.current} className="c7n-deployDetail-steps">
                   {dom}
                 </Steps>
-                <Log className="c7n-deployDetail-pre1" value={this.state.log || log} />
+                <Log className="c7n-deployDetail-pre1" value={this.state.log === undefined ? log : this.state.log} />
               </div>
               }
             </TabPane>
