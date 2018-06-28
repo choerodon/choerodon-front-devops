@@ -238,8 +238,12 @@ class EnvPipelineHome extends Component {
         }
       });
     } else {
-      this.props.form.validateFieldsAndScroll((err, data) => {
+      this.props.form.validateFieldsAndScroll((err, data, modify) => {
         if (!err) {
+          if (!modify) {
+            EnvPipelineStore.setShow(false);
+            return;
+          }
           EnvPipelineStore.setShow(false);
           const id = EnvPipelineStore.getEnvData.id;
           EnvPipelineStore.setSideType('');
