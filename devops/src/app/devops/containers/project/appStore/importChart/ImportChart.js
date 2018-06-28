@@ -340,6 +340,10 @@ class ImportChart extends Component {
       dataIndex: 'name',
       key: 'name',
     }, {
+      title: <FormattedMessage id="app.code" />,
+      dataIndex: 'code',
+      key: 'code',
+    }, {
       title: intl.formatMessage({ id: 'app.version' }),
       key: 'version',
       render: record => (<div>
@@ -385,7 +389,7 @@ class ImportChart extends Component {
             disabled={!(this.state.fileList.status === 'done')}
             onClick={this.importChart.bind(this, data.fileCode)}
           >
-            {intl.formatMessage({ id: 'importApp' })}
+            {intl.formatMessage({ id: 'appstore.importApp' })}
           </Button>
           <Button
             funcType="raised"
@@ -419,10 +423,10 @@ class ImportChart extends Component {
           'devops-service.application-market.importApps',
         ]}
       >
-        <Header title="导入" backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
+        <Header title={<FormattedMessage id="appstore.import" />} backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
         <div className="c7n-store-content-wrap">
           <h2 className="c7n-space-first">
-            <FormattedMessage id="appstore.importApp" />
+            <FormattedMessage id="appstore.import" />
           </h2>
           <p>
             <FormattedMessage id="appstore.importDes" />
