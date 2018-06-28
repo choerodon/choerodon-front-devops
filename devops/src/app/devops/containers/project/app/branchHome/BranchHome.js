@@ -512,7 +512,7 @@ class BranchHome extends Component {
             title={<FormattedMessage id="branch.title" />}
             backPath={`/devops/app?type=project&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`}
           >
-            <Permission
+            {BranchStore.getBranchData.length ? <Permission
               service={['devops-service.git-flow.start']}
             >
               <Tooltip
@@ -527,8 +527,7 @@ class BranchHome extends Component {
                   <FormattedMessage id="branch.create" />
                 </Button>
               </Tooltip>
-            </Permission>
-
+            </Permission> : null}
             <Permission
               service={['devops-service.git-flow.listByAppId']}
             >
