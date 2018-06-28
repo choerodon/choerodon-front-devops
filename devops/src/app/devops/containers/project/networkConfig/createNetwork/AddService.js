@@ -416,7 +416,7 @@ class AddService extends Component {
                           <span>{v.name}</span>
                         </p>
                         <p>
-                          <FormattedMessage id={'appstore.contributor'} />
+                          <FormattedMessage id={'appstore.contributor'} />:
                           <span>{v.contributor}</span>
                         </p>
                         <p>
