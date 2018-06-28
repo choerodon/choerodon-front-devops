@@ -213,7 +213,7 @@ class ImportChart extends Component {
           this.setState({ fileList: file });
           Choerodon.prompt(intl.formatMessage({ id: 'appstore.fileSize' }));
           return false;
-        } else if (file.type !== 'application/zip') {
+        } else if (file.name.slice(file.name.length - 3) !== 'zip') {
           const tmp = file;
           tmp.status = 'error';
           this.setState({ fileList: file });
