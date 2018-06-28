@@ -110,6 +110,7 @@ class HighlightAce extends Component {
    */
   setOptions =() => {
     const editor = this.ace.editor;
+    editor.setAutoScrollEditorIntoView(true);
     editor.$blockScrolling = Infinity;
     if (this.props.readOnly) {
       this.ace.editor.setReadOnly(true);

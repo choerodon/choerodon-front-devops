@@ -31,6 +31,10 @@ class ExportChart extends Component {
     ExportChartStore.loadApps({ projectId: this.state.projectId });
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+  }
+
   /**
    * 获取步骤条状态
    * @param index
@@ -54,15 +58,6 @@ class ExportChart extends Component {
    * @param index
    */
   changeStep = (index) => {
-    const { ExportChartStore } = this.props;
-    if (index === 2) {
-      const selectedRows = this.state.selectedRows;
-      selectedRows.map((app, indexs) => {
-        selectedRows[indexs].versions = ('versions' in selectedRows[indexs]) ? selectedRows[indexs].versions : [this.state[indexs].versions[0]];
-        this.setState({ selectedRows });
-        return index;
-      });
-    }
     this.setState({ current: index });
   };
   /**
@@ -111,10 +106,14 @@ class ExportChart extends Component {
    */
   loadVersion = (appId, index) => {
     const { ExportChartStore } = this.props;
+    this.setState({ isLoading: true });
     ExportChartStore.loadVersionsByAppId(appId, this.state.projectId)
       .then((data) => {
-        if (data) {
-          this.setState({ [index]: { versions: data.reverse() } });
+        this.setState({ isLoading: false });
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else if (data) {
+          this.setState({ [index]: { versions: data.appVersions } });
         }
       });
   };
@@ -223,18 +222,25 @@ class ExportChart extends Component {
   handleLoadAllVersion = () => {
     const { ExportChartStore } = this.props;
     const selectedRowKeys = this.state.selectedRowKeys;
-    selectedRowKeys.map((s, indexs) => {
-      ExportChartStore.loadVersionsByAppId(s, this.state.projectId)
+    const { selectedRows } = this.state;
+    for (let i = 0; i < selectedRowKeys.length; i += 1) {
+      ExportChartStore.loadVersionsByAppId(selectedRowKeys[i], this.state.projectId)
         .then((datas) => {
-          if (datas) {
-            this.setState({ [indexs]: { versions: datas.reverse() } });
-          }
-          if (indexs === selectedRowKeys.length - 1) {
-            this.changeStep(2);
+          if (datas && datas.failed) {
+            Choerodon.prompt(datas.message);
+          } else if (datas.length) {
+            const versions = [datas.reverse()[0]];
+            selectedRows[i].versions = ('versions' in selectedRows[i]) ? selectedRows[i].versions : versions;
+            if (i !== selectedRowKeys.length - 1) {
+              this.setState({ [i]: { versions: datas.reverse() }, selectedRows });
+            } else {
+              this.setState({ [i]: { versions: datas.reverse() }, selectedRows }, () => {
+                this.timer = setTimeout(() => this.changeStep(2), 300);
+              });
+            }
           }
         });
-      return indexs;
-    });
+    }
   };
   /**
    * 渲染第一步
@@ -342,12 +348,12 @@ class ExportChart extends Component {
                 defaultValue={_.map(_.map(this.state.selectedRows[index].versions, 'id'), v => v.toString())}
                 onSelect={this.handleSelectVersion.bind(this, index)}
                 className={'c7n-step-select'}
-                loading={ExportChartStore.isLoading}
-                onFocus={this.loadVersion.bind(this, app.id, index)}
+                loading={this.state.isLoading}
+                // onFocus={this.loadVersion.bind(this, app.id, index)}
                 filter
                 label={intl.formatMessage({ id: 'app.version' })}
                 showSearch
-                mode="tags"
+                mode="multiple"
                 dropdownMatchSelectWidth
                 size="default"
                 optionFilterProp="children"
