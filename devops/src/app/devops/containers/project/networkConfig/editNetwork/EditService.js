@@ -449,11 +449,11 @@ class EditService extends Component {
                             placement="right"
                             content={<div>
                               <p>
-                                <FormattedMessage id={'app.name'} />
+                                <FormattedMessage id={'app.name'} />:
                                 <span>{v.name}</span>
                               </p>
                               <p>
-                                <FormattedMessage id={'app.code'} />
+                                <FormattedMessage id={'app.code'} />:
                                 <span>{v.code}</span>
                               </p>
                             </div>}
@@ -471,15 +471,15 @@ class EditService extends Component {
                             placement="right"
                             content={<div>
                               <p>
-                                <FormattedMessage id={'appstore.name'} />
+                                <FormattedMessage id={'appstore.name'} />:
                                 <span>{v.name}</span>
                               </p>
                               <p>
-                                <FormattedMessage id={'appstore.contributor'} />
+                                <FormattedMessage id={'appstore.contributor'} />:
                                 <span>{v.contributor}</span>
                               </p>
                               <p>
-                                <FormattedMessage id={'appstore.description'} />
+                                <FormattedMessage id={'appstore.description'} />:
                                 <span>{v.description}</span>
                               </p>
                             </div>}
