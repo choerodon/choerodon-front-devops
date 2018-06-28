@@ -72,7 +72,7 @@ class ValueConfig extends Component {
     store.checkYaml(value, projectId)
       .then((datas) => {
         this.setState({ errorLine: datas });
-        if (datas !== [] && !(this.props.store.getValue.errorLines)) {
+        if (datas !== []) {
           store.reDeploy(projectId, data)
             .then((res) => {
               if (res && res.failed) {
