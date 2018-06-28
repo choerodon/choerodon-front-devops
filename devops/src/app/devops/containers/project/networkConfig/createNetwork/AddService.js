@@ -376,7 +376,7 @@ class AddService extends Component {
               className="c7n-create-network-formitem"
               showSearch
               notFoundContent={intl.formatMessage({ id: 'network.form.app.disable' })}
-              label={<FormattedMessage id={'network.form.name'} />}
+              label={<FormattedMessage id={'network.form.app'} />}
               optionFilterProp="children"
               onSelect={this.selectApp}
               filterOption={(input, option) =>
