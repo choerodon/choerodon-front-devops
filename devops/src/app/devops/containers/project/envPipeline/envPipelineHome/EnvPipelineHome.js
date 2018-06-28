@@ -614,9 +614,9 @@ class EnvPipelineHome extends Component {
             onCancel={this.banCancel}
             wrapClassName="vertical-center-modal remove"
           >
-            <h2>{this.props.intal.formatMessage({ id: 'envPl.conform.disable' })}</h2>
-            <span>{ist.length > 0 ? this.props.intal.formatMessage({ id: 'envPl.conform.content.hasInstance' })
-              : this.props.intal.formatMessage({ id: 'envPl.conform.content.noInstance' })}</span>
+            <h2>{this.props.intl.formatMessage({ id: 'envPl.conform.disable' })}</h2>
+            <span>{ist.length > 0 ? this.props.intl.formatMessage({ id: 'envPl.conform.content.hasInstance' })
+              : this.props.intl.formatMessage({ id: 'envPl.conform.content.noInstance' })}</span>
           </Modal>
           <h2 className="c7n-space-first">
             <FormattedMessage
