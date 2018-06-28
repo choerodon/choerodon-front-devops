@@ -591,7 +591,7 @@ const zhCN = {
   'release.add.step.one.description': '您可以在此选择需要发布的应用。',
   'release.add.step.two.title': '选择发布版本',
   'release.add.step.two.description': '您可以在此点击添加版本选择添加需要发布的版本。',
-  'release.add.step.two.btn.add': '添加版本。',
+  'release.add.step.two.btn.add': '添加版本',
   'release.add.step.three.title': '选择发布范围',
   'release.add.step.three.description': '请在此选择应用发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。',
   'release.add.step.three.tooltip': '请注意：发布后不可修改发布范围。',
