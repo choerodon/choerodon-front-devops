@@ -395,7 +395,7 @@ class DeploymentAppHome extends Component {
             type="primary"
             funcType="raised"
             onClick={this.changeStep.bind(this, 3)}
-            disabled={!(this.state.envId && ((data && data.errorLines === null) || (this.state.errorLine === '' || this.state.errorLine === null)) && (this.state.value || (data && data.yaml)))}
+            disabled={!(this.state.envId && ((data && data.errorLines === null) || (this.state.errorLine === [] || this.state.errorLine === null)) && (this.state.value || (data && data.yaml)))}
           >
             {formatMessage({ id: 'next' })}
           </Button>
