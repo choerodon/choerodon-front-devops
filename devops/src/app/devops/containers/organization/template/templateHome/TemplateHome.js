@@ -505,7 +505,7 @@ class TemplateHome extends Component {
                 funcType="flat"
                 onClick={this.handleRefresh}
               >
-                <span className="con-refresh icon" />
+                <span className="icon-refresh icon" />
                 <FormattedMessage id="refresh" />
               </Button>
             </Permission>
