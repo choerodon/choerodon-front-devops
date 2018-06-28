@@ -402,6 +402,10 @@ class ExportChart extends Component {
       dataIndex: 'name',
       key: 'name',
       width: 150,
+    },  {
+      title: <FormattedMessage id="app.code" />,
+      dataIndex: 'code',
+      key: 'code',
     }, {
       title: intl.formatMessage({ id: 'app.version' }),
       key: 'version',
@@ -442,7 +446,7 @@ class ExportChart extends Component {
               // disabled={selectedRows.length === 0}
               onClick={this.handleOk}
             >
-              <FormattedMessage id="appstore.export" />
+              <FormattedMessage id="appstore.exportApp" />
             </Button>
           </Permission>
           <Button funcType="raised" className="c7n-step-clear c7n-step-button" onClick={this.changeStep.bind(this, 2)}>
@@ -477,7 +481,7 @@ class ExportChart extends Component {
         <Header title={intl.formatMessage({ id: 'appstore.export' })} backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
         <Content>
           <h2 className="c7n-space-first">
-            <FormattedMessage id="appstore.exportApp" />
+            <FormattedMessage id="appstore.export" />
           </h2>
           <p>
             <FormattedMessage id="appstore.exportDes" />
