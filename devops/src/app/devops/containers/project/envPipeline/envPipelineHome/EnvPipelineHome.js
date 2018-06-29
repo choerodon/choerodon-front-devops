@@ -238,8 +238,12 @@ class EnvPipelineHome extends Component {
         }
       });
     } else {
-      this.props.form.validateFieldsAndScroll((err, data) => {
+      this.props.form.validateFieldsAndScroll((err, data, modify) => {
         if (!err) {
+          if (!modify) {
+            EnvPipelineStore.setShow(false);
+            return;
+          }
           EnvPipelineStore.setShow(false);
           const id = EnvPipelineStore.getEnvData.id;
           EnvPipelineStore.setSideType('');
@@ -610,9 +614,9 @@ class EnvPipelineHome extends Component {
             onCancel={this.banCancel}
             wrapClassName="vertical-center-modal remove"
           >
-            <h2><FormattedMessage id="envPl.conform.disable" /></h2>
-            <span>{ist.length > 0 ? <FormattedMessage id="envPl.conform.content.hasInstance" />
-              : <FormattedMessage id="envPl.conform.content.noInstance" /> }</span>
+            <h2>{this.props.intl.formatMessage({ id: 'envPl.confirm.disable' })}</h2>
+            <span>{ist.length > 0 ? this.props.intl.formatMessage({ id: 'envPl.confirm.content.hasInstance' })
+              : this.props.intl.formatMessage({ id: 'envPl.confirm.content.noInstance' })}</span>
           </Modal>
           <h2 className="c7n-space-first">
             <FormattedMessage

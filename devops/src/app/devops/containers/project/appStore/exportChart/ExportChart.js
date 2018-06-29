@@ -31,6 +31,10 @@ class ExportChart extends Component {
     ExportChartStore.loadApps({ projectId: this.state.projectId });
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+  }
+
   /**
    * 获取步骤条状态
    * @param index
@@ -54,15 +58,6 @@ class ExportChart extends Component {
    * @param index
    */
   changeStep = (index) => {
-    const { ExportChartStore } = this.props;
-    if (index === 2) {
-      const selectedRows = this.state.selectedRows;
-      selectedRows.map((app, indexs) => {
-        selectedRows[indexs].versions = ('versions' in selectedRows[indexs]) ? selectedRows[indexs].versions : [this.state[indexs].versions[0]];
-        this.setState({ selectedRows });
-        return index;
-      });
-    }
     this.setState({ current: index });
   };
   /**
@@ -111,9 +106,13 @@ class ExportChart extends Component {
    */
   loadVersion = (appId, index) => {
     const { ExportChartStore } = this.props;
+    this.setState({ isLoading: true });
     ExportChartStore.loadVersionsByAppId(appId, this.state.projectId)
       .then((data) => {
-        if (data) {
+        this.setState({ isLoading: false });
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else if (data) {
           this.setState({ [index]: { versions: data.reverse() } });
         }
       });
@@ -187,7 +186,7 @@ class ExportChart extends Component {
     const selectedRows = this.state.selectedRows;
     let disabled = false;
     for (let i = 0; i < selectedRows.length; i += 1) {
-      if ('versions' in selectedRows[i] && selectedRows[i].versions.length === 0) {
+      if (('versions' in selectedRows[i] && selectedRows[i].versions.length === 0) || (!('versions' in selectedRows[i]))) {
         disabled = true;
         return disabled;
       }
@@ -208,10 +207,9 @@ class ExportChart extends Component {
     this.setState({ submitting: true });
     ExportChartStore.exportChart(this.state.projectId, data)
       .then((res) => {
-        const blob = new Blob([res], { type: 'application/zip;charset=utf-8' });
-        const a = document.createElement('a');
-        a.href = window.URL.createObjectURL(blob);
-        a.click();
+        const blob = new Blob([res], { 'Content-Type': 'application/zip;charset=utf-8' });
+        const fileDownload = require('react-file-download');
+        fileDownload(blob, 'chart.zip', 'application/zip');
         this.setState({ submitting: false });
         Choerodon.prompt(intl.formatMessage({ id: 'appstore.exportSucc' }));
         this.handleBack();
@@ -223,18 +221,26 @@ class ExportChart extends Component {
   handleLoadAllVersion = () => {
     const { ExportChartStore } = this.props;
     const selectedRowKeys = this.state.selectedRowKeys;
-    selectedRowKeys.map((s, indexs) => {
-      ExportChartStore.loadVersionsByAppId(s, this.state.projectId)
+    const { selectedRows } = this.state;
+    for (let i = 0; i < selectedRowKeys.length; i += 1) {
+      ExportChartStore.loadVersionsByAppId(selectedRowKeys[i], this.state.projectId)
         .then((datas) => {
-          if (datas) {
-            this.setState({ [indexs]: { versions: datas.reverse() } });
-          }
-          if (indexs === selectedRowKeys.length - 1) {
-            this.changeStep(2);
+          if (datas && datas.failed) {
+            Choerodon.prompt(datas.message);
+          } else if (datas.length) {
+            const versions = [datas.reverse()[0]];
+            selectedRows[i].versions = ('versions' in selectedRows[i]) ? selectedRows[i].versions : versions;
+            // this.setState({ [i]: { versions: datas }, selectedRows });
+            // this.changeStep(2);
+            if (i !== selectedRowKeys.length - 1) {
+              this.setState({ [i]: { versions: datas }, selectedRows });
+            } else {
+              this.setState({ [i]: { versions: datas }, selectedRows });
+              this.changeStep(2);
+            }
           }
         });
-      return indexs;
-    });
+    }
   };
   /**
    * 渲染第一步
@@ -308,7 +314,7 @@ class ExportChart extends Component {
             funcType="raised"
             className="c7n-step-button"
             disabled={selectedRows.length === 0}
-            onClick={this.handleLoadAllVersion}
+            onClick={this.changeStep.bind(this, 2)}
           >
             {intl.formatMessage({ id: 'next' })}
           </Button>
@@ -339,15 +345,15 @@ class ExportChart extends Component {
             <div className="c7n-step-section" key={app.id}>
               <Select
                 onDeselect={this.clearVersions.bind(this, index)}
-                defaultValue={_.map(_.map(this.state.selectedRows[index].versions, 'id'), v => v.toString())}
+                defaultValue={_.map(_.map('versions' in selectedRows[index] && selectedRows[index].versions, 'id'), v => v.toString())}
                 onSelect={this.handleSelectVersion.bind(this, index)}
                 className={'c7n-step-select'}
-                loading={ExportChartStore.isLoading}
+                loading={this.state.isLoading}
                 onFocus={this.loadVersion.bind(this, app.id, index)}
                 filter
-                label={intl.formatMessage({ id: 'app.version' })}
+                label={intl.formatMessage({ id: 'network.column.version' })}
                 showSearch
-                mode="tags"
+                mode="multiple"
                 dropdownMatchSelectWidth
                 size="default"
                 optionFilterProp="children"
@@ -359,7 +365,7 @@ class ExportChart extends Component {
                       .toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
-                { this.state[index].versions.map(v => (
+                { this.state[index] && this.state[index].versions.map(v => (
                   <Option key={v.version} value={v.id.toString()}>
                     {v.version}
                   </Option>
@@ -402,8 +408,12 @@ class ExportChart extends Component {
       dataIndex: 'name',
       key: 'name',
       width: 150,
+    },  {
+      title: <FormattedMessage id="app.code" />,
+      dataIndex: 'code',
+      key: 'code',
     }, {
-      title: intl.formatMessage({ id: 'app.version' }),
+      title: intl.formatMessage({ id: 'network.column.version' }),
       key: 'version',
       render: record => (<div>
         <div role={'none'} className={`c7n-step-table-column col-${record.id}`} onClick={this.handleChangeStatus.bind(this, record.id, record.versions.length)}>
@@ -442,7 +452,7 @@ class ExportChart extends Component {
               // disabled={selectedRows.length === 0}
               onClick={this.handleOk}
             >
-              <FormattedMessage id="appstore.export" />
+              <FormattedMessage id="appstore.exportApp" />
             </Button>
           </Permission>
           <Button funcType="raised" className="c7n-step-clear c7n-step-button" onClick={this.changeStep.bind(this, 2)}>
@@ -477,7 +487,7 @@ class ExportChart extends Component {
         <Header title={intl.formatMessage({ id: 'appstore.export' })} backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
         <Content>
           <h2 className="c7n-space-first">
-            <FormattedMessage id="appstore.exportApp" />
+            <FormattedMessage id="appstore.export" />
           </h2>
           <p>
             <FormattedMessage id="appstore.exportDes" />

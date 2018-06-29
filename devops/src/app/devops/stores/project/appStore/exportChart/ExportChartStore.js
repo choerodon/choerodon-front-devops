@@ -59,19 +59,7 @@ class ExportChartStore {
     });
 
   loadVersionsByAppId =(appId, projectId) => {
-    this.changeLoading(true);
-    return axios.get(`/devops/v1/projects/${projectId}/apps_market/${appId}/versions?is_publish=true`)
-      .then((datas) => {
-        this.changeLoading(true);
-        if (datas && datas.failed) {
-          Choerodon.prompt(datas.message);
-        } else {
-          this.changeLoading(false);
-          // this.setVersions(datas);
-          this.changeLoading(false);
-        }
-        return datas;
-      });
+    return axios.get(`/devops/v1/projects/${projectId}/apps_market/${appId}/versions?is_publish=true`);
   };
   exportChart = (proId, data) => {
     return axios.post(`/devops/v1/projects/${proId}/apps_market/export`, data, { responseType: 'blob' });

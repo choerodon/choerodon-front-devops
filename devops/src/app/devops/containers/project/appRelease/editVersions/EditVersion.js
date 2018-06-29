@@ -222,7 +222,7 @@ class EditVersion extends Component {
             </Button>,
           ]}
         >
-          <p>{this.props.intl.formatMessage({ id: 'release.editVersion.modal.content' })}？</p>
+          <p>{this.props.intl.formatMessage({ id: 'release.editVersion.modal.content' })}</p>
         </Modal>
       </Page>
     );

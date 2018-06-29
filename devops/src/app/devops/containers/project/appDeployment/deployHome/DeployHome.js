@@ -110,7 +110,7 @@ class DeployHome extends Component {
     if (envID) {
       this.loadInstance(envID, verID, id);
     }
-    AppDeploymentStore.loadAppVersion(projectId, id, '');
+    AppDeploymentStore.loadAppVersion(projectId, id);
   };
 
   /**

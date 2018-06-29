@@ -486,7 +486,7 @@ class AddAppRelease extends Component {
             </div>
           </div>
           <div>
-            <div className="app-release-title">{this.props.intl.formatMessage({ id: 'deploy.step.one.version' })}：</div>
+            <div className="app-release-title">{this.props.intl.formatMessage({ id: 'appstore.contributor' })}：</div>
             <div className="deployApp-text">{this.state.contributor}</div>
           </div>
           <div>

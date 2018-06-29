@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import ReactAce from 'react-ace-editor';
-import ace from 'brace';
+// import ace from 'brace';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import 'brace/mode/yaml';
@@ -12,7 +12,7 @@ import 'brace/theme/dawn';
 import './AceForYaml.scss';
 
 
-const { Range } = ace.acequire('ace/range');
+const { Range } = window.ace.acequire('ace/range');
 /* eslint-disable react/no-string-refs */
 
 class HighlightAce extends Component {
@@ -110,6 +110,7 @@ class HighlightAce extends Component {
    */
   setOptions =() => {
     const editor = this.ace.editor;
+    editor.setAutoScrollEditorIntoView(true);
     editor.$blockScrolling = Infinity;
     if (this.props.readOnly) {
       this.ace.editor.setReadOnly(true);

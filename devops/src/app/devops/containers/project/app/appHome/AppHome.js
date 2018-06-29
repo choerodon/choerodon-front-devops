@@ -92,7 +92,7 @@ class AppHome extends Component {
       title: <FormattedMessage id="app.url" />,
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={100}>
+      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={250}>
         <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl ? `../${record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}` : ''}</a>
       </MouserOverWrapper>),
     }, {

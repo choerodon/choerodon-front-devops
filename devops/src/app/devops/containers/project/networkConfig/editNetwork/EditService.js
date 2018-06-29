@@ -449,17 +449,17 @@ class EditService extends Component {
                             placement="right"
                             content={<div>
                               <p>
-                                <FormattedMessage id={'app.name'} />
+                                <FormattedMessage id={'app.name'} />:
                                 <span>{v.name}</span>
                               </p>
                               <p>
-                                <FormattedMessage id={'app.code'} />
+                                <FormattedMessage id={'app.code'} />:
                                 <span>{v.code}</span>
                               </p>
                             </div>}
                           >
                             <span className="icon icon-project" />
-                            <span style={{ display: 'inline-block', paddingLeft: 8 }}>{v.name}</span>
+                            <span style={{ paddingLeft: 8 }}>{v.name}</span>
                           </Popover>
                         </Option>
                       ))}
@@ -471,21 +471,21 @@ class EditService extends Component {
                             placement="right"
                             content={<div>
                               <p>
-                                <FormattedMessage id={'appstore.name'} />
-                                <span>{v.name}</span>
+                                <FormattedMessage id={'appstore.name'} />:
+                                <span> {v.name}</span>
                               </p>
                               <p>
-                                <FormattedMessage id={'appstore.contributor'} />
-                                <span>{v.contributor}</span>
+                                <FormattedMessage id={'appstore.contributor'} />:
+                                <span> {v.contributor}</span>
                               </p>
                               <p>
-                                <FormattedMessage id={'appstore.description'} />
-                                <span>{v.description}</span>
+                                <FormattedMessage id={'appstore.description'} />:
+                                <span> {v.description}</span>
                               </p>
                             </div>}
                           >
                             <span className="icon icon-apps" />
-                            <span style={{ display: 'inline-block', paddingLeft: 8 }}>{v.name}</span>
+                            <span style={{ paddingLeft: 8 }}>{v.name}</span>
                           </Popover>
                         </Option>
                       ))}

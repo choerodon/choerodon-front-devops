@@ -376,7 +376,7 @@ class AddService extends Component {
               className="c7n-create-network-formitem"
               showSearch
               notFoundContent={intl.formatMessage({ id: 'network.form.app.disable' })}
-              label={<FormattedMessage id={'network.form.name'} />}
+              label={<FormattedMessage id={'network.form.app'} />}
               optionFilterProp="children"
               onSelect={this.selectApp}
               filterOption={(input, option) =>
@@ -400,7 +400,7 @@ class AddService extends Component {
                       </div>}
                     >
                       <span className="icon icon-project" />
-                      <span style={{ display: 'inline-block', paddingLeft: 8 }}>{v.name}</span>
+                      <span style={{ paddingLeft: 8 }}>{v.name}</span>
                     </Popover>
                   </Option>
                 ))}
@@ -416,7 +416,7 @@ class AddService extends Component {
                           <span>{v.name}</span>
                         </p>
                         <p>
-                          <FormattedMessage id={'appstore.contributor'} />
+                          <FormattedMessage id={'appstore.contributor'} />:
                           <span>{v.contributor}</span>
                         </p>
                         <p>
@@ -426,7 +426,7 @@ class AddService extends Component {
                       </div>}
                     >
                       <span className="icon icon-apps" />
-                      <span style={{ display: 'inline-block', width: '100%', paddingLeft: 8 }}>{v.name}</span>
+                      <span style={{ width: '100%', paddingLeft: 8 }}>{v.name}</span>
                     </Popover>
                   </Option>
                 ))}

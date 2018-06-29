@@ -1,6 +1,6 @@
 // zh_CN.js
 // 文档地址前缀
-const docServer = 'http://v0-6.choerodon.io/zh/docs';
+const docServer = 'http://v0-7.choerodon.io/zh/docs';
 // 界面标题描述统一管理
 const pageDetail = {
 
@@ -54,7 +54,7 @@ const pageDetail = {
   // appRelease
   'release.title': '项目"{name}"的应用发布',
   'release.description': '应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。',
-  'release.link': `${docServer}/user-guide/development-pipeline/application-release/`,
+  'release.link': `${docServer}/user-guide/application-market/application-release/`,
   'release.add.title': '项目"{name}"的应用发布',
   'release.add.description': '应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。',
   'release.edit.title': '修改应用"{name}"的信息',
@@ -121,7 +121,7 @@ const pageDetail = {
   'appstore.importStep1': '您可以在此选择相应的文件，并进行上传。',
   'appstore.importStep2': '您可以在此选择是否发布，如果发布还可以选择发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。',
   'appstore.importStep3': '您可以在此确认上传应用的信息，如需修改请返回上一步。',
-  'appstore.link': `${docServer}/user-guide/development-pipeline/application-market/`,
+  'appstore.link': `${docServer}/user-guide/application-market/application-market/`,
 
   // appVersion
   'appVer.head': '项目\"{name}\"的应用版本管理',
@@ -546,7 +546,7 @@ const zhCN = {
   domain_delete: '域名删除中，请耐心等待',
   domain_update: '域名更新中，请耐心等待',
   'domain.name.check.exist': '名称已存在',
-  'domain.name.check.failed': '由小写字母、数字、\'-\'或\'.\'组成，并且必须以字母、数字开始和结束',
+  'domain.name.check.failed': '由小写字母、数字、\'-\'组成，并且必须以字母、数字开始和结束',
   'domain.path.check.exist': '路径在该域名路径下已存在，请更改路径或者域名路径',
   'domain.network.check.failed': '请移除不可用的网络',
   'domain.path.add': '添加路径',
@@ -591,7 +591,7 @@ const zhCN = {
   'release.add.step.one.description': '您可以在此选择需要发布的应用。',
   'release.add.step.two.title': '选择发布版本',
   'release.add.step.two.description': '您可以在此点击添加版本选择添加需要发布的版本。',
-  'release.add.step.two.btn.add': '添加版本。',
+  'release.add.step.two.btn.add': '添加版本',
   'release.add.step.three.title': '选择发布范围',
   'release.add.step.three.description': '请在此选择应用发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。',
   'release.add.step.three.tooltip': '请注意：发布后不可修改发布范围。',

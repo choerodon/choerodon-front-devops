@@ -249,6 +249,7 @@ class DeploymentAppHome extends Component {
    */
   handleDeploy = () => {
     const { DeploymentAppStore } = this.props;
+    const instances = DeploymentAppStore.currentInstance;
     const value = this.state.value || DeploymentAppStore.value.yaml;
     const applicationDeployDTO = {
       appId: this.state.appId,
@@ -257,7 +258,7 @@ class DeploymentAppHome extends Component {
       values: value,
       type: this.state.mode === 'new' ? 'create' : 'update',
       appInstanceId: this.state.mode === 'new' ?
-        null : this.state.instanceId,
+        null : this.state.instanceId || (instances && instances.length === 1 && instances[0].id),
     };
     DeploymentAppStore.deploymentApp(applicationDeployDTO)
       .then((datas) => {
@@ -395,8 +396,8 @@ class DeploymentAppHome extends Component {
             type="primary"
             funcType="raised"
             onClick={this.changeStep.bind(this, 3)}
-            disabled={!(this.state.envId && data && data.errorLines === null && (this.state.errorLine === '' || this.state.errorLine === null) && (this.state.value || (data && data.yaml)))}
-          >
+            disabled={!(this.state.envId && (this.state.value || (data && data.yaml)) && (this.state.errorLine ? this.state.errorLine.length === 0 : (data && data.errorLines === null)))}
+            >
             {formatMessage({ id: 'next' })}
           </Button>
           <Button onClick={this.changeStep.bind(this, 1)} funcType="raised">{formatMessage({ id: 'previous' })}</Button>
@@ -437,7 +438,7 @@ class DeploymentAppHome extends Component {
             </RadioGroup>
             {this.state.mode === 'replace' && <Select
               onSelect={this.handleSelectInstance}
-              value={this.state.instanceId}
+              value={this.state.instanceId || (instances && instances.length === 1 && instances[0].id)}
               label={<FormattedMessage id={'deploy.step.three.mode.replace.label'} />}
               className="deploy-select"
               placeholder="Select a person"
@@ -457,7 +458,7 @@ class DeploymentAppHome extends Component {
             type="primary"
             funcType="raised"
             onClick={this.changeStep.bind(this, 4)}
-            disabled={!(this.state.mode === 'new' || (this.state.mode === 'replace' && this.state.instanceId))}
+            disabled={!(this.state.mode === 'new' || (this.state.mode === 'replace' && (this.state.instanceId || (instances && instances.length === 1))))}
           >
             {formatMessage({ id: 'next' })}
           </Button>
@@ -473,7 +474,9 @@ class DeploymentAppHome extends Component {
    * @returns {*}
    */
   handleRenderReview = () => {
-    const { DeploymentAppStore, intl } = this.props;
+    const { DeploymentAppStore } = this.props;
+    const instances = DeploymentAppStore.currentInstance;
+    const { intl } = this.props;
     const { formatMessage } = intl;
     const data = DeploymentAppStore.value;
     const { app, versionId, envId, instanceId, mode } = this.state;
@@ -499,7 +502,7 @@ class DeploymentAppHome extends Component {
           <div>
             <div className="deployApp-title"><span className="icon icon-jsfiddle" />{formatMessage({ id: 'deploy.step.three.mode' })}：</div>
             <div className="deployApp-text">{this.state.mode === 'new' ? formatMessage({ id: 'deploy.step.three.mode.new' }) : formatMessage({ id: 'deploy.step.three.mode.replace' })} {this.state.mode === 'replace' &&
-            <span className="deployApp-value">({this.state.instanceDto.code})</span>}</div>
+            <span className="deployApp-value">({ this.state.instanceId ? this.state.instanceDto.code : (instances && instances.length === 1 && instances[0].code)})</span>}</div>
           </div>
           <div>
             <div className="deployApp-title"><span className="icon icon-description" />{formatMessage({ id: 'deploy.step.two.config' })}：</div>

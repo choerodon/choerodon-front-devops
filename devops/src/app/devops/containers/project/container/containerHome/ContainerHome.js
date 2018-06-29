@@ -252,10 +252,12 @@ class ContainerHome extends Component {
    */
   closeSidebar = () => {
     const { ContainerStore } = this.props;
-    this.state.ws.close();
-    this.state.ws.onclose = () => {
-      console.log('Connection instanceInfo Close ...');
-    };
+    if (this.state.ws) {
+      this.state.ws.close();
+      this.state.ws.onclose = () => {
+        console.log('Connection instanceInfo Close ...');
+      };
+    }
     const editor = this.ace.editor;
     this.loadAllData(this.state.page);
     ContainerStore.changeShow(false);

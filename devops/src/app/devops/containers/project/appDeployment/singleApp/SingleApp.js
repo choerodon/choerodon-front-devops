@@ -48,9 +48,9 @@ class SingleApp extends Component {
    * 获取应用版本
    */
   loadAppVer = (ids) => {
+    const { store } = this.props;
     if (ids && ids !== 'more') {
       const idArr = ids.split(',');
-      const { store } = this.props;
       const projectId = AppState.currentMenuType.id;
       const { verId, envId } = this.state;
       const envNames = store.getEnvcard;
@@ -64,13 +64,15 @@ class SingleApp extends Component {
       }
       if (idArr[0]) {
         if (idArr[1] === projectId) {
-          store.loadAppVersion(projectId, idArr[0], '');
+          store.loadAppVersion(projectId, idArr[0]);
         } else {
-          store.loadAppVersion(idArr[1], idArr[0], 'true');
+          store.loadAppVersion(idArr[1], idArr[0]);
         }
       } else {
         store.setAppVer([]);
       }
+    } else {
+      store.setAppVer([]);
     }
   };
 
@@ -559,7 +561,7 @@ class SingleApp extends Component {
       {appNames[0].projectId === projectId ? <span className="icon icon-project c7n-icon-publish" /> : <span className="icon icon-apps c7n-icon-publish" />}
       {appNames[0].name}</React.Fragment>) : undefined);
     const appVersion = appVer.length ?
-      _.map(appVer, d => <Option key={d.id}>{d.version}</Option>) : [];
+      _.map(appVer, d => d.version && <Option key={d.id}>{d.version}</Option>) : undefined;
 
     const leftDom = scrollLeft !== 0 ?
       <div role="none" className="c7n-env-push-left icon icon-navigate_before" onClick={this.pushScrollRight} />
@@ -777,6 +779,7 @@ class SingleApp extends Component {
           </OptGroup>
         </Select>
         <Select
+          notFoundContent={intl.formatMessage({ id: 'network.form.version.disable' })}
           label={intl.formatMessage({ id: 'app.version' })}
           className="c7n-app-select_312"
           onChange={this.loadVerId}
