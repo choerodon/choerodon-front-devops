@@ -64,9 +64,9 @@ class SingleApp extends Component {
       }
       if (idArr[0]) {
         if (idArr[1] === projectId) {
-          store.loadAppVersion(projectId, idArr[0], '');
+          store.loadAppVersion(projectId, idArr[0]);
         } else {
-          store.loadAppVersion(idArr[1], idArr[0], 'true');
+          store.loadAppVersion(idArr[1], idArr[0]);
         }
       } else {
         store.setAppVer([]);
