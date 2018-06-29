@@ -351,7 +351,7 @@ class ExportChart extends Component {
                 loading={this.state.isLoading}
                 onFocus={this.loadVersion.bind(this, app.id, index)}
                 filter
-                label={intl.formatMessage({ id: 'app.version' })}
+                label={intl.formatMessage({ id: 'network.column.version' })}
                 showSearch
                 mode="multiple"
                 dropdownMatchSelectWidth
@@ -413,7 +413,7 @@ class ExportChart extends Component {
       dataIndex: 'code',
       key: 'code',
     }, {
-      title: intl.formatMessage({ id: 'app.version' }),
+      title: intl.formatMessage({ id: 'network.column.version' }),
       key: 'version',
       render: record => (<div>
         <div role={'none'} className={`c7n-step-table-column col-${record.id}`} onClick={this.handleChangeStatus.bind(this, record.id, record.versions.length)}>
