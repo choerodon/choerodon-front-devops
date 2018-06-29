@@ -4,12 +4,12 @@ import { withRouter } from 'react-router-dom';
 import { Button, Tooltip, Modal, Table, Popover, Progress } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import classnames from 'classnames';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import '../../../main.scss';
 import './BranchHome.scss';
 import CreateBranch from '../component/CreateBranch';
 import TimePopover from '../../../../components/timePopover';
 import Loadingbar from '../../../../components/loadingBar';
-import { devConflictMessage, masterConflictMessage, bothConflictMessage } from './CommonConst';
 
 const { AppState } = stores;
 
@@ -65,12 +65,12 @@ class BranchHome extends Component {
    * @returns {*}
    */
   get tableBranch() {
-    const { BranchStore } = this.props;
+    const { BranchStore, intl } = this.props;
     const menu = AppState.currentMenuType;
     const { type, organizationId: orgId } = menu;
     const branchColumns = [
       {
-        title: Choerodon.languageChange('branch.name'),
+        title: <FormattedMessage id="branch.name" />,
         dataIndex: 'name',
         render: (text, record) => (<div>
           {this.getIcon(record.type)}
@@ -78,32 +78,32 @@ class BranchHome extends Component {
         </div>),
       },
       {
-        title: Choerodon.languageChange('branch.type'),
+        title: <FormattedMessage id="branch.type" />,
         dataIndex: 'type',
       },
       {
-        title: Choerodon.languageChange('branch.code'),
+        title: <FormattedMessage id="branch.code" />,
         dataIndex: 'commit.id',
         render: (text, record) => (<Tooltip title={record.commit.id} trigger="hover" placement="bottom">
           <a href={record.commit.url} rel="nofollow me noopener noreferrer" target="_blank">{record.commit.id.slice(0, 8)}</a></Tooltip>),
       },
       {
-        title: Choerodon.languageChange('branch.des'),
+        title: <FormattedMessage id="branch.des" />,
         dataIndex: 'commit.message',
         render: (text, record) => <Tooltip title={record.commit.message} trigger="hover" placement="bottom"><div className="c7n-table-column">{record.commit.message}</div></Tooltip>,
       },
       {
-        title: Choerodon.languageChange('branch.owner'),
+        title: <FormattedMessage id="branch.owner" />,
         dataIndex: 'commit.authorName',
         render: (text, record) => <Tooltip title={record.commit.authorName} trigger="hover" placement="bottom"><div className="c7n-table-column">{record.commit.authorName}</div></Tooltip>,
       },
       {
-        title: Choerodon.languageChange('branch.time'),
+        title: <FormattedMessage id="branch.time" />,
         dataIndex: 'commit.committedDate',
         render: (text, record) => <TimePopover content={record.commit.committedDate} />,
       },
       {
-        width: 64,
+        align: 'right',
         className: 'operateIcons',
         key: 'action',
         render: (test, record) => (
@@ -112,9 +112,9 @@ class BranchHome extends Component {
               <Permission projectId={this.state.projectId} organizationId={orgId} type={type} service={record.type === 'feature分支' ? ['devops-service.git-flow.finishFeatureEvent'] : ['devops-service.git-flow.finishEvent']}>
                 <Tooltip
                   placement="bottom"
-                  title={'结束分支'}
+                  title={<FormattedMessage id="branch.over" />}
                 >
-                  <Button shape="circle" onClick={this.confirm.bind(this, record.name, record.type)}>
+                  <Button size={'small'} shape="circle" onClick={this.confirm.bind(this, record.name, record.type)}>
                     <span className="icon icon-power_settings_new" />
                   </Button>
                 </Tooltip>
@@ -131,7 +131,9 @@ class BranchHome extends Component {
         className="c7n-branch-table"
         rowClassName="c7n-branch-tr"
         title={() => (<div>
-          <span className="c7n-header-table">分支列表</span>
+          <span className="c7n-header-table">
+            <FormattedMessage id="branch.list" />
+          </span>
           <Popover
             overlayClassName="branch-popover"
             placement="rightTop"
@@ -140,10 +142,10 @@ class BranchHome extends Component {
                 <span className="branch-popover-span span-master" />
                 <div className="branch-popover-content">
                   <p className="branch-popover-p">
-                    master分支
+                    <FormattedMessage id="branch.master" />
                   </p>
                   <p>
-                    即主分支，用于版本持续发布。在开发的整个阶段一直存在，平时不在此分支开发，因此代码比较稳定
+                    <FormattedMessage id="branch.masterDes" />
                   </p>
                 </div>
               </div>
@@ -151,10 +153,10 @@ class BranchHome extends Component {
                 <span className="branch-popover-span span-develop" />
                 <div className="branch-popover-content">
                   <p className="branch-popover-p">
-                    develop分支
+                    <FormattedMessage id="branch.develop" />
                   </p>
                   <p>
-                    即开发分支，用于日常开发持续集成。在开发的整个阶段一直存在，在feature分支、release分支和hotfix分支开发后都会将代码合并到此分支上。
+                    <FormattedMessage id="branch.developDes" />
                   </p>
                 </div>
               </div>
@@ -162,10 +164,10 @@ class BranchHome extends Component {
                 <span className="branch-popover-span span-feature" />
                 <div className="branch-popover-content">
                   <p className="branch-popover-p">
-                    feature分支
+                    <FormattedMessage id="branch.feature" />
                   </p>
                   <p>
-                    即特性分支，用于日常开发时切出分支进行单功能开发。基于develop分支创建，结束分支时合并至develop分支。
+                    <FormattedMessage id="branch.featureDes" />
                   </p>
                 </div>
               </div>
@@ -173,10 +175,10 @@ class BranchHome extends Component {
                 <span className="branch-popover-span span-release" />
                 <div className="branch-popover-content">
                   <p className="branch-popover-p">
-                    release分支
+                    <FormattedMessage id="branch.release" />
                   </p>
                   <p>
-                    即发布分支，用于产品发布、产品迭代。基于develop分支创建，结束分支时合并到develop分支和master分支。
+                    <FormattedMessage id="branch.releaseDes" />
                   </p>
                 </div>
               </div>
@@ -184,10 +186,10 @@ class BranchHome extends Component {
                 <span className="branch-popover-span span-hotfix" />
                 <div className="branch-popover-content">
                   <p className="branch-popover-p">
-                    hotfix分支
+                    <FormattedMessage id="branch.hotfix" />
                   </p>
                   <p>
-                    即热修分支，用于产品发布后修复缺陷。基于master分支创建，结束分支时合并到master分支和develop分支。
+                    <FormattedMessage id="branch.hotfixDes" />
                   </p>
                 </div>
               </div>
@@ -230,24 +232,24 @@ class BranchHome extends Component {
     const { BranchStore } = this.props;
     const tagColumns = [
       {
-        title: Choerodon.languageChange('branch.tag'),
+        title: <FormattedMessage id="branch.tag" />,
         dataIndex: 'name',
       },
       {
-        title: Choerodon.languageChange('branch.code'),
+        title: <FormattedMessage id="branch.code" />,
         dataIndex: 'commit.id',
         render: (text, record) => (<a href={record.commit.url} rel="nofollow me noopener noreferrer" target="_blank">{record.commit.id.slice(0, 8)}</a>),
       },
       {
-        title: Choerodon.languageChange('branch.des'),
+        title: <FormattedMessage id="branch.des" />,
         dataIndex: 'commit.message',
         render: (text, record) => <Tooltip title={record.commit.message} trigger="hover" placement="bottom"><div className="c7n-table-column">{record.commit.message}</div></Tooltip>,
       }, {
-        title: Choerodon.languageChange('branch.owner'),
+        title: <FormattedMessage id="branch.owner" />,
         dataIndex: 'commit.authorName',
       },
       {
-        title: Choerodon.languageChange('branch.time'),
+        title: <FormattedMessage id="branch.time" />,
         dataIndex: 'commit.committedDate',
         render: (text, record) => <TimePopover content={record.commit.committedDate} />,
 
@@ -258,7 +260,7 @@ class BranchHome extends Component {
         onChange={this.tableChange}
         pagination={BranchStore.pageInfo}
         filterBar={false}
-        title={() => <span className="c7n-header-table">标记列表</span>}
+        title={() => <span className="c7n-header-table"><FormattedMessage id="branch.tagList" /></span>}
         columns={tagColumns}
         dataSource={BranchStore.getTagData}
         rowKey={record => record.id}
@@ -272,14 +274,20 @@ class BranchHome extends Component {
    * @param type 分支类型
    */
   getContent =(name, type) => {
-    const { BranchStore } = this.props;
+    const { BranchStore, intl } = this.props;
     const { projectId, appId } = this.state;
-    let content = `是否将分支${name}合并到develop分支？`;
+    let content = intl.formatMessage({ id: 'branch.mergeDev' }, {
+      name: `${name}`,
+    });
     if (type === 'hotfix分支') {
       BranchStore.getLatestHotfixVersion(projectId, appId, name)
         .then((version) => {
           if (version !== false) {
-            content = `是否将分支${name}合并到master，develop分支，并以${version}为版本号？`;
+            content =
+              intl.formatMessage({ id: 'branch.mergeDevMas' }, {
+                name: `${name}`,
+                version: `${version}`,
+              });
             this.setState({ content });
           }
         });
@@ -287,7 +295,11 @@ class BranchHome extends Component {
       BranchStore.getLatestReleaseVersion(projectId, appId, name)
         .then((version) => {
           if (version !== false) {
-            content = `是否将分支${name}合并到master，develop分支，并以${version}为版本号？`;
+            content =
+              intl.formatMessage({ id: 'branch.mergeDevMas' }, {
+                name: `${name}`,
+                version: `${version}`,
+              });
             this.setState({ content });
           }
         });
@@ -312,7 +324,7 @@ class BranchHome extends Component {
    * 获取分支和标记列表
    */
   loadData = () => {
-    const { appId, projectId, page } = this.state;
+    const { appId, projectId } = this.state;
     const { BranchStore } = this.props;
     BranchStore.loadAllData(projectId, appId, 0);
   };
@@ -361,16 +373,27 @@ class BranchHome extends Component {
    * @param type 分支类型
    */
   changeModalContent =(mes, name, type) => {
+    const { intl } = this.props;
     let message = '';
     if (mes === 'no_commit' || mes === 'both_no_commit') {
-      message = (type === 'feature分支') ? Choerodon.getMessage(`${name}分支无提交，是否删除？`, `${name} branch without commit, whether to delete?`) :
-        Choerodon.getMessage(`${name}分支无提交，不生成版本号，是否删除？`, `${name} branch without commit, no version number, whether to delete?`);
+      message = (type === 'feature分支') ? intl.formatMessage({ id: 'branch.noCommitDev' }, {
+        name: `${name}`,
+      }) :
+        intl.formatMessage({ id: 'branch.noCommit' }, {
+          name: `${name}`,
+        });
     } else if (mes && mes.indexOf('dev_conflict') > -1) {
-      message = devConflictMessage(name);
+      message = intl.formatMessage({ id: 'branch.devConflictMes' }, {
+        name: `${name}`,
+      });
     } else if (mes && mes.indexOf('master_conflict') > -1) {
-      message = masterConflictMessage(name);
+      message = intl.formatMessage({ id: 'branch.devConflictMes' }, {
+        name: `${name}`,
+      });
     } else if (mes === 'both_conflict') {
-      message = bothConflictMessage(name);
+      message = intl.formatMessage({ id: 'branch.bothConflictMes' }, {
+        name: `${name}`,
+      });
     }
     this.setState({
       content: message,
@@ -447,16 +470,22 @@ class BranchHome extends Component {
   };
 
   render() {
-    const { BranchStore } = this.props;
+    const { BranchStore, intl } = this.props;
     const menu = AppState.currentMenuType;
     const content = (<Content className="page-content">
-      <h2 className="c7n-space-first">应用&quot;{this.state.appName}&quot;的分支管理</h2>
+      <h2 className="c7n-space-first">
+        <FormattedMessage
+          id="branch.head"
+          values={{
+            name: `${this.state.appName}`,
+          }}
+        />
+      </h2>
       <p>
-        分支是将您的工作从开发主线上分离开来，以免影响开发主线。
-        平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。
-        <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/branch-management/" rel="nofollow me noopener noreferrer" className="c7n-external-link">
+        <FormattedMessage id="branch.description" />
+        <a href={intl.formatMessage({ id: 'branch.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
           <span className="c7n-external-link-content">
-            了解详情
+            <FormattedMessage id="learnmore" />
           </span>
           <span className="icon icon-open_in_new" />
         </a>
@@ -465,16 +494,29 @@ class BranchHome extends Component {
       {this.tableTag}
     </Content>);
     return (
-      <Page className="c7n-region c7n-branch page-container">
+      <Page
+        className="c7n-region c7n-branch"
+        service={[
+          'devops-service.git-flow.listByAppId',
+          'devops-service.git-flow.finishEvent',
+          'devops-service.git-flow.finishFeatureEvent',
+          'devops-service.git-flow.start',
+          'devops-service.git-flow.queryTags',
+          'devops-service.git-flow.queryHotfixNumber',
+          'devops-service.git-flow.queryReleaseNumber',
+          'devops-service.git-flow.finish',
+        ]}
+      >
         { BranchStore.loading ? <Loadingbar display /> : (<React.Fragment>
-          <Header title={Choerodon.languageChange('branch.title')} backPath={`/devops/app?type=project&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`}>
-            <Permission
+          <Header
+            title={<FormattedMessage id="branch.title" />}
+            backPath={`/devops/app?type=project&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`}
+          >
+            {BranchStore.getBranchData.length ? <Permission
               service={['devops-service.git-flow.start']}
             >
               <Tooltip
-                title={<div>
-                  采用gitflow分支模型，可创建feature、release、hotfix等分支，结束分支时自动触发分支合并和特有的持续集成流水线。
-                </div>}
+                title={<FormattedMessage id="branch.createTip" />}
                 placement="rightTop"
               >
                 <Button
@@ -482,11 +524,10 @@ class BranchHome extends Component {
                   onClick={this.showSidebar}
                 >
                   <span className="icon icon-playlist_add" />
-                  <span>{Choerodon.languageChange('branch.create')}</span>
+                  <FormattedMessage id="branch.create" />
                 </Button>
               </Tooltip>
-            </Permission>
-
+            </Permission> : null}
             <Permission
               service={['devops-service.git-flow.listByAppId']}
             >
@@ -496,7 +537,7 @@ class BranchHome extends Component {
                 onClick={this.handleRefresh}
               >
                 <span className="icon icon-refresh" />
-                <span>{Choerodon.languageChange('refresh')}</span>
+                <FormattedMessage id="refresh" />
               </Button>
             </Permission>
           </Header>
@@ -508,20 +549,22 @@ class BranchHome extends Component {
           })}
           maskClosable={false}
           closable={false}
-          title={this.state.content && <span style={{ color: 'rgba(0, 0, 0, 0.85)', fontWeight: 500 }}>结束分支</span>}
+          title={this.state.content && <span style={{ color: 'rgba(0, 0, 0, 0.85)', fontWeight: 500 }}><FormattedMessage id="branch.over" /></span>}
           confirmLoading={this.state.submitting}
           visible={this.state.visible}
           onOk={this.checkBranchStatus}
           onCancel={this.handleCancel}
-          okText="确认"
-          cancelText="取消"
+          okText={<FormattedMessage id="finish" />}
+          cancelText={<FormattedMessage id="cancel" />}
           footer={this.state.content
-            ? [<Button disabled={this.state.submitting} onClick={this.handleCancel}>取消</Button>,
+            ? [<Button disabled={this.state.submitting} onClick={this.handleCancel}>{intl.formatMessage({ id: 'cancel' })}</Button>,
               <Button
                 onClick={this.checkBranchStatus}
                 type="primary"
                 loading={this.state.submitting}
-              >确定</Button>]
+              >
+                {intl.formatMessage({ id: 'finish' })}
+              </Button>]
             : null}
         >
           <p style={{ whiteSpace: 'pre-wrap',
@@ -542,4 +585,4 @@ class BranchHome extends Component {
   }
 }
 
-export default withRouter(BranchHome);
+export default withRouter(injectIntl(BranchHome));

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Form, Input } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import '../../../main.scss';
 import './AppReleaseEdit.scss';
@@ -132,18 +133,7 @@ class AppReleaseEdit extends Component {
     const { getFieldDecorator } = this.props.form;
     const menu = AppState.currentMenuType;
     const SingleData = EditReleaseStore.getSingleData;
-    const content = '您可以在此修改应用发布的展示信息，包括贡献者、分类及应用描述。';
-    const contentDom = (<div className="c7n-region c7n-domainCreate-wrapper">
-      <h2 className="c7n-space-first">修改应用&quot;{SingleData && SingleData.name}&quot;的信息</h2>
-      <p>
-        {content}
-        <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-release/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-          <span className="c7n-external-link-content">
-              了解详情
-          </span>
-          <span className="icon icon-open_in_new" />
-        </a>
-      </p>
+    const contentDom = (<div>
       <Form layout="vertical" onSubmit={this.handleSubmit}>
         <FormItem
           className="c7n-sidebar-form"
@@ -151,7 +141,7 @@ class AppReleaseEdit extends Component {
         >
           <div className="c7n-appRelease-img">
             <div
-              style={{ backgroundImage: SingleData && SingleData.imgUrl !== null ? `url(${SingleData.imgUrl})` : '' }}
+              style={{ backgroundImage: SingleData && SingleData.imgUrl !== null ? `url(${Choerodon.fileServer(SingleData.imgUrl)})` : '' }}
               className="c7n-appRelease-img-hover"
               id="img"
               onMouseLeave={this.state.isClick ? () => {} : this.hideBth}
@@ -165,7 +155,7 @@ class AppReleaseEdit extends Component {
               </div>
               }
             </div>
-            <span className="c7n-appRelease-img-title">应用图标</span>
+            <span className="c7n-appRelease-img-title">{this.props.intl.formatMessage({ id: 'release.add.step.four.app.icon' })}</span>
           </div>
         </FormItem>
         <FormItem
@@ -176,13 +166,13 @@ class AppReleaseEdit extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: this.props.intl.formatMessage({ id: 'required' }),
             }],
             initialValue: SingleData ? SingleData.contributor : menu.name,
           })(
             <Input
               maxLength={30}
-              label={Choerodon.getMessage('贡献者', 'contributor')}
+              label={<FormattedMessage id={'appstore.contributor'} />}
               size="default"
             />,
           )}
@@ -195,13 +185,13 @@ class AppReleaseEdit extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: this.props.intl.formatMessage({ id: 'required' }),
             }],
             initialValue: SingleData ? SingleData.category : '',
           })(
             <Input
               maxLength={10}
-              label={Choerodon.getMessage('分类', 'category')}
+              label={<FormattedMessage id={'appstore.category'} />}
               size="default"
             />,
           )}
@@ -214,14 +204,14 @@ class AppReleaseEdit extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: this.props.intl.formatMessage({ id: 'required' }),
             }, {
             }],
             initialValue: SingleData ? SingleData.description : '',
           })(
             <TextArea
               maxLength={50}
-              label={'描述'}
+              label={<FormattedMessage id={'appstore.description'} />}
               autosize={{ minRows: 2, maxRows: 6 }}
             />,
           )}
@@ -240,21 +230,29 @@ class AppReleaseEdit extends Component {
               style={{ marginRight: 12 }}
               loading={this.state.submitting}
             >
-              {Choerodon.getMessage('保存', 'Save')}</Button>
+              {<FormattedMessage id={'save'} />}
+            </Button>
           </Permission>
           <Button
             funcType="raised"
             disabled={this.state.submitting}
             onClick={this.handleBack}
           >
-            {Choerodon.getMessage('取消', 'Cancel')}</Button>
+            {<FormattedMessage id={'cancel'} />}
+          </Button>
         </FormItem>
       </Form>
     </div>);
     return (
-      <Page className="c7n-region">
-        <Header title="修改应用信息" backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
-        <Content className="page-content c7n-appRelease-wrapper">
+      <Page
+        service={[
+          'devops-service.application-market.queryAppInProject',
+          'devops-service.application-market.update',
+        ]}
+        className="c7n-region"
+      >
+        <Header title={<FormattedMessage id={'release.edit.header.title'} />} backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
+        <Content className="c7n-appRelease-wrapper" code={'release.edit'} vales={{ name: AppState.currentMenuType.name }}>
           {contentDom}
         </Content>
       </Page>
@@ -262,4 +260,4 @@ class AppReleaseEdit extends Component {
   }
 }
 
-export default Form.create({})(withRouter(AppReleaseEdit));
+export default Form.create({})(withRouter(injectIntl(AppReleaseEdit)));

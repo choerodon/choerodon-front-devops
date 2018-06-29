@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Form, Select, Input, Modal, Tooltip } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
@@ -67,6 +68,18 @@ class CreateDomain extends Component {
         this.setState({ env: { loading: false, dataSource: data } });
       });
   }
+  componentDidUpdate() {
+    if (this.state.pathChange) {
+      const { pathArr } = this.state;
+      const fields = [];
+      pathArr.map((path) => {
+        fields.push(`path-${path.pathIndex}`);
+        return fields;
+      });
+      this.props.form.validateFields(fields, { force: true });
+      this.checkAllPath(false);
+    }
+  }
 
   /**
    * 初始化数组
@@ -102,21 +115,21 @@ class CreateDomain extends Component {
     const { store, id, type } = this.props;
     const { projectId } = this.state;
     const service = store.getNetwork;
-    this.props.form.validateFieldsAndScroll((err, data) => {
-      if (!err) {
-        const keys = Object.keys(data);
-        const postData = { domain: data.domain, name: data.name, envId: data.envId };
-        const pathList = [];
-        keys.map((k) => {
-          if (k.includes('path')) {
-            const index = parseInt(k.split('-')[1], 10);
-            const value = data[`network-${index}`];
-            pathList.push({ path: `/${data[k]}`, serviceId: value });
-          }
-          return pathList;
-        });
-        postData.pathList = pathList;
-        if (type === 'create') {
+    this.props.form.validateFieldsAndScroll((err, data, modify) => {
+      if (type === 'create') {
+        if (!err) {
+          const keys = Object.keys(data);
+          const postData = { domain: data.domain, name: data.name, envId: data.envId };
+          const pathList = [];
+          keys.map((k) => {
+            if (k.includes('path')) {
+              const index = parseInt(k.split('-')[1], 10);
+              const value = data[`network-${index}`];
+              pathList.push({ path: `${data[k]}`, serviceId: value });
+            }
+            return pathList;
+          });
+          postData.pathList = pathList;
           this.setState({ submitting: true });
           store.addData(projectId, postData)
             .then((datasss) => {
@@ -128,7 +141,21 @@ class CreateDomain extends Component {
               this.setState({ submitting: false });
               Choerodon.prompt(err.response.data.message);
             });
-        } else {
+        }
+      } else {
+        if (!err && modify) {
+          const keys = Object.keys(data);
+          const postData = { domain: data.domain, name: data.name, envId: data.envId };
+          const pathList = [];
+          keys.map((k) => {
+            if (k.includes('path')) {
+              const index = parseInt(k.split('-')[1], 10);
+              const value = data[`network-${index}`];
+              pathList.push({ path: `${data[k]}`, serviceId: value });
+            }
+            return pathList;
+          });
+          postData.pathList = pathList;
           postData.domainId = id;
           this.setState({ submitting: true });
           store.updateData(projectId, id, postData)
@@ -141,6 +168,8 @@ class CreateDomain extends Component {
               this.setState({ submitting: false });
               Choerodon.prompt(err.response.data.message);
             });
+        } else if (!modify) {
+          this.handleClose();
         }
       }
     });
@@ -159,6 +188,7 @@ class CreateDomain extends Component {
           pathIndex: pathArr[pathArr.length - 1].pathIndex + 1,
           networkIndex: pathArr[pathArr.length - 1].pathIndex + 1,
         });
+      this.checkAllPath(true);
     } else {
       index = 0;
       pathArr.push({
@@ -209,7 +239,7 @@ class CreateDomain extends Component {
    * @type {Function}
    */
   checkName =_.debounce((rule, value, callback) => {
-    const p = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)$/;
+    const p = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?([a-z0-9]([-a-z0-9]*[a-z0-9])?)*)$/;
     const { SingleData } = this.state;
     if (SingleData && SingleData.name === value) {
       callback();
@@ -223,19 +253,25 @@ class CreateDomain extends Component {
               if (data) {
                 callback();
               } else {
-                callback('名称已存在');
+                callback(this.props.intl.formatMessage({ id: 'domain.name.check.exist' }));
               }
             })
             .catch(() => callback());
         } else {
-          callback('请先选环境');
+          callback(this.props.intl.formatMessage({ id: 'network.form.app.disable' }));
         }
       } else {
-        callback('由小写字母、数字、\'-\'或\'.\'组成，并且必须以字母、数字开始和结束');
+        callback(this.props.intl.formatMessage({ id: 'domain.name.check.failed' }));
       }
     }
   }, 1000);
-
+  /**
+   * 级联验证path
+   * @param flag
+   */
+  checkAllPath = (flag) => {
+    this.setState({ pathChange: flag });
+  }
   /**
    * 检查域名和路径组合的唯一性
    * @type {Function}
@@ -252,7 +288,7 @@ class CreateDomain extends Component {
       }
     }
     if (paths.includes(value)) {
-      callback('路径在该域名路径下已存在，请更改路径或者域名路径');
+      callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
     } else {
       const { store } = this.props;
       if (this.props.type === 'edit' && this.state.initServiceLen > index) {
@@ -262,12 +298,12 @@ class CreateDomain extends Component {
         if (v === value && domain === this.state.SingleData.domain) {
           callback();
         } else {
-          store.checkPath(this.state.projectId, domain, `/${value}`, id)
+          store.checkPath(this.state.projectId, domain, `${value}`, id)
             .then((data) => {
               if (data) {
                 callback();
               } else {
-                callback('路径在该域名路径下已存在，请更改路径或者域名路径');
+                callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
               }
             })
             .catch((error) => {
@@ -275,12 +311,12 @@ class CreateDomain extends Component {
             });
         }
       } else {
-        store.checkPath(this.state.projectId, domain, `/${value}`)
+        store.checkPath(this.state.projectId, domain, `${value}`)
           .then((data) => {
             if (data) {
               callback();
             } else {
-              callback('路径在该域名路径下已存在，请更改路径或者域名路径');
+              callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
             }
           })
           .catch((error) => {
@@ -293,7 +329,7 @@ class CreateDomain extends Component {
    * 检查域名是否符合规则
    * @type {Function}
    */
-  checkDomain =_.debounce((rule, value, callback) => {
+  checkDomain =(rule, value, callback) => {
     const { pathArr } = this.state;
     const fields = [];
     pathArr.map((path) => {
@@ -302,7 +338,7 @@ class CreateDomain extends Component {
     });
     this.props.form.validateFields(fields, { force: true });
     callback();
-  }, 500);
+  };
   /**
    * 校验网络是否可用
    * @param rule
@@ -316,7 +352,7 @@ class CreateDomain extends Component {
       const index = parseInt(rule.field.split('-')[1], 10);
       const deletedIns = _.map(this.state[index].deletedService, 'id');
       if (deletedIns.includes(value)) {
-        callback('请移除不可用的网络');
+        callback(this.props.intl.formatMessage({ id: 'domain.network.check.failed' }));
       } else {
         callback();
       }
@@ -338,17 +374,15 @@ class CreateDomain extends Component {
         addStatus = false;
       }
     }
-    const title = this.props.type === 'create' ? <h2 className="c7n-space-first">在项目&quot;{menu.name}&quot;中创建域名</h2> : <h2 className="c7n-space-first">对域名&quot;{SingleData && SingleData.name}&quot;进行修改</h2>;
-    const content = this.props.type === 'create' ? '请选择环境，填写域名名称、地址、路径，并选择网络配置域名访问规则' :
-      '您可在此修改域名配置信息';
+    const title = this.props.type === 'create' ? <h2 className="c7n-space-first"><FormattedMessage id={'domain.create.title'} values={{ name: menu.name }} /></h2> : <h2 className="c7n-space-first"><FormattedMessage id={'domain.update.title'} values={{ name: SingleData && SingleData.name }} /></h2>;
+    const content = this.props.type === 'create' ? this.props.intl.formatMessage({ id: 'domain.create.description' }) :
+      this.props.intl.formatMessage({ id: 'domain.update.description' });
     const contentDom = this.props.visible ? (<div className="c7n-region c7n-domainCreate-wrapper">
       {title}
       <p>
         {content}
-        <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/ingress/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-          <span className="c7n-external-link-content">
-              了解详情
-          </span>
+        <a href={this.props.intl.formatMessage({ id: 'domain.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+          <FormattedMessage id={'learnmore'} />
           <span className="icon icon-open_in_new" />
         </a>
       </p>
@@ -360,7 +394,7 @@ class CreateDomain extends Component {
           {getFieldDecorator('envId', {
             rules: [{
               required: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: this.props.intl.formatMessage({ id: 'required' }),
               // transform: value => value && value.toString(),
             }],
             initialValue: SingleData ? SingleData.envId : undefined,
@@ -370,9 +404,10 @@ class CreateDomain extends Component {
               onFocus={this.loadEnv}
               loading={this.state.env.loading}
               filter
+              getPopupContainer={triggerNode => triggerNode.parentNode}
               onSelect={this.selectEnv}
               showSearch
-              label="环境名称"
+              label={this.props.intl.formatMessage({ id: 'domain.column.env' })}
               optionFilterProp="children"
               filterOption={(input, option) =>
                 option.props.children[2].toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -395,7 +430,7 @@ class CreateDomain extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: this.props.intl.formatMessage({ id: 'required' }),
             }, {
               validator: this.checkName,
             }],
@@ -404,7 +439,7 @@ class CreateDomain extends Component {
             <Input
               disabled={!(this.props.form.getFieldValue('envId'))}
               maxLength={30}
-              label={Choerodon.getMessage('域名名称', 'name')}
+              label={this.props.intl.formatMessage({ id: 'domain.column.name' })}
               size="default"
             />,
           )}
@@ -417,7 +452,7 @@ class CreateDomain extends Component {
             rules: [{
               required: true,
               whitespace: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: this.props.intl.formatMessage({ id: 'required' }),
             }, {
               validator: this.checkDomain,
             }],
@@ -426,7 +461,7 @@ class CreateDomain extends Component {
             <Input
               disabled={!(this.props.form.getFieldValue('envId'))}
               maxLength={50}
-              label={Choerodon.getMessage('域名地址', 'domain')}
+              label={this.props.intl.formatMessage({ id: 'domain.form.domain' })}
               size="default"
             />,
           )}
@@ -439,20 +474,21 @@ class CreateDomain extends Component {
           >
             {getFieldDecorator(`path-${data.pathIndex}`, {
               rules: [{
-                // required: true,
-                // message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                required: true,
+                message: this.props.intl.formatMessage({ id: 'required' }),
               }, {
                 validator: this.checkPath,
               },
               ],
               initialValue: SingleData && this.state.initServiceLen > index
-                ? SingleData.pathList[index].path.slice(1, SingleData.pathList[index].path.length) : '',
+                ? SingleData.pathList[index].path : '/',
             })(
               <Input
-                prefix={'/'}
+                // prefix={'/'}
+                onChange={this.checkAllPath.bind(this, true)}
                 disabled={!(this.props.form.getFieldValue('domain'))}
                 maxLength={10}
-                label={Choerodon.languageChange('domain.path')}
+                label={this.props.intl.formatMessage({ id: 'domain.column.path' })}
                 size="default"
               />,
             )}
@@ -464,7 +500,7 @@ class CreateDomain extends Component {
             {getFieldDecorator(`network-${data.networkIndex}`, {
               rules: [{
                 required: true,
-                message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                message: this.props.intl.formatMessage({ id: 'required' }),
               }, {
                 validator: this.checkService,
               }],
@@ -472,9 +508,10 @@ class CreateDomain extends Component {
                 ? SingleData.pathList[index].serviceId : undefined,
             })(
               <Select
+                getPopupContainer={triggerNode => triggerNode.parentNode}
                 disabled={!(this.props.form.getFieldValue('envId'))}
                 filter
-                label={Choerodon.getMessage('网络', 'network')}
+                label={this.props.intl.formatMessage({ id: 'domain.column.network' })}
                 showSearch
                 dropdownMatchSelectWidth
                 size="default"
@@ -482,29 +519,27 @@ class CreateDomain extends Component {
                 optionLabelProp="children"
                 filterOption={
                   (input, option) =>
-                    option.props.children[4]
+                    option.props.children[1]
                       .toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
                 {this.state[data.pathIndex].deletedService.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
-                  {datas.status && datas.status === 'running' && <div className={datas.status && datas.status === 'running' && 'c7n-domain-create-status c7n-domain-create-status_running'}>
-                    {datas.status && datas.status === 'running' && <div>运行中</div> }
-                  </div> }
-                  {datas.status && datas.status === 'deleted' && <div className={datas.status && datas.status === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
-                    {datas.status && datas.status === 'deleted' && <div>已删除</div> }
-                  </div> }
-                  {datas.status && datas.status === 'failed' && <div className={datas.status && datas.status === 'failed' && 'c7n-domain-create-status c7n-domain-create-status_failed'}>
-                    {datas.status && datas.status === 'failed' && <div>失败</div> }
-                  </div> }
-                  {datas.status && datas.status === 'operating' && <div className={datas.status && datas.status === 'operating' && 'c7n-domain-create-status c7n-domain-create-status_operating'}>
-                    {datas.status && datas.status === 'operating' && <div>处理中</div> }
-                  </div> }
-
+                  {<React.Fragment>
+                    {datas.status && datas.status === 'deleted' ? <div className={datas.status && datas.status === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
+                      {datas.status && datas.status === 'deleted' && <div>{this.props.intl.formatMessage({ id: 'deleted' })}</div>}
+                    </div> : <React.Fragment>
+                      {datas.status && datas.status === 'failed' ? <div className={datas.status && datas.status === 'failed' && 'c7n-domain-create-status c7n-domain-create-status_failed'}>
+                        {datas.status && datas.status === 'failed' && <div>{this.props.intl.formatMessage({ id: 'failed' })}</div> }
+                      </div> : <div className={datas.status && datas.status === 'operating' && 'c7n-domain-create-status c7n-domain-create-status_operating'}>
+                        {datas.status && datas.status === 'operating' && <div>{this.props.intl.formatMessage({ id: 'operating' })}</div>}
+                      </div> }
+                    </React.Fragment> }
+                  </React.Fragment>}
                   {datas.name}</Option>),
                 )}
                 {network.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
                   <div className={'c7n-domain-create-status c7n-domain-create-status_running'}>
-                    <div>运行中</div>
+                    <div>{this.props.intl.formatMessage({ id: 'running' })}</div>
                   </div>
                   {datas.name}</Option>),
                 )}
@@ -516,16 +551,16 @@ class CreateDomain extends Component {
           </Button> : <span className="icon icon-delete c7n-app-icon-disabled" />}
         </div>))}
         <div className="c7n-domain-btn-wrapper">
-          <Tooltip title={addStatus ? '请先填写路径' : ''}>
-            <Button className="c7n-domain-btn" onClick={this.addPath} type="primary" disabled={addStatus} icon="add">添加路径</Button>
+          <Tooltip title={addStatus ? this.props.intl.formatMessage({ id: 'domain.path.isnull' }) : ''}>
+            <Button className="c7n-domain-btn" onClick={this.addPath} type="primary" disabled={addStatus} icon="add">{this.props.intl.formatMessage({ id: 'domain.path.add' })}</Button>
           </Tooltip>
         </div>
       </Form>
     </div>) : null;
     return (
       <Sidebar
-        okText={this.props.type === 'create' ? '创建' : '保存'}
-        cancelText="取消"
+        okText={this.props.type === 'create' ? this.props.intl.formatMessage({ id: 'create' }) : this.props.intl.formatMessage({ id: 'save' })}
+        cancelText={this.props.intl.formatMessage({ id: 'cancel' })}
         visible={this.props.visible}
         title={this.props.title}
         onCancel={this.handleClose}
@@ -539,4 +574,4 @@ class CreateDomain extends Component {
   }
 }
 
-export default Form.create({})(withRouter(CreateDomain));
+export default Form.create({})(withRouter(injectIntl(CreateDomain)));

@@ -1,8 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 
-
-
 @store('AppDeploymentStore')
 class AppDeploymentStore {
   @observable isLoading = true;
@@ -259,7 +257,7 @@ class AppDeploymentStore {
     }
   });
 
-  loadAppVersion = (projectId, appId, publish) => axios.get(`devops/v1/projects/${projectId}/apps/${appId}/version/list?is_publish=${publish}`).then((data) => {
+  loadAppVersion = (projectId, appId) => axios.get(`devops/v1/projects/${projectId}/apps/${appId}/version/list_deployed`).then((data) => {
     if (data && data.failed) {
       Choerodon.prompt(data.message);
     } else {

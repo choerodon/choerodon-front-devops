@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Input, Form, Tooltip, Modal, Popover } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
@@ -43,7 +44,7 @@ class EnvPipelineHome extends Component {
       submitting: false,
       token: null,
       envName: '',
-      copyMsg: '复制下文代码至Kubernetes运行，与平台建立链接',
+      copyMsg: props.intl.formatMessage({ id: 'envPl.code.copy.tooltip' }),
       moveBan: false,
       moveRight: 300,
     };
@@ -85,13 +86,15 @@ class EnvPipelineHome extends Component {
       EnvPipelineStore.loadCode(projectId, value)
         .then((error) => {
           if (error && error.failed) {
-            callback(Choerodon.getMessage('编码已存在', 'Code existed.'));
+            callback(this.props.intl.formatMessage({ id: 'envPl.code.check.exist' }));
           } else {
             callback();
           }
         });
+    } else if (value && !pa.test(value)) {
+      callback(this.props.intl.formatMessage({ id: 'envPl.code.check.failed' }));
     } else {
-      callback(Choerodon.getMessage('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾', 'Code can contain only lowercase letters, digits,"-", must start with lowercase letters and will not end with "-"'));
+      callback();
     }
   }, 1000);
 
@@ -109,7 +112,7 @@ class EnvPipelineHome extends Component {
       EnvPipelineStore.loadName(projectId, value)
         .then((error) => {
           if (error && error.failed) {
-            callback(Choerodon.getMessage('环境名已存在', 'Name existed'));
+            callback(this.props.intl.formatMessage({ id: 'envPl.name.check.exist' }));
           } else {
             callback();
           }
@@ -197,7 +200,7 @@ class EnvPipelineHome extends Component {
   };
 
   mouseEnter = () => {
-    this.setState({ copyMsg: '复制下文代码至Kubernetes运行，与平台建立链接' });
+    this.setState({ copyMsg: this.props.intl.formatMessage({ id: 'envPl.code.copy.tooltip' }) });
   };
 
   /**
@@ -235,8 +238,12 @@ class EnvPipelineHome extends Component {
         }
       });
     } else {
-      this.props.form.validateFieldsAndScroll((err, data) => {
+      this.props.form.validateFieldsAndScroll((err, data, modify) => {
         if (!err) {
+          if (!modify) {
+            EnvPipelineStore.setShow(false);
+            return;
+          }
           EnvPipelineStore.setShow(false);
           const id = EnvPipelineStore.getEnvData.id;
           EnvPipelineStore.setSideType('');
@@ -268,11 +275,11 @@ class EnvPipelineHome extends Component {
    */
   showTitle = (type) => {
     if (type === 'create') {
-      return Choerodon.languageChange('envPl.create');
+      return this.props.intl.formatMessage({ id: 'envPl.create' });
     } else if (type === 'edit') {
-      return Choerodon.languageChange('envPl.edit');
+      return this.props.intl.formatMessage({ id: 'envPl.edit' });
     } else {
-      return Choerodon.getMessage('复制指令', 'Copy Token');
+      return this.props.intl.formatMessage({ id: 'envPl.token.copy.tooltip' });
     }
   };
 
@@ -329,7 +336,7 @@ class EnvPipelineHome extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     const projectName = AppState.currentMenuType.name;
-    let DisEnvDom = (<span className="c7n-none-des">暂无停用环境</span>);
+    let DisEnvDom = (<span className={'c7n-none-des'}>{this.props.intl.formatMessage({ id: 'envPl.status.stop' })}</span>);
     if (disEnvcardPosition.length) {
       DisEnvDom = _.map(disEnvcardPosition, env =>
         (<div className="c7n-env-card c7n-env-card-ban">
@@ -342,7 +349,7 @@ class EnvPipelineHome extends Component {
                 projectId={projectId}
                 type={type}
               >
-                <Tooltip title="重启环境">
+                <Tooltip title={<FormattedMessage id={'envPl.status.restart'} />}>
                   <Button
                     shape="circle"
                     onClick={this.actEnv.bind(this, env.id)}
@@ -354,10 +361,10 @@ class EnvPipelineHome extends Component {
             </div>
           </div>
           <div className="c7n-env-state c7n-env-state-ban">
-            已停用
+            <FormattedMessage id={'envPl.status.stopped'} />
           </div>
           <div className="c7n-env-des">
-            <span className="c7n-env-des-head">描述：</span>
+            <span className="c7n-env-des-head">{this.props.intl.formatMessage({ id: 'envPl.description' })}</span>
             {env.description}
           </div>
         </div>));
@@ -376,13 +383,11 @@ class EnvPipelineHome extends Component {
         (() => {
           if (sideType === 'create') {
             return (<div>
-              <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的环境创建</h2>
+              <h2 className="c7n-space-first"><FormattedMessage id={'env.create.title'} values={{ name: projectName }} /></h2>
               <p>
-                请在下面输入环境编码、名称、描述，创建新环境。新环境默认新增在环境流水线的最后一个节点。
-                <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <span className="c7n-external-link-content">
-                  了解详情
-                  </span>
+                <FormattedMessage id={'env.create.description'} />
+                <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                  <FormattedMessage id={'learnmore'} />
                   <span className="icon-open_in_new icon" />
                 </a>
               </p>
@@ -393,7 +398,7 @@ class EnvPipelineHome extends Component {
                   {getFieldDecorator('code', {
                     rules: [{
                       required: true,
-                      message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                      message: this.props.intl.formatMessage({ id: 'required' }),
                     }, {
                       validator: this.checkCode,
                     }],
@@ -401,18 +406,17 @@ class EnvPipelineHome extends Component {
                   })(
                     <Input
                       maxLength={20}
-                      label={Choerodon.getMessage('环境编码', 'Environment Code')}
+                      label={<FormattedMessage id={'envPl.form.code'} />}
                     />,
                   )}
                 </FormItem>
                 <FormItem
                   {...formItemLayout}
-                  label={Choerodon.getMessage('环境名称', 'Environment Name')}
                 >
                   {getFieldDecorator('name', {
                     rules: [{
                       required: true,
-                      message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                      message: this.props.intl.formatMessage({ id: 'required' }),
                     }, {
                       validator: this.checkName,
                     }],
@@ -420,13 +424,13 @@ class EnvPipelineHome extends Component {
                   })(
                     <Input
                       maxLength={10}
-                      label={Choerodon.getMessage('环境名称', 'Environment Name')}
+                      label={<FormattedMessage id={'envPl.form.name'} />}
                     />,
                   )}
                 </FormItem>
                 <FormItem
                   {...formItemLayout}
-                  label={Choerodon.getMessage('环境描述', 'Environment Description')}
+                  label={<FormattedMessage id={'envPl.form.description'} />}
                 >
                   {getFieldDecorator('description', {
                     initialValue: envData ? envData.description : '',
@@ -434,7 +438,7 @@ class EnvPipelineHome extends Component {
                     <TextArea
                       autosize={{ minRows: 2 }}
                       maxLength={60}
-                      label={Choerodon.getMessage('环境描述', 'Environment Description')}
+                      label={<FormattedMessage id={'envPl.form.description'} />}
                     />,
                   )}
                 </FormItem>
@@ -442,19 +446,17 @@ class EnvPipelineHome extends Component {
             </div>);
           } else if (sideType === 'token') {
             return (<div className="c7n-env-token c7n-sidebar-form">
-              <h2 className="c7n-space-first">复制环境&quot;{this.state.envName}&quot;的指令</h2>
+              <h2 className="c7n-space-first"><FormattedMessage id={'env.token.title'} values={{ name: this.state.envName }} /></h2>
               <p>
-                复制下文代码至Kubernetes运行，与平台建立链接。
-                <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <span className="c7n-external-link-content">
-                  了解详情
-                  </span>
+                <FormattedMessage id={'env.token.description'} />
+                <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                  <FormattedMessage id={'learnmore'} />
                   <span className="icon icon-open_in_new" />
                 </a>
               </p>
               <div className="c7n-env-shell-wrap">
                 <TextArea
-                  label={Choerodon.getMessage('指令', 'Environment Token')}
+                  label={<FormattedMessage id={'envPl.token'} />}
                   className="c7n-input-readOnly"
                   autosize
                   copy
@@ -468,19 +470,17 @@ class EnvPipelineHome extends Component {
             </div>);
           } else if (sideType === 'key') {
             return (<div className="c7n-env-token c7n-sidebar-form">
-              <h2 className="c7n-space-first">复制环境&quot;{envData ? envData.name : ''}&quot;的指令</h2>
+              <h2 className="c7n-space-first"><FormattedMessage id={'env.token.title'} values={{ name: envData ? envData.name : '' }} /></h2>
               <p>
-                复制下文代码至Kubernetes运行，与平台建立链接。
-                <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <span className="c7n-external-link-content">
-                  了解详情
-                  </span>
+                <FormattedMessage id={'env.token.description'} />
+                <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                  <FormattedMessage id={'learnmore'} />
                   <span className="icon icon-open_in_new" />
                 </a>
               </p>
               <div className="c7n-env-shell-wrap">
                 <TextArea
-                  label={Choerodon.getMessage('指令', 'Environment Token')}
+                  label={<FormattedMessage id={'envPl.token'} />}
                   className="c7n-input-readOnly"
                   autosize
                   copy
@@ -494,25 +494,22 @@ class EnvPipelineHome extends Component {
             </div>);
           } else {
             return (<div className="c7n-sidebar-form">
-              <h2 className="c7n-space-first">对&quot;{envData && envData.code}&quot;环境修改</h2>
+              <h2 className="c7n-space-first"><FormattedMessage id={'env.update.title'} values={{ name: envData ? envData.code : '' }} /></h2>
               <p>
-                您可在此修改环境名称及描述，也可以复制指令至Kubernetes运行，与平台建立连接。
-                <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <span className="c7n-external-link-content">
-                  了解详情
-                  </span>
+                <FormattedMessage id={'env.update.description'} />
+                <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                  <FormattedMessage id={'learnmore'} />
                   <span className="icon icon-open_in_new" />
                 </a>
               </p>
               <Form>
                 <FormItem
                   {...formItemLayout}
-                  label={Choerodon.getMessage('环境名称', 'Environment Name')}
                 >
                   {getFieldDecorator('name', {
                     rules: [{
                       required: true,
-                      message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+                      message: this.props.intl.formatMessage({ id: 'required' }),
                     }, {
                       validator: this.checkName,
                     }],
@@ -520,13 +517,12 @@ class EnvPipelineHome extends Component {
                   })(
                     <Input
                       maxLength={10}
-                      label={Choerodon.getMessage('环境名称', 'Environment Name')}
+                      label={<FormattedMessage id={'envPl.form.name'} />}
                     />,
                   )}
                 </FormItem>
                 <FormItem
                   {...formItemLayout}
-                  label={Choerodon.getMessage('环境描述', 'Environment Description')}
                 >
                   {getFieldDecorator('description', {
                     initialValue: envData ? envData.description : '',
@@ -534,7 +530,7 @@ class EnvPipelineHome extends Component {
                     <TextArea
                       autosize={{ minRows: 2 }}
                       maxLength={60}
-                      label={Choerodon.getMessage('环境描述', 'Environment Description')}
+                      label={<FormattedMessage id={'envPl.form.description'} />}
                     />,
                   )}
                 </FormItem>
@@ -560,7 +556,21 @@ class EnvPipelineHome extends Component {
     const rightDom = this.state.moveBan ? null : <div role="none" className={rightStyle} onClick={this.pushScrollLeft} />;
 
     return (
-      <Page className="c7n-region">
+      <Page
+        className="c7n-region"
+        service={[
+          'devops-service.devops-environment.listByProjectIdAndActive',
+          'devops-service.devops-environment.create',
+          'devops-service.devops-environment.update',
+          'devops-service.devops-environment.checkCode',
+          'devops-service.devops-environment.checkName',
+          'devops-service.devops-environment.sort',
+          'devops-service.devops-environment.queryByEnvIdAndActive',
+          'devops-service.devops-environment.queryShell',
+          'devops-service.devops-environment.query',
+          'devops-service.application-instance.pageByOptions',
+        ]}
+      >
         <Header title={Choerodon.languageChange('envPl.title')}>
           <Permission
             service={['devops-service.devops-environment.create']}
@@ -573,7 +583,7 @@ class EnvPipelineHome extends Component {
               onClick={this.showSideBar.bind(this, 'create')}
             >
               <span className="icon-playlist_add icon" />
-              <span>{Choerodon.getMessage('创建环境', 'Create')}</span>
+              <FormattedMessage id="envPl.create" />
             </Button>
           </Permission>
           <Button
@@ -581,7 +591,7 @@ class EnvPipelineHome extends Component {
             onClick={this.reload}
           >
             <span className="icon-refresh icon" />
-            <span>{Choerodon.languageChange('refresh')}</span>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <Content>
@@ -592,8 +602,8 @@ class EnvPipelineHome extends Component {
             onCancel={this.handleCancelFun}
             loading={this.state.submitting}
             okCancel={showBtns}
-            cancelText={Choerodon.languageChange('cancel')}
-            okText={(sideType === 'token' || sideType === 'key') ? Choerodon.getMessage('关闭', 'Close') : Choerodon.getMessage('保存', 'Save')}
+            cancelText={<FormattedMessage id="cancel" />}
+            okText={(sideType === 'token' || sideType === 'key') ? <FormattedMessage id="envPl.close" /> : <FormattedMessage id="save" />}
           >
             {formContent}
           </Sidebar>
@@ -604,29 +614,47 @@ class EnvPipelineHome extends Component {
             onCancel={this.banCancel}
             wrapClassName="vertical-center-modal remove"
           >
-            <h2>{Choerodon.getMessage('确认禁用', 'Confirm Delete')}</h2>
-            <span>{ist.length > 0 ? Choerodon.getMessage('该环境下存在实例，不可禁用。', 'There are instances in operation under this environment, which are not disabled.') :
-              Choerodon.getMessage('当你点击确认后，该环境将被禁用。', 'When you click delete, after which the data will be permanently deleted and irreversible!')}</span>
+            <h2>{this.props.intl.formatMessage({ id: 'envPl.confirm.disable' })}</h2>
+            <span>{ist.length > 0 ? this.props.intl.formatMessage({ id: 'envPl.confirm.content.hasInstance' })
+              : this.props.intl.formatMessage({ id: 'envPl.confirm.content.noInstance' })}</span>
           </Modal>
-          <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的环境流水线</h2>
+          <h2 className="c7n-space-first">
+            <FormattedMessage
+              id="env.title"
+              values={{
+                name: `${projectName}`,
+              }}
+            />
+          </h2>
           <p>
-            环境是指一个应用可以被部署的地方。常见环境有开发测试环境，预生产环境，生产环境等。平台自动为您的项目生成一条环境流水线，您可在下方拖拽需要调整顺序的环境至目标位置。
-            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                了解详情
-              </span>
+            <FormattedMessage
+              id="env.description"
+            />
+            <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <FormattedMessage
+                id="learnmore"
+              />
               <span className="icon icon-open_in_new" />
             </a>
           </p>
           {BoardDom}
           <div className="c7n-env-discontent">
-            <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的环境停用区</h2>
+            <h2 className="c7n-space-first">
+              <FormattedMessage
+                id="env.stop.title"
+                values={{
+                  name: `${projectName}`,
+                }}
+              />
+            </h2>
             <p>
-              您可在此查看已被停用的环境，也可以重新启用这些环境。
-              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/environment-pipeline/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                <span className="c7n-external-link-content">
-                  了解详情
-                </span>
+              <FormattedMessage
+                id="env.stop.description"
+              />
+              <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <FormattedMessage
+                  id="learnmore"
+                />
                 <span className="icon icon-open_in_new" />
               </a>
             </p>
@@ -646,4 +674,4 @@ class EnvPipelineHome extends Component {
   }
 }
 
-export default Form.create({})(withRouter(EnvPipelineHome));
+export default Form.create({})(withRouter(injectIntl(EnvPipelineHome)));

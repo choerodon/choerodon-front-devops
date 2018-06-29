@@ -10,6 +10,7 @@ class AppStoreStore {
   @observable appCards = [];
   @observable app = [];
   @observable pageInfo = {};
+  @observable impApp = {};
 
   @action setPageInfo(page) {
     this.pageInfo = { current: page.number + 1, total: page.totalElements, pageSize: page.size };
@@ -21,6 +22,10 @@ class AppStoreStore {
 
   @computed get getReadme() {
     return this.readme;
+  }
+
+  @computed get getImpApp() {
+    return this.impApp;
   }
 
   @action
@@ -36,6 +41,11 @@ class AppStoreStore {
   @action
   setApp(app) {
     this.app = app;
+  }
+
+  @action
+  setImpApp(impApp) {
+    this.impApp = impApp;
   }
 
   @action
@@ -111,6 +121,56 @@ class AppStoreStore {
       } else {
         this.setReadme(data);
       }
+    })
+    .catch((error) => {
+      Choerodon.prompt(error.message);
+    });
+
+  uploadChart = (projectId, chart) => axios.post(`devops/v1/projects/${projectId}/apps_market/upload`, chart, {
+    header: { 'Content-Type': 'multipart/form-data' },
+  })
+    .then((data) => {
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.setImpApp(data);
+      }
+      return data;
+    })
+    .catch((error) => {
+      Choerodon.prompt(error.message);
+    });
+
+  uploadCancel = (projectId, fileCode) => axios.post(`devops/v1/projects/${projectId}/apps_market/import_cancel?file_name=${fileCode}`)
+    .then((data) => {
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.setImpApp({});
+      }
+      return data;
+    })
+    .catch((error) => {
+      Choerodon.prompt(error.message);
+    });
+
+  importStep = (projectId, fileCode) => axios.post(`devops/v1/projects/${projectId}/apps_market/import?file_name=${fileCode}`)
+    .then((data) => {
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      }
+      return data;
+    })
+    .catch((error) => {
+      Choerodon.prompt(error.message);
+    });
+
+  importPublishStep = (projectId, fileCode, publish) => axios.post(`devops/v1/projects/${projectId}/apps_market/import?file_name=${fileCode}&public=${publish}`)
+    .then((data) => {
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      }
+      return data;
     })
     .catch((error) => {
       Choerodon.prompt(error.message);

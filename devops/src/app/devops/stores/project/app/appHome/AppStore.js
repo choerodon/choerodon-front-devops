@@ -133,14 +133,6 @@ class AppStore {
         const res = this.handleProptError(datas);
         return res;
       });
-
-  deleteData =(projectId, id) =>
-    axios.delete(`/devops/v1/organizations/${projectId}/appTemplates/${id}`)
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
-
   changeAppStatus = (projectId, id, status) =>
     axios.put(`/devops/v1/projects/${projectId}/apps/${id}?active=${status}`)
       .then((datas) => {

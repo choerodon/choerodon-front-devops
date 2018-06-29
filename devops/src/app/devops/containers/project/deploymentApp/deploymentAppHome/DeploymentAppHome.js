@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { Select, Button, Radio, Steps } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
@@ -50,7 +51,7 @@ class DeploymentAppHome extends Component {
     }
     DeploymentAppStore.loadEnv();
     const card = document.getElementsByClassName('deployApp-card')[0];
-    card.style.minHeight = `${window.innerHeight - 277}px`;
+    // card.style.minHeight = `${window.innerHeight - 277}px`;
   }
 
 
@@ -248,6 +249,7 @@ class DeploymentAppHome extends Component {
    */
   handleDeploy = () => {
     const { DeploymentAppStore } = this.props;
+    const instances = DeploymentAppStore.currentInstance;
     const value = this.state.value || DeploymentAppStore.value.yaml;
     const applicationDeployDTO = {
       appId: this.state.appId,
@@ -256,7 +258,7 @@ class DeploymentAppHome extends Component {
       values: value,
       type: this.state.mode === 'new' ? 'create' : 'update',
       appInstanceId: this.state.mode === 'new' ?
-        null : this.state.instanceId,
+        null : this.state.instanceId || (instances && instances.length === 1 && instances[0].id),
     };
     DeploymentAppStore.deploymentApp(applicationDeployDTO)
       .then((datas) => {
@@ -272,18 +274,19 @@ class DeploymentAppHome extends Component {
    * 渲染第一步
    */
   handleRenderApp = () => {
-    const { DeploymentAppStore } = this.props;
+    const { DeploymentAppStore, intl } = this.props;
+    const { formatMessage } = intl;
     const versions = DeploymentAppStore.versions;
     const proId = parseInt(AppState.currentMenuType.id, 10);
     return (
       <div className="deployApp-app">
         <p>
-          您可以点击“打开应用列表”，选择本项目的应用或来自应用市场的应用，再在此界面选择需要部署的版本。
+          {formatMessage({ id: 'deploy.step.one.description' })}
         </p>
         <section className="deployApp-section">
           <div className="deploy-title">
             <span className="icon icon-widgets section-title-icon" />
-            <span className="section-title">选择应用</span>
+            <span className="section-title">{formatMessage({ id: 'deploy.step.one.app' })}</span>
           </div>
           <div className="deploy-text">
             {this.state.app && <div className="section-text-margin">
@@ -296,7 +299,7 @@ class DeploymentAppHome extends Component {
                 className={`${this.state.app ? '' : 'section-text-margin'}`}
                 onClick={this.showSideBar}
               >
-                打开应用列表
+                {formatMessage({ id: 'deploy.app.add' })}
                 <span className="icon icon-open_in_new icon-small" />
               </a>
             </Permission>
@@ -305,12 +308,12 @@ class DeploymentAppHome extends Component {
         <section className="deployApp-section">
           <div className="deploy-title">
             <span className="icon icon-version section-title-icon " />
-            <span className="section-title">选择版本</span>
+            <span className="section-title">{formatMessage({ id: 'deploy.step.one.version.title' })}</span>
           </div>
           <Select
-            notFoundContent={'该应用下还未生成版本'}
+            notFoundContent={formatMessage({ id: 'network.form.version.disable' })}
             value={this.state.versionId ? parseInt(this.state.versionId, 10) : undefined}
-            label="应用版本"
+            label={<FormattedMessage id={'deploy.step.one.version'} />}
             className="section-text-margin"
             onSelect={this.handleSelectVersion}
             style={{ width: 482 }}
@@ -329,9 +332,9 @@ class DeploymentAppHome extends Component {
             disabled={!(this.state.appId && this.state.versionId)}
             onClick={this.changeStep.bind(this, 2)}
           >
-            下一步
+            {formatMessage({ id: 'next' })}
           </Button>
-          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>取消</Button>
+          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>{formatMessage({ id: 'cancel' })}</Button>
         </section>
       </div>
     );
@@ -341,22 +344,23 @@ class DeploymentAppHome extends Component {
    * 渲染第二步
    */
   handleRenderEnv = () => {
-    const { DeploymentAppStore } = this.props;
+    const { DeploymentAppStore, intl } = this.props;
+    const { formatMessage } = intl;
     const envs = DeploymentAppStore.envs;
     const data = DeploymentAppStore.value;
     return (
       <div className="deployApp-env">
         <p>
-          请在此选择需要部署的环境并修改相关配置信息，平台默认会引用该应用上次在该环境部署的信息。
+          {formatMessage({ id: 'deploy.step.two.description' })}
         </p>
         <section className="deployApp-section">
           <div className="deploy-title">
             <span className="icon icon-donut_large section-title-icon " />
-            <span className="section-title">选择环境</span>
+            <span className="section-title">{formatMessage({ id: 'deploy.step.two.env.title' })}</span>
           </div>
           <Select
             value={this.state.envId}
-            label={<span className="deploy-text">环境</span>}
+            label={<span className="deploy-text">{formatMessage({ id: 'deploy.step.two.env' })}</span>}
             className="section-text-margin"
             onSelect={this.handleSelectEnv}
             style={{ width: 482 }}
@@ -374,7 +378,7 @@ class DeploymentAppHome extends Component {
         <section className="deployApp-section">
           <div className="deploy-title">
             <span className="icon icon-description section-title-icon " />
-            <span className="section-title">配置信息</span>
+            <span className="section-title">{formatMessage({ id: 'deploy.step.two.config' })}</span>
           </div>
           {data && (<AceForYaml
             isFileError={!!data.errorLines}
@@ -392,12 +396,12 @@ class DeploymentAppHome extends Component {
             type="primary"
             funcType="raised"
             onClick={this.changeStep.bind(this, 3)}
-            disabled={!(this.state.envId && data && data.errorLines === null && (this.state.errorLine === '' || this.state.errorLine === null) && (this.state.value || (data && data.yaml)))}
-          >
-            下一步
+            disabled={!(this.state.envId && (this.state.value || (data && data.yaml)) && (this.state.errorLine ? this.state.errorLine.length === 0 : (data && data.errorLines === null)))}
+            >
+            {formatMessage({ id: 'next' })}
           </Button>
-          <Button onClick={this.changeStep.bind(this, 1)} funcType="raised">上一步</Button>
-          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>取消</Button>
+          <Button onClick={this.changeStep.bind(this, 1)} funcType="raised">{formatMessage({ id: 'previous' })}</Button>
+          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>{formatMessage({ id: 'cancel' })}</Button>
         </section>
       </div>
     );
@@ -407,34 +411,35 @@ class DeploymentAppHome extends Component {
    * @returns {*}
    */
   handleRenderMode = () => {
-    const { DeploymentAppStore } = this.props;
+    const { DeploymentAppStore, intl } = this.props;
+    const { formatMessage } = intl;
     const instances = DeploymentAppStore.currentInstance;
     return (
       <div className="deployApp-deploy">
         <p>
-          平台支持两种部署模式：新建实例和替换实例。新建实例是部署生成新的实例；替换实例是等待新部署生成的副本集通过健康检查后再删除原副本集，但实例不变，只替换其相关参数。
+          {formatMessage({ id: 'deploy.step.three.description' })}
         </p>
         <section className="deployApp-section">
           <div className="deploy-title">
             <span className="icon icon-jsfiddle section-title-icon " />
-            <span className="section-title">选择部署模式</span>
+            <span className="section-title">{formatMessage({ id: 'deploy.step.three.mode.title' })}</span>
           </div>
           <div className="section-text-margin">
             <RadioGroup
               onChange={this.handleChangeMode}
               value={this.state.mode}
-              label={<span className="deploy-text">部署模式</span>}
+              label={<span className="deploy-text">{formatMessage({ id: 'deploy.step.three.mode' })}</span>}
             >
-              <Radio className="deploy-radio" value={'new'}>新建实例</Radio>
-              <Radio className="deploy-radio" value={'replace'} disabled={instances.length === 0}>替换实例
+              <Radio className="deploy-radio" value={'new'}>{formatMessage({ id: 'deploy.step.three.mode.new' })}</Radio>
+              <Radio className="deploy-radio" value={'replace'} disabled={instances.length === 0}>{formatMessage({ id: 'deploy.step.three.mode.replace' })}
                 <span className="icon icon-error section-instance-icon" />
-                <span className="deploy-tip-text">替换实例会更新该实例的镜像及配置信息，请确认要替换的实例选择无误。</span>
+                <span className="deploy-tip-text">{formatMessage({ id: 'deploy.step.three.mode.help' })}</span>
               </Radio>
             </RadioGroup>
             {this.state.mode === 'replace' && <Select
               onSelect={this.handleSelectInstance}
-              value={this.state.instanceId}
-              label="选择要替换的实例"
+              value={this.state.instanceId || (instances && instances.length === 1 && instances[0].id)}
+              label={<FormattedMessage id={'deploy.step.three.mode.replace.label'} />}
               className="deploy-select"
               placeholder="Select a person"
               optionFilterProp="children"
@@ -453,12 +458,12 @@ class DeploymentAppHome extends Component {
             type="primary"
             funcType="raised"
             onClick={this.changeStep.bind(this, 4)}
-            disabled={!(this.state.mode === 'new' || (this.state.mode === 'replace' && this.state.instanceId))}
+            disabled={!(this.state.mode === 'new' || (this.state.mode === 'replace' && (this.state.instanceId || (instances && instances.length === 1))))}
           >
-            下一步
+            {formatMessage({ id: 'next' })}
           </Button>
-          <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>上一步</Button>
-          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>取消</Button>
+          <Button funcType="raised" onClick={this.changeStep.bind(this, 2)}>{formatMessage({ id: 'previous' })}</Button>
+          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>{formatMessage({ id: 'cancel' })}</Button>
         </section>
       </div>
     );
@@ -470,34 +475,37 @@ class DeploymentAppHome extends Component {
    */
   handleRenderReview = () => {
     const { DeploymentAppStore } = this.props;
+    const instances = DeploymentAppStore.currentInstance;
+    const { intl } = this.props;
+    const { formatMessage } = intl;
     const data = DeploymentAppStore.value;
     const { app, versionId, envId, instanceId, mode } = this.state;
     return (
       <section className="deployApp-review">
         <section>
           <div>
-            <div className="deployApp-title"><span className="icon icon-widgets" />应用名称：</div>
+            <div className="deployApp-title"><span className="icon icon-widgets" />{formatMessage({ id: 'deploy.step.four.app' })}：</div>
             <div className="deployApp-text">{this.state.app && this.state.app.name}
               <span className="deployApp-value">({this.state.app && this.state.app.code})</span>
             </div>
           </div>
           <div>
-            <div className="deployApp-title"><span className="icon icon-version" />应用版本：</div>
+            <div className="deployApp-title"><span className="icon icon-version" />{formatMessage({ id: 'deploy.step.four.version' })}：</div>
             <div className="deployApp-text">{this.state.versionDto && this.state.versionDto.version}</div>
           </div>
           <div>
-            <div className="deployApp-title"><span className="icon icon-donut_large" />选择环境：</div>
+            <div className="deployApp-title"><span className="icon icon-donut_large" />{formatMessage({ id: 'deploy.step.two.env.title' })}：</div>
             <div className="deployApp-text">{this.state.envDto && this.state.envDto.name}
               <span className="deployApp-value">({this.state.envDto && this.state.envDto.code})</span>
             </div>
           </div>
           <div>
-            <div className="deployApp-title"><span className="icon icon-jsfiddle" />部署模式：</div>
-            <div className="deployApp-text">{this.state.mode === 'new' ? '新建实例' : '替换实例'} {this.state.mode === 'replace' &&
-            <span className="deployApp-value">({this.state.instanceDto.code})</span>}</div>
+            <div className="deployApp-title"><span className="icon icon-jsfiddle" />{formatMessage({ id: 'deploy.step.three.mode' })}：</div>
+            <div className="deployApp-text">{this.state.mode === 'new' ? formatMessage({ id: 'deploy.step.three.mode.new' }) : formatMessage({ id: 'deploy.step.three.mode.replace' })} {this.state.mode === 'replace' &&
+            <span className="deployApp-value">({ this.state.instanceId ? this.state.instanceDto.code : (instances && instances.length === 1 && instances[0].code)})</span>}</div>
           </div>
           <div>
-            <div className="deployApp-title"><span className="icon icon-description" />配置信息：</div>
+            <div className="deployApp-title"><span className="icon icon-description" />{formatMessage({ id: 'deploy.step.two.config' })}：</div>
           </div>
           {data && <div>
             {<AceForYaml
@@ -511,61 +519,60 @@ class DeploymentAppHome extends Component {
         </section>
         <section className="deployApp-section">
           <Permission service={['devops-service.application-instance.deploy']}>
-            <Button type="primary" funcType="raised" disabled={!(app && versionId && envId && mode)} onClick={this.handleDeploy}>部署</Button>
+            <Button type="primary" funcType="raised" disabled={!(app && versionId && envId && mode)} onClick={this.handleDeploy}>{formatMessage({ id: 'deploy.btn.deploy' })}</Button>
           </Permission>
-          <Button funcType="raised" onClick={this.changeStep.bind(this, 3)}>上一步</Button>
-          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>取消</Button>
+          <Button funcType="raised" onClick={this.changeStep.bind(this, 3)}>{formatMessage({ id: 'previous' })}</Button>
+          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>{formatMessage({ id: 'cancel' })}</Button>
         </section>
       </section>
     );
   };
 
   render() {
-    const { DeploymentAppStore } = this.props;
+    const { DeploymentAppStore, intl } = this.props;
+    const { formatMessage } = intl;
     const data = DeploymentAppStore.value;
     const projectName = AppState.currentMenuType.name;
     const { appId, versionId, envId, instanceId, mode, value, current } = this.state;
     return (
-      <Page className="c7n-region c7n-deployApp">
-        <Header title={Choerodon.languageChange('deploymentApp.title')} />
-        <Content className="c7n-deployApp-wrapper">
-          <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的部署应用</h2>
-          <p>
-            应用部署是一个将某版本的应用部署至某环境的操作。您可以在此按指引分步骤完成应用部署。
-            <a
-              href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-deployment/"
-              className="c7n-external-link"
-              rel="nofollow me noopener noreferrer"
-              target="_blank"
-            >
-              <span className="c7n-external-link-content">
-                了解详情
-              </span>
-              <span className="icon icon-open_in_new" />
-            </a>
-          </p>
+      <Page
+        service={[
+          'devops-service.application.queryByAppId',
+          'devops-service.application-version.queryByAppId',
+          'devops-service.devops-environment.listByProjectIdAndActive',
+          'devops-service.application-instance.queryValues',
+          'devops-service.application-instance.formatValue',
+          'devops-service.application-instance.listByAppVersionId',
+          'devops-service.application-instance.deploy',
+          'devops-service.application.pageByOptions',
+          'devops-service.application-market.listAllApp',
+        ]}
+        className="c7n-region c7n-deployApp"
+      >
+        <Header title={<FormattedMessage id={'deploy.header.title'} />} />
+        <Content className="c7n-deployApp-wrapper" code={'deploy'} values={{ name: projectName }}>
           <div className="deployApp-card">
             <Steps current={this.state.current}>
               <Step
-                title={<span style={{ color: current === 1 ? '#3F51B5' : '', fontSize: 14 }}>选择应用及版本</span>}
+                title={<span style={{ color: current === 1 ? '#3F51B5' : '', fontSize: 14 }}>{formatMessage({ id: 'deploy.step.one.title' })}</span>}
                 onClick={this.changeStep.bind(this, 1)}
                 status={this.getStatus(1)}
               />
               <Step
                 className={!(appId && versionId) ? 'step-disabled' : ''}
-                title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>选择环境及修改配置信息</span>}
+                title={<span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>{formatMessage({ id: 'deploy.step.two.title' })}</span>}
                 onClick={this.changeStep.bind(this, 2)}
                 status={this.getStatus(2)}
               />
               <Step
                 className={!(envId && data && data.errorLines === null && (this.state.errorLine === '' || this.state.errorLine === null) && (value || (data && data.yaml))) ? 'step-disabled' : ''}
-                title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>选择部署模式</span>}
+                title={<span style={{ color: current === 3 ? '#3F51B5' : '', fontSize: 14 }}>{formatMessage({ id: 'deploy.step.three.title' })}</span>}
                 onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}
               />
               <Step
                 className={!((mode === 'new' || (mode === 'replace' && instanceId)) && this.state.envId) ? 'step-disabled' : ''}
-                title={<span style={{ color: current === 4 ? '#3F51B5' : '', fontSize: 14 }}>确认信息及部署</span>}
+                title={<span style={{ color: current === 4 ? '#3F51B5' : '', fontSize: 14 }}>{formatMessage({ id: 'deploy.step.four.title' })}</span>}
                 onClick={this.changeStep.bind(this, 4)}
                 status={this.getStatus(4)}
               />
@@ -593,4 +600,4 @@ class DeploymentAppHome extends Component {
   }
 }
 
-export default withRouter(DeploymentAppHome);
+export default withRouter(injectIntl(DeploymentAppHome));

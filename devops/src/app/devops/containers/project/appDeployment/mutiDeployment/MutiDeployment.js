@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { Button, Popover, Tooltip } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { stores } from 'choerodon-front-boot';
 import LoadingBar from '../../../../components/loadingBar';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
@@ -29,7 +30,7 @@ class MutiDeployment extends Component {
   };
 
   render() {
-    const { store } = this.props;
+    const { store, intl } = this.props;
     const appList = store.getMutiData;
     const envNames = store.getEnvcard;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
@@ -48,15 +49,15 @@ class MutiDeployment extends Component {
                   <div className="c7n-deploy-muti_card" >
                     <Popover
                       placement="bottom"
-                      title="实例"
+                      title={<FormattedMessage id="ist.title" />}
                       content={version.instances.length ? version.instances.map(ist => (
                         <div>
                           <div className={`c7n-ist-status c7n-ist-status_${ist.instanceStatus}`} >
-                            <div>{Choerodon.languageChange(ist.instanceStatus || 'null')}</div>
+                            <div>{intl.formatMessage({ id: ist.instanceStatus || 'null' })}</div>
                           </div>
                           <span>{ist.instanceName}</span>
                         </div>
-                      )) : '暂无实例'}
+                      )) : <FormattedMessage id="ist.noIst" />}
                       trigger="hover"
                     >
                       <Button
@@ -86,7 +87,7 @@ class MutiDeployment extends Component {
         trDom.push(<tr>
           <td>
             <MouserOverWrapper text={app.applicationName} width={150}>
-              {app.projectId === projectId ? <Tooltip title="本项目"><span className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title="应用市场"><span className="icon icon-apps c7n-icon-publish" /></Tooltip>}
+              {app.projectId === projectId ? <Tooltip title={<FormattedMessage id="project" />}><span className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id="market" />}><span className="icon icon-apps c7n-icon-publish" /></Tooltip>}
               {app.applicationName}
             </MouserOverWrapper>
           </td>
@@ -103,7 +104,7 @@ class MutiDeployment extends Component {
         return trDom;
       });
       envDom = envNames.map(env => (<td>
-        {env.connect ? <Tooltip title="已连接"><span className="c7n-ist-status_on" /></Tooltip> : <Tooltip title="未连接"><span className="c7n-ist-status_off" /></Tooltip>}
+        {env.connect ? <Tooltip title={<FormattedMessage id="connect" />}><span className="c7n-ist-status_on" /></Tooltip> : <Tooltip title={<FormattedMessage id="disconnect" />}><span className="c7n-ist-status_off" /></Tooltip>}
         {env.name}
       </td>));
     }
@@ -112,8 +113,8 @@ class MutiDeployment extends Component {
       : (<table className="c7n-mutiDep-table">
         <thead className="c7n-mutiDep-thead">
           <tr>
-            <td>应用</td>
-            <td>最新版本</td>
+            <td><FormattedMessage id="deploy.app" /></td>
+            <td><FormattedMessage id="ist.lastVer" /></td>
             <React.Fragment>
               {envDom}
             </React.Fragment>
@@ -129,4 +130,4 @@ class MutiDeployment extends Component {
     </div>);
   }
 }
-export default (withRouter(MutiDeployment));
+export default (withRouter(injectIntl(MutiDeployment)));

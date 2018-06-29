@@ -4,8 +4,8 @@ import _ from 'lodash';
 
 const { AppState } = stores;
 
-@store('BranchStore')
-class BranchStore {
+@store('CiPipelineStore')
+class CiPipelineStore {
   @observable apps = [];
   @observable currentApp = {};
   @observable ciPipelines = [];
@@ -122,5 +122,5 @@ class BranchStore {
   }
 }
 
-const branchStore = new BranchStore();
-export default branchStore;
+const ciPipelineStore = new CiPipelineStore();
+export default ciPipelineStore;

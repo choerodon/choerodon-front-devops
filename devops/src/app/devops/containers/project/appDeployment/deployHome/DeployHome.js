@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button } from 'choerodon-ui';
-import { Header, stores } from 'choerodon-front-boot';
+import { Content, Header, Page, stores } from 'choerodon-front-boot';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import SingleApp from '../singleApp';
 import SingleEnv from '../singleEnv';
 import AppInstance from '../appInstance';
@@ -109,7 +110,7 @@ class DeployHome extends Component {
     if (envID) {
       this.loadInstance(envID, verID, id);
     }
-    AppDeploymentStore.loadAppVersion(projectId, id, '');
+    AppDeploymentStore.loadAppVersion(projectId, id);
   };
 
   /**
@@ -162,62 +163,85 @@ class DeployHome extends Component {
   };
 
   render() {
-    const { AppDeploymentStore } = this.props;
-    const projectName = AppState.currentMenuType.name;
+    const { AppDeploymentStore, intl } = this.props;
+    const menu = AppState.currentMenuType;
     const tabActive = AppDeploymentStore.getTabActive;
 
     return (
-      <div className="c7n-region page-container">
-        <Header title={Choerodon.getMessage('实例', 'Instance')}>
+      <Page
+        className="c7n-region"
+        service={[
+          'devops-service.application-instance.pageByOptions',
+          'devops-service.application.listAll',
+          'devops-service.application.pageByEnvIdAndStatus',
+          'devops-service.devops-environment.listByProjectIdAndActive',
+          'devops-service.application-version.queryByAppId',
+          'devops-service.application-instance.listByAppId',
+          'devops-service.application-instance.queryValues',
+          'devops-service.application-instance.formatValue',
+          'devops-service.application-instance.stop',
+          'devops-service.application-instance.start',
+          'devops-service.application-instance.deploy',
+          'devops-service.application-instance.delete',
+        ]}
+      >
+        <Header title={<FormattedMessage id="ist.title" />}>
           <Button
             funcType="flat"
             onClick={this.reload}
           >
             <span className="icon-refresh icon" />
-            <span>{Choerodon.languageChange('refresh')}</span>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <div className="page-content">
-          <h2 className="c7n-space-first">项目&quot;{projectName}&quot;的实例</h2>
+        <Content className="page-content">
+          <h2 className="c7n-space-first">
+            <FormattedMessage
+              id="ist.head"
+              values={{
+                name: `${menu.name}`,
+              }}
+            />
+          </h2>
           <p>
-            您可在此用四种方式查看该项目下应用的实例情况。
-            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/instance/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <FormattedMessage id="ist.description" />
+            <a href={intl.formatMessage({ id: 'ist.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
-                了解详情
+                <FormattedMessage id="learnmore" />
               </span>
               <span className="icon icon-open_in_new" />
             </a>
           </p>
           <div className="c7n-deploy-tab">
-            <span>查看视图：</span>
+            <FormattedMessage id="ist.view" />
             <ButtonGroup>
               <Button
                 funcType="flat"
                 className={tabActive === 'instance' && 'c7n-tab-active'}
                 onClick={this.changeTabs.bind(this, 'instance')}
               >
-                部署实例
+                <FormattedMessage id="ist.instance" />
               </Button>
               <Button
                 funcType="flat"
                 className={tabActive === 'singleEnv' && 'c7n-tab-active'}
                 onClick={this.changeTabs.bind(this, 'singleEnv')}
               >
-                单环境
+                <FormattedMessage id="ist.singleEnv" />
               </Button>
               <Button
                 funcType="flat"
                 className={tabActive === 'singleApp' && 'c7n-tab-active'}
                 onClick={this.changeTabs.bind(this, 'singleApp')}
               >
-                单应用
+                <FormattedMessage id="ist.singleApp" />
               </Button>
               <Button
                 funcType="flat"
                 className={tabActive === 'multiApp' && 'c7n-tab-active'}
                 onClick={this.changeTabs.bind(this, 'multiApp')}
               >
-                多应用
+                <FormattedMessage id="ist.multiApp" />
               </Button>
             </ButtonGroup>
           </div>
@@ -225,10 +249,10 @@ class DeployHome extends Component {
           {tabActive === 'singleApp' && <SingleApp key="singleApp" store={AppDeploymentStore} />}
           {tabActive === 'singleEnv' && <SingleEnv key="singleEnv" store={AppDeploymentStore} />}
           {tabActive === 'instance' && <AppInstance key="instance" store={AppDeploymentStore} />}
-        </div>
-      </div>
+        </Content>
+      </Page>
     );
   }
 }
 
-export default withRouter(DeployHome);
+export default withRouter(injectIntl(DeployHome));

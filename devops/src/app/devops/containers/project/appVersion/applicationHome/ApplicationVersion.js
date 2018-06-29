@@ -3,6 +3,7 @@ import { Table, Button } from 'choerodon-ui';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, stores } from 'choerodon-front-boot';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { fromJS, is } from 'immutable';
 import { commonComponent } from '../../../../components/commonFunction';
 import TimePopover from '../../../../components/timePopover';
@@ -50,7 +51,7 @@ class ApplicationVersion extends Component {
   getColumn = () => {
     const { type, id: orgId } = AppState.currentMenuType;
     return [{
-      title: Choerodon.languageChange('app.appVersion'),
+      title: <FormattedMessage id="app.appVersion" />,
       dataIndex: 'version',
       key: 'version',
       sorter: true,
@@ -58,21 +59,21 @@ class ApplicationVersion extends Component {
       filterMultiple: false,
     },
     {
-      title: Choerodon.languageChange('app.code'),
+      title: <FormattedMessage id="app.code" />,
       dataIndex: 'appCode',
       key: 'appCode',
       sorter: true,
       filters: [],
       filterMultiple: false,
     }, {
-      title: Choerodon.languageChange('app.name'),
+      title: <FormattedMessage id="app.name" />,
       dataIndex: 'appName',
       key: 'appName',
       sorter: true,
       filters: [],
       filterMultiple: false,
     }, {
-      title: Choerodon.languageChange('app.createTime'),
+      title: <FormattedMessage id="app.createTime" />,
       dataIndex: 'creationDate',
       key: 'creationDate',
       sorter: true,
@@ -81,12 +82,13 @@ class ApplicationVersion extends Component {
     ];
   } ;
   render() {
-    const { AppVersionStore } = this.props;
+    const { AppVersionStore, intl } = this.props;
     const serviceData = AppVersionStore.getAllData;
     const { type, id: orgId } = AppState.currentMenuType;
+    const menu = AppState.currentMenuType;
     const contentDom = (
       <Table
-        filterBarPlaceholder={'过滤表'}
+        filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
         loading={AppVersionStore.loading}
         pagination={AppVersionStore.pageInfo}
         columns={this.getColumn()}
@@ -96,35 +98,45 @@ class ApplicationVersion extends Component {
       />);
 
     return (
-      <Page className="c7n-region c7n-appVersion-wrapper">
+      <Page
+        className="c7n-region c7n-appVersion-wrapper"
+        service={[
+          'devops-service.application-version.pageByOptions',
+        ]}
+      >
         {AppVersionStore.isRefresh ? <Loadingbar display /> : <React.Fragment>
-          <Header title={Choerodon.languageChange('app.version')}>
+          <Header title={<FormattedMessage id="app.version" />}>
             <Button
               onClick={this.handleRefresh}
             >
               <span className="icon-refresh icon" />
-              <span>{Choerodon.languageChange('refresh')}</span>
+              <FormattedMessage id="refresh" />
             </Button>
           </Header>
           <Content>
-            <h2 className="c7n-space-first">项目&quot;{AppState.currentMenuType.name}&quot;的应用版本管理</h2>
+            <h2 className="c7n-space-first">
+              <FormattedMessage
+                id="appVer.head"
+                values={{
+                  name: `${menu.name}`,
+                }}
+              />
+            </h2>
             <p>
-              应用版本是应用迭代升级生成的版本。您可在此查看版本号、应用编码、应用名称以及版本生成时间。
-              <a href="http://v0-6.choerodon.io/zh/docs/user-guide/development-pipeline/application-version/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <FormattedMessage id="appVer.description" />
+              <a href={intl.formatMessage({ id: 'appVer.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
-                  了解详情
+                  <FormattedMessage id="learnmore" />
                 </span>
                 <span className="icon icon-open_in_new" />
               </a>
             </p>
             {contentDom}
           </Content>
-
         </React.Fragment>}
-
       </Page>
     );
   }
 }
 
-export default withRouter(ApplicationVersion);
+export default withRouter(injectIntl(ApplicationVersion));

@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Form, Select, Input, Tooltip, Modal, Popover, Icon } from 'choerodon-ui';
-import { stores } from 'choerodon-front-boot';
+import { stores, Content } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
 import './NetworkCreate.scss';
@@ -233,12 +234,13 @@ class AddService extends Component {
    * @param callback
    */
   checkName = (rule, value, callback) => {
+    const { intl } = this.props;
     const { store } = this.props;
     const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     const envId = this.props.form.getFieldValue('envId');
-    if (!pattern.test(value)) {
-      callback('编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾');
-    } else {
+    if (value && !pattern.test(value)) {
+      callback(intl.formatMessage({ id: 'network.name.check.failed' }));
+    } else if (value && pattern.test(value)) {
       store.checkDomainName(this.state.projectId, envId, value)
         .then((data) => {
           if (data) {
@@ -247,9 +249,11 @@ class AddService extends Component {
         })
         .catch((error) => {
           if (error.status === 400) {
-            callback('名称已存在');
+            callback(intl.formatMessage({ id: 'network.name.check.exist' }));
           }
         });
+    } else {
+      callback();
     }
   };
   /**
@@ -259,12 +263,13 @@ class AddService extends Component {
    * @param callback
    */
   checkIP =(rule, value, callback) => {
+    const { intl } = this.props;
     const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
     if (value) {
       if (p.test(value)) {
         callback();
       } else {
-        callback('请输入正确的ip类似 (0-255).(0-255).(0-255).(0-255)');
+        callback(intl.formatMessage({ id: 'network.ip.check.failed' }));
       }
     } else {
       callback();
@@ -277,12 +282,13 @@ class AddService extends Component {
    * @param callback
    */
   checkPort = (rule, value, callback) => {
+    const { intl } = this.props;
     const p = /^[1-9]\d*$/;
     if (value) {
       if (p.test(value) && parseInt(value, 10) >= 1 && parseInt(value, 10) <= 65535) {
         callback();
       } else {
-        callback('该字段必须是数字且大小在0-65535之间');
+        callback(intl.formatMessage({ id: 'network.port.check.failed' }));
       }
     } else {
       callback();
@@ -292,15 +298,15 @@ class AddService extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const menu = AppState.currentMenuType;
-    const { store, form } = this.props;
+    const { store, form, intl } = this.props;
     const app = this.state.app.dataSource;
     const env = this.state.env.dataSource;
     const version = store.getVersions;
     let hasPath = false;
     let addStatus = false;
-    let tooltipTitle = '请先选择一个版本';
+    let tooltipTitle = intl.formatMessage({ id: 'network.form.version.null' });
     if (version.length <= 1 && this.state.versionId) {
-      tooltipTitle = '该应用下没有可选版本';
+      tooltipTitle = intl.formatMessage({ id: 'network.form.version.checked' });
     }
     const { versionsArr } = this.state;
     if (versionsArr.length) {
@@ -312,18 +318,7 @@ class AddService extends Component {
     if ((hasPath && version.length > versionsArr.length) || versionsArr.length === 0) {
       addStatus = true;
     }
-    const formContent = (this.props.visible && <div className="c7n-region c7n-network-create">
-      <h2 className="c7n-space-first">在项目&quot;{menu.name}&quot;中创建应用</h2>
-      <p>
-        请选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。
-        转发内部网络，则只需定义端口即可，系统会自动为您分配集群内部IP；转发外部网络，则需要定义外部IP及端口。
-        <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/service/" className="c7n-external-link">
-          <span className="c7n-external-link-content">
-              了解详情
-          </span>
-          <span className="icon icon-open_in_new" />
-        </a>
-      </p>
+    const formContent = (this.props.visible && <Content code={'network.create'} values={{ name: menu.name }} className="c7n-network-create sidebar-content">
       <Form layout="vertical">
         <FormItem
           className="c7n-create-network-formitem"
@@ -332,18 +327,19 @@ class AddService extends Component {
           {getFieldDecorator('envId', {
             rules: [{
               required: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              transform: value => value.toString(),
+              message: intl.formatMessage({ id: 'required' }),
+              // transform: value => value.toString(),
             }],
           })(
             <Select
+              getPopupContainer={triggerNode => triggerNode.parentNode}
               onFocus={this.loadEnv}
               loading={this.state.env.loading}
               dropdownClassName="c7n-network-env"
               filter
               showSearch
               className="c7n-create-network-formitem"
-              label="环境名称"
+              label={<FormattedMessage id={'network.column.env'} />}
               optionFilterProp="children"
               onSelect={this.selectEnv}
               filterOption={(input, option) => option.props.children[2]
@@ -367,69 +363,70 @@ class AddService extends Component {
           {getFieldDecorator('appId', {
             rules: [{
               required: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-              transform: value => value.toString(),
+              message: intl.formatMessage({ id: 'required' }),
+              // transform: value => value.toString(),
             }],
           })(
             <Select
+              getPopupContainer={triggerNode => triggerNode.parentNode}
               disabled={!(this.props.form.getFieldValue('envId'))}
               onFocus={this.loadApp}
               loading={this.state.app.loading}
               filter
               className="c7n-create-network-formitem"
               showSearch
-              notFoundContent="该环境下没有应用部署"
-              label="应用名称"
+              notFoundContent={intl.formatMessage({ id: 'network.form.app.disable' })}
+              label={<FormattedMessage id={'network.form.app'} />}
               optionFilterProp="children"
               onSelect={this.selectApp}
               filterOption={(input, option) =>
                 option.props.children.props.children[1].props.children
                   .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              <OptGroup label="本项目" key={'project'}>
+              <OptGroup label={<FormattedMessage id={'project'} />} key={'project'}>
                 {_.filter(app, a => a.projectId === (parseInt(menu.id, 10))).map(v => (
                   <Option value={v.id} key={v.code}>
                     <Popover
                       placement="right"
                       content={<div>
                         <p>
-                          <span>名称：</span>
+                          <FormattedMessage id={'app.name'} />:
                           <span>{v.name}</span>
                         </p>
                         <p>
-                          <span>编码：</span>
+                          <FormattedMessage id={'app.code'} />:
                           <span>{v.code}</span>
                         </p>
                       </div>}
                     >
                       <span className="icon icon-project" />
-                      <span style={{ display: 'inline-block', paddingLeft: 8 }}>{v.name}</span>
+                      <span style={{ paddingLeft: 8 }}>{v.name}</span>
                     </Popover>
                   </Option>
                 ))}
               </OptGroup>
-              <OptGroup label="应用市场" key={'markert'}>
+              <OptGroup label={<FormattedMessage id={'market'} />} key={'markert'}>
                 {_.filter(app, a => a.projectId !== (parseInt(menu.id, 10))).map(v => (
                   <Option value={v.id} key={v.code}>
                     <Popover
                       placement="right"
                       content={<div>
                         <p>
-                          <span>名称：</span>
+                          <FormattedMessage id={'appstore.name'} />:
                           <span>{v.name}</span>
                         </p>
                         <p>
-                          <span>贡献者：</span>
+                          <FormattedMessage id={'appstore.contributor'} />:
                           <span>{v.contributor}</span>
                         </p>
                         <p>
-                          <span>描述：</span>
+                          <FormattedMessage id={'appstore.description'} />:
                           <span>{v.description}</span>
                         </p>
                       </div>}
                     >
                       <span className="icon icon-apps" />
-                      <span style={{ display: 'inline-block', width: '100%', paddingLeft: 8 }}>{v.name}</span>
+                      <span style={{ width: '100%', paddingLeft: 8 }}>{v.name}</span>
                     </Popover>
                   </Option>
                 ))}
@@ -445,16 +442,17 @@ class AddService extends Component {
             {getFieldDecorator(`version-${data.versionIndex}`, {
               rules: [{
                 required: true,
-                message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-                transform: value => value.toString(),
+                message: intl.formatMessage({ id: 'required' }),
+                // transform: value => value.toString(),
               }],
             })(
               <Select
+                getPopupContainer={triggerNode => triggerNode.parentNode}
                 onFocus={this.loadVersion.bind(this, data.versionIndex)}
                 filter
-                notFoundContent="该应用下没有版本生成"
+                notFoundContent={intl.formatMessage({ id: 'network.form.version.disable' })}
                 disabled={!(this.props.form.getFieldValue('appId'))}
-                label={Choerodon.getMessage('版本', 'version')}
+                label={<FormattedMessage id={'network.column.version'} />}
                 showSearch
                 dropdownMatchSelectWidth
                 size="default"
@@ -489,19 +487,20 @@ class AddService extends Component {
             {getFieldDecorator(`instance-${data.instanceIndex}`, {
               rules: [{
                 required: true,
-                message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
-                transform: value => value.toString(),
+                message: intl.formatMessage({ id: 'required' }),
+                // transform: value => value.toString(),
               }],
             })(
               <Select
+                getPopupContainer={triggerNode => triggerNode.parentNode}
                 loading={this.state.instanceLoading}
                 onFocus={this.loadInstance.bind(this, data.instanceIndex)}
                 filter
                 disabled={!(this.props.form.getFieldValue(`version-${data.versionIndex}`))}
-                label={Choerodon.getMessage('实例', 'instance')}
+                label={<FormattedMessage id={'network.form.instance'} />}
                 showSearch
-                notFoundContent="该版本下还没有实例"
-                mode="tags"
+                notFoundContent={intl.formatMessage({ id: 'network.form.instance.disable' })}
+                mode="multiple"
                 dropdownMatchSelectWidth
                 size="default"
                 optionFilterProp="children"
@@ -528,8 +527,8 @@ class AddService extends Component {
           </Button> : <span className="icon icon-delete c7n-app-icon-disabled" />}
         </div>))}
         <div className="c7n-domain-btn-wrapper">
-          {addStatus ? <Button className="c7n-domain-btn" onClick={this.addVersion} type="primary" icon="add">添加版本</Button>
-            : <Tooltip title={tooltipTitle}><Button className="c7n-domain-btn c7n-domain-icon-delete-disabled" icon="add">添加版本</Button></Tooltip>}
+          {addStatus ? <Button className="c7n-domain-btn" onClick={this.addVersion} type="primary" icon="add"><FormattedMessage id={'network.btn.add'} /></Button>
+            : <Tooltip title={tooltipTitle}><Button className="c7n-domain-btn c7n-domain-icon-delete-disabled" icon="add"><FormattedMessage id={'network.btn.add'} /></Button></Tooltip>}
         </div>
         <FormItem
           className="c7n-create-network-formitem"
@@ -538,13 +537,13 @@ class AddService extends Component {
           {getFieldDecorator('name', {
             rules: [{
               required: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: intl.formatMessage({ id: 'required' }),
             }, {
               validator: this.checkName,
             }],
             initialValue: this.state.networkValue,
           })(
-            <Input disabled={!(this.props.form.getFieldValue('appId'))} label="网络名称" maxLength={25} />,
+            <Input disabled={!(this.props.form.getFieldValue('appId'))} label={<FormattedMessage id={'network.form.name'} />} maxLength={25} />,
           )}
         </FormItem>
         <FormItem
@@ -558,7 +557,7 @@ class AddService extends Component {
               },
             ],
           })(
-            <Input maxLength={15} label="外部IP" />,
+            <Input maxLength={15} label={<FormattedMessage id={'network.column.ip'} />} />,
           )}
         </FormItem>
         <FormItem
@@ -568,12 +567,12 @@ class AddService extends Component {
           {getFieldDecorator('port', {
             rules: [{
               required: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: intl.formatMessage({ id: 'required' }),
             }, {
               validator: this.checkPort,
             }],
           })(
-            <Input maxLength={5} label="端口号" />,
+            <Input maxLength={5} label={<FormattedMessage id={'network.column.port'} />} />,
           )}
         </FormItem>
         <FormItem
@@ -583,20 +582,20 @@ class AddService extends Component {
           {getFieldDecorator('targetPort', {
             rules: [{
               required: true,
-              message: Choerodon.getMessage('该字段是必输的', 'This field is required.'),
+              message: intl.formatMessage({ id: 'required' }),
             }, {
               validator: this.checkPort,
             }],
           })(
             <Input
               maxLength={5}
-              label={'目标端口'}
+              label={<FormattedMessage id={'network.column.targetPort'} />}
               suffix={<Popover
                 overlayStyle={{ maxWidth: '180px', wordBreak: 'break-all' }}
                 className="routePop"
                 placement="right"
                 trigger="hover"
-                content={'网络选择的目标实例所暴露的端口号'}
+                content={intl.formatMessage({ id: 'network.form.targetPort.help' })}
               >
                 <Icon type="help" />
               </Popover>
@@ -605,13 +604,13 @@ class AddService extends Component {
           )}
         </FormItem>
       </Form>
-    </div>);
+    </Content>);
     return (
       <div className="c7n-region">
         <Sidebar
-          cancelText="取消"
-          okText="创建"
-          title="创建网络"
+          cancelText={<FormattedMessage id={'cancel'} />}
+          okText={<FormattedMessage id={'create'} />}
+          title={<FormattedMessage id={'network.header.create'} />}
           visible={this.props.visible}
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
@@ -624,4 +623,4 @@ class AddService extends Component {
   }
 }
 
-export default Form.create({})(withRouter(AddService));
+export default Form.create({})(withRouter(injectIntl(AddService)));

@@ -4,6 +4,7 @@ import { observer, inject } from 'mobx-react';
 import { Button, Steps, Tabs, Tooltip, Icon } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import classnames from 'classnames';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './Deploydetail.scss';
@@ -79,16 +80,17 @@ class DeploymentDetail extends Component {
    */
 
   getTime =(time) => {
+    const { intl } = this.props;
     let times;
     if (time && time.length) {
       if (time[3]) {
-        times = `${time[3]}秒`;
+        times = `${time[3]}${intl.formatMessage({ id: 'ist.sec' })}`;
       } else if (time[2]) {
-        times = `${time[2]}分${time[3]}秒`;
+        times = `${time[2]}${intl.formatMessage({ id: 'ist.min' })}${time[3]}${intl.formatMessage({ id: 'ist.sec' })}`;
       } else if (time[1]) {
-        times = `${time[1]}时${time[2]}分${time[3]}秒`;
+        times = `${time[1]}${intl.formatMessage({ id: 'ist.hour' })}${time[2]}${intl.formatMessage({ id: 'ist.min' })}${time[3]}${intl.formatMessage({ id: 'ist.sec' })}`;
       } else if (time[0]) {
-        times = `${time[0]}天${time[1]}时${time[2]}分${time[3]}秒`;
+        times = `${time[0]}${intl.formatMessage({ id: 'ist.day' })}${time[1]}${intl.formatMessage({ id: 'ist.hour' })}${time[2]}${intl.formatMessage({ id: 'ist.min' })}${time[3]}${intl.formatMessage({ id: 'ist.sec' })}`;
       }
     }
     return times;
@@ -118,7 +120,7 @@ class DeploymentDetail extends Component {
   };
 
   render() {
-    const { DeployDetailStore } = this.props;
+    const { DeployDetailStore, intl } = this.props;
     const { expand } = this.state;
     const valueStyle = classnames({
       'c7n-deployDetail-show': expand,
@@ -143,13 +145,13 @@ class DeploymentDetail extends Component {
     }
 
     const stageData = DeployDetailStore.getStage || [];
-    const log = stageData.length && stageData[0].log ? stageData[0].log : '没有日志信息';
+    const log = stageData.length && stageData[0].log ? stageData[0].log : intl.formatMessage({ id: 'ist.nolog' });
     const dom = [];
     if (stageData.length) {
       stageData.map((step, index) => {
         const title = (<div>
           <div className={`${index}-stage-title stage-title-text`}>{step.stageName}</div>
-          {step.stageTime && <span className="c7n-stage-time">时间:{this.getTime(step.stageTime)}</span>}
+          {step.stageTime && <span className="c7n-stage-time">{intl.formatMessage({ id: 'ist.time' })}:{this.getTime(step.stageTime)}</span>}
         </div>);
         dom.push(<Step
           key={step.weight}
@@ -165,22 +167,38 @@ class DeploymentDetail extends Component {
     const a = DeployDetailStore.getValue;
 
     return (
-      <Page className="c7n-region c7n-deployDetail-wrapper">
-        <Header title={Choerodon.getMessage('查看实例详情', ' Instance Detail')} backPath={`/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+      <Page
+        className="c7n-region c7n-deployDetail-wrapper"
+        service={[
+          'devops-service.application-instance.listStages',
+          'devops-service.application-instance.queryValues',
+          'devops-service.application-instance.listResources',
+        ]}
+      >
+        <Header title={<FormattedMessage id="ist.detail" />} backPath={`/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <Button
             onClick={this.loadAllData}
             funcType="flat"
           >
             <span className="icon-refresh icon" />
-            <span>{Choerodon.languageChange('refresh')}</span>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         { DeployDetailStore.isLoading ? <LoadingBar display /> : <Content className="page-content">
-          <h2 className="c7n-space-first">查看应用&quot;{projectName}&quot;的实例详情</h2>
+          <h2 className="c7n-space-first">
+            <FormattedMessage
+              id="ist.isthead"
+              values={{
+                name: `${projectName}`,
+              }}
+            />
+          </h2>
           <p>
-            您可在此查看该实例的运行详情及部署详情。运行详情包括各资源对象的基本信息；部署详情包括配置信息及部署阶段及日志。
-            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/instance/" className="c7n-external-link">
-              <span className="c7n-external-link-content">了解详情</span>
+            <FormattedMessage id="ist.istDes" />
+            <a href={intl.formatMessage({ id: 'ist.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <span className="c7n-external-link-content">
+                <FormattedMessage id="learnmore" />
+              </span>
               <span className="icon icon-open_in_new" />
             </a>
           </p>
@@ -188,7 +206,7 @@ class DeploymentDetail extends Component {
             className="c7n-deployDetail-tab"
             defaultActiveKey={this.state.status === 'running' ? '1' : '2'}
           >
-            {this.state.status === 'running' && <TabPane tab="运行详情" key="1">
+            {this.state.status === 'running' && <TabPane tab={intl.formatMessage({ id: 'ist.runDetial' })} key="1">
               <div className="c7n-deployDetail-card c7n-deployDetail-card-content ">
                 <h2 className="c7n-space-first">Resources</h2>
                 {podDTO.length >= 1 && <div className="c7n-deployDetail-table-header header-first">
@@ -259,7 +277,7 @@ class DeploymentDetail extends Component {
                           <td>{dep.desired}</td>
                           <td>{dep.current}</td>
                           <td>{dep.upToDate}</td>
-                          <td>{dep.available ? '可用' : '不可用'}</td>
+                          <td>{dep.available ? intl.formatMessage({ id: 'ist.y' }) : intl.formatMessage({ id: 'ist.n' })}</td>
                           <td><TimePopover content={dep.age} /></td>
                         </tr>
                       ))}
@@ -318,13 +336,9 @@ class DeploymentDetail extends Component {
                 </div> }
               </div>
             </TabPane> }
-            <TabPane tab="部署详情" key="2">
-              <div className="c7n-deployDetail-card c7n-deployDetail-card-content " style={{ display: 'none' }}>
-                <h2 className="c7n-space-first c7n-h2-inline c7n-deployDetail-title">实例运行报错的信息</h2>
-                <p>这事就是测试，实例报错了，不知道什么原因总之就是报错了</p>
-              </div>
+            <TabPane tab={intl.formatMessage({ id: 'deploy.detail' })} key="2">
               <div className="c7n-deployDetail-card c7n-deployDetail-card-content ">
-                <h2 className="c7n-space-first c7n-h2-inline c7n-deployDetail-title">配置信息</h2>
+                <h2 className="c7n-space-first c7n-h2-inline c7n-deployDetail-title">{intl.formatMessage({ id: 'deploy.info' })}</h2>
                 <div role="none" className="c7n-deployDetail-expand" onClick={this.changeStatus}>
                   <Button shape="circle">
                     {this.state.expand ?
@@ -344,11 +358,11 @@ class DeploymentDetail extends Component {
                 </div>
               </div>
               {stageData.length >= 1 && <div className="c7n-deployDetail-card-content">
-                <h2 className="c7n-space-first c7n-deployDetail-title">阶段及日志</h2>
+                <h2 className="c7n-space-first c7n-deployDetail-title">{intl.formatMessage({ id: 'deploy.stage' })}</h2>
                 <Steps current={this.state.current} className="c7n-deployDetail-steps">
                   {dom}
                 </Steps>
-                <Log className="c7n-deployDetail-pre1" value={this.state.log || log} />
+                <Log className="c7n-deployDetail-pre1" value={this.state.log === undefined ? log : this.state.log} />
               </div>
               }
             </TabPane>
@@ -357,4 +371,4 @@ class DeploymentDetail extends Component {
       </Page>);
   }
 }
-export default withRouter(DeploymentDetail);
+export default withRouter(injectIntl(DeploymentDetail));

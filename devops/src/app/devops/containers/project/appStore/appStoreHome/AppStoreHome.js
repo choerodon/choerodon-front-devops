@@ -3,6 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Input, Icon, Pagination, Table, Popover } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import LoadingBar from '../../../../components/loadingBar';
 import './AppStore.scss';
@@ -101,6 +102,28 @@ class AppStoreHome extends Component {
   };
 
   /**
+   * 跳转导入chart界面
+   */
+  importChart = () => {
+    const projectId = AppState.currentMenuType.id;
+    const organizationId = AppState.currentMenuType.organizationId;
+    const projectName = AppState.currentMenuType.name;
+    const type = AppState.currentMenuType.type;
+    this.linkToChange(`/devops/appstore/import?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+  };
+
+  /**
+   * 跳转导出chart界面
+   */
+  exportChart = () => {
+    const projectId = AppState.currentMenuType.id;
+    const organizationId = AppState.currentMenuType.organizationId;
+    const projectName = AppState.currentMenuType.name;
+    const type = AppState.currentMenuType.type;
+    this.linkToChange(`/devops/appstore/export?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+  };
+
+  /**
    * 加载应用卡片
    */
   loadAppCards = () => {
@@ -146,7 +169,7 @@ class AppStoreHome extends Component {
 
 
   render() {
-    const { AppStoreStore } = this.props;
+    const { AppStoreStore, intl } = this.props;
     const pageInfo = AppStoreStore.getPageInfo;
     const appCards = AppStoreStore.getAppCards.slice();
     const listActive = AppStoreStore.getListActive;
@@ -163,7 +186,7 @@ class AppStoreHome extends Component {
         className="c7n-store-card"
         onClick={this.appDetail.bind(this, card.id)}
       >
-        {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${card.imgUrl}` }} />
+        {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${Choerodon.fileServer(card.imgUrl)})` }} />
           : <div className="c7n-store-card-icon" />}
         <div title={card.name} className="c7n-store-card-name">
           {card.name}
@@ -174,33 +197,34 @@ class AppStoreHome extends Component {
         <div title={card.description} className="c7n-store-card-des">
           {card.description}
         </div>
-      </div>)) : (<span className="c7n-none-des">暂无已发布应用</span>);
+      </div>)) : (<span className="c7n-none-des">{intl.formatMessage({ id: 'appstore.noReleaseApp' })}</span>);
 
     const columns = [{
-      title: Choerodon.languageChange('app.name'),
+      title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
       key: 'name',
     }, {
-      title: Choerodon.getMessage('分类', 'Category'),
+      title: <FormattedMessage id="appstore.category" />,
       dataIndex: 'category',
       key: 'category',
     }, {
-      title: Choerodon.getMessage('描述', 'Description'),
+      title: <FormattedMessage id="appstore.description" />,
       dataIndex: 'description',
       key: 'description',
     }, {
-      width: 64,
+      width: 56,
       key: 'action',
       render: (test, record) => (
         <div>
           <Permission
-            service={['devops-service.devops-env-pod-container.queryLogByPod']}
+            service={['devops-service.application-market.queryApp']}
             organizationId={organizationId}
             projectId={projectId}
             type={type}
           >
-            <Popover placement="bottom" content={<div><span>应用详情</span></div>}>
+            <Popover placement="bottom" content={<FormattedMessage id="app.appDetail" />}>
               <Button
+                size="small"
                 shape="circle"
                 onClick={this.appDetail.bind(this, record.id)}
               >
@@ -221,30 +245,61 @@ class AppStoreHome extends Component {
     />);
 
     return (
-      <Page className="c7n-region page-container">
-        <Header title={Choerodon.languageChange('appstore.title')}>
+      <Page
+        className="c7n-region page-container"
+        service={[
+          'devops-service.application-market.listAllApp',
+          'devops-service.application-market.queryApp',
+          'devops-service.application-market.queryAppVersionReadme',
+        ]}
+      >
+        <Header title={<FormattedMessage id="appstore.title" />}>
+          <Permission
+            service={['devops-service.application-market.importApps']}
+          >
+            <Button
+              funcType="flat"
+              onClick={this.importChart}
+            >
+              <span className="icon icon-get_app" />
+              <FormattedMessage id="appstore.import" />
+            </Button>
+          </Permission>
+          <Permission
+            service={['devops-service.application-market.exportFile']}
+          >
+            <Button
+              funcType="flat"
+              onClick={this.exportChart}
+            >
+              <span className="icon-file_upload icon" />
+              <FormattedMessage id="appstore.export" />
+            </Button>
+          </Permission>
           <Button
             funcType="flat"
             onClick={this.reload}
           >
             <span className="icon-refresh icon" />
-            <span>{Choerodon.languageChange('refresh')}</span>
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
         <div className="c7n-store-content">
-          <h2 className="c7n-space-first">应用市场</h2>
+          <h2 className="c7n-space-first">
+            <FormattedMessage id="appstore.title" />
+          </h2>
           <p>
-            您可以在此查看已发布的应用及其详细信息，并选择版本进行部署。
-            <a href="http://v0-6.choerodon.io/zh/docs/user-guide/deployment-pipeline/application-market/" rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <FormattedMessage id="appstore.headDes" />
+            <a href={intl.formatMessage({ id: 'appstore.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
-                了解详情
+                <FormattedMessage id="learnmore" />
               </span>
               <span className="icon icon-open_in_new" />
             </a>
           </p>
           <div className="c7n-store-search">
             <Input
-              placeholder="搜索应用名称或类型"
+              placeholder={intl.formatMessage({ id: 'appstore.search' })}
               value={this.state.val}
               prefix={prefix}
               suffix={suffix}
@@ -280,4 +335,4 @@ class AppStoreHome extends Component {
   }
 }
 
-export default withRouter(AppStoreHome);
+export default withRouter(injectIntl(AppStoreHome));

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Table, Progress, Tooltip } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, Action, stores } from 'choerodon-front-boot';
 import ValueConfig from '../valueConfig';
 import '../AppDeploy.scss';
@@ -200,6 +201,7 @@ class AppInstance extends Component {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
+    const { intl } = this.props;
     if (record.status === 'operating' || !record.connect) {
       return (<Action
         data={[
@@ -208,7 +210,7 @@ class AppInstance extends Component {
             organizationId,
             projectId,
             service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
-            text: '查看实例详情',
+            text: intl.formatMessage({ id: 'ist.detail' }),
             action: this.linkDeployDetail.bind(this, record.id, record.status),
           }]}
       />);
@@ -220,14 +222,14 @@ class AppInstance extends Component {
             organizationId,
             projectId,
             service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
-            text: '查看实例详情',
+            text: intl.formatMessage({ id: 'ist.detail' }),
             action: this.linkDeployDetail.bind(this, record.id, record.status),
           }, {
             type,
             organizationId,
             projectId,
             service: ['devops-service.application-instance.queryValues'],
-            text: Choerodon.getMessage('修改配置信息', 'Modify configuration information'),
+            text: intl.formatMessage({ id: 'ist.values' }),
             action: this.updateConfig.bind(this, record.code, record.id,
               record.envId, record.appVersionId, record.appId),
           }, {
@@ -235,7 +237,7 @@ class AppInstance extends Component {
             organizationId,
             projectId,
             service: ['devops-service.application-instance.delete'],
-            text: Choerodon.getMessage('删除实例', 'Delete the instance'),
+            text: intl.formatMessage({ id: 'ist.del' }),
             action: this.handleOpen.bind(this, record.id),
           },
         ]}
@@ -248,14 +250,14 @@ class AppInstance extends Component {
             organizationId,
             projectId,
             service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
-            text: '查看实例详情',
+            text: intl.formatMessage({ id: 'ist.detail' }),
             action: this.linkDeployDetail.bind(this, record.id, record.status),
           }, {
             type,
             organizationId,
             projectId,
             service: ['devops-service.application-instance.queryValues'],
-            text: Choerodon.getMessage('修改配置信息', 'Modify configuration information'),
+            text: intl.formatMessage({ id: 'ist.values' }),
             action: this.updateConfig.bind(this, record.code, record.id,
               record.envId, record.appVersionId, record.appId),
           }, {
@@ -263,14 +265,14 @@ class AppInstance extends Component {
             organizationId,
             projectId,
             service: ['devops-service.application-instance.start', 'devops-service.application-instance.stop'],
-            text: record.status !== 'stoped' ? Choerodon.getMessage('停止实例', 'Stop the instance') : Choerodon.getMessage('重启实例', 'Start the instance'),
+            text: record.status !== 'stoped' ? intl.formatMessage({ id: 'ist.stop' }) : intl.formatMessage({ id: 'ist.run' }),
             action: record.status !== 'stoped' ? this.activeIst.bind(this, record.id, 'stop') : this.activeIst.bind(this, record.id, 'start'),
           }, {
             type,
             organizationId,
             projectId,
             service: ['devops-service.application-instance.delete'],
-            text: Choerodon.getMessage('删除实例', 'Delete the instance'),
+            text: intl.formatMessage({ id: 'ist.del' }),
             action: this.handleOpen.bind(this, record.id),
           },
         ]}
@@ -279,13 +281,13 @@ class AppInstance extends Component {
   };
 
   render() {
-    const { store } = this.props;
+    const { store, intl } = this.props;
     const ist = store.getIstAll;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const pageInfo = store.getPageInfo;
 
     const columns = [{
-      title: Choerodon.languageChange('deploy.status'),
+      title: <FormattedMessage id="deploy.status" />,
       key: 'podCount',
       filters: [],
       render: record => (
@@ -300,23 +302,23 @@ class AppInstance extends Component {
         </div>
       ),
     }, {
-      title: Choerodon.languageChange('deploy.istStatus'),
+      title: <FormattedMessage id="deploy.istStatus" />,
       key: 'status',
       render: record => (
         <div>
           <div className={`c7n-ist-status c7n-ist-status_${record.status}`}>
-            <div>{Choerodon.languageChange(record.status || 'null')}</div>
+            <div>{intl.formatMessage({ id: record.status || 'null' })}</div>
           </div>
         </div>
       ),
     }, {
-      title: Choerodon.languageChange('deploy.instance'),
+      title: <FormattedMessage id="deploy.instance" />,
       key: 'code',
       filters: [],
       render: record => (record.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{record.code}</span> : <div>
         {record.commandStatus === 'doing' ? (<div>
           <span className="c7n-deploy-istCode">{record.code}</span>
-          <Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
+          <Tooltip title={intl.formatMessage({ id: `ist_${record.commandType}` })}>
             <Progress type="loading" width={15} />
           </Tooltip>
         </div>) :
@@ -328,13 +330,13 @@ class AppInstance extends Component {
           </div>)}
       </div>),
     }, {
-      title: Choerodon.languageChange('deploy.app'),
+      title: <FormattedMessage id="deploy.app" />,
       key: 'appName',
       filters: [],
       render: record => (
         <div>
           <div className="c7n-deploy-col-inside">
-            {record.projectId === projectId ? <Tooltip title="本项目"><span className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title="应用市场"><span className="icon icon-apps c7n-icon-publish" /></Tooltip>}
+            {record.projectId === projectId ? <Tooltip title={<FormattedMessage id="project" />}><span className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id="market" />}><span className="icon icon-apps c7n-icon-publish" /></Tooltip>}
             <span>{record.appName}</span>
           </div>
           <div>
@@ -343,13 +345,13 @@ class AppInstance extends Component {
         </div>
       ),
     }, {
-      title: Choerodon.languageChange('deploy.env'),
+      title: <FormattedMessage id="deploy.env" />,
       key: 'envCode',
       filters: [],
       render: record => (
         <div>
           <div className="c7n-deploy-col-inside">
-            {record.connect ? <Tooltip title="已连接"><span className="c7n-ist-status_on" /></Tooltip> : <Tooltip title="未连接"><span className="c7n-ist-status_off" /></Tooltip>}
+            {record.connect ? <Tooltip title={<FormattedMessage id="connect" />}><span className="c7n-ist-status_on" /></Tooltip> : <Tooltip title={<FormattedMessage id="disconnect" />}><span className="c7n-ist-status_off" /></Tooltip>}
             <span>{record.envName}</span>
           </div>
           <div>
@@ -358,7 +360,7 @@ class AppInstance extends Component {
         </div>
       ),
     }, {
-      width: 64,
+      width: 56,
       className: 'c7n-operate-icon',
       key: 'action',
       render: record => this.columnAction(record),
@@ -367,7 +369,7 @@ class AppInstance extends Component {
     return (
       <div className="c7n-region">
         <Table
-          filterBarPlaceholder="过滤表"
+          filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
           onChange={this.tableChange}
           loading={store.getIsLoading}
           columns={columns}
@@ -394,4 +396,4 @@ class AppInstance extends Component {
   }
 }
 
-export default (withRouter(AppInstance));
+export default (withRouter(injectIntl(AppInstance)));

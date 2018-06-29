@@ -2,8 +2,9 @@
  * yaml 编辑框的高亮效果
  */
 import React, { Component } from 'react';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import ReactAce from 'react-ace-editor';
-import ace from 'brace';
+// import ace from 'brace';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import 'brace/mode/yaml';
@@ -11,7 +12,7 @@ import 'brace/theme/dawn';
 import './AceForYaml.scss';
 
 
-const { Range } = ace.acequire('ace/range');
+const { Range } = window.ace.acequire('ace/range');
 /* eslint-disable react/no-string-refs */
 
 class HighlightAce extends Component {
@@ -109,6 +110,7 @@ class HighlightAce extends Component {
    */
   setOptions =() => {
     const editor = this.ace.editor;
+    editor.setAutoScrollEditorIntoView(true);
     editor.$blockScrolling = Infinity;
     if (this.props.readOnly) {
       this.ace.editor.setReadOnly(true);
@@ -170,13 +172,14 @@ class HighlightAce extends Component {
 
   render() {
     const { value, totalLine, errorLines, isFileError } = this.props;
+    const { formatMessage } = this.props.intl;
     this.handleError();
     return (
       <div>
         { !this.props.readOnly && <div className="ace-error">
-          <span className="deployApp-config-block deployApp-config-lastModify" /> <span className="deployApp-config-title">上次部署修改</span>
-          <span className="deployApp-config-block deployApp-config-modify" /> <span className="deployApp-config-title">本次修改</span>
-          <span className="deployApp-config-error" /><span className="deployApp-config-title">yaml格式错误</span>
+          <span className="deployApp-config-block deployApp-config-lastModify" /> <span className="deployApp-config-title">{formatMessage({ id: 'yaml.lastModify' })}</span>
+          <span className="deployApp-config-block deployApp-config-modify" /> <span className="deployApp-config-title">{formatMessage({ id: 'yaml.modify' })}</span>
+          <span className="deployApp-config-error" /><span className="deployApp-config-title">{formatMessage({ id: 'yaml.yaml.error' })}</span>
         </div> }
         <ReactAce
           mode="yaml"
@@ -188,11 +191,11 @@ class HighlightAce extends Component {
           ref={(instance) => { this.ace = instance; }} // Let's put things into scope
         />
         {isFileError && <div className="ace-error-message">
-          <span className="icon icon-error config-icon-error" /> <span className="config-error-mes">Values文件yaml格式错误，请在应用代码中修改错误并重新生成正确的应用版本。</span>
+          <span className="icon icon-error config-icon-error" /> <span className="config-error-mes">{formatMessage({ id: 'yaml.error.tooltip' })}</span>
         </div>}
       </div>
     );
   }
 }
 
-export default HighlightAce;
+export default injectIntl(HighlightAce);
