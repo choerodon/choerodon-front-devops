@@ -54,7 +54,7 @@ const pageDetail = {
   // appRelease
   'release.title': '项目"{name}"的应用发布',
   'release.description': '应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。',
-  'release.link': `${docServer}/user-guide/development-pipeline/application-release/`,
+  'release.link': `${docServer}/user-guide/application-market/application-release/`,
   'release.add.title': '项目"{name}"的应用发布',
   'release.add.description': '应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。',
   'release.edit.title': '修改应用"{name}"的信息',
@@ -121,7 +121,7 @@ const pageDetail = {
   'appstore.importStep1': '您可以在此选择相应的文件，并进行上传。',
   'appstore.importStep2': '您可以在此选择是否发布，如果发布还可以选择发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。',
   'appstore.importStep3': '您可以在此确认上传应用的信息，如需修改请返回上一步。',
-  'appstore.link': `${docServer}/user-guide/development-pipeline/application-market/`,
+  'appstore.link': `${docServer}/user-guide/application-market/application-market/`,
 
   // appVersion
   'appVer.head': '项目\"{name}\"的应用版本管理',
