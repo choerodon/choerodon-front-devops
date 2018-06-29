@@ -217,7 +217,7 @@ class AppStoreHome extends Component {
       render: (test, record) => (
         <div>
           <Permission
-            service={['devops-service.devops-env-pod-container.queryLogByPod']}
+            service={['devops-service.application-market.queryApp']}
             organizationId={organizationId}
             projectId={projectId}
             type={type}
@@ -254,20 +254,28 @@ class AppStoreHome extends Component {
         ]}
       >
         <Header title={<FormattedMessage id="appstore.title" />}>
-          <Button
-            funcType="flat"
-            onClick={this.importChart}
+          <Permission
+            service={['devops-service.application-market.importApps']}
           >
-            <span className="icon icon-get_app" />
-            <FormattedMessage id="appstore.import" />
-          </Button>
-          <Button
-            funcType="flat"
-            onClick={this.exportChart}
+            <Button
+              funcType="flat"
+              onClick={this.importChart}
+            >
+              <span className="icon icon-get_app" />
+              <FormattedMessage id="appstore.import" />
+            </Button>
+          </Permission>
+          <Permission
+            service={['devops-service.application-market.exportFile']}
           >
-            <span className="icon-file_upload icon" />
-            <FormattedMessage id="appstore.export" />
-          </Button>
+            <Button
+              funcType="flat"
+              onClick={this.exportChart}
+            >
+              <span className="icon-file_upload icon" />
+              <FormattedMessage id="appstore.export" />
+            </Button>
+          </Permission>
           <Button
             funcType="flat"
             onClick={this.reload}

@@ -234,9 +234,6 @@ class ExportChart extends Component {
           } else if (datas.length) {
             const versions = [datas.reverse()[0]];
             selectedRows[i].versions = ('versions' in selectedRows[i]) ? selectedRows[i].versions : versions;
-            // const versionArr = datas.reverse();
-            // window.console.log(datas);
-            // window.console.log(versionArr);
             if (i !== selectedRowKeys.length - 1) {
               this.setState({ [i]: { versions: datas }, selectedRows });
             } else {
