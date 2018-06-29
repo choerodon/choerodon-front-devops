@@ -208,10 +208,6 @@ class ExportChart extends Component {
     ExportChartStore.exportChart(this.state.projectId, data)
       .then((res) => {
         const blob = new Blob([res], { 'Content-Type': 'application/zip;charset=utf-8' });
-        // const a = document.createElement('a');
-        // a.href = window.URL.createObjectURL(blob);
-        // a.download = true;
-        //  a.click();
         const fileDownload = require('react-file-download');
         fileDownload(blob, 'chart.zip', 'application/zip');
         this.setState({ submitting: false });
@@ -346,7 +342,6 @@ class ExportChart extends Component {
               <span>{app.name}</span>
             </div>
             <div className="c7n-step-section" key={app.id}>
-              {this.state[index] && window.console.log(this.state[index].versions)}
               <Select
                 onDeselect={this.clearVersions.bind(this, index)}
                 defaultValue={_.map(_.map(this.state.selectedRows[index].versions, 'id'), v => v.toString())}
