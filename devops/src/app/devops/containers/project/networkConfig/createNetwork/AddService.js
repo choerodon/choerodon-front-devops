@@ -400,7 +400,7 @@ class AddService extends Component {
                       </div>}
                     >
                       <span className="icon icon-project" />
-                      <span style={{ display: 'inline-block', paddingLeft: 8 }}>{v.name}</span>
+                      <span style={{ paddingLeft: 8 }}>{v.name}</span>
                     </Popover>
                   </Option>
                 ))}
@@ -426,7 +426,7 @@ class AddService extends Component {
                       </div>}
                     >
                       <span className="icon icon-apps" />
-                      <span style={{ display: 'inline-block', width: '100%', paddingLeft: 8 }}>{v.name}</span>
+                      <span style={{ width: '100%', paddingLeft: 8 }}>{v.name}</span>
                     </Popover>
                   </Option>
                 ))}

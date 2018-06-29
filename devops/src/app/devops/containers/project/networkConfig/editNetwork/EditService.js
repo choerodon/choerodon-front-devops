@@ -459,7 +459,7 @@ class EditService extends Component {
                             </div>}
                           >
                             <span className="icon icon-project" />
-                            <span style={{ display: 'inline-block', paddingLeft: 8 }}>{v.name}</span>
+                            <span style={{ paddingLeft: 8 }}>{v.name}</span>
                           </Popover>
                         </Option>
                       ))}
@@ -472,20 +472,20 @@ class EditService extends Component {
                             content={<div>
                               <p>
                                 <FormattedMessage id={'appstore.name'} />:
-                                <span>{v.name}</span>
+                                <span> {v.name}</span>
                               </p>
                               <p>
                                 <FormattedMessage id={'appstore.contributor'} />:
-                                <span>{v.contributor}</span>
+                                <span> {v.contributor}</span>
                               </p>
                               <p>
                                 <FormattedMessage id={'appstore.description'} />:
-                                <span>{v.description}</span>
+                                <span> {v.description}</span>
                               </p>
                             </div>}
                           >
                             <span className="icon icon-apps" />
-                            <span style={{ display: 'inline-block', paddingLeft: 8 }}>{v.name}</span>
+                            <span style={{ paddingLeft: 8 }}>{v.name}</span>
                           </Popover>
                         </Option>
                       ))}
