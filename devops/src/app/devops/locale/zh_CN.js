@@ -546,7 +546,7 @@ const zhCN = {
   domain_delete: '域名删除中，请耐心等待',
   domain_update: '域名更新中，请耐心等待',
   'domain.name.check.exist': '名称已存在',
-  'domain.name.check.failed': '由小写字母、数字、\'-\'或\'.\'组成，并且必须以字母、数字开始和结束',
+  'domain.name.check.failed': '由小写字母、数字、\'-\'组成，并且必须以字母、数字开始和结束',
   'domain.path.check.exist': '路径在该域名路径下已存在，请更改路径或者域名路径',
   'domain.network.check.failed': '请移除不可用的网络',
   'domain.path.add': '添加路径',
