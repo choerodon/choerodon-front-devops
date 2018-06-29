@@ -345,7 +345,7 @@ class ExportChart extends Component {
             <div className="c7n-step-section" key={app.id}>
               <Select
                 onDeselect={this.clearVersions.bind(this, index)}
-                // defaultValue={_.map(_.map('versions' in selectedRows[index] && selectedRows[index].versions, 'id'), v => v.toString())}
+                defaultValue={_.map(_.map('versions' in selectedRows[index] && selectedRows[index].versions, 'id'), v => v.toString())}
                 onSelect={this.handleSelectVersion.bind(this, index)}
                 className={'c7n-step-select'}
                 loading={this.state.isLoading}
