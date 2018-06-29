@@ -186,7 +186,7 @@ class ExportChart extends Component {
     const selectedRows = this.state.selectedRows;
     let disabled = false;
     for (let i = 0; i < selectedRows.length; i += 1) {
-      if ('versions' in selectedRows[i] && selectedRows[i].versions.length === 0) {
+      if (('versions' in selectedRows[i] && selectedRows[i].versions.length === 0) || (!('versions' in selectedRows[i]))) {
         disabled = true;
         return disabled;
       }
