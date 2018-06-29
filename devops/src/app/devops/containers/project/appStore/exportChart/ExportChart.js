@@ -207,10 +207,13 @@ class ExportChart extends Component {
     this.setState({ submitting: true });
     ExportChartStore.exportChart(this.state.projectId, data)
       .then((res) => {
-        const blob = new Blob([res], { type: 'application/zip;charset=utf-8' });
-        const a = document.createElement('a');
-        a.href = window.URL.createObjectURL(blob);
-        a.click();
+        const blob = new Blob([res], { 'Content-Type': 'application/zip;charset=utf-8' });
+        // const a = document.createElement('a');
+        // a.href = window.URL.createObjectURL(blob);
+        // a.download = true;
+        //  a.click();
+        const fileDownload = require('react-file-download');
+        fileDownload(blob, 'chart.zip', 'application/zip');
         this.setState({ submitting: false });
         Choerodon.prompt(intl.formatMessage({ id: 'appstore.exportSucc' }));
         this.handleBack();
@@ -231,10 +234,13 @@ class ExportChart extends Component {
           } else if (datas.length) {
             const versions = [datas.reverse()[0]];
             selectedRows[i].versions = ('versions' in selectedRows[i]) ? selectedRows[i].versions : versions;
+            // const versionArr = datas.reverse();
+            // window.console.log(datas);
+            // window.console.log(versionArr);
             if (i !== selectedRowKeys.length - 1) {
-              this.setState({ [i]: { versions: datas.reverse() }, selectedRows });
+              this.setState({ [i]: { versions: datas }, selectedRows });
             } else {
-              this.setState({ [i]: { versions: datas.reverse() }, selectedRows }, () => {
+              this.setState({ [i]: { versions: datas }, selectedRows }, () => {
                 this.timer = setTimeout(() => this.changeStep(2), 300);
               });
             }
@@ -343,6 +349,7 @@ class ExportChart extends Component {
               <span>{app.name}</span>
             </div>
             <div className="c7n-step-section" key={app.id}>
+              {this.state[index] && window.console.log(this.state[index].versions)}
               <Select
                 onDeselect={this.clearVersions.bind(this, index)}
                 defaultValue={_.map(_.map(this.state.selectedRows[index].versions, 'id'), v => v.toString())}
