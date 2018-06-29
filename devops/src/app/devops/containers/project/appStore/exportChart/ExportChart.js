@@ -113,7 +113,7 @@ class ExportChart extends Component {
         if (data && data.failed) {
           Choerodon.prompt(data.message);
         } else if (data) {
-          this.setState({ [index]: { versions: data.appVersions } });
+          this.setState({ [index]: { versions: data.reverse() } });
         }
       });
   };
@@ -230,12 +230,13 @@ class ExportChart extends Component {
           } else if (datas.length) {
             const versions = [datas.reverse()[0]];
             selectedRows[i].versions = ('versions' in selectedRows[i]) ? selectedRows[i].versions : versions;
+            // this.setState({ [i]: { versions: datas }, selectedRows });
+            // this.changeStep(2);
             if (i !== selectedRowKeys.length - 1) {
               this.setState({ [i]: { versions: datas }, selectedRows });
             } else {
-              this.setState({ [i]: { versions: datas }, selectedRows }, () => {
-                this.timer = setTimeout(() => this.changeStep(2), 300);
-              });
+              this.setState({ [i]: { versions: datas }, selectedRows });
+              this.changeStep(2);
             }
           }
         });
@@ -313,7 +314,7 @@ class ExportChart extends Component {
             funcType="raised"
             className="c7n-step-button"
             disabled={selectedRows.length === 0}
-            onClick={this.handleLoadAllVersion}
+            onClick={this.changeStep.bind(this, 2)}
           >
             {intl.formatMessage({ id: 'next' })}
           </Button>
@@ -344,11 +345,11 @@ class ExportChart extends Component {
             <div className="c7n-step-section" key={app.id}>
               <Select
                 onDeselect={this.clearVersions.bind(this, index)}
-                defaultValue={_.map(_.map(this.state.selectedRows[index].versions, 'id'), v => v.toString())}
+                // defaultValue={_.map(_.map('versions' in selectedRows[index] && selectedRows[index].versions, 'id'), v => v.toString())}
                 onSelect={this.handleSelectVersion.bind(this, index)}
                 className={'c7n-step-select'}
                 loading={this.state.isLoading}
-                // onFocus={this.loadVersion.bind(this, app.id, index)}
+                onFocus={this.loadVersion.bind(this, app.id, index)}
                 filter
                 label={intl.formatMessage({ id: 'app.version' })}
                 showSearch
@@ -364,7 +365,7 @@ class ExportChart extends Component {
                       .toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
-                { this.state[index].versions.map(v => (
+                { this.state[index] && this.state[index].versions.map(v => (
                   <Option key={v.version} value={v.id.toString()}>
                     {v.version}
                   </Option>
