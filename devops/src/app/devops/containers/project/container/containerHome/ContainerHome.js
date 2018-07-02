@@ -138,6 +138,21 @@ class ContainerHome extends Component {
           </MouserOverWrapper>
         </div>
       </div>),
+    },  {
+      title: <FormattedMessage id="deploy.env" />,
+      key: 'envCode',
+      filters: [],
+      render: record => (
+        <div>
+          <div className="c7n-deploy-col-inside">
+            {record.connect ? <Tooltip title={<FormattedMessage id="connect" />}><span className="c7n-ist-status_on" /></Tooltip> : <Tooltip title={<FormattedMessage id="disconnect" />}><span className="c7n-ist-status_off" /></Tooltip>}
+            <span>{record.envName}</span>
+          </div>
+          <div>
+            <span className="c7n-deploy-text_gray">{record.envCode}</span>
+          </div>
+        </div>
+      ),
     }, {
       title: <FormattedMessage id={'container.ip'} />,
       dataIndex: 'ip',
