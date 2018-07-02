@@ -21,6 +21,7 @@ const Domain = asyncRouter(() => import('./project/domain'));
 const Container = asyncRouter(() => import('./project/container'));
 const AppRelease = asyncRouter(() => import('./project/appRelease'));
 const Branch = asyncRouter(() => import('./project/branch'));
+const AppTag = asyncRouter(() => import('./project/appTag'));
 
 @inject('AppState')
 class DEVOPSIndex extends React.Component {
@@ -44,6 +45,7 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/container`} component={Container} />
           <Route path={`${match.url}/app-release`} component={AppRelease} />
           <Route path={`${match.url}/branch`} component={Branch} />
+          <Route path={`${match.url}/app-tag`} component={AppTag} />
           <Route path={'*'} component={nomatch} />
         </Switch>
       </IntlProviderAsync>
