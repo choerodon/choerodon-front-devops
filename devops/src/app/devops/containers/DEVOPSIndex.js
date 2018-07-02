@@ -20,6 +20,7 @@ const NetworkConfig = asyncRouter(() => import('./project/networkConfig'));
 const Domain = asyncRouter(() => import('./project/domain'));
 const Container = asyncRouter(() => import('./project/container'));
 const AppRelease = asyncRouter(() => import('./project/appRelease'));
+const MergeRequest = asyncRouter(() => import('./project/mergeRequest'));
 
 @inject('AppState')
 class DEVOPSIndex extends React.Component {
@@ -42,6 +43,7 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/domain`} component={Domain} />
           <Route path={`${match.url}/container`} component={Container} />
           <Route path={`${match.url}/app-release`} component={AppRelease} />
+          <Route path={`${match.url}/merge-request`} component={MergeRequest} />
           <Route path={'*'} component={nomatch} />
         </Switch>
       </IntlProviderAsync>

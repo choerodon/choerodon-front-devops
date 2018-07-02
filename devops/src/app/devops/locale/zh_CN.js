@@ -133,6 +133,10 @@ const pageDetail = {
   'ciPipeline.description': '您可在此查看各应用所有持续集成流水线的运行情况。',
   'ciPipeline.link': `${docServer}/user-guide/development-pipeline/continuous-integration/`,
 
+  // merge-request
+  'mergeRequest.head': '项目"{name}"的应用版本管理',
+  'mergeRequest.description': '应用版本是应用迭代升级生成的版本。您可在此查看版本号、应用编码、应用名称以及版本生成时间。',
+
 };
 
 const zhCN = {
