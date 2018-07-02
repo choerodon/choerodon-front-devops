@@ -25,6 +25,19 @@ class AppDeploymentStore {
   @observable envId = false;
   @observable verId = false;
   @observable appId = false;
+  @observable istParams = [];
+
+  @action setIstTableFilter(param) {
+    if (param) {
+      this.istParams = param;
+    } else {
+      this.istParams = [];
+    }
+  }
+
+  @computed get getIstParams() {
+    return this.istParams.slice();
+  }
 
   @action setPageInfo(page) {
     this.pageInfo = { current: page.number + 1, total: page.totalElements, pageSize: page.size };
