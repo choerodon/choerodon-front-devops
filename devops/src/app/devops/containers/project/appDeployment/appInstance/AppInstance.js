@@ -136,6 +136,7 @@ class AppInstance extends Component {
     this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
     store.loadInstanceAll(projectId, pagination.current - 1, pagination.pageSize, sort,
       null, null, null, postData);
+    store.setIstTableFilter(param);
   };
 
   /**
@@ -285,6 +286,7 @@ class AppInstance extends Component {
     const ist = store.getIstAll;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const pageInfo = store.getPageInfo;
+    const param = store.getIstParams;
 
     const columns = [{
       title: <FormattedMessage id="deploy.status" />,
@@ -374,6 +376,7 @@ class AppInstance extends Component {
           loading={store.getIsLoading}
           columns={columns}
           pagination={pageInfo}
+          filters={param || []}
           dataSource={ist}
           rowKey={record => record.id}
         />

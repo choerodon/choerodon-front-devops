@@ -68,6 +68,7 @@ class CiPipelineHome extends Component {
     super(props);
     this.state = {
       page: 0,
+      param: [],
     };
   }
 
@@ -102,6 +103,8 @@ class CiPipelineHome extends Component {
   }
 
   get tableCiPipeline() {
+    const { param } = this.state;
+
     const ciPipelineColumns = [
       {
         title: <FormattedMessage id="ciPipeline.status" />,
@@ -165,6 +168,7 @@ class CiPipelineHome extends Component {
           columns={ciPipelineColumns}
           dataSource={CiPipelineStore.ciPipelines.slice()}
           rowKey={record => record.id}
+          filters={param}
           onChange={this.handleTableChange}
         />
       </div>
@@ -186,7 +190,8 @@ class CiPipelineHome extends Component {
     this.handleRefresh();
   }
 
-  handleTableChange = (pagination, filters, sorter) => {
+  handleTableChange = (pagination, filters, sorter, param) => {
+    this.setState({ param });
     CiPipelineStore.setLoading(true);
     CiPipelineStore.loadPipelines(
       CiPipelineStore.currentApp.id,
@@ -195,6 +200,9 @@ class CiPipelineHome extends Component {
   };
 
   handleRefresh =() => {
+    this.setState({
+      param: [],
+    });
     CiPipelineStore.setLoading(true);
     CiPipelineStore.loadPipelines(
       CiPipelineStore.currentApp.id,
