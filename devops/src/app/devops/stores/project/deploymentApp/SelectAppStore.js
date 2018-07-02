@@ -80,15 +80,18 @@ class SelectAppStore {
   };
   loadApps = ({ projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
     param: '',
-  } }) => axios.post(`devops/v1/projects/${projectId}/apps_market/list_all?page=${page}&size=${size}`, JSON.stringify(postData)).then((data) => {
+  } }) => {
     this.changeLoading(true);
-    if (data && data.failed) {
-      Choerodon.prompt(data.message);
-    } else {
-      this.handleData(data);
-      this.changeLoading(false);
-    }
-  });
+    return axios.post(`devops/v1/projects/${projectId}/apps_market/list_all?page=${page}&size=${size}`, JSON.stringify(postData))
+      .then((data) => {
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          this.handleData(data);
+          this.changeLoading(false);
+        }
+      });
+  };
   handleData =(data) => {
     this.setAllData(data.content);
     const { number, size, totalElements } = data;

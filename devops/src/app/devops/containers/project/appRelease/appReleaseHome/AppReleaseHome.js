@@ -156,6 +156,7 @@ class AppReleaseHome extends Component {
    */
   handleChangeTabs = (value) => {
     const { AppReleaseStore } = this.props;
+    AppReleaseStore.setAllData([]);
     AppReleaseStore.loadData({ page: 0, key: value, projectId: this.state.projectId, size: 10 });
     this.setState({
       key: value,
