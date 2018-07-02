@@ -124,13 +124,16 @@ class ExportChart extends Component {
    */
   handleSelectVersion = (index, value) => {
     const selectedRows = this.state.selectedRows;
-    const version = selectedRows[index].versions || [];
-    const versionArr = _.map(version, 'id');
-    if (!versionArr.includes(parseInt(value, 10))) {
-      const { versions, app } = this.state[index];
-      const selectedVersion = _.filter(versions, v => v.id === parseInt(value, 10));
-      selectedRows[index].versions = version.concat(selectedVersion);
+    const version = [];
+    if (value.length) {
+      value.map((v) => {
+        const { versions, app } = this.state[index];
+        const selectedVersion = _.filter(versions, s => s.id === v)[0];
+        version.push(selectedVersion);
+        return version;
+      });
     }
+    selectedRows[index].versions = version;
     this.setState({ selectedRows });
   };
   /**
@@ -230,14 +233,8 @@ class ExportChart extends Component {
           } else if (datas.length) {
             const versions = [datas.reverse()[0]];
             selectedRows[i].versions = ('versions' in selectedRows[i]) ? selectedRows[i].versions : versions;
-            // this.setState({ [i]: { versions: datas }, selectedRows });
-            // this.changeStep(2);
-            if (i !== selectedRowKeys.length - 1) {
-              this.setState({ [i]: { versions: datas }, selectedRows });
-            } else {
-              this.setState({ [i]: { versions: datas }, selectedRows });
-              this.changeStep(2);
-            }
+            this.setState({ [i]: { versions: datas }, selectedRows });
+            this.changeStep(2);
           }
         });
     }
@@ -290,7 +287,6 @@ class ExportChart extends Component {
       },
     };
     const selectedRows = this.state.selectedRowKeys || [];
-
     return (
       <div className="c7n-step-section-wrap">
         <p>
@@ -314,7 +310,7 @@ class ExportChart extends Component {
             funcType="raised"
             className="c7n-step-button"
             disabled={selectedRows.length === 0}
-            onClick={this.changeStep.bind(this, 2)}
+            onClick={this.handleLoadAllVersion}
           >
             {intl.formatMessage({ id: 'next' })}
           </Button>
@@ -345,8 +341,8 @@ class ExportChart extends Component {
             <div className="c7n-step-section" key={app.id}>
               <Select
                 onDeselect={this.clearVersions.bind(this, index)}
-                defaultValue={_.map(_.map('versions' in selectedRows[index] && selectedRows[index].versions, 'id'), v => v.toString())}
-                onSelect={this.handleSelectVersion.bind(this, index)}
+                value={selectedRows[index].versions && selectedRows[index].versions.length ? _.map(selectedRows[index].versions, 'id') : undefined}
+                onChange={this.handleSelectVersion.bind(this, index)}
                 className={'c7n-step-select'}
                 loading={this.state.isLoading}
                 onFocus={this.loadVersion.bind(this, app.id, index)}
@@ -366,7 +362,7 @@ class ExportChart extends Component {
                 }
               >
                 { this.state[index] && this.state[index].versions.map(v => (
-                  <Option key={v.version} value={v.id.toString()}>
+                  <Option key={v.version} value={v.id}>
                     {v.version}
                   </Option>
                 ))}
