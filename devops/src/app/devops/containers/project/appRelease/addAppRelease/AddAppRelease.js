@@ -79,20 +79,6 @@ class AddAppRelease extends Component {
   }
 
   /**
-   * 返回到上一级
-   */
-  openAppDeployment() {
-    const projectName = AppState.currentMenuType.name;
-    const projectId = AppState.currentMenuType.id;
-    const type = AppState.currentMenuType.type;
-    const { EditReleaseStore } = this.props;
-    EditReleaseStore.setSelectData([]);
-    this.props.history.push(
-      `/devops/app-release/2?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
-    );
-  }
-
-  /**
    * 取消第一步
    */
   clearStepOne = () => {

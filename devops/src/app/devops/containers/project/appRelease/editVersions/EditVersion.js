@@ -137,6 +137,7 @@ class EditVersion extends Component {
    */
   changeTabs = (value) => {
     const { EditVersionStore } = this.props;
+    EditVersionStore.setAllData([]);
     this.setState({ key: value });
     EditVersionStore
       .loadData({ projectId: this.state.projectId, id: this.state.id, key: value });

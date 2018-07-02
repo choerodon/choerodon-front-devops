@@ -220,6 +220,7 @@ ul {
   color: #3f51b5;
   cursor: pointer;
   margin-right: 2px;
+  text-decoration: underline;
 }
 
 .c7n-region a .c7n-external-link-content + span {
@@ -242,7 +243,6 @@ ul {
 .c7n-region a:hover .c7n-external-link-content {
   // border-color: #3f51b5;
   color: #3f51b5;
-  text-decoration: underline;
 }
 
 .c7n-region a:focus,
