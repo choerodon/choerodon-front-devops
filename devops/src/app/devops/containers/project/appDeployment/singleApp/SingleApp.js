@@ -190,6 +190,7 @@ class SingleApp extends Component {
     this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
     store.loadInstanceAll(projectId, pagination.current - 1,
       pagination.pageSize, sort, envID, verId, appID, postData);
+    store.setIstTableFilter(param);
   };
 
   /**
@@ -591,6 +592,7 @@ class SingleApp extends Component {
           <FormattedMessage id="ist.noAddEnv" />
         </div>
       </div>);
+    const param = store.getIstParams;
 
     const columnApp = [{
       title: <FormattedMessage id="deploy.status" />,
@@ -716,6 +718,7 @@ class SingleApp extends Component {
                   loading={store.getIsLoading}
                   pagination={store.pageInfo}
                   columns={columnVersion}
+                  filters={param || []}
                   dataSource={ist}
                   rowKey={record => record.id}
                 />
@@ -733,6 +736,7 @@ class SingleApp extends Component {
                   loading={store.getIsLoading}
                   pagination={store.pageInfo}
                   columns={columnApp}
+                  filters={param || []}
                   dataSource={ist}
                   rowKey={record => record.id}
                 />

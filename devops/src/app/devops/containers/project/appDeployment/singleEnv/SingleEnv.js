@@ -166,6 +166,7 @@ class SingleEnvironment extends Component {
     this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
     store.loadInstanceAll(projectId, pagination.current - 1,
       pagination.pageSize, sort, envID, verId, appId, postData);
+    store.setIstTableFilter(param);
   };
 
   /**
@@ -382,6 +383,7 @@ class SingleEnvironment extends Component {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
+    const param = store.getIstParams;
 
     let envName = envNames.length ? (<React.Fragment>
       {envNames[0].connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
@@ -495,6 +497,7 @@ class SingleEnvironment extends Component {
         onChange={this.tableChange}
         loading={store.getIsLoading}
         pagination={store.pageInfo}
+        filters={param || []}
         columns={columns}
         dataSource={ist}
         rowKey={record => record.id}
