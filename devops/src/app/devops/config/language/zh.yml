@@ -5,7 +5,7 @@
 "development-pipeline.continuous-integration": "持续集成"
 "development-pipeline.application-version": "应用版本"
 "deployment-pipeline": "部署流水线"
-"deployment-pipeline.environment": "环境流水线"
+"deployment-pipeline.environment-pipeline": "环境流水线"
 "deployment-pipeline.application-deployment": "应用部署"
 "deployment-pipeline.instance": "实例"
 "deployment-pipeline.service": "网络"

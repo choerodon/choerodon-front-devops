@@ -5,7 +5,7 @@
 "development-pipeline.continuous-integration": "CI"
 "development-pipeline.application-version": "Application Version"
 "deployment-pipeline": "Deployment pipeline"
-"deployment-pipeline.environment": "Environment"
+"deployment-pipeline.environment-pipeline": "Environment"
 "deployment-pipeline.application-deployment": "Application Deployment"
 "deployment-pipeline.instance": "Instance"
 "deployment-pipeline.service": "Service"
