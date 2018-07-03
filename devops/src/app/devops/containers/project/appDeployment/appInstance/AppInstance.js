@@ -5,6 +5,7 @@ import { Table, Progress, Tooltip } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, Action, stores } from 'choerodon-front-boot';
 import ValueConfig from '../valueConfig';
+import UpgradeIst from '../upgrateIst';
 import '../AppDeploy.scss';
 import '../../../main.scss';
 import DelIst from '../component/delIst/DelIst';
@@ -19,6 +20,7 @@ class AppInstance extends Component {
       id: null,
       idArr: [],
       visible: false,
+      visibleUp: false,
       openRemove: false,
       loading: false,
       page: 0,
@@ -60,7 +62,6 @@ class AppInstance extends Component {
       id,
       instanceName: istName,
     });
-    store.changeShow(true);
   };
 
   /**
@@ -88,6 +89,39 @@ class AppInstance extends Component {
             visible: true,
             id,
           });
+        }
+      });
+  };
+
+  /**
+   * 升级配置实例信息
+   * @param name 实例名
+   * @param id 实例ID
+   * @param envId
+   * @param verId
+   * @param appId
+   */
+  upgradeIst = (name, id, envId, verId, appId) => {
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    store.loadValue(projectId, appId, envId, verId)
+      .then((res) => {
+        if (res && res.failed) {
+          Choerodon.prompt(res.message);
+        } else {
+          store.loadUpVersion(projectId, verId)
+            .then((val) => {
+              if (val && val.failed) {
+                Choerodon.prompt(val.message);
+              } else {
+                this.setState({
+                  idArr: [envId, verId, appId],
+                  id,
+                  name,
+                  visibleUp: true,
+                });
+              }
+            });
         }
       });
   };
@@ -143,7 +177,7 @@ class AppInstance extends Component {
    * 关闭滑块
    * @param res 是否重新部署需要重载数据
    */
-  handleCancel =(res) => {
+  handleCancel = (res) => {
     const { store } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
@@ -152,7 +186,21 @@ class AppInstance extends Component {
     if (res) {
       store.loadInstanceAll(projectId, this.state.page);
     }
-    store.changeShow(false);
+  };
+
+  /**
+   * 关闭升级滑块
+   * @param res 是否重新部署需要重载数据
+   */
+  handleCancelUp = (res) => {
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    this.setState({
+      visibleUp: false,
+    });
+    if (res) {
+      store.loadInstanceAll(projectId, this.state.page);
+    }
   };
 
   /**
@@ -260,6 +308,14 @@ class AppInstance extends Component {
             service: ['devops-service.application-instance.queryValues'],
             text: intl.formatMessage({ id: 'ist.values' }),
             action: this.updateConfig.bind(this, record.code, record.id,
+              record.envId, record.appVersionId, record.appId),
+          }, {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.application-instance.queryValues'],
+            text: intl.formatMessage({ id: 'ist.upgrade' }),
+            action: this.upgradeIst.bind(this, record.code, record.id,
               record.envId, record.appVersionId, record.appId),
           }, {
             type,
@@ -387,6 +443,14 @@ class AppInstance extends Component {
           id={this.state.id}
           idArr={this.state.idArr}
           onClose={this.handleCancel}
+        /> }
+        {this.state.visibleUp && <UpgradeIst
+          store={this.props.store}
+          visible={this.state.visibleUp}
+          name={this.state.name}
+          id={this.state.id}
+          idArr={this.state.idArr}
+          onClose={this.handleCancelUp}
         /> }
         <DelIst
           open={this.state.openRemove}

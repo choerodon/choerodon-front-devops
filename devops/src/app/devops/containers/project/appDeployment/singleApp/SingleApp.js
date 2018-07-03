@@ -8,6 +8,7 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import ValueConfig from '../valueConfig';
+import UpgradeIst from '../upgrateIst';
 import '../AppDeploy.scss';
 import './SingleApp.scss';
 import '../../../main.scss';
@@ -25,6 +26,7 @@ class SingleApp extends Component {
       appId: null,
       verId: null,
       envId: null,
+      visibleUp: false,
       pageSize: 10,
       page: 0,
       openRemove: false,
@@ -222,6 +224,40 @@ class SingleApp extends Component {
       });
   };
 
+
+  /**
+   * 升级配置实例信息
+   * @param name 实例名
+   * @param id 实例ID
+   * @param envId
+   * @param verId
+   * @param appId
+   */
+  upgradeIst = (name, id, envId, verId, appId) => {
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    store.loadValue(projectId, appId, envId, verId)
+      .then((res) => {
+        if (res && res.failed) {
+          Choerodon.prompt(res.message);
+        } else {
+          store.loadUpVersion(projectId, verId)
+            .then((val) => {
+              if (val && val.failed) {
+                Choerodon.prompt(val.message);
+              } else {
+                this.setState({
+                  idArr: [envId, verId, appId],
+                  id,
+                  name,
+                  visibleUp: true,
+                });
+              }
+            });
+        }
+      });
+  };
+
   /**
    * 关闭滑块
    * @param res 是否重新部署需要重载数据
@@ -240,7 +276,21 @@ class SingleApp extends Component {
     if (res) {
       store.loadInstanceAll(projectId, page, 10, null, envID, verId, appID);
     }
-    store.changeShow(false);
+  };
+
+  /**
+   * 关闭升级滑块
+   * @param res 是否重新部署需要重载数据
+   */
+  handleCancelUp = (res) => {
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    this.setState({
+      visibleUp: false,
+    });
+    if (res) {
+      store.loadInstanceAll(projectId, this.state.page);
+    }
   };
 
   /**
@@ -418,6 +468,14 @@ class SingleApp extends Component {
             service: ['devops-service.application-instance.queryValues'],
             text: intl.formatMessage({ id: 'ist.values' }),
             action: this.updateConfig.bind(this, record.code, record.id,
+              record.envId, record.appVersionId, record.appId),
+          }, {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.application-instance.queryValues'],
+            text: intl.formatMessage({ id: 'ist.upgrade' }),
+            action: this.upgradeIst.bind(this, record.code, record.id,
               record.envId, record.appVersionId, record.appId),
           }, {
             type,
@@ -814,6 +872,14 @@ class SingleApp extends Component {
           idArr={this.state.idArr}
           onClose={this.handleCancel}
         />}
+        {this.state.visibleUp && <UpgradeIst
+          store={this.props.store}
+          visible={this.state.visibleUp}
+          name={this.state.name}
+          id={this.state.id}
+          idArr={this.state.idArr}
+          onClose={this.handleCancelUp}
+        /> }
         <DelIst
           open={this.state.openRemove}
           handleCancel={this.handleClose}
