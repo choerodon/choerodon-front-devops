@@ -21,7 +21,7 @@ const Domain = asyncRouter(() => import('./project/domain'));
 const Container = asyncRouter(() => import('./project/container'));
 const AppRelease = asyncRouter(() => import('./project/appRelease'));
 const Branch = asyncRouter(() => import('./project/branch'));
-const AppTag = asyncRouter(() => import('./project/appTag'));
+const AppTag = asyncRouter(() => import('./project/appTag'), () => import('../stores/project/appTag'));
 
 @inject('AppState')
 class DEVOPSIndex extends React.Component {

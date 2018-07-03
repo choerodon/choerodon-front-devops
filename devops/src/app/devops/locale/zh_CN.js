@@ -136,6 +136,11 @@ const pageDetail = {
   'ciPipeline.description': '您可在此查看各应用所有持续集成流水线的运行情况。',
   'ciPipeline.link': `${docServer}/user-guide/development-pipeline/continuous-integration/`,
 
+  // app-tag
+  'apptag.description': '分支是将您的工作从开发主线上分离开来，以免影响开发主线。平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。',
+  'apptag.head': '项目\"{name}\"的标记管理',
+  'apptag.link': `${docServer}/user-guide/development-pipeline/application-tag/`,
+
 };
 
 const zhCN = {
@@ -648,6 +653,11 @@ const zhCN = {
   'yaml.modify': '本次修改',
   'yaml.yaml.error': 'yaml 格式错误',
   'yaml.error.tooltip': 'Values文件yaml格式错误，请在应用代码中修改错误并重新生成正确的应用版本。',
+
+  // app-tag
+  'apptag.title': '标记管理',
+  'apptag.create': '创建标记',
+  'apptag.table': '标记列表',
 
   ...pageDetail,
 };

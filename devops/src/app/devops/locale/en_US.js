@@ -222,6 +222,13 @@ const enUS = {
   organization: 'organization',
   public: 'public',
 
+  // app-tag
+  'apptag.title': '',
+  'apptag.create': '',
+  'apptag.description': '',
+  'apptag.head': '',
+  'apptag.link': '',
+  'apptag.table': 'Tag list',
 
 };
 export default enUS;
