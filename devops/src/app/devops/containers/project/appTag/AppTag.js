@@ -50,6 +50,7 @@ class AppTag extends Component {
   };
 
   tableChange = (pagination, filters, sorter) => {
+    window.console.log(pagination);
     const { AppTagStore } = this.props;
     const { projectId, appId } = this.state;
     const selectedApp = appId || AppTagStore.getDefaultApp;

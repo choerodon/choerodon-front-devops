@@ -17,7 +17,7 @@ class AppTagStore {
   @observable defaultApp = null;
   @observable loading = true;
   @observable pageInfo = {
-    current: 1,
+    current: 0,
     total: 0,
     pageSize: 10,
   };
@@ -56,7 +56,7 @@ class AppTagStore {
 
   @action setPageInfo(pages) {
     this.pageInfo = {
-      current: pages.page + 1,
+      current: pages.page,
       total: pages.totalElements,
       pageSize: pages.sizes,
     };
@@ -99,7 +99,7 @@ class AppTagStore {
         if (result) {
           this.setAppData(result);
           this.setDefaultApp(result[0]);
-          this.queryTagData(projectId, result[0].id);
+          this.queryTagData(projectId, result[0].id, 0);
         }
       }).catch(err => Choerodon.prompt(err));
 }
