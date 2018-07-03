@@ -43,7 +43,6 @@
           - 'devops-service.project-pipeline.cancel'
           - 'devops-service.project-pipeline.retry'
 
-
 "deployment-pipeline":
   icon: cloud_upload
   sort: 3
