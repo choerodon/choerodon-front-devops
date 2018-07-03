@@ -4,8 +4,8 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import { fromJS, is } from 'immutable';
-import { Obversable } from 'rxjs';
+// import { fromJS, is } from 'immutable';
+// import { Obversable } from 'rxjs';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { commonComponent } from '../../../../components/commonFunction';
 import LoadingBar from '../../../../components/loadingBar';
@@ -49,22 +49,22 @@ class TemplateHome extends Component {
     this.loadAllData();
   }
 
-  shouldComponentUpdate = (nextProps, nextState) => {
-    if (this.props.form.isFieldsTouched()) {
-      return true;
-    }
-    const thisProps = fromJS(this.props || {});
-    const thisState = fromJS(this.state || {});
-    const nextStates = fromJS(nextState || {});
-    if (thisProps.size !== nextProps.size ||
-      thisState.size !== nextState.size) {
-      return true;
-    }
-    if (is(thisState, nextStates)) {
-      return false;
-    }
-    return true;
-  };
+  // shouldComponentUpdate = (nextProps, nextState) => {
+  //   if (this.props.form.isFieldsTouched()) {
+  //     return true;
+  //   }
+  //   const thisProps = fromJS(this.props || {});
+  //   const thisState = fromJS(this.state || {});
+  //   const nextStates = fromJS(nextState || {});
+  //   if (thisProps.size !== nextProps.size ||
+  //     thisState.size !== nextState.size) {
+  //     return true;
+  //   }
+  //   if (is(thisState, nextStates)) {
+  //     return false;
+  //   }
+  //   return true;
+  // };
 
   /**
    * 获取行
