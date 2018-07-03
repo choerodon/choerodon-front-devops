@@ -1,3 +1,4 @@
+"devops": "Devops"
 "develop": "Development pipeline"
 "develop.app": "App"
 "develop.ci": "CI"
@@ -9,7 +10,7 @@
 "deployment.service": "Service"
 "deployment.domain": "Domain"
 "deployment.container": "Container"
-"application": "Application management"
+"application": "Application Market"
 "application.app-release": "App Release"
 "application.appstore": "App Store"
 "application.template": "Application template"

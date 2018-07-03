@@ -15,6 +15,7 @@ ADD dist /usr/share/nginx/html
 COPY devops-structure/devops-enterpoint.sh /usr/share/nginx/html
 COPY config.yml /usr/share/nginx/html
 COPY structure/sql.py /usr/share/nginx/html
+COPY devops-structure/deleteMenu.py /usr/share/nginx/html
 RUN chmod 777 /usr/share/nginx/html/devops-enterpoint.sh
 ENTRYPOINT ["/usr/share/nginx/html/devops-enterpoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

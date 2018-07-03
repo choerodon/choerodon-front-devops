@@ -1,6 +1,19 @@
+"devops":
+  icon: devops
+  sort: 1
+  organization:
+    - "template":
+        icon: application_model
+        Routes: /devops/template
+        sort: 1
+        permission:
+          - 'devops-service.application-template.listByOrgId'
+          - 'devops-service.application-template.queryByAppTemplateId'
+          - 'devops-service.application-template.delete'
+
 "develop":
   icon: wrench
-  sort: 1
+  sort: 2
   project:
     - "app":
         icon: widgets
@@ -33,7 +46,7 @@
 
 "deployment":
   icon: cloud_upload
-  sort: 2
+  sort: 3
   project:
     - "environment":
         icon: linear_scale
@@ -105,16 +118,7 @@
 
 "application":
   icon: store_mall_directory
-  sort: 3
-  organization:
-      - "template":
-          icon: application_model
-          Routes: /devops/template
-          sort: 1
-          permission:
-            - 'devops-service.application-template.listByOrgId'
-            - 'devops-service.application-template.queryByAppTemplateId'
-            - 'devops-service.application-template.delete'
+  sort: 4
   project:
     - "app-release":
         icon: near_me
