@@ -11,11 +11,11 @@
           - 'devops-service.application-template.queryByAppTemplateId'
           - 'devops-service.application-template.delete'
 
-"develop":
+"development-pipeline":
   icon: wrench
   sort: 2
   project:
-    - "app":
+    - "application":
         icon: widgets
         Routes: /devops/app
         sort: 1
@@ -26,13 +26,13 @@
           - 'devops-service.application.queryByAppIdAndActive'
           - 'devops-service.git-flow.queryTags'
           - 'devops-service.git-flow.listByAppId'
-    - "version":
+    - "application-version":
         icon: version
         Routes: /devops/app-version
         sort: 2
         permission:
           - 'devops-service.application-version.pageByOptions'
-    - "ci":
+    - "continuous-integration":
         icon: CI
         Routes: /devops/ci-pipeline
         sort: 9
@@ -44,11 +44,11 @@
           - 'devops-service.project-pipeline.retry'
 
 
-"deployment":
+"deployment-pipeline":
   icon: cloud_upload
   sort: 3
   project:
-    - "environment":
+    - "environment-pipeline":
         icon: linear_scale
         Routes: /devops/env-pipeline
         sort: 10
@@ -63,7 +63,7 @@
           - 'devops-service.devops-environment.activeEnvironment'
           - 'devops-service.devops-environment.queryShell'
           - 'devops-service.application-instance.pageByOptions'
-    - "deploy":
+    - "application-deployment":
         icon: jsfiddle
         Routes: /devops/deployment-app
         sort: 11
@@ -100,7 +100,7 @@
           - 'devops-service.devops-service.query'
           - 'devops-service.devops-service.update'
           - 'devops-service.devops-service.delete'
-    - "domain":
+    - "ingress":
         icon: language
         Routes: /devops/domain
         sort: 14
@@ -116,11 +116,11 @@
           - 'devops-service.devops-env-pod-container.queryLogByPod'
           - 'devops-service.devops-env-pod.pageByOptions'
 
-"application":
+"application-market":
   icon: store_mall_directory
   sort: 4
   project:
-    - "app-release":
+    - "application-release":
         icon: near_me
         Routes: /devops/app-release
         sort: 3
@@ -128,7 +128,7 @@
           - 'devops-service.application-market.create'
           - 'devops-service.application-market.update'
           - 'devops-service.application-market.updateVersions'
-    - "appstore":
+    - "application-market":
         icon: apps
         Routes: /devops/appstore
         sort: 4
