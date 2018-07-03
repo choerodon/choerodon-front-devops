@@ -138,7 +138,7 @@ class ContainerHome extends Component {
           </MouserOverWrapper>
         </div>
       </div>),
-    },  {
+    }, {
       title: <FormattedMessage id="deploy.env" />,
       key: 'envCode',
       filters: [],
