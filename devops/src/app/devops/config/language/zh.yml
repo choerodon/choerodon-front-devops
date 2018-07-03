@@ -1,4 +1,5 @@
 "devops": "持续交付"
+"devops.template": "应用模板"
 "develop": "开发流水线"
 "develop.app": "应用"
 "develop.ci": "持续集成"
@@ -13,4 +14,3 @@
 "application": "应用市场"
 "application.app-release": "应用发布"
 "application.appstore": "应用市场"
-"application.template": "应用模板"

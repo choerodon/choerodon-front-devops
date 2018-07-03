@@ -1,4 +1,5 @@
 "devops": "Devops"
+"devops.template": "Application template"
 "develop": "Development pipeline"
 "develop.app": "App"
 "develop.ci": "CI"
@@ -13,4 +14,3 @@
 "application": "Application Market"
 "application.app-release": "App Release"
 "application.appstore": "App Store"
-"application.template": "Application template"
