@@ -1,8 +1,8 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-import _ from 'lodash';
-import { Observable } from 'rxjs';
-import { formJS } from 'immutable';
+// import _ from 'lodash';
+// import { Observable } from 'rxjs';
+// import { formJS } from 'immutable';
 
 const height = window.screen.height;
 @store('DomainStore')
@@ -103,8 +103,8 @@ class DomainStore {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/projects/${proId}/ingress/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field},${sort.order}`, JSON.stringify(datas)))
-      .subscribe((data) => {
+    return axios.post(`/devops/v1/projects/${proId}/ingress/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field},${sort.order}`, JSON.stringify(datas))
+      .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
           this.handleData(data);

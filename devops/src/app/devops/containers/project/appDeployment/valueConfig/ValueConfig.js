@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Modal } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
-import yaml from 'js-yaml';
+// import yaml from 'js-yaml';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import Ace from '../../../../components/yamlAce';
 import '../AppDeploy.scss';
@@ -20,14 +20,6 @@ class ValueConfig extends Component {
       value: '',
     };
   }
-
-  componentWillReceiveProps() {
-    const value = yaml.safeLoad(this.props.store.getValue);
-    this.setState({
-      value,
-    });
-  }
-
   /**
    * 事件处理，修改value值后写入store
    * @param {*} value 修改后的value值

@@ -1,6 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-import { Observable } from 'rxjs';
+// import { Observable } from 'rxjs';
 
 const height = window.screen.height;
 @store('EditVersionStore')
@@ -90,8 +90,8 @@ class EditVersionStore {
     }
     this.changeLoading(true);
     if (key === '1') {
-      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps_market/${id}/versions?is_publish=false&page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
-        .subscribe((data) => {
+      return axios.post(`/devops/v1/projects/${projectId}/apps_market/${id}/versions?is_publish=false&page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+        .then((data) => {
           const res = this.handleProptError(data);
           if (res) {
             this.handleData(data);
@@ -100,8 +100,8 @@ class EditVersionStore {
           this.changeIsRefresh(false);
         });
     } else {
-      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps_market/${id}/versions?is_publish=true&page=${page}&size=${size}&sort=updatedDate,desc`, JSON.stringify(postData)))
-        .subscribe((data) => {
+      return axios.post(`/devops/v1/projects/${projectId}/apps_market/${id}/versions?is_publish=true&page=${page}&size=${size}&sort=updatedDate,desc`, JSON.stringify(postData))
+        .then((data) => {
           const res = this.handleProptError(data);
           if (res) {
             this.handleData(data);

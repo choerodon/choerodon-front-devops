@@ -8,8 +8,6 @@ import { withRouter } from 'react-router-dom';
 import { fromJS, is } from 'immutable';
 import ReactAce from 'react-ace-editor';
 import _ from 'lodash';
-// import 'brace/mode/text';
-// import 'brace/theme/terminal';
 import { commonComponent } from '../../../../components/commonFunction';
 import TimePopover from '../../../../components/timePopover';
 import LoadingBar from '../../../../components/loadingBar';

@@ -1,7 +1,7 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-import { Observable } from 'rxjs';
-import { formJS } from 'immutable';
+// import { Observable } from 'rxjs';
+// import { formJS } from 'immutable';
 
 const height = window.screen.height;
 
@@ -69,8 +69,8 @@ class SelectAppStore {
     param: '',
   } }) => {
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/list_by_options?active=true&page=${page}&size=${size}&sort=${sort.field},${sort.order}&has_version=true`, JSON.stringify(postData)))
-      .subscribe((data) => {
+    return axios.post(`/devops/v1/projects/${projectId}/apps/list_by_options?active=true&page=${page}&size=${size}&sort=${sort.field},${sort.order}&has_version=true`, JSON.stringify(postData))
+      .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
           this.handleData(data);

@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import ReactAce from 'react-ace-editor';
-import 'brace/mode/text';
-import 'brace/theme/terminal';
 import './Log.scss';
 
 class Log extends Component {
