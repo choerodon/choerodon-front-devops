@@ -1,6 +1,11 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 
+/**
+ * 处理错误请求
+ * @param data
+ * @returns {*}
+ */
 function handleProptError(data) {
   if (data && data.failed) {
     Choerodon.prompt(data.message);
@@ -15,12 +20,14 @@ class AppTagStore {
   @observable tagData = [];
   @observable appData = [];
   @observable defaultApp = null;
+  @observable defaultAppName = null;
   @observable loading = true;
   @observable pageInfo = {
     current: 0,
     total: 0,
     pageSize: 10,
   };
+  @observable branchData = [];
 
   @action setTagData(data) {
     this.tagData = data;
@@ -38,12 +45,20 @@ class AppTagStore {
     return this.appData.slice();
   }
 
-  @action setDefaultApp(app) {
-    this.defaultApp = app.id || app;
+  @action setSelectApp(app) {
+    this.defaultApp = app;
   }
 
-  @computed get getDefaultApp() {
+  @computed get getSelectApp() {
     return this.defaultApp;
+  }
+
+  @action setDefaultAppName(name) {
+    this.defaultAppName = name;
+  }
+
+  @computed get getDefaultAppName() {
+    return this.defaultAppName;
   }
 
   @action setLoading(flag) {
@@ -64,6 +79,14 @@ class AppTagStore {
 
   @computed get getPageInfo() {
     return this.pageInfo;
+  }
+
+  @action setBranchData(data) {
+    this.branchData = data;
+  }
+
+  @computed get getBranchData() {
+    return this.branchData.slice();
   }
 
   /**
@@ -91,6 +114,7 @@ class AppTagStore {
   /**
    * 查询该项目下的所有应用
    * @param projectId
+   * @returns {Promise<T>}
    */
   queryAppData = projectId =>
     axios.get(`/devops/v1/projects/${projectId}/apps`)
@@ -98,10 +122,44 @@ class AppTagStore {
         const result = handleProptError(data);
         if (result) {
           this.setAppData(result);
-          this.setDefaultApp(result[0]);
+          this.setSelectApp(result[0].id);
+          this.setDefaultAppName(result[0].name);
           this.queryTagData(projectId, result[0].id, 0);
         }
       }).catch(err => Choerodon.prompt(err));
+
+  /**
+   * 查询应用下的所有分支
+   * @param projectId
+   * @param appId
+   * @returns {Promise<T>}
+   */
+  queryBranchData = (projectId, appId = this.defaultApp) => {
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/branches`).then((data) => {
+      const result = handleProptError(data);
+      if (result) {
+        this.setBranchData(result);
+      }
+    }).catch(err => Choerodon.prompt(err));
+  };
+
+  /**
+   * 检查标记名称的唯一性
+   * @param projectId
+   * @param value
+   */
+  checkTagName = (projectId, value) => {};
+
+  /**
+   * 创建tag
+   * @param projectId
+   * @param appId
+   * @param tag
+   * @param ref
+   * @returns {JQueryXHR | * | void}
+   */
+  createTag = (projectId, appId, tag, ref) =>
+    axios.post(`/devops/v1/projects/${projectId}/apps/${appId || this.defaultApp}/git/tags?tag=${tag}&ref=${ref}`);
 }
 
 const appTagStore = new AppTagStore();

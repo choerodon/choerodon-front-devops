@@ -45,7 +45,7 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/container`} component={Container} />
           <Route path={`${match.url}/app-release`} component={AppRelease} />
           <Route path={`${match.url}/branch`} component={Branch} />
-          <Route path={`${match.url}/app-tag`} component={AppTag} />
+          <Route path={`${match.url}/tag`} component={AppTag} />
           <Route path={'*'} component={nomatch} />
         </Switch>
       </IntlProviderAsync>
