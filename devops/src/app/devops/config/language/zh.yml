@@ -1,9 +1,21 @@
-"devops": "持续交付"
-"devops.template": "应用模板"
+# 应用管理
+"application-management": "应用管理"
+"application-management.application-template": "应用模板"
+"application-management.application": "应用"
+"application-management.application-version": "应用版本"
+"application-management.version-log": "版本日志"
+"application-management.application-release": "应用发布"
+"application-management.application-market": "应用市场"
+
+# 开发流水线
 "development-pipeline": "开发流水线"
-"development-pipeline.application": "应用"
-"development-pipeline.continuous-integration": "持续集成"
-"development-pipeline.application-version": "应用版本"
+"development-pipeline.branch": "分支"
+"development-pipeline.tag": "标记"
+"development-pipeline.repository": "代码仓库"
+"deployment-pipeline.merge-request": "合并请求"
+"deployment-pipeline.continuous-integration": "持续集成"
+
+# 部署流水线
 "deployment-pipeline": "部署流水线"
 "deployment-pipeline.environment-pipeline": "环境流水线"
 "deployment-pipeline.application-deployment": "应用部署"
@@ -11,6 +23,4 @@
 "deployment-pipeline.service": "网络"
 "deployment-pipeline.ingress": "域名"
 "deployment-pipeline.container": "容器"
-"application-market": "应用市场"
-"application-market.application-release": "应用发布"
-"application-market.application-market": "应用市场"
+

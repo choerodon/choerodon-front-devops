@@ -109,7 +109,7 @@ class AppStoreHome extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const projectName = AppState.currentMenuType.name;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/appstore/import?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    this.linkToChange(`/devops/app-market/import?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -120,7 +120,7 @@ class AppStoreHome extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const projectName = AppState.currentMenuType.name;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/appstore/export?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    this.linkToChange(`/devops/app-market/export?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -141,7 +141,7 @@ class AppStoreHome extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const projectName = AppState.currentMenuType.name;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/appstore/${id}/app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    this.linkToChange(`/devops/app-market/${id}/app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**

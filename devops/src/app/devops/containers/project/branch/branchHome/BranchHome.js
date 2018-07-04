@@ -339,6 +339,7 @@ class BranchHome extends Component {
    */
   showSidebar = () => {
     const { BranchStore } = this.props;
+    BranchStore.loadTagData(this.state.projectId, BranchStore.app);
     BranchStore.setCreateBranchShow('create');
   };
 

@@ -178,7 +178,7 @@ class CreateBranch extends Component {
   changeType =(value) => {
     let type = '';
     if (value !== 'custom') {
-      type = `${value}-`;
+      type = `${value}`;
     }
     this.setState({ type });
   };

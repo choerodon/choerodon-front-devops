@@ -132,7 +132,7 @@ class BranchStore {
 
   loadTagData = (projectId, appId, page = this.pageInfo.current - 1,
     sizes = this.pageInfo.pageSize) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/flow/tags?page=${page}&size=${sizes}`)
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/tags?size=99`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {

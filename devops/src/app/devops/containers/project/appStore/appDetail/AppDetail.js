@@ -127,7 +127,7 @@ class AppDetail extends Component {
           'devops-service.application-market.queryAppVersionReadme',
         ]}
       >
-        <Header title={intl.formatMessage({ id: 'app.appDetail' })} backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+        <Header title={intl.formatMessage({ id: 'app.appDetail' })} backPath={`/devops/app-market?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <Button
             funcType="flat"
             onClick={this.reload}
