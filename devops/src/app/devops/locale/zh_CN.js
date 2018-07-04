@@ -135,8 +135,8 @@ const pageDetail = {
   'ciPipeline.link': `${docServer}/user-guide/development-pipeline/continuous-integration/`,
 
   // merge-request
-  'mergeRequest.head': '项目"{name}"的应用版本管理',
-  'mergeRequest.description': '应用版本是应用迭代升级生成的版本。您可在此查看版本号、应用编码、应用名称以及版本生成时间。',
+  'merge.title': '项目"{name}"的合并请求',
+  'merge.description': '分支是将您的工作从开发主线上分离开来，以免影响开发主线。平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。',
 
 };
 
@@ -628,6 +628,18 @@ const zhCN = {
   'yaml.modify': '本次修改',
   'yaml.yaml.error': 'yaml 格式错误',
   'yaml.error.tooltip': 'Values文件yaml格式错误，请在应用代码中修改错误并重新生成正确的应用版本。',
+
+
+  // merge request
+  'merge.head': '合并请求',
+  'merge.tab1': '开放',
+  'merge.tab2': '已合并',
+  'merge.tab3': '关闭',
+  'merge.tab4': '全部',
+  'merge.commit': '新增提交',
+  'merge.upDate': '更新日期',
+  'merge.detail': '查看详情',
+  'merge.createMerge': '创建合并请求',
 
   ...pageDetail,
 };
