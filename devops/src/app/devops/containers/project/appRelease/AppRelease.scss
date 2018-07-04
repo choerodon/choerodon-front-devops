@@ -229,3 +229,13 @@
   pointer-events: none;
 }
 
+.apprelease-formItem-label {
+  &::after {
+    display: inline-block;
+    margin-left: 4px;
+    content: "*";
+    line-height: 1;
+    font-size: 13px;
+    color: #d50000;
+  }
+}

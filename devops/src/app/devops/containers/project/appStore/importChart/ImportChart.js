@@ -146,7 +146,7 @@ class ImportChart extends Component {
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    this.props.history.push(`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    this.props.history.push(`/devops/app-market?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
     if (this.state.fileCode) {
       AppStoreStore.uploadCancel(projectId, this.state.fileCode)
         .then(() => {
@@ -423,7 +423,7 @@ class ImportChart extends Component {
           'devops-service.application-market.importApps',
         ]}
       >
-        <Header title={<FormattedMessage id="appstore.import" />} backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
+        <Header title={<FormattedMessage id="appstore.import" />} backPath={`/devops/app-market?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
         <div className="c7n-store-content-wrap">
           <h2 className="c7n-space-first">
             <FormattedMessage id="appstore.import" />

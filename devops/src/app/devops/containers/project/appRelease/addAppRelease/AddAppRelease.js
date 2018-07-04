@@ -358,7 +358,7 @@ class AddAppRelease extends Component {
           </div>
           <p style={{ marginLeft: 30, marginTop: 24 }}>
             <span className="icon icon-error release-icon-error" />
-            <span className="deploy-tip-text">{this.props.intl.formatMessage({ id: 'release.add.step.three.tooltip' })}。</span>
+            <span className="deploy-tip-text">{this.props.intl.formatMessage({ id: 'release.add.step.three.tooltip' })}</span>
           </p>
         </section>
         <section className="deployAddApp-section">
@@ -409,7 +409,7 @@ class AddAppRelease extends Component {
             onChange={(value) => { this.setState({ contributor: value.target.value }); }}
             style={{ width: 512 }}
             maxLength={30}
-            label={<FormattedMessage id={'appstore.contributor'} />}
+            label={<span className="apprelease-formItem-label"><FormattedMessage id={'appstore.contributor'} /></span>}
             size="default"
           />
         </section>
@@ -419,7 +419,7 @@ class AddAppRelease extends Component {
             style={{ width: 512 }}
             onChange={(value) => { this.setState({ category: value.target.value }); }}
             maxLength={10}
-            label={<FormattedMessage id={'appstore.category'} />}
+            label={<span className="apprelease-formItem-label"><FormattedMessage id={'appstore.category'} /></span>}
             size="default"
           />
         </section>
@@ -429,7 +429,7 @@ class AddAppRelease extends Component {
             onChange={(value) => { this.setState({ description: value.target.value }); }}
             style={{ width: 512 }}
             maxLength={50}
-            label={<FormattedMessage id={'appstore.description'} />}
+            label={<span className="apprelease-formItem-label"><FormattedMessage id={'appstore.description'} /></span>}
             autosize={{ minRows: 2, maxRows: 6 }}
           />
         </section>

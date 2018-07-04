@@ -179,7 +179,7 @@ class ExportChart extends Component {
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    this.props.history.push(`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    this.props.history.push(`/devops/app-market?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
   /**
    * 判断第二步是否可点击下一步
@@ -480,7 +480,7 @@ class ExportChart extends Component {
         ]}
         className="c7n-region"
       >
-        <Header title={intl.formatMessage({ id: 'appstore.export' })} backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
+        <Header title={intl.formatMessage({ id: 'appstore.export' })} backPath={`/devops/app-market?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
         <Content>
           <h2 className="c7n-space-first">
             <FormattedMessage id="appstore.export" />

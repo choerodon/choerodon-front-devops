@@ -336,6 +336,17 @@ class EditService extends Component {
       callback();
     }
   };
+  /**
+   * 切换version
+   * @param index
+   * @param value
+   */
+  selectVersion =(index, value) => {
+    const { SingleData } = this.state;
+    if (SingleData.appVersion[index].id !== parseInt(value, 10)) {
+      this.setState({ [index]: { versions: this.state[index].versions, instances: this.state[index].instances, deletedIns: [] } });
+    }
+  };
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -515,7 +526,7 @@ class EditService extends Component {
                       notFoundContent={intl.formatMessage({ id: 'network.form.version.disable' })}
                       label={<FormattedMessage id={'network.column.version'} />}
                       showSearch
-                      onSelect={this.selectVersion}
+                      onSelect={this.selectVersion.bind(this, index)}
                       dropdownMatchSelectWidth
                       onFocus={this.loadVersion.bind(this, data.versionIndex)}
                       size="default"

@@ -13,8 +13,8 @@ const TimePopoverRequiredProps = {
   content: PropTypes.string,
 };
 
-function TimePopover({ content, title }) {
-  return (<div>
+function TimePopover({ content, title, style }) {
+  return (<div style={style}>
     <Popover
       title={title}
       content={content}

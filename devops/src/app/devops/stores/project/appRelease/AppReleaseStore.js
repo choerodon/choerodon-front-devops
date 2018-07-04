@@ -65,8 +65,8 @@ class AppReleaseStore {
           this.changeIsRefresh(false);
         });
     } else {
-      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps_market/list?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
-        .subscribe((data) => {
+      return axios.post(`/devops/v1/projects/${projectId}/apps_market/list?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+        .then((data) => {
           const res = this.handleProptError(data);
           if (res) {
             this.handleData(data);

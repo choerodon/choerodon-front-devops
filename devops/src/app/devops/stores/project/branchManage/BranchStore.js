@@ -1,16 +1,20 @@
 import { observable, action, computed } from 'mobx';
-import { axios, store } from 'choerodon-front-boot';
+import { axios, store, stores } from 'choerodon-front-boot';
+
+const { AppState } = stores;
 
 @store('BranchStore')
 class BranchStore {
+  @observable apps = [];
+  @observable app = null;
   @observable branchData = [];
   @observable tagData = [];
   @observable branchs = [];
   @observable tags = [];
   @observable currentBranch = {};
   @observable loading = true;
-  @observable initVersion = null;
-  @observable releaseLatestVersion = null;
+  @observable issue = [];
+  @observable branch = null;
 
   @observable createBranchShow = false;
   @observable confirmShow = false;
@@ -68,22 +72,67 @@ class BranchStore {
     this.loading = flag;
   }
 
-  @action changeInitVersion(data) {
-    this.releaseLatestVersion = data;
+
+  @action setApps(data) {
+    this.apps = data;
   }
 
-  loadBranchData = (projectId, appId) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/branches`)
+  @action setApp(data) {
+    this.app = data;
+  }
+
+  @action setIssue(data) {
+    this.issue = data;
+  }
+
+  @action setBranch(data) {
+    this.branch = data;
+  }
+
+
+  loadApps = (proId = AppState.currentMenuType.id) => {
+    this.changeLoading(true);
+    return axios.get(`/devops/v1/projects/${proId}/apps`)
       .then((data) => {
+        this.changeLoading(false);
+        const res = this.handleProptError(data);
+        this.setApps(data.reverse());
+        this.setApp(data[0].id);
+        this.loadBranchData(proId, data[0].id);
+        return res;
+      });
+  };
+
+  loadIssue = (proId = AppState.currentMenuType.id, issueId = -1) => axios.get(`/agile/v1/projects/${proId}/issues/${issueId}/summary`)
+    .then((data) => {
+      const res = this.handleProptError(data);
+      this.setIssue(data.content);
+      return res;
+    });
+
+  loadIssueById =(proId, id) => axios.get(`/agile/v1/projects/147/issues/sub_issue/677`)
+    .then((datas) => {
+      const res = this.handleProptError(datas);
+      if (res) {
+        this.setIssue(datas);
+      }
+    });
+
+  loadBranchData = (projectId, appId) => {
+    this.changeLoading(true);
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/branches`)
+      .then((data) => {
+        this.changeLoading(false);
         const res = this.handleProptError(data);
         if (res) {
           this.setBranchData(data);
         }
       });
+  }
 
   loadTagData = (projectId, appId, page = this.pageInfo.current - 1,
     sizes = this.pageInfo.pageSize) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=${sizes}`)
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/tags?size=99`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
@@ -99,8 +148,8 @@ class BranchStore {
     sizes = this.pageInfo.pageSize) => {
     this.changeLoading(true);
     return axios.all([
-      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/branches`),
-      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=${sizes}`)])
+      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/flow/branches`),
+      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/flow/tags?page=${page}&size=${sizes}`)])
       .then(axios.spread((branch, tag) => {
         if (!branch.failed && !tag.failed) {
           this.setBranchData(branch);
@@ -113,50 +162,34 @@ class BranchStore {
         }
         this.changeLoading(false);
       }));
-  }
+  };
 
-  getLatestHotfixVersion =(projectId, appId, branch = '') =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags/hotfix?branch=${branch}`)
-      .then((data) => {
-        const res = this.handleProptError(data);
-        if (res) {
-          this.changeInitVersion(data);
-        }
-        return res;
-      });
-  getLatestReleaseVersion =(projectId, appId, branch = '') =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags/release?branch=${branch}`)
-      .then((data) => {
-        const res = this.handleProptError(data);
-        if (res) {
-          this.changeInitVersion(data);
-          return res;
-        }
-      });
-  createBranch =(projectId, appId, name) =>
-    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/start?name=${name}`)
+  loadBranchByName = (projectId, appId, name) => axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/branch?branchName=${name}`)
+    .then((branch) => {
+      const res = this.handleProptError(branch);
+      this.setBranch(branch);
+      return res;
+    });
+
+  updateBranchByName = (projectId, appId, postData) => axios.put(`/devops/v1/projects/${projectId}/apps/${appId}/git/branch`, postData)
+    .then((datas) => {
+      const res = this.handleProptError(datas);
+      return res;
+    });
+
+  createBranch =(projectId, appId, postData) =>
+    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git/branch`, postData)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
-  finishFeature =(projectId, appId, name) =>
-    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/finish_feature?branch=${name}`)
+  deleteData = (proId = AppState.currentMenuType.id, appId, name) => {
+    return axios.delete(`/devops/v1/projects/${proId}/apps/${appId}/git/branch?branchName=${name}`)
       .then((datas) => {
         const res = this.handleProptError(datas);
         return res;
       });
-  finishBranch =(projectId, appId, name) =>
-    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/finish?branch=${name}`)
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
-  getBranchMergeStaus =(projectId, appId, name) =>
-    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/update_merge_request_status?branch=${name}`)
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
+  };
   handleProptError =(error) => {
     if (error && error.failed) {
       Choerodon.prompt(error.message);
