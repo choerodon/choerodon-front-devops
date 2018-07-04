@@ -36,46 +36,14 @@
     margin-top: 16px;
   }
 
-  .c7n-branch-icon {
-    text-align: center;
-    font-size: 13px;
-    border-radius: 50%;
-    height: 18px;
-    width: 18px;
-    display: inline-block;
-    margin-right: 6px;
-    line-height: 18px;
-    font-weight: bold;
-  }
-
-  .icon-master {
-    color: #4d90fe;
-    background: rgba(77, 144, 254, 0.2);
-  }
-
-  .icon-feature {
-    color: #f953ba;
-    background: rgba(249, 83, 186, 0.2);
-  }
-
-  .icon-hotfix {
-    color: #f44336;
-    background: rgba(244, 67, 54, 0.2);
-  }
-
-  .icon-develop {
-    color: #ffb100;
-    background: rgba(255, 177, 0, 0.2);
-  }
-
-  .icon-release {
-    color: #1bc123;
-    background: rgba(27, 193, 35, 0.2);
-  }
-
   .ant-table-title {
     padding: 0;
     padding-bottom: 8px;
+  }
+
+  .branch-select_512 {
+    width: 512px;
+    margin-bottom: 20px;
   }
 }
 
@@ -85,6 +53,7 @@
   font-size: 13px;
   color: rgba(0, 0, 0, 0.36);
   padding-left: 5px;
+  padding-bottom: 6px;
 }
 
 .branch-popover {
@@ -106,7 +75,11 @@
     background: #45a3fc;
   }
 
-  .span-develop {
+  .span-bugfix {
+    background: #af4cff;
+  }
+
+  .span-custom {
     background: #ffb100;
   }
 
@@ -123,7 +96,7 @@
   }
 
   .branch-popover-content {
-    height: 54px;
+    // height: 54px;
     width: 88%;
     display: inline-block;
     font-size: 12px;

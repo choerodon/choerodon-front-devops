@@ -358,7 +358,7 @@ class AddAppRelease extends Component {
           </div>
           <p style={{ marginLeft: 30, marginTop: 24 }}>
             <span className="icon icon-error release-icon-error" />
-            <span className="deploy-tip-text">{this.props.intl.formatMessage({ id: 'release.add.step.three.tooltip' })}。</span>
+            <span className="deploy-tip-text">{this.props.intl.formatMessage({ id: 'release.add.step.three.tooltip' })}</span>
           </p>
         </section>
         <section className="deployAddApp-section">

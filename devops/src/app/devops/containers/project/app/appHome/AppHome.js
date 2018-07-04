@@ -121,13 +121,6 @@ class AppHome extends Component {
       key: 'action',
       render: (test, record) => (
         <div>
-          {record.repoUrl ? <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.git-flow.listByAppId', 'devops-service.git-flow.queryTags']} >
-            <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="app.branchManage" /> : <FormattedMessage id="app.start" />}</React.Fragment>}</div>}>
-              {record.active && record.synchro && record.repoUrl !== null ? <Button shape="circle" size={'small'} onClick={this.linkToBranch.bind(this, record.id, record.name)}>
-                <span className="icon icon-branch" />
-              </Button> : <span className="icon icon-branch c7n-app-icon-disabled" /> }
-            </Tooltip>
-          </Permission> : null }
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="edit" /> : <FormattedMessage id="app.start" />}</React.Fragment>}</div>}>
               {record.active && record.synchro ? <Button shape="circle" size={'small'} onClick={this.showSideBar.bind(this, 'edit', record.id)}>
