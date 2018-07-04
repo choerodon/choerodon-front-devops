@@ -313,7 +313,7 @@ class AppInstance extends Component {
             type,
             organizationId,
             projectId,
-            service: ['devops-service.application-instance.queryValues'],
+            service: ['devops-service.application-version.getUpgradeAppVersion'],
             text: intl.formatMessage({ id: 'ist.upgrade' }),
             action: this.upgradeIst.bind(this, record.code, record.id,
               record.envId, record.appVersionId, record.appId),
