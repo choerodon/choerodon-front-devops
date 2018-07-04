@@ -1,3 +1,15 @@
 h4.c7n-tag-table {
   margin-top: 20px;
 }
+
+.apptag-formitem {
+  position: relative;
+  padding-left: 26px;
+  .c7n-apptag-icon {
+    position: absolute;
+    left: 0;
+    top: 20px;
+    font-size: 16px;
+    color: rgba(0, 0, 0, .54);
+  }
+}

@@ -4,13 +4,25 @@ import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import { Button, Tooltip, Table, Select } from 'choerodon-ui';
+import { Button, Tooltip, Table, Select, Modal, Form, Input, Icon, Avatar } from 'choerodon-ui';
 import TimePopover from '../../../components/timePopover';
 import '../../main.scss';
 import './AppTag.scss';
 
 const { AppState } = stores;
 const Option = Select.Option;
+const { Sidebar } = Modal;
+const FormItem = Form.Item;
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 100 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 26 },
+  },
+};
 
 @observer
 class AppTag extends Component {
@@ -22,6 +34,9 @@ class AppTag extends Component {
       page: 0,
       pageSize: 10,
       appId: null,
+      appName: null,
+      showSide: false,
+      submitting: false,
     };
   }
 
@@ -34,27 +49,58 @@ class AppTag extends Component {
    * @param type 操作类型
    * @param id 操作应用
    */
-  showSideBar =(type, id = '') => {
+  showSideBar = () => {
     this.props.form.resetFields();
-    // const { AppStore } = this.props;
-    // const menu = AppState.currentMenuType;
-    // const { projectId, organizationId } = menu;
-    // if (type === 'create') {
-    //   AppStore.setSingleData(null);
-    //   AppStore.loadSelectData(organizationId);
-    //   this.setState({ show: true, type });
-    // } else {
-    //   AppStore.loadDataById(projectId, id);
-    //   this.setState({ show: true, type, id });
-    // }
+    const { AppTagStore } = this.props;
+    const { projectId } = this.state;
+    this.setState({
+      showSide: true,
+    });
+    AppTagStore.queryBranchData(projectId);
+  };
+
+  /**
+   * 点击创建
+   * @param e
+   */
+  handleOk = (e) => {
+    e.preventDefault();
+    const { AppTagStore } = this.props;
+    const { projectId, appId } = this.state;
+    this.props.form.validateFieldsAndScroll((err, data) => {
+      if (!err) {
+        this.setState({
+          submitting: true,
+        });
+        const { tag, ref } = data;
+        AppTagStore.createTag(projectId, appId, tag, ref).then(() => {
+          this.loadInitData();
+          this.setState({
+            submitting: false,
+            showSide: false,
+          });
+        }).catch((error) => {
+          Choerodon.prompt(error.response.data.message);
+          this.setState({
+            submitting: false,
+          });
+        });
+      }
+    });
+  };
+
+  handleCancel = () => {
+    this.setState({
+      showSide: false,
+    });
+    this.props.form.resetFields();
   };
 
   tableChange = (pagination, filters, sorter) => {
-    window.console.log(pagination);
     const { AppTagStore } = this.props;
     const { projectId, appId } = this.state;
-    const selectedApp = appId || AppTagStore.getDefaultApp;
-    this.setState({ page: pagination.current });
+    const selectedApp = appId || AppTagStore.getSelectApp;
+    this.setState({ page: pagination.current - 1 });
     AppTagStore
       .queryTagData(projectId, selectedApp, pagination.current - 1, pagination.pageSize);
   };
@@ -63,11 +109,11 @@ class AppTag extends Component {
    * 通过下拉选择器选择应用时，获取应用id
    * @param id
    */
-  handleSelect = (id) => {
+  handleSelect = (id, option) => {
     const { AppTagStore } = this.props;
     const { projectId, page, pageSize } = this.state;
-    this.setState({ appId: id });
-    AppTagStore.setDefaultApp(id);
+    this.setState({ appId: id, appName: option.props.children });
+    AppTagStore.setSelectApp(id);
     AppTagStore.queryTagData(projectId, id, page, pageSize);
   };
 
@@ -83,35 +129,97 @@ class AppTag extends Component {
     const { AppTagStore } = this.props;
     const { projectId } = this.state;
     AppTagStore.queryAppData(projectId);
-  }
+    this.setState({ appName: null });
+  };
+
+  /**
+   * 标记名称的校验规则：\d+(\.\d+){2}
+   */
+  checkTagName = _.debounce((rule, value, callback) => {
+    const { AppTagStore, intl } = this.props;
+    const { projectId } = this.state;
+    // eslint-disable-next-line no-useless-escape
+    const pa = /^\d+(\.\d+){2}$/;
+    if (value && pa.test(value)) {
+      AppTagStore.checkTagName(projectId, value)
+        .then((data) => {
+          if (data) {
+            callback();
+          } else {
+            callback(intl.formatMessage({ id: 'apptag.checkName' }));
+          }
+        });
+    } else {
+      callback(intl.formatMessage({ id: 'apptag.checkNameReg' }));
+    }
+  }, 1000);
+
+  /**
+   * 删除标记
+   * @param id
+   */
+  deleteTag = (test) => {
+    window.console.log(test);
+  };
 
   render() {
-    const { intl, AppTagStore } = this.props;
+    const { intl, AppTagStore, form } = this.props;
+    const { getFieldDecorator } = form;
+    const { showSide, appName, submitting } = this.state;
     const menu = AppState.currentMenuType;
     const { type, id: projectId, organizationId: orgId } = menu;
+    const currentAppName = appName || AppTagStore.getDefaultAppName;
     const tagColumns = [
       {
-        title: <FormattedMessage id="branch.tag" />,
+        title: <FormattedMessage id="apptag.tag" />,
         dataIndex: 'name',
-        sorter: true,
       },
       {
-        title: <FormattedMessage id="branch.code" />,
+        title: <FormattedMessage id="apptag.code" />,
         dataIndex: 'commit.id',
+        width: 100,
         render: (text, record) => (<a href={record.commit.url} rel="nofollow me noopener noreferrer" target="_blank">{record.commit.id.slice(0, 8)}</a>),
       },
       {
-        title: <FormattedMessage id="branch.des" />,
+        title: <FormattedMessage id="apptag.des" />,
         dataIndex: 'commit.message',
         render: (text, record) => <Tooltip title={record.commit.message} trigger="hover" placement="bottom"><div className="c7n-table-column">{record.commit.message}</div></Tooltip>,
       }, {
-        title: <FormattedMessage id="branch.owner" />,
+        title: <FormattedMessage id="apptag.owner" />,
         dataIndex: 'commit.authorName',
+        render: (text, record) => (<div>
+          {text}
+        </div>),
       },
       {
-        title: <FormattedMessage id="branch.time" />,
+        title: <FormattedMessage id="apptag.time" />,
         dataIndex: 'commit.committedDate',
         render: (text, record) => <TimePopover content={record.commit.committedDate} />,
+      }, {
+        align: 'right',
+        width: 60,
+        key: 'action',
+        render: text => (
+          <Permission
+            type={type}
+            projectId={projectId}
+            organizationId={orgId}
+            service={['devops-service.application.update']}
+          >
+            <Tooltip
+              placement="top"
+              title={<FormattedMessage id="delete" />}
+            >
+              <Button
+                shape="circle"
+                size={'small'}
+                onClick={() => this.deleteTag(text)}
+              >
+                <Icon type="delete_forever" />
+              </Button>
+            </Tooltip>
+          </Permission>
+        ),
       },
     ];
     return (
@@ -137,10 +245,10 @@ class AppTag extends Component {
               organizationId={orgId}
             >
               <Button
-                onClick={this.showSideBar.bind(this, 'create')}
+                onClick={this.showSideBar}
               >
                 <span className="icon-playlist_add icon" />
-                <FormattedMessage id="app.create" />
+                <FormattedMessage id="apptag.create" />
               </Button>
             </Permission>
             <Button
@@ -170,12 +278,12 @@ class AppTag extends Component {
             </p>
             <Select
               className="c7n-select_512"
-              value={AppTagStore.getDefaultApp}
+              value={AppTagStore.getSelectApp}
               label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
               filter
-              onChange={this.handleSelect}
+              onChange={(value, option) => this.handleSelect(value, option)}
             >
               {
                 _.map(AppTagStore.getAppData, (app, index) =>
@@ -193,6 +301,89 @@ class AppTag extends Component {
               dataSource={AppTagStore.getTagData}
               rowKey={record => record.name}
             />
+            <Sidebar
+              title={<FormattedMessage id="apptag.create" />}
+              visible={showSide}
+              onOk={this.handleOk}
+              okText={<FormattedMessage id="create" />}
+              cancelText={<FormattedMessage id="cancel" />}
+              confirmLoading={submitting}
+              onCancel={this.handleCancel}
+            >
+              <div className="c7n-region">
+                <h2 className="c7n-space-first">
+                  <FormattedMessage
+                    id="apptag.createTag"
+                    values={{
+                      name: `${currentAppName}`,
+                    }}
+                  />
+                </h2>
+                <p>
+                  <FormattedMessage id="apptag.createDescription" />
+                  <a href={intl.formatMessage({ id: 'apptag.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                    <span className="c7n-external-link-content">
+                      <FormattedMessage id="learnmore" />
+                    </span>
+                    <span className="icon icon-open_in_new" />
+                  </a>
+                </p>
+                <Form layout="vertical" className="c7n-sidebar-form">
+                  <div className="apptag-formitem">
+                    <Icon type="local_offer" className="c7n-apptag-icon" />
+                    <FormItem
+                      {...formItemLayout}
+                    >
+                      {getFieldDecorator('tag', {
+                        rules: [{
+                          required: true,
+                          whitespace: true,
+                          message: intl.formatMessage({ id: 'required' }),
+                        }, {
+                          // validator: this.checkTagName,
+                        }],
+                      })(
+                        <Input
+                          autoFocus
+                          label={<FormattedMessage id="apptag.name" />}
+                          size="default"
+                        />,
+                      )}
+                    </FormItem>
+                  </div>
+                  <div className="apptag-formitem">
+                    <Icon type="wrap_text" className="c7n-apptag-icon" />
+                    <FormItem
+                      {...formItemLayout}
+                    >
+                      {getFieldDecorator('ref', {
+                        rules: [{
+                          required: true,
+                          // whitespace: true,
+                          message: intl.formatMessage({ id: 'required' }),
+                        }],
+                      })(
+                        <Select
+                          allowClear
+                          label={<FormattedMessage id="apptag.ref" />}
+                          filter
+                          dropdownMatchSelectWidth
+                          size="default"
+                          filterOption={(input, option) =>
+                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                        >
+                          {
+                            _.map(AppTagStore.getBranchData, item =>
+                              <Option key={item.name} value={item.name}>{item.name}</Option>,
+                            )
+                          }
+                        </Select>,
+                      )}
+                    </FormItem>
+                  </div>
+                </Form>
+              </div>
+            </Sidebar>
           </Content>
         </React.Fragment>
       </Page>
@@ -200,4 +391,4 @@ class AppTag extends Component {
   }
 }
 
-export default withRouter(injectIntl(AppTag));
+export default Form.create({})(withRouter(injectIntl(AppTag)));
