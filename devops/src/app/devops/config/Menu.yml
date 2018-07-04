@@ -58,22 +58,22 @@
   icon: wrench
   sort: 2
   project:
-     - "branch":
+    - "repository":
         icon: account_balance
         Routes: /devops/repository
         sort: 1
         permission:
-          - 'devops-service.devops-git.queryByAppId',
+            - 'devops-service.devops-git.queryByAppId'
     - "branch":
         icon: branch
         Routes: /devops/branch
         sort: 2
         permission:
-          - 'devops-service.devops-git.createBranch',
-          - 'devops-service.devops-git.queryByAppId',
-          - 'devops-service.devops-git.delete',
-          - 'devops-service.devops-git.listByAppId',
-          - 'devops-service.devops-git.update',
+          - 'devops-service.devops-git.createBranch'
+          - 'devops-service.devops-git.queryByAppId'
+          - 'devops-service.devops-git.delete'
+          - 'devops-service.devops-git.listByAppId'
+          - 'devops-service.devops-git.update'
     - "tag":
         icon: local_offer
         Routes: /devops/tag
@@ -85,8 +85,8 @@
         Routes: /devops/merge-request
         sort: 4
         permission:
-          - 'devops-service.application.listByActive',
-          - 'devops-service.devops-git.getMergeRequestList',
+          - 'devops-service.application.listByActive'
+          - 'devops-service.devops-git.getMergeRequestList'
           - 'devops-service.devops-git.getUr'
     - "continuous-integration":
         icon: CI

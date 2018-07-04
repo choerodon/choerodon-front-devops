@@ -12,8 +12,8 @@
 "development-pipeline.branch": "分支"
 "development-pipeline.tag": "标记"
 "development-pipeline.repository": "代码仓库"
-"deployment-pipeline.merge-request": "合并请求"
-"deployment-pipeline.continuous-integration": "持续集成"
+"development-pipeline.merge-request": "合并请求"
+"development-pipeline.continuous-integration": "持续集成"
 
 # 部署流水线
 "deployment-pipeline": "部署流水线"
