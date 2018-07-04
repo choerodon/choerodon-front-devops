@@ -12,8 +12,8 @@
 "development-pipeline.branch": "Branch"
 "development-pipeline.tag": "Tag"
 "development-pipeline.repository": "Repository"
-"deployment-pipeline.merge-request": "Merge Request"
-"deployment-pipeline.continuous-integration": "Continuous Integration"
+"development-pipeline.merge-request": "Merge Request"
+"development-pipeline.continuous-integration": "Continuous Integration"
 
 # 部署流水线
 "deployment-pipeline": "Deployment Pipeline"
