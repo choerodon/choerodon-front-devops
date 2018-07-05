@@ -139,6 +139,14 @@ const pageDetail = {
   // merge-request
   'merge.title': '项目"{name}"的合并请求',
   'merge.description': '分支是将您的工作从开发主线上分离开来，以免影响开发主线。平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。',
+  
+  // app-tag
+  'apptag.description': '分支是将您的工作从开发主线上分离开来，以免影响开发主线。平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。',
+  'apptag.head': '项目\"{name}\"的标记管理',
+  'apptag.link': `${docServer}/user-guide/development-pipeline/application-tag/`,
+  'apptag.createTag': '在应用\"{name}\"中创建标记',
+  'apptag.createDescription': '采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线',
+
 };
 
 const zhCN = {
@@ -652,7 +660,6 @@ const zhCN = {
   'yaml.yaml.error': 'yaml 格式错误',
   'yaml.error.tooltip': 'Values文件yaml格式错误，请在应用代码中修改错误并重新生成正确的应用版本。',
 
-
   // merge request
   'merge.head': '合并请求',
   'merge.tab1': '开放',
@@ -663,6 +670,20 @@ const zhCN = {
   'merge.upDate': '更新日期',
   'merge.detail': '查看详情',
   'merge.createMerge': '创建合并请求',
+
+  // app-tag
+  'apptag.title': '标记管理',
+  'apptag.create': '创建标记',
+  'apptag.table': '标记列表',
+  'apptag.code': '提交编码',
+  'apptag.des': '提交描述',
+  'apptag.owner': '提交者',
+  'apptag.time': '提交时间',
+  'apptag.tag': '标记',
+  'apptag.name': '标记名称',
+  'apptag.ref': '标记来源',
+  'apptag.checkName': '标记名称已存在',
+  'apptag.checkNameReg': '标记名称由数字和.组成',
 
   ...pageDetail,
 };
