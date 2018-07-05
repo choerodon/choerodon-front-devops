@@ -16,17 +16,24 @@ h4.c7n-tag-table {
 
 .apptag-commit {
   display: inline-block;
-  vertical-align: text-bottom;
+  vertical-align: middle;
   &.apptag-commit-avatar {
-    margin-right: 5px;
+    margin-right: 8px;
     width: 18px;
     height: 18px;
     line-height: 18px;
     border-radius: 50%;
-    font-size: 18px;
+    font-size: 14px;
     text-align: center;
     background-color: rgba(63,81,181,.44);
     color: rgba(63,81,181,1);
   }
+}
+
+.apptag-commit-img {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin-right: 8px;
 }
 

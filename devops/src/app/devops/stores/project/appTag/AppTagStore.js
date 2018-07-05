@@ -19,7 +19,7 @@ function handleProptError(data) {
 class AppTagStore {
   @observable tagData = [];
   @observable appData = [];
-  @observable defaultApp = null;
+  @observable selectedApp = null;
   @observable defaultAppName = null;
   @observable loading = true;
   @observable pageInfo = {
@@ -46,11 +46,11 @@ class AppTagStore {
   }
 
   @action setSelectApp(app) {
-    this.defaultApp = app;
+    this.selectedApp = app;
   }
 
   @computed get getSelectApp() {
-    return this.defaultApp;
+    return this.selectedApp;
   }
 
   @action setDefaultAppName(name) {
@@ -97,15 +97,15 @@ class AppTagStore {
    * @param sizes
    * @returns {Promise<T>}
    */
-  queryTagData = (projectId, appId, page = 0, sizes = 10) => {
+  queryTagData = (projectId, page = 0, sizes = 10, appId = this.selectedApp) => {
     this.setLoading(true);
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git_flow/tags?page=${page}&size=${sizes}`)
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/tags?page=${page}&size=${sizes}`)
       .then((data) => {
         this.setLoading(false);
         const result = handleProptError(data);
         if (result) {
-          const { tagList, totalElements } = result;
-          this.setTagData(tagList);
+          const { content, totalElements } = result;
+          this.setTagData(content);
           this.setPageInfo({ page, sizes, totalElements });
         }
       }).catch(err => Choerodon.prompt(err));
@@ -124,7 +124,7 @@ class AppTagStore {
           this.setAppData(result);
           this.setSelectApp(result[0].id);
           this.setDefaultAppName(result[0].name);
-          this.queryTagData(projectId, result[0].id, 0);
+          this.queryTagData(projectId, 0, 10, result[0].id);
         }
       }).catch(err => Choerodon.prompt(err));
 
@@ -134,8 +134,8 @@ class AppTagStore {
    * @param appId
    * @returns {Promise<T>}
    */
-  queryBranchData = (projectId, appId = this.defaultApp) => {
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/branches`).then((data) => {
+  queryBranchData = (projectId) => {
+    axios.get(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/branches`).then((data) => {
       const result = handleProptError(data);
       if (result) {
         this.setBranchData(result);
@@ -148,7 +148,8 @@ class AppTagStore {
    * @param projectId
    * @param value
    */
-  checkTagName = (projectId, value) => {};
+  checkTagName = (projectId, name) =>
+    axios.get(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags_check?tag_name=${name}`);
 
   /**
    * 创建tag
@@ -158,8 +159,16 @@ class AppTagStore {
    * @param ref
    * @returns {JQueryXHR | * | void}
    */
-  createTag = (projectId, appId, tag, ref) =>
-    axios.post(`/devops/v1/projects/${projectId}/apps/${appId || this.defaultApp}/git/tags?tag=${tag}&ref=${ref}`);
+  createTag = (projectId, tag, ref) =>
+    axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags?tag=${tag}&ref=${ref}`);
+
+  /**
+   * 删除标记
+   * @param projectId
+   * @param tag
+   */
+  deleteTag = (projectId, tag) =>
+    axios.delete(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags?tag=${tag}`);
 }
 
 const appTagStore = new AppTagStore();

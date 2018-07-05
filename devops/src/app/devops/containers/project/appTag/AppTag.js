@@ -37,6 +37,7 @@ class AppTag extends Component {
       appName: null,
       showSide: false,
       submitting: false,
+      deleteLoading: false,
     };
   }
 
@@ -66,19 +67,26 @@ class AppTag extends Component {
   handleOk = (e) => {
     e.preventDefault();
     const { AppTagStore } = this.props;
-    const { projectId, appId } = this.state;
+    const { projectId } = this.state;
     this.props.form.validateFieldsAndScroll((err, data) => {
       if (!err) {
         this.setState({
           submitting: true,
         });
         const { tag, ref } = data;
-        AppTagStore.createTag(projectId, appId, tag, ref).then(() => {
-          this.loadInitData();
-          this.setState({
-            submitting: false,
-            showSide: false,
-          });
+        AppTagStore.createTag(projectId, tag, ref).then((req) => {
+          if (req && req.failed) {
+            Choerodon.prompt(data.message);
+            this.setState({
+              submitting: false,
+            });
+          } else {
+            this.loadTagData(projectId);
+            this.setState({
+              submitting: false,
+              showSide: false,
+            });
+          }
         }).catch((error) => {
           Choerodon.prompt(error.response.data.message);
           this.setState({
@@ -98,11 +106,9 @@ class AppTag extends Component {
 
   tableChange = (pagination, filters, sorter) => {
     const { AppTagStore } = this.props;
-    const { projectId, appId } = this.state;
-    const selectedApp = appId || AppTagStore.getSelectApp;
+    const { projectId } = this.state;
     this.setState({ page: pagination.current - 1 });
-    AppTagStore
-      .queryTagData(projectId, selectedApp, pagination.current - 1, pagination.pageSize);
+    this.loadTagData(projectId, pagination.current - 1, pagination.pageSize);
   };
 
   /**
@@ -114,7 +120,7 @@ class AppTag extends Component {
     const { projectId, page, pageSize } = this.state;
     this.setState({ appId: id, appName: option.props.children });
     AppTagStore.setSelectApp(id);
-    AppTagStore.queryTagData(projectId, id, page, pageSize);
+    this.loadTagData(projectId, page, pageSize);
   };
 
   /**
@@ -129,7 +135,20 @@ class AppTag extends Component {
     const { AppTagStore } = this.props;
     const { projectId } = this.state;
     AppTagStore.queryAppData(projectId);
-    this.setState({ appName: null });
+    this.setState({ appName: null, appId: null });
+  };
+
+  /**
+   * 加载刷新tag列表信息
+   * @param projectId
+   * @param id
+   * @param page
+   * @param pageSize
+   */
+  loadTagData = (projectId, page = 0, pageSize = 10) => {
+    const { AppTagStore } = this.props;
+    AppTagStore
+      .queryTagData(projectId, page, pageSize);
   };
 
   /**
@@ -137,7 +156,7 @@ class AppTag extends Component {
    */
   checkTagName = _.debounce((rule, value, callback) => {
     const { AppTagStore, intl } = this.props;
-    const { projectId } = this.state;
+    const { projectId, appId } = this.state;
     // eslint-disable-next-line no-useless-escape
     const pa = /^\d+(\.\d+){2}$/;
     if (value && pa.test(value)) {
@@ -158,14 +177,27 @@ class AppTag extends Component {
    * 删除标记
    * @param id
    */
-  deleteTag = (test) => {
-    window.console.log(test);
+  deleteTag = (tag) => {
+    const { AppTagStore } = this.props;
+    const { projectId } = this.state;
+    this.setState({ deleteLoading: true });
+    AppTagStore.deleteTag(projectId, tag.name).then((data) => {
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.loadTagData(projectId);
+      }
+      this.setState({ deleteLoading: false });
+    }).catch((error) => {
+      this.setState({ deleteLoading: false });
+      Choerodon.prompt(error);
+    });
   };
 
   render() {
     const { intl, AppTagStore, form } = this.props;
     const { getFieldDecorator } = form;
-    const { showSide, appName, submitting } = this.state;
+    const { showSide, appName, submitting, deleteLoading } = this.state;
     const menu = AppState.currentMenuType;
     const { type, id: projectId, organizationId: orgId } = menu;
     const currentAppName = appName || AppTagStore.getDefaultAppName;
@@ -187,7 +219,9 @@ class AppTag extends Component {
         title: <FormattedMessage id="apptag.owner" />,
         dataIndex: 'commit.authorName',
         render: (text, record) => (<div>
-          <span className="apptag-commit apptag-commit-avatar">{text.toString().substr(0, 1)}</span>
+          {record.commit.author && record.commit.author.avatarUrl
+            ? <img className="apptag-commit-img" src={record.commit.author.avatarUrl} alt="avatar" />
+            : <span className="apptag-commit apptag-commit-avatar">{text.toString().substr(0, 1)}</span>}
           <span className="apptag-commit">{text}</span>
         </div>),
       },
@@ -207,13 +241,13 @@ class AppTag extends Component {
             service={['devops-service.application.update']}
           >
             <Tooltip
-              placement="top"
+              placement="bottom"
               title={<FormattedMessage id="delete" />}
             >
               <Button
                 shape="circle"
                 size={'small'}
-                onClick={() => this.deleteTag(text)}
+                onClick={this.deleteTag.bind(this, text)}
               >
                 <Icon type="delete_forever" />
               </Button>
@@ -297,7 +331,7 @@ class AppTag extends Component {
               pagination={AppTagStore.pageInfo}
               filterBar={false}
               columns={tagColumns}
-              loading={AppTagStore.getLoading}
+              loading={AppTagStore.getLoading || deleteLoading}
               dataSource={AppTagStore.getTagData}
               rowKey={record => record.name}
             />
@@ -340,7 +374,7 @@ class AppTag extends Component {
                           whitespace: true,
                           message: intl.formatMessage({ id: 'required' }),
                         }, {
-                          // validator: this.checkTagName,
+                          validator: this.checkTagName,
                         }],
                       })(
                         <Input
