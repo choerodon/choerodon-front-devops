@@ -10,7 +10,7 @@ import '../../main.scss';
 import './AppTag.scss';
 
 const { AppState } = stores;
-const Option = Select.Option;
+const { Option, OptGroup } = Select;
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const formItemLayout = {
@@ -238,7 +238,9 @@ class AppTag extends Component {
             type={type}
             projectId={projectId}
             organizationId={orgId}
-            service={['devops-service.application.update']}
+            service={[
+              'devops-service.devops-git.deleteTag',
+            ]}
           >
             <Tooltip
               placement="bottom"
@@ -260,20 +262,20 @@ class AppTag extends Component {
       <Page
         className="c7n-region c7n-app-wrapper"
         service={[
-          'devops-service.git-flow.listByAppId',
-          'devops-service.git-flow.finishEvent',
-          'devops-service.git-flow.finishFeatureEvent',
-          'devops-service.git-flow.start',
-          'devops-service.git-flow.queryTags',
-          'devops-service.git-flow.queryHotfixNumber',
-          'devops-service.git-flow.queryReleaseNumber',
-          'devops-service.git-flow.finish',
+          'devops-service.application.listByActive',
+          'devops-service.devops-git.getTag',
+          'devops-service.devops-git.listByAppId',
+          'devops-service.devops-git.start',
+          'devops-service.devops-git.checkTag',
+          'devops-service.devops-git.deleteTag',
         ]}
       >
         <React.Fragment>
           <Header title={<FormattedMessage id="apptag.title" />}>
             <Permission
-              service={['devops-service.application.create']}
+              service={[
+                'devops-service.devops-git.start',
+              ]}
               type={type}
               projectId={projectId}
               organizationId={orgId}
@@ -404,13 +406,17 @@ class AppTag extends Component {
                           dropdownMatchSelectWidth
                           size="default"
                           filterOption={(input, option) =>
-                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                            option.props.children[1]
+                              .toLowerCase()
+                              .indexOf(input.toLowerCase()) >= 0}
                         >
-                          {
-                            _.map(AppTagStore.getBranchData, item =>
-                              <Option key={item.name} value={item.name}>{item.name}</Option>,
-                            )
-                          }
+                          <OptGroup label={<FormattedMessage id="apptag.branch" />}>
+                            {
+                              _.map(AppTagStore.getBranchData, item =>
+                                <Option key={item.name} value={item.name}><Icon className="apptag-branch-icon" type="branch" />{item.name}</Option>,
+                              )
+                            }
+                          </OptGroup>
                         </Select>,
                       )}
                     </FormItem>
