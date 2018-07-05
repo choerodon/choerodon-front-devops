@@ -141,7 +141,7 @@ class MergeRequestHome extends Component {
         </div>
       ),
     }, {
-      title: <FormattedMessage id="deploy.status" />,
+      title: <FormattedMessage id="merge.state" />,
       dataIndex: 'state',
       key: 'state',
     }, {
@@ -194,7 +194,7 @@ class MergeRequestHome extends Component {
       render: (test, record) => (
         <div>
           <Permission
-            service={['devops-service.application-market.queryApp']}
+            service={['devops-service.devops-git.getMergeRequestList']}
             organizationId={organizationId}
             projectId={projectId}
             type={type}
@@ -283,7 +283,7 @@ class MergeRequestHome extends Component {
       render: (test, record) => (
         <div>
           <Permission
-            service={['devops-service.application-market.queryApp']}
+            service={['devops-service.devops-git.getMergeRequestList']}
             organizationId={organizationId}
             projectId={projectId}
             type={type}
