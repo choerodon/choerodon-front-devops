@@ -141,11 +141,11 @@ class MergeRequestHome extends Component {
         </div>
       ),
     }, {
-      title: <FormattedMessage id="deploy.status" />,
+      title: <FormattedMessage id="merge.state" />,
       dataIndex: 'state',
       key: 'state',
     }, {
-      title: <FormattedMessage id="ciPipeline.createdAt" />,
+      title: <FormattedMessage id="create" />,
       key: 'createdAt',
       render: record => (
         <div>
@@ -154,7 +154,7 @@ class MergeRequestHome extends Component {
           </Tooltip>
           <Popover
             rowKey="creationDate"
-            title={<FormattedMessage id="create" />}
+            title={<FormattedMessage id="ciPipeline.createdAt" />}
             content={record.createdAt}
             placement="left"
           >
@@ -194,7 +194,7 @@ class MergeRequestHome extends Component {
       render: (test, record) => (
         <div>
           <Permission
-            service={['devops-service.application-market.queryApp']}
+            service={['devops-service.devops-git.getMergeRequestList']}
             organizationId={organizationId}
             projectId={projectId}
             type={type}
@@ -283,7 +283,7 @@ class MergeRequestHome extends Component {
       render: (test, record) => (
         <div>
           <Permission
-            service={['devops-service.application-market.queryApp']}
+            service={['devops-service.devops-git.getMergeRequestList']}
             organizationId={organizationId}
             projectId={projectId}
             type={type}
