@@ -1,0 +1,24 @@
+.c7n-app-select_512 {
+  width: 512px;
+  margin-bottom: 16px;
+}
+
+.c7n-merge-branches {
+  i {
+    vertical-align: baseline;
+    margin-right: 5px;
+  }
+
+  .c7n-merge-right {
+    transform: rotate(180deg);
+    vertical-align: sub;
+    margin: 0 5px;
+  }
+}
+
+.c7n-merge-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  margin-right: 5px;
+}

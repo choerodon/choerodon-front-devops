@@ -35,7 +35,7 @@ const ICONS = {
   canceled: {
     icon: 'icon-not_interested',
     code: 'canceled',
-    display: 'cancle',
+    display: 'cancel',
   },
   skipped: {
     icon: 'icon-skipped_b',
@@ -162,6 +162,7 @@ class CiPipelineHome extends Component {
     return (
       <div>
         <Table
+          filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
           loading={CiPipelineStore.loading}
           size="middle"
           pagination={CiPipelineStore.pagination}
