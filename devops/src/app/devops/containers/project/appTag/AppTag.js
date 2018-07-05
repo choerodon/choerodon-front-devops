@@ -265,7 +265,7 @@ class AppTag extends Component {
           'devops-service.application.listByActive',
           'devops-service.devops-git.getTag',
           'devops-service.devops-git.listByAppId',
-          'devops-service.devops-git.start',
+          'devops-service.devops-git.createTag',
           'devops-service.devops-git.checkTag',
           'devops-service.devops-git.deleteTag',
         ]}
