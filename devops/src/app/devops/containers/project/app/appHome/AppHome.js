@@ -122,8 +122,10 @@ class AppHome extends Component {
       render: (test, record) => (
         <div>
           {record.sonarUrl ? <Tooltip title={record.sonarUrl} placement="bottomRight">
-            <a className="ant-btn ant-btn-circle ant-btn-sm ant-btn-flat" href={record.snoarUrl} rel="nofollow me noopener noreferrer" target="_blank">
-              <span className="icon icon-polymer" />
+            <a href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
+              <Button shape="circle" size={'small'}>
+                <span className="icon icon-polymer" />
+              </Button>
             </a>
           </Tooltip> : null }
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']} >
