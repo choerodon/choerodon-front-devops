@@ -132,16 +132,11 @@ class BranchStore {
 
   loadTagData = (projectId, appId, page = this.pageInfo.current - 1,
     sizes = this.pageInfo.pageSize) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/tags?size=99`)
+    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/tag_list`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
-          const { totalElements } = data;
-          const number = page;
-          const size = sizes;
-          const pages = { number, size, totalElements };
-          this.setPageInfo(pages);
-          this.setTagData(data.tagList);
+          this.setTagData(data);
         }
       });
   loadAllData = (projectId, appId, page = this.pageInfo.current - 1,
