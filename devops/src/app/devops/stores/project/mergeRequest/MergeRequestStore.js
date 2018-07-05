@@ -27,7 +27,7 @@ class MergeRequestStore {
   }
 
   @action setPageInfo(page) {
-    this.pageInfo = { current: page.number + 1, total: page.totalElements, pageSize: page.size };
+    this.pageInfo = page;
   }
 
   @computed get getPageInfo() {
@@ -92,23 +92,43 @@ class MergeRequestStore {
   loadMergeRquest(appId, key, page = 0, size = 10, projectId = AppState.currentMenuType.id) {
     this.setMerge([]);
     this.setLoading(true);
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/merge_request/list?state=${key}&page=${page}&size=${size}`)
-      .then((res) => {
-        const response = this.handleProptError(res);
-        if (response) {
-          this.setPageInfo({
-            current: res.number + 1,
-            pageSize: res.size,
-            total: res.totalElements,
-          });
-          this.setMerge(res.content);
-        }
-        this.setLoading(false);
-      })
-      .catch((error) => {
-        this.setLoading(false);
-        Choerodon.prompt(error.message);
-      });
+    if (key === 'all') {
+      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/merge_request/list?page=${page}&size=${size}`)
+        .then((res) => {
+          const response = this.handleProptError(res);
+          if (response) {
+            this.setPageInfo({
+              current: res.pageResult.number + 1,
+              pageSize: res.pageResult.size,
+              total: res.pageResult.totalElements,
+            });
+            this.setMerge(res);
+          }
+          this.setLoading(false);
+        })
+        .catch((error) => {
+          this.setLoading(false);
+          Choerodon.prompt(error.message);
+        });
+    } else {
+      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/merge_request/list?state=${key}&page=${page}&size=${size}`)
+        .then((res) => {
+          const response = this.handleProptError(res);
+          if (response) {
+            this.setPageInfo({
+              current: res.pageResult.number + 1,
+              pageSize: res.pageResult.size,
+              total: res.pageResult.totalElements,
+            });
+            this.setMerge(res);
+          }
+          this.setLoading(false);
+        })
+        .catch((error) => {
+          this.setLoading(false);
+          Choerodon.prompt(error.message);
+        });
+    }
   }
 
 
