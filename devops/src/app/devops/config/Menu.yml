@@ -29,12 +29,6 @@
         sort: 2
         permission:
           - 'devops-service.application-version.pageByOptions'
-    - "version-log":
-        icon: description
-        Routes: /devops/version-log
-        sort: 3
-        permission:
-          - 'devops-service.application-version.pageByOptions'
     - "application-release":
         icon: near_me
         Routes: /devops/app-release
