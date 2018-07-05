@@ -177,7 +177,6 @@ class AppTag extends Component {
       {
         title: <FormattedMessage id="apptag.code" />,
         dataIndex: 'commit.id',
-        width: 100,
         render: (text, record) => (<a href={record.commit.url} rel="nofollow me noopener noreferrer" target="_blank">{record.commit.id.slice(0, 8)}</a>),
       },
       {
@@ -188,7 +187,8 @@ class AppTag extends Component {
         title: <FormattedMessage id="apptag.owner" />,
         dataIndex: 'commit.authorName',
         render: (text, record) => (<div>
-          {text}
+          <span className="apptag-commit apptag-commit-avatar">{text.toString().substr(0, 1)}</span>
+          <span className="apptag-commit">{text}</span>
         </div>),
       },
       {

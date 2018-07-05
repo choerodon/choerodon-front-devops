@@ -13,3 +13,19 @@ h4.c7n-tag-table {
     color: rgba(0, 0, 0, .54);
   }
 }
+
+.apptag-commit {
+  display: inline-block;
+  vertical-align: text-bottom;
+  &.apptag-commit-avatar {
+    margin-right: 5px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    border-radius: 50%;
+    font-size: 18px;
+    text-align: center;
+    background-color: rgba(63,81,181,.44);
+    color: rgba(63,81,181,1);
+  }
+}
