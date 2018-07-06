@@ -344,7 +344,7 @@ class CiPipelineHome extends Component {
 
   renderJobs = (jobs, record) => {
     const pipeStage = [];
-    if (jobs.length) {
+    if (jobs && jobs.length) {
       for (let i = 0, l = jobs.length; i < l; i += 1) {
         pipeStage.push(<span className="c7n-jobs">
           {
