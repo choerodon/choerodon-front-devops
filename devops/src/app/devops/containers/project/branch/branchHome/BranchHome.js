@@ -88,7 +88,7 @@ class BranchHome extends Component {
     let icon;
     let type;
     if (name) {
-      type = name.split('-')[0];
+      type = name.split('/')[0];
     }
     switch (type) {
       case 'feature':
@@ -142,7 +142,7 @@ class BranchHome extends Component {
           </div>
           {record.commitUserUrl && record.commitUserName ? <Tooltip title={record.commitUserName}>
             <div className="branch-user-img" ><img src={record.commitUserUrl} alt="" width={'100%'} /></div>
-          </Tooltip> : <div className="branch-user-img" >{record.commitUserName.slice(0, 1)}</div> }
+          </Tooltip> : <Tooltip title={record.commitUserName}><div className="branch-user-img" >{record.commitUserName.slice(0, 1)}</div></Tooltip> }
           <div style={{ display: 'inline-block' }} className="branch-col-icon">{record.commitContent}</div>
         </div>),
       },
