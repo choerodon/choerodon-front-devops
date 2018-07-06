@@ -15,6 +15,9 @@ class BranchStore {
   @observable loading = true;
   @observable issue = [];
   @observable branch = null;
+  @observable issueDto = null;
+  @observable issueTime = [];
+  @observable issueLoading = false;
 
   @observable createBranchShow = false;
   @observable confirmShow = false;
@@ -89,12 +92,20 @@ class BranchStore {
     this.branch = data;
   }
 
+  @action setIssueDto(data) {
+    this.issueDto = data;
+  }
+
+  @action setIssueTime(time) {
+    this.issueTime = time;
+  }
+  @action setIssueLoading(flag) {
+    this.issueLoading = flag;
+  }
 
   loadApps = (proId = AppState.currentMenuType.id) => {
-    this.changeLoading(true);
     return axios.get(`/devops/v1/projects/${proId}/apps`)
       .then((data) => {
-        this.changeLoading(false);
         const res = this.handleProptError(data);
         this.setApps(data.reverse());
         this.setApp(data[0].id);
@@ -103,20 +114,39 @@ class BranchStore {
       });
   };
 
-  loadIssue = (proId = AppState.currentMenuType.id, issueId = -1) => axios.get(`/agile/v1/projects/${proId}/issues/${issueId}/summary`)
-    .then((data) => {
-      const res = this.handleProptError(data);
-      this.setIssue(data.content);
-      return res;
-    });
+  loadIssue = (proId = AppState.currentMenuType.id, issueId = -1, search = '') => {
+    this.setIssueLoading(true);
+    return axios.get(`/agile/v1/projects/${proId}/issues/${issueId}/summary?content=${search}&page=0&size=20`)
+      .then((data) => {
+        this.setIssueLoading(false);
+        const res = this.handleProptError(data);
+        this.setIssue(data.content);
+        return res;
+      });
+  };
 
-  loadIssueById =(proId, id) => axios.get(`/agile/v1/projects/147/issues/sub_issue/677`)
+
+  loadIssueById =(proId, id) => {
+    this.changeLoading(true);
+    return axios.get(`/agile/v1/projects/${proId}/issues/${id}`)
+      .then((datas) => {
+        this.changeLoading(false);
+        const res = this.handleProptError(datas);
+        if (res) {
+          this.setIssueDto(datas);
+        }
+      });
+  };
+
+
+  loadIssueTimeById =(proId, id) => axios.get(`/agile/v1/projects/${proId}/work_log/issue/${id}`)
     .then((datas) => {
       const res = this.handleProptError(datas);
       if (res) {
-        this.setIssue(datas);
+        this.setIssueTime(datas);
       }
     });
+
 
   loadBranchData = (projectId, appId) => {
     this.changeLoading(true);

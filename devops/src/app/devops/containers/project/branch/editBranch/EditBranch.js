@@ -7,6 +7,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import '../../../main.scss';
 import '../CreateBranch/CreateBranch.scss';
 import '../commom.scss';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -34,11 +35,6 @@ class EditBranch extends Component {
       submitting: false,
       initValue: null,
     };
-  }
-
-  componentDidMount() {
-    const { store } = this.props;
-    store.loadIssue();
   }
   /**
    * 获取issue的正文
@@ -79,7 +75,10 @@ class EditBranch extends Component {
     return (<span>
       <Tooltip title={mes}>
         <div style={{ background: color }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
-        <span className="branch-issue-content"><span>{s.issueNum}</span>{s.summary}</span>
+        <span className="branch-issue-content">
+          <span style={{ color: 'rgb(0,0,0,0.65)' }}>{s.issueNum}</span>
+          <MouserOverWrapper style={{ display: 'inline-block', lineHeight: '12px' }} width={300} text={`   ${s.summary}`}>{`    ${s.summary}`}</MouserOverWrapper>
+        </span>
       </Tooltip>
     </span>);
   };
@@ -99,6 +98,7 @@ class EditBranch extends Component {
         this.setState({ submitting: true });
         store.updateBranchByName(projectId, appId, data)
           .then(() => {
+            store.loadBranchData(projectId, store.app);
             this.props.onClose();
             this.props.form.resetFields();
             this.setState({ submitting: false });
@@ -121,6 +121,22 @@ class EditBranch extends Component {
   handleClose = () => {
     this.props.form.resetFields();
     this.props.onClose();
+  };
+  /**
+   * 加载issue
+   */
+  loadIssue = () => {
+    const { store } = this.props;
+    store.loadIssue(this.state.projectId, -1, '');
+  };
+  /**
+   * 搜索issue
+   * @param input
+   * @param options
+   */
+  searchIssue = (input, options) => {
+    const { store } = this.props;
+    store.loadIssue(this.state.projectId, -1, input);
   };
 
 
@@ -168,6 +184,9 @@ class EditBranch extends Component {
                 initialValue: this.props.store.branch ? this.props.store.branch.issueId : undefined,
               })(
                 <Select
+                  onFilterChange={this.searchIssue}
+                  onFocus={this.loadIssue}
+                  loading={store.issueLoading}
                   key="service"
                   allowClear
                   label={<FormattedMessage id={'branch.issueName'} />}
@@ -176,14 +195,11 @@ class EditBranch extends Component {
                   onSelect={this.selectTemplate}
                   size="default"
                   optionFilterProp="children"
-                  filterOption={
-                    (input, option) =>
-                      option.props.children.props.children[1].props.children
-                        .toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }
+                  filterOption={false}
                 >
                   {issue.map(s => (
                     <Option
+                      key={s.issueId}
                       value={s.issueId}
                     >
                       {this.getOptionContent(s)}
