@@ -671,6 +671,7 @@ const zhCN = {
   'merge.upDate': '更新日期',
   'merge.detail': '查看详情',
   'merge.createMerge': '创建合并请求',
+  'merge.state': '合并状态',
 
   // app-tag
   'apptag.title': '标记管理',

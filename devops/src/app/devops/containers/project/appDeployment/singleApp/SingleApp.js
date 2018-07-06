@@ -234,7 +234,7 @@ class SingleApp extends Component {
    * @param appId
    */
   upgradeIst = (name, id, envId, verId, appId) => {
-    const { store } = this.props;
+    const { store, intl } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     store.loadValue(projectId, appId, envId, verId)
       .then((res) => {
@@ -245,6 +245,8 @@ class SingleApp extends Component {
             .then((val) => {
               if (val && val.failed) {
                 Choerodon.prompt(val.message);
+              } else if (val.length === 0) {
+                Choerodon.prompt(intl.formatMessage({ id: 'ist.noUpVer' }));
               } else {
                 this.setState({
                   idArr: [envId, verId, appId],
