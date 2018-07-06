@@ -75,7 +75,9 @@ class BranchHome extends Component {
     return (<span>
       <Tooltip title={mes}>
         <div style={{ background: color }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
-        <span className="branch-issue-content"><span>{s.issueNum}</span>{s.summary}</span>
+      </Tooltip>
+      <Tooltip title={s.summary}>
+        <span className="branch-issue-content"><span>{s.issueNum}</span></span>
       </Tooltip>
     </span>);
   };
@@ -330,6 +332,7 @@ class BranchHome extends Component {
   handleEdit =(name) => {
     const { BranchStore } = this.props;
     BranchStore.loadBranchByName(this.state.projectId, BranchStore.app, name);
+    BranchStore.loadIssue();
     BranchStore.setCreateBranchShow('edit');
   };
 

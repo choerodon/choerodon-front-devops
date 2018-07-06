@@ -74,7 +74,7 @@ class EditBranch extends Component {
     }
     return (<span>
       <Tooltip title={mes}>
-        <div style={{ background: color }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
+        <div style={{ background: color, marginRight: 5 }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
         <span className="branch-issue-content">
           <span style={{ color: 'rgb(0,0,0,0.65)' }}>{s.issueNum}</span>
           <MouserOverWrapper style={{ display: 'inline-block', lineHeight: '12px' }} width={300} text={`   ${s.summary}`}>{`    ${s.summary}`}</MouserOverWrapper>
