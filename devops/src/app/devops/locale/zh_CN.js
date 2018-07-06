@@ -686,6 +686,7 @@ const zhCN = {
   'apptag.ref': '标记来源',
   'apptag.checkName': '标记名称已存在',
   'apptag.checkNameReg': '标记名称由数字和.组成',
+  'apptag.branch': '分支',
 
   ...pageDetail,
 };
