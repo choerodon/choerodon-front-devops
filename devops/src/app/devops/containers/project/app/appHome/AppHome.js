@@ -121,10 +121,10 @@ class AppHome extends Component {
       key: 'action',
       render: (test, record) => (
         <div>
-          {record.sonarUrl ? <Tooltip title={<FormattedMessage id="app.quality" />} placement="bottomRight">
+          {record.sonarUrl ? <Tooltip title={<FormattedMessage id="app.quality" />} placement="bottom">
             <a href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
               <Button shape="circle" size={'small'}>
-                <span className="icon icon-polymer" />
+                <span className="icon icon-quality" />
               </Button>
             </a>
           </Tooltip> : null }
