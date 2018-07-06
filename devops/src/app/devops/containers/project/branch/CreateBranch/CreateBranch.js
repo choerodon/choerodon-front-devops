@@ -76,7 +76,7 @@ class CreateBranch extends Component {
     }
     return (<span>
       <Tooltip title={mes}>
-        <div style={{ background: color }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
+        <div style={{ background: color, marginRight: 5 }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
       </Tooltip>
       <span className="branch-issue-content">
         <span style={{ color: 'rgb(0,0,0,0.65)' }}>{s.issueNum}</span>
