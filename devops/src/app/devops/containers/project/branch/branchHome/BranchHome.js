@@ -36,10 +36,6 @@ class BranchHome extends Component {
     BranchStore.loadApps();
     // this.loadData();
   }
-  componentWillUnmount() {
-    clearTimeout(this.timer);
-  }
-
   /**
    * 获取issue的options
    * @param s
@@ -136,26 +132,37 @@ class BranchHome extends Component {
       {
         title: <FormattedMessage id="branch.commit" />,
         render: (text, record) => (<div>
-          <div><span className="icon icon-point branch-column-icon" /><a href={record.commitUrl} target="_blank" rel="nofollow me noopener noreferrer"><span>{record.sha}</span></a></div>
-          {record.commitUserName && record.commitUserUrl ? <Tooltip title={record.commitUserName}>
+          <div>
+            <span className="icon icon-point branch-column-icon" />
+            <a href={record.commitUrl} target="_blank" rel="nofollow me noopener noreferrer">
+              <span>{record.sha}</span>
+            </a>
+            <span className="icon icon-schedule branch-col-icon branch-column-icon" style={{ paddingLeft: 16, fontSize: 16, marginBottom: 2 }} />
+            <TimePopover content={record.commitDate} style={{ display: 'inline-block', color: 'rgba(0, 0, 0, 0.65)' }} />
+          </div>
+          {record.commitUserUrl && record.commitUserName ? <Tooltip title={record.commitUserName}>
             <div className="branch-user-img" ><img src={record.commitUserUrl} alt="" width={'100%'} /></div>
           </Tooltip> : <div className="branch-user-img" >{record.commitUserName.slice(0, 1)}</div> }
-          <div style={{ display: 'inline-block' }}>{record.commitComent}</div>
+          <div style={{ display: 'inline-block' }} className="branch-col-icon">{record.commitContent}</div>
         </div>),
       },
       {
         title: <FormattedMessage id="branch.time" />,
         dataIndex: 'commit.committedDate',
         render: (text, record) => (<div>
-          {record.createUserName && record.createUserUrl ? <Tooltip title={record.createUserName}>
-            <div className="branch-user-img" >
-              <img src={record.createUserUrl} alt="" width={'100%'} />
-            </div>
-          </Tooltip>
+          {record.createUserName && record.createUserUrl ?
+            <React.Fragment>
+              <div className="branch-user-img" >
+                <img src={record.createUserUrl} alt="" width={'100%'} />
+              </div>
+              <span>{record.createUserName}</span>
+            </React.Fragment>
             : <React.Fragment>
-              {record.createUserName ? <div className="branch-user-img" >{record.createUserName.slice(0, 1)}</div> : null}
+              {record.createUserName ? <div>
+                <div className="branch-user-img" >{record.createUserName.slice(0, 1)}</div>
+                <span>{record.createUserName}</span>
+              </div> : null}
             </React.Fragment> }
-          <TimePopover content={record.createDate} style={{ display: 'inline-block' }} />
         </div>),
       },
       {
@@ -163,7 +170,7 @@ class BranchHome extends Component {
         dataIndex: 'commit.message',
         render: (text, record) => (<div>
           {record.typeCode ? this.getOptionContent(record) : null}
-          <a onClick={this.showIssue.bind(this, record.issueId)} role={'none'}><Tooltip title={record.issueName}>{record.issueCode}</Tooltip></a>
+          <a onClick={this.showIssue.bind(this, record.issueId, record.name)} role={'none'}><Tooltip title={record.issueName}>{record.issueCode}</Tooltip></a>
         </div>),
       },
       {
@@ -188,7 +195,7 @@ class BranchHome extends Component {
                   placement="bottom"
                   title={<FormattedMessage id="branch.request" />}
                 >
-                  <a href={record.commitUrl && `${record.commitUrl.split('/commit')[0]}/merge_requests/new?merge_request[source_branch]=${record.name}&merge_request[target_branch]=master`} target="_blank" rel="nofollow me noopener noreferrer">
+                  <a href={record.commitUrl && `${record.commitUrl.split('/commit')[0]}/merge_requests/new?change_branches=true&merge_request[source_branch]=${record.name}&merge_request[target_branch]=master`} target="_blank" rel="nofollow me noopener noreferrer">
                     <Button size={'small'} shape="circle">
                       <span className="icon icon-wrap_text" />
                     </Button>
@@ -301,7 +308,7 @@ class BranchHome extends Component {
         pagination={false}
         columns={branchColumns}
         dataSource={BranchStore.branchData.slice()}
-        rowKey={record => record.id}
+        rowKey={record => record.name}
       />
     );
   }
@@ -343,9 +350,11 @@ class BranchHome extends Component {
     BranchStore.setCreateBranchShow('create');
   };
 
-  showIssue =(id) => {
+  showIssue =(id, name) => {
     const { BranchStore } = this.props;
+    this.setState({ name });
     BranchStore.loadIssueById(this.state.projectId, id);
+    BranchStore.loadIssueTimeById(this.state.projectId, id);
     BranchStore.setCreateBranchShow('detail');
   };
 
@@ -355,7 +364,7 @@ class BranchHome extends Component {
   hideSidebar = () => {
     const { BranchStore } = this.props;
     BranchStore.setCreateBranchShow(false);
-    this.loadData(BranchStore.app);
+    // this.loadData(BranchStore.app);
   };
   /**
    * 打开删除框
@@ -400,8 +409,11 @@ class BranchHome extends Component {
           'devops-service.devops-git.queryByAppId',
           'devops-service.devops-git.delete',
           'devops-service.devops-git.listByAppId',
-          'devops-service.git-flow.queryTags',
+          'devops-service.devops-git.getTagList',
           'devops-service.devops-git.update',
+          'agile-service.issue.queryIssueByOption',
+          'agile-service.issue.queryIssue',
+          'agile-service.work-log.queryWorkLogListByIssueId',
         ]}
       >
         <Header title={<FormattedMessage id="branch.title" />}>
@@ -462,8 +474,8 @@ class BranchHome extends Component {
             {
               _.map(apps, (app, index) =>
                 (
-                  <Option value={app.id}>
-                    <Tooltip title={app.code} key={index}>
+                  <Option value={app.id} key={index}>
+                    <Tooltip title={app.code}>
                       <span style={{ width: '100%', display: 'inline-block' }}>
                         {app.name}
                       </span>
@@ -488,8 +500,8 @@ class BranchHome extends Component {
           onClose={this.hideSidebar}
         /> }
         {BranchStore.createBranchShow === 'detail' && <IssueDetail
+          name={this.state.name}
           store={BranchStore}
-          name={_.filter(apps, app => app.id === BranchStore.app)[0].name}
           visible={BranchStore.createBranchShow === 'detail'}
           onClose={this.hideSidebar}
         /> }

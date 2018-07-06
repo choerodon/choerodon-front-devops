@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import { Modal, Form } from 'choerodon-ui';
+import { Modal, Form, Progress } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import '../../../main.scss';
-import '../CreateBranch/CreateBranch.scss';
+import _ from 'lodash';
+import './Issue.scss';
 import '../commom.scss';
+import IssueDescription from './IssueDescription';
+import LoadingBar from '../../../../components/loadingBar';
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
+const QuillDeltaToHtmlConverter = require('quill-delta-to-html');
+
 @observer
 class IssueDetail extends Component {
   constructor(props) {
@@ -24,19 +28,133 @@ class IssueDetail extends Component {
     };
   }
 
-  componentDidMount() {
-    const { store } = this.props;
-    store.loadIssue();
-  }
-
+  /**
+   * 获取状态的icon
+   * @param statusCode
+   * @returns {string}
+   */
+  getStatusIcon = (statusCode) => {
+    let icon = '';
+    if (statusCode === 'todo') {
+      icon = 'watch_later';
+    } else if (statusCode === 'doing') {
+      icon = 'timelapse';
+    } else {
+      icon = 'check_circle';
+    }
+    return icon;
+  };
+  /**
+   * 返回优先级的字的颜色
+   * @param priorityCode
+   * @returns {string}
+   */
+  getAssigeColor =(priorityCode) => {
+    let color = '';
+    if (priorityCode === 'low') {
+      color = 'rgba(0, 0, 0, 0.36)';
+    } else if (priorityCode === 'medium') {
+      color = 'rgb(53, 117, 223)';
+    } else {
+      color = 'rgb(255, 177, 0)';
+    }
+    return color;
+  };
+  /**
+   * 获取头像的首字母
+   * @param name
+   */
+  getName = (name) => {
+    const p = /[\u4e00-\u9fa5]/;
+    const str = p.exec(name);
+    let names = '';
+    if (str) {
+      names = str[0];
+    } else {
+      names = names.slice(0, 1);
+    }
+    return names;
+  };
+  /**
+   * 将quill特有的文本结构转为html
+   * @param {*} description
+   */
+  delta2Html =(description) => {
+    const delta = this.text2Delta(description);
+    const converter = new QuillDeltaToHtmlConverter(delta, {});
+    const text = converter.convert();
+    if (text.substring(0, 3) === '<p>') {
+      return text.substring(3);
+    } else {
+      return text;
+    }
+  };
   handleClose = () => {
     this.props.form.resetFields();
     this.props.onClose();
   };
 
+  /**
+   * 获取时间
+   * @param str
+   * @returns {string}
+   */
+  formatDate = (str) => {
+    const { formatMessage } = this.props.intl;
+    const MONTH = [
+      formatMessage({ id: 'branch.issue.one' }),
+      formatMessage({ id: 'branch.issue.two' }),
+      formatMessage({ id: 'branch.issue.three' }),
+      formatMessage({ id: 'branch.issue.four' }),
+      formatMessage({ id: 'branch.issue.five' }),
+      formatMessage({ id: 'branch.issue.six' }),
+      formatMessage({ id: 'branch.issue.seven' }),
+      formatMessage({ id: 'branch.issue.eight' }),
+      formatMessage({ id: 'branch.issue.nine' }),
+      formatMessage({ id: 'branch.issue.ten' }),
+      formatMessage({ id: 'branch.issue.eleven' }),
+      formatMessage({ id: 'branch.issue.twenty' }),
+    ];
+    if (!str) {
+      return '';
+    }
+    const arr = str.split(' ');
+    if (arr.length < 1) {
+      return '';
+    }
+    const date = arr[0];
+    const time = arr[1];
+    if (!arr[0] || !arr[1]) {
+      return '';
+    }
+    const d = date.split('-');
+    const t = time.split(':');
+    if (d.length < 3 || t.length < 3) {
+      return '';
+    }
+    return `${d[2]}/${MONTH[d[1] * 1]}${formatMessage({ id: 'branch.issue.month' })}/${d[0].slice(2)} ${t[0] < 12 ? t[0] : (t[0] * 1) - 12}:${t[1]} ${t[0] * 1 < 12 ? formatMessage({ id: 'branch.issue.am' }) : formatMessage({ id: 'branch.issue.pm' })}`;
+  };
+  /**
+   * 富文本编辑转换
+   * @param description
+   * @returns {*}
+   */
+  text2Delta =(description) => {
+    if (
+      description &&
+      description.indexOf('[') === 0 &&
+      description[description.length - 1] === ']'
+    ) {
+      return JSON.parse(description);
+    }
+    return description || '';
+  }
   render() {
     const { visible, intl, store } = this.props;
-    const issue = store.issue;
+    const { formatMessage } = intl;
+    const issue = store.issueDto;
+    const time = _.reduce(_.map(store.issueTime, 'workTime'), (sum, v) => sum + (v || 0), 0);
+    const delta = issue ? this.delta2Html(issue.description) : '';
     return (
       <Sidebar
         title={<FormattedMessage
@@ -50,64 +168,133 @@ class IssueDetail extends Component {
         okCancel={false}
         onOk={this.handleClose}
       >
-        <div className="c7n-region c7n-branch-issue">
+        { !issue ? <LoadingBar display /> : <div className="c7n-branch-issue">
           <section className="branch-issue-name">
-            <p>{issue.summary}</p>
+            <p className="issue-summary">{issue.summary}</p>
           </section>
           <section className="branch-issue-status">
-            <div className="issue-status"> <span className="icon icon-watch_later" style={{ color: issue.statusColor }} />
+            <div className="issue-status">
+              <span className="issue-status-icon-large" >
+                <i className={`icon icon-${this.getStatusIcon(issue.statusCode)}`} style={{ color: issue.statusColor }} />
+              </span>
               <div>
-                <div>{<FormattedMessage id={'network.column.status'} />}</div>
-                <div>{issue.statusName}</div>
+                <div className="issue-status-title">{<FormattedMessage id={'network.column.status'} />}</div>
+                <div className="issue-status-text" style={{ color: issue.statusColor }}>{issue.statusName}</div>
               </div>
             </div>
-            <div className="issue-status"> <span className="icon icon-flag" style={{ color: issue.statusColor }} />
+            <div className="issue-status">
+              <span className="issue-status-icon-small" style={{ backgroundColor: 'rgba(77, 144, 254, 0.2)' }}>
+                <i className="icon icon-flag" style={{ color: '#3575DF' }} />
+              </span>
               <div>
-                <div>{<FormattedMessage id={'branch.issue.priority'} />}</div>
-                <div>{issue.priorityName}</div>
+                <div className="issue-status-title" >{<FormattedMessage id={'branch.issue.priority'} />}</div>
+                <div className="issue-status-text" style={{ color: this.getAssigeColor(issue.priorityCode) }}>{issue.priorityName}</div>
+              </div>
+            </div>
+            <div className="issue-status">
+              <span className="issue-status-icon-small" style={{ backgroundColor: 'rgb(216, 216, 216)' }} >
+                <i className="icon icon-directions_run" />
+              </span>
+              <div>
+                <div className="issue-status-title">{this.props.intl.formatMessage({ id: 'branch.issue.sprint' })}</div>
+                <div className="issue-status-text">{issue.activeSprint ? issue.activeSprint.sprintName : formatMessage({ id: 'branch.issue.no' })}</div>
+              </div>
+            </div>
+            <div className="issue-status">
+              <span className="issue-status-icon-small" style={{ backgroundColor: 'rgb(216, 216, 216)' }} >
+                <i className="icon icon-event_note" />
+              </span>
+              <div>
+                <div className="issue-status-title">{formatMessage({ id: 'branch.issue.remainTime' })}</div>
+                <div className="issue-status-text">{issue.remainingTime ? `${issue.remainingTime}${formatMessage({ id: 'branch.issue.hour' })}` : formatMessage({ id: 'branch.issue.no' })}</div>
               </div>
             </div>
           </section>
           <section className="branch-issue-detail">
-            <div className="issue-detail-head">
-              <div>
-                <span className="icon icon-error_outline" />{<FormattedMessage id={'detail'} />}</div>
-              <div />
+            <div className="issue-detail-head-wrapper">
+              <div className="issue-detail-head">
+                <i className="icon icon-error_outline" />
+                <span>{<FormattedMessage id={'detail'} />}</span>
+              </div>
+              <div className="issue-detail-head-hr" />
             </div>
             <div className="issue-detail-content">
               <div className="issue-detail-tr">
-                <div className="issue-detail-td">
-                  <span className="td-title">{<FormattedMessage id={'branch.issue.module'} />}</span>
-                  <span className="td-text">{issue.statusColor}</span>
+                <div>
+                  <span className="issue-detail-content-title">{formatMessage({ id: 'branch.issue.module' })}:</span>
+                  {issue.componentIssueRelDTOList.length ? issue.componentIssueRelDTOList.map(module => <span key={module.name} className="issue-detail-module-value">{module.name}{`${issue.componentIssueRelDTOList.length > 1 ? ',' : ''}`}</span>) : '无'}
                 </div>
-                <div className="issue-detail-td">
-                  <span className="td-title">{<FormattedMessage id={'branch.issue.type'} />}</span>
-                  <span className="td-text">{issue.statusColor}</span>
+                <div>
+                  <span className="issue-detail-content-title">{formatMessage({ id: 'branch.issue.label' })}:</span>
+                  {issue.labelIssueRelDTOList.length
+                    ? issue.labelIssueRelDTOList.map(label => <span key={label.labelName} className="issue-detail-label-value">{label.labelName}</span>) : formatMessage({ id: 'branch.issue.no' })}
+                </div>
+                <div>
+                  <span className="issue-detail-content-title">{formatMessage({ id: 'branch.issue.influenceVer' })}:</span>
+                  {issue.typeCode === 'bug' && issue.versionIssueRelDTOList.length ? issue.versionIssueRelDTOList.map(label => (label.relationType === 'influence' ? <span key={label.name} className="issue-detail-module-value">{label.name}</span> : '无')) : '无' }
+                </div>
+                <div>
+                  <span className="issue-detail-content-title">{formatMessage({ id: 'branch.issue.fixVer' })}:</span>
+                  {issue.versionIssueRelDTOList.length
+                    ? issue.versionIssueRelDTOList.map(label => <span className="issue-detail-module-value">{label.relationType === 'fix' ? label.name : formatMessage({ id: 'branch.issue.no' })}{`${issue.versionIssueRelDTOList.length > 1 ? ',' : ''}`}</span>) : '无'}
+                </div>
+                <div>
+                  <span className="issue-detail-content-title">{formatMessage({ id: 'branch.issue.epic' })}:</span>
+                  {issue.epicName ? <span className="issue-detail-epic-value">{issue.epicName}</span> : formatMessage({ id: 'branch.issue.no' })}
+                </div>
+                <div>
+                  <span className="issue-detail-content-title">{formatMessage({ id: 'branch.issue.workTime' })}:</span>
+                  <div className="issue-detail-time">
+                    <Progress
+                      percent={time
+                        ? (time * 100) / (time + issue.remainingTime && issue.remainingTime) : 0}
+                      showInfo={false}
+                      status={'success'}
+                    />
+                  </div>
+                  <span>{`${time}h/${time + issue.remainingTime && issue.remainingTime}h`}</span>
                 </div>
               </div>
               <div className="issue-detail-tr">
-                <div className="issue-detail-td">
-                  <span className="td-title">{<FormattedMessage id={'branch.issue.label'} />}</span>
-                  <span className="td-text">{issue.statusColor}</span>
+                <div>
+                  <p className="issue-detail-title-bold">{formatMessage({ id: 'branch.issue.person' })}</p>
+                  <div>
+                    <span className="issue-detail-content-title" style={{ marginLeft: 0 }}>{formatMessage({ id: 'branch.issue.reporter' })}:</span>
+                    <div className="branch-user-img">{issue.reporterImageUrl ? <img src={issue.reporterImageUrl} alt="" width="100%" /> : this.getName(issue.reporterName) }</div>
+                    <span className="issue-detail-content-title" style={{ marginLeft: 0 }}>{issue.reporterName}</span>
+                  </div>
+                  <div className="issue-detail-content-title" style={{ marginLeft: 0 }}>{formatMessage({ id: 'branch.issue.assignee' })}:</div>
+                  <div className="branch-user-img">{issue.assigneeImageUrl ? <img src={issue.assigneeImageUrl} alt="" width="100%" /> : this.getName(issue.assigneeName) }</div>
+                  <span className="issue-detail-content-title" style={{ marginLeft: 0 }}>{issue.assigneeName}</span>
                 </div>
-                <div className="issue-detail-td">
-                  <span className="td-title">{<FormattedMessage id={'branch.issue.creator'} />}</span>
-                  <span className="td-text">{issue.reporterName}</span>
+                <div>
+                  <p className="issue-detail-title-bold">{formatMessage({ id: 'branch.issue.date' })}</p>
+                  <div>
+                    <span className="issue-detail-content-title" style={{ marginLeft: 0 }}>{formatMessage({ id: 'branch.issue.createTime' })}：</span>
+                    <span>{this.formatDate(issue.creationDate)}</span>
+                  </div>
+                  <div>
+                    <span className="issue-detail-content-title" style={{ marginLeft: 0 }}>{formatMessage({ id: 'branch.issue.updateTime' })}:</span>
+                    <span>{this.formatDate(issue.lastUpdateDate)}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </section>
           <section className="branch-issue-description">
-            <div className="issue-description-head">
-              <div>
-                <span className="icon icon-subject" />{<FormattedMessage id={'branch.issue.summary'} />}</div>
-              <div />
+            <div className="issue-detail-head-wrapper">
+              <div className="issue-detail-head">
+                <i className="icon icon-subject" />
+                {<FormattedMessage id={'template.des'} />}
+              </div>
+              <div className="issue-detail-head-hr" />
             </div>
-            <div>
-              <span>{issue.description}</span>
+            <div style={{ marginLeft: 30 }}>
+              <IssueDescription data={delta} />
             </div>
           </section>
-        </div>
+        </div> }
+
       </Sidebar>
     );
   }

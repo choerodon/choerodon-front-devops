@@ -7,6 +7,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import '../../../main.scss';
 import './CreateBranch.scss';
 import '../commom.scss';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -35,11 +36,6 @@ class CreateBranch extends Component {
       initValue: null,
       type: 'custom',
     };
-  }
-
-  componentDidMount() {
-    const { store } = this.props;
-    store.loadIssue();
   }
 
   /**
@@ -82,7 +78,10 @@ class CreateBranch extends Component {
       <Tooltip title={mes}>
         <div style={{ background: color }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
       </Tooltip>
-      <span className="branch-issue-content">{`${s.issueNum}    ${s.summary}`}</span>
+      <span className="branch-issue-content">
+        <span style={{ color: 'rgb(0,0,0,0.65)' }}>{s.issueNum}</span>
+        <MouserOverWrapper style={{ display: 'inline-block', lineHeight: '12px' }} width={320} text={`    ${s.summary}`}>{`    ${s.summary}`}</MouserOverWrapper>
+      </span>
     </span>);
   };
   /**
@@ -129,10 +128,11 @@ class CreateBranch extends Component {
     this.props.form.validateFieldsAndScroll((err, data) => {
       if (!err) {
         const postData = data;
-        postData.branchName = type ? `${type}-${data.branchName}` : data.branchName;
+        postData.branchName = type ? `${type}/${data.branchName}` : data.branchName;
         this.setState({ submitting: true });
         store.createBranch(projectId, appId, postData)
           .then(() => {
+            store.loadBranchData(projectId, this.props.appId);
             this.props.onClose();
             this.props.form.resetFields();
             this.setState({ submitting: false });
@@ -208,6 +208,22 @@ class CreateBranch extends Component {
     }
     this.setState({ type });
   };
+  /**
+   * 加载issues
+   */
+  loadIssue = () => {
+    const { store } = this.props;
+    store.loadIssue(this.state.projectId, -1, '');
+  };
+  /**
+   * 搜索issue
+   * @param input
+   * @param options
+   */
+  searchIssue = (input, options) => {
+    const { store } = this.props;
+    store.loadIssue(this.state.projectId, -1, input);
+  };
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -253,6 +269,9 @@ class CreateBranch extends Component {
             >
               {getFieldDecorator('issueId')(
                 <Select
+                  onFilterChange={this.searchIssue}
+                  onFocus={this.loadIssue}
+                  loading={store.issueLoading}
                   onChange={this.changeIssue}
                   key="service"
                   allowClear
@@ -262,11 +281,7 @@ class CreateBranch extends Component {
                   onSelect={this.selectTemplate}
                   size="default"
                   optionFilterProp="children"
-                  filterOption={
-                    (input, option) =>
-                      option.props.children.props.children[1].props.children
-                        .toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }
+                  filterOption={false}
                 >
                   {issue.map(s => (
                     <Option value={s.issueId} key={s.typeCode}>
@@ -302,18 +317,18 @@ class CreateBranch extends Component {
                   optionFilterProp="children"
                   filterOption={
                     (input, option) =>
-                      option.props.children
+                      option.props.children[1]
                         .toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
                 >
                   <OptGroup label={intl.formatMessage({ id: 'branch.branch' })} key="proGroup">
                     {branches.map(s => (
-                      <Option value={s.name}>{s.name}</Option>
+                      <Option value={s.name} key={s.name}><span className="icon icon-branch c7n-branch-formItem-icon" />{s.name}</Option>
                     ))}
                   </OptGroup>
                   <OptGroup label={intl.formatMessage({ id: 'branch.tag' })} key="pubGroup">
                     {tags.map(s => (
-                      <Option value={s.name}>{s.name}</Option>
+                      <Option value={s.name} key={s.name}><span className="icon icon-local_offer c7n-branch-formItem-icon" />{s.name}</Option>
                     ))}
                   </OptGroup>
                 </Select>,
@@ -369,7 +384,7 @@ class CreateBranch extends Component {
                 <Input
                   label={<FormattedMessage id={'branch.name'} />}
                   autoFocus
-                  prefix={`${this.state.type === 'custom' ? '' : `${this.state.type}-`}`}
+                  prefix={`${this.state.type === 'custom' ? '' : `${this.state.type}/`}`}
                   maxLength={30}
                 />,
               )}
