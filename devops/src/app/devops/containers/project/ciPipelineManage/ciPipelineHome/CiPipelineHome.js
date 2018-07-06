@@ -352,8 +352,12 @@ class CiPipelineHome extends Component {
               <span className="c7n-split-before" />
               : null
           }
-          <Tooltip title={`${jobs[i].stage} : ${jobs[i].status}`}>
-            <a
+          <Tooltip
+            title={(jobs[i].stage === 'sonarqube' && jobs[i].status === 'failed') ? `${jobs[i].stage} : ${jobs[i].description}` : `${jobs[i].stage} : ${jobs[i].status}`}>
+            {jobs[i].stage === 'sonarqube' ? <i
+              className={`icon ${ICONS[jobs[i].status || 'skipped'].icon || ''}
+                c7n-icon-${jobs[i].status} c7n-icon-lg`}
+            /> : <a
               className=""
               href={`${record.gitlabUrl.slice(0, -4)}/-/jobs/${jobs[i].id}`}
               target="_blank"
@@ -363,7 +367,7 @@ class CiPipelineHome extends Component {
                 className={`icon ${ICONS[jobs[i].status || 'skipped'].icon || ''}
                 c7n-icon-${jobs[i].status} c7n-icon-lg`}
               />
-            </a>
+            </a>}
           </Tooltip>
         </span>);
       }
