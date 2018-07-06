@@ -90,7 +90,7 @@ class BranchHome extends Component {
     let icon;
     let type;
     if (name) {
-      type = name.split('/')[0];
+      type = name.split('-')[0];
     }
     switch (type) {
       case 'feature':
