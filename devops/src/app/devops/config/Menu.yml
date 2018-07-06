@@ -29,12 +29,6 @@
         sort: 2
         permission:
           - 'devops-service.application-version.pageByOptions'
-    - "version-log":
-        icon: description
-        Routes: /devops/version-log
-        sort: 3
-        permission:
-          - 'devops-service.application-version.pageByOptions'
     - "application-release":
         icon: near_me
         Routes: /devops/app-release
@@ -79,7 +73,12 @@
         Routes: /devops/tag
         sort: 3
         permission:
-          - 'devops-service.devops-git.start'
+          - 'devops-service.application.listByActive'
+          - 'devops-service.devops-git.getTag'
+          - 'devops-service.devops-git.listByAppId'
+          - 'devops-service.devops-git.createTag'
+          - 'devops-service.devops-git.checkTag'
+          - 'devops-service.devops-git.deleteTag'
     - "merge-request":
         icon: device_hub
         Routes: /devops/merge-request
