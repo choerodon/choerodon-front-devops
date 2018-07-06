@@ -128,7 +128,7 @@ class CreateBranch extends Component {
     this.props.form.validateFieldsAndScroll((err, data) => {
       if (!err) {
         const postData = data;
-        postData.branchName = type ? `${type}/${data.branchName}` : data.branchName;
+        postData.branchName = type ? `${type}-${data.branchName}` : data.branchName;
         this.setState({ submitting: true });
         store.createBranch(projectId, appId, postData)
           .then(() => {
@@ -384,7 +384,7 @@ class CreateBranch extends Component {
                 <Input
                   label={<FormattedMessage id={'branch.name'} />}
                   autoFocus
-                  prefix={`${this.state.type === 'custom' ? '' : `${this.state.type}/`}`}
+                  prefix={`${this.state.type === 'custom' ? '' : `${this.state.type}-`}`}
                   maxLength={30}
                 />,
               )}
