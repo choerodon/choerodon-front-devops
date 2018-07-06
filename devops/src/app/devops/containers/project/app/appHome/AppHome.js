@@ -121,6 +121,13 @@ class AppHome extends Component {
       key: 'action',
       render: (test, record) => (
         <div>
+          {record.sonarUrl ? <Tooltip title={<FormattedMessage id="app.quality" />} placement="bottom">
+            <a href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
+              <Button shape="circle" size={'small'}>
+                <span className="icon icon-quality" />
+              </Button>
+            </a>
+          </Tooltip> : null }
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="edit" /> : <FormattedMessage id="app.start" />}</React.Fragment>}</div>}>
               {record.active && record.synchro ? <Button shape="circle" size={'small'} onClick={this.showSideBar.bind(this, 'edit', record.id)}>
@@ -135,7 +142,6 @@ class AppHome extends Component {
               </Button> : <React.Fragment>
                 {record.active ? <span className="icon icon-remove_circle_outline c7n-app-icon-disabled" /> : <span className="icon icon-finished c7n-app-icon-disabled" />}
               </React.Fragment> }
-              
             </Tooltip>
           </Permission>
         </div>
