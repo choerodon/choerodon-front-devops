@@ -198,8 +198,7 @@ class AppTag extends Component {
     const { intl, AppTagStore, form } = this.props;
     const { getFieldDecorator } = form;
     const { showSide, appName, submitting, deleteLoading } = this.state;
-    const menu = AppState.currentMenuType;
-    const { type, id: projectId, organizationId: orgId } = menu;
+    const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const currentAppName = appName || AppTagStore.getDefaultAppName;
     const tagColumns = [
       {
@@ -271,7 +270,7 @@ class AppTag extends Component {
         ]}
       >
         <React.Fragment>
-          <Header title={<FormattedMessage id="apptag.title" />}>
+          <Header title={<FormattedMessage id="apptag.head" />}>
             <Permission
               service={[
                 'devops-service.devops-git.start',
@@ -294,24 +293,7 @@ class AppTag extends Component {
               <FormattedMessage id="refresh" />
             </Button>
           </Header>
-          <Content>
-            <h2 className="c7n-space-first">
-              <FormattedMessage
-                id="apptag.head"
-                values={{
-                  name: `${menu.name}`,
-                }}
-              />
-            </h2>
-            <p>
-              <FormattedMessage id="apptag.description" />
-              <a className="c7n-external-link" href={intl.formatMessage({ id: 'apptag.link' })} rel="nofollow me noopener noreferrer" target="_blank">
-                <span className="c7n-external-link-content">
-                  <FormattedMessage id="learnmore" />
-                </span>
-                <span className="icon icon-open_in_new" />
-              </a>
-            </p>
+          <Content code="apptag" value={{ name }}>
             <Select
               className="c7n-select_512"
               value={AppTagStore.getSelectApp}

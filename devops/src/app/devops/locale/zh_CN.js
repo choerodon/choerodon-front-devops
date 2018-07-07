@@ -142,7 +142,7 @@ const pageDetail = {
   
   // app-tag
   'apptag.description': '分支是将您的工作从开发主线上分离开来，以免影响开发主线。平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。',
-  'apptag.head': '项目\"{name}\"的标记管理',
+  'apptag.title': '项目\"{name}\"的标记管理',
   'apptag.link': `${docServer}/user-guide/development-pipeline/application-tag/`,
   'apptag.createTag': '在应用\"{name}\"中创建标记',
   'apptag.createDescription': '采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线',
@@ -678,7 +678,7 @@ const zhCN = {
   'merge.state': '合并状态',
 
   // app-tag
-  'apptag.title': '标记管理',
+  'apptag.head': '标记管理',
   'apptag.create': '创建标记',
   'apptag.table': '标记列表',
   'apptag.code': '提交编码',
@@ -692,6 +692,7 @@ const zhCN = {
   'apptag.checkNameReg': '标记名称由数字和.组成',
 
   // repository
+  'repository.head': '代码仓库',
   'repository.repository': '仓库',
   'repository.url': '仓库地址',
   'repository.application': '应用名称',
