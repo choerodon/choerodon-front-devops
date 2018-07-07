@@ -31,6 +31,13 @@ class Repository extends Component {
     this.loadRepoData();
   }
 
+  /**
+   * 表格切换页码和搜索排序时触发
+   * @param pagination
+   * @param filters
+   * @param sorter
+   * @param param
+   */
   tableChange = (pagination, filters, sorter, param) => {
     // 分页 {size: 表格的尺寸, current: 当前所在页, pageSize: 每页条数}
     window.console.log(pagination);
@@ -48,12 +55,22 @@ class Repository extends Component {
     this.loadRepoData(pagination.current - 1, pagination.pageSize, sorter, search);
   };
 
+  /**
+   * 分页加载所有仓库数据
+   * @param page
+   * @param pageSize
+   * @param sorter
+   * @param search
+   */
   loadRepoData = (page = 0, pageSize = 10, sorter = {}, search = { searchParam: {}, param: '' }) => {
     const { RepositoryStore } = this.props;
     const { projectId } = this.state;
     RepositoryStore.queryRepoData(projectId, page, pageSize, sorter, search);
   };
 
+  /**
+   * 页面刷新
+   */
   handleRefresh = () => {
     this.setState({
       param: [],
@@ -66,6 +83,10 @@ class Repository extends Component {
     this.loadRepoData();
   };
 
+  /**
+   * 点击复制代码成功回调
+   * @returns {*|string}
+   */
   handleCopy = () => Choerodon.prompt('复制成功');
 
   render() {
@@ -128,7 +149,7 @@ class Repository extends Component {
         ]}
       >
         <React.Fragment>
-          <Header title={<FormattedMessage id="apptag.title" />}>
+          <Header title={<FormattedMessage id="repository.head" />}>
             <Button
               onClick={this.handleRefresh}
             >
