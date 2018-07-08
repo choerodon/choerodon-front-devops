@@ -39,14 +39,6 @@ class Repository extends Component {
    * @param param
    */
   tableChange = (pagination, filters, sorter, param) => {
-    // 分页 {size: 表格的尺寸, current: 当前所在页, pageSize: 每页条数}
-    window.console.log(pagination);
-    // 搜索条添加前置字段 {[列的dataIndex字段]: 输入的查询值}
-    window.console.log(filters);
-    // 排序 {column: 当前列, columnKey: 排序列的key, field: 排序字段, order: 升降序(asc,desc)}
-    window.console.log(sorter);
-    // 搜索条不添加前置字段 string
-    window.console.log(param);
     const search = {
       searchParam: filters,
       param: param[0],
