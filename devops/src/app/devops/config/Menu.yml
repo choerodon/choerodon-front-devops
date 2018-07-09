@@ -57,7 +57,7 @@
         Routes: /devops/repository
         sort: 1
         permission:
-            - 'devops-service.devops-git.queryByAppId'
+            - 'devops-service.application.listCodeRepository'
     - "branch":
         icon: branch
         Routes: /devops/branch
