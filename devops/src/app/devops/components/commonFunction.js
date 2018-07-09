@@ -87,7 +87,7 @@ export const commonComponent =(storeName) => {
       const store = this.props[storeName];
       const menu = AppState.currentMenuType;
       const organizationId = menu.id;
-      let sort = {field: 'id', order: 'desc' };
+      let sort = {field: '', order: 'desc' };
       if (sorter.column) {
         sort.field = sorter.field || sorter.columnKey;
         // sort = sorter;

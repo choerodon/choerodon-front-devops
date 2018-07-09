@@ -18,6 +18,7 @@ class BranchStore {
   @observable issueDto = null;
   @observable issueTime = [];
   @observable issueLoading = false;
+  @observable issueInitValue = null;
 
   @observable createBranchShow = false;
   @observable confirmShow = false;
@@ -102,6 +103,9 @@ class BranchStore {
   @action setIssueLoading(flag) {
     this.issueLoading = flag;
   }
+  @action setIssueInitValue(value) {
+    this.issueInitValue = value;
+  }
 
   loadApps = (proId = AppState.currentMenuType.id) => {
     return axios.get(`/devops/v1/projects/${proId}/apps`)
@@ -114,9 +118,9 @@ class BranchStore {
       });
   };
 
-  loadIssue = (proId = AppState.currentMenuType.id, issueId = -1, search = '') => {
+  loadIssue = (proId = AppState.currentMenuType.id, search = '') => {
     this.setIssueLoading(true);
-    return axios.get(`/agile/v1/projects/${proId}/issues/${issueId}/summary?content=${search}&page=0&size=20`)
+    return axios.post(`/agile/v1/projects/${proId}/issues/no_sub?page=0&size=20`, { content: search })
       .then((data) => {
         this.setIssueLoading(false);
         const res = this.handleProptError(data);
@@ -191,7 +195,21 @@ class BranchStore {
 
   loadBranchByName = (projectId, appId, name) => axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/branch?branchName=${name}`)
     .then((branch) => {
+      this.setIssueInitValue(null);
       const res = this.handleProptError(branch);
+      if (!branch.issueId) {
+        axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}`)
+          .then((data) => {
+            const type = branch.branchName.split('-')[0];
+            const issueName = branch.branchName.split(`${type}-`)[1];
+            if (issueName.indexOf(data.code) === 0) {
+              const issueSum = `${data.code}-${parseInt(branch.branchName.split(`${data.code}-`)[1].split('-')[0], 10)}`;
+              if (!isNaN(parseInt(branch.branchName.split(`${data.code}-`)[1].split('-')[0], 10))) {
+                this.setIssueInitValue(issueSum);
+              }
+            }
+          });
+      }
       this.setBranch(branch);
       return res;
     });

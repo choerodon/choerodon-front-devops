@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { Modal, Form, Radio, Input, Select, Tooltip } from 'choerodon-ui';
-import { stores } from 'choerodon-front-boot';
+import { stores, axios } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import '../../../main.scss';
 import '../CreateBranch/CreateBranch.scss';
@@ -92,8 +92,13 @@ class EditBranch extends Component {
     const { store } = this.props;
     const appId = store.app;
     const { projectId, type } = this.state;
+    let isModify = false;
+    const issueId = this.props.form.getFieldValue('issueId');
+    if (!store.branch.issueId && issueId) {
+      isModify = true;
+    }
     this.props.form.validateFieldsAndScroll((err, data, modify) => {
-      if (!err && modify) {
+      if ((!err && modify) || (isModify && !err)) {
         data.branchName = store.branch.branchName;
         this.setState({ submitting: true });
         store.updateBranchByName(projectId, appId, data)
@@ -108,9 +113,9 @@ class EditBranch extends Component {
             this.setState({ submitting: false });
           });
       } else if (!modify) {
-        this.props.onClose();
         this.props.form.resetFields();
         this.setState({ submitting: false });
+        this.props.onClose();
       }
     });
   };
@@ -127,7 +132,7 @@ class EditBranch extends Component {
    */
   loadIssue = () => {
     const { store } = this.props;
-    store.loadIssue(this.state.projectId, -1, '');
+    store.loadIssue(this.state.projectId, '');
   };
   /**
    * 搜索issue
@@ -136,14 +141,23 @@ class EditBranch extends Component {
    */
   searchIssue = (input, options) => {
     const { store } = this.props;
-    store.loadIssue(this.state.projectId, -1, input);
+    store.loadIssue(this.state.projectId, input);
   };
 
 
   render() {
     const { getFieldDecorator } = this.props.form;
     const { visible, intl, store } = this.props;
+    const issueInitValue = store.issueInitValue;
     const issue = store.issue.slice();
+    const branch = store.branch;
+    let issueId = branch && branch.issueId;
+    if (branch && !issueId && issueInitValue && issue.length) {
+      const issues = _.filter(issue, i => i.issueNum === issueInitValue);
+      if (issues.length) {
+        issueId = issues[0].issueId;
+      }
+    }
     return (
       <Sidebar
         title={<FormattedMessage id="branch.edit" />}
@@ -173,15 +187,12 @@ class EditBranch extends Component {
             </a>
           </p>
           <Form layout="vertical" onSubmit={this.handleOk} className="c7n-sidebar-form">
-            <div className="branch-formItem-icon">
-              <span className="icon icon-assignment" />
-            </div>
             <FormItem
               className="branch-formItem"
               {...formItemLayout}
             >
               {getFieldDecorator('issueId', {
-                initialValue: this.props.store.branch ? this.props.store.branch.issueId : undefined,
+                initialValue: this.props.store.branch ? issueId : undefined,
               })(
                 <Select
                   onFilterChange={this.searchIssue}
