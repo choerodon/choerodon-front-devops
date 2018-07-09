@@ -6,13 +6,16 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { fromJS, is } from 'immutable';
-import ReactAce from 'react-ace-editor';
+import CodeMirror from 'react-codemirror';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/base16-dark.css';
 import _ from 'lodash';
 import { commonComponent } from '../../../../components/commonFunction';
 import TimePopover from '../../../../components/timePopover';
 import LoadingBar from '../../../../components/loadingBar';
 import './ContainerHome.scss';
 import '../../../main.scss';
+
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const Sidebar = Modal.Sidebar;
@@ -211,12 +214,12 @@ class ContainerHome extends Component {
     const authToken = document.cookie.split('=')[1];
     const logs = [];
     const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${this.state.namespace}.envId:${this.state.envId}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}`);
-    const editor = this.ace.editor;
+    // eslint-disable-next-line react/no-string-refs
+    const editor = this.refs.editorLog.getCodeMirror();
     this.setState({
       ws,
     });
     editor.setValue('No Logs.');
-    editor.$blockScrolling = Infinity;
     ws.onopen = () => {
       console.log('open.........');
     };
@@ -228,15 +231,12 @@ class ContainerHome extends Component {
         if (logs.length > 0) {
           const logString = _.join(logs, '');
           editor.setValue(logString);
-          editor.renderer.scrollCursorIntoView();
-          editor.getAnimatedScroll();
-          editor.clearSelection();
+          editor.execCommand('goDocEnd');
         } else {
           editor.setValue('No Logs.');
         }
       };
     };
-    editor.clearSelection();
   };
 
   /**
@@ -271,7 +271,8 @@ class ContainerHome extends Component {
         console.log('Connection instanceInfo Close ...');
       };
     }
-    const editor = this.ace.editor;
+    // eslint-disable-next-line react/no-string-refs
+    const editor = this.refs.editorLog.getCodeMirror();
     this.loadAllData(this.state.page);
     ContainerStore.changeShow(false);
     editor.setValue('No Logs.');
@@ -304,6 +305,13 @@ class ContainerHome extends Component {
       </Content>
     </React.Fragment>);
 
+    const options = {
+      readOnly: true,
+      lineNumbers: true,
+      autofocus: true,
+      theme: 'base16-dark',
+    };
+
     return (
       <Page
         className="c7n-region"
@@ -323,13 +331,13 @@ class ContainerHome extends Component {
         >
           <Content className="sidebar-content" code={'container.log'} values={{ name: containerName }}>
             <section className="c7n-podLog-section">
-              <ReactAce
-                mode="text"
-                theme="terminal"
-                setReadOnly
-                setShowPrintMargin={false}
-                style={{ height: '500px' }}
-                ref={(instance) => { this.ace = instance; }}
+              <CodeMirror
+                // eslint-disable-next-line react/no-string-refs
+                ref="editorLog"
+                value="No Logs"
+                className="c7n-podLog-editor"
+                onChange={code => this.props.ChangeCode(code)}
+                options={options}
               />
             </section>
           </Content>
