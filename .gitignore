@@ -4,7 +4,7 @@
 # IDE
 .idea
 .project
-.package-lock.json
+package-lock.json
 
 
 # npm
