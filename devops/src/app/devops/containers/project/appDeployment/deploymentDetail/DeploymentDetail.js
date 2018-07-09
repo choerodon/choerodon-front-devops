@@ -5,18 +5,27 @@ import { Button, Steps, Tabs, Tooltip, Icon } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import CodeMirror from 'react-codemirror';
+
+
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './Deploydetail.scss';
 import '../../container/containerHome/ContainerHome.scss';
 import Log from '../../appDeployment/component/log';
 import LoadingBar from '../../../../components/loadingBar';
-import Ace from '../../../../components/yamlAce';
+// import Ace from '../../../../components/yamlAce';
 
 const Step = Steps.Step;
 const TabPane = Tabs.TabPane;
 
 const { AppState } = stores;
+
+require('codemirror/lib/codemirror.css');
+require('codemirror/mode/yaml/yaml');
+require('codemirror/mode/textile/textile');
+require('codemirror/theme/base16-light.css');
+require('codemirror/theme/base16-dark.css');
 
 @observer
 class DeploymentDetail extends Component {
@@ -27,6 +36,7 @@ class DeploymentDetail extends Component {
       status: props.match.params.status,
       expand: false,
       current: 1,
+      flag: true,
     };
   }
 
@@ -119,6 +129,10 @@ class DeploymentDetail extends Component {
     DeployDetailStore.changeLogVisible(false);
   };
 
+  handleValue=(key) => {
+    this.setState({ flag: key });
+  };
+
   render() {
     const { DeployDetailStore, intl } = this.props;
     const { expand } = this.state;
@@ -165,7 +179,18 @@ class DeploymentDetail extends Component {
       });
     }
     const a = DeployDetailStore.getValue;
-
+    const options = {
+      theme: 'base16-light',
+      mode: 'yaml',
+      readOnly: true,
+      lineNumbers: true,
+    };
+    const logOptions = {
+      theme: 'base16-dark',
+      mode: 'textile',
+      readOnly: true,
+      lineNumbers: true,
+    };
     return (
       <Page
         className="c7n-region c7n-deployDetail-wrapper"
@@ -203,6 +228,7 @@ class DeploymentDetail extends Component {
             </a>
           </p>
           <Tabs
+            onChange={this.handleValue}
             className="c7n-deployDetail-tab"
             defaultActiveKey={this.state.status === 'running' ? '1' : '2'}
           >
@@ -348,13 +374,14 @@ class DeploymentDetail extends Component {
                   </Button>
                 </div>
                 <div className={valueStyle}>
-                  {DeployDetailStore.getValue
-                  && <Ace
-                    readOnly
-                    totalLine={DeployDetailStore.getValue.totalLine}
+                  {DeployDetailStore.getValue && this.state.expand
+                  &&
+                  <CodeMirror
+                    options={options}
+                    ref={(instance) => { this.codeEditor = instance; }}
                     value={DeployDetailStore.getValue.yaml}
-                  />}
-
+                  />
+                  }
                 </div>
               </div>
               {stageData.length >= 1 && <div className="c7n-deployDetail-card-content">
@@ -362,7 +389,7 @@ class DeploymentDetail extends Component {
                 <Steps current={this.state.current} className="c7n-deployDetail-steps">
                   {dom}
                 </Steps>
-                <Log className="c7n-deployDetail-pre1" value={this.state.log === undefined ? log : this.state.log} />
+                 <CodeMirror className="c7n-deployDetail-pre1" value={this.state.log === undefined ? log : this.state.log} options={logOptions} />
               </div>
               }
             </TabPane>

@@ -89,7 +89,7 @@ class MergeRequestStore {
     });
   };
 
-  loadMergeRquest(appId, key, page = 0, size = 10, projectId = AppState.currentMenuType.id) {
+  loadMergeRquest(appId, key = 'opened', page = 0, size = 10, projectId = AppState.currentMenuType.id) {
     this.setMerge([]);
     this.setLoading(true);
     if (key === 'all') {
