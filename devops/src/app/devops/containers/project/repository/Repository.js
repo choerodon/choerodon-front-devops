@@ -149,8 +149,8 @@ class Repository extends Component {
               text={record.repoUrl ? `${record.repoUrl}.git` : noRepoUrl}
               onCopy={this.handleCopy}
             >
-              <Button shape="circle" size={'small'}>
-                <span className="icon icon-baseline-file_copy" />
+              <Button className="repo-copy-btn" shape="circle" size={'small'}>
+                <span className="icon icon-library_books" />
               </Button>
             </CopyToClipboard>
           </Tooltip>
