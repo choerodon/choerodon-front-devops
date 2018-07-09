@@ -698,6 +698,7 @@ const zhCN = {
   'repository.application': '应用名称',
   'repository.copyUrl': '复制仓库地址',
   'repository.quality': '代码质量',
+  'repository.noUrl': '仓库地址为空',
 
   ...pageDetail,
 };
