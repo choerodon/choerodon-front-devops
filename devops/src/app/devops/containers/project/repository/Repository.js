@@ -41,6 +41,7 @@ class Repository extends Component {
   }
 
   /**
+<<<<<<< HEAD
    * 获取仓库头像的颜色
    * @param id
    * @returns {string}
@@ -51,6 +52,8 @@ class Repository extends Component {
   };
 
   /**
+=======
+>>>>>>> 25c61dadf86cde64bf2ef0b3f57cbcc9e7b32722
    * 表格切换页码和搜索排序时触发
    * @param pagination
    * @param filters
