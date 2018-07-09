@@ -75,7 +75,6 @@ class AppStore {
     if (sort.field !== '') {
       url = `/devops/v1/projects/${projectId}/apps/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`;
     }
-    window.console.log(url);
     this.changeLoading(true);
     return axios.post(url, JSON.stringify(postData))
       .then((data) => {

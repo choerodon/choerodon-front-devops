@@ -189,6 +189,9 @@ class CreateBranch extends Component {
    */
   changeIssue =(value, options) => {
     const key = options.key;
+    const { store } = this.props;
+    const issue = store.issue.slice();
+    const issueDto = _.filter(issue, i => i.issueId === value)[0];
     let type = '';
     switch (key) {
       case 'story':
@@ -206,14 +209,14 @@ class CreateBranch extends Component {
       default:
         type = 'custom';
     }
-    this.setState({ type });
+    this.setState({ type, issueDto });
   };
   /**
    * 加载issues
    */
   loadIssue = () => {
     const { store } = this.props;
-    store.loadIssue(this.state.projectId, -1, '');
+    store.loadIssue(this.state.projectId, '');
   };
   /**
    * 搜索issue
@@ -222,7 +225,7 @@ class CreateBranch extends Component {
    */
   searchIssue = (input, options) => {
     const { store } = this.props;
-    store.loadIssue(this.state.projectId, -1, input);
+    store.loadIssue(this.state.projectId, input);
   };
 
   render() {
@@ -260,9 +263,6 @@ class CreateBranch extends Component {
             </a>
           </p>
           <Form layout="vertical" onSubmit={this.handleOk} className="c7n-sidebar-form">
-            <div className="branch-formItem-icon">
-              <span className="icon icon-assignment" />
-            </div>
             <FormItem
               className="branch-formItem"
               {...formItemLayout}
@@ -272,13 +272,12 @@ class CreateBranch extends Component {
                   onFilterChange={this.searchIssue}
                   onFocus={this.loadIssue}
                   loading={store.issueLoading}
-                  onChange={this.changeIssue}
+                  onSelect={this.changeIssue}
                   key="service"
                   allowClear
                   label={<FormattedMessage id={'branch.issueName'} />}
                   filter
                   dropdownMatchSelectWidth
-                  onSelect={this.selectTemplate}
                   size="default"
                   optionFilterProp="children"
                   filterOption={false}
@@ -291,9 +290,6 @@ class CreateBranch extends Component {
                 </Select>,
               )}
             </FormItem>
-            <div className="branch-formItem-icon">
-              <span className="icon icon-wrap_text" />
-            </div>
             <FormItem
               className="branch-formItem"
               {...formItemLayout}
@@ -334,9 +330,6 @@ class CreateBranch extends Component {
                 </Select>,
               )}
             </FormItem>
-            <div className="branch-formItem-icon">
-              <span className="icon icon-branch" />
-            </div>
             <FormItem
               className={'c7n-formItem_180'}
               {...formItemLayout}
@@ -379,13 +372,11 @@ class CreateBranch extends Component {
                 }, {
                   validator: this.checkName,
                 }],
-                initialValue: this.state.initValue,
+                initialValue: this.state.issueDto ? this.state.issueDto.issueNum : '',
               })(
                 <Input
                   label={<FormattedMessage id={'branch.name'} />}
-                  autoFocus
                   prefix={`${this.state.type === 'custom' ? '' : `${this.state.type}-`}`}
-                  maxLength={30}
                 />,
               )}
             </FormItem>

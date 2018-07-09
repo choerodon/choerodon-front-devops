@@ -344,7 +344,14 @@ class EditService extends Component {
   selectVersion =(index, value) => {
     const { SingleData } = this.state;
     if (SingleData.appVersion[index].id !== parseInt(value, 10)) {
-      this.setState({ [index]: { versions: this.state[index].versions, instances: this.state[index].instances, deletedIns: [] } });
+      SingleData.appVersion[index] = [];
+      this.setState({
+        [index]: {
+          versions: this.state[index].versions,
+          instances: this.state[index].instances,
+          deletedIns: [],
+        },
+        SingleData });
     }
   };
 

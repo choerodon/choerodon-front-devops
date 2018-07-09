@@ -282,7 +282,7 @@ class IssueDetail extends Component {
             </div>
           </section>
           <section className="branch-issue-description">
-            <div className="issue-detail-head-wrapper">
+            <div className="issue-detail-head-wrapper" style={{ marginTop: 22 }}>
               <div className="issue-detail-head">
                 <i className="icon icon-subject" />
                 {<FormattedMessage id={'template.des'} />}

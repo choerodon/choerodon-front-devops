@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Tooltip, Modal, Table, Popover, Progress, Select } from 'choerodon-ui';
-import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { Content, Header, Page, Permission, stores, axios } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import '../../../main.scss';
@@ -144,7 +144,7 @@ class BranchHome extends Component {
           </div>
           {record.commitUserUrl && record.commitUserName ? <Tooltip title={record.commitUserName}>
             <div className="branch-user-img" ><img src={record.commitUserUrl} alt="" width={'100%'} /></div>
-          </Tooltip> : <Tooltip title={record.commitUserName}><div className="branch-user-img" >{record.commitUserName.slice(0, 1)}</div></Tooltip> }
+          </Tooltip> : <Tooltip title={record.commitUserName}><div className="branch-user-img" >{record.commitUserName && record.commitUserName.slice(0, 1)}</div></Tooltip> }
           <div style={{ display: 'inline-block' }} className="branch-col-icon">{record.commitContent}</div>
         </div>),
       },
@@ -161,7 +161,7 @@ class BranchHome extends Component {
             </React.Fragment>
             : <React.Fragment>
               {record.createUserName ? <div>
-                <div className="branch-user-img" >{record.createUserName.slice(0, 1)}</div>
+                <div className="branch-user-img" >{record.createUserName && record.createUserName.slice(0, 1)}</div>
                 <span>{record.createUserName}</span>
               </div> : null}
             </React.Fragment> }
@@ -391,10 +391,13 @@ class BranchHome extends Component {
     const { name } = this.state;
     const menu = AppState.currentMenuType;
     const organizationId = menu.id;
+    this.setState({ submitting: true });
     BranchStore.deleteData(organizationId, BranchStore.app, name).then((data) => {
+      this.setState({ submitting: false });
       this.loadData(BranchStore.app);
       this.closeRemove();
     }).catch((error) => {
+      this.setState({ submitting: false });
       Choerodon.handleResponseError(error);
     });
   };
@@ -509,11 +512,12 @@ class BranchHome extends Component {
           onClose={this.hideSidebar}
         /> }
         <Modal
+          confirmLoading={this.state.submitting}
           visible={this.state.visible}
           title={<FormattedMessage id={'branch.action.delete'} />}
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
-            <Button key="submit" type="danger" onClick={this.handleDelete}>
+            <Button key="submit" type="danger" onClick={this.handleDelete} loading={this.state.submitting}>
               {this.props.intl.formatMessage({ id: 'delete' })}
             </Button>,
           ]}
