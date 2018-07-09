@@ -38,6 +38,8 @@ class AppTag extends Component {
       showSide: false,
       submitting: false,
       deleteLoading: false,
+      visible: false,
+      tag: null,
     };
   }
 
@@ -97,6 +99,9 @@ class AppTag extends Component {
     });
   };
 
+  /**
+   * 取消创建tag
+   */
   handleCancel = () => {
     this.setState({
       showSide: false,
@@ -104,6 +109,12 @@ class AppTag extends Component {
     this.props.form.resetFields();
   };
 
+  /**
+   * tag表格分页、排序、筛选等
+   * @param pagination
+   * @param filters
+   * @param sorter
+   */
   tableChange = (pagination, filters, sorter) => {
     const { AppTagStore } = this.props;
     const { projectId } = this.state;
@@ -174,14 +185,20 @@ class AppTag extends Component {
   }, 1000);
 
   /**
+   * 打开确认确认窗口
+   * @param tag
+   */
+  openRemove = tag => this.setState({ visible: true, tag });
+
+  /**
    * 删除标记
    * @param id
    */
-  deleteTag = (tag) => {
+  deleteTag = () => {
     const { AppTagStore } = this.props;
-    const { projectId } = this.state;
-    this.setState({ deleteLoading: true });
-    AppTagStore.deleteTag(projectId, tag.name).then((data) => {
+    const { projectId, tag } = this.state;
+    this.setState({ deleteLoading: true, visible: false });
+    AppTagStore.deleteTag(projectId, tag).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -194,12 +211,16 @@ class AppTag extends Component {
     });
   };
 
+  /**
+   * 取消删除
+   */
+  closeRemove = () => this.setState({ visible: false });
+
   render() {
     const { intl, AppTagStore, form } = this.props;
     const { getFieldDecorator } = form;
-    const { showSide, appName, submitting, deleteLoading } = this.state;
-    const menu = AppState.currentMenuType;
-    const { type, id: projectId, organizationId: orgId } = menu;
+    const { showSide, appName, submitting, deleteLoading, visible } = this.state;
+    const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const currentAppName = appName || AppTagStore.getDefaultAppName;
     const tagColumns = [
       {
@@ -219,9 +240,9 @@ class AppTag extends Component {
         title: <FormattedMessage id="apptag.owner" />,
         dataIndex: 'commit.authorName',
         render: (text, record) => (<div>
-          {record && record.commitUserImage
-            ? <img className="apptag-commit-img" src={record.commitUserImage} alt="avatar" />
-            : <span className="apptag-commit apptag-commit-avatar">{text.toString().substr(0, 1)}</span>}
+          {record.commit.author && record.commit.author.avatarUrl
+            ? <img className="apptag-commit-img" src={record.commit.author.avatarUrl} alt="avatar" />
+            : <span className="apptag-commit apptag-commit-avatar">{text.toString().substr(0, 1).toUpperCase()}</span>}
           <span className="apptag-commit">{text}</span>
         </div>),
       },
@@ -233,7 +254,7 @@ class AppTag extends Component {
         align: 'right',
         width: 60,
         key: 'action',
-        render: text => (
+        render: (text, record) => (
           <Permission
             type={type}
             projectId={projectId}
@@ -249,7 +270,7 @@ class AppTag extends Component {
               <Button
                 shape="circle"
                 size={'small'}
-                onClick={this.deleteTag.bind(this, text)}
+                onClick={this.openRemove.bind(this, record.name)}
               >
                 <Icon type="delete_forever" />
               </Button>
@@ -270,162 +291,155 @@ class AppTag extends Component {
           'devops-service.devops-git.deleteTag',
         ]}
       >
-        <React.Fragment>
-          <Header title={<FormattedMessage id="apptag.title" />}>
-            <Permission
-              service={[
-                'devops-service.devops-git.start',
-              ]}
-              type={type}
-              projectId={projectId}
-              organizationId={orgId}
-            >
-              <Button
-                onClick={this.showSideBar}
-              >
-                <span className="icon-playlist_add icon" />
-                <FormattedMessage id="apptag.create" />
-              </Button>
-            </Permission>
+        <Modal
+          visible={this.state.visible}
+          title={<FormattedMessage id={'apptag.action.delete'} />}
+          footer={[
+            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
+            <Button key="submit" type="danger" onClick={this.deleteTag}>
+              {this.props.intl.formatMessage({ id: 'delete' })}
+            </Button>,
+          ]}
+        >
+          <p>{this.props.intl.formatMessage({ id: 'apptag.delete.tooltip' })}</p>
+        </Modal>
+        <Header title={<FormattedMessage id="apptag.head" />}>
+          <Permission
+            service={[
+              'devops-service.devops-git.start',
+            ]}
+            type={type}
+            projectId={projectId}
+            organizationId={orgId}
+          >
             <Button
-              onClick={this.handleRefresh}
+              onClick={this.showSideBar}
             >
-              <span className="icon-refresh icon" />
-              <FormattedMessage id="refresh" />
+              <span className="icon-playlist_add icon" />
+              <FormattedMessage id="apptag.create" />
             </Button>
-          </Header>
-          <Content>
-            <h2 className="c7n-space-first">
-              <FormattedMessage
-                id="apptag.head"
-                values={{
-                  name: `${menu.name}`,
-                }}
-              />
-            </h2>
-            <p>
-              <FormattedMessage id="apptag.description" />
-              <a className="c7n-external-link" href={intl.formatMessage({ id: 'apptag.link' })} rel="nofollow me noopener noreferrer" target="_blank">
-                <span className="c7n-external-link-content">
-                  <FormattedMessage id="learnmore" />
-                </span>
-                <span className="icon icon-open_in_new" />
-              </a>
-            </p>
-            <Select
-              className="c7n-select_512"
-              value={AppTagStore.getSelectApp}
-              label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-              filter
-              onChange={(value, option) => this.handleSelect(value, option)}
-            >
-              {
-                _.map(AppTagStore.getAppData, (app, index) =>
-                  <Option key={index} value={app.id}>{app.name}</Option>,
-                )
-              }
-            </Select>
-            <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
-            <Table
-              onChange={this.tableChange}
-              pagination={AppTagStore.pageInfo}
-              filterBar={false}
-              columns={tagColumns}
-              loading={AppTagStore.getLoading || deleteLoading}
-              dataSource={AppTagStore.getTagData}
-              rowKey={record => record.name}
-            />
-            <Sidebar
-              title={<FormattedMessage id="apptag.create" />}
-              visible={showSide}
-              onOk={this.handleOk}
-              okText={<FormattedMessage id="create" />}
-              cancelText={<FormattedMessage id="cancel" />}
-              confirmLoading={submitting}
-              onCancel={this.handleCancel}
-            >
-              <div className="c7n-region">
-                <h2 className="c7n-space-first">
-                  <FormattedMessage
-                    id="apptag.createTag"
-                    values={{
-                      name: `${currentAppName}`,
-                    }}
-                  />
-                </h2>
-                <p>
-                  <FormattedMessage id="apptag.createDescription" />
-                  <a href={intl.formatMessage({ id: 'apptag.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                    <span className="c7n-external-link-content">
-                      <FormattedMessage id="learnmore" />
-                    </span>
-                    <span className="icon icon-open_in_new" />
-                  </a>
-                </p>
-                <Form layout="vertical" className="c7n-sidebar-form">
-                  <div className="apptag-formitem">
-                    <Icon type="local_offer" className="c7n-apptag-icon" />
-                    <FormItem
-                      {...formItemLayout}
-                    >
-                      {getFieldDecorator('tag', {
-                        rules: [{
-                          required: true,
-                          whitespace: true,
-                          message: intl.formatMessage({ id: 'required' }),
-                        }, {
-                          validator: this.checkTagName,
-                        }],
-                      })(
-                        <Input
-                          autoFocus
-                          label={<FormattedMessage id="apptag.name" />}
-                          size="default"
-                        />,
-                      )}
-                    </FormItem>
-                  </div>
-                  <div className="apptag-formitem">
-                    <Icon type="wrap_text" className="c7n-apptag-icon" />
-                    <FormItem
-                      {...formItemLayout}
-                    >
-                      {getFieldDecorator('ref', {
-                        rules: [{
-                          required: true,
-                          // whitespace: true,
-                          message: intl.formatMessage({ id: 'required' }),
-                        }],
-                      })(
-                        <Select
-                          allowClear
-                          label={<FormattedMessage id="apptag.ref" />}
-                          filter
-                          dropdownMatchSelectWidth
-                          size="default"
-                          filterOption={(input, option) =>
-                            option.props.children[1]
-                              .toLowerCase()
-                              .indexOf(input.toLowerCase()) >= 0}
-                        >
-                          <OptGroup label={<FormattedMessage id="apptag.branch" />}>
-                            {
-                              _.map(AppTagStore.getBranchData, item =>
-                                <Option key={item.name} value={item.name}><Icon className="apptag-branch-icon" type="branch" />{item.name}</Option>,
-                              )
-                            }
-                          </OptGroup>
-                        </Select>,
-                      )}
-                    </FormItem>
-                  </div>
-                </Form>
-              </div>
-            </Sidebar>
-          </Content>
-        </React.Fragment>
+          </Permission>
+          <Button
+            onClick={this.handleRefresh}
+          >
+            <span className="icon-refresh icon" />
+            <FormattedMessage id="refresh" />
+          </Button>
+        </Header>
+        <Content code="apptag" value={{ name }}>
+          <Select
+            className="c7n-select_512"
+            value={AppTagStore.getSelectApp}
+            label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filter
+            onChange={(value, option) => this.handleSelect(value, option)}
+          >
+            {
+              _.map(AppTagStore.getAppData, (app, index) =>
+                <Option key={index} value={app.id}>{app.name}</Option>,
+              )
+            }
+          </Select>
+          <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
+          <Table
+            onChange={this.tableChange}
+            pagination={AppTagStore.pageInfo}
+            filterBar={false}
+            columns={tagColumns}
+            loading={AppTagStore.getLoading || deleteLoading}
+            dataSource={AppTagStore.getTagData}
+            rowKey={record => record.name}
+          />
+          <Sidebar
+            title={<FormattedMessage id="apptag.create" />}
+            visible={showSide}
+            onOk={this.handleOk}
+            okText={<FormattedMessage id="create" />}
+            cancelText={<FormattedMessage id="cancel" />}
+            confirmLoading={submitting}
+            onCancel={this.handleCancel}
+          >
+            <div className="c7n-region">
+              <h2 className="c7n-space-first">
+                <FormattedMessage
+                  id="apptag.createTag"
+                  values={{
+                    name: `${currentAppName}`,
+                  }}
+                />
+              </h2>
+              <p>
+                <FormattedMessage id="apptag.createDescription" />
+                <a href={intl.formatMessage({ id: 'apptag.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                  <span className="c7n-external-link-content">
+                    <FormattedMessage id="learnmore" />
+                  </span>
+                  <span className="icon icon-open_in_new" />
+                </a>
+              </p>
+              <Form layout="vertical" className="c7n-sidebar-form">
+                <div className="apptag-formitem">
+                  <Icon type="local_offer" className="c7n-apptag-icon" />
+                  <FormItem
+                    {...formItemLayout}
+                  >
+                    {getFieldDecorator('tag', {
+                      rules: [{
+                        required: true,
+                        whitespace: true,
+                        message: intl.formatMessage({ id: 'required' }),
+                      }, {
+                        validator: this.checkTagName,
+                      }],
+                    })(
+                      <Input
+                        autoFocus
+                        label={<FormattedMessage id="apptag.name" />}
+                        size="default"
+                      />,
+                    )}
+                  </FormItem>
+                </div>
+                <div className="apptag-formitem">
+                  <Icon type="wrap_text" className="c7n-apptag-icon" />
+                  <FormItem
+                    {...formItemLayout}
+                  >
+                    {getFieldDecorator('ref', {
+                      rules: [{
+                        required: true,
+                        // whitespace: true,
+                        message: intl.formatMessage({ id: 'required' }),
+                      }],
+                    })(
+                      <Select
+                        allowClear
+                        label={<FormattedMessage id="apptag.ref" />}
+                        filter
+                        dropdownMatchSelectWidth
+                        size="default"
+                        filterOption={(input, option) =>
+                          option.props.children[1]
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0}
+                      >
+                        <OptGroup label={<FormattedMessage id="apptag.branch" />}>
+                          {
+                            _.map(AppTagStore.getBranchData, item =>
+                              <Option key={item.name} value={item.name}><Icon className="apptag-branch-icon" type="branch" />{item.name}</Option>,
+                            )
+                          }
+                        </OptGroup>
+                      </Select>,
+                    )}
+                  </FormItem>
+                </div>
+              </Form>
+            </div>
+          </Sidebar>
+        </Content>
       </Page>
     );
   }
