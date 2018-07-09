@@ -240,9 +240,9 @@ class AppTag extends Component {
         title: <FormattedMessage id="apptag.owner" />,
         dataIndex: 'commit.authorName',
         render: (text, record) => (<div>
-          {record.commit.author && record.commit.author.avatarUrl
-            ? <img className="apptag-commit-img" src={record.commit.author.avatarUrl} alt="avatar" />
-            : <span className="apptag-commit apptag-commit-avatar">{text.toString().substr(0, 1).toUpperCase()}</span>}
+          {record.commitUserImage
+            ? <img className="apptag-commit-img" src={record.commitUserImage} alt="avatar" />
+            : <span className="apptag-commit apptag-commit-avatar">{text.toString().substr(0, 1)}</span>}
           <span className="apptag-commit">{text}</span>
         </div>),
       },

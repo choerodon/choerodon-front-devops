@@ -147,6 +147,11 @@ const pageDetail = {
   'apptag.createTag': '在应用\"{name}\"中创建标记',
   'apptag.createDescription': '采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线',
 
+  // repository
+  'repository.description': '应用是满足用户某些需求的程序代码的集合，可以是某个解耦的微服务或是某个单体应用。您可以创建应用，平台会为您创建对应的git库以便管理该应用代码。',
+  'repository.title': '项目\"{name}\"的代码仓库',
+  'repository.link': `${docServer}/user-guide/development-pipeline/repository/`,
+
 };
 
 const zhCN = {
@@ -716,6 +721,15 @@ const zhCN = {
   'apptag.checkNameReg': '标记名称由数字和.组成，必须以数字开头且不能用.结尾，例如：0.0.1',
   'apptag.action.delete': '删除标记',
   'apptag.delete.tooltip': '确定要删除该标记吗？',
+
+  // repository
+  'repository.head': '代码仓库',
+  'repository.repository': '仓库',
+  'repository.url': '仓库地址',
+  'repository.application': '应用名称',
+  'repository.copyUrl': '复制仓库地址',
+  'repository.quality': '代码质量',
+  'repository.noUrl': '仓库代码为空',
 
   ...pageDetail,
 };

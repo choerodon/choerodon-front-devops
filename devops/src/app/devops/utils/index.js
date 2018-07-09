@@ -3,7 +3,8 @@
  * @param data
  * @returns {*}
  */
-function handleProptError(data) {
+/* eslint-disable import/prefer-default-export */
+export function handleProptError(data) {
   if (data && data.failed) {
     Choerodon.prompt(data.message);
     return false;
