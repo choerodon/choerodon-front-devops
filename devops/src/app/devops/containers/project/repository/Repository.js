@@ -41,8 +41,6 @@ class Repository extends Component {
   }
 
   /**
-<<<<<<< HEAD
-   * 获取仓库头像的颜色
    * @param id
    * @returns {string}
    */
@@ -52,8 +50,6 @@ class Repository extends Component {
   };
 
   /**
-=======
->>>>>>> 25c61dadf86cde64bf2ef0b3f57cbcc9e7b32722
    * 表格切换页码和搜索排序时触发
    * @param pagination
    * @param filters
@@ -125,7 +121,9 @@ class Repository extends Component {
       title: <FormattedMessage id="repository.url" />,
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (text, record) => <a href={record.repoUrl ? `${record.repoUrl}.git` : null} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl ? `${record.repoUrl}.git` : ''}</a>,
+      render: (text, record) => (<MouserOverWrapper text={record.repoUrl} width={250}>
+        <a href={record.repoUrl ? `${record.repoUrl}.git` : null} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl ? `../${record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}.git` : ''}</a>
+      </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="repository.application" />,
       dataIndex: 'name',

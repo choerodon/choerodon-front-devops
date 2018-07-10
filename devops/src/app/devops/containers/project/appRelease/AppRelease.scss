@@ -85,7 +85,11 @@
 
     .deployAddApp-section {
       margin: 32px 0;
-      width: 512px;
+      //width: 512px;
+
+      &.deployAddApp-section-512 {
+        width: 512px;
+      }
 
       a {
         margin-left: auto;
