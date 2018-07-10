@@ -76,7 +76,7 @@ class AppHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={95}>
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={230}>
         {record.name}
       </MouserOverWrapper>),
     }, {
@@ -85,7 +85,7 @@ class AppHome extends Component {
       key: 'code',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.code} width={145}>
+      render: (test, record) => (<MouserOverWrapper text={record.code} width={240}>
         {record.code}
       </MouserOverWrapper>),
     }, {
@@ -403,7 +403,7 @@ class AppHome extends Component {
             initialValue: singleData ? singleData.name : '',
           })(
             <Input
-              maxLength={10}
+              maxLength={20}
               label={<FormattedMessage id="app.name" />}
               size="default"
             />,

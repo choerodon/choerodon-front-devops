@@ -8,6 +8,7 @@ import _ from 'lodash';
 import LoadingBar from '../../../../components/loadingBar';
 import './AppStore.scss';
 import '../../../main.scss';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const ButtonGroup = Button.Group;
 
@@ -188,8 +189,9 @@ class AppStoreHome extends Component {
       >
         {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${Choerodon.fileServer(card.imgUrl)})` }} />
           : <div className="c7n-store-card-icon" />}
-        <div title={card.name} className="c7n-store-card-name">
-          {card.name}
+        <div className="c7n-store-card-name">
+          <MouserOverWrapper text={card.name} width={200}>
+            {card.name}</MouserOverWrapper>
         </div>
         <div className="c7n-store-card-source">
           {card.category}

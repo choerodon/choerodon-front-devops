@@ -257,7 +257,6 @@ class AddAppRelease extends Component {
             <Table
               rowClassName={'col-check'}
               filterBarPlaceholder={formatMessage({ id: 'filter' })}
-              className="c7n-table-512"
               onRow={(record) => {
                 const { isClick } = this.state;
                 return {
@@ -316,14 +315,12 @@ class AddAppRelease extends Component {
           </Permission>
         </section>
         <section className="deployAddApp-section">
-          <div style={{ width: 512 }}>
-            <Table
-              columns={columns}
-              dataSource={data.slice() || []}
-              pagination={data.pageInfo}
-              rowKey={record => record.id}
-            />
-          </div>
+          <Table
+            columns={columns}
+            dataSource={data.slice() || []}
+            pagination={data.pageInfo}
+            rowKey={record => record.id}
+          />
         </section>
         <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 3)} disabled={!(data.length)}>{this.props.intl.formatMessage({ id: 'next' })}</Button>
@@ -423,7 +420,7 @@ class AddAppRelease extends Component {
             size="default"
           />
         </section>
-        <section className="deployAddApp-section">
+        <section className="deployAddApp-section deployAddApp-section-512">
           <TextArea
             value={description}
             onChange={(value) => { this.setState({ description: value.target.value }); }}
