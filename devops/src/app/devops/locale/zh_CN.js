@@ -688,9 +688,10 @@ const zhCN = {
 
 
   // yaml file
+  'yaml.new': '当前新增',
   'yaml.lastModify': '上次修改',
-  'yaml.modify': '本次修改',
-  'yaml.yaml.error': 'yaml 格式错误',
+  'yaml.modify': '当前修改',
+  'yaml.yaml.error': '格式错误',
   'yaml.error.tooltip': 'Values文件yaml格式错误，请在应用代码中修改错误并重新生成正确的应用版本。',
 
   // merge request
