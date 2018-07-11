@@ -77,60 +77,12 @@ class NewEditor extends Component {
     } else if(lineInfo === 'newLine-text') {
       editor.addLineClass(start.line, 'background', 'newLine-text');
     } else if(options.origin ==='+delete' && options.removed.toString() ===",") {
-      return;
+      const s = 'return';
     } else {
       editor.addLineClass(start.line, 'background', 'lastModifyLine-line');
       editor.markText(from, to, { className: 'lastModifyLine-text' });
     }
-    // let newValue = '';
-    // if(options.origin ==='+input' && (options.text.toString() === "" || options.text.toString() === ",") || (options.origin === '+delete' && options.removed.toString() === "")){
-    //   newValue = '';
-    // } else if(editor.getLine(start.line)!== "  "){
-    //   newValue = editor.getLine(start.line);
-    // }
-    // window.console.log(newValue);
-    // const newValue = editor.getLine(start.line);
-    // window.console.log(newValue);
-    // const oldValue = sourceData[start.line];
-    // const from = { line: start.line, ch: newValue.split(':')[0].length + 2 };
-    // const to = { line: end.line, ch: end.ch + 1 };
-    // const lineInfo = editor.lineInfo(from.line).bgClass;
-    // if (newValue) {
-    //   if (lineInfo === 'lastModifyLine-line'){
-    //     editor.addLineClass(start.line, 'background', 'lastModifyLine-line');
-    //     editor.markText(from, to, { className: 'lastModifyLine-text' });
-    //   } else if(lineInfo === 'newLine-text') {
-    //     editor.addLineClass(start.line, 'background', 'newLine-text');
-    //   } else {
-    //     if (newValue !== oldValue) {
-    //       editor.addLineClass(start.line, 'background', 'lastModifyLine-line');
-    //       editor.markText(from, to, { className: 'lastModifyLine-text' });
-    //     } else {
-    //       editor.addLineClass(start.line, 'background', 'clearLineHeight-line');
-    //       editor.markText(from, to, { className: 'clearLineHeight-text' });
-    //     }
-    // }
-    // }
-    // if (oldValue && !this.props.newLines.includes(start.line)) {
-    //   if (newValue !== oldValue) {
-    //     if ((options.origin.includes('input') || options.origin.includes('delete')) && end.line === start.line && prevLineLength === lines) {
-    //       editor.addLineClass(start.line, 'background', 'lastModifyLine-line');
-    //       editor.markText(from, to, { className: 'lastModifyLine-text' });
-    //     }
-    //   } else if(!modifyLines.includes(from.line)) {
-    //     editor.addLineClass(start.line, 'background', 'clearLineHeight-line');
-    //     editor.markText(from, to, { className: 'clearLineHeight-text' });
-    //   }
-    // } else if(!oldValue || this.props.newLines.includes(start.line)) {
-    //   if (newValue && newValue !== oldValue) {
-    //     editor.addLineClass(start.line, 'background', 'newLine-text');
-    //   } else if(newValue && newValue === oldValue) {
-    //     editor.addLineClass(start.line, 'background', 'newLine-text');
-    //   } else {
-    //     editor.addLineClass(start.line, 'background', 'clearLineHeight-line');
-    //   }
-    // }
-    this.setState({ lines });
+    // this.props.onChange(values);
     this.handleModifyHighLight(values, options);
   };
   /**
@@ -138,7 +90,7 @@ class NewEditor extends Component {
    */
   handleModifyHighLight =_.debounce((values, options) => {
     this.props.onChange(values);
-  }, 1000);
+  }, 500);
   /**
    * 处理yaml格式错误显示
    */

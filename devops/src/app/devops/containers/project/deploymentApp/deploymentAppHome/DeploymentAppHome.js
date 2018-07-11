@@ -273,10 +273,12 @@ class DeploymentAppHome extends Component {
 
   loadReview = () => {
     const { value, versionId } = this.state;
-    axios.post(`/devops/v1/projects/${this.state.projectId}/app_instances/previewValue?appVersionId=${versionId}`, { yaml: value })
-      .then((data) => {
-        this.setState({ yaml: data });
-      });
+    if (value) {
+      axios.post(`/devops/v1/projects/${this.state.projectId}/app_instances/previewValue?appVersionId=${versionId}`, { yaml: value })
+        .then((data) => {
+          this.setState({ yaml: data });
+        });
+    }
     this.changeStep(3);
   };
   /**
