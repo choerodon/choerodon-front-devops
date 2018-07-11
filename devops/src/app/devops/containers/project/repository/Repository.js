@@ -121,9 +121,11 @@ class Repository extends Component {
       title: <FormattedMessage id="repository.url" />,
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (text, record) => (<MouserOverWrapper text={record.repoUrl} width={250}>
-        <a href={record.repoUrl ? `${record.repoUrl}.git` : null} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl ? `../${record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}.git` : ''}</a>
-      </MouserOverWrapper>),
+      render: (text, record) => (<a href={record.repoUrl ? `${record.repoUrl}.git` : null} rel="nofollow me noopener noreferrer" target="_blank">
+        <MouserOverWrapper text={`${record.repoUrl}.git`} width={250}>
+          {record.repoUrl ? `../${record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}.git` : ''}
+        </MouserOverWrapper>
+      </a>),
     }, {
       title: <FormattedMessage id="repository.application" />,
       dataIndex: 'name',

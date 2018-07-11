@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Popover } from 'choerodon-ui';
+import { Tooltip } from 'choerodon-ui';
 import TimeAgo from 'timeago-react';
 import PropTypes from 'prop-types';
 
@@ -15,16 +15,14 @@ const TimePopoverRequiredProps = {
 
 function TimePopover({ content, title, style }) {
   return (<div style={style}>
-    <Popover
-      title={title}
-      content={content}
-      placement="bottom"
+    <Tooltip
+      title={content}
     >
       <TimeAgo
         datetime={content}
         locale={Choerodon.getMessage('zh_CN', 'en')}
       />
-    </Popover>
+    </Tooltip>
   </div>);
 }
 
