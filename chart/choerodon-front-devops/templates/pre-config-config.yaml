@@ -29,6 +29,10 @@ spec:
           value: {{ .Values.preJob.preConfig.mysql.password }}
         - name: DB_NAME
           value: {{ .Values.preJob.preConfig.mysql.dbname }}
+        - name: ENABLE_DELETE
+          value: {{ .Values.preJob.preConfig.mysql.enabledelete }}
+        - name: UP_ATTRS
+          value: {{ .Values.preJob.preConfig.mysql.upattrs }}
         command:
         - /bin/sh
         - -c
