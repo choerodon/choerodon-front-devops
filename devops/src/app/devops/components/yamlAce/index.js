@@ -1,3 +1,3 @@
-import AceForYaml from './readYaml';
+import AceForYaml from './NewEditor';
 
 export default AceForYaml;
