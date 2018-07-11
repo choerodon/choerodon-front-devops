@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Modal, Select, Icon } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
-import yaml from 'js-yaml';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import Ace from '../../../../components/yamlAce';
@@ -23,13 +22,6 @@ class UpgradeIst extends Component {
       value: '',
       verValue: undefined,
     };
-  }
-
-  componentWillReceiveProps() {
-    const value = yaml.safeLoad(this.props.store.getValue);
-    this.setState({
-      value,
-    });
   }
 
   /**
@@ -149,6 +141,7 @@ class UpgradeIst extends Component {
         <div className="c7n-body-section c7n-border-done">
           <div>
             {data && <Ace
+              newLines={data.newLines}
               isFileError={!!data.errorLines}
               errorLines={error}
               totalLine={data.totalLine}

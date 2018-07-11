@@ -6,15 +6,13 @@ import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot'
 import classnames from 'classnames';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import CodeMirror from 'react-codemirror';
-
-
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './Deploydetail.scss';
 import '../../container/containerHome/ContainerHome.scss';
-import Log from '../../appDeployment/component/log';
+// import Log from '../../appDeployment/component/log';
 import LoadingBar from '../../../../components/loadingBar';
-// import Ace from '../../../../components/yamlAce';
+import Ace from '../../../../components/yamlAce';
 
 const Step = Steps.Step;
 const TabPane = Tabs.TabPane;
@@ -383,7 +381,7 @@ class DeploymentDetail extends Component {
                 <div className={valueStyle}>
                   {DeployDetailStore.getValue && this.state.expand
                   &&
-                  <CodeMirror
+                  <Ace
                     options={options}
                     ref={(instance) => { this.codeEditor = instance; }}
                     value={DeployDetailStore.getValue.yaml}

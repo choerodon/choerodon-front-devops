@@ -108,6 +108,7 @@ class ValueConfig extends Component {
         <div className="c7n-body-section c7n-border-done">
           <div>
             {data && <Ace
+              newLines={data.newLines}
               isFileError={!!data.errorLines}
               errorLines={error}
               totalLine={data.totalLine}

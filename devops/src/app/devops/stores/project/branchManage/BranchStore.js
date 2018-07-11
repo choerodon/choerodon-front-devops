@@ -111,16 +111,16 @@ class BranchStore {
     return axios.get(`/devops/v1/projects/${proId}/apps`)
       .then((data) => {
         const res = this.handleProptError(data);
-        this.setApps(data.reverse());
+        this.setApps(data);
         this.setApp(data[0].id);
         this.loadBranchData(proId, data[0].id);
         return res;
       });
   };
 
-  loadIssue = (proId = AppState.currentMenuType.id, search = '') => {
+  loadIssue = (proId = AppState.currentMenuType.id, search = '', issueId = '', issueNum = '') => {
     this.setIssueLoading(true);
-    return axios.post(`/agile/v1/projects/${proId}/issues/no_sub?page=0&size=20`, { content: search })
+    return axios.get(`/agile/v1/projects/${proId}/issues/summary?issueId=${issueId}&self=true&issueNum=${issueNum}&content=${search}`)
       .then((data) => {
         this.setIssueLoading(false);
         const res = this.handleProptError(data);
@@ -131,6 +131,7 @@ class BranchStore {
 
 
   loadIssueById =(proId, id) => {
+    this.setIssueDto(null);
     this.changeLoading(true);
     return axios.get(`/agile/v1/projects/${proId}/issues/${id}`)
       .then((datas) => {
@@ -196,19 +197,27 @@ class BranchStore {
   loadBranchByName = (projectId, appId, name) => axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/branch?branchName=${name}`)
     .then((branch) => {
       this.setIssueInitValue(null);
+      this.setIssueDto(null);
       const res = this.handleProptError(branch);
       if (!branch.issueId) {
+        const types = ['feature', 'release', 'bugfix', 'master', 'hotfix'];
         axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}`)
           .then((data) => {
             const type = branch.branchName.split('-')[0];
-            const issueName = branch.branchName.split(`${type}-`)[1];
+            let issueName = '';
+            if (types.includes(type)) {
+              issueName = branch.branchName.split(`${type}-`)[1];
+            } else {
+              issueName = branch.branchName;
+            }
             if (issueName.indexOf(data.code) === 0) {
-              const issueSum = `${data.code}-${parseInt(branch.branchName.split(`${data.code}-`)[1].split('-')[0], 10)}`;
-              if (!isNaN(parseInt(branch.branchName.split(`${data.code}-`)[1].split('-')[0], 10))) {
-                this.setIssueInitValue(issueSum);
-              }
+              const issueNum = `${parseInt(branch.branchName.split(`${data.code}-`)[1].split('-')[0], 10)}`;
+              this.setIssueInitValue(`${data.code}-${issueNum}`);
+              this.loadIssue(AppState.currentMenuType.id, '', '', issueNum);
             }
           });
+      } else {
+        this.loadIssue(AppState.currentMenuType.id, '', branch.issueId, '');
       }
       this.setBranch(branch);
       return res;

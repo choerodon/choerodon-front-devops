@@ -1,6 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-import { Observable } from 'rxjs';
+// import { Observable } from 'rxjs';
 
 const height = window.screen.height;
 

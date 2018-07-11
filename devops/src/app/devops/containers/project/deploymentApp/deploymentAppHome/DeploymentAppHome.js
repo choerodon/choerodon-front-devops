@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { Select, Button, Radio, Steps } from 'choerodon-ui';
-import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { Content, Header, Page, Permission, stores, axios } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
 import './DeployApp.scss';
@@ -151,7 +151,7 @@ class DeploymentAppHome extends Component {
     const { DeploymentAppStore } = this.props;
     const envs = DeploymentAppStore.envs;
     const envDto = _.filter(envs, v => v.id === value)[0];
-    this.setState({ envId: value, envDto, value: null });
+    this.setState({ envId: value, envDto, value: null, yaml: null });
     const { appId, versionId } = this.state;
     DeploymentAppStore.setValue(null);
     this.setState({ value: null, markers: [] });
@@ -192,9 +192,9 @@ class DeploymentAppHome extends Component {
    * @param value
    * @param markers
    */
-  handleChangeValue = (value, markers) => {
+  handleChangeValue = (value) => {
     const { DeploymentAppStore } = this.props;
-    this.setState({ value, markers });
+    this.setState({ value });
     DeploymentAppStore.checkYaml(value)
       .then((data) => {
         this.setState({ errorLine: data });
@@ -269,6 +269,15 @@ class DeploymentAppHome extends Component {
       .catch((error) => {
         Choerodon.prompt(error.response.data.message);
       });
+  };
+
+  loadReview = () => {
+    const { value, versionId } = this.state;
+    axios.get(`/devops/v1/projects/${this.state.projectId}/app_instances/previewValue?value=${value}&appVersionId=${versionId}`)
+      .then((data) => {
+        this.setState({ yaml: data });
+      });
+    this.changeStep(3);
   };
   /**
    * 渲染第一步
@@ -347,7 +356,7 @@ class DeploymentAppHome extends Component {
     const { DeploymentAppStore, intl } = this.props;
     const { formatMessage } = intl;
     const envs = DeploymentAppStore.envs;
-    const data = DeploymentAppStore.value;
+    const data = this.state.yaml || DeploymentAppStore.value;
     return (
       <div className="deployApp-env">
         <p>
@@ -381,6 +390,7 @@ class DeploymentAppHome extends Component {
             <span className="section-title">{formatMessage({ id: 'deploy.step.two.config' })}</span>
           </div>
           {data && (<AceForYaml
+            newLines={data.newLines}
             isFileError={!!data.errorLines}
             totalLine={data.totalLine}
             errorLines={this.state.errorLine}
@@ -395,7 +405,7 @@ class DeploymentAppHome extends Component {
           <Button
             type="primary"
             funcType="raised"
-            onClick={this.changeStep.bind(this, 3)}
+            onClick={this.loadReview}
             disabled={!(this.state.envId && (this.state.value || (data && data.yaml)) && (this.state.errorLine ? this.state.errorLine.length === 0 : (data && data.errorLines === null)))}
             >
             {formatMessage({ id: 'next' })}
@@ -478,7 +488,7 @@ class DeploymentAppHome extends Component {
     const instances = DeploymentAppStore.currentInstance;
     const { intl } = this.props;
     const { formatMessage } = intl;
-    const data = DeploymentAppStore.value;
+    const data = this.state.yaml || DeploymentAppStore.value;
     const { app, versionId, envId, instanceId, mode } = this.state;
     return (
       <section className="deployApp-review">
@@ -510,7 +520,6 @@ class DeploymentAppHome extends Component {
           {data && <div>
             {<AceForYaml
               totalLine={data.totalLine + 1}
-              modifyMarkers={this.state.markers}
               readOnly={this.state.current === 4}
               value={this.state.value || data.yaml}
               highlightMarkers={data.highlightMarkers}
