@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Tabs, Icon, Select, Table, Tooltip, Popover } from 'choerodon-ui';
+import { Button, Tabs, Icon, Select, Table, Tooltip } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import TimeAgo from 'timeago-react';
@@ -152,17 +152,15 @@ class MergeRequestHome extends Component {
           <Tooltip title={record.author.name}>
             <img src={record.author.avatarUrl} alt="avatar" className="c7n-merge-avatar" />
           </Tooltip>
-          <Popover
-            rowKey="creationDate"
-            title={<FormattedMessage id="ciPipeline.createdAt" />}
-            content={record.createdAt}
-            placement="left"
+          <Tooltip
+            title={record.createdAt}
           >
             <TimeAgo
+              className="c7n-merge-time"
               datetime={record.createdAt}
               locale={this.props.intl.formatMessage({ id: 'language' })}
             />
-          </Popover>
+          </Tooltip>
         </div>),
     }, {
       title: <FormattedMessage id="merge.commit" />,
@@ -176,17 +174,12 @@ class MergeRequestHome extends Component {
       key: 'updatedAt',
       render: record => (
         <div>
-          <Popover
-            rowKey="creationDate"
-            title={<FormattedMessage id="merge.upDate" />}
-            content={record.updatedAt}
-            placement="left"
-          >
+          <Tooltip title={record.updatedAt}>
             <TimeAgo
               datetime={record.updatedAt}
               locale={this.props.intl.formatMessage({ id: 'language' })}
             />
-          </Popover>
+          </Tooltip>
         </div>),
     }, {
       width: 56,
@@ -241,17 +234,13 @@ class MergeRequestHome extends Component {
           <Tooltip title={record.author.name}>
             <img src={record.author.avatarUrl} alt="avatar" className="c7n-merge-avatar" />
           </Tooltip>
-          <Popover
-            rowKey="creationDate"
-            title={<FormattedMessage id="ciPipeline.createdAt" />}
-            content={record.createdAt}
-            placement="left"
-          >
+          <Tooltip title={record.createdAt}>
             <TimeAgo
+              className="c7n-merge-time"
               datetime={record.createdAt}
               locale={this.props.intl.formatMessage({ id: 'language' })}
             />
-          </Popover>
+          </Tooltip>
         </div>),
     }, {
       title: <FormattedMessage id="merge.commit" />,
@@ -265,17 +254,14 @@ class MergeRequestHome extends Component {
       key: 'updatedAt',
       render: record => (
         <div>
-          <Popover
-            rowKey="creationDate"
-            title={<FormattedMessage id="merge.upDate" />}
-            content={record.updatedAt}
-            placement="left"
+          <Tooltip
+            title={record.updatedAt}
           >
             <TimeAgo
               datetime={record.updatedAt}
               locale={this.props.intl.formatMessage({ id: 'language' })}
             />
-          </Popover>
+          </Tooltip>
         </div>),
     }, {
       width: 56,

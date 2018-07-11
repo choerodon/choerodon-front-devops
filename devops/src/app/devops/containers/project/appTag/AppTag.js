@@ -4,8 +4,9 @@ import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import { Button, Tooltip, Table, Select, Modal, Form, Input, Icon, Avatar } from 'choerodon-ui';
+import { Button, Tooltip, Table, Select, Modal, Form, Input, Icon } from 'choerodon-ui';
 import TimePopover from '../../../components/timePopover';
+import MouserOverWrapper from '../../../components/MouseOverWrapper';
 import '../../main.scss';
 import './AppTag.scss';
 
@@ -235,7 +236,8 @@ class AppTag extends Component {
       {
         title: <FormattedMessage id="apptag.des" />,
         dataIndex: 'commit.message',
-        render: (text, record) => <Tooltip title={record.commit.message} trigger="hover" placement="bottom"><div className="c7n-table-column">{record.commit.message}</div></Tooltip>,
+        render: (text, record) => (<MouserOverWrapper text={record.commit.message} width={550}>
+          {record.commit.message}</MouserOverWrapper>),
       }, {
         title: <FormattedMessage id="apptag.owner" />,
         dataIndex: 'commit.authorName',

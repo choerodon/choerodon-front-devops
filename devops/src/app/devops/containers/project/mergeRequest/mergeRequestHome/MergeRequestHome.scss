@@ -17,8 +17,12 @@
 }
 
 .c7n-merge-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 12px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
   margin-right: 5px;
+}
+
+.c7n-merge-time {
+  vertical-align: middle;
 }
