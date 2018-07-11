@@ -19,7 +19,7 @@
 }
 
 .modifyLine-text {
-  background-color: #fdda80;
+  background-color: #1b69b6;
 }
 
 .clearLineHeight-line {
@@ -102,10 +102,13 @@
 }
 
 .CodeMirror-linenumbers {
-  width: 38px !important;
+  // width: 38px !important;
 }
 
 .CodeMirror-gutter-elt {
   height: 19px !important;
 }
+
+.CodeMirror-selected { background-color: #b3d7fd !important; }
+.CodeMirror-selectedtext { color: white !important; }
 

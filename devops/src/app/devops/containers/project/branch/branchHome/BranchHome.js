@@ -332,7 +332,6 @@ class BranchHome extends Component {
   handleEdit =(name) => {
     const { BranchStore } = this.props;
     BranchStore.loadBranchByName(this.state.projectId, BranchStore.app, name);
-    BranchStore.loadIssue();
     BranchStore.setCreateBranchShow('edit');
   };
 

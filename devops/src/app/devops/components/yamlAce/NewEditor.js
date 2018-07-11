@@ -10,8 +10,13 @@ import './yamlCodeMirror.scss';
 
 require('codemirror/lib/codemirror.css');
 require('codemirror/mode/yaml/yaml');
-require('codemirror/mode/textile/textile');
 require('codemirror/theme/base16-light.css');
+
+require('codemirror/addon/fold/foldgutter.css');
+require('codemirror/addon/fold/foldcode');
+require('codemirror/addon/fold/foldgutter.js');
+require('codemirror/addon/fold/brace-fold.js');
+require('codemirror/addon/fold/comment-fold.js');
 /* eslint-disable */
 class NewEditor extends Component {
   static propTypes = {
@@ -28,17 +33,23 @@ class NewEditor extends Component {
       mode: 'yaml',
       readOnly: false,
       lineNumbers: true,
-    },
+      foldGutter: true,
+      lineWrapping: true,
+      gutters:["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+      indicatorFolded:'CodeMirror-foldgutter-folded',
+    }
   };
   constructor(props) {
     super(props);
     this.state = {
-      isTriggerChange: false,
-    };
+
+    }
+    ;
   }
 
   componentDidMount() {
     const editor = this.aceEditor.getCodeMirror();
+    editor.setOption('styleSelectedText',false);
     editor.setSize('100%', (editor.getDoc().size * 19) + 8);
     if (this.props.highlightMarkers) {
       this.handleHighLight();
@@ -46,53 +57,82 @@ class NewEditor extends Component {
   }
 
   /**
-   *
-   * 清除更改的高亮
-   */
-  handleClearMarkers = () => {
-    const editor = this.ace.editor;
-    const markers = this.props.modifyMarkers;
-    Object.values(markers).map((marker) => {
-      if (marker.clazz === 'modifyLine-text' || marker.clazz === 'modifyLine-line') {
-        editor.session.addMarker(marker.range, 'modifyLine-line', 'fullLine', false);
-        editor.session.addMarker(marker.range, 'modifyLine-text', 'text', false);
-      } else if (marker.clazz === 'clearLineHeight-line' || marker.clazz === 'clearLineHeight-text') {
-        editor.session.addMarker(marker.range, 'clearLineHeight-line', 'fullLine', false);
-        editor.session.addMarker(marker.range, 'clearLineHeight-text', 'text', false);
-      }
-      return marker;
-    });
-  };
-  /**
    * 显示报错行
    */
   onChange =(values, options) => {
+    window.console.log(options);
     const editor = this.aceEditor.getCodeMirror();
     const lines = editor.getDoc().size;
     editor.setSize('100%', (lines * 19) + 8);
     const prevLineLength = this.state.lines || lines;
-    const { sourceData } = this.state;
     const start = options.from;
     const end = options.to;
     const newValue = editor.getLine(start.line);
-    const oldValue = sourceData[start.line];
-    const value = editor.getLine(start.line);
-    const lineFrom = { line: start.line, ch: 0 };
-    const from = { line: start.line, ch: value.split(':')[0].length + 2 };
+    const from = { line: start.line, ch: newValue.split(':')[0].length + 2 };
     const to = { line: end.line, ch: end.ch + 1 };
-    if (oldValue) {
-      if (newValue !== oldValue) {
-        if (options.origin.includes('input') || (options.origin.includes('delete') && end.line === start.line && prevLineLength === lines)) {
-          editor.markText(lineFrom, to, { className: 'modifyLine-line' });
-          editor.markText(from, to, { className: 'modifyLine-text' });
-        }
-      } else {
-        editor.markText(lineFrom, to, { className: 'clearLineHeight-line' });
-        editor.markText(from, to, { className: 'clearLineHeight-tex' });
-      }
+    const lineInfo = editor.lineInfo(from.line).bgClass;
+    // 新增行
+    if (options.origin ==='+input' && options.text.toString() ===",") {
+      editor.addLineClass(start.line + 1, 'background', 'newLine-text');
+    } else if (lineInfo === 'lastModifyLine-line') {
+      editor.addLineClass(start.line, 'background', 'lastModifyLine-line');
+      editor.markText(from, to, { className: 'lastModifyLine-text' });
+    } else if(lineInfo === 'newLine-text') {
+      editor.addLineClass(start.line, 'background', 'newLine-text');
+    } else if(options.origin ==='+delete' && options.removed.toString() ===",") {
+      return;
     } else {
-      editor.markText(lineFrom, to, { className: 'newLine-text' });
+      editor.addLineClass(start.line, 'background', 'lastModifyLine-line');
+      editor.markText(from, to, { className: 'lastModifyLine-text' });
     }
+    // let newValue = '';
+    // if(options.origin ==='+input' && (options.text.toString() === "" || options.text.toString() === ",") || (options.origin === '+delete' && options.removed.toString() === "")){
+    //   newValue = '';
+    // } else if(editor.getLine(start.line)!== "  "){
+    //   newValue = editor.getLine(start.line);
+    // }
+    // window.console.log(newValue);
+    // const newValue = editor.getLine(start.line);
+    // window.console.log(newValue);
+    // const oldValue = sourceData[start.line];
+    // const from = { line: start.line, ch: newValue.split(':')[0].length + 2 };
+    // const to = { line: end.line, ch: end.ch + 1 };
+    // const lineInfo = editor.lineInfo(from.line).bgClass;
+    // if (newValue) {
+    //   if (lineInfo === 'lastModifyLine-line'){
+    //     editor.addLineClass(start.line, 'background', 'lastModifyLine-line');
+    //     editor.markText(from, to, { className: 'lastModifyLine-text' });
+    //   } else if(lineInfo === 'newLine-text') {
+    //     editor.addLineClass(start.line, 'background', 'newLine-text');
+    //   } else {
+    //     if (newValue !== oldValue) {
+    //       editor.addLineClass(start.line, 'background', 'lastModifyLine-line');
+    //       editor.markText(from, to, { className: 'lastModifyLine-text' });
+    //     } else {
+    //       editor.addLineClass(start.line, 'background', 'clearLineHeight-line');
+    //       editor.markText(from, to, { className: 'clearLineHeight-text' });
+    //     }
+    // }
+    // }
+    // if (oldValue && !this.props.newLines.includes(start.line)) {
+    //   if (newValue !== oldValue) {
+    //     if ((options.origin.includes('input') || options.origin.includes('delete')) && end.line === start.line && prevLineLength === lines) {
+    //       editor.addLineClass(start.line, 'background', 'lastModifyLine-line');
+    //       editor.markText(from, to, { className: 'lastModifyLine-text' });
+    //     }
+    //   } else if(!modifyLines.includes(from.line)) {
+    //     editor.addLineClass(start.line, 'background', 'clearLineHeight-line');
+    //     editor.markText(from, to, { className: 'clearLineHeight-text' });
+    //   }
+    // } else if(!oldValue || this.props.newLines.includes(start.line)) {
+    //   if (newValue && newValue !== oldValue) {
+    //     editor.addLineClass(start.line, 'background', 'newLine-text');
+    //   } else if(newValue && newValue === oldValue) {
+    //     editor.addLineClass(start.line, 'background', 'newLine-text');
+    //   } else {
+    //     editor.addLineClass(start.line, 'background', 'clearLineHeight-line');
+    //   }
+    // }
     this.setState({ lines });
     this.handleModifyHighLight(values, options);
   };
@@ -100,9 +140,7 @@ class NewEditor extends Component {
    * 设置本次修改的高亮
    */
   handleModifyHighLight =_.debounce((values, options) => {
-    const editor = this.aceEditor.getCodeMirror();
-    const modifyMarkers = editor.getAllMarks();
-    this.props.onChange(values, modifyMarkers);
+    this.props.onChange(values);
   }, 1000);
   /**
    * 处理yaml格式错误显示
@@ -136,18 +174,20 @@ class NewEditor extends Component {
     const editor = this.aceEditor.getCodeMirror();
     editor.setSize('100%', (editor.getDoc().size * 19) + 8);
     const sourceData = this.props.value.split('\n');
-    this.setState({ sourceData });
+    this.setState({ sourceData, modifyLines: _.map(this.props.highlightMarkers, 'line'), newLines: this.props.newLines });
     const diff = this.props.highlightMarkers;
-    diff.map((line) => {
+    const newLine = this.props.newLines;
+    diff.length && diff.map((line) => {
       editor.markText({ line: line.line, ch: line.startColumn }, { line: line.line, ch: line.endColumn }, {
         className: 'lastModifyLine-text',
         title: '上次修改',
       });
-      editor.markText({ line: line.line, ch: 0 }, { line: line.line, ch: line.endColumn }, {
-        className: 'lastModifyLine-line',
-      });
+      editor.addLineClass(line.line, 'background', 'lastModifyLine-line');
       return diff;
     });
+    newLine.length && newLine.map((lines) => {
+      editor.addLineClass(lines, 'background', 'newLine-text');
+    })
   };
 
   render() {
@@ -159,7 +199,6 @@ class NewEditor extends Component {
         { !this.props.readOnly && <div className="ace-error">
           <span className="deployApp-config-block deployApp-config-new" /> <span className="deployApp-config-title">{formatMessage({ id: 'yaml.new' })}</span>
           <span className="deployApp-config-block deployApp-config-lastModify" /> <span className="deployApp-config-title">{formatMessage({ id: 'yaml.lastModify' })}</span>
-          <span className="deployApp-config-block deployApp-config-modify" /> <span className="deployApp-config-title">{formatMessage({ id: 'yaml.modify' })}</span>
           <span className="deployApp-config-error" /><span className="deployApp-config-title">{formatMessage({ id: 'yaml.yaml.error' })}</span>
         </div> }
         <CodeMirror

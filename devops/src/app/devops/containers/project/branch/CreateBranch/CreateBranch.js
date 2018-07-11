@@ -128,7 +128,7 @@ class CreateBranch extends Component {
     this.props.form.validateFieldsAndScroll((err, data) => {
       if (!err) {
         const postData = data;
-        postData.branchName = type ? `${type}-${data.branchName}` : data.branchName;
+        postData.branchName = type && type !== 'custom' ? `${type}-${data.branchName}` : data.branchName;
         this.setState({ submitting: true });
         store.createBranch(projectId, appId, postData)
           .then(() => {

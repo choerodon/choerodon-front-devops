@@ -192,7 +192,7 @@ class EditBranch extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('issueId', {
-                initialValue: this.props.store.branch ? issueId : undefined,
+                initialValue: issue.length ? issueId : undefined,
               })(
                 <Select
                   onFilterChange={this.searchIssue}
