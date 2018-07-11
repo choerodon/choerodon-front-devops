@@ -480,8 +480,6 @@ class AppHome extends Component {
           'devops-service.application.pageByOptions',
           'devops-service.application.listTemplate',
           'devops-service.application.queryByAppIdAndActive',
-          'devops-service.git-flow.listByAppId',
-          'devops-service.git-flow.queryTags',
           'devops-service.application.queryByAppId',
         ]}
       >
