@@ -114,9 +114,9 @@ class DeploymentDetail extends Component {
   };
 
   changeStage =(index) => {
-    const { DeployDetailStore } = this.props;
+    const { DeployDetailStore, intl } = this.props;
     const data = DeployDetailStore.getStage;
-    this.setState({ current: index + 1, log: data[index].log || '' });
+    this.setState({ current: index + 1, log: data[index].log || intl.formatMessage({ id: 'ist.nolog' }) });
   };
 
   changeStatus =() => {
@@ -135,7 +135,7 @@ class DeploymentDetail extends Component {
 
   render() {
     const { DeployDetailStore, intl } = this.props;
-    const { expand } = this.state;
+    const { expand, log } = this.state;
     const valueStyle = classnames({
       'c7n-deployDetail-show': expand,
       'c7n-deployDetail-hidden': !expand,
@@ -159,7 +159,9 @@ class DeploymentDetail extends Component {
     }
 
     const stageData = DeployDetailStore.getStage || [];
-    const log = stageData.length && stageData[0].log ? stageData[0].log : intl.formatMessage({ id: 'ist.nolog' });
+    const logger = (stageData.length && stageData[0].log) ? stageData[0].log : intl.formatMessage({ id: 'ist.nolog' });
+    const logValues = log || logger;
+
     const dom = [];
     if (stageData.length) {
       stageData.map((step, index) => {
@@ -191,6 +193,11 @@ class DeploymentDetail extends Component {
       readOnly: true,
       lineNumbers: true,
     };
+    const Logger = () => (<CodeMirror
+      className="c7n-deployDetail-pre1"
+      value={logValues}
+      options={logOptions}
+    />);
     return (
       <Page
         className="c7n-region c7n-deployDetail-wrapper"
@@ -389,7 +396,7 @@ class DeploymentDetail extends Component {
                 <Steps current={this.state.current} className="c7n-deployDetail-steps">
                   {dom}
                 </Steps>
-                 <CodeMirror className="c7n-deployDetail-pre1" value={this.state.log === undefined ? log : this.state.log} options={logOptions} />
+                <Logger />
               </div>
               }
             </TabPane>
