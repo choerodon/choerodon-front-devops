@@ -308,7 +308,7 @@ class AppTag extends Component {
         <Header title={<FormattedMessage id="apptag.head" />}>
           <Permission
             service={[
-              'devops-service.devops-git.start',
+              'devops-service.devops-git.createTag',
             ]}
             type={type}
             projectId={projectId}
