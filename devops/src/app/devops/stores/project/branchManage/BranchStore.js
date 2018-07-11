@@ -111,7 +111,7 @@ class BranchStore {
     return axios.get(`/devops/v1/projects/${proId}/apps`)
       .then((data) => {
         const res = this.handleProptError(data);
-        this.setApps(data.reverse());
+        this.setApps(data);
         this.setApp(data[0].id);
         this.loadBranchData(proId, data[0].id);
         return res;

@@ -137,7 +137,7 @@ class BranchHome extends Component {
           <div>
             <span className="icon icon-point branch-column-icon" />
             <a href={record.commitUrl} target="_blank" rel="nofollow me noopener noreferrer">
-              <span>{record.sha}</span>
+              <span>{record.sha && record.sha.slice(0, 8) }</span>
             </a>
             <span className="icon icon-schedule branch-col-icon branch-column-icon" style={{ paddingLeft: 16, fontSize: 16, marginBottom: 2 }} />
             <TimePopover content={record.commitDate} style={{ display: 'inline-block', color: 'rgba(0, 0, 0, 0.65)' }} />
