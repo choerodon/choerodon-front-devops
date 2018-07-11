@@ -33,10 +33,8 @@ class NewEditor extends Component {
       mode: 'yaml',
       readOnly: false,
       lineNumbers: true,
-      foldGutter: true,
-      lineWrapping: true,
-      gutters:["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-      indicatorFolded:'CodeMirror-foldgutter-folded',
+      // foldGutter: true,
+      // gutters:["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
     }
   };
   constructor(props) {
@@ -60,7 +58,6 @@ class NewEditor extends Component {
    * 显示报错行
    */
   onChange =(values, options) => {
-    window.console.log(options);
     const editor = this.aceEditor.getCodeMirror();
     const lines = editor.getDoc().size;
     editor.setSize('100%', (lines * 19) + 8);
@@ -177,7 +174,7 @@ class NewEditor extends Component {
     this.setState({ sourceData, modifyLines: _.map(this.props.highlightMarkers, 'line'), newLines: this.props.newLines });
     const diff = this.props.highlightMarkers;
     const newLine = this.props.newLines;
-    diff.length && diff.map((line) => {
+    diff && diff.length && diff.map((line) => {
       editor.markText({ line: line.line, ch: line.startColumn }, { line: line.line, ch: line.endColumn }, {
         className: 'lastModifyLine-text',
         title: '上次修改',
@@ -185,7 +182,7 @@ class NewEditor extends Component {
       editor.addLineClass(line.line, 'background', 'lastModifyLine-line');
       return diff;
     });
-    newLine.length && newLine.map((lines) => {
+    newLine && newLine.length && newLine.map((lines) => {
       editor.addLineClass(lines, 'background', 'newLine-text');
     })
   };

@@ -273,7 +273,7 @@ class DeploymentAppHome extends Component {
 
   loadReview = () => {
     const { value, versionId } = this.state;
-    axios.get(`/devops/v1/projects/${this.state.projectId}/app_instances/previewValue?value=${value}&appVersionId=${versionId}`)
+    axios.post(`/devops/v1/projects/${this.state.projectId}/app_instances/previewValue?appVersionId=${versionId}`, { yaml: value })
       .then((data) => {
         this.setState({ yaml: data });
       });
@@ -490,6 +490,12 @@ class DeploymentAppHome extends Component {
     const { formatMessage } = intl;
     const data = this.state.yaml || DeploymentAppStore.value;
     const { app, versionId, envId, instanceId, mode } = this.state;
+    const options = {
+      theme: 'base16-light',
+      mode: 'yaml',
+      readOnly: true,
+      lineNumbers: true,
+    };
     return (
       <section className="deployApp-review">
         <section>
@@ -519,9 +525,10 @@ class DeploymentAppHome extends Component {
           </div>
           {data && <div>
             {<AceForYaml
-              totalLine={data.totalLine + 1}
+              options={options}
+              newLines={data.newLines}
               readOnly={this.state.current === 4}
-              value={this.state.value || data.yaml}
+              value={data.yaml}
               highlightMarkers={data.highlightMarkers}
             />}
           </div>}
@@ -555,6 +562,7 @@ class DeploymentAppHome extends Component {
           'devops-service.application-instance.deploy',
           'devops-service.application.pageByOptions',
           'devops-service.application-market.listAllApp',
+          'devops-service.application-instance.previewValues',
         ]}
         className="c7n-region c7n-deployApp"
       >
