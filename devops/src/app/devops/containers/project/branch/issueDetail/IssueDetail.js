@@ -71,7 +71,7 @@ class IssueDetail extends Component {
     if (str) {
       names = str[0];
     } else {
-      names = names.slice(0, 1);
+      names = name.slice(0, 1);
     }
     return names;
   };

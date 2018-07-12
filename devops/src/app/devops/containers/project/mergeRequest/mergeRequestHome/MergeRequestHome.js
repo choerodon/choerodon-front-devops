@@ -149,7 +149,7 @@ class MergeRequestHome extends Component {
       key: 'createdAt',
       render: record => (
         <div>
-          <Tooltip title={record.author.name}>
+          <Tooltip title={record.author.username}>
             <img src={record.author.avatarUrl} alt="avatar" className="c7n-merge-avatar" />
           </Tooltip>
           <Tooltip

@@ -3,15 +3,16 @@
 }
 
 .newLine-text {
-  background-color: #acf2bd;
+  background-color: #ecfdf0;
 }
 
 .lastModifyLine-line {
-  background-color: rgba(188, 188, 247, 0.8);
+  // background-color: #1b69b6;
 }
 
 .lastModifyLine-text {
-  background: #9c99ff;
+  color: white !important;
+  background-color: #5E92F2;
 }
 
 .modifyLine-line {
@@ -107,8 +108,3 @@
 }
 
 .CodeMirror-selected { background-color: #b3d7fd !important; }
-.CodeMirror-selectedtext { color: white !important; }
-
-.cursor-default {
-  cursor: default !important;
-}
