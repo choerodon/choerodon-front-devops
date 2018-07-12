@@ -19,7 +19,7 @@ def deleteMenu(table, column, id):
 # delete menu
 def deleteMenuTable():
     try:
-        sql = "SELECT id FROM `iam_menu` WHERE code LIKE 'choerodon.code.devops%' AND level='project'";
+        sql = "SELECT id FROM `iam_menu` WHERE code LIKE 'choerodon.code.devops%'";
         cursor.execute(sql);
         ids = cursor.fetchall();
         for id in ids:

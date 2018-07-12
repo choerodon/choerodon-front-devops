@@ -24,3 +24,10 @@
 "deployment-pipeline.service": "Service"
 "deployment-pipeline.ingress": "Ingress"
 "deployment-pipeline.container": "Container"
+
+# 0.8废弃
+"application-market": "Application Market"
+"application-market.application-market": "Application Market"
+"application-market.application-release": "Application Release"
+"application": "Application Management"
+"application.application-template": "Application Template"

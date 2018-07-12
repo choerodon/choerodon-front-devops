@@ -10,7 +10,6 @@
           - 'devops-service.application-template.listByOrgId'
           - 'devops-service.application-template.queryByAppTemplateId'
           - 'devops-service.application-template.delete'
-
   project:
     - "application":
         icon: widgets
@@ -36,7 +35,7 @@
           - 'devops-service.application-market.update'
           - 'devops-service.application-market.updateVersions'
     - "application-market":
-        icon: apps
+        icon: appmarket
         Routes: /devops/app-market
         sort: 5
         permission:
@@ -78,7 +77,7 @@
           - 'devops-service.devops-git.checkTag'
           - 'devops-service.devops-git.deleteTag'
     - "merge-request":
-        icon: device_hub
+        icon: merge_request
         Routes: /devops/merge-request
         sort: 4
         permission:
@@ -96,7 +95,7 @@
           - 'devops-service.project-pipeline.cancel'
           - 'devops-service.project-pipeline.retry'
     - "application":
-        delete: true
+        delete: "true"
         icon: widgets
         Routes: /devops/app
         sort: 5
@@ -106,7 +105,7 @@
           - 'devops-service.application.queryByAppId'
           - 'devops-service.application.queryByAppIdAndActive'
     - "application-version":
-        delete: true
+        delete: "true"
         icon: version
         Routes: /devops/app-version
         sort: 6
@@ -183,5 +182,44 @@
         permission:
           - 'devops-service.devops-env-pod-container.queryLogByPod'
           - 'devops-service.devops-env-pod.pageByOptions'
+"application-market":
+  icon: apps
+  sort: 30
+  delete: "true"
+  project:
+    - "application-release":
+        icon: near_me
+        Routes: /devops/app-release
+        sort: 4
+        delete: "true"
+        permission:
+          - 'devops-service.application-market.create'
+          - 'devops-service.application-market.update'
+          - 'devops-service.application-market.updateVersions'
+    - "application-market":
+        icon: apps
+        Routes: /devops/app-market
+        sort: 5
+        delete: "true"
+        permission:
+          - 'devops-service.application-market.queryApp'
+          - 'devops-service.application-market.listAllApp'
+          - 'devops-service.application-market.uploadApps'
+          - 'devops-service.application-market.importApps'
+          - 'devops-service.application-market.deleteZip'
+          - 'devops-service.application-market.queryAppVersionReadme'
 
-
+"application":
+  icon: apps
+  sort: 31
+  delete: "true"
+  organization:
+    - "application-template":
+        icon: application_model
+        Routes: /devops/template
+        sort: 1
+        delete: "true"
+        permission:
+          - 'devops-service.application-template.listByOrgId'
+          - 'devops-service.application-template.queryByAppTemplateId'
+          - 'devops-service.application-template.delete'
