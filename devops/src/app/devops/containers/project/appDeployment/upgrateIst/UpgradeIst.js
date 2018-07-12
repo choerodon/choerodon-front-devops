@@ -57,11 +57,13 @@ class UpgradeIst extends Component {
     const { store, id, idArr, intl } = this.props;
     const projectId = AppState.currentMenuType.id;
     const value = this.state.value || this.props.store.getValue.yaml;
+    const verValue = this.props.store.getVerValue;
+    const verId = this.state.id || verValue[0].id;
     const data = {
       values: value,
       appInstanceId: id,
       environmentId: idArr[0],
-      appVerisonId: this.state.id,
+      appVerisonId: verId,
       appId: idArr[2],
       type: 'update',
     };

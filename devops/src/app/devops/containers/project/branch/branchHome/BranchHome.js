@@ -12,7 +12,7 @@ import TimePopover from '../../../../components/timePopover';
 import EditBranch from '../editBranch';
 import IssueDetail from '../issueDetail';
 import '../commom.scss';
-
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const { AppState } = stores;
 const Option = Select.Option;
@@ -93,7 +93,7 @@ class BranchHome extends Component {
     if (str) {
       names = str[0];
     } else {
-      names = names.slice(0, 1);
+      names = name.slice(0, 1);
     }
     return names;
   };
@@ -161,7 +161,7 @@ class BranchHome extends Component {
           {record.commitUserUrl && record.commitUserName ? <Tooltip title={record.commitUserName}>
             <div className="branch-user-img" ><img src={record.commitUserUrl} alt="" width={'100%'} /></div>
           </Tooltip> : <Tooltip title={record.commitUserName}><div className="branch-user-img" >{record.commitUserName && record.commitUserName.slice(0, 1)}</div></Tooltip> }
-          <div style={{ display: 'inline-block' }} className="branch-col-icon">{record.commitContent}</div>
+            <MouserOverWrapper style={{ display: 'inline-block' }} text={record.commitContent} width={250} className="branch-col-icon">{record.commitContent}</MouserOverWrapper>
         </div>),
       },
       {
@@ -173,14 +173,20 @@ class BranchHome extends Component {
               <div className="branch-user-img" >
                 <img src={record.createUserUrl} alt="" width={'100%'} />
               </div>
-              <span style={{ paddingRight: 5 }}>{record.createUserName}</span>
-              <span>{record.createUserRealName}</span>
+              <div style={{ display: 'inline-block', overflow: 'hidden' }}>
+                <span style={{ paddingRight: 5 }}>{record.createUserName}</span>
+                {record.createUserName !== record.createUserRealName
+                && <span>{record.createUserRealName}</span>}
+              </div>
             </React.Fragment>
             : <React.Fragment>
               {record.createUserName ? <div>
                 <div className="branch-user-img" >{record.createUserRealName && this.getName(record.createUserRealName)}</div>
-                <span style={{ paddingRight: 5 }}>{record.createUserName}</span>
-                <span>{record.createUserRealName}</span>
+                <div style={{ display: 'inline-block', overflow: 'hidden' }}>
+                  <span style={{ paddingRight: 5 }}>{record.createUserName}</span>
+                  {record.createUserName !== record.createUserRealName
+                  && <span>{record.createUserRealName}</span>}
+                </div>
               </div> : null}
             </React.Fragment> }
         </div>),
@@ -217,7 +223,7 @@ class BranchHome extends Component {
                 >
                   <a href={record.commitUrl && `${record.commitUrl.split('/commit')[0]}/merge_requests/new?change_branches=true&merge_request[source_branch]=${record.name}&merge_request[target_branch]=master`} target="_blank" rel="nofollow me noopener noreferrer">
                     <Button size={'small'} shape="circle">
-                      <span className="icon icon-wrap_text" />
+                      <span className="icon icon-merge_request" />
                     </Button>
                   </a>
                 </Tooltip>

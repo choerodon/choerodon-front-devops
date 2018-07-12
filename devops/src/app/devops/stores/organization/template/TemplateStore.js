@@ -72,7 +72,7 @@ class TemplateStore {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return axios.post(`/devops/v1/organizations/${orgId}/app_templates/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(datas))
+    return axios.post(`/devops/v1/organizations/${orgId}/app_templates/list_by_options?page=${page}&size=${size}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {

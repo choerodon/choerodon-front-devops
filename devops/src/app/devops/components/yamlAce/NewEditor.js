@@ -10,7 +10,8 @@ import './yamlCodeMirror.scss';
 
 require('codemirror/lib/codemirror.css');
 require('codemirror/mode/yaml/yaml');
-require('codemirror/theme/base16-light.css');
+// require('codemirror/theme/base16-light.css');
+require('codemirror/theme/neat.css');
 
 require('codemirror/addon/fold/foldgutter.css');
 require('codemirror/addon/fold/foldcode');
@@ -29,7 +30,7 @@ class NewEditor extends Component {
   };
   static defaultProps = {
     options: {
-      theme: 'base16-light',
+      theme: 'neat',
       mode: 'yaml',
       readOnly: false,
       lineNumbers: true,
@@ -61,13 +62,14 @@ class NewEditor extends Component {
   onChange =(values, options) => {
     const editor = this.aceEditor.getCodeMirror();
     const lines = editor.getDoc().size;
-    editor.setSize('100%', (lines * 19) + 8);
+    editor.setSize('100%', (lines * 19) + 38);
     const prevLineLength = this.state.lines || lines;
     const start = options.from;
     const end = options.to;
     const newValue = editor.getLine(start.line);
     const from = { line: start.line, ch: newValue.split(':')[0].length + 2 };
-    const to = { line: end.line, ch: end.ch + 1 };
+    const ch = 1000;
+    const to = { line: end.line, ch: ch };
     const lineInfo = editor.lineInfo(from.line).bgClass;
     // 新增行
     if (options.origin ==='+input' && options.text.toString() ===",") {
@@ -124,7 +126,7 @@ class NewEditor extends Component {
    */
   handleHighLight = () => {
     const editor = this.aceEditor.getCodeMirror();
-    editor.setSize('100%', (editor.getDoc().size * 19) + 8);
+    editor.setSize('100%', (editor.getDoc().size * 19) + 38);
     const sourceData = this.props.value.split('\n');
     this.setState({ sourceData, modifyLines: _.map(this.props.highlightMarkers, 'line'), newLines: this.props.newLines });
     const diff = this.props.highlightMarkers;
