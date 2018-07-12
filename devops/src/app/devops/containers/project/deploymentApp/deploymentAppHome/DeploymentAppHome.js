@@ -398,7 +398,7 @@ class DeploymentAppHome extends Component {
             errorLines={this.state.errorLine}
             errMessage={data.errorMsg}
             modifyMarkers={this.state.markers}
-            value={this.state.value || data.yaml}
+            value={data.yaml}
             highlightMarkers={data.highlightMarkers}
             onChange={this.handleChangeValue}
           />)}
@@ -495,7 +495,7 @@ class DeploymentAppHome extends Component {
     const options = {
       theme: 'base16-light',
       mode: 'yaml',
-      readOnly: true,
+      readOnly: 'nocursor',
       lineNumbers: true,
     };
     return (

@@ -101,14 +101,14 @@
   }
 }
 
-.CodeMirror-linenumbers {
-  width: 38px !important;
-}
-
 .CodeMirror-gutter-elt {
   height: 19px !important;
+  width: 38px !important;
 }
 
 .CodeMirror-selected { background-color: #b3d7fd !important; }
 .CodeMirror-selectedtext { color: white !important; }
 
+.cursor-default {
+  cursor: default !important;
+}
