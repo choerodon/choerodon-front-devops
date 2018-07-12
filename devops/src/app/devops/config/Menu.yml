@@ -95,7 +95,7 @@
           - 'devops-service.project-pipeline.cancel'
           - 'devops-service.project-pipeline.retry'
     - "application":
-        delete: "true"
+        delete: true
         icon: widgets
         Routes: /devops/app
         sort: 5
@@ -105,7 +105,7 @@
           - 'devops-service.application.queryByAppId'
           - 'devops-service.application.queryByAppIdAndActive'
     - "application-version":
-        delete: "true"
+        delete: true
         icon: version
         Routes: /devops/app-version
         sort: 6
@@ -185,13 +185,13 @@
 "application-market":
   icon: apps
   sort: 30
-  delete: "true"
+  delete: true
   project:
     - "application-release":
         icon: near_me
         Routes: /devops/app-release
         sort: 4
-        delete: "true"
+        delete: true
         permission:
           - 'devops-service.application-market.create'
           - 'devops-service.application-market.update'
@@ -200,7 +200,7 @@
         icon: apps
         Routes: /devops/app-market
         sort: 5
-        delete: "true"
+        delete: true
         permission:
           - 'devops-service.application-market.queryApp'
           - 'devops-service.application-market.listAllApp'
@@ -212,13 +212,13 @@
 "application":
   icon: apps
   sort: 31
-  delete: "true"
+  delete: true
   organization:
     - "application-template":
         icon: application_model
         Routes: /devops/template
         sort: 1
-        delete: "true"
+        delete: true
         permission:
           - 'devops-service.application-template.listByOrgId'
           - 'devops-service.application-template.queryByAppTemplateId'
