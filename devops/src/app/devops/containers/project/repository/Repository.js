@@ -31,7 +31,7 @@ class Repository extends Component {
       filters: {},
       sort: {
         columnKey: 'id',
-        order: 'asc',
+        order: 'desc',
       },
     };
   }
@@ -86,7 +86,7 @@ class Repository extends Component {
       param: [],
       sort: {
         columnKey: 'id',
-        order: 'asc',
+        order: 'desc',
       },
       filters: {},
     });

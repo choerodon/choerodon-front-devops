@@ -16,6 +16,8 @@ preJob:
       username: choerodon
       password: 123456
       dbname: iam_service
+      enabledelete: true
+      upattrs: sort
 
 service:
   enable: false

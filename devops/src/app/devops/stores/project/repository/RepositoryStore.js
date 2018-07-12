@@ -51,7 +51,7 @@ class RepositoryStore {
    */
   queryRepoData = (projectId, page, pageSize, sorter, search) => {
     this.setLoading(true);
-    const order = sorter.order ? orderMapping[sorter.order] : 'asc';
+    const order = sorter.order ? orderMapping[sorter.order] : 'desc';
     axios.post(`/devops/v1/projects/${projectId}/apps/list_code_repository?page=${page}&size=${pageSize}&sort=${sorter.field || 'id'},${order}`, JSON.stringify(search))
       .then((data) => {
         const res = handleProptError(data);

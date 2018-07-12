@@ -13,6 +13,8 @@
 "development-pipeline.repository": "Repository"
 "development-pipeline.merge-request": "Merge Request"
 "development-pipeline.continuous-integration": "Continuous Integration"
+"development-pipeline.application": "Application"
+"development-pipeline.application-version": "Application Version"
 
 # 部署流水线
 "deployment-pipeline": "Deployment Pipeline"
@@ -22,3 +24,10 @@
 "deployment-pipeline.service": "Service"
 "deployment-pipeline.ingress": "Ingress"
 "deployment-pipeline.container": "Container"
+
+# 0.8废弃
+"application-market": "Application Market"
+"application-market.application-market": "Application Market"
+"application-market.application-release": "Application Release"
+"application": "Application Management"
+"application.application-template": "Application Template"
