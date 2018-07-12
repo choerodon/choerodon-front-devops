@@ -25,3 +25,9 @@
 "deployment-pipeline.ingress": "域名"
 "deployment-pipeline.container": "容器"
 
+# 0.8版本废弃项
+"application-market": "应用市场"
+"application-market.application-market": "应用市场"
+"application-market.application-release": "应用发布"
+"application": "应用管理"
+"application.application-template": "应用模版"
