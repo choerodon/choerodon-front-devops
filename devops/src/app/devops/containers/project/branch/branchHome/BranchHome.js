@@ -81,6 +81,22 @@ class BranchHome extends Component {
       </Tooltip>
     </span>);
   };
+
+  /**
+   * 获取头像的首字母
+   * @param name
+   */
+  getName = (name) => {
+    const p = /[\u4e00-\u9fa5]/;
+    const str = p.exec(name);
+    let names = '';
+    if (str) {
+      names = str[0];
+    } else {
+      names = names.slice(0, 1);
+    }
+    return names;
+  };
   /**
    * 获取列表的icon
    * @param type 分支类型
@@ -157,12 +173,14 @@ class BranchHome extends Component {
               <div className="branch-user-img" >
                 <img src={record.createUserUrl} alt="" width={'100%'} />
               </div>
-              <span>{record.createUserName}</span>
+              <span style={{ paddingRight: 5 }}>{record.createUserName}</span>
+              <span>{record.createUserRealName}</span>
             </React.Fragment>
             : <React.Fragment>
               {record.createUserName ? <div>
-                <div className="branch-user-img" >{record.createUserName && record.createUserName.slice(0, 1)}</div>
-                <span>{record.createUserName}</span>
+                <div className="branch-user-img" >{record.createUserRealName && this.getName(record.createUserRealName)}</div>
+                <span style={{ paddingRight: 5 }}>{record.createUserName}</span>
+                <span>{record.createUserRealName}</span>
               </div> : null}
             </React.Fragment> }
         </div>),

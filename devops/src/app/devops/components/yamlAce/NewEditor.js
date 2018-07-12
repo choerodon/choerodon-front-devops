@@ -33,6 +33,7 @@ class NewEditor extends Component {
       mode: 'yaml',
       readOnly: false,
       lineNumbers: true,
+      lineWrapping: true,
       // foldGutter: true,
       // gutters:["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
     }
@@ -71,6 +72,8 @@ class NewEditor extends Component {
     // 新增行
     if (options.origin ==='+input' && options.text.toString() ===",") {
       editor.addLineClass(start.line + 1, 'background', 'newLine-text');
+    } else if (options.origin ==='+input' && options.from.ch === 0 && options.to.ch === 0) {
+      editor.addLineClass(start.line, 'background', 'newLine-text');
     } else if (lineInfo === 'lastModifyLine-line') {
       editor.addLineClass(start.line, 'background', 'lastModifyLine-line');
       editor.markText(from, to, { className: 'lastModifyLine-text' });
