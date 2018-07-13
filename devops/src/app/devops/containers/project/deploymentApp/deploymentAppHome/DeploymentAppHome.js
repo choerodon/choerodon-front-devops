@@ -271,13 +271,13 @@ class DeploymentAppHome extends Component {
       });
   };
 
-  loadReview = () => {
+
+  loadReview = async () => {
     const { value, versionId } = this.state;
     if (value) {
-      axios.post(`/devops/v1/projects/${this.state.projectId}/app_instances/previewValue?appVersionId=${versionId}`, { yaml: value })
-        .then((data) => {
-          this.setState({ yaml: data });
-        });
+      const yaml = await axios.post(`/devops/v1/projects/${this.state.projectId}/app_instances/previewValue?appVersionId=${versionId}`, { yaml: value })
+        .then(data => data);
+      this.setState({ yaml });
     }
     this.changeStep(3);
   };
@@ -493,7 +493,7 @@ class DeploymentAppHome extends Component {
     const data = this.state.yaml || DeploymentAppStore.value;
     const { app, versionId, envId, instanceId, mode } = this.state;
     const options = {
-      theme: 'base16-light',
+      theme: 'neat',
       mode: 'yaml',
       readOnly: 'nocursor',
       lineNumbers: true,

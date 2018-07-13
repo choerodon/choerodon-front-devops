@@ -180,7 +180,7 @@ class DeploymentDetail extends Component {
     }
     const a = DeployDetailStore.getValue;
     const options = {
-      theme: 'base16-light',
+      theme: 'neat',
       mode: 'yaml',
       readOnly: 'nocursor',
       lineNumbers: true,

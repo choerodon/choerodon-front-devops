@@ -14,10 +14,10 @@ require('codemirror/mode/yaml/yaml');
 require('codemirror/theme/neat.css');
 
 require('codemirror/addon/fold/foldgutter.css');
-require('codemirror/addon/fold/foldcode');
-require('codemirror/addon/fold/foldgutter.js');
-require('codemirror/addon/fold/brace-fold.js');
-require('codemirror/addon/fold/comment-fold.js');
+// require('codemirror/addon/fold/foldcode');
+// require('codemirror/addon/fold/foldgutter.js');
+// require('codemirror/addon/fold/brace-fold.js');
+// require('codemirror/addon/fold/comment-fold.js');
 /* eslint-disable */
 class NewEditor extends Component {
   static propTypes = {
