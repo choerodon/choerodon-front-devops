@@ -99,7 +99,9 @@ class MergeRequestHome extends Component {
     history.push(url);
   };
 
-  linkToMerge = (url) => {
+  linkToMerge = (iid) => {
+    const { MergeRequestStore } = this.props;
+    const url = `${MergeRequestStore.getUrl}/merge_requests/${iid}`;
     window.open(url);
   };
 
@@ -122,8 +124,8 @@ class MergeRequestHome extends Component {
 
     const columnsAll = [{
       title: <FormattedMessage id="app.code" />,
-      dataIndex: 'iid',
       key: 'iid',
+      render: record => (<span>!{record.iid}</span>),
     }, {
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'title',
@@ -198,7 +200,7 @@ class MergeRequestHome extends Component {
               <Button
                 size="small"
                 shape="circle"
-                onClick={this.linkToMerge.bind(this, record.webUrl)}
+                onClick={this.linkToMerge.bind(this, record.iid)}
               >
                 <span className="icon icon-find_in_page" />
               </Button>
@@ -210,8 +212,8 @@ class MergeRequestHome extends Component {
 
     const columns = [{
       title: <FormattedMessage id="app.code" />,
-      dataIndex: 'iid',
       key: 'iid',
+      render: record => (<span>!{record.iid}</span>),
     }, {
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'title',
@@ -282,7 +284,7 @@ class MergeRequestHome extends Component {
               <Button
                 size="small"
                 shape="circle"
-                onClick={this.linkToMerge.bind(this, record.webUrl)}
+                onClick={this.linkToMerge.bind(this, record.iid)}
               >
                 <span className="icon icon-find_in_page" />
               </Button>
