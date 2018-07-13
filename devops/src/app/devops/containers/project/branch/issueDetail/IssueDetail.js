@@ -260,12 +260,12 @@ class IssueDetail extends Component {
                   <p className="issue-detail-title-bold">{formatMessage({ id: 'branch.issue.person' })}</p>
                   <div>
                     <span className="issue-detail-content-title" style={{ marginLeft: 0 }}>{formatMessage({ id: 'branch.issue.reporter' })}:</span>
-                    <div className="branch-user-img">{issue.reporterImageUrl ? <img src={issue.reporterImageUrl} alt="" width="100%" /> : this.getName(issue.reporterName) }</div>
+                    <div className="issue-user-img">{issue.reporterImageUrl ? <img src={issue.reporterImageUrl} alt="" width="100%" /> : issue.reporterName && this.getName(issue.reporterName) }</div>
                     <span className="issue-detail-content-title" style={{ marginLeft: 0 }}>{issue.reporterName}</span>
                   </div>
                   <div className="issue-detail-content-title" style={{ marginLeft: 0 }}>{formatMessage({ id: 'branch.issue.assignee' })}:</div>
-                  <div className="branch-user-img">{issue.assigneeImageUrl ? <img src={issue.assigneeImageUrl} alt="" width="100%" /> : this.getName(issue.assigneeName) }</div>
-                  <span className="issue-detail-content-title" style={{ marginLeft: 0 }}>{issue.assigneeName}</span>
+                  {issue.assigneeImageUrl ? <div className="issue-user-img"><img src={issue.assigneeImageUrl} alt="" width="100%" /> </div> : <React.Fragment>{issue.assigneeName ? this.getName(issue.assigneeName) : formatMessage({ id: 'branch.issue.no' })}</React.Fragment> }
+                  <div className="issue-detail-content-title" style={{ marginLeft: 0, display: 'inline-block' }}>{issue.assigneeName}</div>
                 </div>
                 <div>
                   <p className="issue-detail-title-bold">{formatMessage({ id: 'branch.issue.date' })}</p>

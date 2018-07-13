@@ -195,6 +195,7 @@ class EditBranch extends Component {
                 initialValue: issue.length ? issueId : undefined,
               })(
                 <Select
+                  dropdownClassName={'createBranch-dropdown'}
                   onFilterChange={this.searchIssue}
                   onFocus={this.loadIssue}
                   loading={store.issueLoading}
