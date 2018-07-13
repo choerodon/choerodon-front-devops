@@ -201,7 +201,7 @@ class BranchStore {
       const res = this.handleProptError(branch);
       if (!branch.issueId) {
         const types = ['feature', 'release', 'bugfix', 'master', 'hotfix'];
-        axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}`)
+        axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/project_info`)
           .then((data) => {
             const type = branch.branchName.split('-')[0];
             let issueName = '';
@@ -210,9 +210,9 @@ class BranchStore {
             } else {
               issueName = branch.branchName;
             }
-            if (issueName.indexOf(data.code) === 0) {
-              const issueNum = `${parseInt(branch.branchName.split(`${data.code}-`)[1].split('-')[0], 10)}`;
-              this.setIssueInitValue(`${data.code}-${issueNum}`);
+            if (issueName.indexOf(data.projectCode) === 0) {
+              const issueNum = `${parseInt(branch.branchName.split(`${data.projectCode}-`)[1].split('-')[0], 10)}`;
+              this.setIssueInitValue(`${data.projectCode}-${issueNum}`);
               this.loadIssue(AppState.currentMenuType.id, '', '', issueNum);
             }
           });

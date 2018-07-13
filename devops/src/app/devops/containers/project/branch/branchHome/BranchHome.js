@@ -159,7 +159,7 @@ class BranchHome extends Component {
             <TimePopover content={record.commitDate} style={{ display: 'inline-block', color: 'rgba(0, 0, 0, 0.65)' }} />
           </div>
           {record.commitUserUrl && record.commitUserName ? <Tooltip title={record.commitUserName}>
-            <div className="branch-user-img" ><img src={record.commitUserUrl} alt="" width={'100%'} /></div>
+            <div className="branch-user-img" style={{ backgroundImage: `url(${record.commitUserUrl})` }} />
           </Tooltip> : <Tooltip title={record.commitUserName}><div className="branch-user-img" >{record.commitUserName && record.commitUserName.slice(0, 1)}</div></Tooltip> }
             <MouserOverWrapper style={{ display: 'inline-block' }} text={record.commitContent} width={250} className="branch-col-icon">{record.commitContent}</MouserOverWrapper>
         </div>),
@@ -170,10 +170,8 @@ class BranchHome extends Component {
         render: (text, record) => (<div>
           {record.createUserName && record.createUserUrl ?
             <React.Fragment>
-              <div className="branch-user-img" >
-                <img src={record.createUserUrl} alt="" width={'100%'} />
-              </div>
-              <div style={{ display: 'inline-block', overflow: 'hidden' }}>
+              <div className="branch-user-img" style={{ backgroundImage: `url(${record.createUserUrl})` }} />
+              <div style={{ display: 'inline-block' }}>
                 <span style={{ paddingRight: 5 }}>{record.createUserName}</span>
                 {record.createUserName !== record.createUserRealName
                 && <span>{record.createUserRealName}</span>}
@@ -182,7 +180,7 @@ class BranchHome extends Component {
             : <React.Fragment>
               {record.createUserName ? <div>
                 <div className="branch-user-img" >{record.createUserRealName && this.getName(record.createUserRealName)}</div>
-                <div style={{ display: 'inline-block', overflow: 'hidden' }}>
+                <div style={{ display: 'inline-block' }}>
                   <span style={{ paddingRight: 5 }}>{record.createUserName}</span>
                   {record.createUserName !== record.createUserRealName
                   && <span>{record.createUserRealName}</span>}
