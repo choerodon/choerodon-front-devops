@@ -719,9 +719,10 @@ const zhCN = {
   'apptag.ref': '标记来源',
   'apptag.checkName': '标记名称已存在',
   'apptag.branch': '分支',
-  'apptag.checkNameReg': '标记名称由数字和.组成，必须以数字开头且不能用.结尾，例如：0.0.1',
   'apptag.action.delete': '删除标记',
   'apptag.delete.tooltip': '确定要删除该标记吗？',
+  'apptag.checkNameReg': '由数字和 . 组成，必须以数字开头且不能以 . 结尾，例如：0.0.1',
+  'apptag.noRefBranch': '该应用还没有分支，请先创建分支',
 
   // repository
   'repository.head': '代码仓库',
