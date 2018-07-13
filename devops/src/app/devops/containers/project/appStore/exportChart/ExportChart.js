@@ -155,7 +155,7 @@ class ExportChart extends Component {
     const cols = document.getElementsByClassName(`col-${id}`);
     if (_.indexOf(upDown, id) === -1) {
       for (let i = 0; i < cols.length; i += 1) {
-        cols[i].style.height = `${Math.ceil(length / 4) * 31}px`;
+        cols[i].style.height = 'auto';
       }
       upDown.push(id);
       this.setState({
@@ -244,7 +244,7 @@ class ExportChart extends Component {
    */
   renderStepOne = () => {
     const { ExportChartStore, intl } = this.props;
-    const data = ExportChartStore.app.slice();
+    const data = ExportChartStore.getApp;
     const column = [{
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
@@ -470,7 +470,6 @@ class ExportChart extends Component {
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-
     return (
       <Page
         service={[
