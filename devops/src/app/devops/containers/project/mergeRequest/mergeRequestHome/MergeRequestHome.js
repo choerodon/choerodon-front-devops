@@ -149,8 +149,10 @@ class MergeRequestHome extends Component {
       key: 'createdAt',
       render: record => (
         <div>
-          <Tooltip title={record.author.username}>
-            <img src={record.author.avatarUrl} alt="avatar" className="c7n-merge-avatar" />
+          <Tooltip title={`${record.author.username} ${record.author.name}`}>
+            {record.author.avatarUrl
+              ? <img className="c7n-merge-avatar" src={record.author.avatarUrl} alt="avatar" />
+              : <span className="apptag-commit apptag-commit-avatar">{record.author.name.toString().substr(0, 1)}</span>}
           </Tooltip>
           <Tooltip
             title={record.createdAt}
@@ -231,8 +233,10 @@ class MergeRequestHome extends Component {
       key: 'createdAt',
       render: record => (
         <div>
-          <Tooltip title={record.author.name}>
-            <img src={record.author.avatarUrl} alt="avatar" className="c7n-merge-avatar" />
+          <Tooltip title={record.author.username !== record.author.name ? `${record.author.username} ${record.author.name}` : record.author.name}>
+            {record.author.avatarUrl
+              ? <img className="c7n-merge-avatar" src={record.author.avatarUrl} alt="avatar" />
+              : <span className="apptag-commit apptag-commit-avatar">{record.author.name.toString().substr(0, 1)}</span>}
           </Tooltip>
           <Tooltip title={record.createdAt}>
             <TimeAgo
@@ -371,7 +375,7 @@ class MergeRequestHome extends Component {
                 rowKey={record => record.id}
               />
             </TabPane>
-            <TabPane tab={`${intl.formatMessage({ id: 'merge.tab3' })}(${data.closeCcount || 0})`} key="closed">
+            <TabPane tab={`${intl.formatMessage({ id: 'merge.tab3' })}(${data.closeCount || 0})`} key="closed">
               <Table
                 filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                 onChange={this.tableChange}

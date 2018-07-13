@@ -421,6 +421,7 @@ class AppTag extends Component {
                         label={<FormattedMessage id="apptag.ref" />}
                         filter
                         dropdownMatchSelectWidth
+                        notFoundContent={<FormattedMessage id="apptag.noRefBranch" />}
                         size="default"
                         filterOption={(input, option) =>
                           option.props.children[1]
