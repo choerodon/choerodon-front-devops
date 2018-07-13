@@ -269,6 +269,7 @@ class CreateBranch extends Component {
             >
               {getFieldDecorator('issueId')(
                 <Select
+                  dropdownClassName={'createBranch-dropdown'}
                   onFilterChange={this.searchIssue}
                   onFocus={this.loadIssue}
                   loading={store.issueLoading}

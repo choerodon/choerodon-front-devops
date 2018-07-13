@@ -3,9 +3,7 @@ import { Table, Button, Input, Form, Tooltip, Select, Modal, Icon } from 'choero
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-import _ from 'lodash';
-// import { fromJS, is } from 'immutable';
-// import { Obversable } from 'rxjs';
+// import _ from 'lodash';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { commonComponent } from '../../../../components/commonFunction';
 import LoadingBar from '../../../../components/loadingBar';
@@ -18,6 +16,8 @@ const Option = Select.Option;
 const Sidebar = Modal.Sidebar;
 const FormItem = Form.Item;
 const { TextArea } = Input;
+const Debounce = require('lodash.debounce');
+
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -160,7 +160,7 @@ class TemplateHome extends Component {
    * @param value
    * @param callback
    */
-  checkCode = _.debounce((rule, value, callback) => {
+  checkCode = Debounce((rule, value, callback) => {
     const { TemplateStore, intl } = this.props;
     // eslint-disable-next-line no-useless-escape
     const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
@@ -185,7 +185,7 @@ class TemplateHome extends Component {
    * @param value
    * @param callback
    */
-  checkName = _.debounce((rule, value, callback) => {
+  checkName = Debounce((rule, value, callback) => {
     const { TemplateStore, intl } = this.props;
     const singleData = TemplateStore.singleData;
     if (singleData && value !== singleData.name) {

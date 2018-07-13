@@ -170,4 +170,19 @@
     text-align: left;
     line-height: 20px;
   }
+
+  .issue-user-img {
+    width: 18px;
+    height: 18px;
+    background: rgb(197, 203, 232);
+    color: rgb(100, 115, 195);
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    margin-right: 8px;
+    text-align: center;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+  }
 }

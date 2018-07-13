@@ -249,6 +249,7 @@ class BranchHome extends Component {
         <FormattedMessage id="branch.list" />
       </span>
       <Popover
+        // trigger={'click'}
         // getPopupContainer={triggerNode => triggerNode.parentNode}
         overlayClassName="branch-popover"
         placement="rightTop"
