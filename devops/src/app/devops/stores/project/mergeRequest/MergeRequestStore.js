@@ -7,12 +7,17 @@ const { AppState } = stores;
 class MergeRequestStore {
   @observable loading = true;
   @observable apps = [];
-  @observable mergeData = [];
+  @observable mergeData = {};
   @observable params = [];
   @observable pageInfo = {};
   @observable currentApp = {};
   @observable url = '';
-
+  @observable count = {
+    closeCount: 0,
+    mergeCount: 0,
+    openCount: 0,
+    totalCount: 0,
+  };
 
   @action setTableFilter(param) {
     if (param) {
@@ -71,6 +76,14 @@ class MergeRequestStore {
     this.currentApp = data;
   }
 
+  @action setCount(data) {
+    this.count = data;
+  }
+
+  @computed get getCount() {
+    return this.count;
+  }
+
   loadInitData = () => {
     this.setLoading(true);
     this.loadApps(AppState.currentMenuType.id).then((res) => {
@@ -97,12 +110,19 @@ class MergeRequestStore {
         .then((res) => {
           const response = this.handleProptError(res);
           if (response) {
+            const { pageResult, closeCount, mergeCount, openCount, totalCount } = response;
             this.setPageInfo({
-              current: res.pageResult.number + 1,
-              pageSize: res.pageResult.size,
-              total: res.pageResult.totalElements,
+              current: pageResult.number + 1,
+              pageSize: pageResult.size,
+              total: pageResult.totalElements,
             });
-            this.setMerge(res);
+            this.setMerge(pageResult);
+            this.setCount({
+              closeCount,
+              mergeCount,
+              openCount,
+              totalCount,
+            });
           }
           this.setLoading(false);
         })
@@ -115,12 +135,19 @@ class MergeRequestStore {
         .then((res) => {
           const response = this.handleProptError(res);
           if (response) {
+            const { pageResult, closeCount, mergeCount, openCount, totalCount } = response;
             this.setPageInfo({
-              current: res.pageResult.number + 1,
-              pageSize: res.pageResult.size,
-              total: res.pageResult.totalElements,
+              current: pageResult.number + 1,
+              pageSize: pageResult.size,
+              total: pageResult.totalElements,
             });
-            this.setMerge(res);
+            this.setMerge(pageResult);
+            this.setCount({
+              closeCount,
+              mergeCount,
+              openCount,
+              totalCount,
+            });
           }
           this.setLoading(false);
         })

@@ -120,7 +120,8 @@ class MergeRequestHome extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     const appData = MergeRequestStore.getApps;
-    const data = MergeRequestStore.getMerge;
+    const { content } = MergeRequestStore.getMerge;
+    const { closeCount, mergeCount, openCount, totalCount } = MergeRequestStore.getCount;
 
     const columnsAll = [{
       title: <FormattedMessage id="app.code" />,
@@ -353,7 +354,7 @@ class MergeRequestHome extends Component {
             }
           </Select>
           <Tabs defaultActiveKey="open" onChange={this.tabChange}>
-            <TabPane tab={`${intl.formatMessage({ id: 'merge.tab1' })}(${data.openCount || 0})`} key="opened">
+            <TabPane tab={`${intl.formatMessage({ id: 'merge.tab1' })}(${openCount || 0})`} key="opened">
               <Table
                 filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                 onChange={this.tableChange}
@@ -361,11 +362,11 @@ class MergeRequestHome extends Component {
                 columns={columns}
                 pagination={pageInfo}
                 filters={param || []}
-                dataSource={data.pageResult ? data.pageResult.content : null}
+                dataSource={content}
                 rowKey={record => record.id}
               />
             </TabPane>
-            <TabPane tab={`${intl.formatMessage({ id: 'merge.tab2' })}(${data.mergeCount || 0})`} key="merged">
+            <TabPane tab={`${intl.formatMessage({ id: 'merge.tab2' })}(${mergeCount || 0})`} key="merged">
               <Table
                 filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                 onChange={this.tableChange}
@@ -373,11 +374,11 @@ class MergeRequestHome extends Component {
                 columns={columns}
                 pagination={pageInfo}
                 filters={param || []}
-                dataSource={data.pageResult ? data.pageResult.content : null}
+                dataSource={content}
                 rowKey={record => record.id}
               />
             </TabPane>
-            <TabPane tab={`${intl.formatMessage({ id: 'merge.tab3' })}(${data.closeCount || 0})`} key="closed">
+            <TabPane tab={`${intl.formatMessage({ id: 'merge.tab3' })}(${closeCount || 0})`} key="closed">
               <Table
                 filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                 onChange={this.tableChange}
@@ -385,11 +386,11 @@ class MergeRequestHome extends Component {
                 columns={columns}
                 pagination={pageInfo}
                 filters={param || []}
-                dataSource={data.pageResult ? data.pageResult.content : null}
+                dataSource={content}
                 rowKey={record => record.id}
               />
             </TabPane>
-            <TabPane tab={`${intl.formatMessage({ id: 'merge.tab4' })}(${data.totalCount || 0})`} key="all">
+            <TabPane tab={`${intl.formatMessage({ id: 'merge.tab4' })}(${totalCount || 0})`} key="all">
               <Table
                 filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                 onChange={this.tableChange}
@@ -397,7 +398,7 @@ class MergeRequestHome extends Component {
                 columns={columnsAll}
                 pagination={pageInfo}
                 filters={param || []}
-                dataSource={data.pageResult ? data.pageResult.content : null}
+                dataSource={content}
                 rowKey={record => record.id}
               />
             </TabPane>
