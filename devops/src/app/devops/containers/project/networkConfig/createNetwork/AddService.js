@@ -245,10 +245,7 @@ class AddService extends Component {
         .then((data) => {
           if (data) {
             callback();
-          }
-        })
-        .catch((error) => {
-          if (error.status === 400) {
+          } else {
             callback(intl.formatMessage({ id: 'network.name.check.exist' }));
           }
         });

@@ -190,7 +190,7 @@ class NetworkHome extends Component {
       sorter: true,
       render: record => (
         <React.Fragment>
-          <Tooltip title={`${record.appProjectId === parseInt(menu.id, 10) ? <FormattedMessage id={'project'} /> : <FormattedMessage id={'market'} />}`}>
+          <Tooltip title={`${record.appProjectId === parseInt(menu.id, 10) ? this.props.intl.formatMessage({ id: 'project' }) : this.props.intl.formatMessage({ id: 'market' })}`}>
             <span className={`icon ${record.appProjectId === parseInt(menu.id, 10) ? 'icon-project' : 'icon-apps'} c7n-network-icon`} />
           </Tooltip>
           <MouserOverWrapper text={record.appName || ''} width={100} style={{ display: 'inline-block', verticalAlign: 'middle' }} >

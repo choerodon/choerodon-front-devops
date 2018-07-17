@@ -3,9 +3,9 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Radio, Steps, Table, Tooltip, Form, Input } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
-// import _ from 'lodash';
-import remove from 'lodash/remove';
-import cloneDeep from 'lodash/cloneDeep';
+import _ from 'lodash';
+// import remove from 'lodash/remove';
+// import cloneDeep from 'lodash/cloneDeep';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import '../../../main.scss';
 import './../AppRelease.scss';
@@ -507,8 +507,8 @@ class AddAppRelease extends Component {
   };
   removeVersion = (id) => {
     const { EditReleaseStore } = this.props;
-    const data = cloneDeep(EditReleaseStore.selectData.slice());
-    remove(data, app => app.id === id);
+    const data = _.cloneDeep(EditReleaseStore.selectData.slice());
+    _.remove(data, app => app.id === id);
     EditReleaseStore.setSelectData(data);
   };
 

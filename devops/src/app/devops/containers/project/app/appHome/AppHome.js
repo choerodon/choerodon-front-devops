@@ -3,7 +3,7 @@ import { Table, Tootip, Button, Input, Form, Modal, Tooltip, Select } from 'choe
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-// import _ from 'lodash';
+import _ from 'lodash';
 import { fromJS, is } from 'immutable';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { commonComponent } from '../../../../components/commonFunction';
@@ -12,7 +12,7 @@ import './AppHome.scss';
 import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
-const Debounce = require('lodash.debounce');
+// const Debounce = require('lodash.debounce');
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -197,7 +197,7 @@ class AppHome extends Component {
    *
    * @type 隔断时间提交验证数据
    */
-  postName =Debounce((projectId, value, callback) => {
+  postName =_.debounce((projectId, value, callback) => {
     const { AppStore, intl } = this.props;
     AppStore.checkName(projectId, value)
       .then((data) => {
@@ -214,7 +214,7 @@ class AppHome extends Component {
    * @param value
    * @param callback
    */
-  checkCode =Debounce((rule, value, callback) => {
+  checkCode =_.debounce((rule, value, callback) => {
     const { AppStore, intl } = this.props;
     // eslint-disable-next-line no-useless-escape
     const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
