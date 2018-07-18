@@ -70,9 +70,11 @@ class MutiDeployment extends Component {
                         </div>
                       </Button>
                     </Popover>
-                    <MouserOverWrapper text={version.version} width={160}>
-                      {version.version}
-                    </MouserOverWrapper>
+                    <Tooltip title={version.version}>
+                      <div className="c7n-text-ellipsis">
+                        {version.version}
+                      </div>
+                    </Tooltip>
                   </div>
                 </div>))}
               </td>);
@@ -86,7 +88,7 @@ class MutiDeployment extends Component {
 
         trDom.push(<tr>
           <td>
-            <MouserOverWrapper text={app.applicationName} width={150}>
+            <MouserOverWrapper text={app.applicationName} width={0.12}>
               {app.projectId === projectId ? <Tooltip title={<FormattedMessage id="project" />}><span className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id="market" />}><span className="icon icon-apps c7n-icon-publish" /></Tooltip>}
               {app.applicationName}
             </MouserOverWrapper>
@@ -94,9 +96,11 @@ class MutiDeployment extends Component {
           <td><React.Fragment>
             <div className="c7n-deploy-muti-row">
               <div className="c7n-deploy-muti_card">
-                <MouserOverWrapper text={app.latestVersion} width={160}>
-                  {app.latestVersion}
-                </MouserOverWrapper>
+                <Tooltip title={app.latestVersion}>
+                  <div className="c7n-text-ellipsis">
+                    {app.latestVersion}
+                  </div>
+                </Tooltip>
               </div>
             </div>
           </React.Fragment></td><React.Fragment>{tdDom}</React.Fragment>

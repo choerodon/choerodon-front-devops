@@ -640,7 +640,7 @@ class SingleApp extends Component {
           <div className={d.connect ? 'c7n-app-state' : 'c7n-app-state-pending'}>
             {d.connect ? <FormattedMessage id="running" /> : <FormattedMessage id="disconnect" />}
           </div>
-          <div className="c7n-app-name"><MouserOverWrapper text={d.name || ''} width={80}>{d.name}</MouserOverWrapper></div>
+          <div className="c7n-app-name"><Tooltip title={d.name || ''}>{d.name}</Tooltip></div>
         </div>
         <span className="c7n-app-arrow">→</span>
       </div>)) :

@@ -122,7 +122,7 @@ class Repository extends Component {
       dataIndex: 'repoUrl',
       key: 'repoUrl',
       render: (text, record) => (<a href={record.repoUrl ? `${record.repoUrl}.git` : null} rel="nofollow me noopener noreferrer" target="_blank">
-        <MouserOverWrapper text={`${record.repoUrl}.git`} width={250}>
+        <MouserOverWrapper text={`${record.repoUrl}.git`} width={0.25}>
           {record.repoUrl ? `../${record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}.git` : ''}
         </MouserOverWrapper>
       </a>),

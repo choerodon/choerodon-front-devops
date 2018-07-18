@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Input, Icon, Pagination, Table, Popover } from 'choerodon-ui';
+import { Button, Input, Icon, Pagination, Table, Popover, Tooltip } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import LoadingBar from '../../../../components/loadingBar';
 import './AppStore.scss';
 import '../../../main.scss';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const ButtonGroup = Button.Group;
 
@@ -190,8 +189,8 @@ class AppStoreHome extends Component {
         {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${Choerodon.fileServer(card.imgUrl)})` }} />
           : <div className="c7n-store-card-icon" />}
         <div className="c7n-store-card-name">
-          <MouserOverWrapper text={card.name} width={200}>
-            {card.name}</MouserOverWrapper>
+          <Tooltip title={card.name}>
+            {card.name}</Tooltip>
         </div>
         <div className="c7n-store-card-source">
           {card.category}
