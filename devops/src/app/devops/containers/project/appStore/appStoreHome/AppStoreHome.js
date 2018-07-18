@@ -78,10 +78,10 @@ class AppStoreHome extends Component {
    * 搜索函数
    */
   onSearch = () => {
-    const { page, pageSize, val } = this.state;
+    const { pageSize, val } = this.state;
     this.searchInput.focus();
     const pagination = {
-      current: page + 1, pageSize,
+      current: 1, pageSize,
     };
     this.onChange(pagination, null, null, val);
   };
