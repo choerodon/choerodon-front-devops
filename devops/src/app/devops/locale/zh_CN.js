@@ -35,16 +35,16 @@ const pageDetail = {
   // domain
   'domain.title': '项目"{name}"的域名管理',
   'domain.description': '域名管理是将您已经预定义好的域名在平台中进行配置，使外部能够通过指定的域名访问到系统内部的实例。',
-  'domain.link': `${docServer}/user-guide/deployment-pipeline/ingress`,
+  'domain.link': `${docServer}/user-guide/deployment-pipeline/ingress/`,
   'domain.create.title': '在项目"{name}"中创建域名',
   'domain.create.description': '请选择环境，填写域名名称、地址、路径，并选择网络配置域名访问规则。',
-  'domain.create.link': `${docServer}/user-guide/deployment-pipeline/service/`,
+  'domain.create.link': `${docServer}/user-guide/deployment-pipeline/ingress/`,
   'domain.update.title': '对域名"{name}"进行修改',
   'domain.update.description': '您可在此修改域名配置信息。',
-  'domain.update.link': `${docServer}/user-guide/deployment-pipeline/service/`,
+  'domain.update.link': `${docServer}/user-guide/deployment-pipeline/ingress/`,
 
   // deploymentApp
-  'deploy.title': '项目"{name}"的部署应用',
+  'deploy.title': '项目"{name}"的应用部署',
   'deploy.description': '应用部署是一个将某版本的应用部署至某环境的操作。您可以在此按指引分步骤完成应用部署。',
   'deploy.link': `${docServer}/user-guide/deployment-pipeline/application-deployment/`,
   'deploy.sidebar.title': '项目"{name}"的部署选择应用',
@@ -54,7 +54,7 @@ const pageDetail = {
   // appRelease
   'release.title': '项目"{name}"的应用发布',
   'release.description': '应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。',
-  'release.link': `${docServer}/user-guide/application-market/application-release/`,
+  'release.link': `${docServer}/user-guide/application-management/application-release/`,
   'release.add.title': '项目"{name}"的应用发布',
   'release.add.description': '应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。',
   'release.edit.title': '修改应用"{name}"的信息',
@@ -79,7 +79,7 @@ const pageDetail = {
   'template.delDescription': '确定要删除该应用模板吗？',
   'template.createDescription': '请在下面输入应用模板编码、名称、描述，创建默认空白模板。您也可以通过复制于现有模板，以便节省部分操作，提升效率。',
   'template.description': '应用模板是将同类型应用的代码库结构整理成模板，用于创建应用时能引用相应模板快速创建初始代码库。您也可以根据实际情况自定义应用模板。',
-  'template.link': `${docServer}/user-guide/development-pipeline/application-template/`,
+  'template.link': `${docServer}/user-guide/application-management/application-template/`,
 
   // app
   'app.head': '项目\"{name}\"的应用管理',
@@ -88,7 +88,7 @@ const pageDetail = {
   'app.editDescription': '您可在此修改应用名称。',
   'app.description': '应用是满足用户某些需求的程序代码的集合，可以是某个解耦的微服务或是某个单体应用。您可在此创建应用、修改应用名称、停用应用、启用应用及分支管理。',
   'app.createDescription': '请在下面输入应用编码及名称，也可以选择某个应用模板，快速创建应用。平台会为您自动创建对应的git库以便管理该应用代码。',
-  'app.link': `${docServer}/user-guide/development-pipeline/application-management/`,
+  'app.link': `${docServer}/user-guide/application-management/application-management/`,
 
   // branch
   'branch.head': '项目\"{name}\"的分支管理',
@@ -112,7 +112,7 @@ const pageDetail = {
   'ist.isthead': '查看应用\"{name}\"的实例详情',
   'ist.istDes': '您可在此查看该实例的运行详情及部署详情。运行详情包括各资源对象的基本信息；部署详情包括配置信息及部署阶段及日志。',
   'ist.description': '您可在此用四种方式查看该项目下应用的实例情况。',
-  'ist.link': `${docServer}/user-guide/development-pipeline/instance/`,
+  'ist.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
 
   // appstore
   'appstore.headDes': '您可以在此查看已发布的应用及其详细信息，并选择版本进行部署。',
@@ -124,12 +124,12 @@ const pageDetail = {
   'appstore.importStep1': '您可以在此选择相应的文件，并进行上传。',
   'appstore.importStep2': '您可以在此选择是否发布，如果发布还可以选择发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。',
   'appstore.importStep3': '您可以在此确认上传应用的信息，如需修改请返回上一步。',
-  'appstore.link': `${docServer}/user-guide/application-market/application-market/`,
+  'appstore.link': `${docServer}/user-guide/application-management/application-market/`,
 
   // appVersion
   'appVer.head': '项目\"{name}\"的应用版本管理',
   'appVer.description': '应用版本是应用迭代升级生成的版本。您可在此查看版本号、应用编码、应用名称以及版本生成时间。',
-  'appVer.link': `${docServer}/user-guide/development-pipeline/application-version/`,
+  'appVer.link': `${docServer}/user-guide/application-management/application-version/`,
 
   // ci-pipeline
   'ciPipeline.head': '项目\"{name}\"的持续集成',
@@ -139,11 +139,12 @@ const pageDetail = {
   // merge-request
   'merge.title': '项目"{name}"的合并请求',
   'merge.description': '分支是将您的工作从开发主线上分离开来，以免影响开发主线。平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。',
-  
+  'merge.link': `${docServer}/user-guide/development-pipeline/merge-request/`,
+
   // app-tag
   'apptag.description': '分支是将您的工作从开发主线上分离开来，以免影响开发主线。平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。',
   'apptag.title': '项目\"{name}\"的标记管理',
-  'apptag.link': `${docServer}/user-guide/development-pipeline/application-tag/`,
+  'apptag.link': `${docServer}/user-guide/development-pipeline/tag/`,
   'apptag.createTag': '在应用\"{name}\"中创建标记',
   'apptag.createDescription': '采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线',
 
@@ -299,7 +300,7 @@ const zhCN = {
   'deploy.ver': '版本',
   'deploy.env': '环境',
   'deploy.cNumber': '容器数量',
-  'deploy.header.title': '部署应用',
+  'deploy.header.title': '应用部署',
   'deploy.step.one.title': '选择应用及版本',
   'deploy.step.one.description': '您可以点击“打开应用列表”，选择本项目的应用或来自应用市场的应用，再在此界面选择需要部署的版本。',
   'deploy.app.add': '打开应用列表',
