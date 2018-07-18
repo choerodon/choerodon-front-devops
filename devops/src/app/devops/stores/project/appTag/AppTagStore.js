@@ -25,7 +25,7 @@ class AppTagStore {
   @observable pageInfo = {
     current: 0,
     total: 0,
-    pageSize: 10,
+    pageSize: 4,
   };
   @observable branchData = [];
 
@@ -86,7 +86,7 @@ class AppTagStore {
   }
 
   @computed get getBranchData() {
-    return this.branchData.slice();
+    return this.branchData;
   }
 
   /**
@@ -97,9 +97,9 @@ class AppTagStore {
    * @param sizes
    * @returns {Promise<T>}
    */
-  queryTagData = (projectId, page = 0, sizes = 10, appId = this.selectedApp) => {
+  queryTagData = (projectId, page = 0, sizes = 10, postData = { searchParam: {}, param: '' }) => {
     this.setLoading(true);
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/tags?page=${page}&size=${sizes}`)
+    axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags_list_options?page=${page}&size=${sizes}`, JSON.stringify(postData))
       .then((data) => {
         this.setLoading(false);
         const result = handleProptError(data);
@@ -124,7 +124,7 @@ class AppTagStore {
           this.setAppData(result);
           this.setSelectApp(result[0].id);
           this.setDefaultAppName(result[0].name);
-          this.queryTagData(projectId, 0, 10, result[0].id);
+          this.queryTagData(projectId, 0, 4);
         }
       }).catch(err => Choerodon.prompt(err));
 
@@ -134,8 +134,8 @@ class AppTagStore {
    * @param appId
    * @returns {Promise<T>}
    */
-  queryBranchData = (projectId) => {
-    axios.get(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/branches`).then((data) => {
+  queryBranchData = ({ projectId, sorter = { field: 'createDate', order: 'asc' }, postData = { searchParam: {}, param: '' }, size = 3 }) => {
+    axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/branches?page=0&size=${size}`, JSON.stringify(postData)).then((data) => {
       const result = handleProptError(data);
       if (result) {
         this.setBranchData(result);

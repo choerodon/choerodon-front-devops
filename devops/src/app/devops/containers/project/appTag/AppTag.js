@@ -41,6 +41,8 @@ class AppTag extends Component {
       deleteLoading: false,
       visible: false,
       tag: null,
+      size: 3,
+      filters: {},
     };
   }
 
@@ -60,7 +62,7 @@ class AppTag extends Component {
     this.setState({
       showSide: true,
     });
-    AppTagStore.queryBranchData(projectId);
+    AppTagStore.queryBranchData({ projectId });
   };
 
   /**
@@ -88,12 +90,14 @@ class AppTag extends Component {
             this.setState({
               submitting: false,
               showSide: false,
+              size: 3,
             });
           }
         }).catch((error) => {
           Choerodon.prompt(error.response.data.message);
           this.setState({
             submitting: false,
+            size: 3,
           });
         });
       }
@@ -106,6 +110,7 @@ class AppTag extends Component {
   handleCancel = () => {
     this.setState({
       showSide: false,
+      size: 3,
     });
     this.props.form.resetFields();
   };
@@ -116,11 +121,12 @@ class AppTag extends Component {
    * @param filters
    * @param sorter
    */
-  tableChange = (pagination, filters, sorter) => {
+  tableChange = (pagination, filters, sorter, params) => {
     const { AppTagStore } = this.props;
     const { projectId } = this.state;
     this.setState({ page: pagination.current - 1 });
-    this.loadTagData(projectId, pagination.current - 1, pagination.pageSize);
+    AppTagStore
+      .queryTagData(projectId, pagination.current - 1, pagination.pageSize, { searchParam: filters, param: params.toString() });
   };
 
   /**
@@ -216,6 +222,25 @@ class AppTag extends Component {
    * 取消删除
    */
   closeRemove = () => this.setState({ visible: false });
+  /**
+   * 加载更多
+   */
+  changeSize =(e) => {
+    e.stopPropagation();
+    const { AppTagStore } = this.props;
+    const { size } = this.state;
+    this.setState({ size: size + 10 });
+    AppTagStore.queryBranchData({ projectId: this.state.projectId, size: this.state.size + 10, postData: { searchParam: { branchName: [this.state.filter] }, param: '' } });
+  };
+  /**
+   * 搜索分支数据
+   * @param input
+   */
+  searchBranch = (input) => {
+    this.setState({ filter: input });
+    const { AppTagStore } = this.props;
+    AppTagStore.queryBranchData({ projectId: this.state.projectId, size: this.state.size, postData: { searchParam: { branchName: [input] }, param: '' } });
+  }
 
   render() {
     const { intl, AppTagStore, form } = this.props;
@@ -226,7 +251,10 @@ class AppTag extends Component {
     const tagColumns = [
       {
         title: <FormattedMessage id="apptag.tag" />,
-        dataIndex: 'name',
+        dataIndex: 'tagName',
+        filters: [],
+        filteredValue: this.state.filters.name,
+        render: (text, record) => (<span>{record.name}</span>),
       },
       {
         title: <FormattedMessage id="apptag.code" />,
@@ -348,7 +376,6 @@ class AppTag extends Component {
           <Table
             onChange={this.tableChange}
             pagination={AppTagStore.pageInfo}
-            filterBar={false}
             columns={tagColumns}
             loading={AppTagStore.getLoading || deleteLoading}
             dataSource={AppTagStore.getTagData}
@@ -417,23 +444,26 @@ class AppTag extends Component {
                       }],
                     })(
                       <Select
+                        onFilterChange={this.searchBranch}
                         allowClear
                         label={<FormattedMessage id="apptag.ref" />}
                         filter
                         dropdownMatchSelectWidth
                         notFoundContent={<FormattedMessage id="apptag.noRefBranch" />}
                         size="default"
-                        filterOption={(input, option) =>
-                          option.props.children[1]
-                            .toLowerCase()
-                            .indexOf(input.toLowerCase()) >= 0}
+                        filterOption={false}
                       >
                         <OptGroup label={<FormattedMessage id="apptag.branch" />}>
                           {
-                            _.map(AppTagStore.getBranchData, item =>
-                              <Option key={item.name} value={item.name}><Icon className="apptag-branch-icon" type="branch" />{item.name}</Option>,
+                            _.map(AppTagStore.getBranchData.content, item =>
+                              <Option key={item.branchName} value={item.branchName}><Icon className="apptag-branch-icon" type="branch" />{item.branchName}</Option>,
                             )
                           }
+                          {AppTagStore.getBranchData.totalElements > AppTagStore.getBranchData.numberOfElements && AppTagStore.getBranchData.numberOfElements > 0 ? <Option key="more">
+                            <div role="none" onClick={this.changeSize} className="c7n-option-popover c7n-dom-more">
+                              {intl.formatMessage({ id: 'ist.more' })}
+                            </div>
+                          </Option> : null }
                         </OptGroup>
                       </Select>,
                     )}

@@ -28,6 +28,7 @@ class BranchHome extends Component {
       appName: props.match.params.name,
       page: 0,
       pageSize: 10,
+      filters: {},
     };
   }
 
@@ -141,10 +142,13 @@ class BranchHome extends Component {
     const branchColumns = [
       {
         title: <FormattedMessage id="branch.name" />,
-        dataIndex: 'name',
+        dataIndex: 'branchName',
+        filters: [],
+        filteredValue: this.state.filters.branchName,
+        sorter: true,
         render: (text, record) => (<div>
-          {this.getIcon(record.name)}
-          <span>{record.name}</span>
+          {this.getIcon(record.branchName)}
+          <span>{record.branchName}</span>
         </div>),
       },
       {
@@ -156,7 +160,7 @@ class BranchHome extends Component {
               <span>{record.sha && record.sha.slice(0, 8) }</span>
             </a>
             <span className="icon icon-schedule branch-col-icon branch-column-icon" style={{ paddingLeft: 16, fontSize: 16, marginBottom: 2 }} />
-            <TimePopover content={record.commitDate} style={{ display: 'inline-block', color: 'rgba(0, 0, 0, 0.65)' }} />
+            <TimePopover content={record.creationDate} style={{ display: 'inline-block', color: 'rgba(0, 0, 0, 0.65)' }} />
           </div>
           {record.commitUserUrl && record.commitUserName ? <Tooltip title={record.commitUserName}>
             <div className="branch-user-img" style={{ backgroundImage: `url(${record.commitUserUrl})` }} />
@@ -325,15 +329,17 @@ class BranchHome extends Component {
     </div>);
     return (
       <Table
+        filters={this.state.paras}
+        filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
         loading={BranchStore.loading}
-        filterBar={false}
         className="c7n-branch-table"
         rowClassName="c7n-branch-tr"
         title={() => title}
-        pagination={false}
+        pagination={BranchStore.getPageInfo}
         columns={branchColumns}
-        dataSource={BranchStore.branchData.slice()}
-        rowKey={record => record.name}
+        dataSource={BranchStore.branchData.content.slice()}
+        rowKey={record => record.branchName}
+        onChange={this.tableChange}
       />
     );
   }
@@ -345,8 +351,8 @@ class BranchHome extends Component {
     const { projectId } = this.state;
     const { BranchStore } = this.props;
     BranchStore.setApp(value);
-    BranchStore.setBranchData([]);
-    BranchStore.loadBranchData(projectId, value);
+    BranchStore.setBranchData({ content: [] });
+    BranchStore.loadBranchData({ projectId });
   };
   /**
    * 修改相关联问题
@@ -371,7 +377,11 @@ class BranchHome extends Component {
    */
   showSidebar = () => {
     const { BranchStore } = this.props;
-    BranchStore.loadTagData(this.state.projectId, BranchStore.app);
+    BranchStore.loadTagData(this.state.projectId);
+    BranchStore.loadBranchData({
+      projectId: this.state.projectId,
+      size: 3,
+    });
     BranchStore.setCreateBranchShow('create');
   };
 
@@ -423,6 +433,49 @@ class BranchHome extends Component {
       Choerodon.handleResponseError(error);
     });
   };
+  /**
+   * table筛选
+   * @param pagination
+   * @param filters
+   * @param sorter
+   * @param paras
+   */
+  tableChange =(pagination, filters, sorter, paras) => {
+    const { BranchStore } = this.props;
+    const menu = AppState.currentMenuType;
+    const organizationId = menu.id;
+    this.setState({ filters, paras });
+    const sort = { field: 'creationDate', order: 'desc' };
+    if (sorter.column) {
+      sort.field = sorter.field || sorter.columnKey;
+      // sort = sorter;
+      if (sorter.order === 'ascend') {
+        sort.order = 'asc';
+      } else if (sorter.order === 'descend') {
+        sort.order = 'desc';
+      }
+    }
+    let searchParam = {};
+    const page = pagination.current - 1;
+    if (Object.keys(filters).length) {
+      searchParam = filters;
+      // page = 0;
+    }
+    if (paras) {
+      searchParam = { branchName: [paras.toString()] };
+    }
+    const postData = {
+      searchParam,
+      param: '',
+    };
+    BranchStore
+      .loadBranchData({
+        projectId: organizationId,
+        size: pagination.pageSize,
+        sorter: sort,
+        postData,
+      });
+  };
 
   render() {
     const { BranchStore, intl } = this.props;
@@ -445,7 +498,7 @@ class BranchHome extends Component {
         ]}
       >
         <Header title={<FormattedMessage id="branch.title" />}>
-          {BranchStore.branchData.length && BranchStore.app ? <Permission
+          {BranchStore.branchData.content.length && BranchStore.app ? <Permission
             service={['devops-service.devops-git.createBranch']}
           >
             <Tooltip
