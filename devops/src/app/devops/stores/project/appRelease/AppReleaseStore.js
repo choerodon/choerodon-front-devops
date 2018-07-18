@@ -48,14 +48,14 @@ class AppReleaseStore {
     return this.loading;
   }
 
-  loadData = ({ isRefresh = false, projectId, page = 0, size = 10, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
+  loadData = ({ isRefresh = false, projectId, page = 0, size = 10, sorter = { field: 'id', order: 'desc' }, postData = { searchParam: {},
     param: '' }, key = '1' }) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
     if (key === '1') {
-      return axios.post(`/devops/v1/projects/${projectId}/apps/list_unpublish?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+      return axios.post(`/devops/v1/projects/${projectId}/apps/list_unpublish?page=${page}&size=${size}&sort=${sorter.field},${sorter.order}`, JSON.stringify(postData))
         .then((data) => {
           const res = this.handleProptError(data);
           if (res) {
@@ -65,7 +65,7 @@ class AppReleaseStore {
           this.changeIsRefresh(false);
         });
     } else {
-      return axios.post(`/devops/v1/projects/${projectId}/apps_market/list?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+      return axios.post(`/devops/v1/projects/${projectId}/apps_market/list?page=${page}&size=${size}&sort=${sorter.field},${sorter.order}`, JSON.stringify(postData))
         .then((data) => {
           const res = this.handleProptError(data);
           if (res) {
