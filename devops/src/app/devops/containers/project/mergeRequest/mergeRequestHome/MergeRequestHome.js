@@ -331,7 +331,7 @@ class MergeRequestHome extends Component {
           </h2>
           <p>
             <FormattedMessage id="merge.description" />
-            <a href={intl.formatMessage({ id: 'appstore.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href={intl.formatMessage({ id: 'merge.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 <FormattedMessage id="learnmore" />
               </span>

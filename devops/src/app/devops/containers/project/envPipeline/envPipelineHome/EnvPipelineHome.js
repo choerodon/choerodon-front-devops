@@ -571,7 +571,7 @@ class EnvPipelineHome extends Component {
           'devops-service.application-instance.pageByOptions',
         ]}
       >
-        <Header title={Choerodon.languageChange('envPl.title')}>
+        <Header title={<FormattedMessage id={'envPl.title'} />}>
           <Permission
             service={['devops-service.devops-environment.create']}
             organizationId={organizationId}
