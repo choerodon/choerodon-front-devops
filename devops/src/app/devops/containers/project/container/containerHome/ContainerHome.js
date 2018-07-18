@@ -289,7 +289,7 @@ class ContainerHome extends Component {
           onClick={this.handleRefresh}
         >
           <span className="icon-refresh icon" />
-          <span>{Choerodon.languageChange('refresh')}</span>
+          <span>{<FormattedMessage id={'refresh'} />}</span>
         </Button>
       </Header>
       <Content className="page-content" code={'container'} values={{ name: projectName }}>

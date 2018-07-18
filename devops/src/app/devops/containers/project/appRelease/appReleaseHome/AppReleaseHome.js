@@ -114,13 +114,13 @@ class AppReleaseHome extends Component {
     const { filters } = this.state;
 
     const column = [{
-      title: Choerodon.languageChange('app.name'),
+      title: <FormattedMessage id={'app.name'} />,
       dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
     }, {
-      title: Choerodon.languageChange('app.code'),
+      title: <FormattedMessage id={'app.code'} />,
       dataIndex: 'code',
       key: 'code',
       sorter: true,

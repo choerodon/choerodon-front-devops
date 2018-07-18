@@ -64,35 +64,35 @@ class DomainHome extends Component {
   };
 
   render() {
-    const { DomainStore } = this.props;
+    const { DomainStore, intl } = this.props;
     const data = DomainStore.getAllData;
     const menu = AppState.currentMenuType;
     const projectName = menu.name;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
-      title: this.props.intl.formatMessage({ id: 'domain.column.status' }),
+      title: intl.formatMessage({ id: 'domain.column.status' }),
       render: (record) => {
         let statusDom = null;
         switch (record.status) {
           case 'failed':
             statusDom = (<div className="c7n-domain-status c7n-domain-status-failed">
-              <div>{this.props.intl.formatMessage({ id: 'failed' })}</div>
+              <div>{intl.formatMessage({ id: 'failed' })}</div>
             </div>);
             break;
           case 'operating':
             statusDom = (<div className="c7n-domain-status c7n-domain-status-operating">
-              <div>{this.props.intl.formatMessage({ id: 'operating' })}</div>
+              <div>{intl.formatMessage({ id: 'operating' })}</div>
             </div>);
             break;
           default:
             statusDom = (<div className="c7n-domain-status c7n-domain-status-running">
-              <div>{this.props.intl.formatMessage({ id: 'running' })}</div>
+              <div>{intl.formatMessage({ id: 'running' })}</div>
             </div>);
         }
         return (statusDom);
       },
     }, {
-      title: this.props.intl.formatMessage({ id: 'domain.column.name' }),
+      title: intl.formatMessage({ id: 'domain.column.name' }),
       key: 'name',
       sorter: true,
       filters: [],
@@ -105,7 +105,7 @@ class DomainHome extends Component {
             </Tooltip>);
             break;
           case 'doing':
-            statusDom = (<Tooltip title={Choerodon.languageChange(`ist_${record.commandType}`)}>
+            statusDom = (<Tooltip title={intl.formatMessage({ id: `ist_${record.commandType}` })}>
               <Progress type="loading" width={15} style={{ marginRight: 5 }} />
             </Tooltip>);
             break;
@@ -118,12 +118,12 @@ class DomainHome extends Component {
         </React.Fragment>);
       },
     }, {
-      title: this.props.intl.formatMessage({ id: 'domain.column.domain' }),
+      title: intl.formatMessage({ id: 'domain.column.domain' }),
       key: 'domain',
       filters: [],
       dataIndex: 'domain',
     }, {
-      title: this.props.intl.formatMessage({ id: 'domain.column.env' }),
+      title: intl.formatMessage({ id: 'domain.column.env' }),
       key: 'envName',
       sorter: true,
       filters: [],
@@ -138,7 +138,7 @@ class DomainHome extends Component {
         </React.Fragment>
       ),
     }, {
-      title: this.props.intl.formatMessage({ id: 'domain.column.path' }),
+      title: intl.formatMessage({ id: 'domain.column.path' }),
       className: 'c7n-network-col',
       key: 'path',
       sorter: true,
@@ -152,7 +152,7 @@ class DomainHome extends Component {
         </div>
       ),
     }, {
-      title: this.props.intl.formatMessage({ id: 'domain.column.network' }),
+      title: intl.formatMessage({ id: 'domain.column.network' }),
       className: 'c7n-network-col',
       key: 'serviceName',
       filters: [],
@@ -160,7 +160,7 @@ class DomainHome extends Component {
         <div>
           {_.map(record.pathList, instance =>
             (<div className="c7n-network-col_border" key={`${instance.path}-${instance.serviceId}`}>
-              <Tooltip title={Choerodon.languageChange(instance.serviceStatus || 'null')} placement="top">
+              <Tooltip title={intl.formatMessage({ id: `${instance.serviceStatus || 'null'}` })} placement="top">
                 <span className={instance.serviceStatus === 'running' ? 'env-status-success' : 'env-status-error'} />
               </Tooltip>
               {instance.serviceName}
@@ -178,29 +178,29 @@ class DomainHome extends Component {
         let deletDom = null;
         switch (record.status) {
           case 'operating':
-            editDom = (<Tooltip trigger="hover" placement="bottom" title={Choerodon.languageChange(`domain_${record.commandType}`)}>
+            editDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `domain_${record.commandType}` })}>
               <span className="icon icon-mode_edit c7n-app-icon-disabled" />
             </Tooltip>);
-            deletDom = (<Tooltip trigger="hover" placement="bottom" title={Choerodon.languageChange(`domain_${record.commandType}`)}>
+            deletDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `domain_${record.commandType}` })}>
               <span className="icon icon-delete_forever c7n-app-icon-disabled" />
             </Tooltip>);
             break;
           default:
             editDom = (<React.Fragment>
-              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'edit' })}</div>}>
+              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'edit' })}</div>}>
                 <Button shape="circle" size={'small'} funcType="flat" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                   <span className="icon icon-mode_edit" />
                 </Button>
-              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
+              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
                 <span className="icon icon-mode_edit c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
             deletDom = (<React.Fragment>
-              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'delete' })}</div>}>
+              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'delete' })}</div>}>
                 <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
                   <span className="icon icon-delete_forever" />
                 </Button>
-              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
+              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
                 <span className="icon icon-delete_forever c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
@@ -241,7 +241,7 @@ class DomainHome extends Component {
         ]}
       >
         { DomainStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <Header title={this.props.intl.formatMessage({ id: 'domain.header.title' })}>
+          <Header title={intl.formatMessage({ id: 'domain.header.title' })}>
             <Permission
               service={['devops-service.devops-ingress.create']}
               type={type}
@@ -273,7 +273,7 @@ class DomainHome extends Component {
           </Header>
           <Content code={'domain'} values={{ name: projectName }}>
             <Table
-              filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
+              filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
               loading={DomainStore.loading}
               onChange={this.tableChange}
               pagination={DomainStore.pageInfo}
@@ -299,11 +299,11 @@ class DomainHome extends Component {
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
             <Button key="submit" type="danger" onClick={this.handleDelete}>
-              {this.props.intl.formatMessage({ id: 'delete' })}
+              {intl.formatMessage({ id: 'delete' })}
             </Button>,
           ]}
         >
-          <p>{this.props.intl.formatMessage({ id: 'confirm.delete' })}</p>
+          <p>{intl.formatMessage({ id: 'confirm.delete' })}</p>
         </Modal>
       </Page>
     );
