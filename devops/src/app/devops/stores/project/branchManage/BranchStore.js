@@ -25,7 +25,7 @@ class BranchStore {
   @observable pageInfo = {
     current: 1,
     total: 0,
-    pageSize: 4,
+    pageSize: 10,
   };
   @action setPageInfo(page) {
     this.pageInfo = page;
@@ -161,7 +161,6 @@ class BranchStore {
         if (res) {
           this.setBranchData(data);
           const pages = { page, size, total: data.totalElements };
-          window.console.log(page);
           this.setPageInfo(pages);
         }
       });

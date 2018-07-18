@@ -25,7 +25,7 @@ class AppTagStore {
   @observable pageInfo = {
     current: 0,
     total: 0,
-    pageSize: 4,
+    pageSize: 10,
   };
   @observable branchData = [];
 
@@ -124,7 +124,7 @@ class AppTagStore {
           this.setAppData(result);
           this.setSelectApp(result[0].id);
           this.setDefaultAppName(result[0].name);
-          this.queryTagData(projectId, 0, 4);
+          this.queryTagData(projectId, 0, 10);
         }
       }).catch(err => Choerodon.prompt(err));
 
