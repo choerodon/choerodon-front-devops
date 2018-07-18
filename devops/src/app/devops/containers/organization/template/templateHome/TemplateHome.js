@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Table, Button, Input, Form, Tooltip, Select, Modal, Icon } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-// import _ from 'lodash';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { commonComponent } from '../../../../components/commonFunction';
 import LoadingBar from '../../../../components/loadingBar';
@@ -79,7 +78,8 @@ class TemplateHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={108}>
+      dataIndex: 'name',
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={0.15}>
         {record.name}
       </MouserOverWrapper>),
     }, {
@@ -88,7 +88,7 @@ class TemplateHome extends Component {
       key: 'code',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.code} width={108}>
+      render: (test, record) => (<MouserOverWrapper text={record.code} width={0.15}>
         {record.code}
       </MouserOverWrapper>),
     }, {
@@ -97,7 +97,7 @@ class TemplateHome extends Component {
       key: 'description',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.description} width={150}>
+      render: (test, record) => (<MouserOverWrapper text={record.description} width={0.25}>
         {record.description}
       </MouserOverWrapper>),
     }, {
@@ -105,12 +105,11 @@ class TemplateHome extends Component {
       dataIndex: 'repoUrl',
       key: 'repoUrl',
       render: (test, record) => (
-        <Tooltip trigger="hover" placement="bottom" title={record.repoUrl}>
+        <Tooltip trigger="hover" title={record.repoUrl}>
           <div className="c7n-template-table">
             <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">../{record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}</a>
           </div>
         </Tooltip>
-
       ),
     }, {
       title: <FormattedMessage id="template.type" />,

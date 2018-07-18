@@ -314,7 +314,7 @@ class DeployAppHome extends Component {
                           {this.state.app && !this.state.isMarket && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon icon-check" /></span> }
                           <div className="c7n-store-card-icon" />
                           <div className="c7n-store-card-name">
-                            <MouserOverWrapper text={card.name} width={196}>
+                            <MouserOverWrapper text={card.name} width={0.15}>
                               {card.name}</MouserOverWrapper>
                           </div>
                           <div className="c7n-store-card-des-60">

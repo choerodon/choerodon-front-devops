@@ -7,7 +7,6 @@ import { Action, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import ValueConfig from '../valueConfig';
 import UpgradeIst from '../upgrateIst';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DelIst from '../component/delIst/DelIst';
 import '../AppDeploy.scss';
 import '../../../main.scss';
@@ -467,7 +466,7 @@ class SingleEnvironment extends Component {
 
     const appNameDom = appNames.length ? _.map(appNames, d => (<div role="none" className={appID === d.id ? 'c7n-deploy-single_card c7n-deploy-single_card-active' : 'c7n-deploy-single_card'} onClick={this.loadDetail.bind(this, this.state.envId, d.id)}>
       {d.projectId === projectId ? <span className="icon icon-project c7n-icon-publish" /> : <span className="icon icon-apps c7n-icon-publish" />}
-      <span className="c7n-text-ellipsis"><MouserOverWrapper text={d.name || ''} width={150}>{d.name}</MouserOverWrapper></span>
+      <div className="c7n-text-ellipsis"><Tooltip title={d.name || ''}>{d.name}</Tooltip></div>
     </div>)) : (<div className="c7n-deploy-single_card" >
       <div className="c7n-deploy-square"><div>App</div></div>
       <FormattedMessage id="ist.noApp" />

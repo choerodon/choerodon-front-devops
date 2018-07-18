@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import { Modal, Form, Radio, Input, Select, Tooltip } from 'choerodon-ui';
 import { stores, axios } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import _ from 'lodash';
 import '../../../main.scss';
 import '../CreateBranch/CreateBranch.scss';
 import '../commom.scss';
@@ -77,7 +78,7 @@ class EditBranch extends Component {
         <div style={{ background: color, marginRight: 5 }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
         <span className="branch-issue-content">
           <span style={{ color: 'rgb(0,0,0,0.65)' }}>{s.issueNum}</span>
-          <MouserOverWrapper style={{ display: 'inline-block', lineHeight: '12px' }} width={300} text={`   ${s.summary}`}>{`    ${s.summary}`}</MouserOverWrapper>
+          <MouserOverWrapper style={{ display: 'inline-block', lineHeight: '12px' }} width={0.3} text={`   ${s.summary}`}>{`    ${s.summary}`}</MouserOverWrapper>
         </span>
       </Tooltip>
     </span>);

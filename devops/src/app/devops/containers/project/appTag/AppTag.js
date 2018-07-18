@@ -236,7 +236,7 @@ class AppTag extends Component {
       {
         title: <FormattedMessage id="apptag.des" />,
         dataIndex: 'commit.message',
-        render: (text, record) => (<MouserOverWrapper text={record.commit.message} width={550}>
+        render: (text, record) => (<MouserOverWrapper text={record.commit.message} width={0.5}>
           {record.commit.message}</MouserOverWrapper>),
       }, {
         title: <FormattedMessage id="apptag.owner" />,

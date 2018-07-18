@@ -5,6 +5,7 @@ import { Button, Select, Steps, Table } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, message, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import '../Importexport.scss';
 import '../../../main.scss';
 
@@ -261,6 +262,9 @@ class ExportChart extends Component {
       title: <FormattedMessage id="appstore.description" />,
       dataIndex: 'description',
       key: 'description',
+      render: (test, record) => (<MouserOverWrapper text={record.description} width={0.3}>
+        {record.description}
+      </MouserOverWrapper>),
     }];
     const rowSelection = {
       selectedRowKeys: this.state.selectedRowKeys || [],
@@ -404,7 +408,7 @@ class ExportChart extends Component {
       dataIndex: 'name',
       key: 'name',
       width: 150,
-    },  {
+    }, {
       title: <FormattedMessage id="app.code" />,
       dataIndex: 'code',
       key: 'code',

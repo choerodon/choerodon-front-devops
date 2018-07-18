@@ -78,7 +78,7 @@ class ContainerHome extends Component {
         switch (record.status) {
           case 'Completed':
             dom = (<div>
-              <MouserOverWrapper text={record.status} width={78}>
+              <MouserOverWrapper text={record.status} width={0.073}>
                 <span className="icon icon-check_circle c7n-icon-success" />
                 <span className="c7n-container-title">{record.status}</span>
               </MouserOverWrapper>
@@ -104,7 +104,7 @@ class ContainerHome extends Component {
             break;
           default:
             dom = (<div>
-              <MouserOverWrapper text={record.status} width={78}>
+              <MouserOverWrapper text={record.status} width={0.073}>
                 <span className="icon icon-help c7n-icon-help" />
                 <span className="c7n-container-title">{record.status}</span>
               </MouserOverWrapper>
@@ -119,7 +119,7 @@ class ContainerHome extends Component {
       sorter: true,
       filters: [],
       filterMultiple: false,
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={300}>
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={0.3}>
         {record.name}
       </MouserOverWrapper>),
     }, {
@@ -134,7 +134,7 @@ class ContainerHome extends Component {
           <span>{record.appName}</span>
         </div>
         <div>
-          <MouserOverWrapper text={record.appVersion} width={200}>
+          <MouserOverWrapper text={record.appVersion} width={0.2}>
             <span className="c7n-deploy-text_gray">{record.appVersion}</span>
           </MouserOverWrapper>
         </div>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Tootip, Button, Input, Form, Modal, Tooltip, Select } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
@@ -11,8 +11,6 @@ import LoadingBar from '../../../../components/loadingBar';
 import './AppHome.scss';
 import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
-
-// const Debounce = require('lodash.debounce');
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -78,7 +76,7 @@ class AppHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={230}>
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={0.2}>
         {record.name}
       </MouserOverWrapper>),
     }, {
@@ -87,14 +85,14 @@ class AppHome extends Component {
       key: 'code',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.code} width={240}>
+      render: (test, record) => (<MouserOverWrapper text={record.code} width={0.25}>
         {record.code}
       </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="app.url" />,
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={250}>
+      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={0.25}>
         <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl ? `../${record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}` : ''}</a>
       </MouserOverWrapper>),
     }, {
