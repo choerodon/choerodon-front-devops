@@ -5,7 +5,7 @@ const docServer = 'http://v0-7.choerodon.io/zh/docs';
 const pageDetail = {
 
   // network
-  'network.title': '项目"{name}"的网络配置',
+  'network.title': '项目"{name}"的网络管理',
   'network.description': '网络管理是定义了一种访问网络的策略，是指内部的负载均衡以及网络转发，会将网络流量定向转发到指定的单个或者多个实例容器组。',
   'network.link': `${docServer}/user-guide/deployment-pipeline/service/`,
   'network.create.title': '项目"{name}"中创建网络',
@@ -127,7 +127,7 @@ const pageDetail = {
   'appstore.link': `${docServer}/user-guide/application-management/application-market/`,
 
   // appVersion
-  'appVer.head': '项目\"{name}\"的应用版本管理',
+  'appVer.head': '项目\"{name}\"的应用版本',
   'appVer.description': '应用版本是应用迭代升级生成的版本。您可在此查看版本号、应用编码、应用名称以及版本生成时间。',
   'appVer.link': `${docServer}/user-guide/application-management/application-version/`,
 
@@ -252,7 +252,7 @@ const zhCN = {
   network_create: '网络创建中，请耐心等待',
   network_delete: '网络删除中，请耐心等待',
   network_update: '网络更新中，请耐心等待',
-  'network.header.title': '网络管理',
+  'network.header.title': '网络',
   'network.header.create': '创建网络',
   'network.header.update': '修改网络',
   'network.column.name': '名称',
@@ -356,7 +356,7 @@ const zhCN = {
   'envPl.add': '请添加一个环境',
 
   // app
-  'app.title': '应用管理',
+  'app.title': '应用',
   'app.appDetail': '应用详情',
   'app.id': '标识',
   'app.name': '名称',
@@ -430,7 +430,7 @@ const zhCN = {
   'branch.branch': '分支',
   'branch.tag': '标记',
   'branch.create': '创建分支',
-  'branch.title': '分支管理',
+  'branch.title': '分支',
   'branch.branchType': '分支类型',
   'branch.list': '分支列表',
   'branch.tagList': '标记列表',
@@ -585,7 +585,7 @@ const zhCN = {
   'resource.type': '资源类型',
 
   // container
-  'container.header.title': '容器管理',
+  'container.header.title': '容器',
   'container.status': '状态',
   'container.name': '容器名称',
   'container.app': '应用',
@@ -603,7 +603,7 @@ const zhCN = {
   'version.createTime': '时间',
 
   // domain
-  'domain.header.title': '域名管理',
+  'domain.header.title': '域名',
   'domain.header.create': '创建域名',
   'domain.header.update': '修改域名',
   'domain.header.delete': '删除域名',
@@ -708,7 +708,7 @@ const zhCN = {
   'merge.state': '合并状态',
 
   // app-tag
-  'apptag.head': '标记管理',
+  'apptag.head': '标记',
   'apptag.create': '创建标记',
   'apptag.table': '标记列表',
   'apptag.code': '提交编码',
