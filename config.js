@@ -22,14 +22,7 @@ const config = {
     devServerConfig: {},
     webpackConfig(config) {
         const webpack = require('./devops/node_modules/webpack');
-        const LodashModuleReplacementPlugin = require('./devops/node_modules/lodash-webpack-plugin');
         config.plugins.push(new webpack.DefinePlugin(env));
-        config.plugins.push(new LodashModuleReplacementPlugin({
-            path: true,
-            flattening: true,
-        }));
-        config.plugins.push(new webpack.optimize.OccurrenceOrderPlugin());
-        config.plugins.push(new webpack.optimize.UglifyJsPlugin());
         return config;
     },
     entryName: 'index',
