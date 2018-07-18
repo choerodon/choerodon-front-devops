@@ -7,8 +7,8 @@ const { AppState } = stores;
 class BranchStore {
   @observable apps = [];
   @observable app = null;
-  @observable branchData = [];
-  @observable tagData = [];
+  @observable branchData = { content: [] };
+  @observable tagData = { content: [] };
   @observable branchs = [];
   @observable tags = [];
   @observable currentBranch = {};
@@ -25,12 +25,10 @@ class BranchStore {
   @observable pageInfo = {
     current: 1,
     total: 0,
-    pageSize: 10,
+    pageSize: 4,
   };
   @action setPageInfo(page) {
-    this.pageInfo.current = page.number + 1;
-    this.pageInfo.total = page.totalElements;
-    this.pageInfo.pageSize = page.size;
+    this.pageInfo = page;
   }
 
   @computed get getPageInfo() {
@@ -113,7 +111,7 @@ class BranchStore {
         const res = this.handleProptError(data);
         this.setApps(data);
         this.setApp(data[0].id);
-        this.loadBranchData(proId, data[0].id);
+        this.loadBranchData({ projectId: proId});
         return res;
       });
   };
@@ -153,21 +151,24 @@ class BranchStore {
     });
 
 
-  loadBranchData = (projectId, appId) => {
+  loadBranchData = ({ projectId, page = this.pageInfo.current - 1, size = 10, sort = { field: 'creationDate', order: 'asc' }, postData = { searchParam: {},
+    param: '' } }) => {
     this.changeLoading(true);
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/branches`)
+    axios.post(`/devops/v1/projects/${projectId}/apps/${this.app}/git/branches?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
       .then((data) => {
         this.changeLoading(false);
         const res = this.handleProptError(data);
         if (res) {
           this.setBranchData(data);
+          const pages = { page, size, total: data.totalElements };
+          window.console.log(page);
+          this.setPageInfo(pages);
         }
       });
   }
 
-  loadTagData = (projectId, appId, page = this.pageInfo.current - 1,
-    sizes = this.pageInfo.pageSize) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/tag_list`)
+  loadTagData = (projectId, page = 0, sizes = 10, postData = { searchParam: {}, param: '' }) =>
+    axios.post(`/devops/v1/projects/${projectId}/apps/${this.app}/git/tags_list_options?page=0&size=${sizes}`, JSON.stringify(postData))
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {

@@ -37,6 +37,7 @@ class CreateBranch extends Component {
       type: 'custom',
       branchSize: 3,
       tagSize: 3,
+      filter: false,
     };
   }
 
@@ -134,7 +135,7 @@ class CreateBranch extends Component {
         this.setState({ submitting: true });
         store.createBranch(projectId, appId, postData)
           .then(() => {
-            store.loadBranchData(projectId, this.props.appId);
+            store.loadBranchData({ projectId, appId: this.props.appId });
             this.props.onClose();
             this.props.form.resetFields();
             this.setState({ submitting: false });
@@ -233,12 +234,20 @@ class CreateBranch extends Component {
    * 改变长度
    * @param type
    */
-  changeSize =(type) => {
+  changeSize =(type, e) => {
+    e.stopPropagation();
     const { branchSize, tagSize } = this.state;
+    const { store } = this.props;
     if (type === 'branch') {
-      this.setState({ branchSize: branchSize + 20 });
+      this.setState({ branchSize: branchSize + 10 });
+      store.loadBranchData({
+        projectId: this.state.projectId,
+        size: branchSize + 10,
+        postData: { searchParam: { branchName: [this.state.filter] }, param: '' },
+      });
     } else {
-      this.setState({ tagSize: tagSize + 20 });
+      this.setState({ tagSize: tagSize + 10 });
+      store.loadTagData(this.state.projectId, 0, tagSize + 10, { searchParam: { tagName: [this.state.filter] }, param: '' });
     }
   };
   /**
@@ -247,16 +256,22 @@ class CreateBranch extends Component {
   searchData =(input) => {
     const { store } = this.props;
     const { branchSize, tagSize } = this.state;
-    // this.setState({ branchSize: 3, tagSize: 3 });
+    this.setState({ filter: input });
+    store.loadBranchData({
+      projectId: this.state.projectId,
+      size: branchSize,
+      postData: { searchParam: { branchName: [input] },
+        param: '' },
+    });
+    store.loadTagData(this.state.projectId, 0, tagSize, { searchParam: { tagName: [input] }, param: '' });
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
     const { visible, intl, store } = this.props;
-    const { branchSize, tagSize } = this.state;
     const issue = store.issue.slice();
-    const branches = store.branchData.slice();
-    const tags = store.tagData.slice();
+    const branches = store.branchData;
+    const tags = store.tagData;
     return (
       <Sidebar
         title={<FormattedMessage id="branch.create" />}
@@ -324,7 +339,7 @@ class CreateBranch extends Component {
                   whitespace: true,
                   message: intl.formatMessage({ id: 'required' }),
                 }],
-                initialValue: this.state.initValue,
+                initialValue: this.state.originBranch,
               })(
                 <Select
                   key="service"
@@ -332,27 +347,24 @@ class CreateBranch extends Component {
                   label={<FormattedMessage id={'branch.source'} />}
                   filter
                   onFilterChange={this.searchData}
-                  dropdownMatchSelectWidth
-                  onSelect={this.selectTemplate}
                   size="default"
-                  optionFilterProp="children"
                   filterOption={false}
                 >
                   <OptGroup label={intl.formatMessage({ id: 'branch.branch' })} key="proGroup">
-                    {branches.map(s => (
-                      <Option value={s.name} key={s.name}><span className="icon icon-branch c7n-branch-formItem-icon" />{s.name}</Option>
+                    {branches.content.map(s => (
+                      <Option value={s.branchName} key={s.branchName}><span className="icon icon-branch c7n-branch-formItem-icon" />{s.branchName}</Option>
                     ))}
-                    {branches.length > branchSize ? <Option key="more">
+                    {branches.totalElements > branches.numberOfElements && branches.numberOfElements > 0 ? <Option key="more">
                       <div role="none" onClick={this.changeSize.bind(this, 'branch')} className="c7n-option-popover c7n-dom-more">
                         {intl.formatMessage({ id: 'ist.more' })}
                       </div>
                     </Option> : null }
                   </OptGroup>
-                  <OptGroup label={intl.formatMessage({ id: 'branch.tag' })} key="pubGroup">
-                    {tags.map(s => (
+                  <OptGroup label={intl.formatMessage({ id: 'branch.tag' })} key="more">
+                    {tags.content.map(s => (
                       <Option value={s.name} key={s.name}><span className="icon icon-local_offer c7n-branch-formItem-icon" />{s.name}</Option>
                     ))}
-                    {tags.length > tagSize ? <Option key="more">
+                    {tags.totalElements > tags.numberOfElements && tags.numberOfElements > 0 ? <Option value="more">
                       <div role="none" onClick={this.changeSize.bind(this, 'tag')} className="c7n-option-popover c7n-dom-more">
                         {intl.formatMessage({ id: 'ist.more' })}
                       </div>
