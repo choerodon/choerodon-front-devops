@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React, { Component } from 'react';
 import { Table, Button, Modal, Tooltip, Popover } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
@@ -220,9 +219,6 @@ class ContainerHome extends Component {
       ws,
     });
     editor.setValue('No Logs.');
-    ws.onopen = () => {
-      console.log('open.........');
-    };
     ws.onmessage = (e) => {
       const reader = new FileReader();
       reader.readAsText(e.data, 'utf-8');
@@ -267,9 +263,6 @@ class ContainerHome extends Component {
     const { ContainerStore } = this.props;
     if (this.state.ws) {
       this.state.ws.close();
-      this.state.ws.onclose = () => {
-        console.log('Connection instanceInfo Close ...');
-      };
     }
     // eslint-disable-next-line react/no-string-refs
     const editor = this.refs.editorLog.getCodeMirror();
@@ -328,6 +321,7 @@ class ContainerHome extends Component {
           className="c7n-podLog-content c7n-region"
           okText={<FormattedMessage id={'cancel'} />}
           okCancel={false}
+          destroyOnClose
         >
           <Content className="sidebar-content" code={'container.log'} values={{ name: containerName }}>
             <section className="c7n-podLog-section">

@@ -161,11 +161,14 @@ class DeployAppHome extends Component {
     this.setState({ val: e.target.value });
     if (this.state.activeTab === '1') {
       SelectAppStore.loadData({
-        projectId: this.state.projectId, postData: { param: e.target.value, searchParam: {} } });
+        projectId: this.state.projectId,
+        postData: { param: e.target.value, searchParam: {} },
+        page: 0,
+      });
     } else {
       SelectAppStore.loadApps({
         projectId: this.state.projectId,
-        postData: { param: e.target.value, searchParam: {} },
+        postData: { param: e.target.value, searchParam: {}, page: 0 },
       });
     }
   };
