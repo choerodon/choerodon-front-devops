@@ -302,7 +302,7 @@ class EditService extends Component {
       if (p.test(value) && parseInt(value, 10) >= 1 && parseInt(value, 10) <= 65535) {
         callback();
       } else {
-        callback(intl.formatMessage('network.port.check.failed'));
+        callback(intl.formatMessage({ id: 'network.port.check.failed' }));
       }
     } else {
       callback();
