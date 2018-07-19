@@ -5,8 +5,8 @@ const docServer = 'http://v0-7.choerodon.io/zh/docs';
 const pageDetail = {
 
   // network
-  'network.title': '项目"{name}"的网络管理',
-  'network.description': '网络管理是定义了一种访问网络的策略，是指内部的负载均衡以及网络转发，会将网络流量定向转发到指定的单个或者多个实例容器组。',
+  'network.title': '项目"{name}"的网络',
+  'network.description': '网络是定义了一种访问网络的策略，是指内部的负载均衡以及网络转发，会将网络流量定向转发到指定的单个或者多个实例容器组。',
   'network.link': `${docServer}/user-guide/deployment-pipeline/service/`,
   'network.create.title': '项目"{name}"中创建网络',
   'network.create.description': '请选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。\n' +
@@ -33,8 +33,8 @@ const pageDetail = {
   'env.stop.description': '您可在此查看已被停用的环境，也可以重新启用这些环境',
 
   // domain
-  'domain.title': '项目"{name}"的域名管理',
-  'domain.description': '域名管理是将您已经预定义好的域名在平台中进行配置，使外部能够通过指定的域名访问到系统内部的实例。',
+  'domain.title': '项目"{name}"的域名',
+  'domain.description': '域名是将您已经预定义好的域名在平台中进行配置，使外部能够通过指定的域名访问到系统内部的实例。',
   'domain.link': `${docServer}/user-guide/deployment-pipeline/ingress/`,
   'domain.create.title': '在项目"{name}"中创建域名',
   'domain.create.description': '请选择环境，填写域名名称、地址、路径，并选择网络配置域名访问规则。',
@@ -65,8 +65,8 @@ const pageDetail = {
   'release.addVersion.description': '您可以在此勾选并添加需要发布的版本。',
 
   // container
-  'container.title': '项目"{name}"的容器管理',
-  'container.description': '容器管理便于您查看和管理Kubernetes中应用实例生成的容器， 可以实时查看相关容器的地址、创建时间、状态，确定容器是否正常运行且通过健康检查，并且可以查看容器日志进行错误定位和状态监控。',
+  'container.title': '项目"{name}"的容器',
+  'container.description': '容器便于您查看和管理Kubernetes中应用实例生成的容器， 可以实时查看相关容器的地址、创建时间、状态，确定容器是否正常运行且通过健康检查，并且可以查看容器日志进行错误定位和状态监控。',
   'container.link': `${docServer}/user-guide/deployment-pipeline/container/`,
   'container.log.title': '查看容器"{name}"的日志',
   'container.log.description': '您可在此查看该容器的日志进行错误定位和状态监控。',
@@ -82,7 +82,7 @@ const pageDetail = {
   'template.link': `${docServer}/user-guide/application-management/application-template/`,
 
   // app
-  'app.head': '项目\"{name}\"的应用管理',
+  'app.head': '项目\"{name}\"的应用',
   'app.createApp': '在项目\"{name}\"中创建应用',
   'app.editApp': '对应用\"{name}\"进行修改',
   'app.editDescription': '您可在此修改应用名称。',
@@ -91,7 +91,7 @@ const pageDetail = {
   'app.link': `${docServer}/user-guide/application-management/application-management/`,
 
   // branch
-  'branch.head': '项目\"{name}\"的分支管理',
+  'branch.head': '项目\"{name}\"的分支',
   'branch.createHead': '在应用\"{name}\"中创建分支',
   'branch.createDes': '采用Gitflow工作流模式，请在下面选择分支类型，并填写issue号或版本号，即可创建分支。',
   'branch.mergeDev': '是否将分支\"{name}\"合并到develop分支？',
@@ -143,7 +143,7 @@ const pageDetail = {
 
   // app-tag
   'apptag.description': '分支是将您的工作从开发主线上分离开来，以免影响开发主线。平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。',
-  'apptag.title': '项目\"{name}\"的标记管理',
+  'apptag.title': '项目\"{name}\"的标记',
   'apptag.link': `${docServer}/user-guide/development-pipeline/tag/`,
   'apptag.createTag': '在应用\"{name}\"中创建标记',
   'apptag.createDescription': '采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线',
@@ -399,7 +399,7 @@ const zhCN = {
   'app.createTime': '生成时间',
 
   // environment
-  'environment.title': '环境管理',
+  'environment.title': '环境',
   'environment.name': '环境名称',
   'environment.url': '环境地址',
   'environment.token': '环境密钥',
@@ -579,7 +579,7 @@ const zhCN = {
   'ciPipeline.createdAt': '创建时间',
 
   // resource
-  'resource.title': '资源管理',
+  'resource.title': '资源',
   'resource.name': '资源名称',
   'resource.description': '资源描述',
   'resource.type': '资源类型',
