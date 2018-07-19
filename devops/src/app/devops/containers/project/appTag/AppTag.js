@@ -266,7 +266,7 @@ class AppTag extends Component {
         dataIndex: 'tagName',
         filters: [],
         // filteredValue: this.state.filters.tagName,
-        render: (text, record) => (<span>{record.name}</span>),
+        render: (text, record) => (<span>{record.tagName}</span>),
       },
       {
         title: <FormattedMessage id="apptag.code" />,
@@ -312,7 +312,7 @@ class AppTag extends Component {
               <Button
                 shape="circle"
                 size={'small'}
-                onClick={this.openRemove.bind(this, record.name)}
+                onClick={this.openRemove.bind(this, record.tagName)}
               >
                 <Icon type="delete_forever" />
               </Button>
@@ -334,11 +334,12 @@ class AppTag extends Component {
         ]}
       >
         <Modal
+          confirmLoading={this.state.deleteLoading}
           visible={this.state.visible}
           title={<FormattedMessage id={'apptag.action.delete'} />}
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
-            <Button key="submit" type="danger" onClick={this.deleteTag}>
+            <Button key="submit" type="danger" onClick={this.deleteTag} loading={this.state.deleteLoading}>
               {this.props.intl.formatMessage({ id: 'delete' })}
             </Button>,
           ]}
@@ -392,7 +393,7 @@ class AppTag extends Component {
             columns={tagColumns}
             loading={AppTagStore.getLoading || deleteLoading}
             dataSource={AppTagStore.getTagData}
-            rowKey={record => record.name}
+            rowKey={record => record.tagName}
           />
           <Sidebar
             title={<FormattedMessage id="apptag.create" />}
