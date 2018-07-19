@@ -160,7 +160,7 @@ class BranchHome extends Component {
               <span>{record.sha && record.sha.slice(0, 8) }</span>
             </a>
             <span className="icon icon-schedule branch-col-icon branch-column-icon" style={{ paddingLeft: 16, fontSize: 16, marginBottom: 2 }} />
-            <TimePopover content={record.creationDate} style={{ display: 'inline-block', color: 'rgba(0, 0, 0, 0.65)' }} />
+            <TimePopover content={record.commitDate} style={{ display: 'inline-block', color: 'rgba(0, 0, 0, 0.65)' }} />
           </div>
           {record.commitUserUrl && record.commitUserName ? <Tooltip title={record.commitUserName}>
             <div className="branch-user-img" style={{ backgroundImage: `url(${record.commitUserUrl})` }} />
