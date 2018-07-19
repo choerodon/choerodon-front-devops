@@ -448,7 +448,7 @@ class CreateDomain extends Component {
           })(
             <Input
               disabled={!(this.props.form.getFieldValue('envId'))}
-              maxLength={30}
+              maxLength={40}
               label={this.props.intl.formatMessage({ id: 'domain.column.name' })}
               size="default"
             />,

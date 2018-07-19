@@ -546,7 +546,7 @@ class TemplateHome extends Component {
           title={<FormattedMessage id="template.del" />}
           footer={[
             <Button key="back" onClick={this.closeRemove}><FormattedMessage id="cancel" /></Button>,
-            <Button key="submit" type="danger" onClick={this.handleDelete}>
+            <Button key="submit" type="danger" onClick={this.handleDelete} loading={this.state.submitting}>
               <FormattedMessage id="delete" />
             </Button>,
           ]}

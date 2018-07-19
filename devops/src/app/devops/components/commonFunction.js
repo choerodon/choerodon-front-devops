@@ -38,8 +38,10 @@ export const commonComponent =(storeName) => {
       const lastDatas = store.getPageInfo.total % 10;
       const page = store.getPageInfo.current;
       const totalPage = Math.ceil(store.getPageInfo.total / store.getPageInfo.pageSize);
+      this.setState({ submitting: true });
       store.deleteData(organizationId, id).then((data) => {
         if (data) {
+          this.setState({ submitting: false });
           if (lastDatas === 1 && page === totalPage) {
             this.loadAllData(false, store.getPageInfo.current - 2);
           } else {
@@ -48,6 +50,7 @@ export const commonComponent =(storeName) => {
           this.closeRemove();
         }
       }).catch((error) => {
+        this.setState({ submitting: false });
         Choerodon.handleResponseError(error);
       });
     };

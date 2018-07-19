@@ -198,7 +198,7 @@ class BranchHome extends Component {
         dataIndex: 'commit.message',
         render: (text, record) => (<div>
           {record.typeCode ? this.getOptionContent(record) : null}
-          <a onClick={this.showIssue.bind(this, record.issueId, record.name)} role={'none'}><Tooltip title={record.issueName}>{record.issueCode}</Tooltip></a>
+          <a onClick={this.showIssue.bind(this, record.issueId, record.branchName)} role={'none'}><Tooltip title={record.issueName}>{record.issueCode}</Tooltip></a>
         </div>),
       },
       {
@@ -207,14 +207,14 @@ class BranchHome extends Component {
         key: 'action',
         render: (test, record) => (
           <div>
-            {record.name !== 'master' ?
+            {record.branchName !== 'master' ?
               <React.Fragment>
                 <Permission projectId={this.state.projectId} organizationId={orgId} type={type} service={['devops-service.devops-git.update']}>
                   <Tooltip
                     placement="bottom"
                     title={<FormattedMessage id="branch.edit" />}
                   >
-                    <Button size={'small'} shape="circle" onClick={this.handleEdit.bind(this, record.name)}>
+                    <Button size={'small'} shape="circle" onClick={this.handleEdit.bind(this, record.branchName)}>
                       <span className="icon icon-mode_edit" />
                     </Button>
                   </Tooltip>
@@ -223,7 +223,7 @@ class BranchHome extends Component {
                   placement="bottom"
                   title={<FormattedMessage id="branch.request" />}
                 >
-                  <a href={record.commitUrl && `${record.commitUrl.split('/commit')[0]}/merge_requests/new?change_branches=true&merge_request[source_branch]=${record.name}&merge_request[target_branch]=master`} target="_blank" rel="nofollow me noopener noreferrer">
+                  <a href={record.commitUrl && `${record.commitUrl.split('/commit')[0]}/merge_requests/new?change_branches=true&merge_request[source_branch]=${record.branchName}&merge_request[target_branch]=master`} target="_blank" rel="nofollow me noopener noreferrer">
                     <Button size={'small'} shape="circle">
                       <span className="icon icon-merge_request" />
                     </Button>
@@ -234,7 +234,7 @@ class BranchHome extends Component {
                     placement="bottom"
                     title={<FormattedMessage id="delete" />}
                   >
-                    <Button size={'small'} shape="circle" onClick={this.openRemove.bind(this, record.name)}>
+                    <Button size={'small'} shape="circle" onClick={this.openRemove.bind(this, record.branchName)}>
                       <span className="icon icon-delete" />
                     </Button>
                   </Tooltip>
