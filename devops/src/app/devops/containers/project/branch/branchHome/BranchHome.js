@@ -248,8 +248,8 @@ class BranchHome extends Component {
         ),
       },
     ];
-    const title = (<div>
-      <span className="c7n-header-table">
+    const title = (<div className="c7n-header-table">
+      <span>
         <FormattedMessage id="branch.list" />
       </span>
       <Popover
@@ -330,19 +330,23 @@ class BranchHome extends Component {
       </Popover>
     </div>);
     return (
-      <Table
-        filters={this.state.paras}
-        filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
-        loading={BranchStore.loading}
-        className="c7n-branch-table"
-        rowClassName="c7n-branch-tr"
-        title={() => title}
-        pagination={BranchStore.getPageInfo}
-        columns={branchColumns}
-        dataSource={BranchStore.branchData.content.slice()}
-        rowKey={record => record.branchName}
-        onChange={this.tableChange}
-      />
+      <div>
+        {title}
+        <Table
+          filters={this.state.paras}
+          filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
+          loading={BranchStore.loading}
+          className="c7n-branch-table"
+          rowClassName="c7n-branch-tr"
+          // title={() => title}
+          pagination={BranchStore.getPageInfo}
+          columns={branchColumns}
+          dataSource={BranchStore.branchData.content.slice()}
+          rowKey={record => record.branchName}
+          onChange={this.tableChange}
+        />
+      </div>
+
     );
   }
 

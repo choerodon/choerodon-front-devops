@@ -170,6 +170,7 @@ class IssueDetail extends Component {
       >
         { !issue ? <LoadingBar display /> : <div className="c7n-branch-issue">
           <section className="branch-issue-name">
+            <h2 className="issue-num">{issue.issueNum} </h2>
             <p className="issue-summary">{issue.summary}</p>
           </section>
           <section className="branch-issue-status">
