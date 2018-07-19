@@ -97,7 +97,7 @@ class TemplateHome extends Component {
       key: 'description',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.description} width={0.25}>
+      render: (test, record) => (<MouserOverWrapper text={record.description} width={0.2}>
         {record.description}
       </MouserOverWrapper>),
     }, {
@@ -105,11 +105,11 @@ class TemplateHome extends Component {
       dataIndex: 'repoUrl',
       key: 'repoUrl',
       render: (test, record) => (
-        <Tooltip trigger="hover" title={record.repoUrl}>
+        <MouserOverWrapper text={record.repoUrl} width={0.1}>
           <div className="c7n-template-table">
             <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">../{record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}</a>
           </div>
-        </Tooltip>
+        </MouserOverWrapper>
       ),
     }, {
       title: <FormattedMessage id="template.type" />,
@@ -128,7 +128,6 @@ class TemplateHome extends Component {
           : <React.Fragment><Icon type="av_timer" /><span className="c7n-template-column-text"><FormattedMessage id="template.perDefine" /></span> </React.Fragment>
       ),
     }, {
-      align: 'right',
       width: 80,
       key: 'action',
       render: (test, record) => (
