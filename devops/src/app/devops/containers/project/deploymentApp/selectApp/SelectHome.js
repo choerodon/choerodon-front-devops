@@ -320,7 +320,7 @@ class DeployAppHome extends Component {
                             <MouserOverWrapper text={card.name} width={0.15}>
                               {card.name}</MouserOverWrapper>
                           </div>
-                          <div className="c7n-store-card-des-60">
+                          <div title={card.code} className="c7n-store-card-des-60">
                             {card.code}
                           </div>
                         </div>

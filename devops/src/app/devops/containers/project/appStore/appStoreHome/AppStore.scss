@@ -74,7 +74,7 @@
 
 .c7n-store-card {
   cursor: pointer;
-  padding: 16px 20px;
+  padding: 10px 20px;
   margin-bottom: 16px;
   margin-right: 15px;
   background-color: white;
@@ -89,7 +89,7 @@
   }
 
   .c7n-store-card-icon {
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     border-radius: 50px;
     height: 50px;
     width: 50px;
@@ -110,7 +110,6 @@
   .c7n-store-card-source {
     font-size: 13px;
     color: rgba(0, 0, 0, 0.65);
-    margin-bottom: 8px;
   }
 
   .c7n-store-card-des {
