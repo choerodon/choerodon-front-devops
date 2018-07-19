@@ -3,8 +3,8 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Tooltip, Modal, Table, Popover, Progress, Select } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores, axios } from 'choerodon-front-boot';
-import classnames from 'classnames';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import _ from 'lodash';
 import '../../../main.scss';
 import './BranchHome.scss';
 import CreateBranch from '../CreateBranch';
@@ -165,7 +165,9 @@ class BranchHome extends Component {
           {record.commitUserUrl && record.commitUserName ? <Tooltip title={record.commitUserName}>
             <div className="branch-user-img" style={{ backgroundImage: `url(${record.commitUserUrl})` }} />
           </Tooltip> : <Tooltip title={record.commitUserName}><div className="branch-user-img" >{record.commitUserName && record.commitUserName.slice(0, 1)}</div></Tooltip> }
-            <MouserOverWrapper style={{ display: 'inline-block' }} text={record.commitContent} width={250} className="branch-col-icon">{record.commitContent}</MouserOverWrapper>
+          <MouserOverWrapper text={record.commitContent} width={0.2} className="branch-col-icon">
+            {record.commitContent}
+          </MouserOverWrapper>
         </div>),
       },
       {

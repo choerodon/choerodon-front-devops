@@ -8,6 +8,7 @@ import TimeAgo from 'timeago-react';
 import _ from 'lodash';
 import './MergeRequestHome.scss';
 import '../../../main.scss';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const { AppState } = stores;
 const Option = Select.Option;
@@ -131,6 +132,9 @@ class MergeRequestHome extends Component {
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'title',
       key: 'title',
+      render: (text, record) => (<MouserOverWrapper text={record.title} width={0.2}>
+        {record.title}
+      </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="app.branch" />,
       key: 'targetBranch',
@@ -219,6 +223,9 @@ class MergeRequestHome extends Component {
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'title',
       key: 'title',
+      render: (text, record) => (<MouserOverWrapper text={record.title} width={0.25}>
+        {record.title}
+      </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="app.branch" />,
       key: 'targetBranch',
