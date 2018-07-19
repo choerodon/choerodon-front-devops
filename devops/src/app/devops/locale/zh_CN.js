@@ -6,7 +6,7 @@ const pageDetail = {
 
   // network
   'network.title': '项目"{name}"的网络',
-  'network.description': '网络是定义了一种访问网络的策略，是指内部的负载均衡以及网络转发，会将网络流量定向转发到指定的单个或者多个实例容器组。',
+  'network.description': '网络是一种管理内部服务连通方式的策略，实现容器内部资源的负载均衡以及流量转发。配置后，平台会将网络流量定向转发到指定的单个或者多个实例容器组，完成服务的连通与流转。',
   'network.link': `${docServer}/user-guide/deployment-pipeline/service/`,
   'network.create.title': '项目"{name}"中创建网络',
   'network.create.description': '请选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。\n' +
@@ -30,11 +30,11 @@ const pageDetail = {
   'env.token.description': '复制下文代码至Kubernetes运行，与平台建立链接。',
   'env.token.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
   'env.stop.title': '项目"{name}"的环境停用区',
-  'env.stop.description': '您可在此查看已被停用的环境，也可以重新启用这些环境',
+  'env.stop.description': '您可在此查看已被停用的环境，也可以重新启用这些环境。',
 
   // domain
   'domain.title': '项目"{name}"的域名',
-  'domain.description': '域名是将您已经预定义好的域名在平台中进行配置，使外部能够通过指定的域名访问到系统内部的实例。',
+  'domain.description': '您可以在此选择环境，填写域名名称、地址、路径，并选择对应的网络，配置域名访问规则。',
   'domain.link': `${docServer}/user-guide/deployment-pipeline/ingress/`,
   'domain.create.title': '在项目"{name}"中创建域名',
   'domain.create.description': '请选择环境，填写域名名称、地址、路径，并选择网络配置域名访问规则。',
@@ -93,15 +93,15 @@ const pageDetail = {
   // branch
   'branch.head': '项目\"{name}\"的分支',
   'branch.createHead': '在应用\"{name}\"中创建分支',
-  'branch.createDes': '采用Gitflow工作流模式，请在下面选择分支类型，并填写issue号或版本号，即可创建分支。',
+  'branch.createDes': '请在下面选择该分支要解决的问题、分支来源，可以修改默认的分支类型及分支名称，即可创建分支。',
   'branch.mergeDev': '是否将分支\"{name}\"合并到develop分支？',
   'branch.noCommitDev': '是否将分支\"{name}\"分支无提交，是否删除？',
   'branch.noCommit': '是否将分支\"{name}\"分支无提交，不生成版本号，是否删除？',
   'branch.mergeDevMas': '是否将分支\"{name}\"合并到master，develop分支，并以为\"{version}\"版本号？',
-  'branch.description': '分支是将您的工作从开发主线上分离开来，以免影响开发主线。平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。',
+  'branch.description': '分支是将您的工作从主线上分离开来，以免影响主线。平台默认提供除master主分支外六种分支模型，您可以在此查看各应用的分支，创建分支，并将代码拉至本地开发后提交代码。',
   'branch.createTip': '采用gitflow分支模型，可创建feature、release、hotfix等分支，结束分支时自动触发分支合并和特有的持续集成流水线。',
   'branch.link': `${docServer}/user-guide/development-pipeline/branch-management/`,
-  'branch.editDes': '采用Git flow工作流模式，自动创建分支模式所特有的流水线，持续交付过程中对feature、release、hotfix等分支进行管理。',
+  'branch.editDes': '请在下面选择该分支要解决的问题、分支来源，可以修改默认的分支类型及分支名称。',
   'branch.editHead': '修改分支\"{name}\"完成的问题',
   'branch.detailHead': '分支\"{name}\"完成的问题',
   // ist
@@ -111,7 +111,7 @@ const pageDetail = {
   'ist.upgradeDes': '选择新版本，并对实例配置信息进行修改后升级实例。',
   'ist.isthead': '查看应用\"{name}\"的实例详情',
   'ist.istDes': '您可在此查看该实例的运行详情及部署详情。运行详情包括各资源对象的基本信息；部署详情包括配置信息及部署阶段及日志。',
-  'ist.description': '您可在此用四种方式查看该项目下应用的实例情况。',
+  'ist.description': '实例是一次应用部署生成的应用实体。您可在此用四种视图查看该项目的实例情况。',
   'ist.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
 
   // appstore
@@ -124,6 +124,7 @@ const pageDetail = {
   'appstore.importStep1': '您可以在此选择相应的文件，并进行上传。',
   'appstore.importStep2': '您可以在此选择是否发布，如果发布还可以选择发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。',
   'appstore.importStep3': '您可以在此确认上传应用的信息，如需修改请返回上一步。',
+  'appstore.description': '应用市场是应用的集市。您可以在此查看已发布至您项目的应用及其详细信息，并选择需要的应用版本进行部署。',
   'appstore.link': `${docServer}/user-guide/application-management/application-market/`,
 
   // appVersion
@@ -138,18 +139,18 @@ const pageDetail = {
 
   // merge-request
   'merge.title': '项目"{name}"的合并请求',
-  'merge.description': '分支是将您的工作从开发主线上分离开来，以免影响开发主线。平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。',
+  'merge.description': '您可以在此查看各应用的合并请求。',
   'merge.link': `${docServer}/user-guide/development-pipeline/merge-request/`,
 
   // app-tag
-  'apptag.description': '分支是将您的工作从开发主线上分离开来，以免影响开发主线。平台采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线。',
+  'apptag.description': '标记是用于标识某一时间点形成的稳定可发布的代码版本。您可以在此查看各应用的所有标记及相关提交信息，还可以基于某一分支创建标记。',
   'apptag.title': '项目\"{name}\"的标记',
   'apptag.link': `${docServer}/user-guide/development-pipeline/tag/`,
   'apptag.createTag': '在应用\"{name}\"中创建标记',
-  'apptag.createDescription': '采用gitflow分支模型，您可以在此创建分支，然后将代码拉至本地开发后提交代码，再结束分支，平台会为您合并代码并触发相应的持续集成流水线',
+  'apptag.createDescription': '请在下面标记名称，选择标记来源，即可创建分支。\n',
 
   // repository
-  'repository.description': '应用是满足用户某些需求的程序代码的集合，可以是某个解耦的微服务或是某个单体应用。您可以创建应用，平台会为您创建对应的git库以便管理该应用代码。',
+  'repository.description': '代码仓库是部分实现特定功能的程序代码集合。您可以在此查看该项目下的代码仓库、仓库地址及其关联的应用名称，还可以一键复制仓库地址以便克隆代码。',
   'repository.title': '项目\"{name}\"的代码仓库',
   'repository.link': `${docServer}/user-guide/development-pipeline/repository/`,
 
@@ -671,7 +672,7 @@ const zhCN = {
   'release.add.step.three.tooltip': '请注意：发布后不可修改发布范围。',
   'release.add.step.four.description': '您可以在此上传应用图标，填写贡献者、分类及应用描述，维护应用展示信息。',
   'release.add.step.four.title': '填写应用信息',
-  'release.add.step.four.tooltip': '请注意：平台将会提取发布的应用版本中Readme文件展示在应用市场的应用详情页，请先维护好对应的Readme文件后再发布。',
+  'release.add.step.four.tooltip': '请注意：平台将会提取发布的应用版本里chart/app文件夹下的README.md文件展示在应用市场的应用详情页，建议请先维护好后再发布。',
   'release.add.step.four.app.icon': '应用图标',
   'release.add.step.five.title': '确认信息',
   'release.add.step.five.description': '您可以在此确认应用发布的信息，如需修改请返回相应步骤。',
