@@ -121,12 +121,24 @@ class AppTag extends Component {
    * @param filters
    * @param sorter
    */
-  tableChange = (pagination, filters, sorter, params) => {
+  tableChange = (pagination, filters, sorter, paras) => {
     const { AppTagStore } = this.props;
     const { projectId } = this.state;
     this.setState({ page: pagination.current - 1 });
+    this.setState({ filters, paras });
+    let searchParam = {};
+    if (Object.keys(filters).length) {
+      searchParam = filters;
+    }
+    if (paras.length) {
+      searchParam = { tagName: [paras.toString()] };
+    }
+    const postData = {
+      searchParam,
+      param: '',
+    };
     AppTagStore
-      .queryTagData(projectId, pagination.current - 1, pagination.pageSize, { searchParam: filters, param: params.toString() });
+      .queryTagData(projectId, pagination.current - 1, pagination.pageSize, postData);
   };
 
   /**
@@ -253,7 +265,7 @@ class AppTag extends Component {
         title: <FormattedMessage id="apptag.tag" />,
         dataIndex: 'tagName',
         filters: [],
-        filteredValue: this.state.filters.name,
+        // filteredValue: this.state.filters.tagName,
         render: (text, record) => (<span>{record.name}</span>),
       },
       {
@@ -374,6 +386,7 @@ class AppTag extends Component {
           </Select>
           <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
           <Table
+            // filters={this.state.paras}
             onChange={this.tableChange}
             pagination={AppTagStore.pageInfo}
             columns={tagColumns}

@@ -461,7 +461,7 @@ class BranchHome extends Component {
       searchParam = filters;
       // page = 0;
     }
-    if (paras) {
+    if (paras.length) {
       searchParam = { branchName: [paras.toString()] };
     }
     const postData = {
@@ -472,7 +472,7 @@ class BranchHome extends Component {
       .loadBranchData({
         projectId: organizationId,
         size: pagination.pageSize,
-        sorter: sort,
+        sort,
         postData,
       });
   };

@@ -125,7 +125,7 @@ class CreateDomain extends Component {
             if (k.includes('path')) {
               const index = parseInt(k.split('-')[1], 10);
               const value = data[`network-${index}`];
-              pathList.push({ path: `${data[k]}`, serviceId: value });
+              pathList.push({ path: `/${data[k]}`, serviceId: value });
             }
             return pathList;
           });
@@ -151,7 +151,8 @@ class CreateDomain extends Component {
             if (k.includes('path')) {
               const index = parseInt(k.split('-')[1], 10);
               const value = data[`network-${index}`];
-              pathList.push({ path: `${data[k]}`, serviceId: value });
+              const path = data[k].split('/')[data[k].split('/').length - 1];
+              pathList.push({ path: `/${path}`, serviceId: value });
             }
             return pathList;
           });
@@ -283,24 +284,40 @@ class CreateDomain extends Component {
     const index = parseInt(rule.field.split('-')[1], 10);
     const paths = [];
     for (let i = 0; i < pathArr.length; i += 1) {
-      const p = this.props.form.getFieldValue(`path-${pathArr[i].pathIndex}`);
+      const p = `/${this.props.form.getFieldValue(`path-${pathArr[i].pathIndex}`)}`;
       if (i !== index) {
         paths.push(p);
       }
     }
-    if (patt.test(value.substr(1))) {
-      if (paths.includes(value)) {
-        callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
-      } else {
-        const { store } = this.props;
-        if (this.props.type === 'edit' && this.state.initServiceLen > index) {
-          const id = this.state.SingleData.id;
-          const v = this.state.SingleData.pathList[index].path
-            .slice(1, this.state.SingleData.pathList[index].path.length);
-          if (v === value && domain === this.state.SingleData.domain) {
-            callback();
+    if (paths.includes(`/${value}`) && !value) {
+      callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
+    } else if (value) {
+      if (patt.test(value)) {
+        if (paths.includes(`/${value}`)) {
+          callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
+        } else {
+          const { store } = this.props;
+          if (this.props.type === 'edit' && this.state.initServiceLen > index) {
+            const id = this.state.SingleData.id;
+            const v = this.state.SingleData.pathList[index].path
+              .slice(1, this.state.SingleData.pathList[index].path.length);
+            if (v === value && domain === this.state.SingleData.domain) {
+              callback();
+            } else {
+              store.checkPath(this.state.projectId, domain, `/${value}`, id)
+                .then((data) => {
+                  if (data) {
+                    callback();
+                  } else {
+                    callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
+                  }
+                })
+                .catch((error) => {
+                  callback();
+                });
+            }
           } else {
-            store.checkPath(this.state.projectId, domain, `${value}`, id)
+            store.checkPath(this.state.projectId, domain, `/${value}`)
               .then((data) => {
                 if (data) {
                   callback();
@@ -312,23 +329,14 @@ class CreateDomain extends Component {
                 callback();
               });
           }
-        } else {
-          store.checkPath(this.state.projectId, domain, `${value}`)
-            .then((data) => {
-              if (data) {
-                callback();
-              } else {
-                callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
-              }
-            })
-            .catch((error) => {
-              callback();
-            });
         }
+      } else {
+        callback(this.props.intl.formatMessage({ id: 'domain.name.check.failed' }));
       }
     } else {
-      callback(this.props.intl.formatMessage({ id: 'domain.name.check.failed' }));
+      callback();
     }
+
   };
   /**
    * 检查域名是否符合规则
@@ -484,17 +492,17 @@ class CreateDomain extends Component {
           >
             {getFieldDecorator(`path-${data.pathIndex}`, {
               rules: [{
-                required: true,
-                message: this.props.intl.formatMessage({ id: 'required' }),
+                // required: true,
+                // message: this.props.intl.formatMessage({ id: 'required' }),
               }, {
                 validator: this.checkPath,
               },
               ],
               initialValue: SingleData && this.state.initServiceLen > index
-                ? SingleData.pathList[index].path : '/',
+                ? SingleData.pathList[index].path.slice(1) : '',
             })(
               <Input
-                // prefix={'/'}
+                prefix={'/'}
                 onChange={this.checkAllPath.bind(this, true)}
                 disabled={!(this.props.form.getFieldValue('domain'))}
                 maxLength={10}

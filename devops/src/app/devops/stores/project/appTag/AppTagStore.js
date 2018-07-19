@@ -34,7 +34,7 @@ class AppTagStore {
   }
 
   @computed get getTagData() {
-    return this.tagData.slice();
+    return this.tagData;
   }
 
   @action setAppData(data) {

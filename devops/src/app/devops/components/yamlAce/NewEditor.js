@@ -105,8 +105,10 @@ class NewEditor extends Component {
       const eles = document.getElementsByClassName('CodeMirror-linenumber CodeMirror-gutter-elt');
       if (eles.length) {
         for (let i = 0; i < error.length; i += 1) {
-          eles[error[i].lineNumber - 1].className = 'CodeMirror-linenumber CodeMirror-gutter-elt line_error';
-          eles[error[i].lineNumber - 1].title = error[i].errorMsg;
+          if (eles.length > (error[i].lineNumber - 1)) {
+            eles[error[i].lineNumber - 1].className = 'CodeMirror-linenumber CodeMirror-gutter-elt line_error';
+            eles[error[i].lineNumber - 1].title = error[i].errorMsg;
+          }
         }
       }
     } else {

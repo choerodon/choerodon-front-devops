@@ -24,13 +24,11 @@ class AppReleaseStore {
   }
 
   @computed get getAllData() {
-    // window.console.log(this.allData);
     return this.allData.slice();
   }
 
   @action setAllData(data) {
     this.allData = data;
-    // window.console.log(this.allData);
   }
 
   @action changeIsRefresh(flag) {
