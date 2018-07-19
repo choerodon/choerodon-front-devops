@@ -9,7 +9,7 @@ const pageDetail = {
   'network.description': '网络是一种管理内部服务连通方式的策略，实现容器内部资源的负载均衡以及流量转发。配置后，平台会将网络流量定向转发到指定的单个或者多个实例容器组，完成服务的连通与流转。',
   'network.link': `${docServer}/user-guide/deployment-pipeline/service/`,
   'network.create.title': '项目"{name}"中创建网络',
-  'network.create.description': '请选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。\n' +
+  'network.create.description': '您可在此选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。\n' +
   '        转发内部网络，则只需定义端口即可，系统会自动为您分配集群内部IP；转发外部网络，则需要定义外部IP及端口。',
   'network.create.link': `${docServer}/user-guide/deployment-pipeline/service/`,
   'network.update.title': '对网络"{name}"进行修改',
@@ -34,10 +34,10 @@ const pageDetail = {
 
   // domain
   'domain.title': '项目"{name}"的域名',
-  'domain.description': '您可以在此选择环境，填写域名名称、地址、路径，并选择对应的网络，配置域名访问规则。',
+  'domain.description': '域名是用户通过浏览器可以从外部访问系统内部应用程序的地址。您可在此配置已经预定义好的域名，使外部能够通过指定的域名访问到系统内部的实例。',
   'domain.link': `${docServer}/user-guide/deployment-pipeline/ingress/`,
   'domain.create.title': '在项目"{name}"中创建域名',
-  'domain.create.description': '您可以在此选择环境，填写域名名称、地址、路径，并选择对应的网络，配置域名访问规则。',
+  'domain.create.description': '您可在此选择环境，填写域名名称、地址、路径，并选择对应的网络，配置域名访问规则。',
   'domain.create.link': `${docServer}/user-guide/deployment-pipeline/ingress/`,
   'domain.update.title': '对域名"{name}"进行修改',
   'domain.update.description': '您可在此修改域名配置信息。',
@@ -45,10 +45,10 @@ const pageDetail = {
 
   // deploymentApp
   'deploy.title': '项目"{name}"的应用部署',
-  'deploy.description': '应用部署是一个将某版本的应用部署至某环境的操作。您可以在此按指引分步骤完成应用部署。',
+  'deploy.description': '应用部署是一个将某版本的应用部署至某环境的操作。您可在此按照指引分步骤完成应用部署。',
   'deploy.link': `${docServer}/user-guide/deployment-pipeline/application-deployment/`,
   'deploy.sidebar.title': '项目"{name}"的部署选择应用',
-  'deploy.sidebar.description': '您可以在此灵活选择来源于本项目及应用市场的应用，且有列表式及卡片式两种展示方式可以切换。',
+  'deploy.sidebar.description': '您可在此灵活选择来源于本项目及应用市场的应用，且有列表式及卡片式两种展示方式可以切换。',
   'deploy.sidebar.link': `${docServer}/user-guide/deployment-pipeline/application-deployment/`,
 
   // appRelease
@@ -56,13 +56,13 @@ const pageDetail = {
   'release.description': '应用发布是可以将您研发的应用发布至其他项目使用。可发布的范围有本组织或全平台下的所有项目，并且您可以控制应用版本的发布范围。',
   'release.link': `${docServer}/user-guide/application-management/application-release/`,
   'release.add.title': '项目"{name}"的应用发布',
-  'release.add.description': '应用发布是可以将您研发的应用发布至其他项目使用，可发布的范围有本组织或全平台下的所有项目。并且可以控制发布应用版本的范围。',
+  'release.add.description': '应用发布是可以将您研发的应用发布至其他项目使用。可发布的范围有本组织或全平台下的所有项目，并且您可以控制应用版本的发布范围。',
   'release.edit.title': '修改应用"{name}"的信息',
-  'release.edit.description': '您可以在此修改应用发布的展示信息，包括贡献者、分类及应用描述。',
+  'release.edit.description': '您可在此修改应用发布的展示信息，包括贡献者、分类及应用描述。',
   'release.editVersion.title': '查看应用"{name}"的版本',
-  'release.editVersion.description': '您可以在此查看未发布及已发布的版本，且可以发布未发布的版本。',
+  'release.editVersion.description': '您可在此查看未发布及已发布的版本，且可以发布未发布的版本。',
   'release.addVersion.title': '添加应用"{name}"发布的版本',
-  'release.addVersion.description': '您可以在此勾选并添加需要发布的版本。',
+  'release.addVersion.description': '您可在此勾选并添加需要发布的版本。',
 
   // container
   'container.title': '项目"{name}"的容器',
@@ -93,17 +93,17 @@ const pageDetail = {
   // branch
   'branch.head': '项目\"{name}\"的分支',
   'branch.createHead': '在应用\"{name}\"中创建分支',
-  'branch.createDes': '请在下面选择该分支要解决的问题、分支来源，可以修改默认的分支类型及分支名称，即可创建分支。',
+  'branch.createDes': '您在此选择该分支要解决的问题、分支来源，修改默认的分支类型及分支名称，即可创建分支。',
   'branch.mergeDev': '是否将分支\"{name}\"合并到develop分支？',
   'branch.noCommitDev': '是否将分支\"{name}\"分支无提交，是否删除？',
   'branch.noCommit': '是否将分支\"{name}\"分支无提交，不生成版本号，是否删除？',
   'branch.mergeDevMas': '是否将分支\"{name}\"合并到master，develop分支，并以为\"{version}\"版本号？',
-  'branch.description': '分支是将您的工作从主线上分离开来，以免影响主线。平台默认提供除master主分支外六种分支模型，您可以在此查看各应用的分支，创建分支，并将代码拉至本地开发后提交代码。',
+  'branch.description': '分支是将您的开发工作从主线上分离开来，以免影响主线。您可在此查看各应用的分支，创建分支，并将代码拉至本地开发后提交代码。',
   'branch.createTip': '采用gitflow分支模型，可创建feature、release、hotfix等分支，结束分支时自动触发分支合并和特有的持续集成流水线。',
   'branch.link': `${docServer}/user-guide/development-pipeline/branch-management/`,
-  'branch.editDes': '请在下面选择该分支要解决的问题、分支来源，可以修改默认的分支类型及分支名称。',
-  'branch.editHead': '修改分支\"{name}\"完成的问题',
-  'branch.detailHead': '分支\"{name}\"完成的问题',
+  'branch.editDes': '您可在此修改该分支关联的问题。',
+  'branch.editHead': '修改分支\"{name}\"关联的问题',
+  'branch.detailHead': '分支\"{name}\"关联的问题',
   // instance
   'ist.head': '项目\"{name}\"的实例',
   'ist.editHead': '对\"{name}\"进行修改',
@@ -111,20 +111,19 @@ const pageDetail = {
   'ist.upgradeDes': '选择新版本，并对实例配置信息进行修改后升级实例。',
   'ist.isthead': '查看应用\"{name}\"的实例详情',
   'ist.istDes': '您可在此查看该实例的运行详情及部署详情。运行详情包括各资源对象的基本信息；部署详情包括配置信息及部署阶段及日志。',
-  'ist.description': '实例是一次应用部署生成的应用实体。您可在此用四种视图查看该项目的实例情况。',
+  'ist.description': '实例是一次应用部署生成的应用实体。您可在此用四种视图查看该项目的实例情况及相关应用、环境信息。',
   'ist.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
 
   // appstore
-  'appstore.headDes': '您可以在此查看已发布的应用及其详细信息，并选择版本进行部署。',
-  'appstore.exportDes': '您可以在此选择相应的应用，并选择版本进行导出。',
-  'appstore.importDes': '您可以在此选择相应的应用，上传文件后并进行导入。',
-  'appstore.exportStep1': '您可以在此选择想要导出的应用，您可以一次选择多个应用。',
-  'appstore.exportStep2': '您可以在此选择想要导出的版本。',
-  'appstore.exportStep3': '您可以在此确认应用发布的信息，如需修改请返回相应步骤。',
-  'appstore.importStep1': '您可以在此选择相应的文件，并进行上传。',
-  'appstore.importStep2': '您可以在此选择是否发布，如果发布还可以选择发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。',
-  'appstore.importStep3': '您可以在此确认上传应用的信息，如需修改请返回上一步。',
-  'appstore.description': '应用市场是应用的集市。您可以在此查看已发布至您项目的应用及其详细信息，并选择需要的应用版本进行部署。',
+  'appstore.headDes': '应用市场是应用的集市。您可在此查看已发布至您项目的应用及其详细信息，并选择需要的应用版本进行部署。',
+  'appstore.exportDes': '您可在此选择相应的应用，并选择版本进行导出。',
+  'appstore.importDes': '您可在此选择相应的应用，上传文件后并进行导入。',
+  'appstore.exportStep1': '您可在此选择想要导出的应用，您可以一次选择多个应用。',
+  'appstore.exportStep2': '您可在此选择想要导出的版本。',
+  'appstore.exportStep3': '您可在此确认应用发布的信息，如需修改请返回相应步骤。',
+  'appstore.importStep1': '您可在此选择相应的文件，并进行上传。',
+  'appstore.importStep2': '您可在此选择是否发布，如果发布还可以选择发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。',
+  'appstore.importStep3': '您可在此确认上传应用的信息，如需修改请返回上一步。',
   'appstore.link': `${docServer}/user-guide/application-management/application-market/`,
 
   // appVersion
@@ -139,18 +138,18 @@ const pageDetail = {
 
   // merge-request
   'merge.title': '项目"{name}"的合并请求',
-  'merge.description': '您可以在此查看各应用的合并请求。',
+  'merge.description': '合并请求是将某一分支的代码合并至另一分支的操作。您可在此查看各应用的合并请求，及创建合并请求。',
   'merge.link': `${docServer}/user-guide/development-pipeline/merge-request/`,
 
   // app-tag
-  'apptag.description': '标记是用于标识某一时间点形成的稳定可发布的代码版本。您可以在此查看各应用的所有标记及相关提交信息，还可以基于某一分支创建标记。',
+  'apptag.description': '标记是用于标识某一时间点形成的稳定可发布的代码版本。您可在此查看各应用的所有标记及相关提交信息，还可以基于某一分支创建标记。',
   'apptag.title': '项目\"{name}\"的标记',
   'apptag.link': `${docServer}/user-guide/development-pipeline/tag/`,
   'apptag.createTag': '在应用\"{name}\"中创建标记',
-  'apptag.createDescription': '您可以在此填写标记名称，选择标记来源，即可基于某一分支创建标记。',
+  'apptag.createDescription': '您在此填写标记名称，选择标记来源，即可基于某一分支创建标记。',
 
   // repository
-  'repository.description': '代码仓库是部分实现特定功能的程序代码集合。您可以在此查看该项目下的代码仓库、仓库地址及其关联的应用名称，还可以一键复制仓库地址以便克隆代码。',
+  'repository.description': '代码仓库是部分实现特定功能的程序代码集合。您可在此查看该项目下的代码仓库、仓库地址及其关联的应用名称，还可以一键复制仓库地址以便克隆代码。',
   'repository.title': '项目\"{name}\"的代码仓库',
   'repository.link': `${docServer}/user-guide/development-pipeline/repository/`,
 
@@ -445,7 +444,7 @@ const zhCN = {
   'branch.source': '分支来源',
   'branch.owner': '提交者',
   'branch.time': '创建者',
-  'branch.edit': '修改相关联问题',
+  'branch.edit': '修改关联问题',
   'branch.request': '创建合并请求',
   'branch.checkName': '名称只能包含数字和".",并且以数字开头和结尾',
   'branch.checkNameEnd': '不能以"/"、"."、".lock"结尾',
@@ -663,19 +662,19 @@ const zhCN = {
   'release.action.version': '版本控制',
   'release.action.publish': '发布应用',
   'release.add.step.one.title': '选择应用',
-  'release.add.step.one.description': '您可以在此选择需要发布的应用。',
+  'release.add.step.one.description': '您可在此选择需要发布的应用。',
   'release.add.step.two.title': '选择发布版本',
-  'release.add.step.two.description': '您可以在此点击添加版本按钮，选择添加需要发布的版本。',
+  'release.add.step.two.description': '您可在此点击添加版本按钮，选择添加需要发布的版本。',
   'release.add.step.two.btn.add': '添加版本',
   'release.add.step.three.title': '选择发布范围',
-  'release.add.step.three.description': '您可以在此选择应用发布的范围。若希望本组织内所有项目均可使用，则选择本组织；若希望全平台下的所有项目均可使用，则选择全平台。',
+  'release.add.step.three.description': '您可在此选择应用发布的范围。若希望本组织内所有项目均可使用，则选择本组织；若希望全平台下的所有项目均可使用，则选择全平台。',
   'release.add.step.three.tooltip': '请注意：发布后不可修改发布范围。',
-  'release.add.step.four.description': '您可以在此上传应用图标，填写贡献者、分类及应用描述，维护应用展示信息。',
+  'release.add.step.four.description': '您可在此上传应用图标，填写贡献者、分类及应用描述，维护应用展示信息。',
   'release.add.step.four.title': '填写应用信息',
   'release.add.step.four.tooltip': '请注意：平台将会提取发布的应用版本里chart/app文件夹下的README.md文件展示在应用市场的应用详情页，建议请先维护好后再发布。',
   'release.add.step.four.app.icon': '应用图标',
   'release.add.step.five.title': '确认信息',
-  'release.add.step.five.description': '您可以在此确认应用发布的信息，如需修改请返回相应步骤。',
+  'release.add.step.five.description': '您可在此确认应用发布的信息，如需修改请返回相应步骤。',
   'release.add.step.five.tooltip': '请注意：该版本发布后不可取消发布，且不可修改发布范围。',
   'release.add.step.five.btn.confirm': '发布',
   'release.edit.header.title': '修改应用信息',
