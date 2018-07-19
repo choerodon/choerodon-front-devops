@@ -240,7 +240,7 @@ class CreateDomain extends Component {
    * @type {Function}
    */
   checkName =_.debounce((rule, value, callback) => {
-    const p = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)$/;
+    const p = /^([a-z0-9]([-a-z0-9]*[a-z0-9])*)$/;
     const { SingleData } = this.state;
     if (SingleData && SingleData.name === value) {
       callback();
@@ -262,7 +262,7 @@ class CreateDomain extends Component {
           callback(this.props.intl.formatMessage({ id: 'network.form.app.disable' }));
         }
       } else {
-        callback(this.props.intl.formatMessage({ id: 'domain.name.check.failed' }));
+        callback(this.props.intl.formatMessage({ id: 'domain.names.check.failed' }));
       }
     }
   }, 1000);
