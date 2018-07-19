@@ -405,7 +405,7 @@ class EnvPipelineHome extends Component {
                     initialValue: envData ? envData.code : '',
                   })(
                     <Input
-                      maxLength={20}
+                      maxLength={30}
                       label={<FormattedMessage id={'envPl.form.code'} />}
                     />,
                   )}
