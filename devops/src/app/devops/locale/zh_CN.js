@@ -37,7 +37,7 @@ const pageDetail = {
   'domain.description': '您可以在此选择环境，填写域名名称、地址、路径，并选择对应的网络，配置域名访问规则。',
   'domain.link': `${docServer}/user-guide/deployment-pipeline/ingress/`,
   'domain.create.title': '在项目"{name}"中创建域名',
-  'domain.create.description': '请选择环境，填写域名名称、地址、路径，并选择网络配置域名访问规则。',
+  'domain.create.description': '您可以在此选择环境，填写域名名称、地址、路径，并选择对应的网络，配置域名访问规则。',
   'domain.create.link': `${docServer}/user-guide/deployment-pipeline/ingress/`,
   'domain.update.title': '对域名"{name}"进行修改',
   'domain.update.description': '您可在此修改域名配置信息。',
@@ -104,7 +104,7 @@ const pageDetail = {
   'branch.editDes': '请在下面选择该分支要解决的问题、分支来源，可以修改默认的分支类型及分支名称。',
   'branch.editHead': '修改分支\"{name}\"完成的问题',
   'branch.detailHead': '分支\"{name}\"完成的问题',
-  // ist
+  // instance
   'ist.head': '项目\"{name}\"的实例',
   'ist.editHead': '对\"{name}\"进行修改',
   'ist.editDes': '对实例配置信息进行修改后重新部署。',
@@ -147,7 +147,7 @@ const pageDetail = {
   'apptag.title': '项目\"{name}\"的标记',
   'apptag.link': `${docServer}/user-guide/development-pipeline/tag/`,
   'apptag.createTag': '在应用\"{name}\"中创建标记',
-  'apptag.createDescription': '请在下面标记名称，选择标记来源，即可创建分支。\n',
+  'apptag.createDescription': '您可以在此填写标记名称，选择标记来源，即可基于某一分支创建标记。',
 
   // repository
   'repository.description': '代码仓库是部分实现特定功能的程序代码集合。您可以在此查看该项目下的代码仓库、仓库地址及其关联的应用名称，还可以一键复制仓库地址以便克隆代码。',
