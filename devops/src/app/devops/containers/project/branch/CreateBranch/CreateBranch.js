@@ -362,7 +362,7 @@ class CreateBranch extends Component {
                   </OptGroup>
                   <OptGroup label={intl.formatMessage({ id: 'branch.tag' })} key="more">
                     {tags.content.map(s => (
-                      <Option value={s.name} key={s.name}><span className="icon icon-local_offer c7n-branch-formItem-icon" />{s.name}</Option>
+                      <Option value={s.tagName} key={s.tagName}><span className="icon icon-local_offer c7n-branch-formItem-icon" />{s.tagName}</Option>
                     ))}
                     {tags.totalElements > tags.numberOfElements && tags.numberOfElements > 0 ? <Option value="more">
                       <div role="none" onClick={this.changeSize.bind(this, 'tag')} className="c7n-option-popover c7n-dom-more">
@@ -419,7 +419,7 @@ class CreateBranch extends Component {
                 initialValue: this.state.issueDto ? this.state.issueDto.issueNum : '',
               })(
                 <Input
-                  maxLength={15}
+                  maxLength={64}
                   label={<FormattedMessage id={'branch.name'} />}
                   prefix={`${this.state.type === 'custom' ? '' : `${this.state.type}-`}`}
                 />,

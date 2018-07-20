@@ -3,8 +3,8 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Tooltip, Modal, Table, Popover, Progress, Select } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores, axios } from 'choerodon-front-boot';
-import classnames from 'classnames';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import _ from 'lodash';
 import '../../../main.scss';
 import './BranchHome.scss';
 import CreateBranch from '../CreateBranch';
@@ -148,7 +148,9 @@ class BranchHome extends Component {
         sorter: true,
         render: (text, record) => (<div>
           {this.getIcon(record.branchName)}
-          <span>{record.branchName}</span>
+          <MouserOverWrapper text={record.branchName} width={0.2} style={{ display: 'inline-block' }}>
+            {record.branchName}
+          </MouserOverWrapper>
         </div>),
       },
       {
@@ -160,12 +162,14 @@ class BranchHome extends Component {
               <span>{record.sha && record.sha.slice(0, 8) }</span>
             </a>
             <span className="icon icon-schedule branch-col-icon branch-column-icon" style={{ paddingLeft: 16, fontSize: 16, marginBottom: 2 }} />
-            <TimePopover content={record.creationDate} style={{ display: 'inline-block', color: 'rgba(0, 0, 0, 0.65)' }} />
+            <TimePopover content={record.commitDate} style={{ display: 'inline-block', color: 'rgba(0, 0, 0, 0.65)' }} />
           </div>
           {record.commitUserUrl && record.commitUserName ? <Tooltip title={record.commitUserName}>
             <div className="branch-user-img" style={{ backgroundImage: `url(${record.commitUserUrl})` }} />
           </Tooltip> : <Tooltip title={record.commitUserName}><div className="branch-user-img" >{record.commitUserName && record.commitUserName.slice(0, 1)}</div></Tooltip> }
-            <MouserOverWrapper style={{ display: 'inline-block' }} text={record.commitContent} width={250} className="branch-col-icon">{record.commitContent}</MouserOverWrapper>
+          <MouserOverWrapper text={record.commitContent} width={0.2} className="branch-col-icon">
+            {record.commitContent}
+          </MouserOverWrapper>
         </div>),
       },
       {
@@ -198,7 +202,7 @@ class BranchHome extends Component {
         dataIndex: 'commit.message',
         render: (text, record) => (<div>
           {record.typeCode ? this.getOptionContent(record) : null}
-          <a onClick={this.showIssue.bind(this, record.issueId, record.name)} role={'none'}><Tooltip title={record.issueName}>{record.issueCode}</Tooltip></a>
+          <a onClick={this.showIssue.bind(this, record.issueId, record.branchName)} role={'none'}><Tooltip title={record.issueName}>{record.issueCode}</Tooltip></a>
         </div>),
       },
       {
@@ -207,14 +211,14 @@ class BranchHome extends Component {
         key: 'action',
         render: (test, record) => (
           <div>
-            {record.name !== 'master' ?
+            {record.branchName !== 'master' ?
               <React.Fragment>
                 <Permission projectId={this.state.projectId} organizationId={orgId} type={type} service={['devops-service.devops-git.update']}>
                   <Tooltip
                     placement="bottom"
                     title={<FormattedMessage id="branch.edit" />}
                   >
-                    <Button size={'small'} shape="circle" onClick={this.handleEdit.bind(this, record.name)}>
+                    <Button size={'small'} shape="circle" onClick={this.handleEdit.bind(this, record.branchName)}>
                       <span className="icon icon-mode_edit" />
                     </Button>
                   </Tooltip>
@@ -223,7 +227,7 @@ class BranchHome extends Component {
                   placement="bottom"
                   title={<FormattedMessage id="branch.request" />}
                 >
-                  <a href={record.commitUrl && `${record.commitUrl.split('/commit')[0]}/merge_requests/new?change_branches=true&merge_request[source_branch]=${record.name}&merge_request[target_branch]=master`} target="_blank" rel="nofollow me noopener noreferrer">
+                  <a href={record.commitUrl && `${record.commitUrl.split('/commit')[0]}/merge_requests/new?change_branches=true&merge_request[source_branch]=${record.branchName}&merge_request[target_branch]=master`} target="_blank" rel="nofollow me noopener noreferrer">
                     <Button size={'small'} shape="circle">
                       <span className="icon icon-merge_request" />
                     </Button>
@@ -234,7 +238,7 @@ class BranchHome extends Component {
                     placement="bottom"
                     title={<FormattedMessage id="delete" />}
                   >
-                    <Button size={'small'} shape="circle" onClick={this.openRemove.bind(this, record.name)}>
+                    <Button size={'small'} shape="circle" onClick={this.openRemove.bind(this, record.branchName)}>
                       <span className="icon icon-delete" />
                     </Button>
                   </Tooltip>
@@ -246,8 +250,8 @@ class BranchHome extends Component {
         ),
       },
     ];
-    const title = (<div>
-      <span className="c7n-header-table">
+    const title = (<div className="c7n-header-table">
+      <span>
         <FormattedMessage id="branch.list" />
       </span>
       <Popover
@@ -328,19 +332,23 @@ class BranchHome extends Component {
       </Popover>
     </div>);
     return (
-      <Table
-        filters={this.state.paras}
-        filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
-        loading={BranchStore.loading}
-        className="c7n-branch-table"
-        rowClassName="c7n-branch-tr"
-        title={() => title}
-        pagination={BranchStore.getPageInfo}
-        columns={branchColumns}
-        dataSource={BranchStore.branchData.content.slice()}
-        rowKey={record => record.branchName}
-        onChange={this.tableChange}
-      />
+      <div>
+        {title}
+        <Table
+          filters={this.state.paras}
+          filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
+          loading={BranchStore.loading}
+          className="c7n-branch-table"
+          rowClassName="c7n-branch-tr"
+          // title={() => title}
+          pagination={BranchStore.getPageInfo}
+          columns={branchColumns}
+          dataSource={BranchStore.branchData.content.slice()}
+          rowKey={record => record.branchName}
+          onChange={this.tableChange}
+        />
+      </div>
+
     );
   }
 
@@ -461,7 +469,7 @@ class BranchHome extends Component {
       searchParam = filters;
       // page = 0;
     }
-    if (paras) {
+    if (paras.length) {
       searchParam = { branchName: [paras.toString()] };
     }
     const postData = {
@@ -472,7 +480,7 @@ class BranchHome extends Component {
       .loadBranchData({
         projectId: organizationId,
         size: pagination.pageSize,
-        sorter: sort,
+        sort,
         postData,
       });
   };

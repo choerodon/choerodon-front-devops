@@ -50,6 +50,7 @@
   // margin-right: 8px;
 
   i {
+    font-size: 14px !important;
     padding-bottom: 3px;
   }
 }
@@ -59,25 +60,6 @@
   span {
     padding-right: 6px;
   }
-}
-
-.branch-user-img {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  line-height: 18px;
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: bold;
-  background-color: #c5cbe8;
-  background-position: center;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  color: #3f51b5;
-  text-transform: uppercase;
-  text-align: center;
-  margin-right: 5px;
-  float: left;
 }
 
 .branch-column-icon {

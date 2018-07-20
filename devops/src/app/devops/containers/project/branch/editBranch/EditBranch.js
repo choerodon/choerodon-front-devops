@@ -104,7 +104,7 @@ class EditBranch extends Component {
         this.setState({ submitting: true });
         store.updateBranchByName(projectId, appId, data)
           .then(() => {
-            store.loadBranchData(projectId, store.app);
+            store.loadBranchData({ projectId });
             this.props.onClose();
             this.props.form.resetFields();
             this.setState({ submitting: false });

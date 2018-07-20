@@ -216,10 +216,8 @@ ul {
 
 //.c7n-region a,
 .c7n-region a .c7n-external-link-content {
-  // border-bottom: 1px solid #3367d6;
-  color: #3f51b5;
+  color: #3f51b5 !important;
   cursor: pointer;
-  margin-right: 2px;
   text-decoration: underline;
 }
 
@@ -241,31 +239,12 @@ ul {
 
 .c7n-region a:hover,
 .c7n-region a:hover .c7n-external-link-content {
-  // border-color: #3f51b5;
   color: #3f51b5;
 }
 
 .c7n-region a:focus,
 .c7n-region a:focus .c7n-external-link-content {
-  // border-color: #3f51b5;
-  color: #3f51b5;
-  // outline: 1px solid #3367d6;
-  // outline-offset: 2px;
-  text-decoration: none;
-}
-
-.c7n-region a:visited,
-.c7n-region a:visited .c7n-external-link-content,
-.c7n-region a:visited .c7n-icon svg {
-  //border-color: #7b1fa2;
-  //color: #7b1fa2;
-}
-
-.c7n-region a:visited:focus,
-.c7n-region a:visited:focus .c7n-external-link-content {
-  //outline: 1px solid #7b1fa2;
-  //outline-offset: 2px;
-  //text-decoration: none;
+  color: #3f51b5 !important;
 }
 
 .c7n-region a:active,
@@ -286,7 +265,6 @@ ul {
 
 .c7n-region .c7n-text-title-1-subtle {
   color: #000;
-  //font-family: "roboto";
   font-size: 20px;
   font-weight: 400;
   letter-spacing: 0.005em;
@@ -297,7 +275,6 @@ ul {
 
 .c7n-region .c7n-text-title-2 {
   color: #000;
-  //font-family: "roboto";
   font-size: 18px;
   font-weight: 500;
   letter-spacing: 0.005em;
@@ -308,7 +285,6 @@ ul {
 
 .c7n-region .c7n-text-title-3 {
   color: #000;
-  //font-family: "roboto";
   font-size: 18px;
   font-weight: 400;
   letter-spacing: 0.005em;

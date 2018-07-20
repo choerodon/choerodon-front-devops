@@ -52,38 +52,31 @@ class EditReleaseStore {
   }
 
   @computed get getAllData() {
-    // window.console.log(this.allData);
     return this.allData.slice();
   }
 
   @action setAllData(data) {
     this.allData = data;
-    // window.console.log(this.allData);
   }
 
   @action setSelectData(data) {
     this.selectData = data;
     this.setSelectPageInfo({ pageSize: 10, total: data.length, current: 0 });
-    // window.console.log(this.allData);
   }
   @computed get getSelectData() {
     return this.selectData.slice();
-    // window.console.log(this.allData);
   }
 
   @computed get getVersionData() {
-    // window.console.log(this.allData);
     return this.versionData.slice();
   }
 
   @action setVersionData(data) {
     this.versionData = data;
-    // window.console.log(this.allData);
   }
 
   @action setApps(data) {
     this.apps = data;
-    // window.console.log(this.allData);
   }
 
   @action changeIsRefresh(flag) {
@@ -245,7 +238,3 @@ class EditReleaseStore {
 const editReleaseStore = new EditReleaseStore();
 export default editReleaseStore;
 
-// autorun(() => {
-//   window.console.log(templateStore.allData.length);
-//   whyRun();
-// });

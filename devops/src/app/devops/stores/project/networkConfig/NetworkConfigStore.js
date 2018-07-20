@@ -76,10 +76,8 @@ class NetworkConfigStore {
         });
       }
     } else if (type === 'remove') {
-      this.instance.splice(index, 1);
-      // window.console.log(this.instance);
+      this.instance.splice(index, 1);;
     }
-    // window.console.log(this.instance);
   }
 
   @computed

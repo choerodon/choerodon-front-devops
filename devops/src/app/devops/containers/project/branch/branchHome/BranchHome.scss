@@ -3,6 +3,7 @@
     font-size: 18px;
     color: #000;
     line-height: 28px;
+    margin: 12px 0 16px 0;
   }
 
   .c7n-branch-table {
@@ -44,6 +45,23 @@
   .branch-select_512 {
     width: 512px;
     margin-bottom: 20px;
+  }
+
+  .branch-user-img {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #c5cbe8;
+    color: #3f51b5;
+    text-transform: uppercase;
+    text-align: center;
+    margin-right: 5px;
+    float: left;
+    background-size: 100% 100%;
   }
 }
 

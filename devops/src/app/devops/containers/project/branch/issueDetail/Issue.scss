@@ -3,7 +3,13 @@
     background-color: #00bfa5;
   }
 
+  .issue-num {
+    display: inline-block;
+    margin-right: 30px;
+  }
+
   .issue-summary {
+    display: inline-block;
     font-size: 14px;
     color: #000;
     line-height: 28px;
@@ -164,7 +170,7 @@
   .issue-detail-content-title {
     display: inline-block;
     margin: 0 0 10px 30px;
-    width: 100px;
+    width: 120px;
     font-size: 13px;
     color: rgba(0, 0, 0, 0.65);
     text-align: left;

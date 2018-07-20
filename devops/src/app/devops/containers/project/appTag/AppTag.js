@@ -121,12 +121,24 @@ class AppTag extends Component {
    * @param filters
    * @param sorter
    */
-  tableChange = (pagination, filters, sorter, params) => {
+  tableChange = (pagination, filters, sorter, paras) => {
     const { AppTagStore } = this.props;
     const { projectId } = this.state;
     this.setState({ page: pagination.current - 1 });
+    this.setState({ filters, paras });
+    let searchParam = {};
+    if (Object.keys(filters).length) {
+      searchParam = filters;
+    }
+    if (paras.length) {
+      searchParam = { tagName: [paras.toString()] };
+    }
+    const postData = {
+      searchParam,
+      param: '',
+    };
     AppTagStore
-      .queryTagData(projectId, pagination.current - 1, pagination.pageSize, { searchParam: filters, param: params.toString() });
+      .queryTagData(projectId, pagination.current - 1, pagination.pageSize, postData);
   };
 
   /**
@@ -253,8 +265,8 @@ class AppTag extends Component {
         title: <FormattedMessage id="apptag.tag" />,
         dataIndex: 'tagName',
         filters: [],
-        filteredValue: this.state.filters.name,
-        render: (text, record) => (<span>{record.name}</span>),
+        // filteredValue: this.state.filters.tagName,
+        render: (text, record) => (<span>{record.tagName}</span>),
       },
       {
         title: <FormattedMessage id="apptag.code" />,
@@ -300,7 +312,7 @@ class AppTag extends Component {
               <Button
                 shape="circle"
                 size={'small'}
-                onClick={this.openRemove.bind(this, record.name)}
+                onClick={this.openRemove.bind(this, record.tagName)}
               >
                 <Icon type="delete_forever" />
               </Button>
@@ -322,11 +334,12 @@ class AppTag extends Component {
         ]}
       >
         <Modal
+          confirmLoading={this.state.deleteLoading}
           visible={this.state.visible}
           title={<FormattedMessage id={'apptag.action.delete'} />}
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
-            <Button key="submit" type="danger" onClick={this.deleteTag}>
+            <Button key="submit" type="danger" onClick={this.deleteTag} loading={this.state.deleteLoading}>
               {this.props.intl.formatMessage({ id: 'delete' })}
             </Button>,
           ]}
@@ -374,12 +387,13 @@ class AppTag extends Component {
           </Select>
           <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
           <Table
+            // filters={this.state.paras}
             onChange={this.tableChange}
             pagination={AppTagStore.pageInfo}
             columns={tagColumns}
             loading={AppTagStore.getLoading || deleteLoading}
             dataSource={AppTagStore.getTagData}
-            rowKey={record => record.name}
+            rowKey={record => record.tagName}
           />
           <Sidebar
             title={<FormattedMessage id="apptag.create" />}

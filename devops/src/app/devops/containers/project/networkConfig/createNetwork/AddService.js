@@ -540,7 +540,7 @@ class AddService extends Component {
             }],
             initialValue: this.state.networkValue,
           })(
-            <Input disabled={!(this.props.form.getFieldValue('appId'))} label={<FormattedMessage id={'network.form.name'} />} maxLength={25} />,
+            <Input disabled={!(this.props.form.getFieldValue('appId'))} label={<FormattedMessage id={'network.form.name'} />} maxLength={40} />,
           )}
         </FormItem>
         <FormItem

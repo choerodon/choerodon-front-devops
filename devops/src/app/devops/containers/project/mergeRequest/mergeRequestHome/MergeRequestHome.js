@@ -8,6 +8,7 @@ import TimeAgo from 'timeago-react';
 import _ from 'lodash';
 import './MergeRequestHome.scss';
 import '../../../main.scss';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const { AppState } = stores;
 const Option = Select.Option;
@@ -131,6 +132,9 @@ class MergeRequestHome extends Component {
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'title',
       key: 'title',
+      render: (text, record) => (<MouserOverWrapper text={record.title} width={0.2}>
+        {record.title}
+      </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="app.branch" />,
       key: 'targetBranch',
@@ -152,7 +156,7 @@ class MergeRequestHome extends Component {
       key: 'createdAt',
       render: record => (
         <div>
-          <Tooltip title={`${record.author.username} ${record.author.name}`}>
+          <Tooltip title={record.author.username !== record.author.name ? `${record.author.username} ${record.author.name}` : record.author.name}>
             {record.author.avatarUrl
               ? <img className="c7n-merge-avatar" src={record.author.avatarUrl} alt="avatar" />
               : <span className="apptag-commit apptag-commit-avatar">{record.author.name.toString().substr(0, 1)}</span>}
@@ -219,6 +223,9 @@ class MergeRequestHome extends Component {
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'title',
       key: 'title',
+      render: (text, record) => (<MouserOverWrapper text={record.title} width={0.25}>
+        {record.title}
+      </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="app.branch" />,
       key: 'targetBranch',
