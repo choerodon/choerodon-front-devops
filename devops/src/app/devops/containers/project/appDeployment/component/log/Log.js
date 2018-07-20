@@ -1,8 +1,4 @@
 import React, { Component } from 'react';
-import AceEditor from 'react-ace';
-import 'brace/mode/text';
-import 'brace/theme/terminal';
-
 import './Log.scss';
 
 class Log extends Component {
@@ -11,29 +7,43 @@ class Log extends Component {
     this.state = {
     };
   }
+  componentDidMount() {
+    const ele = document.getElementById('editor');
+    let editor;
+    if (ele) {
+      editor = window.ace.edit('editor', {
+        mode: 'ace/mode/text',
+      });
+      editor.setTheme('ace/theme/terminal');
+      editor.setReadOnly(true);
+      editor.setAutoScrollEditorIntoView(true);
+      editor.$blockScrolling = Infinity;
+    }
+    if (editor && this.props.value) {
+      editor.setValue(this.props.value);
+      editor.clearSelection();
+    }
+  }
+  componentWillReceiveProps() {
+    const ele = document.getElementById('editor');
+    let editor;
+    if (ele) {
+      editor = window.ace.edit('editor', {
+        mode: 'ace/mode/text',
+      });
+      editor.setTheme('ace/theme/terminal');
+      editor.setReadOnly(true);
+      editor.setAutoScrollEditorIntoView(true);
+      editor.$blockScrolling = Infinity;
+    }
+    if (editor && this.props.value) {
+      editor.setValue(this.props.value);
+      editor.clearSelection();
+    }
+  }
 
   render() {
-    const height = (window.innerHeight);
-    const aceHeight = (height * 53) / 100;
-    return (<AceEditor
-      mode="text"
-      theme="terminal"
-      name="blah2"
-      style={{ width: '100%', height: '500px', marginBottom: 32 }}
-      onLoad={this.onLoad}
-      onChange={this.onChange}
-      fontSize={14}
-      showGutter
-      highlightActiveLine
-      value={this.props.value}
-      setOptions={{
-        enableBasicAutocompletion: false,
-        enableLiveAutocompletion: false,
-        enableSnippets: true,
-        showLineNumbers: true,
-        tabSize: 2,
-      }}
-    />);
+    return (<div id="editor" style={{ height: 500, width: '100%' }} />);
   }
 }
 

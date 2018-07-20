@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React, { Component } from 'react';
 import { Table, Button, Modal, Tooltip, Popover } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
@@ -6,15 +5,16 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { fromJS, is } from 'immutable';
-import ReactAce from 'react-ace-editor';
+import CodeMirror from 'react-codemirror';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/base16-dark.css';
 import _ from 'lodash';
-import 'brace/mode/text';
-import 'brace/theme/terminal';
 import { commonComponent } from '../../../../components/commonFunction';
 import TimePopover from '../../../../components/timePopover';
 import LoadingBar from '../../../../components/loadingBar';
 import './ContainerHome.scss';
 import '../../../main.scss';
+
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const Sidebar = Modal.Sidebar;
@@ -77,7 +77,7 @@ class ContainerHome extends Component {
         switch (record.status) {
           case 'Completed':
             dom = (<div>
-              <MouserOverWrapper text={record.status} width={78}>
+              <MouserOverWrapper text={record.status} width={0.073}>
                 <span className="icon icon-check_circle c7n-icon-success" />
                 <span className="c7n-container-title">{record.status}</span>
               </MouserOverWrapper>
@@ -103,7 +103,7 @@ class ContainerHome extends Component {
             break;
           default:
             dom = (<div>
-              <MouserOverWrapper text={record.status} width={78}>
+              <MouserOverWrapper text={record.status} width={0.073}>
                 <span className="icon icon-help c7n-icon-help" />
                 <span className="c7n-container-title">{record.status}</span>
               </MouserOverWrapper>
@@ -118,7 +118,7 @@ class ContainerHome extends Component {
       sorter: true,
       filters: [],
       filterMultiple: false,
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={300}>
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={0.3}>
         {record.name}
       </MouserOverWrapper>),
     }, {
@@ -133,11 +133,26 @@ class ContainerHome extends Component {
           <span>{record.appName}</span>
         </div>
         <div>
-          <MouserOverWrapper text={record.appVersion} width={200}>
+          <MouserOverWrapper text={record.appVersion} width={0.2}>
             <span className="c7n-deploy-text_gray">{record.appVersion}</span>
           </MouserOverWrapper>
         </div>
       </div>),
+    }, {
+      title: <FormattedMessage id="deploy.env" />,
+      key: 'envCode',
+      filters: [],
+      render: record => (
+        <div>
+          <div className="c7n-deploy-col-inside">
+            {record.connect ? <Tooltip title={<FormattedMessage id="connect" />}><span className="c7n-ist-status_on" /></Tooltip> : <Tooltip title={<FormattedMessage id="disconnect" />}><span className="c7n-ist-status_off" /></Tooltip>}
+            <span>{record.envName}</span>
+          </div>
+          <div>
+            <span className="c7n-deploy-text_gray">{record.envCode}</span>
+          </div>
+        </div>
+      ),
     }, {
       title: <FormattedMessage id={'container.ip'} />,
       dataIndex: 'ip',
@@ -198,15 +213,12 @@ class ContainerHome extends Component {
     const authToken = document.cookie.split('=')[1];
     const logs = [];
     const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${this.state.namespace}.envId:${this.state.envId}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}`);
-    const editor = this.ace.editor;
+    // eslint-disable-next-line react/no-string-refs
+    const editor = this.refs.editorLog.getCodeMirror();
     this.setState({
       ws,
     });
     editor.setValue('No Logs.');
-    editor.$blockScrolling = Infinity;
-    ws.onopen = () => {
-      console.log('open.........');
-    };
     ws.onmessage = (e) => {
       const reader = new FileReader();
       reader.readAsText(e.data, 'utf-8');
@@ -215,15 +227,12 @@ class ContainerHome extends Component {
         if (logs.length > 0) {
           const logString = _.join(logs, '');
           editor.setValue(logString);
-          editor.renderer.scrollCursorIntoView();
-          editor.getAnimatedScroll();
-          editor.clearSelection();
+          editor.execCommand('goDocEnd');
         } else {
           editor.setValue('No Logs.');
         }
       };
     };
-    editor.clearSelection();
   };
 
   /**
@@ -254,11 +263,9 @@ class ContainerHome extends Component {
     const { ContainerStore } = this.props;
     if (this.state.ws) {
       this.state.ws.close();
-      this.state.ws.onclose = () => {
-        console.log('Connection instanceInfo Close ...');
-      };
     }
-    const editor = this.ace.editor;
+    // eslint-disable-next-line react/no-string-refs
+    const editor = this.refs.editorLog.getCodeMirror();
     this.loadAllData(this.state.page);
     ContainerStore.changeShow(false);
     editor.setValue('No Logs.');
@@ -275,7 +282,7 @@ class ContainerHome extends Component {
           onClick={this.handleRefresh}
         >
           <span className="icon-refresh icon" />
-          <span>{Choerodon.languageChange('refresh')}</span>
+          <span>{<FormattedMessage id={'refresh'} />}</span>
         </Button>
       </Header>
       <Content className="page-content" code={'container'} values={{ name: projectName }}>
@@ -290,6 +297,13 @@ class ContainerHome extends Component {
         />
       </Content>
     </React.Fragment>);
+
+    const options = {
+      readOnly: true,
+      lineNumbers: true,
+      autofocus: true,
+      theme: 'base16-dark',
+    };
 
     return (
       <Page
@@ -307,16 +321,17 @@ class ContainerHome extends Component {
           className="c7n-podLog-content c7n-region"
           okText={<FormattedMessage id={'cancel'} />}
           okCancel={false}
+          destroyOnClose
         >
           <Content className="sidebar-content" code={'container.log'} values={{ name: containerName }}>
             <section className="c7n-podLog-section">
-              <ReactAce
-                mode="text"
-                theme="terminal"
-                setReadOnly
-                setShowPrintMargin={false}
-                style={{ height: '500px' }}
-                ref={(instance) => { this.ace = instance; }}
+              <CodeMirror
+                // eslint-disable-next-line react/no-string-refs
+                ref="editorLog"
+                value="No Logs"
+                className="c7n-podLog-editor"
+                onChange={code => this.props.ChangeCode(code)}
+                options={options}
               />
             </section>
           </Content>

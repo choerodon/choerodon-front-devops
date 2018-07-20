@@ -4,9 +4,11 @@ import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Tabs, Icon, Modal, Input, Table, Pagination } from 'choerodon-ui';
 import { stores, Content } from 'choerodon-front-boot';
+import Loadingbar from '../../../../components/loadingBar';
 import '../../../main.scss';
 import './SelectApp.scss';
 import SelectAppStore from '../../../../stores/project/deploymentApp/SelectAppStore';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const TabPane = Tabs.TabPane;
 const ButtonGroup = Button.Group;
@@ -159,11 +161,14 @@ class DeployAppHome extends Component {
     this.setState({ val: e.target.value });
     if (this.state.activeTab === '1') {
       SelectAppStore.loadData({
-        projectId: this.state.projectId, postData: { param: e.target.value, searchParam: {} } });
+        projectId: this.state.projectId,
+        postData: { param: e.target.value, searchParam: {} },
+        page: 0,
+      });
     } else {
       SelectAppStore.loadApps({
         projectId: this.state.projectId,
-        postData: { param: e.target.value, searchParam: {} },
+        postData: { param: e.target.value, searchParam: {}, page: 0 },
       });
     }
   };
@@ -264,6 +269,7 @@ class DeployAppHome extends Component {
     const projectName = AppState.currentMenuType.name;
     const prefix = <Icon type="search" onClick={this.handleSearch} />;
     const suffix = this.state.val ? <Icon type="close" onClick={this.clearInputValue} /> : null;
+    const loading = SelectAppStore.getLoading;
     return (
       <SideBar
         title={<FormattedMessage id={'deploy.step.one.app'} />}
@@ -299,35 +305,38 @@ class DeployAppHome extends Component {
                       ref={node => this.searchInput = node}
                     />
                   </div>
-                  <div>
-                    {dataSource.length >= 1 && dataSource.map(card => (
-                      <div
-                        key={card.id}
-                        role="none"
-                        className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && !this.state.isMarket && 'c7n-card-active'}`}
-                        onClick={this.hanldeSelectApp.bind(this, card)}
-                      >
-                        {this.state.app && !this.state.isMarket && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon icon-check" /></span> }
-                        <div className="c7n-store-card-icon" />
-                        <div className="c7n-store-card-name">
-                          {card.name}
+                  {loading ? <Loadingbar display /> : <React.Fragment>
+                    <div>
+                      {dataSource.length >= 1 && dataSource.map(card => (
+                        <div
+                          key={card.id}
+                          role="none"
+                          className={`c7n-store-card ${this.state.app && this.state.app.id === card.id && !this.state.isMarket && 'c7n-card-active'}`}
+                          onClick={this.hanldeSelectApp.bind(this, card)}
+                        >
+                          {this.state.app && !this.state.isMarket && this.state.app.id === card.id && <span className="span-icon-check" ><i className="icon icon-check" /></span> }
+                          <div className="c7n-store-card-icon" />
+                          <div className="c7n-store-card-name">
+                            <MouserOverWrapper text={card.name} width={0.15}>
+                              {card.name}</MouserOverWrapper>
+                          </div>
+                          <div title={card.code} className="c7n-store-card-des-60">
+                            {card.code}
+                          </div>
                         </div>
-                        <div className="c7n-store-card-des-60">
-                          {card.code}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="c7n-store-pagination">
-                    <Pagination
-                      total={pageInfo.total}
-                      current={pageInfo.current}
-                      pageSize={pageInfo.pageSize}
-                      showSizeChanger
-                      onChange={this.onPageChange}
-                      onShowSizeChange={this.onPageChange}
-                    />
-                  </div>
+                      ))}
+                    </div>
+                    <div className="c7n-store-pagination">
+                      <Pagination
+                        total={pageInfo.total}
+                        current={pageInfo.current}
+                        pageSize={pageInfo.pageSize}
+                        showSizeChanger
+                        onChange={this.onPageChange}
+                        onShowSizeChange={this.onPageChange}
+                      />
+                    </div>
+                  </React.Fragment> }
                 </React.Fragment> }
 
               </TabPane>
@@ -346,39 +355,41 @@ class DeployAppHome extends Component {
                       ref={node => this.searchInput = node}
                     />
                   </div>
-                  <div>
-                    {dataSource.length >= 1 && dataSource.map(card => (
-                      <div
-                        key={card.id}
-                        role="none"
-                        className={`c7n-store-card ${this.state.app && this.state.isMarket && this.state.app.appId === card.appId && 'c7n-card-active'}`}
-                        onClick={this.hanldeSelectApp.bind(this, card)}
-                      >
-                        {this.state.app && this.state.app.appId === card.appId && this.state.isMarket && <span className="span-icon-check" ><i className="icon icon-check " /></span> }
-                        {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${Choerodon.fileServer(card.imgUrl)})` }} />
-                          : <div className="c7n-store-card-icon" />}
-                        <div title={card.name} className="c7n-store-card-name">
-                          {card.name}
+                  {loading ? <Loadingbar display /> : <React.Fragment>
+                    <div>
+                      {dataSource.length >= 1 && dataSource.map(card => (
+                        <div
+                          key={card.id}
+                          role="none"
+                          className={`c7n-store-card ${this.state.app && this.state.isMarket && this.state.app.appId === card.appId && 'c7n-card-active'}`}
+                          onClick={this.hanldeSelectApp.bind(this, card)}
+                        >
+                          {this.state.app && this.state.app.appId === card.appId && this.state.isMarket && <span className="span-icon-check" ><i className="icon icon-check " /></span> }
+                          {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${Choerodon.fileServer(card.imgUrl)})` }} />
+                            : <div className="c7n-store-card-icon" />}
+                          <div title={card.name} className="c7n-store-card-name">
+                            {card.name}
+                          </div>
+                          <div className="c7n-store-card-source">
+                            {card.category}
+                          </div>
+                          <div title={card.description} className="c7n-store-card-des-60">
+                            {card.description}
+                          </div>
                         </div>
-                        <div className="c7n-store-card-source">
-                          {card.category}
-                        </div>
-                        <div title={card.description} className="c7n-store-card-des-60">
-                          {card.description}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="c7n-store-pagination">
-                    <Pagination
-                      total={pageInfo.total}
-                      current={pageInfo.current}
-                      pageSize={pageInfo.pageSize}
-                      showSizeChanger
-                      onChange={this.onPageChange}
-                      onShowSizeChange={this.onPageChange}
-                    />
-                  </div>
+                      ))}
+                    </div>
+                    <div className="c7n-store-pagination">
+                      <Pagination
+                        total={pageInfo.total}
+                        current={pageInfo.current}
+                        pageSize={pageInfo.pageSize}
+                        showSizeChanger
+                        onChange={this.onPageChange}
+                        onShowSizeChange={this.onPageChange}
+                      />
+                    </div>
+                  </React.Fragment>}
                 </React.Fragment> }
               </TabPane>
             </Tabs>

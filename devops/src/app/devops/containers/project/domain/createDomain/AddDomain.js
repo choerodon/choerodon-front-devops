@@ -113,7 +113,7 @@ class CreateDomain extends Component {
   handleSubmit =(e) => {
     e.preventDefault();
     const { store, id, type } = this.props;
-    const { projectId } = this.state;
+    const { projectId, initServiceLen, SingleData } = this.state;
     const service = store.getNetwork;
     this.props.form.validateFieldsAndScroll((err, data, modify) => {
       if (type === 'create') {
@@ -125,7 +125,7 @@ class CreateDomain extends Component {
             if (k.includes('path')) {
               const index = parseInt(k.split('-')[1], 10);
               const value = data[`network-${index}`];
-              pathList.push({ path: `${data[k]}`, serviceId: value });
+              pathList.push({ path: `/${data[k]}`, serviceId: value });
             }
             return pathList;
           });
@@ -143,7 +143,7 @@ class CreateDomain extends Component {
             });
         }
       } else {
-        if (!err && modify) {
+        if ((!err && modify) || (!err && initServiceLen !== SingleData.pathList.length)) {
           const keys = Object.keys(data);
           const postData = { domain: data.domain, name: data.name, envId: data.envId };
           const pathList = [];
@@ -151,7 +151,8 @@ class CreateDomain extends Component {
             if (k.includes('path')) {
               const index = parseInt(k.split('-')[1], 10);
               const value = data[`network-${index}`];
-              pathList.push({ path: `${data[k]}`, serviceId: value });
+              const path = data[k].split('/')[data[k].split('/').length - 1];
+              pathList.push({ path: `/${path}`, serviceId: value });
             }
             return pathList;
           });
@@ -168,7 +169,7 @@ class CreateDomain extends Component {
               this.setState({ submitting: false });
               Choerodon.prompt(err.response.data.message);
             });
-        } else if (!modify) {
+        } else if (!modify && !err) {
           this.handleClose();
         }
       }
@@ -239,7 +240,7 @@ class CreateDomain extends Component {
    * @type {Function}
    */
   checkName =_.debounce((rule, value, callback) => {
-    const p = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?([a-z0-9]([-a-z0-9]*[a-z0-9])?)*)$/;
+    const p = /^([a-z0-9]([-a-z0-9]?[a-z0-9])*)$/;
     const { SingleData } = this.state;
     if (SingleData && SingleData.name === value) {
       callback();
@@ -261,7 +262,7 @@ class CreateDomain extends Component {
           callback(this.props.intl.formatMessage({ id: 'network.form.app.disable' }));
         }
       } else {
-        callback(this.props.intl.formatMessage({ id: 'domain.name.check.failed' }));
+        callback(this.props.intl.formatMessage({ id: 'domain.names.check.failed' }));
       }
     }
   }, 1000);
@@ -278,58 +279,76 @@ class CreateDomain extends Component {
    */
   checkPath =(rule, value, callback) => {
     const { pathArr } = this.state;
+    const patt = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)$/;
     const domain = this.props.form.getFieldValue('domain');
     const index = parseInt(rule.field.split('-')[1], 10);
     const paths = [];
     for (let i = 0; i < pathArr.length; i += 1) {
-      const p = this.props.form.getFieldValue(`path-${pathArr[i].pathIndex}`);
+      const p = `/${this.props.form.getFieldValue(`path-${pathArr[i].pathIndex}`)}`;
       if (i !== index) {
         paths.push(p);
       }
     }
-    if (paths.includes(value)) {
+    if (paths.includes(`/${value}`) && !value) {
       callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
-    } else {
-      const { store } = this.props;
-      if (this.props.type === 'edit' && this.state.initServiceLen > index) {
-        const id = this.state.SingleData.id;
-        const v = this.state.SingleData.pathList[index].path
-          .slice(1, this.state.SingleData.pathList[index].path.length);
-        if (v === value && domain === this.state.SingleData.domain) {
-          callback();
+    } else if (value) {
+      if (patt.test(value)) {
+        if (paths.includes(`/${value}`)) {
+          callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
         } else {
-          store.checkPath(this.state.projectId, domain, `${value}`, id)
-            .then((data) => {
-              if (data) {
-                callback();
-              } else {
-                callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
-              }
-            })
-            .catch((error) => {
-              callback();
-            });
-        }
-      } else {
-        store.checkPath(this.state.projectId, domain, `${value}`)
-          .then((data) => {
-            if (data) {
+          const { store } = this.props;
+          if (this.props.type === 'edit' && this.state.initServiceLen > index) {
+            const id = this.state.SingleData.id;
+            const v = this.state.SingleData.pathList[index].path
+              .slice(1, this.state.SingleData.pathList[index].path.length);
+            if (v === value && domain === this.state.SingleData.domain) {
               callback();
             } else {
-              callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
+              store.checkPath(this.state.projectId, domain, `/${value}`, id)
+                .then((data) => {
+                  if (data) {
+                    callback();
+                  } else {
+                    callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
+                  }
+                })
+                .catch((error) => {
+                  callback();
+                });
             }
-          })
-          .catch((error) => {
-            callback();
-          });
+          } else {
+            store.checkPath(this.state.projectId, domain, `/${value}`)
+              .then((data) => {
+                if (data) {
+                  callback();
+                } else {
+                  callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
+                }
+              })
+              .catch((error) => {
+                callback();
+              });
+          }
+        }
+      } else {
+        callback(this.props.intl.formatMessage({ id: 'domain.name.check.failed' }));
       }
+    } else {
+      callback();
     }
+
   };
   /**
    * 检查域名是否符合规则
    * @type {Function}
    */
   checkDomain =(rule, value, callback) => {
+    const patt = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)$/;
+    if (patt.test(value)) {
+      callback();
+    } else {
+      callback(this.props.intl.formatMessage({ id: 'domain.name.check.failed' }));
+    }
     const { pathArr } = this.state;
     const fields = [];
     pathArr.map((path) => {
@@ -337,7 +356,6 @@ class CreateDomain extends Component {
       return fields;
     });
     this.props.form.validateFields(fields, { force: true });
-    callback();
   };
   /**
    * 校验网络是否可用
@@ -438,7 +456,7 @@ class CreateDomain extends Component {
           })(
             <Input
               disabled={!(this.props.form.getFieldValue('envId'))}
-              maxLength={30}
+              maxLength={40}
               label={this.props.intl.formatMessage({ id: 'domain.column.name' })}
               size="default"
             />,
@@ -474,17 +492,17 @@ class CreateDomain extends Component {
           >
             {getFieldDecorator(`path-${data.pathIndex}`, {
               rules: [{
-                required: true,
-                message: this.props.intl.formatMessage({ id: 'required' }),
+                // required: true,
+                // message: this.props.intl.formatMessage({ id: 'required' }),
               }, {
                 validator: this.checkPath,
               },
               ],
               initialValue: SingleData && this.state.initServiceLen > index
-                ? SingleData.pathList[index].path : '/',
+                ? SingleData.pathList[index].path.slice(1) : '',
             })(
               <Input
-                // prefix={'/'}
+                prefix={'/'}
                 onChange={this.checkAllPath.bind(this, true)}
                 disabled={!(this.props.form.getFieldValue('domain'))}
                 maxLength={10}

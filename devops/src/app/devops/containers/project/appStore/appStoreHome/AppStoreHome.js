@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Input, Icon, Pagination, Table, Popover } from 'choerodon-ui';
+import { Button, Input, Icon, Pagination, Table, Popover, Tooltip } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
@@ -78,10 +78,10 @@ class AppStoreHome extends Component {
    * 搜索函数
    */
   onSearch = () => {
-    const { page, pageSize, val } = this.state;
+    const { pageSize, val } = this.state;
     this.searchInput.focus();
     const pagination = {
-      current: page + 1, pageSize,
+      current: 1, pageSize,
     };
     this.onChange(pagination, null, null, val);
   };
@@ -109,7 +109,7 @@ class AppStoreHome extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const projectName = AppState.currentMenuType.name;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/appstore/import?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    this.linkToChange(`/devops/app-market/import?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -120,7 +120,7 @@ class AppStoreHome extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const projectName = AppState.currentMenuType.name;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/appstore/export?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    this.linkToChange(`/devops/app-market/export?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -141,7 +141,7 @@ class AppStoreHome extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const projectName = AppState.currentMenuType.name;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/appstore/${id}/app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    this.linkToChange(`/devops/app-market/${id}/app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -188,8 +188,9 @@ class AppStoreHome extends Component {
       >
         {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${Choerodon.fileServer(card.imgUrl)})` }} />
           : <div className="c7n-store-card-icon" />}
-        <div title={card.name} className="c7n-store-card-name">
-          {card.name}
+        <div className="c7n-store-card-name">
+          <Tooltip title={card.name}>
+            {card.name}</Tooltip>
         </div>
         <div className="c7n-store-card-source">
           {card.category}

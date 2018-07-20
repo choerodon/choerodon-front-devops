@@ -84,8 +84,12 @@
     }
 
     .deployAddApp-section {
-      margin: 32px 0;
-      width: 512px;
+      margin: 24px 0 32px  0;
+      //width: 512px;
+
+      &.deployAddApp-section-512 {
+        width: 512px;
+      }
 
       a {
         margin-left: auto;
@@ -229,3 +233,13 @@
   pointer-events: none;
 }
 
+.apprelease-formItem-label {
+  &::after {
+    display: inline-block;
+    margin-left: 4px;
+    content: "*";
+    line-height: 1;
+    font-size: 13px;
+    color: #d50000;
+  }
+}

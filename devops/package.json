@@ -13,21 +13,21 @@
     "build": "choerodon-front-boot build --config ../config.js"
   },
   "dependencies": {
-    "choerodon-front-boot": "^0.6.2",
-    "json-beautify": "^1.0.1",
+    "choerodon-front-boot": "^0.6.4",
+    "lodash-webpack-plugin": "^0.11.5",
     "markdown-react-js": "^1.0.0",
-    "react-ace": "^6.0.0",
-    "react-ace-editor": "0.0.2",
+    "quill-delta-to-html": "^0.8.4",
+    "react-codemirror": "^1.0.0",
     "react-copy-to-clipboard": "^5.0.1",
     "react-dnd": "^2.6.0",
-    "react-dnd-html5-backend": "^2.6.0",
+    "react-dnd-html5-backend": "^5.0.1",
     "react-file-download": "^0.3.5",
+    "react-image-lightbox": "^5.0.0",
     "react-loading": "^1.0.4",
     "react-static-container": "^1.0.2",
     "react-timeago": "^3.4.3",
     "timeago-react": "^2.0.0",
     "webpack": "^3.7.0",
-    "webpack-dev-server": "^2.9.1",
-    "yaml": "^0.3.0"
+    "webpack-dev-server": "^2.9.1"
   }
 }

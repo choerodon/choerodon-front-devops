@@ -1,7 +1,7 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-import { Observable } from 'rxjs';
-import { formJS } from 'immutable';
+// import { Observable } from 'rxjs';
+// import { formJS } from 'immutable';
 
 const height = window.screen.height;
 @store('EditReleaseStore')
@@ -52,38 +52,31 @@ class EditReleaseStore {
   }
 
   @computed get getAllData() {
-    // window.console.log(this.allData);
     return this.allData.slice();
   }
 
   @action setAllData(data) {
     this.allData = data;
-    // window.console.log(this.allData);
   }
 
   @action setSelectData(data) {
     this.selectData = data;
     this.setSelectPageInfo({ pageSize: 10, total: data.length, current: 0 });
-    // window.console.log(this.allData);
   }
   @computed get getSelectData() {
     return this.selectData.slice();
-    // window.console.log(this.allData);
   }
 
   @computed get getVersionData() {
-    // window.console.log(this.allData);
     return this.versionData.slice();
   }
 
   @action setVersionData(data) {
     this.versionData = data;
-    // window.console.log(this.allData);
   }
 
   @action setApps(data) {
     this.apps = data;
-    // window.console.log(this.allData);
   }
 
   @action changeIsRefresh(flag) {
@@ -126,8 +119,8 @@ class EditReleaseStore {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/list_unpublish?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
-      .subscribe((data) => {
+    return axios.post(`/devops/v1/projects/${projectId}/apps/list_unpublish?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+      .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
           this.handleData(data);
@@ -152,8 +145,8 @@ class EditReleaseStore {
     }
     this.changeLoading(true);
     if (key === '1') {
-      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/version/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
-        .subscribe((data) => {
+      return axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/version/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+        .then((data) => {
           const res = this.handleProptError(data);
           if (res) {
             this.handleVersionData(data);
@@ -162,8 +155,8 @@ class EditReleaseStore {
           this.changeIsRefresh(false);
         });
     } else {
-      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/version/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
-        .subscribe((data) => {
+      return axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/version/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+        .then((data) => {
           const res = this.handleProptError(data);
           if (res) {
             this.handleVersionData(data);
@@ -245,7 +238,3 @@ class EditReleaseStore {
 const editReleaseStore = new EditReleaseStore();
 export default editReleaseStore;
 
-// autorun(() => {
-//   window.console.log(templateStore.allData.length);
-//   whyRun();
-// });

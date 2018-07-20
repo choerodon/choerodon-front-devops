@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
 import { Table, Button, Input, Form, Tooltip, Select, Modal, Icon } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-import _ from 'lodash';
-import { fromJS, is } from 'immutable';
-import { Obversable } from 'rxjs';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { commonComponent } from '../../../../components/commonFunction';
 import LoadingBar from '../../../../components/loadingBar';
@@ -18,6 +15,8 @@ const Option = Select.Option;
 const Sidebar = Modal.Sidebar;
 const FormItem = Form.Item;
 const { TextArea } = Input;
+const Debounce = require('lodash.debounce');
+
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -49,22 +48,22 @@ class TemplateHome extends Component {
     this.loadAllData();
   }
 
-  shouldComponentUpdate = (nextProps, nextState) => {
-    if (this.props.form.isFieldsTouched()) {
-      return true;
-    }
-    const thisProps = fromJS(this.props || {});
-    const thisState = fromJS(this.state || {});
-    const nextStates = fromJS(nextState || {});
-    if (thisProps.size !== nextProps.size ||
-      thisState.size !== nextState.size) {
-      return true;
-    }
-    if (is(thisState, nextStates)) {
-      return false;
-    }
-    return true;
-  };
+  // shouldComponentUpdate = (nextProps, nextState) => {
+  //   if (this.props.form.isFieldsTouched()) {
+  //     return true;
+  //   }
+  //   const thisProps = fromJS(this.props || {});
+  //   const thisState = fromJS(this.state || {});
+  //   const nextStates = fromJS(nextState || {});
+  //   if (thisProps.size !== nextProps.size ||
+  //     thisState.size !== nextState.size) {
+  //     return true;
+  //   }
+  //   if (is(thisState, nextStates)) {
+  //     return false;
+  //   }
+  //   return true;
+  // };
 
   /**
    * 获取行
@@ -79,7 +78,8 @@ class TemplateHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={108}>
+      dataIndex: 'name',
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={0.15}>
         {record.name}
       </MouserOverWrapper>),
     }, {
@@ -88,7 +88,7 @@ class TemplateHome extends Component {
       key: 'code',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.code} width={108}>
+      render: (test, record) => (<MouserOverWrapper text={record.code} width={0.15}>
         {record.code}
       </MouserOverWrapper>),
     }, {
@@ -97,7 +97,7 @@ class TemplateHome extends Component {
       key: 'description',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.description} width={150}>
+      render: (test, record) => (<MouserOverWrapper text={record.description} width={0.2}>
         {record.description}
       </MouserOverWrapper>),
     }, {
@@ -105,12 +105,11 @@ class TemplateHome extends Component {
       dataIndex: 'repoUrl',
       key: 'repoUrl',
       render: (test, record) => (
-        <Tooltip trigger="hover" placement="bottom" title={record.repoUrl}>
+        <MouserOverWrapper text={record.repoUrl} width={0.1}>
           <div className="c7n-template-table">
             <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">../{record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}</a>
           </div>
-        </Tooltip>
-
+        </MouserOverWrapper>
       ),
     }, {
       title: <FormattedMessage id="template.type" />,
@@ -129,7 +128,6 @@ class TemplateHome extends Component {
           : <React.Fragment><Icon type="av_timer" /><span className="c7n-template-column-text"><FormattedMessage id="template.perDefine" /></span> </React.Fragment>
       ),
     }, {
-      align: 'right',
       width: 80,
       key: 'action',
       render: (test, record) => (
@@ -160,7 +158,7 @@ class TemplateHome extends Component {
    * @param value
    * @param callback
    */
-  checkCode = _.debounce((rule, value, callback) => {
+  checkCode = Debounce((rule, value, callback) => {
     const { TemplateStore, intl } = this.props;
     // eslint-disable-next-line no-useless-escape
     const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
@@ -185,7 +183,7 @@ class TemplateHome extends Component {
    * @param value
    * @param callback
    */
-  checkName = _.debounce((rule, value, callback) => {
+  checkName = Debounce((rule, value, callback) => {
     const { TemplateStore, intl } = this.props;
     const singleData = TemplateStore.singleData;
     if (singleData && value !== singleData.name) {
@@ -547,7 +545,7 @@ class TemplateHome extends Component {
           title={<FormattedMessage id="template.del" />}
           footer={[
             <Button key="back" onClick={this.closeRemove}><FormattedMessage id="cancel" /></Button>,
-            <Button key="submit" type="danger" onClick={this.handleDelete}>
+            <Button key="submit" type="danger" onClick={this.handleDelete} loading={this.state.submitting}>
               <FormattedMessage id="delete" />
             </Button>,
           ]}

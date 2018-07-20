@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { Action, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import ValueConfig from '../valueConfig';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import UpgradeIst from '../upgrateIst';
 import DelIst from '../component/delIst/DelIst';
 import '../AppDeploy.scss';
 import '../../../main.scss';
@@ -23,6 +23,7 @@ class SingleEnvironment extends Component {
       appId: null,
       verId: null,
       envId: null,
+      visibleUp: false,
       active: -1,
       pageSize: 10,
       page: 0,
@@ -166,6 +167,7 @@ class SingleEnvironment extends Component {
     this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
     store.loadInstanceAll(projectId, pagination.current - 1,
       pagination.pageSize, sort, envID, verId, appId, postData);
+    store.setIstTableFilter(param);
   };
 
   /**
@@ -197,6 +199,42 @@ class SingleEnvironment extends Component {
       });
   };
 
+
+  /**
+   * 升级配置实例信息
+   * @param name 实例名
+   * @param id 实例ID
+   * @param envId
+   * @param verId
+   * @param appId
+   */
+  upgradeIst = (name, id, envId, verId, appId) => {
+    const { store, intl } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    store.loadValue(projectId, appId, envId, verId)
+      .then((res) => {
+        if (res && res.failed) {
+          Choerodon.prompt(res.message);
+        } else {
+          store.loadUpVersion(projectId, verId)
+            .then((val) => {
+              if (val && val.failed) {
+                Choerodon.prompt(val.message);
+              } else if (val.length === 0) {
+                Choerodon.prompt(intl.formatMessage({ id: 'ist.noUpVer' }));
+              } else {
+                this.setState({
+                  idArr: [envId, verId, appId],
+                  id,
+                  name,
+                  visibleUp: true,
+                });
+              }
+            });
+        }
+      });
+  };
+
   /**
    * 关闭滑块
    * @param res 是否重新部署需要重载数据
@@ -214,7 +252,21 @@ class SingleEnvironment extends Component {
     if (res) {
       store.loadInstanceAll(projectId, page, 10, null, envID, null, appId);
     }
-    store.changeShow(false);
+  };
+
+  /**
+   * 关闭升级滑块
+   * @param res 是否重新部署需要重载数据
+   */
+  handleCancelUp = (res) => {
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    this.setState({
+      visibleUp: false,
+    });
+    if (res) {
+      store.loadInstanceAll(projectId, this.state.page);
+    }
   };
 
   /**
@@ -356,6 +408,14 @@ class SingleEnvironment extends Component {
             type,
             organizationId,
             projectId,
+            service: ['devops-service.application-version.getUpgradeAppVersion'],
+            text: intl.formatMessage({ id: 'ist.upgrade' }),
+            action: this.upgradeIst.bind(this, record.code, record.id,
+              record.envId, record.appVersionId, record.appId),
+          }, {
+            type,
+            organizationId,
+            projectId,
             service: ['devops-service.application-instance.start', 'devops-service.application-instance.stop'],
             text: record.status !== 'stoped' ? intl.formatMessage({ id: 'ist.stop' }) : intl.formatMessage({ id: 'ist.run' }),
             action: record.status !== 'stoped' ? this.activeIst.bind(this, record.id, 'stop') : this.activeIst.bind(this, record.id, 'start'),
@@ -382,6 +442,7 @@ class SingleEnvironment extends Component {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
+    const param = store.getIstParams;
 
     let envName = envNames.length ? (<React.Fragment>
       {envNames[0].connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
@@ -405,7 +466,7 @@ class SingleEnvironment extends Component {
 
     const appNameDom = appNames.length ? _.map(appNames, d => (<div role="none" className={appID === d.id ? 'c7n-deploy-single_card c7n-deploy-single_card-active' : 'c7n-deploy-single_card'} onClick={this.loadDetail.bind(this, this.state.envId, d.id)}>
       {d.projectId === projectId ? <span className="icon icon-project c7n-icon-publish" /> : <span className="icon icon-apps c7n-icon-publish" />}
-      <span className="c7n-text-ellipsis"><MouserOverWrapper text={d.name || ''} width={150}>{d.name}</MouserOverWrapper></span>
+      <div className="c7n-text-ellipsis"><Tooltip title={d.name || ''}>{d.name}</Tooltip></div>
     </div>)) : (<div className="c7n-deploy-single_card" >
       <div className="c7n-deploy-square"><div>App</div></div>
       <FormattedMessage id="ist.noApp" />
@@ -495,6 +556,7 @@ class SingleEnvironment extends Component {
         onChange={this.tableChange}
         loading={store.getIsLoading}
         pagination={store.pageInfo}
+        filters={param || []}
         columns={columns}
         dataSource={ist}
         rowKey={record => record.id}
@@ -515,7 +577,14 @@ class SingleEnvironment extends Component {
           idArr={this.state.idArr}
           onClose={this.handleCancel}
         /> }
-
+        {this.state.visibleUp && <UpgradeIst
+          store={this.props.store}
+          visible={this.state.visibleUp}
+          name={this.state.name}
+          id={this.state.id}
+          idArr={this.state.idArr}
+          onClose={this.handleCancelUp}
+        /> }
         <DelIst
           open={this.state.openRemove}
           handleCancel={this.handleClose}

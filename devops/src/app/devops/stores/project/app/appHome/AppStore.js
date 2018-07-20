@@ -1,7 +1,7 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-import { Observable } from 'rxjs';
-import { formJS } from 'immutable';
+// import { Observable } from 'rxjs';
+// import { formJS } from 'immutable';
 
 const height = window.screen.height;
 
@@ -65,15 +65,19 @@ class AppStore {
     return this.singleData;
   }
 
-  loadData = (isRefresh = false, projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
+  loadData = (isRefresh = false, projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: '', order: 'desc' }, postData = { searchParam: {},
     param: '',
   }) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
+    let url = `/devops/v1/projects/${projectId}/apps/list_by_options?page=${page}&size=${size}`;
+    if (sort.field !== '') {
+      url = `/devops/v1/projects/${projectId}/apps/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`;
+    }
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
-      .subscribe((data) => {
+    return axios.post(url, JSON.stringify(postData))
+      .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
           this.handleData(data);

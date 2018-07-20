@@ -35,7 +35,7 @@ const ICONS = {
   canceled: {
     icon: 'icon-not_interested',
     code: 'canceled',
-    display: 'cancle',
+    display: 'cancel',
   },
   skipped: {
     icon: 'icon-skipped_b',
@@ -68,6 +68,7 @@ class CiPipelineHome extends Component {
     super(props);
     this.state = {
       page: 0,
+      param: [],
     };
   }
 
@@ -102,6 +103,8 @@ class CiPipelineHome extends Component {
   }
 
   get tableCiPipeline() {
+    const { param } = this.state;
+
     const ciPipelineColumns = [
       {
         title: <FormattedMessage id="ciPipeline.status" />,
@@ -159,12 +162,14 @@ class CiPipelineHome extends Component {
     return (
       <div>
         <Table
+          filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
           loading={CiPipelineStore.loading}
           size="middle"
           pagination={CiPipelineStore.pagination}
           columns={ciPipelineColumns}
           dataSource={CiPipelineStore.ciPipelines.slice()}
           rowKey={record => record.id}
+          filters={param}
           onChange={this.handleTableChange}
         />
       </div>
@@ -186,7 +191,8 @@ class CiPipelineHome extends Component {
     this.handleRefresh();
   }
 
-  handleTableChange = (pagination, filters, sorter) => {
+  handleTableChange = (pagination, filters, sorter, param) => {
+    this.setState({ param });
     CiPipelineStore.setLoading(true);
     CiPipelineStore.loadPipelines(
       CiPipelineStore.currentApp.id,
@@ -195,6 +201,9 @@ class CiPipelineHome extends Component {
   };
 
   handleRefresh =() => {
+    this.setState({
+      param: [],
+    });
     CiPipelineStore.setLoading(true);
     CiPipelineStore.loadPipelines(
       CiPipelineStore.currentApp.id,
@@ -335,7 +344,7 @@ class CiPipelineHome extends Component {
 
   renderJobs = (jobs, record) => {
     const pipeStage = [];
-    if (jobs.length) {
+    if (jobs && jobs.length) {
       for (let i = 0, l = jobs.length; i < l; i += 1) {
         pipeStage.push(<span className="c7n-jobs">
           {
@@ -343,8 +352,12 @@ class CiPipelineHome extends Component {
               <span className="c7n-split-before" />
               : null
           }
-          <Tooltip title={`${jobs[i].stage} : ${jobs[i].status}`}>
-            <a
+          <Tooltip
+            title={(jobs[i].stage === 'sonarqube' && jobs[i].status === 'failed') ? `${jobs[i].stage} : ${jobs[i].description}` : `${jobs[i].stage} : ${jobs[i].status}`}>
+            {jobs[i].stage === 'sonarqube' ? <i
+              className={`icon ${ICONS[jobs[i].status || 'skipped'].icon || ''}
+                c7n-icon-${jobs[i].status} c7n-icon-lg`}
+            /> : <a
               className=""
               href={`${record.gitlabUrl.slice(0, -4)}/-/jobs/${jobs[i].id}`}
               target="_blank"
@@ -354,7 +367,7 @@ class CiPipelineHome extends Component {
                 className={`icon ${ICONS[jobs[i].status || 'skipped'].icon || ''}
                 c7n-icon-${jobs[i].status} c7n-icon-lg`}
               />
-            </a>
+            </a>}
           </Tooltip>
         </span>);
       }

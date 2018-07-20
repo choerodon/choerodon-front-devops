@@ -37,8 +37,10 @@ export default class MouserOverWrapper extends Component {
   };
   render() {
     const { text, width, className, style } = this.props;
+    const menuWidth = document.getElementsByClassName('common-menu')[0].offsetWidth;
+    const iWidth = window.innerWidth - 48 - menuWidth;
     const textStyle = {
-      maxWidth: width,
+      maxWidth: iWidth * width,
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
       overflow: 'hidden',
@@ -57,16 +59,16 @@ export default class MouserOverWrapper extends Component {
       }
     }
     if (text && len) {
-      const chineselen = this.chineseLength(text) * 12;
-      const numberlen = this.numberLength(text) * 8;
+      const chineselen = this.chineseLength(text) * 13;
+      const numberlen = this.numberLength(text) * 7.09;
       const otherLen = (text.length - this.chineseLength(text) - this.numberLength(text)) * 8;
       domWidth = chineselen + numberlen + otherLen;
     }
     Object.assign(textStyle, style);
-    if (text && domWidth <= width) {
+    if (text && domWidth <= iWidth * width) {
       return <div style={textStyle} className={className}> {this.props.children}</div>;
     } else {
-      return (<Tooltip title={text} placement="bottom" >
+      return (<Tooltip title={text} placement="topLeft" >
         <div style={textStyle} className={className}>
           {this.props.children}
         </div>

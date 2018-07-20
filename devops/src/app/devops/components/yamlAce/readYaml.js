@@ -4,11 +4,8 @@
 import React, { Component } from 'react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import ReactAce from 'react-ace-editor';
-// import ace from 'brace';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import 'brace/mode/yaml';
-import 'brace/theme/dawn';
 import './AceForYaml.scss';
 
 

@@ -432,6 +432,9 @@
 
 .c7n-app-name {
   width: 80px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .inline {
@@ -695,4 +698,15 @@
   line-height: 28px;
   color: #3f51b5;
   padding-left: 20px;
+}
+
+.c7n-app-select_512 {
+  width: 512px;
+  margin-bottom: 16px;
+}
+
+.c7n-noVer-waring {
+  margin: 0 5px 0 0;
+  color: #ffb100;
+  vertical-align: text-bottom;
 }

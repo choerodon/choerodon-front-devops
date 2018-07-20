@@ -1,6 +1,30 @@
 # Changelog
 All notable changes to choerodon-front-devops will be documented in this file.
 
+## [0.8.0] - 2018-07-20
+### Added
+- `Repository`, `branch management`, `tag` and `merge request`, achieving more flexible branch management models.
+- Job operation event message in `container`. 
+- Code quality checking in CI pipeline.
+- Sonarqube code quality checking link in `application management`.
+- Default selection of latest version in `application export`.
+
+### Changed
+- Table column width auto adaption.
+- Adjust menu structure. 
+- Improve log component of stage log.
+- Improve loading and jumping speed of some pages.
+- Improve field display of some pages.
+- Change the sort of applications in application management.
+- Improve service uniqueness check.
+- Improve ingress validation rules.
+
+### Fixed
+- Problem with select-all in selection box.
+- Filter condition of the table component cannot be cleared when the parent component is refreshed.
+- Fixed switch version does not clear instances when modify the service in service management.
+- Fixed instance details, the log not changed while switch the stage.
+
 ## [0.7.0] - 2018-06-29
 ### Added
 - `Service management` instanseinstance availability verification.

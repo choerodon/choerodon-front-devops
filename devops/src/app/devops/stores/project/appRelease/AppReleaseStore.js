@@ -1,7 +1,7 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-import { Observable } from 'rxjs';
-import { formJS } from 'immutable';
+// import { Observable } from 'rxjs';
+// import { formJS } from 'immutable';
 
 const height = window.screen.height;
 @store('AppReleaseStore')
@@ -24,13 +24,11 @@ class AppReleaseStore {
   }
 
   @computed get getAllData() {
-    // window.console.log(this.allData);
     return this.allData.slice();
   }
 
   @action setAllData(data) {
     this.allData = data;
-    // window.console.log(this.allData);
   }
 
   @action changeIsRefresh(flag) {
@@ -48,15 +46,15 @@ class AppReleaseStore {
     return this.loading;
   }
 
-  loadData = ({ isRefresh = false, projectId, page = 0, size = 10, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
+  loadData = ({ isRefresh = false, projectId, page = 0, size = 10, sorter = { field: 'id', order: 'desc' }, postData = { searchParam: {},
     param: '' }, key = '1' }) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
     if (key === '1') {
-      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps/list_unpublish?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
-        .subscribe((data) => {
+      return axios.post(`/devops/v1/projects/${projectId}/apps/list_unpublish?page=${page}&size=${size}&sort=${sorter.field},${sorter.order}`, JSON.stringify(postData))
+        .then((data) => {
           const res = this.handleProptError(data);
           if (res) {
             this.handleData(data);
@@ -65,8 +63,8 @@ class AppReleaseStore {
           this.changeIsRefresh(false);
         });
     } else {
-      return Observable.fromPromise(axios.post(`/devops/v1/projects/${projectId}/apps_market/list?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData)))
-        .subscribe((data) => {
+      return axios.post(`/devops/v1/projects/${projectId}/apps_market/list?page=${page}&size=${size}&sort=${sorter.field},${sorter.order}`, JSON.stringify(postData))
+        .then((data) => {
           const res = this.handleProptError(data);
           if (res) {
             this.handleData(data);

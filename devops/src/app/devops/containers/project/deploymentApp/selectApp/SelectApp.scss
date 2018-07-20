@@ -65,7 +65,7 @@
   .c7n-store-card {
     border: 2px solid white;
     cursor: pointer;
-    padding: 16px 20px;
+    padding: 10px 20px;
     margin-bottom: 14px;
     margin-right: 14px;
     background-color: white;
@@ -80,7 +80,7 @@
     }
 
     .c7n-store-card-icon {
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       border-radius: 50px;
       height: 50px;
       width: 50px;
@@ -92,15 +92,11 @@
 
     .c7n-store-card-name {
       font-size: 15px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
     }
 
     .c7n-store-card-source {
       font-size: 13px;
       color: rgba(0, 0, 0, 0.65);
-      margin-bottom: 8px;
     }
 
     .c7n-store-card-des-60 {

@@ -46,6 +46,7 @@ class DeployHome extends Component {
     const { AppDeploymentStore } = this.props;
     const tabActive = AppDeploymentStore.getTabActive;
     this.changeTabs(tabActive);
+    AppDeploymentStore.setIstTableFilter(null);
   };
 
   /**
@@ -132,6 +133,8 @@ class DeployHome extends Component {
   changeTabs = (tabName) => {
     const { AppDeploymentStore } = this.props;
     AppDeploymentStore.setTabActive(tabName);
+    // 设定只要切换tab页就清空筛选条件
+    AppDeploymentStore.setIstTableFilter(null);
     if (tabName === 'singleApp') {
       this.loadEnvCards();
       this.loadAppName();

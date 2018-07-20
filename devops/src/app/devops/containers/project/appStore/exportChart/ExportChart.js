@@ -5,6 +5,7 @@ import { Button, Select, Steps, Table } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, message, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import '../Importexport.scss';
 import '../../../main.scss';
 
@@ -155,7 +156,7 @@ class ExportChart extends Component {
     const cols = document.getElementsByClassName(`col-${id}`);
     if (_.indexOf(upDown, id) === -1) {
       for (let i = 0; i < cols.length; i += 1) {
-        cols[i].style.height = `${Math.ceil(length / 4) * 31}px`;
+        cols[i].style.height = 'auto';
       }
       upDown.push(id);
       this.setState({
@@ -179,7 +180,7 @@ class ExportChart extends Component {
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    this.props.history.push(`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    this.props.history.push(`/devops/app-market?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
   /**
    * 判断第二步是否可点击下一步
@@ -244,7 +245,7 @@ class ExportChart extends Component {
    */
   renderStepOne = () => {
     const { ExportChartStore, intl } = this.props;
-    const data = ExportChartStore.app.slice();
+    const data = ExportChartStore.getApp;
     const column = [{
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
@@ -261,6 +262,9 @@ class ExportChart extends Component {
       title: <FormattedMessage id="appstore.description" />,
       dataIndex: 'description',
       key: 'description',
+      render: (test, record) => (<MouserOverWrapper text={record.description} width={0.3}>
+        {record.description}
+      </MouserOverWrapper>),
     }];
     const rowSelection = {
       selectedRowKeys: this.state.selectedRowKeys || [],
@@ -404,7 +408,7 @@ class ExportChart extends Component {
       dataIndex: 'name',
       key: 'name',
       width: 150,
-    },  {
+    }, {
       title: <FormattedMessage id="app.code" />,
       dataIndex: 'code',
       key: 'code',
@@ -470,7 +474,6 @@ class ExportChart extends Component {
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-
     return (
       <Page
         service={[
@@ -480,7 +483,7 @@ class ExportChart extends Component {
         ]}
         className="c7n-region"
       >
-        <Header title={intl.formatMessage({ id: 'appstore.export' })} backPath={`/devops/appstore?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
+        <Header title={intl.formatMessage({ id: 'appstore.export' })} backPath={`/devops/app-market?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
         <Content>
           <h2 className="c7n-space-first">
             <FormattedMessage id="appstore.export" />

@@ -143,7 +143,7 @@ class NetworkHome extends Component {
             statusDom = null;
         }
         return (<React.Fragment>
-          <MouserOverWrapper text={record.name || ''} width={100} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+          <MouserOverWrapper text={record.name || ''} width={0.1} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
             {record.name}</MouserOverWrapper>
           {statusDom}
         </React.Fragment>);
@@ -166,21 +166,21 @@ class NetworkHome extends Component {
       key: 'ip',
       filters: [],
       render: record => (
-        <MouserOverWrapper text={record.externalIp || ''} width={40}>
+        <MouserOverWrapper text={record.externalIp || ''} width={0.1}>
           {record.externalIp}</MouserOverWrapper>
       ),
     }, {
       title: <FormattedMessage id={'network.column.port'} />,
       key: 'port',
       render: record => (
-        <MouserOverWrapper text={record.port || ''} width={40}>
+        <MouserOverWrapper text={record.port || ''} width={0.05}>
           {record.port}</MouserOverWrapper>
       ),
     }, {
       title: <FormattedMessage id={'network.column.targetPort'} />,
       key: 'targetPort',
       render: record => (
-        <MouserOverWrapper text={record.targetPort || ''} width={40}>
+        <MouserOverWrapper text={record.targetPort || ''} width={0.05}>
           {record.targetPort}</MouserOverWrapper>
       ),
     }, {
@@ -190,10 +190,10 @@ class NetworkHome extends Component {
       sorter: true,
       render: record => (
         <React.Fragment>
-          <Tooltip title={`${record.appProjectId === parseInt(menu.id, 10) ? <FormattedMessage id={'project'} /> : <FormattedMessage id={'market'} />}`}>
+          <Tooltip title={`${record.appProjectId === parseInt(menu.id, 10) ? this.props.intl.formatMessage({ id: 'project' }) : this.props.intl.formatMessage({ id: 'market' })}`}>
             <span className={`icon ${record.appProjectId === parseInt(menu.id, 10) ? 'icon-project' : 'icon-apps'} c7n-network-icon`} />
           </Tooltip>
-          <MouserOverWrapper text={record.appName || ''} width={100} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
+          <MouserOverWrapper text={record.appName || ''} width={0.1} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
             <span>{record.appName}</span>
           </MouserOverWrapper>
         </React.Fragment>
@@ -208,7 +208,7 @@ class NetworkHome extends Component {
         <React.Fragment>
           {_.map(record.appVersion, versions =>
             (<div key={versions.id} className={`c7n-network-col_border col-${record.id}-${versions.id}`}>
-              <MouserOverWrapper text={versions.version || ''} width={100} className="c7n-network-column-version" >
+              <MouserOverWrapper text={versions.version || ''} width={0.1} className="c7n-network-column-version" >
                 <span>{versions.version}</span>
               </MouserOverWrapper>
             </div>))}
@@ -230,7 +230,7 @@ class NetworkHome extends Component {
               />
               }
               {_.map(versions.appInstance, datas =>
-                (<MouserOverWrapper key={datas.id} width={115} className={`${datas.intanceStatus !== 'running' ? 'c7n-network-status-error' : ''} c7n-network-square`} text={datas.code}>{datas.code}</MouserOverWrapper>))}
+                (<MouserOverWrapper key={datas.id} width={0.12} className={`${datas.intanceStatus !== 'running' ? 'c7n-network-status-error' : ''} c7n-network-square`} text={datas.code}>{datas.code}</MouserOverWrapper>))}
             </div>))}
         </React.Fragment>
       ),

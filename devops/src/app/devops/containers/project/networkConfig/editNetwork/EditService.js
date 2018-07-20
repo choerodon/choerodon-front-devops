@@ -237,34 +237,6 @@ class EditService extends Component {
     this.props.form.resetFields();
     this.props.onClose();
   };
-
-  /**
-   * 检查名字的唯一性
-   * @param rule
-   * @param value
-   * @param callback
-   */
-  checkName = _.debounce((rule, value, callback) => {
-    const { store, intl } = this.props;
-    const { SingleData } = this.state;
-    const envId = this.state.envId || SingleData.envId;
-    const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
-    if (!pattern.test(value)) {
-      callback(intl.formatMessage('network.name.check.failed'));
-    } else if (value !== SingleData.name) {
-      store.checkDomainName(this.state.projectId, envId, value)
-        .then(() => {
-          callback();
-        })
-        .catch((error) => {
-          if (error.response.message.status === 400) {
-            callback(intl.formatMessage('network.name.check.exist'));
-          }
-        });
-    } else {
-      callback();
-    }
-  }, 1000);
   /**
    * 校验IP
    * @param rule
@@ -330,10 +302,28 @@ class EditService extends Component {
       if (p.test(value) && parseInt(value, 10) >= 1 && parseInt(value, 10) <= 65535) {
         callback();
       } else {
-        callback(intl.formatMessage('network.port.check.failed'));
+        callback(intl.formatMessage({ id: 'network.port.check.failed' }));
       }
     } else {
       callback();
+    }
+  };
+  /**
+   * 切换version
+   * @param index
+   * @param value
+   */
+  selectVersion =(index, value) => {
+    const { SingleData } = this.state;
+    if (SingleData.appVersion[index].id !== parseInt(value, 10)) {
+      SingleData.appVersion[index] = [];
+      this.setState({
+        [index]: {
+          versions: this.state[index].versions,
+          instances: this.state[index].instances,
+          deletedIns: [],
+        },
+        SingleData });
     }
   };
 
@@ -380,8 +370,6 @@ class EditService extends Component {
                   rules: [{
                     required: true,
                     message: intl.formatMessage({ id: 'required' }),
-                  }, {
-                    validator: this.checkName,
                   }],
                   initialValue: SingleData ? SingleData.name : '',
                 })(
@@ -515,7 +503,7 @@ class EditService extends Component {
                       notFoundContent={intl.formatMessage({ id: 'network.form.version.disable' })}
                       label={<FormattedMessage id={'network.column.version'} />}
                       showSearch
-                      onSelect={this.selectVersion}
+                      onSelect={this.selectVersion.bind(this, index)}
                       dropdownMatchSelectWidth
                       onFocus={this.loadVersion.bind(this, data.versionIndex)}
                       size="default"

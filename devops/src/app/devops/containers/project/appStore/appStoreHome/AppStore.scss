@@ -1,7 +1,6 @@
 .c7n-store-content {
   flex-grow: 1;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.04);
   padding: 20px 24px;
   margin: 0 !important;
 }
@@ -30,7 +29,7 @@
     width: 50%;
     height: 48px;
     background: #fff;
-    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
   }
 
   input {
@@ -75,14 +74,14 @@
 
 .c7n-store-card {
   cursor: pointer;
-  padding: 16px 20px;
+  padding: 10px 20px;
   margin-bottom: 16px;
   margin-right: 15px;
   background-color: white;
   height: 190px;
   width: 240px;
   display: inline-block;
-  box-shadow: 0 1px 3px -2px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
   border-radius: 2px;
 
   &:hover {
@@ -90,7 +89,7 @@
   }
 
   .c7n-store-card-icon {
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     border-radius: 50px;
     height: 50px;
     width: 50px;
@@ -104,13 +103,13 @@
     font-size: 15px;
     text-overflow: ellipsis;
     white-space: nowrap;
+    width: 200px;
     overflow: hidden;
   }
 
   .c7n-store-card-source {
     font-size: 13px;
     color: rgba(0, 0, 0, 0.65);
-    margin-bottom: 8px;
   }
 
   .c7n-store-card-des {

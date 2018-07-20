@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Tootip, Button, Input, Form, Modal, Tooltip, Select } from 'choerodon-ui';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
@@ -76,7 +76,7 @@ class AppHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={95}>
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={0.2}>
         {record.name}
       </MouserOverWrapper>),
     }, {
@@ -85,14 +85,14 @@ class AppHome extends Component {
       key: 'code',
       sorter: true,
       filters: [],
-      render: (test, record) => (<MouserOverWrapper text={record.code} width={145}>
+      render: (test, record) => (<MouserOverWrapper text={record.code} width={0.25}>
         {record.code}
       </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="app.url" />,
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={250}>
+      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={0.25}>
         <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl ? `../${record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}` : ''}</a>
       </MouserOverWrapper>),
     }, {
@@ -121,13 +121,13 @@ class AppHome extends Component {
       key: 'action',
       render: (test, record) => (
         <div>
-          {record.repoUrl ? <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.git-flow.listByAppId', 'devops-service.git-flow.queryTags']} >
-            <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="app.branchManage" /> : <FormattedMessage id="app.start" />}</React.Fragment>}</div>}>
-              {record.active && record.synchro && record.repoUrl !== null ? <Button shape="circle" size={'small'} onClick={this.linkToBranch.bind(this, record.id, record.name)}>
-                <span className="icon icon-branch" />
-              </Button> : <span className="icon icon-branch c7n-app-icon-disabled" /> }
-            </Tooltip>
-          </Permission> : null }
+          {record.sonarUrl ? <Tooltip title={<FormattedMessage id="app.quality" />} placement="bottom">
+            <a href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
+              <Button shape="circle" size={'small'}>
+                <span className="icon icon-quality" />
+              </Button>
+            </a>
+          </Tooltip> : null }
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="edit" /> : <FormattedMessage id="app.start" />}</React.Fragment>}</div>}>
               {record.active && record.synchro ? <Button shape="circle" size={'small'} onClick={this.showSideBar.bind(this, 'edit', record.id)}>
@@ -142,7 +142,6 @@ class AppHome extends Component {
               </Button> : <React.Fragment>
                 {record.active ? <span className="icon icon-remove_circle_outline c7n-app-icon-disabled" /> : <span className="icon icon-finished c7n-app-icon-disabled" />}
               </React.Fragment> }
-              
             </Tooltip>
           </Permission>
         </div>
@@ -404,7 +403,7 @@ class AppHome extends Component {
             initialValue: singleData ? singleData.name : '',
           })(
             <Input
-              maxLength={10}
+              maxLength={20}
               label={<FormattedMessage id="app.name" />}
               size="default"
             />,
@@ -481,8 +480,6 @@ class AppHome extends Component {
           'devops-service.application.pageByOptions',
           'devops-service.application.listTemplate',
           'devops-service.application.queryByAppIdAndActive',
-          'devops-service.git-flow.listByAppId',
-          'devops-service.git-flow.queryTags',
           'devops-service.application.queryByAppId',
         ]}
       >

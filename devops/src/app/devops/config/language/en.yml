@@ -1,16 +1,33 @@
-"devops": "Devops"
-"devops.template": "Application template"
-"development-pipeline": "Development pipeline"
+# 应用管理
+"application-management": "Application Management"
+"application-management.application-template": "Application Template"
+"application-management.application": "Application"
+"application-management.application-version": "Application Version"
+"application-management.application-release": "Application Release"
+"application-management.application-market": "Application Market"
+
+# 开发流水线
+"development-pipeline": "Development Pipeline"
+"development-pipeline.branch": "Branch"
+"development-pipeline.tag": "Tag"
+"development-pipeline.repository": "Repository"
+"development-pipeline.merge-request": "Merge Request"
+"development-pipeline.continuous-integration": "Continuous Integration"
 "development-pipeline.application": "Application"
-"development-pipeline.continuous-integration": "CI"
 "development-pipeline.application-version": "Application Version"
-"deployment-pipeline": "Deployment pipeline"
-"deployment-pipeline.environment-pipeline": "Environment"
+
+# 部署流水线
+"deployment-pipeline": "Deployment Pipeline"
+"deployment-pipeline.environment-pipeline": "Environment Pipeline"
 "deployment-pipeline.application-deployment": "Application Deployment"
 "deployment-pipeline.instance": "Instance"
 "deployment-pipeline.service": "Service"
 "deployment-pipeline.ingress": "Ingress"
 "deployment-pipeline.container": "Container"
+
+# 0.8废弃
 "application-market": "Application Market"
-"application-market.application-release": "Application Release"
 "application-market.application-market": "Application Market"
+"application-market.application-release": "Application Release"
+"application": "Application Management"
+"application.application-template": "Application Template"

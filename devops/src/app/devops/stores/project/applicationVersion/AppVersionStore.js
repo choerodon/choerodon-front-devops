@@ -1,6 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-import { Observable } from 'rxjs';
+// import { Observable } from 'rxjs';
 
 const height = window.screen.height;
 
@@ -25,13 +25,11 @@ class AppVersionStore {
 
 
   @computed get getAllData() {
-    // window.console.log(this.allData);
     return this.allData.slice();
   }
 
   @action setAllData(data) {
     this.allData = data;
-    // window.console.log(this.allData);
   }
 
   @action changeIsRefresh(flag) {
@@ -57,8 +55,8 @@ class AppVersionStore {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return Observable.fromPromise(axios.post(`/devops/v1/projects/${proId}/app_version/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field},${sort.order}`, JSON.stringify(datas)))
-      .subscribe((data) => {
+    return axios.post(`/devops/v1/projects/${proId}/app_version/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
+      .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
           this.handleData(data);

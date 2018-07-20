@@ -5,11 +5,12 @@ import { Button, Steps, Tabs, Tooltip, Icon } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import CodeMirror from 'react-codemirror';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './Deploydetail.scss';
 import '../../container/containerHome/ContainerHome.scss';
-import Log from '../../appDeployment/component/log';
+// import Log from '../../appDeployment/component/log';
 import LoadingBar from '../../../../components/loadingBar';
 import Ace from '../../../../components/yamlAce';
 
@@ -17,6 +18,12 @@ const Step = Steps.Step;
 const TabPane = Tabs.TabPane;
 
 const { AppState } = stores;
+
+require('codemirror/lib/codemirror.css');
+require('codemirror/mode/yaml/yaml');
+require('codemirror/mode/textile/textile');
+require('codemirror/theme/base16-light.css');
+require('codemirror/theme/base16-dark.css');
 
 @observer
 class DeploymentDetail extends Component {
@@ -27,6 +34,7 @@ class DeploymentDetail extends Component {
       status: props.match.params.status,
       expand: false,
       current: 1,
+      flag: true,
     };
   }
 
@@ -104,9 +112,9 @@ class DeploymentDetail extends Component {
   };
 
   changeStage =(index) => {
-    const { DeployDetailStore } = this.props;
+    const { DeployDetailStore, intl } = this.props;
     const data = DeployDetailStore.getStage;
-    this.setState({ current: index + 1, log: data[index].log || '' });
+    this.setState({ current: index + 1, log: data[index].log || intl.formatMessage({ id: 'ist.nolog' }) });
   };
 
   changeStatus =() => {
@@ -119,9 +127,13 @@ class DeploymentDetail extends Component {
     DeployDetailStore.changeLogVisible(false);
   };
 
+  handleValue=(key) => {
+    this.setState({ flag: key });
+  };
+
   render() {
     const { DeployDetailStore, intl } = this.props;
-    const { expand } = this.state;
+    const { expand, log } = this.state;
     const valueStyle = classnames({
       'c7n-deployDetail-show': expand,
       'c7n-deployDetail-hidden': !expand,
@@ -145,7 +157,9 @@ class DeploymentDetail extends Component {
     }
 
     const stageData = DeployDetailStore.getStage || [];
-    const log = stageData.length && stageData[0].log ? stageData[0].log : intl.formatMessage({ id: 'ist.nolog' });
+    const logger = (stageData.length && stageData[0].log) ? stageData[0].log : intl.formatMessage({ id: 'ist.nolog' });
+    const logValues = log || logger;
+
     const dom = [];
     if (stageData.length) {
       stageData.map((step, index) => {
@@ -165,7 +179,23 @@ class DeploymentDetail extends Component {
       });
     }
     const a = DeployDetailStore.getValue;
-
+    const options = {
+      theme: 'neat',
+      mode: 'yaml',
+      readOnly: 'nocursor',
+      lineNumbers: true,
+    };
+    const logOptions = {
+      theme: 'base16-dark',
+      mode: 'textile',
+      readOnly: 'nocursor',
+      lineNumbers: true,
+    };
+    const Logger = () => (<CodeMirror
+      className="c7n-deployDetail-pre1"
+      value={logValues}
+      options={logOptions}
+    />);
     return (
       <Page
         className="c7n-region c7n-deployDetail-wrapper"
@@ -203,6 +233,7 @@ class DeploymentDetail extends Component {
             </a>
           </p>
           <Tabs
+            onChange={this.handleValue}
             className="c7n-deployDetail-tab"
             defaultActiveKey={this.state.status === 'running' ? '1' : '2'}
           >
@@ -348,13 +379,14 @@ class DeploymentDetail extends Component {
                   </Button>
                 </div>
                 <div className={valueStyle}>
-                  {DeployDetailStore.getValue
-                  && <Ace
-                    readOnly
-                    totalLine={DeployDetailStore.getValue.totalLine}
+                  {DeployDetailStore.getValue && this.state.expand
+                  &&
+                  <Ace
+                    options={options}
+                    ref={(instance) => { this.codeEditor = instance; }}
                     value={DeployDetailStore.getValue.yaml}
-                  />}
-
+                  />
+                  }
                 </div>
               </div>
               {stageData.length >= 1 && <div className="c7n-deployDetail-card-content">
@@ -362,7 +394,7 @@ class DeploymentDetail extends Component {
                 <Steps current={this.state.current} className="c7n-deployDetail-steps">
                   {dom}
                 </Steps>
-                <Log className="c7n-deployDetail-pre1" value={this.state.log === undefined ? log : this.state.log} />
+                <Logger />
               </div>
               }
             </TabPane>

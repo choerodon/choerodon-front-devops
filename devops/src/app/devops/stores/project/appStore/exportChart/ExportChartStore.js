@@ -1,4 +1,4 @@
-import { observable, action, computed } from 'mobx';
+import { observable, action, computed, toJS } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 
 @store('ExportChartStore')
@@ -6,7 +6,7 @@ class ExportChartStore {
   @observable isLoading = true;
   @observable app = [];
   @observable pageInfo = {};
-  @observable versions = {};
+  // @observable versions = {};
 
   @action setPageInfo(page) {
     this.pageInfo = { current: page.number + 1, total: page.totalElements, pageSize: page.size };
@@ -24,7 +24,7 @@ class ExportChartStore {
 
   @computed
   get getApp() {
-    return this.app;
+    return toJS(this.app);
   }
 
   @action
@@ -35,9 +35,6 @@ class ExportChartStore {
   @computed
   get getIsLoading() {
     return this.isLoading;
-  }
-  @action setVersions(data) {
-    this.versions = data;
   }
 
 

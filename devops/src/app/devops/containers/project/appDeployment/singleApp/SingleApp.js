@@ -8,6 +8,7 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import ValueConfig from '../valueConfig';
+import UpgradeIst from '../upgrateIst';
 import '../AppDeploy.scss';
 import './SingleApp.scss';
 import '../../../main.scss';
@@ -25,6 +26,7 @@ class SingleApp extends Component {
       appId: null,
       verId: null,
       envId: null,
+      visibleUp: false,
       pageSize: 10,
       page: 0,
       openRemove: false,
@@ -190,6 +192,7 @@ class SingleApp extends Component {
     this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
     store.loadInstanceAll(projectId, pagination.current - 1,
       pagination.pageSize, sort, envID, verId, appID, postData);
+    store.setIstTableFilter(param);
   };
 
   /**
@@ -221,6 +224,42 @@ class SingleApp extends Component {
       });
   };
 
+
+  /**
+   * 升级配置实例信息
+   * @param name 实例名
+   * @param id 实例ID
+   * @param envId
+   * @param verId
+   * @param appId
+   */
+  upgradeIst = (name, id, envId, verId, appId) => {
+    const { store, intl } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    store.loadValue(projectId, appId, envId, verId)
+      .then((res) => {
+        if (res && res.failed) {
+          Choerodon.prompt(res.message);
+        } else {
+          store.loadUpVersion(projectId, verId)
+            .then((val) => {
+              if (val && val.failed) {
+                Choerodon.prompt(val.message);
+              } else if (val.length === 0) {
+                Choerodon.prompt(intl.formatMessage({ id: 'ist.noUpVer' }));
+              } else {
+                this.setState({
+                  idArr: [envId, verId, appId],
+                  id,
+                  name,
+                  visibleUp: true,
+                });
+              }
+            });
+        }
+      });
+  };
+
   /**
    * 关闭滑块
    * @param res 是否重新部署需要重载数据
@@ -239,7 +278,21 @@ class SingleApp extends Component {
     if (res) {
       store.loadInstanceAll(projectId, page, 10, null, envID, verId, appID);
     }
-    store.changeShow(false);
+  };
+
+  /**
+   * 关闭升级滑块
+   * @param res 是否重新部署需要重载数据
+   */
+  handleCancelUp = (res) => {
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    this.setState({
+      visibleUp: false,
+    });
+    if (res) {
+      store.loadInstanceAll(projectId, this.state.page);
+    }
   };
 
   /**
@@ -422,6 +475,14 @@ class SingleApp extends Component {
             type,
             organizationId,
             projectId,
+            service: ['devops-service.application-version.getUpgradeAppVersion'],
+            text: intl.formatMessage({ id: 'ist.upgrade' }),
+            action: this.upgradeIst.bind(this, record.code, record.id,
+              record.envId, record.appVersionId, record.appId),
+          }, {
+            type,
+            organizationId,
+            projectId,
             service: ['devops-service.application-instance.start', 'devops-service.application-instance.stop'],
             text: record.status !== 'stoped' ? intl.formatMessage({ id: 'ist.stop' }) : intl.formatMessage({ id: 'ist.run' }),
             action: record.status !== 'stoped' ? this.activeIst.bind(this, record.id, 'stop') : this.activeIst.bind(this, record.id, 'start'),
@@ -579,7 +640,7 @@ class SingleApp extends Component {
           <div className={d.connect ? 'c7n-app-state' : 'c7n-app-state-pending'}>
             {d.connect ? <FormattedMessage id="running" /> : <FormattedMessage id="disconnect" />}
           </div>
-          <div className="c7n-app-name"><MouserOverWrapper text={d.name || ''} width={80}>{d.name}</MouserOverWrapper></div>
+          <div className="c7n-app-name"><Tooltip title={d.name || ''}>{d.name}</Tooltip></div>
         </div>
         <span className="c7n-app-arrow">→</span>
       </div>)) :
@@ -591,6 +652,7 @@ class SingleApp extends Component {
           <FormattedMessage id="ist.noAddEnv" />
         </div>
       </div>);
+    const param = store.getIstParams;
 
     const columnApp = [{
       title: <FormattedMessage id="deploy.status" />,
@@ -716,6 +778,7 @@ class SingleApp extends Component {
                   loading={store.getIsLoading}
                   pagination={store.pageInfo}
                   columns={columnVersion}
+                  filters={param || []}
                   dataSource={ist}
                   rowKey={record => record.id}
                 />
@@ -733,6 +796,7 @@ class SingleApp extends Component {
                   loading={store.getIsLoading}
                   pagination={store.pageInfo}
                   columns={columnApp}
+                  filters={param || []}
                   dataSource={ist}
                   rowKey={record => record.id}
                 />
@@ -810,6 +874,14 @@ class SingleApp extends Component {
           idArr={this.state.idArr}
           onClose={this.handleCancel}
         />}
+        {this.state.visibleUp && <UpgradeIst
+          store={this.props.store}
+          visible={this.state.visibleUp}
+          name={this.state.name}
+          id={this.state.id}
+          idArr={this.state.idArr}
+          onClose={this.handleCancelUp}
+        /> }
         <DelIst
           open={this.state.openRemove}
           handleCancel={this.handleClose}

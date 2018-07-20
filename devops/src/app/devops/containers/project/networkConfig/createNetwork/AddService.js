@@ -245,10 +245,7 @@ class AddService extends Component {
         .then((data) => {
           if (data) {
             callback();
-          }
-        })
-        .catch((error) => {
-          if (error.status === 400) {
+          } else {
             callback(intl.formatMessage({ id: 'network.name.check.exist' }));
           }
         });
@@ -543,7 +540,7 @@ class AddService extends Component {
             }],
             initialValue: this.state.networkValue,
           })(
-            <Input disabled={!(this.props.form.getFieldValue('appId'))} label={<FormattedMessage id={'network.form.name'} />} maxLength={25} />,
+            <Input disabled={!(this.props.form.getFieldValue('appId'))} label={<FormattedMessage id={'network.form.name'} />} maxLength={40} />,
           )}
         </FormItem>
         <FormItem

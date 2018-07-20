@@ -4,6 +4,8 @@ import { withRouter } from 'react-router-dom';
 import { Button, Radio, Steps, Table, Tooltip, Form, Input } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
+// import remove from 'lodash/remove';
+// import cloneDeep from 'lodash/cloneDeep';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import '../../../main.scss';
 import './../AppRelease.scss';
@@ -76,20 +78,6 @@ class AddAppRelease extends Component {
 
   handleChangeMode =(value) => {
     this.setState({ mode: value.target.value });
-  }
-
-  /**
-   * 返回到上一级
-   */
-  openAppDeployment() {
-    const projectName = AppState.currentMenuType.name;
-    const projectId = AppState.currentMenuType.id;
-    const type = AppState.currentMenuType.type;
-    const { EditReleaseStore } = this.props;
-    EditReleaseStore.setSelectData([]);
-    this.props.history.push(
-      `/devops/app-release/2?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
-    );
   }
 
   /**
@@ -271,7 +259,6 @@ class AddAppRelease extends Component {
             <Table
               rowClassName={'col-check'}
               filterBarPlaceholder={formatMessage({ id: 'filter' })}
-              className="c7n-table-512"
               onRow={(record) => {
                 const { isClick } = this.state;
                 return {
@@ -330,14 +317,12 @@ class AddAppRelease extends Component {
           </Permission>
         </section>
         <section className="deployAddApp-section">
-          <div style={{ width: 512 }}>
-            <Table
-              columns={columns}
-              dataSource={data.slice() || []}
-              pagination={data.pageInfo}
-              rowKey={record => record.id}
-            />
-          </div>
+          <Table
+            columns={columns}
+            dataSource={data.slice() || []}
+            pagination={data.pageInfo}
+            rowKey={record => record.id}
+          />
         </section>
         <section className="deployAddApp-section">
           <Button type="primary" funcType="raised" onClick={this.changeStep.bind(this, 3)} disabled={!(data.length)}>{this.props.intl.formatMessage({ id: 'next' })}</Button>
@@ -372,7 +357,7 @@ class AddAppRelease extends Component {
           </div>
           <p style={{ marginLeft: 30, marginTop: 24 }}>
             <span className="icon icon-error release-icon-error" />
-            <span className="deploy-tip-text">{this.props.intl.formatMessage({ id: 'release.add.step.three.tooltip' })}。</span>
+            <span className="deploy-tip-text">{this.props.intl.formatMessage({ id: 'release.add.step.three.tooltip' })}</span>
           </p>
         </section>
         <section className="deployAddApp-section">
@@ -423,7 +408,7 @@ class AddAppRelease extends Component {
             onChange={(value) => { this.setState({ contributor: value.target.value }); }}
             style={{ width: 512 }}
             maxLength={30}
-            label={<FormattedMessage id={'appstore.contributor'} />}
+            label={<span className="apprelease-formItem-label"><FormattedMessage id={'appstore.contributor'} /></span>}
             size="default"
           />
         </section>
@@ -433,17 +418,17 @@ class AddAppRelease extends Component {
             style={{ width: 512 }}
             onChange={(value) => { this.setState({ category: value.target.value }); }}
             maxLength={10}
-            label={<FormattedMessage id={'appstore.category'} />}
+            label={<span className="apprelease-formItem-label"><FormattedMessage id={'appstore.category'} /></span>}
             size="default"
           />
         </section>
-        <section className="deployAddApp-section">
+        <section className="deployAddApp-section deployAddApp-section-512">
           <TextArea
             value={description}
             onChange={(value) => { this.setState({ description: value.target.value }); }}
             style={{ width: 512 }}
             maxLength={50}
-            label={<FormattedMessage id={'appstore.description'} />}
+            label={<span className="apprelease-formItem-label"><FormattedMessage id={'appstore.description'} /></span>}
             autosize={{ minRows: 2, maxRows: 6 }}
           />
         </section>

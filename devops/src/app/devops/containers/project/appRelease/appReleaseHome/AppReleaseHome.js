@@ -20,6 +20,7 @@ class AppReleaseHome extends Component {
       show: false,
       projectId: menu.id,
       key: props.match.params.key === '2' ? '2' : '1',
+      filters: [],
     };
   }
   componentDidMount() {
@@ -110,14 +111,16 @@ class AppReleaseHome extends Component {
   showProjectTable = () => {
     const { AppReleaseStore } = this.props;
     const data = AppReleaseStore.allData.slice();
+    const { filters } = this.state;
+
     const column = [{
-      title: Choerodon.languageChange('app.name'),
+      title: <FormattedMessage id={'app.name'} />,
       dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
     }, {
-      title: Choerodon.languageChange('app.code'),
+      title: <FormattedMessage id={'app.code'} />,
       dataIndex: 'code',
       key: 'code',
       sorter: true,
@@ -141,6 +144,7 @@ class AppReleaseHome extends Component {
         pagination={AppReleaseStore.pageInfo}
         columns={column}
         dataSource={data}
+        filters={filters}
         rowKey={record => record.id}
         onChange={this.tableChange}
       />
@@ -152,8 +156,12 @@ class AppReleaseHome extends Component {
    */
   handleChangeTabs = (value) => {
     const { AppReleaseStore } = this.props;
+    AppReleaseStore.setAllData([]);
     AppReleaseStore.loadData({ page: 0, key: value, projectId: this.state.projectId, size: 10 });
-    this.setState({ key: value });
+    this.setState({
+      key: value,
+      filters: [],
+    });
   }
 
   /**
@@ -167,6 +175,9 @@ class AppReleaseHome extends Component {
     const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     const sort = { field: 'id', order: 'desc' };
+    this.setState({
+      filters: paras,
+    });
     if (sorter.column) {
       sort.field = sorter.field || sorter.columnKey;
       // sort = sorter;
@@ -198,6 +209,7 @@ class AppReleaseHome extends Component {
   };
   handleRefresh =() => {
     const { AppReleaseStore } = this.props;
+    this.setState({ filters: [] });
     AppReleaseStore.loadData({
       projectId: this.state.projectId,
       isRefresh: true,
@@ -208,6 +220,7 @@ class AppReleaseHome extends Component {
   render() {
     const { AppReleaseStore } = this.props;
     const data = AppReleaseStore.allData.slice();
+    const { filters } = this.state;
     return (
       <Page
         service={[
@@ -238,6 +251,7 @@ class AppReleaseHome extends Component {
                 pagination={AppReleaseStore.pageInfo}
                 columns={this.getColumn()}
                 dataSource={data}
+                filters={filters}
                 rowKey={record => record.id}
                 onChange={this.tableChange}
               />

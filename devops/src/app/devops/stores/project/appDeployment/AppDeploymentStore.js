@@ -25,6 +25,20 @@ class AppDeploymentStore {
   @observable envId = false;
   @observable verId = false;
   @observable appId = false;
+  @observable istParams = [];
+  @observable verValue = undefined;
+
+  @action setIstTableFilter(param) {
+    if (param) {
+      this.istParams = param;
+    } else {
+      this.istParams = [];
+    }
+  }
+
+  @computed get getIstParams() {
+    return this.istParams.slice();
+  }
 
   @action setPageInfo(page) {
     this.pageInfo = { current: page.number + 1, total: page.totalElements, pageSize: page.size };
@@ -160,6 +174,14 @@ class AppDeploymentStore {
 
   @action setValue(data) {
     this.value = data;
+  }
+
+  @computed get getVerValue() {
+    return this.verValue;
+  }
+
+  @action setVerValue(data) {
+    this.verValue = data;
   }
 
   @computed get getAppPage() {
@@ -298,9 +320,7 @@ class AppDeploymentStore {
       });
   }
 
-  checkYaml = (value, projectId)=> {
-    return axios.post(`/devops/v1/projects/${projectId}/app_instances/value_format`, { yaml: value })
-  };
+  checkYaml = (value, projectId) => axios.post(`/devops/v1/projects/${projectId}/app_instances/value_format`, { yaml: value });
 
   changeIstActive(projectId, istId, active) {
     return axios.put(`devops/v1/projects/${projectId}/app_instances/${istId}/${active}`);
@@ -313,6 +333,14 @@ class AppDeploymentStore {
   deleteIst(projectId, istId) {
     return axios.delete(`devops/v1/projects/${projectId}/app_instances/${istId}/delete`);
   }
+
+  loadUpVersion = (projectId, verId) => axios.get(`devops/v1/projects/${projectId}/version/${verId}/upgrade_version`)
+    .then((data) => {
+      if (data) {
+        this.setVerValue(data);
+      }
+      return data;
+    });
 }
 
 const appDeploymentStore = new AppDeploymentStore();
