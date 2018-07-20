@@ -148,7 +148,9 @@ class BranchHome extends Component {
         sorter: true,
         render: (text, record) => (<div>
           {this.getIcon(record.branchName)}
-          <span>{record.branchName}</span>
+          <MouserOverWrapper text={record.branchName} width={0.2} style={{ display: 'inline-block' }}>
+            {record.branchName}
+          </MouserOverWrapper>
         </div>),
       },
       {
