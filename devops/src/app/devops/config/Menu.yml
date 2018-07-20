@@ -223,3 +223,18 @@
           - 'devops-service.application-template.listByOrgId'
           - 'devops-service.application-template.queryByAppTemplateId'
           - 'devops-service.application-template.delete'
+
+"devops":
+  icon: apps
+  sort: 31
+  delete: true
+  organization:
+    - "template":
+        icon: application_model
+        Routes: /devops/template
+        sort: 1
+        delete: true
+        permission:
+          - 'devops-service.application-template.listByOrgId'
+          - 'devops-service.application-template.queryByAppTemplateId'
+          - 'devops-service.application-template.delete'
