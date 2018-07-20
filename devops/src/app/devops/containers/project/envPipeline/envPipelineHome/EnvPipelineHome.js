@@ -631,9 +631,9 @@ class EnvPipelineHome extends Component {
               id="env.description"
             />
             <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <FormattedMessage
-                id="learnmore"
-              />
+              <span className="c7n-external-link-content">
+                <FormattedMessage id="learnmore" />
+              </span>
               <span className="icon icon-open_in_new" />
             </a>
           </p>
@@ -652,9 +652,9 @@ class EnvPipelineHome extends Component {
                 id="env.stop.description"
               />
               <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                <FormattedMessage
-                  id="learnmore"
-                />
+                <span className="c7n-external-link-content">
+                  <FormattedMessage id="learnmore" />
+                </span>
                 <span className="icon icon-open_in_new" />
               </a>
             </p>
