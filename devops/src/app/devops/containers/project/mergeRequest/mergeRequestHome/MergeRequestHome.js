@@ -156,7 +156,7 @@ class MergeRequestHome extends Component {
       key: 'createdAt',
       render: record => (
         <div>
-          <Tooltip title={`${record.author.username} ${record.author.name}`}>
+          <Tooltip title={record.author.username !== record.author.name ? `${record.author.username} ${record.author.name}` : record.author.name}>
             {record.author.avatarUrl
               ? <img className="c7n-merge-avatar" src={record.author.avatarUrl} alt="avatar" />
               : <span className="apptag-commit apptag-commit-avatar">{record.author.name.toString().substr(0, 1)}</span>}
