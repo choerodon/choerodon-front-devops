@@ -88,7 +88,7 @@ const pageDetail = {
   'app.editDescription': '您可在此修改应用名称。',
   'app.description': '应用是满足用户某些需求的程序代码的集合，可以是某个解耦的微服务或是某个单体应用。您可在此创建应用、修改应用名称、停用应用、启用应用及分支管理。',
   'app.createDescription': '请在下面输入应用编码及名称，也可以选择某个应用模板，快速创建应用。平台会为您自动创建对应的git库以便管理该应用代码。',
-  'app.link': `${docServer}/user-guide/application-management/application-management/`,
+  'app.link': `${docServer}/user-guide/application-management/application/`,
 
   // branch
   'branch.head': '项目\"{name}\"的分支',
@@ -100,7 +100,7 @@ const pageDetail = {
   'branch.mergeDevMas': '是否将分支\"{name}\"合并到master，develop分支，并以为\"{version}\"版本号？',
   'branch.description': '分支是将您的开发工作从主线上分离开来，以免影响主线。您可在此查看各应用的分支，创建分支，并将代码拉至本地开发后提交代码。',
   'branch.createTip': '采用gitflow分支模型，可创建feature、release、hotfix等分支，结束分支时自动触发分支合并和特有的持续集成流水线。',
-  'branch.link': `${docServer}/user-guide/development-pipeline/branch-management/`,
+  'branch.link': `${docServer}/user-guide/development-pipeline/branch/`,
   'branch.editDes': '您可在此修改该分支关联的问题。',
   'branch.editHead': '修改分支\"{name}\"关联的问题',
   'branch.detailHead': '分支\"{name}\"关联的问题',
