@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "choerodon-front-boot": "^0.6.5",
-    "lodash-webpack-plugin": "^0.11.5",
     "markdown-react-js": "^1.0.0",
     "quill-delta-to-html": "^0.8.4",
     "react-codemirror": "^1.0.0",
