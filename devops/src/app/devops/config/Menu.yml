@@ -209,12 +209,12 @@
           - 'devops-service.application-market.deleteZip'
           - 'devops-service.application-market.queryAppVersionReadme'
 
-"application":
+"devops":
   icon: apps
   sort: 31
   delete: true
   organization:
-    - "application-template":
+    - "template":
         icon: application_model
         Routes: /devops/template
         sort: 1
