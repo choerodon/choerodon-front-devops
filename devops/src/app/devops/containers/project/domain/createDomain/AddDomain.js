@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Form, Select, Input, Modal, Tooltip } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { stores } from 'choerodon-front-boot';
+import { stores, Content } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
 import './CreateDomain.scss';
@@ -336,7 +336,6 @@ class CreateDomain extends Component {
     } else {
       callback();
     }
-
   };
   /**
    * 检查域名是否符合规则
@@ -397,13 +396,15 @@ class CreateDomain extends Component {
       this.props.intl.formatMessage({ id: 'domain.update.description' });
     const contentDom = this.props.visible ? (<div className="c7n-region c7n-domainCreate-wrapper">
       {title}
-      <p>
-        {content}
-        <a href={this.props.intl.formatMessage({ id: 'domain.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-          <FormattedMessage id={'learnmore'} />
-          <span className="icon icon-open_in_new" />
-        </a>
-      </p>
+      <div className="page-content-header">
+        <p className="description">
+          {content}
+          <a href={this.props.intl.formatMessage({ id: 'domain.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <FormattedMessage id={'learnmore'} />
+            <i className="icon icon-open_in_new" />
+          </a>
+        </p>
+      </div>
       <Form layout="vertical" onSubmit={this.handleSubmit}>
         <FormItem
           className="c7n-domain-formItem"

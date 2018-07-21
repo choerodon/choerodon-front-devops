@@ -1,21 +1,19 @@
 import React, { Component } from 'react';
-import { Table, Button, Modal, Tooltip, Popover } from 'choerodon-ui';
-import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-import { injectIntl, FormattedMessage } from 'react-intl';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { fromJS, is } from 'immutable';
+import { injectIntl, FormattedMessage } from 'react-intl';
+import { Table, Button, Modal, Tooltip, Popover } from 'choerodon-ui';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import CodeMirror from 'react-codemirror';
+import _ from 'lodash';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/base16-dark.css';
-import _ from 'lodash';
 import { commonComponent } from '../../../../components/commonFunction';
 import TimePopover from '../../../../components/timePopover';
 import LoadingBar from '../../../../components/loadingBar';
-import './ContainerHome.scss';
-import '../../../main.scss';
-
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import '../../../main.scss';
+import './ContainerHome.scss';
 
 const Sidebar = Modal.Sidebar;
 const { AppState } = stores;
@@ -30,27 +28,14 @@ class ContainerHome extends Component {
       id: '',
       show: false,
       name: '',
-      log: [],
+      showSide: false,
     };
+    this.timer = null;
   }
 
   componentDidMount() {
     this.loadAllData(this.state.page);
   }
-
-  shouldComponentUpdate = (nextProps, nextState) => {
-    const thisProps = fromJS(this.props || {});
-    const thisState = fromJS(this.state || {});
-    const nextStates = fromJS(nextState || {});
-    if (thisProps.size !== nextProps.size ||
-      thisState.size !== nextState.size) {
-      return true;
-    }
-    if (is(thisState, nextStates)) {
-      return false;
-    }
-    return true;
-  };
 
   componentWillUnmount() {
     if (this.state.ws) {
@@ -212,27 +197,40 @@ class ContainerHome extends Component {
   loadLog = () => {
     const authToken = document.cookie.split('=')[1];
     const logs = [];
-    const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${this.state.namespace}.envId:${this.state.envId}.log:${this.state.logId}&podName=${this.state.podName}&containerName=${this.state.containerName}&logId=${this.state.logId}&token=${authToken}`);
-    // eslint-disable-next-line react/no-string-refs
-    const editor = this.refs.editorLog.getCodeMirror();
-    this.setState({
-      ws,
-    });
-    editor.setValue('No Logs.');
+    let oldLogs = [];
+    const { namespace, envId, logId, podName, containerName } = this.state;
+    const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${namespace}.envId:${envId}.log:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
+    const editor = this.editorLog.getCodeMirror();
+    this.setState({ ws });
+    editor.setValue('Loading...');
     ws.onmessage = (e) => {
-      const reader = new FileReader();
-      reader.readAsText(e.data, 'utf-8');
-      reader.onload = () => {
-        logs.push(reader.result);
-        if (logs.length > 0) {
+      if (e.data.size) {
+        const reader = new FileReader();
+        reader.readAsText(e.data, 'utf-8');
+        reader.onload = () => {
+          if (reader.result !== '') {
+            logs.push(reader.result);
+          }
+        };
+      }
+    };
+    if (logs.length > 0) {
+      const logString = _.join(logs, '');
+      editor.setValue(logString);
+    }
+    this.timer = setInterval(() => {
+      if (logs.length > 0) {
+        if (!_.isEqual(logs, oldLogs)) {
           const logString = _.join(logs, '');
           editor.setValue(logString);
           editor.execCommand('goDocEnd');
-        } else {
-          editor.setValue('No Logs.');
+          // 如果没有返回数据，则不进行重新赋值给编辑器
+          oldLogs = _.cloneDeep(logs);
         }
-      };
-    };
+      } else {
+        editor.setValue('No Logs.');
+      }
+    }, 1000);
   };
 
   /**
@@ -250,30 +248,33 @@ class ContainerHome extends Component {
           podName: data.podName,
           containerName: data.containerName,
           logId: data.logId,
+          showSide: true,
         });
         this.loadLog();
       });
-    ContainerStore.changeShow(true);
   };
 
   /**
    * 关闭日志
    */
   closeSidebar = () => {
+    clearInterval(this.timer);
+    this.timer = null;
     const { ContainerStore } = this.props;
-    if (this.state.ws) {
-      this.state.ws.close();
+    const { ws, page } = this.state;
+    if (ws) {
+      ws.close();
     }
-    // eslint-disable-next-line react/no-string-refs
-    const editor = this.refs.editorLog.getCodeMirror();
-    this.loadAllData(this.state.page);
-    ContainerStore.changeShow(false);
-    editor.setValue('No Logs.');
+    const editor = this.editorLog.getCodeMirror();
+    this.setState({ showSide: false }, () => {
+      editor.setValue('');
+    });
+    this.loadAllData(page);
   };
 
   render() {
     const { ContainerStore } = this.props;
-    const { containerName } = this.state;
+    const { containerName, showSide } = this.state;
     const serviceData = ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
@@ -315,7 +316,7 @@ class ContainerHome extends Component {
       >
         {contentDom}
         <Sidebar
-          visible={ContainerStore.show}
+          visible={showSide}
           title={<FormattedMessage id={'container.log.header.title'} />}
           onOk={this.closeSidebar}
           className="c7n-podLog-content c7n-region"
@@ -326,8 +327,7 @@ class ContainerHome extends Component {
           <Content className="sidebar-content" code={'container.log'} values={{ name: containerName }}>
             <section className="c7n-podLog-section">
               <CodeMirror
-                // eslint-disable-next-line react/no-string-refs
-                ref="editorLog"
+                ref={(editor) => { this.editorLog = editor; }}
                 value="No Logs"
                 className="c7n-podLog-editor"
                 onChange={code => this.props.ChangeCode(code)}
