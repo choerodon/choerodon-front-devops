@@ -128,13 +128,7 @@ class EditBranch extends Component {
     this.props.form.resetFields();
     this.props.onClose();
   };
-  /**
-   * 加载issue
-   */
-  loadIssue = () => {
-    const { store } = this.props;
-    store.loadIssue(this.state.projectId, '');
-  };
+
   /**
    * 搜索issue
    * @param input
@@ -142,7 +136,11 @@ class EditBranch extends Component {
    */
   searchIssue = (input, options) => {
     const { store } = this.props;
-    store.loadIssue(this.state.projectId, input);
+    if (input !== '') {
+      store.loadIssue(this.state.projectId, input, false);
+    } else {
+      store.loadIssue(this.state.projectId, '',  true);
+    }
   };
 
 
@@ -198,7 +196,6 @@ class EditBranch extends Component {
                 <Select
                   dropdownClassName={'createBranch-dropdown'}
                   onFilterChange={this.searchIssue}
-                  onFocus={this.loadIssue}
                   loading={store.issueLoading}
                   key="service"
                   allowClear
