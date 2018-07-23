@@ -182,6 +182,7 @@
         permission:
           - 'devops-service.devops-env-pod-container.queryLogByPod'
           - 'devops-service.devops-env-pod.pageByOptions'
+
 "application-market":
   icon: apps
   sort: 30
@@ -210,7 +211,7 @@
           - 'devops-service.application-market.queryAppVersionReadme'
 
 "devops":
-  icon: apps
+  icon: devops
   sort: 31
   delete: true
   organization:
@@ -221,5 +222,81 @@
         delete: true
         permission:
           - 'devops-service.application-template.listByOrgId'
-          - 'devops-service.application-template.queryByAppTemplateId'
-          - 'devops-service.application-template.delete'
+  project:
+    - "app":
+        icon: widgets
+        Routes: /devops/app
+        sort: 1
+        delete: true
+        permission:
+          - 'devops-service.application.pageByOptions'
+    - "version":
+        icon: version
+        Routes: /devops/app-version
+        sort: 2
+        delete: true
+        permission:
+          - 'devops-service.application-version.pageByOptions'
+    - "ci":
+        icon: CI
+        Routes: /devops/ci-pipeline
+        sort: 3
+        delete: true
+        permission:
+          - 'devops-service.project-pipeline.list'
+    - "environment":
+        icon: linear_scale
+        Routes: /devops/env-pipeline
+        sort: 5
+        delete: true
+        permission:
+          - 'devops-service.devops-environment.listByProjectIdAndActive'
+    - "app-release":
+        icon: near_me
+        Routes: /devops/app-release
+        sort: 4
+        delete: true
+        permission:
+          - 'devops-service.application-market.create'
+    - "appstore":
+        icon: apps
+        Routes: /devops/appstore
+        sort: 6
+        delete: true
+        permission:
+          - 'devops-service.application-market.queryApp'
+    - "deploy":
+        icon: jsfiddle
+        Routes: /devops/deployment-app
+        sort: 7
+        delete: true
+        permission:
+          - 'devops-service.application-instance.deploy'
+    - "instance":
+        icon: instance_outline
+        Routes: /devops/instance
+        sort: 8
+        delete: true
+        permission:
+          - 'devops-service.application-instance.listByAppId'
+    - "service":
+        icon: router
+        Routes: /devops/service
+        sort: 9
+        delete: true
+        permission:
+          - 'devops-service.devops-service.create'
+    - "domain":
+        icon: language
+        Routes: /devops/domain
+        sort: 10
+        delete: true
+        permission:
+          - 'devops-service.devops-ingress.pageByOptions'
+    - "container":
+        icon: kubernetes
+        Routes: /devops/container
+        sort: 11
+        delete: true
+        permission:
+          - 'devops-service.devops-env-pod-container.queryLogByPod'

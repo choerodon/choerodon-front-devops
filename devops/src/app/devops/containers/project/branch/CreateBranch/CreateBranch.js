@@ -214,13 +214,7 @@ class CreateBranch extends Component {
     }
     this.setState({ type, issueDto });
   };
-  /**
-   * 加载issues
-   */
-  loadIssue = () => {
-    const { store } = this.props;
-    store.loadIssue(this.state.projectId, '');
-  };
+
   /**
    * 搜索issue
    * @param input
@@ -228,7 +222,11 @@ class CreateBranch extends Component {
    */
   searchIssue = (input, options) => {
     const { store } = this.props;
-    store.loadIssue(this.state.projectId, input);
+    if (input !== '') {
+      store.loadIssue(this.state.projectId, input, false);
+    } else {
+      store.loadIssue(this.state.projectId, '', true);
+    }
   };
   /**
    * 改变长度
@@ -309,7 +307,6 @@ class CreateBranch extends Component {
                 <Select
                   dropdownClassName={'createBranch-dropdown'}
                   onFilterChange={this.searchIssue}
-                  onFocus={this.loadIssue}
                   loading={store.issueLoading}
                   onSelect={this.changeIssue}
                   key="service"

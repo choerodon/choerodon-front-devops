@@ -129,9 +129,9 @@ class BranchStore {
       return res;
     });
 
-  loadIssue = (proId = AppState.currentMenuType.id, search = '', issueId = '', issueNum = '') => {
+  loadIssue = (proId = AppState.currentMenuType.id, search = '', onlyActiveSprint, issueId = '', issueNum = '') => {
     this.setIssueLoading(true);
-    return axios.get(`/agile/v1/projects/${proId}/issues/summary?issueId=${issueId}&self=true&issueNum=${issueNum}&content=${search}`)
+    return axios.get(`/agile/v1/projects/${proId}/issues/summary?issueId=${issueId}&onlyActiveSprint=${onlyActiveSprint}&self=true&issueNum=${issueNum}&content=${search}`)
       .then((data) => {
         this.setIssueLoading(false);
         const res = handleProptError(data);
@@ -256,7 +256,7 @@ class BranchStore {
             }
           });
       } else {
-        this.loadIssue(AppState.currentMenuType.id, '', branch.issueId, '');
+        this.loadIssue(AppState.currentMenuType.id, '', true, branch.issueId, '');
       }
       this.setBranch(branch);
       return res;
