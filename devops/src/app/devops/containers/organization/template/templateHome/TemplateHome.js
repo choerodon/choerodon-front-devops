@@ -543,6 +543,7 @@ class TemplateHome extends Component {
         <Modal
           visible={this.state.openRemove}
           title={<FormattedMessage id="template.del" />}
+          closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}><FormattedMessage id="cancel" /></Button>,
             <Button key="submit" type="danger" onClick={this.handleDelete} loading={this.state.submitting}>

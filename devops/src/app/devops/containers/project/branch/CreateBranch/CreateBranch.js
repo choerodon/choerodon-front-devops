@@ -135,7 +135,7 @@ class CreateBranch extends Component {
         this.setState({ submitting: true });
         store.createBranch(projectId, appId, postData)
           .then(() => {
-            store.loadBranchData({ projectId, appId: this.props.appId });
+            store.loadBranchList({ projectId, appId: this.props.appId });
             this.props.onClose();
             this.props.form.resetFields();
             this.setState({ submitting: false });
@@ -399,7 +399,7 @@ class CreateBranch extends Component {
                   filterOption={false}
                 >
                   {['feature', 'bugfix', 'release', 'hotfix', 'custom'].map(s => (
-                    <Option value={s} key={s}>{this.getIcon(s)}<span>{s}</span></Option>
+                    <Option value={s} key={s}>{this.getIcon(s)}<span className="c7n-branch-text">{s}</span></Option>
                   ))}
                 </Select>,
               )}

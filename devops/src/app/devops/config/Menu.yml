@@ -71,7 +71,7 @@
         sort: 3
         permission:
           - 'devops-service.application.listByActive'
-          - 'devops-service.devops-git.getTag'
+          - 'devops-service.devops-git.getTagByPage'
           - 'devops-service.devops-git.listByAppId'
           - 'devops-service.devops-git.createTag'
           - 'devops-service.devops-git.checkTag'

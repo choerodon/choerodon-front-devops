@@ -156,7 +156,7 @@ class AppTag extends Component {
   /**
    * 页面内刷新，选择器变回默认选项
    */
-  handleRefresh = () => this.loadInitData();
+  handleRefresh = () => this.loadTagData(this.state.projectId);
 
   /**
    * 加载应用信息
@@ -216,14 +216,14 @@ class AppTag extends Component {
   deleteTag = () => {
     const { AppTagStore } = this.props;
     const { projectId, tag } = this.state;
-    this.setState({ deleteLoading: true, visible: false });
+    this.setState({ deleteLoading: true });
     AppTagStore.deleteTag(projectId, tag).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
       } else {
+        this.setState({ deleteLoading: false, visible: false });
         this.loadTagData(projectId);
       }
-      this.setState({ deleteLoading: false });
     }).catch((error) => {
       this.setState({ deleteLoading: false });
       Choerodon.prompt(error);
@@ -326,7 +326,7 @@ class AppTag extends Component {
         className="c7n-region c7n-app-wrapper"
         service={[
           'devops-service.application.listByActive',
-          'devops-service.devops-git.getTag',
+          'devops-service.devops-git.getTagByPage',
           'devops-service.devops-git.listByAppId',
           'devops-service.devops-git.createTag',
           'devops-service.devops-git.checkTag',
@@ -337,6 +337,7 @@ class AppTag extends Component {
           confirmLoading={this.state.deleteLoading}
           visible={this.state.visible}
           title={<FormattedMessage id={'apptag.action.delete'} />}
+          closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
             <Button key="submit" type="danger" onClick={this.deleteTag} loading={this.state.deleteLoading}>
@@ -391,7 +392,7 @@ class AppTag extends Component {
             onChange={this.tableChange}
             pagination={AppTagStore.pageInfo}
             columns={tagColumns}
-            loading={AppTagStore.getLoading || deleteLoading}
+            loading={AppTagStore.getLoading}
             dataSource={AppTagStore.getTagData}
             rowKey={record => record.tagName}
           />
