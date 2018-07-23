@@ -99,7 +99,6 @@ const pageDetail = {
   'branch.noCommit': '是否将分支\"{name}\"分支无提交，不生成版本号，是否删除？',
   'branch.mergeDevMas': '是否将分支\"{name}\"合并到master，develop分支，并以为\"{version}\"版本号？',
   'branch.description': '分支是将您的开发工作从主线上分离开来，以免影响主线。您可在此查看各应用的分支，创建分支，并将代码拉至本地开发后提交代码。',
-  'branch.createTip': '采用gitflow分支模型，可创建feature、release、hotfix等分支，结束分支时自动触发分支合并和特有的持续集成流水线。',
   'branch.link': `${docServer}/user-guide/development-pipeline/branch/`,
   'branch.editDes': '您可在此修改该分支关联的问题。',
   'branch.editHead': '修改分支\"{name}\"关联的问题',

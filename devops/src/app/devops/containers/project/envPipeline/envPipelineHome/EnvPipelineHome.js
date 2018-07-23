@@ -612,6 +612,7 @@ class EnvPipelineHome extends Component {
             width={400}
             onOk={this.banEnv}
             onCancel={this.banCancel}
+            closable={false}
             wrapClassName="vertical-center-modal remove"
           >
             <h2>{this.props.intl.formatMessage({ id: 'envPl.confirm.disable' })}</h2>
