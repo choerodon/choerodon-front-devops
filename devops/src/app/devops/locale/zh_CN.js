@@ -153,6 +153,10 @@ const pageDetail = {
   'repository.title': '项目\"{name}\"的代码仓库',
   'repository.link': `${docServer}/user-guide/development-pipeline/repository/`,
 
+  // 环境总览
+  'envoverview.description': '环境总览描述处。',
+  'envoverview.title': '项目\"{name}\"的环境总览',
+  'envoverview.link': `${docServer}/user-guide/development-pipeline/tag/`,
 };
 
 const zhCN = {
@@ -734,6 +738,10 @@ const zhCN = {
   'repository.copyUrl': '复制仓库地址',
   'repository.quality': '代码质量',
   'repository.noUrl': '仓库代码为空',
+
+  //
+  'envoverview.head': '环境总览',
+  'envoverview.noEnv': '暂无可用环境',
 
   ...pageDetail,
 };
