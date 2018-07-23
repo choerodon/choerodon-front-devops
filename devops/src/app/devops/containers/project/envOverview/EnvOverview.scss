@@ -1,0 +1,56 @@
+.c7n-envow-status-wrap {
+  display: flex;
+
+  .c7n-envow-status-content {
+    margin-left: auto;
+
+    .c7n-envow-status-text {
+      width: 78px;
+      padding-right: 28px;
+      padding-bottom: 10px;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .c7n-envow-status-num {
+      display: inline-block;
+      font-size: 20px;
+      border-radius: 8px;
+      color: white;
+      text-align: center;
+      height: 32px;
+      width: 52px;
+    }
+  }
+}
+
+.c7n-envow-status-running {
+  background-color: #1ec024;
+}
+
+.c7n-envow-status-operating {
+  background-color: #4d90fe;
+}
+
+.c7n-envow-status-stopped {
+  background-color: #cecece;
+}
+
+.c7n-envow-status-fail {
+  background-color: #f44336;
+}
+
+.c7n-envow-select {
+  margin-right: 18px;
+
+  .ant-select-selection__rendered {
+    margin-bottom: 0;
+  }
+  .ant-select-selection{
+    color: #3f51b5;
+  }
+
+  .ant-select-underline {
+    display: none;
+  }
+}
