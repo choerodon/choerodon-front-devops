@@ -12,7 +12,7 @@ class BranchStore {
   @observable tagData = { content: [] };
   @observable tags = [];
   @observable currentBranch = {};
-  @observable loading = true;
+  @observable loading = false;
   @observable issue = [];
   @observable branch = null;
   @observable issueDto = null;
@@ -120,14 +120,21 @@ class BranchStore {
    * @param proId
    * @returns {JQueryPromise<any> | JQueryPromise<void> | PromiseLike<T> | Promise<T> | *}
    */
-  loadApps = (proId = AppState.currentMenuType.id) => axios.get(`/devops/v1/projects/${proId}/apps`)
-    .then((data) => {
-      const res = handleProptError(data);
-      this.setApps(data);
-      this.setApp(data[0].id);
-      this.loadBranchList({ projectId: proId });
-      return res;
-    });
+  loadApps = (proId = AppState.currentMenuType.id) => {
+    this.setBranchList([]);
+    this.setApps([]);
+    this.setApp(null);
+    axios.get(`/devops/v1/projects/${proId}/apps`)
+      .then((data) => {
+        const res = handleProptError(data);
+        this.setApps(data);
+        if (data.length) {
+          this.setApp(data[0].id);
+          this.loadBranchList({ projectId: proId });
+        }
+        return res;
+      });
+  };
 
   loadIssue = (proId = AppState.currentMenuType.id, search = '', onlyActiveSprint, issueId = '', issueNum = '') => {
     this.setIssueLoading(true);
@@ -192,17 +199,19 @@ class BranchStore {
    */
   loadBranchList = ({ projectId, page = this.pageInfo.current - 1, size = 10, sort = { field: 'creationDate', order: 'asc' }, postData = { searchParam: {},
     param: '' } }) => {
-    this.changeLoading(true);
-    axios.post(`/devops/v1/projects/${projectId}/apps/${this.app}/git/branches?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
-      .then((data) => {
-        this.changeLoading(false);
-        const res = handleProptError(data);
-        if (res) {
-          this.setBranchList(data.content);
-          const pages = { page, pageSize: size, total: data.totalElements };
-          this.setPageInfo(pages);
-        }
-      });
+    if (this.app) {
+      this.changeLoading(true);
+      axios.post(`/devops/v1/projects/${projectId}/apps/${this.app}/git/branches?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+        .then((data) => {
+          this.changeLoading(false);
+          const res = handleProptError(data);
+          if (res) {
+            this.setBranchList(data.content);
+            const pages = { page, pageSize: size, total: data.totalElements };
+            this.setPageInfo(pages);
+          }
+        });
+    }
   };
 
   loadTagData = (projectId, page = 0, sizes = 10, postData = { searchParam: {}, param: '' }) =>

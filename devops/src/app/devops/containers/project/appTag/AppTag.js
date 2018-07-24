@@ -73,11 +73,9 @@ class AppTag extends Component {
     e.preventDefault();
     const { AppTagStore } = this.props;
     const { projectId } = this.state;
+    this.setState({ submitting: true });
     this.props.form.validateFieldsAndScroll((err, data) => {
       if (!err) {
-        this.setState({
-          submitting: true,
-        });
         const { tag, ref } = data;
         AppTagStore.createTag(projectId, tag, ref).then((req) => {
           if (req && req.failed) {
@@ -100,6 +98,8 @@ class AppTag extends Component {
             size: 3,
           });
         });
+      } else {
+        this.setState({ submitting: false });
       }
     });
   };
@@ -260,6 +260,7 @@ class AppTag extends Component {
     const { showSide, appName, submitting, deleteLoading, visible } = this.state;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const currentAppName = appName || AppTagStore.getDefaultAppName;
+    const appData = AppTagStore.getAppData;
     const tagColumns = [
       {
         title: <FormattedMessage id="apptag.tag" />,
@@ -348,21 +349,23 @@ class AppTag extends Component {
           <p>{this.props.intl.formatMessage({ id: 'apptag.delete.tooltip' })}</p>
         </Modal>
         <Header title={<FormattedMessage id="apptag.head" />}>
-          <Permission
-            service={[
-              'devops-service.devops-git.createTag',
-            ]}
-            type={type}
-            projectId={projectId}
-            organizationId={orgId}
-          >
-            <Button
-              onClick={this.showSideBar}
+          {appData && appData.length ? (
+            <Permission
+              service={[
+                'devops-service.devops-git.createTag',
+              ]}
+              type={type}
+              projectId={projectId}
+              organizationId={orgId}
             >
-              <span className="icon-playlist_add icon" />
-              <FormattedMessage id="apptag.create" />
-            </Button>
-          </Permission>
+              <Button
+                onClick={this.showSideBar}
+              >
+                <span className="icon-playlist_add icon" />
+                <FormattedMessage id="apptag.create" />
+              </Button>
+            </Permission>
+          ) : null}
           <Button
             onClick={this.handleRefresh}
           >
@@ -381,7 +384,7 @@ class AppTag extends Component {
             onChange={(value, option) => this.handleSelect(value, option)}
           >
             {
-              _.map(AppTagStore.getAppData, (app, index) =>
+              _.map(appData, (app, index) =>
                 <Option key={index} value={app.id}>{app.name}</Option>,
               )
             }
