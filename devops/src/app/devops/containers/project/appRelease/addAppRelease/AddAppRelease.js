@@ -4,8 +4,6 @@ import { withRouter } from 'react-router-dom';
 import { Button, Radio, Steps, Table, Tooltip, Form, Input } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
-// import remove from 'lodash/remove';
-// import cloneDeep from 'lodash/cloneDeep';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import '../../../main.scss';
 import './../AppRelease.scss';
@@ -37,8 +35,6 @@ class AddAppRelease extends Component {
     EditReleaseStore.loadApps({ projectId: this.state.projectId });
     EditReleaseStore.loadApp(this.state.projectId, this.state.appId);
     EditReleaseStore.setSelectData([]);
-    const card = document.getElementsByClassName('deployApp-card')[0];
-    // card.style.minHeight = `${window.innerHeight - 247}px`;
   }
 
   /**
@@ -162,6 +158,7 @@ class AddAppRelease extends Component {
           this.getBase64(formdata.get('file'), (imgUrl) => {
             const ele = document.getElementById('img');
             ele.style.backgroundImage = `url(${imgUrl})`;
+            this.setState({ imgback: imgUrl });
           });
         }
       });
@@ -195,7 +192,6 @@ class AddAppRelease extends Component {
     const sort = { field: 'id', order: 'desc' };
     if (sorter.column) {
       sort.field = sorter.field || sorter.columnKey;
-      // sort = sorter;
       if (sorter.order === 'ascend') {
         sort.order = 'asc';
       } else if (sorter.order === 'descend') {
@@ -206,7 +202,6 @@ class AddAppRelease extends Component {
     const page = pagination.current - 1;
     if (Object.keys(filters).length) {
       searchParam = filters;
-      // page = 0;
     }
     const postData = {
       searchParam,
@@ -337,7 +332,6 @@ class AddAppRelease extends Component {
    * @returns {*}
    */
   handleRenderMode = () => {
-    const { EditReleaseStore } = this.props;
     const radioStyle = {
       display: 'block',
       height: '30px',
@@ -373,7 +367,6 @@ class AddAppRelease extends Component {
    * @returns {*}
    */
   handleRenderDescription = () => {
-    const { getFieldDecorator } = this.props.form;
     const { description, category, contributor } = this.state;
     return (
       <div className="deployApp-deploy">
@@ -384,7 +377,7 @@ class AddAppRelease extends Component {
           <div className="c7n-appRelease-img-wrap">
             <div className="c7n-appRelease-img">
               <div
-                style={{ backgroundImage: this.state.img ? `url(${this.state.img})` : '' }}
+                style={{ backgroundImage: this.state.imgback ? `url(${this.state.imgback})` : '' }}
                 className="c7n-appRelease-img-hover"
                 id="img"
                 onMouseLeave={this.state.isClick ? () => {} : this.hideBth}
@@ -453,7 +446,6 @@ class AddAppRelease extends Component {
    */
   handleRenderReview = () => {
     const { EditReleaseStore } = this.props;
-    const data = EditReleaseStore.value;
     return (
       <section className="deployApp-review">
         <p>{this.props.intl.formatMessage({ id: 'release.add.step.five.description' })}</p>
