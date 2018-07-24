@@ -199,7 +199,7 @@ class ContainerHome extends Component {
     const logs = [];
     let oldLogs = [];
     const { namespace, envId, logId, podName, containerName } = this.state;
-    const ws = new WebSocket('wss://devops.service.choerodon.com.cn/ws/log?key=env:c7ncd-staging.envId:54.log:fc1ee7a0-2fea-4269-87db-2d3b197f1f3d&podName=devops-service-ed8ad-7cf8f76cfc-5zpd7&containerName=devops-service-ed8ad&logId=fc1ee7a0-2fea-4269-87db-2d3b197f1f3d&token=35ac7d17-0af1-411f-8d18-65c917a25233;%20token_type');
+    const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${namespace}.envId:${envId}.log:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
     const editor = this.editorLog.getCodeMirror();
     this.setState({ ws });
     editor.setValue('Loading...');
