@@ -29,6 +29,7 @@ class MergeRequestHome extends Component {
   componentDidMount() {
     const { MergeRequestStore } = this.props;
     MergeRequestStore.loadInitData();
+    MergeRequestStore.loadUser();
   }
 
   componentWillUnmount() {
@@ -70,7 +71,11 @@ class MergeRequestHome extends Component {
       tabKey: key,
     });
     const { MergeRequestStore } = this.props;
-    MergeRequestStore.loadMergeRquest(MergeRequestStore.currentApp.id, key);
+    let keys = key;
+    if (key === 'assignee') {
+      keys = 'opened';
+    }
+    MergeRequestStore.loadMergeRquest(MergeRequestStore.currentApp.id, keys);
   };
 
   /**
@@ -83,10 +88,14 @@ class MergeRequestHome extends Component {
   tableChange =(pagination, filters, sorter, param) => {
     const { MergeRequestStore } = this.props;
     this.setState({ param });
+    let keys = this.state.tabKey;
+    if (keys === 'assignee') {
+      keys = 'opened';
+    }
     MergeRequestStore.setLoading(true);
     MergeRequestStore.loadMergeRquest(
       MergeRequestStore.currentApp.id,
-      this.state.tabKey,
+      keys,
       pagination.current - 1,
       pagination.pageSize);
   };
@@ -122,7 +131,9 @@ class MergeRequestHome extends Component {
     const type = AppState.currentMenuType.type;
     const appData = MergeRequestStore.getApps;
     const { content } = MergeRequestStore.getMerge;
-    const { closeCount, mergeCount, openCount, totalCount } = MergeRequestStore.getCount;
+    const assignee = MergeRequestStore.getAssignee;
+    const { closeCount, mergeCount,
+      openCount, totalCount, assigneeCount } = MergeRequestStore.getCount;
 
     const columnsAll = [{
       title: <FormattedMessage id="app.code" />,
@@ -409,6 +420,18 @@ class MergeRequestHome extends Component {
                 rowKey={record => record.id}
               />
             </TabPane>
+            {assigneeCount !== 0 ? <TabPane tab={`${intl.formatMessage({ id: 'merge.tab5' })}(${assigneeCount || 0})`} key="assignee">
+              <Table
+                filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
+                onChange={this.tableChange}
+                loading={MergeRequestStore.getIsLoading}
+                columns={columnsAll}
+                pagination={pageInfo}
+                filters={param || []}
+                dataSource={assignee}
+                rowKey={record => record.id}
+              />
+            </TabPane> : null}
           </Tabs>
         </Content>
       </Page>

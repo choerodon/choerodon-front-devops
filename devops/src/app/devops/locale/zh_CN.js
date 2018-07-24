@@ -705,6 +705,7 @@ const zhCN = {
   'merge.tab2': '已合并',
   'merge.tab3': '关闭',
   'merge.tab4': '全部',
+  'merge.tab5': '待审核',
   'merge.commit': '新增提交',
   'merge.upDate': '更新日期',
   'merge.detail': '查看详情',
