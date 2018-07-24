@@ -228,7 +228,7 @@ class ContainerHome extends Component {
           oldLogs = _.cloneDeep(logs);
         }
       } else {
-        editor.setValue('No Logs.');
+        editor.setValue('Loading...');
       }
     }, 1000);
   };
@@ -328,7 +328,7 @@ class ContainerHome extends Component {
             <section className="c7n-podLog-section">
               <CodeMirror
                 ref={(editor) => { this.editorLog = editor; }}
-                value="No Logs"
+                value="Loading..."
                 className="c7n-podLog-editor"
                 onChange={code => this.props.ChangeCode(code)}
                 options={options}

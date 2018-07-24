@@ -188,7 +188,7 @@ class DeploymentDetail extends Component {
     const logOptions = {
       theme: 'base16-dark',
       mode: 'textile',
-      readOnly: 'nocursor',
+      readOnly: true,
       lineNumbers: true,
     };
     const Logger = () => (<CodeMirror

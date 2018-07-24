@@ -495,7 +495,7 @@ class DeploymentAppHome extends Component {
     const options = {
       theme: 'neat',
       mode: 'yaml',
-      readOnly: 'nocursor',
+      readOnly: true,
       lineNumbers: true,
     };
     return (
