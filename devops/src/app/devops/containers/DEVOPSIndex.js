@@ -24,6 +24,7 @@ const Branch = asyncRouter(() => import('./project/branch'));
 const MergeRequest = asyncRouter(() => import('./project/mergeRequest'));
 const AppTag = asyncRouter(() => import('./project/appTag'), () => import('../stores/project/appTag'));
 const Repository = asyncRouter(() => import('./project/repository'), () => import('../stores/project/repository'));
+const EnvOverview = asyncRouter(() => import('./project/envOverview'));
 
 @inject('AppState')
 class DEVOPSIndex extends React.Component {
@@ -35,6 +36,7 @@ class DEVOPSIndex extends React.Component {
       <IntlProviderAsync>
         <Switch>
           <Route path={`${match.url}/env-pipeline`} component={EnvPipelineIndex} />
+          <Route path={`${match.url}/env-overview`} component={EnvOverview} />
           <Route path={`${match.url}/ci-pipeline`} component={CiPipelineManageIndex} />
           <Route path={`${match.url}/template`} component={Template} />
           <Route path={`${match.url}/app-version`} component={AppVersion} />
