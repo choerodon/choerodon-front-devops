@@ -29,6 +29,7 @@ class MergeRequestHome extends Component {
   componentDidMount() {
     const { MergeRequestStore } = this.props;
     MergeRequestStore.loadInitData();
+    MergeRequestStore.loadUser();
   }
 
   componentWillUnmount() {
@@ -70,7 +71,11 @@ class MergeRequestHome extends Component {
       tabKey: key,
     });
     const { MergeRequestStore } = this.props;
-    MergeRequestStore.loadMergeRquest(MergeRequestStore.currentApp.id, key);
+    let keys = key;
+    if (key === 'assignee') {
+      keys = 'opened';
+    }
+    MergeRequestStore.loadMergeRquest(MergeRequestStore.currentApp.id, keys);
   };
 
   /**
@@ -83,10 +88,14 @@ class MergeRequestHome extends Component {
   tableChange =(pagination, filters, sorter, param) => {
     const { MergeRequestStore } = this.props;
     this.setState({ param });
+    let keys = this.state.tabKey;
+    if (keys === 'assignee') {
+      keys = 'opened';
+    }
     MergeRequestStore.setLoading(true);
     MergeRequestStore.loadMergeRquest(
       MergeRequestStore.currentApp.id,
-      this.state.tabKey,
+      keys,
       pagination.current - 1,
       pagination.pageSize);
   };
@@ -122,7 +131,9 @@ class MergeRequestHome extends Component {
     const type = AppState.currentMenuType.type;
     const appData = MergeRequestStore.getApps;
     const { content } = MergeRequestStore.getMerge;
+    const assignee = MergeRequestStore.getAssignee;
     const { closeCount, mergeCount, openCount, totalCount } = MergeRequestStore.getCount;
+    const assigneeCount = MergeRequestStore.getAssigneeCount;
 
     const columnsAll = [{
       title: <FormattedMessage id="app.code" />,
@@ -302,6 +313,107 @@ class MergeRequestHome extends Component {
       ),
     }];
 
+    const columnsOpen = [{
+      title: <FormattedMessage id="app.code" />,
+      key: 'iid',
+      render: record => (<span>!{record.iid}</span>),
+    }, {
+      title: <FormattedMessage id="app.name" />,
+      dataIndex: 'title',
+      key: 'title',
+      render: (text, record) => (<MouserOverWrapper text={record.title} width={0.25}>
+        {record.title}
+      </MouserOverWrapper>),
+    }, {
+      title: <FormattedMessage id="app.branch" />,
+      key: 'targetBranch',
+      render: record => (
+        <div className="c7n-merge-branches">
+          <Icon type="branch" />
+          <span>{record.sourceBranch}</span>
+          <Icon type="keyboard_backspace" className="c7n-merge-right" />
+          <Icon type="branch" />
+          <span>{record.targetBranch}</span>
+        </div>
+      ),
+    }, {
+      title: <FormattedMessage id="create" />,
+      key: 'createdAt',
+      render: record => (
+        <div>
+          <Tooltip title={record.author.username !== record.author.name ? `${record.author.username} ${record.author.name}` : record.author.name}>
+            {record.author.avatarUrl
+              ? <img className="c7n-merge-avatar" src={record.author.avatarUrl} alt="avatar" />
+              : <span className="apptag-commit apptag-commit-avatar">{record.author.name.toString().substr(0, 1)}</span>}
+          </Tooltip>
+          <Tooltip title={record.createdAt}>
+            <TimeAgo
+              className="c7n-merge-time"
+              datetime={record.createdAt}
+              locale={this.props.intl.formatMessage({ id: 'language' })}
+            />
+          </Tooltip>
+        </div>),
+    }, {
+      title: <FormattedMessage id="merge.commit" />,
+      key: 'commits',
+      render: record => (
+        <div>
+          {record.commits.length ? `${record.commits.length} commits` : '0 commit'}
+        </div>),
+    }, {
+      title: <FormattedMessage id="merge.upDate" />,
+      key: 'updatedAt',
+      render: record => (
+        <div>
+          <Tooltip
+            title={record.updatedAt}
+          >
+            <TimeAgo
+              datetime={record.updatedAt}
+              locale={this.props.intl.formatMessage({ id: 'language' })}
+            />
+          </Tooltip>
+        </div>),
+    }, {
+      title: <FormattedMessage id="merge.assignee" />,
+      key: 'assignee',
+      render: record => (
+        <div>
+          {record.assignee ? (<div>
+            <Tooltip title={record.assignee.username !== record.assignee.name ? `${record.assignee.username} ${record.assignee.name}` : record.assignee.name}>
+              {record.assignee.avatarUrl
+                ? <img className="c7n-merge-avatar" src={record.assignee.avatarUrl} alt="avatar" />
+                : <span className="apptag-commit apptag-commit-avatar">{record.assignee.name.toString().substr(0, 1)}</span>}
+            </Tooltip>
+            {record.assignee.username !== record.assignee.name ? `${record.assignee.username} ${record.assignee.name}` : record.assignee.name}
+          </div>) : <FormattedMessage id="merge.noAssignee" />}
+        </div>),
+    }, {
+      width: 56,
+      key: 'action',
+      render: (test, record) => (
+        <div>
+          <Permission
+            service={['devops-service.devops-git.getMergeRequestList']}
+            organizationId={organizationId}
+            projectId={projectId}
+            type={type}
+          >
+            <Tooltip placement="bottom" title={<FormattedMessage id="merge.detail" />}>
+              <Button
+                size="small"
+                shape="circle"
+                onClick={this.linkToMerge.bind(this, record.iid)}
+              >
+                <span className="icon icon-find_in_page" />
+              </Button>
+            </Tooltip>
+          </Permission>
+        </div>
+      ),
+    }];
+
     return (
       <Page
         className="c7n-region page-container"
@@ -366,7 +478,7 @@ class MergeRequestHome extends Component {
                 filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                 onChange={this.tableChange}
                 loading={MergeRequestStore.getIsLoading}
-                columns={columns}
+                columns={columnsOpen}
                 pagination={pageInfo}
                 filters={param || []}
                 dataSource={content}
@@ -409,6 +521,18 @@ class MergeRequestHome extends Component {
                 rowKey={record => record.id}
               />
             </TabPane>
+            {assigneeCount !== 0 ? <TabPane tab={`${intl.formatMessage({ id: 'merge.tab5' })}(${assigneeCount || 0})`} key="assignee">
+              <Table
+                filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
+                onChange={this.tableChange}
+                loading={MergeRequestStore.getIsLoading}
+                columns={columnsOpen}
+                pagination={pageInfo}
+                filters={param || []}
+                dataSource={assignee}
+                rowKey={record => record.id}
+              />
+            </TabPane> : null}
           </Tabs>
         </Content>
       </Page>

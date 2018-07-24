@@ -1,4 +1,5 @@
 import { observable, action, computed } from 'mobx';
+import _ from 'lodash';
 import { axios, store, stores } from 'choerodon-front-boot';
 
 const { AppState } = stores;
@@ -8,10 +9,13 @@ class MergeRequestStore {
   @observable loading = true;
   @observable apps = [];
   @observable mergeData = {};
+  @observable assignee = {};
   @observable params = [];
   @observable pageInfo = {};
   @observable currentApp = {};
   @observable url = '';
+  @observable id = null;
+  @observable assigneeCount = 0;
   @observable count = {
     closeCount: 0,
     mergeCount: 0,
@@ -55,12 +59,32 @@ class MergeRequestStore {
     return this.url;
   }
 
+  @action setUserId(id) {
+    this.id = id;
+  }
+
+  @computed get getUserId() {
+    return this.id;
+  }
+
   @action setMerge(mergeData) {
     this.mergeData = mergeData;
   }
 
+  @action setAssignee(assignee) {
+    this.assignee = assignee;
+  }
+
+  @action setAssigneeCount(assigneeCount) {
+    this.assigneeCount = assigneeCount;
+  }
+
   @computed get getMerge() {
     return this.mergeData;
+  }
+
+  @computed get getAssignee() {
+    return this.assignee;
   }
 
   @computed
@@ -84,6 +108,10 @@ class MergeRequestStore {
     return this.count;
   }
 
+  @computed get getAssigneeCount() {
+    return this.assigneeCount;
+  }
+
   loadInitData = () => {
     this.setLoading(true);
     this.loadApps(AppState.currentMenuType.id).then((res) => {
@@ -105,6 +133,7 @@ class MergeRequestStore {
   loadMergeRquest(appId, key = 'opened', page = 0, size = 10, projectId = AppState.currentMenuType.id) {
     this.setMerge([]);
     this.setLoading(true);
+    const userId = this.getUserId;
     if (key === 'all') {
       axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/merge_request/list?page=${page}&size=${size}`)
         .then((res) => {
@@ -142,6 +171,12 @@ class MergeRequestStore {
               total: pageResult.totalElements,
             });
             this.setMerge(pageResult);
+            if (key === 'opened') {
+              const assignee = pageResult ?
+                _.filter(pageResult.content, a => a.assignee && a.assignee.id === userId) : [];
+              this.setAssignee(assignee);
+              this.setAssigneeCount(assignee.length);
+            }
             this.setCount({
               closeCount,
               mergeCount,
@@ -163,6 +198,10 @@ class MergeRequestStore {
     return axios.get(`/devops/v1/projects/${projectId}/apps`)
       .then(datas => this.handleProptError(datas));
   }
+
+  loadUser = () => axios.get('iam/v1/users/self').then((data) => {
+    this.setUserId(data.id);
+  });
 
   loadUrl(projectId, appId) {
     return axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/url`)
