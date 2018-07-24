@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Tabs, Form, Select, Collapse, Icon } from 'choerodon-ui';
+import { Button, Tabs, Form, Select, Collapse, Icon, Input } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import _ from 'lodash';
 import '../EnvOverview.scss';
 import '../../../main.scss';
 
@@ -23,6 +24,26 @@ class EnvOverviewHome extends Component {
   componentDidMount() {
     this.loadEnvCards();
   }
+
+  /**
+   * 搜索函数
+   */
+  onSearch = () => {
+    const { pageSize, val } = this.state;
+    this.searchInput.focus();
+    const pagination = {
+      current: 1, pageSize,
+    };
+    this.onChange(pagination, null, null, val);
+  };
+
+  /**
+   * 搜索输入赋值
+   * @param e
+   */
+  onChangeSearch = (e) => {
+    this.setState({ val: e.target.value });
+  };
 
   /**
    * 获取可用环境
@@ -50,9 +71,8 @@ class EnvOverviewHome extends Component {
     const envNameDom = envNames.length ? _.map(envNames, d => (<Option key={d.id}>
       {d.name}</Option>)) : [];
 
-    const headDom = (<div className="c7n-envow-plane-head">
-      <Icon type="navigate_next" />
-    </div>);
+    const prefix = <Icon type="search" onClick={this.onSearch} />;
+    const suffix = this.state.val ? <Icon type="close" onClick={this.emitEmpty} /> : null;
 
     return (
       <Page
@@ -165,6 +185,18 @@ class EnvOverviewHome extends Component {
           </div>
           <Tabs defaultActiveKey="app" animated={false} onChange={this.tabChange}>
             <TabPane tab={`${intl.formatMessage({ id: 'network.column.app' })}`} key="app">
+              <div className="c7n-envow-search">
+                <Input
+                  placeholder={intl.formatMessage({ id: 'envoverview.search' })}
+                  value={this.state.val}
+                  prefix={prefix}
+                  suffix={suffix}
+                  onChange={this.onChangeSearch}
+                  onPressEnter={this.onSearch}
+                  // eslint-disable-next-line no-return-assign
+                  ref={node => this.searchInput = node}
+                />
+              </div>
               <Collapse bordered={false} defaultActiveKey={['1']}>
                 <Panel header={`${process.env.NODE_ENV}`} key="1">
                   <p>{text}</p>
