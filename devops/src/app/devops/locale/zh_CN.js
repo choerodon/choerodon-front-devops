@@ -741,6 +741,7 @@ const zhCN = {
   //
   'envoverview.head': '环境总览',
   'envoverview.noEnv': '暂无可用环境',
+  'envoverview.search': '搜索应用或实例名称',
 
   ...pageDetail,
 };
