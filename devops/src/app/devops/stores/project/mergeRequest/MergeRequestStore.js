@@ -15,12 +15,12 @@ class MergeRequestStore {
   @observable currentApp = {};
   @observable url = '';
   @observable id = null;
+  @observable assigneeCount = 0;
   @observable count = {
     closeCount: 0,
     mergeCount: 0,
     openCount: 0,
     totalCount: 0,
-    assigneeCount: 0,
   };
 
   @action setTableFilter(param) {
@@ -75,6 +75,10 @@ class MergeRequestStore {
     this.assignee = assignee;
   }
 
+  @action setAssigneeCount(assigneeCount) {
+    this.assigneeCount = assigneeCount;
+  }
+
   @computed get getMerge() {
     return this.mergeData;
   }
@@ -102,6 +106,10 @@ class MergeRequestStore {
 
   @computed get getCount() {
     return this.count;
+  }
+
+  @computed get getAssigneeCount() {
+    return this.assigneeCount;
   }
 
   loadInitData = () => {
@@ -157,7 +165,6 @@ class MergeRequestStore {
           const response = this.handleProptError(res);
           if (response) {
             const { pageResult, closeCount, mergeCount, openCount, totalCount } = response;
-            let assignee = [];
             this.setPageInfo({
               current: pageResult.number + 1,
               pageSize: pageResult.size,
@@ -165,16 +172,16 @@ class MergeRequestStore {
             });
             this.setMerge(pageResult);
             if (key === 'opened') {
-              assignee = pageResult ?
+              const assignee = pageResult ?
                 _.filter(pageResult.content, a => a.assignee && a.assignee.id === userId) : [];
               this.setAssignee(assignee);
+              this.setAssigneeCount(assignee.length);
             }
             this.setCount({
               closeCount,
               mergeCount,
               openCount,
               totalCount,
-              assigneeCount: assignee.length,
             });
           }
           this.setLoading(false);
