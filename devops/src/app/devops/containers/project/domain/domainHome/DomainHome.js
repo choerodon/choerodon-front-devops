@@ -296,6 +296,7 @@ class DomainHome extends Component {
         <Modal
           visible={this.state.openRemove}
           title={<FormattedMessage id={'domain.header.delete'} />}
+          closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
             <Button key="submit" type="danger" onClick={this.handleDelete}>

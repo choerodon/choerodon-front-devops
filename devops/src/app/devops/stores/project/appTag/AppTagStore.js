@@ -21,7 +21,7 @@ class AppTagStore {
   @observable appData = [];
   @observable selectedApp = null;
   @observable defaultAppName = null;
-  @observable loading = true;
+  @observable loading = false;
   @observable pageInfo = {
     current: 0,
     total: 0,
@@ -98,17 +98,22 @@ class AppTagStore {
    * @returns {Promise<T>}
    */
   queryTagData = (projectId, page = 0, sizes = 10, postData = { searchParam: {}, param: '' }) => {
-    this.setLoading(true);
-    axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags_list_options?page=${page}&size=${sizes}`, JSON.stringify(postData))
-      .then((data) => {
-        this.setLoading(false);
-        const result = handleProptError(data);
-        if (result) {
-          const { content, totalElements } = result;
-          this.setTagData(content);
-          this.setPageInfo({ page, sizes, totalElements });
-        }
-      }).catch(err => Choerodon.prompt(err));
+    if (this.selectedApp) {
+      this.setLoading(true);
+      axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags_list_options?page=${page}&size=${sizes}`, JSON.stringify(postData))
+        .then((data) => {
+          this.setLoading(false);
+          const result = handleProptError(data);
+          if (result) {
+            const { content, totalElements } = result;
+            this.setTagData(content);
+            this.setPageInfo({ page, sizes, totalElements });
+          }
+        }).catch((err) => {
+          Choerodon.prompt(err);
+          this.setLoading(false);
+        });
+    }
   };
 
   /**
@@ -116,17 +121,24 @@ class AppTagStore {
    * @param projectId
    * @returns {Promise<T>}
    */
-  queryAppData = projectId =>
+  queryAppData = (projectId) => {
+    this.setTagData([]);
+    this.setAppData([]);
+    this.setSelectApp(null);
     axios.get(`/devops/v1/projects/${projectId}/apps`)
       .then((data) => {
         const result = handleProptError(data);
         if (result) {
           this.setAppData(result);
-          this.setSelectApp(result[0].id);
-          this.setDefaultAppName(result[0].name);
-          this.queryTagData(projectId, 0, 10);
+          if (result.length) {
+            // 没有应用时不请求tag
+            this.setSelectApp(result[0].id);
+            this.setDefaultAppName(result[0].name);
+            this.queryTagData(projectId, 0, 10);
+          }
         }
       }).catch(err => Choerodon.prompt(err));
+  };
 
   /**
    * 查询应用下的所有分支

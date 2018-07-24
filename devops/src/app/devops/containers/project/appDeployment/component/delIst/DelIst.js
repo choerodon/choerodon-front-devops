@@ -11,7 +11,7 @@ class DelIst extends React.Component {
         title={intl.formatMessage({ id: 'ist.del' })}
         visible={open}
         onOk={handleCancel}
-        onCancel={handleConfirm}
+        closable={false}
         footer={[
           <Button key="back" onClick={handleCancel}><FormattedMessage id="cancel" /></Button>,
           <Button key="submit" type="danger" loading={confirmLoading} onClick={handleConfirm}>

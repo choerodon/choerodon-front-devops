@@ -73,11 +73,9 @@ class AppTag extends Component {
     e.preventDefault();
     const { AppTagStore } = this.props;
     const { projectId } = this.state;
+    this.setState({ submitting: true });
     this.props.form.validateFieldsAndScroll((err, data) => {
       if (!err) {
-        this.setState({
-          submitting: true,
-        });
         const { tag, ref } = data;
         AppTagStore.createTag(projectId, tag, ref).then((req) => {
           if (req && req.failed) {
@@ -100,6 +98,8 @@ class AppTag extends Component {
             size: 3,
           });
         });
+      } else {
+        this.setState({ submitting: false });
       }
     });
   };
@@ -156,7 +156,7 @@ class AppTag extends Component {
   /**
    * 页面内刷新，选择器变回默认选项
    */
-  handleRefresh = () => this.loadInitData();
+  handleRefresh = () => this.loadTagData(this.state.projectId);
 
   /**
    * 加载应用信息
@@ -216,14 +216,14 @@ class AppTag extends Component {
   deleteTag = () => {
     const { AppTagStore } = this.props;
     const { projectId, tag } = this.state;
-    this.setState({ deleteLoading: true, visible: false });
+    this.setState({ deleteLoading: true });
     AppTagStore.deleteTag(projectId, tag).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
       } else {
+        this.setState({ deleteLoading: false, visible: false });
         this.loadTagData(projectId);
       }
-      this.setState({ deleteLoading: false });
     }).catch((error) => {
       this.setState({ deleteLoading: false });
       Choerodon.prompt(error);
@@ -260,6 +260,7 @@ class AppTag extends Component {
     const { showSide, appName, submitting, deleteLoading, visible } = this.state;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const currentAppName = appName || AppTagStore.getDefaultAppName;
+    const appData = AppTagStore.getAppData;
     const tagColumns = [
       {
         title: <FormattedMessage id="apptag.tag" />,
@@ -326,7 +327,7 @@ class AppTag extends Component {
         className="c7n-region c7n-app-wrapper"
         service={[
           'devops-service.application.listByActive',
-          'devops-service.devops-git.getTag',
+          'devops-service.devops-git.getTagByPage',
           'devops-service.devops-git.listByAppId',
           'devops-service.devops-git.createTag',
           'devops-service.devops-git.checkTag',
@@ -337,6 +338,7 @@ class AppTag extends Component {
           confirmLoading={this.state.deleteLoading}
           visible={this.state.visible}
           title={<FormattedMessage id={'apptag.action.delete'} />}
+          closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
             <Button key="submit" type="danger" onClick={this.deleteTag} loading={this.state.deleteLoading}>
@@ -347,21 +349,23 @@ class AppTag extends Component {
           <p>{this.props.intl.formatMessage({ id: 'apptag.delete.tooltip' })}</p>
         </Modal>
         <Header title={<FormattedMessage id="apptag.head" />}>
-          <Permission
-            service={[
-              'devops-service.devops-git.createTag',
-            ]}
-            type={type}
-            projectId={projectId}
-            organizationId={orgId}
-          >
-            <Button
-              onClick={this.showSideBar}
+          {appData && appData.length ? (
+            <Permission
+              service={[
+                'devops-service.devops-git.createTag',
+              ]}
+              type={type}
+              projectId={projectId}
+              organizationId={orgId}
             >
-              <span className="icon-playlist_add icon" />
-              <FormattedMessage id="apptag.create" />
-            </Button>
-          </Permission>
+              <Button
+                onClick={this.showSideBar}
+              >
+                <span className="icon-playlist_add icon" />
+                <FormattedMessage id="apptag.create" />
+              </Button>
+            </Permission>
+          ) : null}
           <Button
             onClick={this.handleRefresh}
           >
@@ -380,7 +384,7 @@ class AppTag extends Component {
             onChange={(value, option) => this.handleSelect(value, option)}
           >
             {
-              _.map(AppTagStore.getAppData, (app, index) =>
+              _.map(appData, (app, index) =>
                 <Option key={index} value={app.id}>{app.name}</Option>,
               )
             }
@@ -391,7 +395,7 @@ class AppTag extends Component {
             onChange={this.tableChange}
             pagination={AppTagStore.pageInfo}
             columns={tagColumns}
-            loading={AppTagStore.getLoading || deleteLoading}
+            loading={AppTagStore.getLoading}
             dataSource={AppTagStore.getTagData}
             rowKey={record => record.tagName}
           />

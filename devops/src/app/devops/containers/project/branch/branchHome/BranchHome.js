@@ -148,7 +148,7 @@ class BranchHome extends Component {
         sorter: true,
         render: (text, record) => (<div>
           {this.getIcon(record.branchName)}
-          <MouserOverWrapper text={record.branchName} width={0.2} style={{ display: 'inline-block' }}>
+          <MouserOverWrapper text={record.branchName} width={0.2} className="c7n-branch-text">
             {record.branchName}
           </MouserOverWrapper>
         </div>),
@@ -255,8 +255,6 @@ class BranchHome extends Component {
         <FormattedMessage id="branch.list" />
       </span>
       <Popover
-        // trigger={'click'}
-        // getPopupContainer={triggerNode => triggerNode.parentNode}
         overlayClassName="branch-popover"
         placement="rightTop"
         content={<section>
@@ -340,10 +338,9 @@ class BranchHome extends Component {
           loading={BranchStore.loading}
           className="c7n-branch-table"
           rowClassName="c7n-branch-tr"
-          // title={() => title}
           pagination={BranchStore.getPageInfo}
           columns={branchColumns}
-          dataSource={BranchStore.branchData.content.slice()}
+          dataSource={BranchStore.getBranchList}
           rowKey={record => record.branchName}
           onChange={this.tableChange}
         />
@@ -353,14 +350,14 @@ class BranchHome extends Component {
   }
 
   /**
-   * 获取分支和标记列表
+   * 获取分支
    */
   loadData = (value) => {
     const { projectId } = this.state;
     const { BranchStore } = this.props;
     BranchStore.setApp(value);
     BranchStore.setBranchData({ content: [] });
-    BranchStore.loadBranchData({ projectId });
+    BranchStore.loadBranchList({ projectId });
   };
   /**
    * 修改相关联问题
@@ -385,9 +382,10 @@ class BranchHome extends Component {
    */
   showSidebar = () => {
     const { BranchStore } = this.props;
-    BranchStore.loadTagData(this.state.projectId);
+    const { projectId } = this.state;
+    BranchStore.loadTagData(projectId);
     BranchStore.loadBranchData({
-      projectId: this.state.projectId,
+      projectId,
       size: 3,
     });
     BranchStore.setCreateBranchShow('create');
@@ -456,7 +454,6 @@ class BranchHome extends Component {
     const sort = { field: 'creationDate', order: 'desc' };
     if (sorter.column) {
       sort.field = sorter.field || sorter.columnKey;
-      // sort = sorter;
       if (sorter.order === 'ascend') {
         sort.order = 'asc';
       } else if (sorter.order === 'descend') {
@@ -477,7 +474,7 @@ class BranchHome extends Component {
       param: '',
     };
     BranchStore
-      .loadBranchData({
+      .loadBranchList({
         projectId: organizationId,
         size: pagination.pageSize,
         sort,
@@ -506,21 +503,16 @@ class BranchHome extends Component {
         ]}
       >
         <Header title={<FormattedMessage id="branch.title" />}>
-          {BranchStore.branchData.content.length && BranchStore.app ? <Permission
+          {BranchStore.getBranchList.length && BranchStore.app ? <Permission
             service={['devops-service.devops-git.createBranch']}
           >
-            <Tooltip
-              title={<FormattedMessage id="branch.createTip" />}
-              placement="rightTop"
+            <Button
+              ghost
+              onClick={this.showSidebar}
             >
-              <Button
-                ghost
-                onClick={this.showSidebar}
-              >
-                <span className="icon icon-playlist_add" />
-                <FormattedMessage id="branch.create" />
-              </Button>
-            </Tooltip>
+              <span className="icon icon-playlist_add" />
+              <FormattedMessage id="branch.create" />
+            </Button>
           </Permission> : null}
           <Button
             funcType="flat"
@@ -598,6 +590,7 @@ class BranchHome extends Component {
           confirmLoading={this.state.submitting}
           visible={this.state.visible}
           title={<FormattedMessage id={'branch.action.delete'} />}
+          closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
             <Button key="submit" type="danger" onClick={this.handleDelete} loading={this.state.submitting}>

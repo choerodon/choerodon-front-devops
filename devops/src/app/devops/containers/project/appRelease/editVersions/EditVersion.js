@@ -216,6 +216,7 @@ class EditVersion extends Component {
         <Modal
           visible={this.state.visible}
           title={this.props.intl.formatMessage({ id: 'release.editVersion.modal.title' })}
+          closable={false}
           footer={[
             <Button key="back" disabled={this.state.submitting} onClick={this.handleClose}>{this.props.intl.formatMessage({ id: 'cancel' })}</Button>,
             <Button key="submit" loading={this.state.submitting} type="primary" onClick={this.handleOk}>
