@@ -3,10 +3,11 @@ const fs = require('fs');
 const YamlJs = require('yamljs');
 const path = require('path');
 const chai = require('chai');
+const chaiHttp = require('chai-http');
 
 chai.use(chaiHttp);
 
-global.user = {};
+global.user_token = null;
 
 /**
  * 读取yaml文件
@@ -21,8 +22,10 @@ const signConfig = loadYamlFile(path.resolve(__dirname, 'config.yaml'));
 
 const oauth = {
   gateway: signConfig.gateway,
+  organization: signConfig.id.organization,
+  project: signConfig.id.project,
   code: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
-  name: signConfig.login.username,
+  username: signConfig.login.username,
   password: signConfig.login.password,
 };
 
@@ -64,13 +67,13 @@ function encode(password) {
 function login(user) {
   const password = encode(user.password);
   const req = Object.assign(user, { password });
-  const authorize = '/oauth/oauth/authorize?scope=default&redirect_uri=http://api.staging.saas.hand-china.com&response_type=token&realm=default&state=client&client_id=devops';
+  const authorize = '/oauth/oauth/authorize?scope=default&redirect_uri=http://api.staging.saas.hand-china.com&response_type=token&realm=default&state=client&client_id=client';
   return chai.request(oauth.gateway)
     .get(authorize)
     .redirects(0)
     .then((res) => {
-      let cookie = res.header['set-cookie'][0].split(';')[0];
-      if (msg === 'success') {
+      if (res.header['set-cookie']) {
+        let cookie = res.header['set-cookie'][0].split(';')[0];
         return chai.request(oauth.gateway)
           .post('/oauth/login')
           .redirects(0)
@@ -78,29 +81,25 @@ function login(user) {
           .set('content-type', 'application/x-www-form-urlencoded')
           .send(req)
           .then((res) => {
-            cookie = res.header['set-cookie'][0].split(';')[0];
-            console.log(res.header);
-            return chai.request(oauth.gateway)
-              .get(authorize)
-              .redirects(0)
-              .set('Cookie', cookie)
-              .then((res) => {
-                const location = res.header['location'];
-                if (!location) {
-                  throw new Error("未能获取Token");
-                }
-                global.user.username = reqBody.username;
-                // global.user.token = `Bearer ${location.split('#access_token')[1].split('&token_type')[0]}`
-                return res;
-              })
-          })
-      } else {
-        return chai.request(oauth.gateway)
-          .post('/oauth/login')
-          .set('Cookie', cookie)
-          .set('content-type', 'application/x-www-form-urlencoded')
-          .send(req)
-          .then(res => res);
+            if (res.header['set-cookie']) {
+              cookie = res.header['set-cookie'][0].split(';')[0];
+              return chai.request(oauth.gateway)
+                .get(authorize)
+                .redirects(0)
+                .set('Cookie', cookie)
+                .then((res) => {
+                  const location = res.header['location'];
+                  if (!location) {
+                    throw new Error("未能获取Token");
+                  }
+                  // Bearer 是 oauth2 框架规范
+                  global.user_token = {
+                    username: req.username,
+                    token: `Bearer ${location.split('#access_token=')[1].split('&token_type')[0]}`,
+                  };
+                })
+            }
+          });
       }
     });
 }
@@ -111,7 +110,10 @@ function login(user) {
 function logout() {
   return chai.request(oauth.gateway)
     .get('/oauth/logout')
-    .set('Authorization', global.user.token);
+    .set('Authorization', global.user_token.token)
+    .then(() => {
+      global.user_token = null;
+    });
 }
 
 module.exports = {
