@@ -382,3 +382,24 @@ table {
 .c7n-select_512 {
   width: 512px;
 }
+
+// 环境连接状态
+.c7n-ist-status_on,
+.env-status-success {
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  display: inline-block;
+  background-color: #00bf96;
+  margin-right: 5px;
+}
+
+.c7n-ist-status_off,
+.env-status-error {
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  display: inline-block;
+  background-color: #d50000;
+  margin-right: 5px;
+}

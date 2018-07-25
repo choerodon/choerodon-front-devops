@@ -86,26 +86,10 @@
   // color: #0f0f0f;
 }
 
-.env-status-success {
-  width: 8px;
-  height: 8px;
-  border-radius: 8px;
-  display: inline-block;
-  background-color: #00bf96;
-  margin-right: 5px;
-}
-
-.env-status-error {
-  width: 8px;
-  height: 8px;
-  border-radius: 8px;
-  display: inline-block;
-  background-color: #d50000;
-  margin-right: 5px;
-}
-
 .instance-status-disable {
   color: white !important;
-  // line-height: 20px;
-  background-color: #d50000 !important
+  background-color: #d50000 !important;
+  .icon-cancel {
+    color: #fff;
+  }
 }

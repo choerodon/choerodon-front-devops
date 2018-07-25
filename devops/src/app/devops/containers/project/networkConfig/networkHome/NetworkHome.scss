@@ -139,24 +139,6 @@
     vertical-align: middle;
   }
 
-  .env-status-success {
-    width: 8px;
-    height: 8px;
-    border-radius: 8px;
-    display: inline-block;
-    background-color: #00bf96;
-    margin-right: 5px;
-  }
-
-  .env-status-error {
-    width: 8px;
-    height: 8px;
-    border-radius: 8px;
-    display: inline-block;
-    background-color: #d50000;
-    margin-right: 5px;
-  }
-
   .c7n-network-status-error {
     color: white !important;
     background-color: #d50000 !important;
