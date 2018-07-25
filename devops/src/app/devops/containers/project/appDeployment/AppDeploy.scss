@@ -644,24 +644,6 @@
   background: rgba(0, 0, 0, 0.36);
 }
 
-.c7n-ist-status_off {
-  width: 8px;
-  height: 8px;
-  border-radius: 8px;
-  display: inline-block;
-  background-color: #d50000;
-  margin-right: 5px;
-}
-
-.c7n-ist-status_on {
-  width: 8px;
-  height: 8px;
-  border-radius: 8px;
-  display: inline-block;
-  background-color: #00bf96;
-  margin-right: 5px;
-}
-
 .c7n-ist-status_failed,
 .c7n-ist-status_install_failed,
 .c7n-ist-status_upgrade_failed,
