@@ -529,7 +529,7 @@ class TemplateHome extends Component {
             {this.state.show && <Sidebar
               okText={<FormattedMessage id={this.state.type === 'create' ? 'create' : 'save'} />}
               cancelText={<FormattedMessage id="cancel" />}
-              title={<FormattedMessage id={this.state.type === 'create' ? 'template.create' : 'template.create'} />}
+              title={<FormattedMessage id={this.state.type === 'create' ? 'template.create' : 'template.edit'} />}
               visible={this.state.show}
               onOk={this.handleSubmit}
               onCancel={this.hideSidebar}
