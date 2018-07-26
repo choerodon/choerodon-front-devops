@@ -197,13 +197,6 @@ class AppDetail extends Component {
                     <MDReactComponent text={readme} />
                   </div>
                 </div>
-                <h1><FormattedMessage id="appstore.doc" /></h1>
-                <a href={intl.formatMessage({ id: 'template.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <span className="c7n-external-link-content">
-                    <FormattedMessage id="learnmore" />
-                  </span>
-                  <span className="icon icon-open_in_new" />
-                </a>
               </div>
             </div>
           </div>)}

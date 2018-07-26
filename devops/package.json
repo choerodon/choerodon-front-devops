@@ -10,7 +10,8 @@
   "main": "src/app/devops/containers/DEVOPSIndex.js",
   "scripts": {
     "start": "choerodon-front-boot start --config ../config.js",
-    "build": "choerodon-front-boot build --config ../config.js"
+    "build": "choerodon-front-boot build --config ../config.js",
+    "test": "mocha"
   },
   "dependencies": {
     "choerodon-front-boot": "^0.6.5",

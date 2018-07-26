@@ -420,7 +420,7 @@ class AddAppRelease extends Component {
             value={description}
             onChange={(value) => { this.setState({ description: value.target.value }); }}
             style={{ width: 512 }}
-            maxLength={50}
+            maxLength={100}
             label={<span className="apprelease-formItem-label"><FormattedMessage id={'appstore.description'} /></span>}
             autosize={{ minRows: 2, maxRows: 6 }}
           />
