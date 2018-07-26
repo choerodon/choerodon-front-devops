@@ -451,7 +451,7 @@ class SingleEnvironment extends Component {
 
     if (envNames.length && store.envId) {
       _.map(envNames, (d) => {
-        if (d.id === store.envId) {
+        if (d.id === Number(store.envId)) {
           envName = (<React.Fragment>
             {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
             {d.name}
