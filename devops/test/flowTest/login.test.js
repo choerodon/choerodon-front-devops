@@ -3,14 +3,13 @@ const { login, logout } = require('../Utils');
 
 const { expect } = chai;
 
-const token = null;
-
 describe('Login flow test', function () {
   it('登录未成功，不能获取access_token', function () {
     const user = {
       username: 'test-error',
       password: 'test-error',
     };
+    this.skip();
     return login(user)
       .then(function () {
         expect(global.user_token).to.be.null;

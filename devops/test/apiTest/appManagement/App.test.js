@@ -1,13 +1,10 @@
 const appFunction = require('../../apiFunction/AppManagement/AppFunction');
 const uuidv1 = require('uuid/v1');
-const { oauth, login, logout } = require('../../Utils');
+const { oauth, login } = require('../../Utils');
 
 describe('App Api', function () {
   before(function () {
     return login(oauth);
-  });
-  after(function () {
-    return logout();
   });
   // 并不能保证不重复
   const uidName = `app-${uuidv1().slice(0, 8)}`;

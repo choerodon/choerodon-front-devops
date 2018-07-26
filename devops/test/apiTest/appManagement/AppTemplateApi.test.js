@@ -18,10 +18,6 @@ const MicroService = { name: `${name}-mics`, description: `MicroService mk-test-
 
 
 describe('AppTemplate Api', function () {
-  before(function () {
-    return utils.login(utils.oauth);
-  });
-
   it('[POST] 组织下分页查询应用模板', function () {
     return getAppTemplateByPage(organizationId, pageInfo, query);
   });
@@ -67,8 +63,4 @@ describe('AppTemplate Api', function () {
   // it('[GET] 创建复制于MicroServiceFront的应用模板', function () {
   //   return createTemplate(organizationId, MicroServiceFront);
   // });
-
-  after(function () {
-    return utils.logout();
-  });
 });

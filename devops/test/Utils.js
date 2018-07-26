@@ -92,6 +92,7 @@ function login(user) {
                   if (!location) {
                     throw new Error("未能获取Token");
                   }
+                  // return location;
                   // Bearer 是 oauth2 框架规范
                   global.user_token = {
                     username: req.username,
@@ -102,6 +103,10 @@ function login(user) {
           });
       }
     });
+}
+
+function sleep(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
 }
 
 /**
@@ -120,4 +125,5 @@ module.exports = {
   oauth,
   login,
   logout,
+  sleep,
 };
