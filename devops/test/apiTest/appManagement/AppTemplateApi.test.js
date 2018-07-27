@@ -43,24 +43,24 @@ describe('AppTemplate Api', function () {
     return getAppTemplateById(organizationId, id);
   });
 
-  // it('[DELETE] 根据ID删除单个应用模板', function () {
-  //   const id = 52;
-  //   return delAppTemplateById(organizationId, id);
-  // });
+  it('[DELETE] 根据ID删除单个应用模板', function () {
+    const id = 52;
+    // return delAppTemplateById(organizationId, id);
+  });
 
-  // it('[GET] 创建空应用模板', function () {
-  //   return createTemplate(organizationId, template);
-  // });
-  //
-  // it('[GET] 创建复制于JavaLib的应用模板', function () {
-  //   return createTemplate(organizationId, JavaLib);
-  // });
-  //
-  // it('[GET] 创建复制于MicroService的应用模板', function () {
-  //   return createTemplate(organizationId, MicroService);
-  // });
-  //
-  // it('[GET] 创建复制于MicroServiceFront的应用模板', function () {
-  //   return createTemplate(organizationId, MicroServiceFront);
-  // });
+  it('[GET] 创建空应用模板', function () {
+    // return createTemplate(organizationId, template);
+  });
+
+  it('[GET] 创建复制于JavaLib的应用模板', function () {
+    // return createTemplate(organizationId, JavaLib);
+  });
+
+  it('[GET] 创建复制于MicroService的应用模板', function () {
+    // return createTemplate(organizationId, MicroService);
+  });
+
+  it('[GET] 创建复制于MicroServiceFront的应用模板', function () {
+    // return createTemplate(organizationId, MicroServiceFront);
+  });
 });

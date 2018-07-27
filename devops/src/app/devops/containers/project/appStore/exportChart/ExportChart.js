@@ -248,18 +248,22 @@ class ExportChart extends Component {
     const data = ExportChartStore.getApp;
     const column = [{
       title: <FormattedMessage id="app.name" />,
+      filters: [],
       dataIndex: 'name',
       key: 'name',
     }, {
       title: <FormattedMessage id="appstore.contributor" />,
+      filters: [],
       dataIndex: 'contributor',
       key: 'contributor',
     }, {
       title: <FormattedMessage id="appstore.category" />,
+      filters: [],
       dataIndex: 'category',
       key: 'category',
     }, {
       title: <FormattedMessage id="appstore.description" />,
+      filters: [],
       dataIndex: 'description',
       key: 'description',
       render: (test, record) => (<MouserOverWrapper text={record.description} width={0.3}>
