@@ -20,7 +20,7 @@ function getAppTemplateByPage(organizationId, pageInfo, query) {
     .set('Authorization', global.user_token.token)
     .then((res) => {
       res.should.have.status(200);
-      res.should.not.have.property('failed');
+      res.body.should.not.have.property('failed');
       return res;
     });
 }
@@ -31,7 +31,7 @@ function checkTempalteCode(organizationId, code) {
     .set('Authorization', global.user_token.token)
     .then((res) => {
       res.should.have.status(204);
-      res.should.not.have.property('failed');
+      res.body.should.not.have.property('failed');
       return res;
     });
 }
@@ -42,7 +42,7 @@ function checkTempalteName(organizationId, name) {
     .set('Authorization', global.user_token.token)
     .then((res) => {
       res.should.have.status(204);
-      res.should.not.have.property('failed');
+      res.body.should.not.have.property('failed');
       return res;
     });
 }
@@ -53,7 +53,7 @@ function getAppTemplateAll(organizationId) {
     .set('Authorization', global.user_token.token)
     .then((res) => {
       res.should.have.status(200);
-      res.should.not.have.property('failed');
+      res.body.should.not.have.property('failed');
       return res;
     });
 }
@@ -65,7 +65,7 @@ function createTemplate(organizationId, data) {
     .set('Authorization', global.user_token.token)
     .then((res) => {
       res.should.have.status(200);
-      res.should.not.have.property('failed');
+      res.body.should.not.have.property('failed');
       return res;
     });
 }
@@ -77,7 +77,7 @@ function updateTemplate(organizationId, data) {
     .set('Authorization', global.user_token.token)
     .then((res) => {
       res.should.have.status(200);
-      res.should.not.have.property('failed');
+      res.body.should.not.have.property('failed');
       return res;
     });
 }
@@ -89,7 +89,7 @@ function getAppTemplateById(organizationId, id) {
     .set('Authorization', global.user_token.token)
     .then((res) => {
       res.should.have.status(200);
-      res.should.not.have.property('failed');
+      res.body.should.not.have.property('failed');
       return res;
     });
 }
@@ -100,7 +100,7 @@ function delAppTemplateById(organizationId, id) {
     .set('Authorization', global.user_token.token)
     .then((res) => {
       res.should.have.status(204);
-      res.should.not.have.property('failed');
+      res.body.should.not.have.property('failed');
       return res;
     });
 }

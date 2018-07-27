@@ -6,9 +6,9 @@ const utils = require('../../Utils');
 chai.should();
 chai.use(chaiHttp);
 
-function getEnableApp(projectId) {
+function getCiPipeline(projectId, appId) {
   return chai.request(utils.oauth.gateway)
-    .get(`/devops/v1/projects/${projectId}/apps`)
+    .get(`/devops/v1/projects/${projectId}/applications/${appId}/pipelines`)
     .set('Authorization', global.user_token.token)
     .then((res) => {
       res.should.have.status(200);
@@ -17,10 +17,11 @@ function getEnableApp(projectId) {
     });
 }
 
-function getBaseUrl(projectId, appId) {
+function getCommits(projectId, gitlabProjectId, commits) {
   return chai.request(utils.oauth.gateway)
-    .get(`/devops/v1/projects/${projectId}/apps/${appId}/git/url`)
+    .post(`/devops/v1/projects/${projectId}/gitlab_projects/${gitlabProjectId}/commit_sha`)
     .set('Authorization', global.user_token.token)
+    .send(commits)
     .then((res) => {
       res.should.have.status(200);
       res.body.should.not.have.property('failed');
@@ -28,20 +29,9 @@ function getBaseUrl(projectId, appId) {
     });
 }
 
-function getAllMergeRequest(projectId, appId) {
+function pipelineAction(projectId, gitlabProjectId, pipelineId, action) {
   return chai.request(utils.oauth.gateway)
-    .get(`/devops/v1/projects/${projectId}/apps/${appId}/git/merge_request/list`)
-    .set('Authorization', global.user_token.token)
-    .then((res) => {
-      res.should.have.status(200);
-      res.body.should.not.have.property('failed');
-      return res;
-    });
-}
-
-function getMergeRequest(projectId, appId, state) {
-  return chai.request(utils.oauth.gateway)
-    .get(`/devops/v1/projects/${projectId}/apps/${appId}/git/merge_request/list?state=${appId}`)
+    .post(`/devops/v1/projects/${projectId}/gitlab_projects/${gitlabProjectId}/pipelines/${pipelineId}/${action}`)
     .set('Authorization', global.user_token.token)
     .then((res) => {
       res.should.have.status(200);
@@ -51,8 +41,7 @@ function getMergeRequest(projectId, appId, state) {
 }
 
 module.exports = {
-  getEnableApp,
-  getBaseUrl,
-  getAllMergeRequest,
-  getMergeRequest,
+  getCiPipeline,
+  getCommits,
+  pipelineAction,
 };

@@ -13,7 +13,7 @@ function getRepo(projectId, pageInfo, query) {
     .set('Authorization', global.user_token.token)
     .then((res) => {
       res.should.have.status(200);
-      res.should.not.have.property('failed');
+      res.body.should.not.have.property('failed');
       return res;
     });
 }
