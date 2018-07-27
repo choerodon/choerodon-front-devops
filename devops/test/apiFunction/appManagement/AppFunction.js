@@ -18,6 +18,7 @@ class AppFunction {
           expect(res).to.have.status(200);
         } else {
           expect(res.body.failed).to.be.true;
+          expect(res.body.code).to.be.equal('error.app.code.notMatch');
         }
       });
   }

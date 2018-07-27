@@ -1,4 +1,4 @@
-const appFunction = require('../../apiFunction/AppManagement/AppFunction');
+const appFunction = require('../../apiFunction/appManagement/AppFunction');
 const uuidv1 = require('uuid/v1');
 const { oauth, login } = require('../../Utils');
 
@@ -17,14 +17,16 @@ describe('App Api', function () {
       name: uidName,
       projectId: oauth.project,
     };
-    // return appFunction.createApp(oauth.project, app);
+    this.skip();
+    return appFunction.createApp(oauth.project, app);
   });
   it('[PUT] 修改应用名称成功', function () {
     const app = {
       id: 317,
       name: `c-${uidName}`,
     };
-    // return appFunction.editApp(oauth.project, app);
+    this.skip();
+    return appFunction.editApp(oauth.project, app);
   });
   it('[PUT] 应用名称已存在，不能创建修改应用', function () {
     const app = {
@@ -64,6 +66,6 @@ describe('App Api', function () {
     return appFunction.getAppList(oauth.project, 0, 30, 'code', 'desc', info);
   });
   it('[PUT] 应用生失效', function () {
-    return appFunction.invalidApp(oauth.project, 320, false);
+    return appFunction.invalidApp(oauth.project, 320, true);
   });
 });

@@ -124,8 +124,7 @@ class AppTag extends Component {
   tableChange = (pagination, filters, sorter, paras) => {
     const { AppTagStore } = this.props;
     const { projectId } = this.state;
-    this.setState({ page: pagination.current - 1 });
-    this.setState({ filters, paras });
+    this.setState({ page: pagination.current - 1, filters, paras });
     let searchParam = {};
     if (Object.keys(filters).length) {
       searchParam = filters;
