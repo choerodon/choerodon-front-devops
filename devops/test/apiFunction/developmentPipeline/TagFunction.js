@@ -58,20 +58,6 @@ class TagFunction {
       });
   }
 
-  getTagList(page = 0, size = 10, data = { searchParam: {}, param: '' }) {
-    const { projectId, appId } = this.app;
-    return chai.request(oauth.gateway)
-      .post(`/devops/v1/projects/${projectId}/apps/${appId}/git/tag_list`)
-      .set('Authorization', global.user_token.token)
-      .set('Content-type', 'application/json')
-      .then((res) => {
-        expect(res).to.have.status(200);
-        expect(res.body.content).to.be.an.instanceOf(Array);
-        expect(res.body.number).to.be.equal(page);
-        expect(res.body.size).to.be.equal(size);
-      });
-  }
-
   deleteTag(name, flag = true) {
     const { projectId, appId } = this.app;
     return chai.request(oauth.gateway)
