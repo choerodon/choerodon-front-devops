@@ -222,25 +222,6 @@ class BranchStore {
           this.setTagData(data);
         }
       });
-  loadAllData = (projectId, appId, page = this.pageInfo.current - 1,
-    sizes = this.pageInfo.pageSize) => {
-    this.changeLoading(true);
-    return axios.all([
-      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/flow/branches`),
-      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/flow/tags?page=${page}&size=${sizes}`)])
-      .then(axios.spread((branch, tag) => {
-        if (!branch.failed && !tag.failed) {
-          this.setBranchData(branch);
-          this.setTagData(tag.tagList);
-          const { totalElements } = tag;
-          const number = page;
-          const size = sizes;
-          const pages = { number, size, totalElements };
-          this.setPageInfo(pages);
-        }
-        this.changeLoading(false);
-      }));
-  };
 
   loadBranchByName = (projectId, appId, name) => axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/branch?branchName=${name}`)
     .then((branch) => {
