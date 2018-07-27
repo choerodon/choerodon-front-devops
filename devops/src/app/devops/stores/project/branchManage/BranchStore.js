@@ -207,7 +207,7 @@ class BranchStore {
           const res = handleProptError(data);
           if (res) {
             this.setBranchList(data.content);
-            const pages = { page, pageSize: size, total: data.totalElements };
+            const pages = { current: data.number + 1, pageSize: size, total: data.totalElements };
             this.setPageInfo(pages);
           }
         });

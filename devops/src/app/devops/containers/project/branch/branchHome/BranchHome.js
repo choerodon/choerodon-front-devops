@@ -451,7 +451,7 @@ class BranchHome extends Component {
     const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     this.setState({ filters, paras });
-    const sort = { field: 'creationDate', order: 'desc' };
+    const sort = { field: 'creationDate', order: 'asc' };
     if (sorter.column) {
       sort.field = sorter.field || sorter.columnKey;
       if (sorter.order === 'ascend') {
@@ -476,6 +476,7 @@ class BranchHome extends Component {
     BranchStore
       .loadBranchList({
         projectId: organizationId,
+        page: pagination.current - 1,
         size: pagination.pageSize,
         sort,
         postData,

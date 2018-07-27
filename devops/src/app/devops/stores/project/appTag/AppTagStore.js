@@ -70,11 +70,7 @@ class AppTagStore {
   }
 
   @action setPageInfo(pages) {
-    this.pageInfo = {
-      current: pages.page,
-      total: pages.totalElements,
-      pageSize: pages.sizes,
-    };
+    this.pageInfo = pages;
   }
 
   @computed get getPageInfo() {
@@ -105,9 +101,9 @@ class AppTagStore {
           this.setLoading(false);
           const result = handleProptError(data);
           if (result) {
-            const { content, totalElements } = result;
+            const { content, totalElements, number } = result;
             this.setTagData(content);
-            this.setPageInfo({ page, sizes, totalElements });
+            this.setPageInfo({ current: number + 1, pageSize: sizes, total: totalElements });
           }
         }).catch((err) => {
           Choerodon.prompt(err);
