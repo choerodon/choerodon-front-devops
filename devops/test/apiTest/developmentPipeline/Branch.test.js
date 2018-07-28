@@ -79,4 +79,34 @@ describe('Branch api', function () {
     };
     return branchFunction.createBranch(project, 347, data, false);
   });
+  it('[POST] 获取分支列表', function () {
+    const { project } = oauth;
+    return branchFunction.getBranchList({ project, app: 347 });
+  });
+  it('[GET] 根据分支名查询分支', function () {
+    const { project } = oauth;
+    return branchFunction.queryBranchByName(project, 347, 'master');
+  });
+  it('[GET] 根据分支名查询不存在的分支', function () {
+    const { project } = oauth;
+    return branchFunction.queryBranchByName(project, 347, '不存在的分支', false);
+  });
+  it('[PUT] 修改分支关联问题', function () {
+    const { project } = oauth;
+    const data = {
+      branchName: '关联问题测试',
+      issueId: 7534,
+    };
+    return branchFunction.editBranchLinkIssue(project, 347, data);
+  });
+  it('[DELETE] 删除分支', function () {
+    const { project } = oauth;
+    this.skip();
+    return branchFunction.deleteBranch(project, 347, '');
+  });
+  it('[DELETE] 不存在该分支，删除报错', function () {
+    const { project } = oauth;
+    this.skip();
+    return branchFunction.deleteBranch(project, 347, '不存在的分支', false);
+  });
 });
