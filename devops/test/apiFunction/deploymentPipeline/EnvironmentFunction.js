@@ -2,6 +2,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const utils = require('../../Utils');
+const _ = require('lodash');
 
 chai.should();
 chai.use(chaiHttp);
@@ -96,6 +97,30 @@ function envAction(projectId, envId, active) {
     });
 }
 
+function exchangeOrder(projectId, active) {
+  let newIds = [];
+  return chai.request(utils.oauth.gateway)
+    .get(`/devops/v1/projects/${projectId}/envs?active=${active}`)
+    .set('Authorization', global.user_token.token)
+    .then((res) => {
+      res.should.have.status(200);
+      res.body.should.not.have.property('failed');
+      const envIds = _.map(res.body, 'id');
+      newIds = _.reverse(envIds);
+    })
+    .then(() => {
+      chai.request(utils.oauth.gateway)
+        .put(`/devops/v1/projects/${projectId}/envs/sort`)
+        .send(newIds)
+        .set('Authorization', global.user_token.token)
+        .then((res) => {
+          res.should.have.status(200);
+          res.body.should.not.have.property('failed');
+          return res;
+        });
+    });
+}
+
 module.exports = {
   getEnv,
   createEnv,
@@ -105,4 +130,5 @@ module.exports = {
   getEnvById,
   envAction,
   getEnvShell,
+  exchangeOrder,
 };

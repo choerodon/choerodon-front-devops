@@ -1,10 +1,8 @@
 /* eslint-disable prefer-arrow-callback,no-undef */
-const { getEnv, checkEnvCode, checkEnvName, createEnv, updateEnv, getEnvById, envAction, getEnvShell } = require('../../apiFunction/deploymentPipeline/EnvironmentFunction');
+const { getEnv, checkEnvCode, checkEnvName, createEnv, updateEnv, getEnvById, envAction, getEnvShell, exchangeOrder } = require('../../apiFunction/deploymentPipeline/EnvironmentFunction');
 const uuidv1 = require('uuid/v1');
 const utils = require('../../Utils');
 
-
-const organizationId = utils.oauth.organization;
 const projectId = utils.oauth.project;
 const envId = 60;
 const code = `env-code-${uuidv1().substring(0, 5)}`;
@@ -30,7 +28,8 @@ describe('Environment Api', function () {
   });
 
   it('[POST] 项目下创建环境', function () {
-    // return createEnv(projectId, env);
+    this.skip();
+    return createEnv(projectId, env);
   });
 
   it('[PUT] 项目下更新环境', function () {
@@ -51,5 +50,9 @@ describe('Environment Api', function () {
 
   it('[GET] 获取激活环境指令', function () {
     return getEnvShell(projectId, envId, false);
+  });
+
+  it('[PUT] 调整启用环境流水线顺序', function () {
+    return exchangeOrder(projectId, true);
   });
 });
