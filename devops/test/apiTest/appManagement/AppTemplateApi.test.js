@@ -45,22 +45,27 @@ describe('AppTemplate Api', function () {
 
   it('[DELETE] 根据ID删除单个应用模板', function () {
     const id = 52;
-    // return delAppTemplateById(organizationId, id);
+    this.skip();
+    return delAppTemplateById(organizationId, id);
   });
 
   it('[GET] 创建空应用模板', function () {
-    // return createTemplate(organizationId, template);
+    this.skip();
+    return createTemplate(organizationId, template);
   });
 
   it('[GET] 创建复制于JavaLib的应用模板', function () {
-    // return createTemplate(organizationId, JavaLib);
+    this.skip();
+    return createTemplate(organizationId, JavaLib);
   });
 
   it('[GET] 创建复制于MicroService的应用模板', function () {
-    // return createTemplate(organizationId, MicroService);
+    this.skip();
+    return createTemplate(organizationId, MicroService);
   });
 
   it('[GET] 创建复制于MicroServiceFront的应用模板', function () {
-    // return createTemplate(organizationId, MicroServiceFront);
+    this.skip();
+    return createTemplate(organizationId, MicroServiceFront);
   });
 });

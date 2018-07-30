@@ -2,21 +2,14 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const utils = require('../../Utils');
+const _ = require('lodash');
 
 chai.should();
 chai.use(chaiHttp);
 
-/**
- * 组织下分页查询应用模板
- * @param organizationId
- * @param pageInfo
- * @param query
- * @returns {Promise<T>}
- */
-function getAppTemplateByPage(organizationId, pageInfo, query) {
+function getEnv(projectId, active) {
   return chai.request(utils.oauth.gateway)
-    .post(`/devops/v1/organizations/${organizationId}/app_templates/list_by_options?page=${pageInfo.page}&size=${pageInfo.size}&sort=${pageInfo.sort.field || 'id'}`)
-    .send(query)
+    .get(`/devops/v1/projects/${projectId}/envs?active=${active}`)
     .set('Authorization', global.user_token.token)
     .then((res) => {
       res.should.have.status(200);
@@ -25,42 +18,9 @@ function getAppTemplateByPage(organizationId, pageInfo, query) {
     });
 }
 
-function checkTempalteCode(organizationId, code) {
+function createEnv(projectId, data) {
   return chai.request(utils.oauth.gateway)
-    .get(`/devops/v1/organizations/${organizationId}/app_templates/checkCode?code=${code}`)
-    .set('Authorization', global.user_token.token)
-    .then((res) => {
-      res.should.have.status(204);
-      res.body.should.not.have.property('failed');
-      return res;
-    });
-}
-
-function checkTempalteName(organizationId, name) {
-  return chai.request(utils.oauth.gateway)
-    .get(`/devops/v1/organizations/${organizationId}/app_templates/checkName?name=${name}`)
-    .set('Authorization', global.user_token.token)
-    .then((res) => {
-      res.should.have.status(204);
-      res.body.should.not.have.property('failed');
-      return res;
-    });
-}
-
-function getAppTemplateAll(organizationId) {
-  return chai.request(utils.oauth.gateway)
-    .get(`/devops/v1/organizations/${organizationId}/app_templates`)
-    .set('Authorization', global.user_token.token)
-    .then((res) => {
-      res.should.have.status(200);
-      res.body.should.not.have.property('failed');
-      return res;
-    });
-}
-
-function createTemplate(organizationId, data) {
-  return chai.request(utils.oauth.gateway)
-    .post(`/devops/v1/organizations/${organizationId}/app_templates`)
+    .post(`/devops/v1/projects/${projectId}/envs`)
     .send(data)
     .set('Authorization', global.user_token.token)
     .then((res) => {
@@ -70,9 +30,31 @@ function createTemplate(organizationId, data) {
     });
 }
 
-function updateTemplate(organizationId, data) {
+function checkEnvCode(projectId, code) {
   return chai.request(utils.oauth.gateway)
-    .put(`/devops/v1/organizations/${organizationId}/app_templates`)
+    .get(`/devops/v1/projects/${projectId}/envs/checkCode?code=${code}`)
+    .set('Authorization', global.user_token.token)
+    .then((res) => {
+      res.should.have.status(204);
+      res.body.should.not.have.property('failed');
+      return res;
+    });
+}
+
+function checkEnvName(projectId, name) {
+  return chai.request(utils.oauth.gateway)
+    .get(`/devops/v1/projects/${projectId}/envs/checkName?name=${name}`)
+    .set('Authorization', global.user_token.token)
+    .then((res) => {
+      res.should.have.status(204);
+      res.body.should.not.have.property('failed');
+      return res;
+    });
+}
+
+function updateEnv(projectId, data) {
+  return chai.request(utils.oauth.gateway)
+    .put(`/devops/v1/projects/${projectId}/envs`)
     .send(data)
     .set('Authorization', global.user_token.token)
     .then((res) => {
@@ -82,10 +64,9 @@ function updateTemplate(organizationId, data) {
     });
 }
 
-
-function getAppTemplateById(organizationId, id) {
+function getEnvById(projectId, envId) {
   return chai.request(utils.oauth.gateway)
-    .get(`/devops/v1/organizations/${organizationId}/app_templates/${id}`)
+    .get(`/devops/v1/projects/${projectId}/envs/${envId}`)
     .set('Authorization', global.user_token.token)
     .then((res) => {
       res.should.have.status(200);
@@ -94,24 +75,60 @@ function getAppTemplateById(organizationId, id) {
     });
 }
 
-function delAppTemplateById(organizationId, id) {
+function getEnvShell(projectId, envId, update) {
   return chai.request(utils.oauth.gateway)
-    .delete(`/devops/v1/organizations/${organizationId}/app_templates/${id}`)
+    .get(`/devops/v1/projects/${projectId}/envs/${envId}/shell?update=${update}`)
     .set('Authorization', global.user_token.token)
     .then((res) => {
-      res.should.have.status(204);
+      res.should.have.status(200);
       res.body.should.not.have.property('failed');
       return res;
+    });
+}
+
+function envAction(projectId, envId, active) {
+  return chai.request(utils.oauth.gateway)
+    .put(`/devops/v1/projects/${projectId}/envs/${envId}/active?active=${active}`)
+    .set('Authorization', global.user_token.token)
+    .then((res) => {
+      res.should.have.status(200);
+      res.body.should.not.have.property('failed');
+      return res;
+    });
+}
+
+function exchangeOrder(projectId, active) {
+  let newIds = [];
+  return chai.request(utils.oauth.gateway)
+    .get(`/devops/v1/projects/${projectId}/envs?active=${active}`)
+    .set('Authorization', global.user_token.token)
+    .then((res) => {
+      res.should.have.status(200);
+      res.body.should.not.have.property('failed');
+      const envIds = _.map(res.body, 'id');
+      newIds = _.reverse(envIds);
+    })
+    .then(() => {
+      chai.request(utils.oauth.gateway)
+        .put(`/devops/v1/projects/${projectId}/envs/sort`)
+        .send(newIds)
+        .set('Authorization', global.user_token.token)
+        .then((res) => {
+          res.should.have.status(200);
+          res.body.should.not.have.property('failed');
+          return res;
+        });
     });
 }
 
 module.exports = {
-  getAppTemplateByPage,
-  checkTempalteCode,
-  checkTempalteName,
-  getAppTemplateAll,
-  getAppTemplateById,
-  delAppTemplateById,
-  createTemplate,
-  updateTemplate,
+  getEnv,
+  createEnv,
+  updateEnv,
+  checkEnvCode,
+  checkEnvName,
+  getEnvById,
+  envAction,
+  getEnvShell,
+  exchangeOrder,
 };
