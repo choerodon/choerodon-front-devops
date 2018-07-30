@@ -4,7 +4,7 @@ const uuidv1 = require('uuid/v1');
 const utils = require('../../Utils');
 
 const projectId = utils.oauth.project;
-const envId = 60;
+const envId = 61;
 const code = `env-code-${uuidv1().substring(0, 5)}`;
 const name = `env-${uuidv1().substring(0, 5)}`;
 const env = { name, description: `mk-env-description-${uuidv1().substring(0, 10)}`, code, projectId };
