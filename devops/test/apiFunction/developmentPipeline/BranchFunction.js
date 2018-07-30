@@ -46,8 +46,7 @@ class BranchFunction {
           expect(res).to.have.status(200);
           expect(res.body.branchName).to.be.equal(name);
         } else {
-          expect(res).to.have.status(200);
-          expect(res.body).to.be.null;
+          expect(res).to.have.status(400);
         }
       });
   }
