@@ -85,7 +85,7 @@ class DeployAppHome extends Component {
       columns={column}
       rowKey={record => record.id}
       dataSource={dataSource}
-      pagination={SelectAppStore.pageInfo}
+      pagination={SelectAppStore.getLocalPageInfo}
     />);
   }
   /**
@@ -131,7 +131,7 @@ class DeployAppHome extends Component {
       columns={column}
       rowKey={record => record.id}
       dataSource={dataSource}
-      pagination={SelectAppStore.pageInfo}
+      pagination={SelectAppStore.getStorePageInfo}
     />);
   };
   /**
@@ -243,12 +243,12 @@ class DeployAppHome extends Component {
   changeTab =(key) => {
     if (key === '1') {
       SelectAppStore.loadData({
-        projectId: this.state.projectId, page: 0, size: SelectAppStore.pageInfo.pageSize });
+        projectId: this.state.projectId, page: 0, size: SelectAppStore.localPageInfo.pageSize });
     } else {
       SelectAppStore.loadApps({
-        projectId: this.state.projectId, page: 0, size: SelectAppStore.pageInfo.pageSize });
+        projectId: this.state.projectId, page: 0, size: SelectAppStore.storePageInfo.pageSize });
     }
-    this.setState({ activeTab: key, page: 0, size: SelectAppStore.pageInfo.pageSize });
+    this.setState({ activeTab: key, page: 0 });
   }
   /**
    * 确定选择数据
@@ -265,7 +265,8 @@ class DeployAppHome extends Component {
     const { formatMessage } = this.props.intl;
     const localDataSource = SelectAppStore.getAllData;
     const storeDataSource = SelectAppStore.getStoreData;
-    const pageInfo = SelectAppStore.pageInfo;
+    const { total: lt, current: lc, pageSize: lp } = SelectAppStore.getLocalPageInfo;
+    const { total: st, current: sc, pageSize: sp } = SelectAppStore.getStorePageInfo;
     const projectName = AppState.currentMenuType.name;
     const prefix = <Icon type="search" onClick={this.handleSearch} />;
     const suffix = this.state.val ? <Icon type="close" onClick={this.clearInputValue} /> : null;
@@ -328,9 +329,9 @@ class DeployAppHome extends Component {
                     </div>
                     <div className="c7n-store-pagination">
                       <Pagination
-                        total={pageInfo.total}
-                        current={pageInfo.current}
-                        pageSize={pageInfo.pageSize}
+                        total={lt}
+                        current={lc}
+                        pageSize={lp}
                         showSizeChanger
                         onChange={this.onPageChange}
                         onShowSizeChange={this.onPageChange}
@@ -381,9 +382,9 @@ class DeployAppHome extends Component {
                     </div>
                     <div className="c7n-store-pagination">
                       <Pagination
-                        total={pageInfo.total}
-                        current={pageInfo.current}
-                        pageSize={pageInfo.pageSize}
+                        total={st}
+                        current={sc}
+                        pageSize={sp}
                         showSizeChanger
                         onChange={this.onPageChange}
                         onShowSizeChange={this.onPageChange}

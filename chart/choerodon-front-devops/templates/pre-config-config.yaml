@@ -39,6 +39,5 @@ spec:
         - '
           cd /usr/share/nginx/html;
           python sql.py -d {{ .Values.preJob.preConfig.mysql.enabledelete }};
-          python deleteMenu.py;
           '
       restartPolicy: Never

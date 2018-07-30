@@ -1,6 +1,7 @@
 import { observable, action, computed } from 'mobx';
 import _ from 'lodash';
 import { axios, store, stores } from 'choerodon-front-boot';
+import { handleProptError } from '../../../utils';
 
 const { AppState } = stores;
 
@@ -8,10 +9,20 @@ const { AppState } = stores;
 class MergeRequestStore {
   @observable loading = true;
   @observable apps = [];
-  @observable mergeData = {};
+  @observable mergeData = {
+    closed: [],
+    merged: [],
+    opened: [],
+    all: [],
+  };
   @observable assignee = {};
   @observable params = [];
-  @observable pageInfo = {};
+  @observable pageInfo = {
+    closed: {},
+    merged: {},
+    opened: {},
+    all: {},
+  };
   @observable currentApp = {};
   @observable url = '';
   @observable id = null;
@@ -35,8 +46,8 @@ class MergeRequestStore {
     return this.params.slice();
   }
 
-  @action setPageInfo(page) {
-    this.pageInfo = page;
+  @action setPageInfo(page, key) {
+    this.pageInfo[key] = page;
   }
 
   @computed get getPageInfo() {
@@ -67,8 +78,12 @@ class MergeRequestStore {
     return this.id;
   }
 
-  @action setMerge(mergeData) {
-    this.mergeData = mergeData;
+  @action setMerge(mergeData, key) {
+    this.mergeData[key] = mergeData;
+  }
+
+  @computed get getMerge() {
+    return this.mergeData;
   }
 
   @action setAssignee(assignee) {
@@ -77,10 +92,6 @@ class MergeRequestStore {
 
   @action setAssigneeCount(assigneeCount) {
     this.assigneeCount = assigneeCount;
-  }
-
-  @computed get getMerge() {
-    return this.mergeData;
   }
 
   @computed get getAssignee() {
@@ -116,7 +127,7 @@ class MergeRequestStore {
     this.setLoading(true);
     this.loadApps(AppState.currentMenuType.id).then((res) => {
       this.setApps(res || []);
-      const response = this.handleProptError(res);
+      const response = handleProptError(res);
       if (response) {
         if (res.length) {
           const defaultApp = res[0];
@@ -137,15 +148,16 @@ class MergeRequestStore {
     if (key === 'all') {
       axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/merge_request/list?page=${page}&size=${size}`)
         .then((res) => {
-          const response = this.handleProptError(res);
+          const response = handleProptError(res);
           if (response) {
             const { pageResult, closeCount, mergeCount, openCount, totalCount } = response;
+            const { number, totalElements, content } = pageResult;
             this.setPageInfo({
-              current: pageResult.number + 1,
+              current: number + 1,
               pageSize: pageResult.size,
-              total: pageResult.totalElements,
-            });
-            this.setMerge(pageResult);
+              total: totalElements,
+            }, key);
+            this.setMerge(content, key);
             this.setCount({
               closeCount,
               mergeCount,
@@ -160,20 +172,22 @@ class MergeRequestStore {
           Choerodon.prompt(error.message);
         });
     } else {
-      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/merge_request/list?state=${key}&page=${page}&size=${size}`)
+      // 针对opened和assignee的数据不分页处理，原因是前端从opened中分离assignee数据，会导致分页数据都显示opened的，期待后端修改
+      axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/merge_request/list?state=${key}&page=${page}&size=${key === 'opened' ? 30 : size}`)
         .then((res) => {
-          const response = this.handleProptError(res);
+          const response = handleProptError(res);
           if (response) {
             const { pageResult, closeCount, mergeCount, openCount, totalCount } = response;
+            const { number, totalElements, content } = pageResult;
             this.setPageInfo({
-              current: pageResult.number + 1,
+              current: number + 1,
               pageSize: pageResult.size,
-              total: pageResult.totalElements,
-            });
-            this.setMerge(pageResult);
+              total: totalElements,
+            }, key);
+            this.setMerge(content, key);
             if (key === 'opened') {
               const assignee = pageResult ?
-                _.filter(pageResult.content, a => a.assignee && a.assignee.id === userId) : [];
+                _.filter(content, a => a.assignee && a.assignee.id === userId) : [];
               this.setAssignee(assignee);
               this.setAssigneeCount(assignee.length);
             }
@@ -196,7 +210,7 @@ class MergeRequestStore {
 
   loadApps(projectId) {
     return axios.get(`/devops/v1/projects/${projectId}/apps`)
-      .then(datas => this.handleProptError(datas));
+      .then(datas => handleProptError(datas));
   }
 
   loadUser = () => axios.get('iam/v1/users/self').then((data) => {
@@ -212,15 +226,6 @@ class MergeRequestStore {
           this.setUrl(data);
         }
       });
-  }
-
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
   }
 }
 

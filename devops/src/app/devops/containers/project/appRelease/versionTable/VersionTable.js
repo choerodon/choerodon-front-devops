@@ -115,15 +115,7 @@ class VersionTable extends Component {
   handleClose = () => {
     this.props.store.changeShow(false);
   }
-  /**
-   * 切换tabs
-   * @param value
-   */
-  changeTabs = (value) => {
-    this.setState({ key: value });
-    this.props.store
-      .loadAllVersion({ projectId: this.state.projectId, appId: this.props.appId, key: value });
-  }
+
   /**
    * 添加版本
    */

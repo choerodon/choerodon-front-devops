@@ -38,7 +38,7 @@ class EditVersion extends Component {
    */
   getSidebarTable =() => {
     const { EditVersionStore } = this.props;
-    const data = EditVersionStore.allData;
+    const data = EditVersionStore.getUnReleaseData;
     const columns = [{
       title: <FormattedMessage id={'deploy.ver'} />,
       dataIndex: 'version',
@@ -54,7 +54,7 @@ class EditVersion extends Component {
     };
     return (<Table
       loading={EditVersionStore.loading}
-      pagination={EditVersionStore.pageInfo}
+      pagination={EditVersionStore.getUnPageInfo}
       rowSelection={rowSelection}
       columns={columns}
       dataSource={data}
@@ -69,7 +69,7 @@ class EditVersion extends Component {
    */
   getPublishTable = () => {
     const { EditVersionStore } = this.props;
-    const data = EditVersionStore.allData;
+    const data = EditVersionStore.getReleaseData;
     const columns = [{
       title: <FormattedMessage id={'deploy.ver'} />,
       dataIndex: 'version',
@@ -83,7 +83,7 @@ class EditVersion extends Component {
     return (<Table
       filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
       loading={EditVersionStore.loading}
-      pagination={EditVersionStore.pageInfo}
+      pagination={EditVersionStore.getPageInfo}
       columns={columns}
       dataSource={data}
       onChange={this.versionTableChange}
@@ -137,7 +137,6 @@ class EditVersion extends Component {
    */
   changeTabs = (value) => {
     const { EditVersionStore } = this.props;
-    EditVersionStore.setAllData([]);
     this.setState({ key: value });
     EditVersionStore
       .loadData({ projectId: this.state.projectId, id: this.state.id, key: value });

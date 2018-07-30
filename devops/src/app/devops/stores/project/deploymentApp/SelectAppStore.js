@@ -13,19 +13,12 @@ class SelectAppStore {
   @observable loading = false; // 打开tab的loading
   @observable singleData = null;
   @observable selectData = [];
-  @observable pageInfo = {
+  @observable localPageInfo = {
     current: 1, total: 0, pageSize: 15,
   };
-
-  @action setPageInfo(page) {
-    this.pageInfo.current = page.number + 1;
-    this.pageInfo.total = page.totalElements;
-    this.pageInfo.pageSize = page.size;
-  }
-
-  @computed get getPageInfo() {
-    return this.pageInfo;
-  }
+  @observable storePageInfo = {
+    current: 1, total: 0, pageSize: 15,
+  };
 
   /**
    * 项目应用数据
@@ -38,6 +31,16 @@ class SelectAppStore {
     this.localData = data;
   }
 
+  @action setLocalPageInfo(page) {
+    this.localPageInfo.current = page.number + 1;
+    this.localPageInfo.total = page.totalElements;
+    this.localPageInfo.pageSize = page.size;
+  }
+
+  @computed get getLocalPageInfo() {
+    return this.localPageInfo;
+  }
+
   /**
    * 应用市场数据
    */
@@ -47,6 +50,16 @@ class SelectAppStore {
 
   @computed get getStoreData() {
     return this.storeData.slice();
+  }
+
+  @action setStorePageInfo(page) {
+    this.storePageInfo.current = page.number + 1;
+    this.storePageInfo.total = page.totalElements;
+    this.storePageInfo.pageSize = page.size;
+  }
+
+  @computed get getStorePageInfo() {
+    return this.storePageInfo;
   }
 
   @computed get getSelectData() {
@@ -80,7 +93,7 @@ class SelectAppStore {
     return this.singleData;
   }
 
-  loadData = ({ projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
+  loadData = ({ projectId, page = this.localPageInfo.current - 1, size = this.localPageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
     param: '',
   } }) => {
     this.changeLoading(true);
@@ -93,7 +106,7 @@ class SelectAppStore {
         this.changeLoading(false);
       });
   };
-  loadApps = ({ projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
+  loadApps = ({ projectId, page = this.storePageInfo.current - 1, size = this.storePageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
     param: '',
   } }) => {
     this.changeLoading(true);
@@ -107,14 +120,21 @@ class SelectAppStore {
         }
       });
   };
+
+  /**
+   * 项目内和商店中判断
+   * @param data
+   * @param type
+   */
   handleData =(data, type) => {
     const { number, size, totalElements, content } = data;
     if (type === 'local') {
       this.setAllData(content);
+      this.setLocalPageInfo({ number, size, totalElements });
     } else {
       this.setStoreData(content);
+      this.setStorePageInfo({ number, size, totalElements });
     }
-    this.setPageInfo({ number, size, totalElements });
   };
 
   handleProptError =(error) => {
