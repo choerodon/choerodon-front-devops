@@ -1,17 +1,52 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-// import { Observable } from 'rxjs';
-// import { formJS } from 'immutable';
+import { handleProptError } from '../../../utils';
 
 const height = window.screen.height;
 @store('AppReleaseStore')
 class AppReleaseStore {
-  @observable allData = [];
+  @observable unReleaseData = [];
+  @observable releaseData = [];
   @observable isRefresh= false;// 页面的loading
   @observable loading = false; // 打开tab的loading
+  @observable unPageInfo = {
+    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
+  };
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
+
+  /**
+   * 未发布
+   */
+  @computed get getUnReleaseData() {
+    return this.unReleaseData.slice();
+  }
+
+  @action setUnReleaseData(data) {
+    this.unReleaseData = data;
+  }
+
+  @action setUnPageInfo(page) {
+    this.unPageInfo.current = page.number + 1;
+    this.unPageInfo.total = page.totalElements;
+    this.unPageInfo.pageSize = page.size;
+  }
+
+  @computed get getUnPageInfo() {
+    return this.unPageInfo;
+  }
+
+  /**
+   * 已发布
+   */
+  @computed get getReleaseData() {
+    return this.releaseData.slice();
+  }
+
+  @action setReleaseData(data) {
+    this.releaseData = data;
+  }
 
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
@@ -21,14 +56,6 @@ class AppReleaseStore {
 
   @computed get getPageInfo() {
     return this.pageInfo;
-  }
-
-  @computed get getAllData() {
-    return this.allData.slice();
-  }
-
-  @action setAllData(data) {
-    this.allData = data;
   }
 
   @action changeIsRefresh(flag) {
@@ -55,9 +82,9 @@ class AppReleaseStore {
     if (key === '1') {
       return axios.post(`/devops/v1/projects/${projectId}/apps/list_unpublish?page=${page}&size=${size}&sort=${sorter.field},${sorter.order}`, JSON.stringify(postData))
         .then((data) => {
-          const res = this.handleProptError(data);
+          const res = handleProptError(data);
           if (res) {
-            this.handleData(data);
+            this.handleData(data, key);
           }
           this.changeLoading(false);
           this.changeIsRefresh(false);
@@ -65,9 +92,9 @@ class AppReleaseStore {
     } else {
       return axios.post(`/devops/v1/projects/${projectId}/apps_market/list?page=${page}&size=${size}&sort=${sorter.field},${sorter.order}`, JSON.stringify(postData))
         .then((data) => {
-          const res = this.handleProptError(data);
+          const res = handleProptError(data);
           if (res) {
-            this.handleData(data);
+            this.handleData(data, key);
           }
           this.changeLoading(false);
           this.changeIsRefresh(false);
@@ -75,27 +102,17 @@ class AppReleaseStore {
     }
   };
 
-  handleData =(data) => {
-    this.setAllData(data.content);
-    const { number, size, totalElements } = data;
-    const page = { number, size, totalElements };
-    this.setPageInfo(page);
-  };
-
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
+  handleData =(data, type) => {
+    const { number, size, totalElements, content } = data;
+    if (type === '1') {
+      this.setUnReleaseData(content);
+      this.setUnPageInfo({ number, size, totalElements });
     } else {
-      return error;
+      this.setReleaseData(content);
+      this.setPageInfo({ number, size, totalElements });
     }
-  }
+  };
 }
 
 const appReleaseStore = new AppReleaseStore();
 export default appReleaseStore;
-
-// autorun(() => {
-//   window.console.log(templateStore.allData.length);
-//   whyRun();
-// });

@@ -110,7 +110,7 @@ class AppReleaseHome extends Component {
    */
   showProjectTable = () => {
     const { AppReleaseStore } = this.props;
-    const data = AppReleaseStore.allData.slice();
+    const data = AppReleaseStore.getUnReleaseData;
     const { filters } = this.state;
 
     const column = [{
@@ -141,7 +141,7 @@ class AppReleaseHome extends Component {
       <Table
         filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
         loading={AppReleaseStore.loading}
-        pagination={AppReleaseStore.pageInfo}
+        pagination={AppReleaseStore.getUnPageInfo}
         columns={column}
         dataSource={data}
         filters={filters}
@@ -156,7 +156,6 @@ class AppReleaseHome extends Component {
    */
   handleChangeTabs = (value) => {
     const { AppReleaseStore } = this.props;
-    AppReleaseStore.setAllData([]);
     AppReleaseStore.loadData({ page: 0, key: value, projectId: this.state.projectId, size: 10 });
     this.setState({
       key: value,
@@ -180,7 +179,6 @@ class AppReleaseHome extends Component {
     });
     if (sorter.column) {
       sort.field = sorter.field || sorter.columnKey;
-      // sort = sorter;
       if (sorter.order === 'ascend') {
         sort.order = 'asc';
       } else if (sorter.order === 'descend') {
@@ -191,7 +189,6 @@ class AppReleaseHome extends Component {
     let searchParam = {};
     if (Object.keys(filters).length) {
       searchParam = filters;
-      // page = 0;
     }
     const postData = {
       searchParam,
@@ -219,7 +216,7 @@ class AppReleaseHome extends Component {
 
   render() {
     const { AppReleaseStore } = this.props;
-    const data = AppReleaseStore.allData.slice();
+    const data = AppReleaseStore.getReleaseData;
     const { filters } = this.state;
     return (
       <Page
@@ -248,7 +245,7 @@ class AppReleaseHome extends Component {
               <Table
                 filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
                 loading={AppReleaseStore.loading}
-                pagination={AppReleaseStore.pageInfo}
+                pagination={AppReleaseStore.getPageInfo}
                 columns={this.getColumn()}
                 dataSource={data}
                 filters={filters}

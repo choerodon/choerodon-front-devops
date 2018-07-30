@@ -57,12 +57,15 @@ class MergeRequestHome extends Component {
   handleChange(id) {
     this.setState({
       id,
+      tabKey: 'opened',
     });
     const { MergeRequestStore } = this.props;
     const currentApp = MergeRequestStore.apps.find(app => app.id === id);
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     MergeRequestStore.setCurrentApp(currentApp);
-    MergeRequestStore.loadMergeRquest(id, this.state.tabKey);
+    MergeRequestStore.setAssignee([]);
+    MergeRequestStore.setAssigneeCount(0);
+    MergeRequestStore.loadMergeRquest(id, 'opened');
     MergeRequestStore.loadUrl(projectId, id);
   }
 
@@ -123,14 +126,14 @@ class MergeRequestHome extends Component {
 
   render() {
     const { MergeRequestStore, intl } = this.props;
-    const { param } = this.state;
+    const { param, tabKey } = this.state;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const pageInfo = MergeRequestStore.getPageInfo;
+    const { opened: op, merged: mp, closed: cp, all: ap } = MergeRequestStore.getPageInfo;
     const menu = AppState.currentMenuType;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     const appData = MergeRequestStore.getApps;
-    const { content } = MergeRequestStore.getMerge;
+    const { opened: od, merged: md, closed: cd, all: ad } = MergeRequestStore.getMerge;
     const assignee = MergeRequestStore.getAssignee;
     const { closeCount, mergeCount, openCount, totalCount } = MergeRequestStore.getCount;
     const assigneeCount = MergeRequestStore.getAssigneeCount;
@@ -472,16 +475,16 @@ class MergeRequestHome extends Component {
               )
             }
           </Select>
-          <Tabs defaultActiveKey="open" onChange={this.tabChange}>
+          <Tabs activeKey={tabKey} onChange={this.tabChange} animated={false}>
             <TabPane tab={`${intl.formatMessage({ id: 'merge.tab1' })}(${openCount || 0})`} key="opened">
               <Table
                 filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                 onChange={this.tableChange}
                 loading={MergeRequestStore.getIsLoading}
                 columns={columnsOpen}
-                pagination={pageInfo}
+                pagination={false}
                 filters={param || []}
-                dataSource={content}
+                dataSource={od}
                 rowKey={record => record.id}
               />
             </TabPane>
@@ -491,9 +494,9 @@ class MergeRequestHome extends Component {
                 onChange={this.tableChange}
                 loading={MergeRequestStore.getIsLoading}
                 columns={columns}
-                pagination={pageInfo}
+                pagination={mp}
                 filters={param || []}
-                dataSource={content}
+                dataSource={md}
                 rowKey={record => record.id}
               />
             </TabPane>
@@ -503,9 +506,9 @@ class MergeRequestHome extends Component {
                 onChange={this.tableChange}
                 loading={MergeRequestStore.getIsLoading}
                 columns={columns}
-                pagination={pageInfo}
+                pagination={cp}
                 filters={param || []}
-                dataSource={content}
+                dataSource={cd}
                 rowKey={record => record.id}
               />
             </TabPane>
@@ -515,9 +518,9 @@ class MergeRequestHome extends Component {
                 onChange={this.tableChange}
                 loading={MergeRequestStore.getIsLoading}
                 columns={columnsAll}
-                pagination={pageInfo}
+                pagination={ap}
                 filters={param || []}
-                dataSource={content}
+                dataSource={ad}
                 rowKey={record => record.id}
               />
             </TabPane>
@@ -527,7 +530,7 @@ class MergeRequestHome extends Component {
                 onChange={this.tableChange}
                 loading={MergeRequestStore.getIsLoading}
                 columns={columnsOpen}
-                pagination={pageInfo}
+                pagination={false}
                 filters={param || []}
                 dataSource={assignee}
                 rowKey={record => record.id}

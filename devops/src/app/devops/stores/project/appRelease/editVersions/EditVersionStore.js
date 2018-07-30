@@ -1,23 +1,52 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-// import { Observable } from 'rxjs';
+import { handleProptError } from '../../../../utils';
 
 const height = window.screen.height;
 @store('EditVersionStore')
 class EditVersionStore {
+  @observable unReleaseData = [];
+  @observable releaseData = [];
   @observable isRefresh= false;// 页面的loading
   @observable loading = false; // 打开tab的loading
-  @observable singleData = null;
-  @observable selectData = [];
-  @observable apps = [];
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
-  @observable versionPage = {
-    current: 0, total: 0, pageSize: height <= 900 ? 10 : 15,
+  @observable unPageInfo = {
+    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
-  @observable versionData = [];
-  @observable type = [];
+
+  /**
+   * 未发布
+   */
+  @computed get getUnReleaseData() {
+    return this.unReleaseData.slice();
+  }
+
+  @action setUnReleaseData(data) {
+    this.unReleaseData = data;
+  }
+
+  @action setUnPageInfo(page) {
+    this.unPageInfo.current = page.number + 1;
+    this.unPageInfo.total = page.totalElements;
+    this.unPageInfo.pageSize = page.size;
+  }
+
+  @computed get getUnPageInfo() {
+    return this.unPageInfo;
+  }
+
+  /**
+   * 已发布
+   */
+  @computed get getReleaseData() {
+    return this.releaseData.slice();
+  }
+
+  @action setReleaseData(data) {
+    this.releaseData = data;
+  }
 
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
@@ -27,34 +56,6 @@ class EditVersionStore {
 
   @computed get getPageInfo() {
     return this.pageInfo;
-  }
-
-
-  @computed get getAllData() {
-    return this.allData.slice();
-  }
-
-  @action setAllData(data) {
-    this.allData = data;
-  }
-
-  @action setSelectData(data) {
-    this.selectData = data;
-  }
-  @computed get getSelectData() {
-    return this.selectData.slice();
-  }
-
-  @computed get getVersionData() {
-    return this.versionData.slice();
-  }
-
-  @action setVersionData(data) {
-    this.versionData = data;
-  }
-
-  @action setApps(data) {
-    this.apps = data;
   }
 
   @action changeIsRefresh(flag) {
@@ -72,18 +73,6 @@ class EditVersionStore {
     return this.loading;
   }
 
-  @action setSingleData(data) {
-    this.singleData = data;
-  }
-
-  @computed get getSingleData() {
-    return this.singleData;
-  }
-
-  @action setType(data) {
-    this.type = data;
-  }
-
   loadData = ({ isRefresh = false, projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {}, param: '' }, key = '1', id }) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
@@ -92,9 +81,9 @@ class EditVersionStore {
     if (key === '1') {
       return axios.post(`/devops/v1/projects/${projectId}/apps_market/${id}/versions?is_publish=false&page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
         .then((data) => {
-          const res = this.handleProptError(data);
+          const res = handleProptError(data);
           if (res) {
-            this.handleData(data);
+            this.handleData(data, key);
           }
           this.changeLoading(false);
           this.changeIsRefresh(false);
@@ -102,9 +91,9 @@ class EditVersionStore {
     } else {
       return axios.post(`/devops/v1/projects/${projectId}/apps_market/${id}/versions?is_publish=true&page=${page}&size=${size}&sort=updatedDate,desc`, JSON.stringify(postData))
         .then((data) => {
-          const res = this.handleProptError(data);
+          const res = handleProptError(data);
           if (res) {
-            this.handleData(data);
+            this.handleData(data, key);
           }
           this.changeLoading(false);
           this.changeIsRefresh(false);
@@ -112,28 +101,23 @@ class EditVersionStore {
     }
   };
 
-  handleData =(data) => {
-    this.setAllData(data.content);
-    const { number, size, totalElements } = data;
-    const page = { number, size, totalElements };
-    this.setPageInfo(page);
+  handleData =(data, type) => {
+    const { number, size, totalElements, content } = data;
+    if (type === '1') {
+      this.setUnReleaseData(content);
+      this.setUnPageInfo({ number, size, totalElements });
+    } else {
+      this.setReleaseData(content);
+      this.setPageInfo({ number, size, totalElements });
+    }
   };
 
-  updateData = (projectId, id, data) =>
+  updateData = (projectId, id, data) => 
     axios.put(`/devops/v1/projects/${projectId}/apps_market/${id}/versions`, JSON.stringify(data))
       .then((datas) => {
-        const res = this.handleProptError(datas);
+        const res = handleProptError(datas);
         return res;
       });
-
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
-  }
 }
 
 const editVersionStore = new EditVersionStore();
