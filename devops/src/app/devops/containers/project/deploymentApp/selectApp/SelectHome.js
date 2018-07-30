@@ -93,7 +93,7 @@ class DeployAppHome extends Component {
    * @returns {*}
    */
   getMarketTable = () => {
-    const dataSource = SelectAppStore.allData;
+    const dataSource = SelectAppStore.getStoreData;
     const column = [{
       key: 'check',
       width: '50px',
@@ -241,7 +241,6 @@ class DeployAppHome extends Component {
    * @param key
    */
   changeTab =(key) => {
-    SelectAppStore.setAllData([]);
     if (key === '1') {
       SelectAppStore.loadData({
         projectId: this.state.projectId, page: 0, size: SelectAppStore.pageInfo.pageSize });
@@ -264,7 +263,8 @@ class DeployAppHome extends Component {
 
   render() {
     const { formatMessage } = this.props.intl;
-    const dataSource = SelectAppStore.getAllData;
+    const localDataSource = SelectAppStore.getAllData;
+    const storeDataSource = SelectAppStore.getStoreData;
     const pageInfo = SelectAppStore.pageInfo;
     const projectName = AppState.currentMenuType.name;
     const prefix = <Icon type="search" onClick={this.handleSearch} />;
@@ -307,7 +307,7 @@ class DeployAppHome extends Component {
                   </div>
                   {loading ? <Loadingbar display /> : <React.Fragment>
                     <div>
-                      {dataSource.length >= 1 && dataSource.map(card => (
+                      {localDataSource.length >= 1 && localDataSource.map(card => (
                         <div
                           key={card.id}
                           role="none"
@@ -357,7 +357,7 @@ class DeployAppHome extends Component {
                   </div>
                   {loading ? <Loadingbar display /> : <React.Fragment>
                     <div>
-                      {dataSource.length >= 1 && dataSource.map(card => (
+                      {storeDataSource.length >= 1 && storeDataSource.map(card => (
                         <div
                           key={card.id}
                           role="none"

@@ -36,7 +36,7 @@ describe('Tag Api', function () {
   it('[GET] 标签名重复，不可用', function () {
     return tagFunction.checkTag('0.0.1', false);
   });
-  it('[POST] 获取tag列表', function () {
+  it('[POST] 分页获取tag列表', function () {
     const info = {
       searchParam: { tagName: ['0.0.1'] },
       param: '',

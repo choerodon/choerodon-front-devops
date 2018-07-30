@@ -7,7 +7,8 @@ const height = window.screen.height;
 
 @store('SelectAppStore')
 class SelectAppStore {
-  @observable allData = [];
+  @observable localData = [];
+  @observable storeData = [];
   @observable isRefresh= false;// 页面的loading
   @observable loading = false; // 打开tab的loading
   @observable singleData = null;
@@ -26,14 +27,28 @@ class SelectAppStore {
     return this.pageInfo;
   }
 
-
+  /**
+   * 项目应用数据
+   */
   @computed get getAllData() {
-    return this.allData.slice();
+    return this.localData.slice();
   }
 
   @action setAllData(data) {
-    this.allData = data;
+    this.localData = data;
   }
+
+  /**
+   * 应用市场数据
+   */
+  @action setStoreData(data) {
+    this.storeData = data;
+  }
+
+  @computed get getStoreData() {
+    return this.storeData.slice();
+  }
+
   @computed get getSelectData() {
     return this.singleData.slice();
   }
@@ -73,7 +88,7 @@ class SelectAppStore {
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
-          this.handleData(data);
+          this.handleData(data, 'local');
         }
         this.changeLoading(false);
       });
@@ -87,16 +102,19 @@ class SelectAppStore {
         if (data && data.failed) {
           Choerodon.prompt(data.message);
         } else {
-          this.handleData(data);
+          this.handleData(data, 'store');
           this.changeLoading(false);
         }
       });
   };
-  handleData =(data) => {
-    this.setAllData(data.content);
-    const { number, size, totalElements } = data;
-    const page = { number, size, totalElements };
-    this.setPageInfo(page);
+  handleData =(data, type) => {
+    const { number, size, totalElements, content } = data;
+    if (type === 'local') {
+      this.setAllData(content);
+    } else {
+      this.setStoreData(content);
+    }
+    this.setPageInfo({ number, size, totalElements });
   };
 
   handleProptError =(error) => {
