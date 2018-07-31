@@ -1,3 +1,3 @@
-import NetworkCreate from './AddService';
+import CreateNetwork from './CreateNetwork';
 
-export default NetworkCreate;
+export default CreateNetwork;

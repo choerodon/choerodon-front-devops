@@ -274,8 +274,6 @@ const zhCN = {
   'network.form.ip': '外部IP',
   'network.form.port': '端口',
   'network.form.targetPort': '目标端口',
-  'network.form.app': '应用名称',
-  'network.form.instance': '实例',
   'network.name.check.failed': '名称只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
   'network.name.check.exist': '名称已存在',
   'network.ip.check.failed': '请输入正确的ip，类似 (0-255).(0-255).(0-255).(0-255)',
@@ -288,6 +286,13 @@ const zhCN = {
   'network.form.instance.disable': '请先选择版本',
   'network.btn.add': '添加版本',
   'network.form.targetPort.help': '网络选择的目标实例所暴露的端口号',
+  'network.env': '环境',
+  'network.target': '目标对象',
+  'network.target.type': '选择类型',
+  'network.target.instance': '选择实例',
+  'network.target.param': '填写参数',
+  'network.form.app': '应用名称',
+  'network.config': '网络配置',
 
   // deploymentApp
   'deploy.title': '应用部署',

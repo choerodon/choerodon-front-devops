@@ -1,7 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-// import { Observable } from 'rxjs';
-// import _ from 'lodash';
+import { handleProptError } from '../../../utils';
 
 const height = window.screen.height;
 @store('NetworkConfigStore')
@@ -15,7 +14,6 @@ class NetworkConfigStore {
   @observable instance = [];
   @observable versions = [];
   @observable app = [];
-  @observable envLoading = false;
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
@@ -91,16 +89,6 @@ class NetworkConfigStore {
   }
 
   @computed
-  get getEnv() {
-    return this.env.slice();
-  }
-
-  @action
-  setEnv(data) {
-    this.env = data;
-  }
-
-  @computed
   get getSelectData() {
     return this.selectData.slice();
   }
@@ -154,9 +142,15 @@ class NetworkConfigStore {
     return this.versionDto.slice();
   }
 
-  @action
-  changEnvLoading(flag) {
-    this.envLoading = flag;
+  /**
+   * 环境
+   */
+  @action setEnv(data) {
+    this.env = data;
+  }
+
+  @computed get getEnv() {
+    return this.env;
   }
 
   loadData = (isRefresh = false, proId, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
@@ -169,7 +163,7 @@ class NetworkConfigStore {
     this.changeLoading(true);
     return axios.post(`/devops/v1/projects/${proId}/service/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           this.handleData(data);
         }
@@ -187,7 +181,7 @@ class NetworkConfigStore {
   loadDataById = (projectId, id) => {
     this.changeLoading(true);
     return axios.get(`/devops/v1/projects/${projectId}/service/${id}`).then((data) => {
-      const res = this.handleProptError(data);
+      const res = handleProptError(data);
       if (res) {
         this.setSingleData(data);
         return data;
@@ -200,47 +194,35 @@ class NetworkConfigStore {
   checkDomainName = (projectId, envId, value) =>
     axios.get(`/devops/v1/projects/${projectId}/service/check?envId=${envId}&name=${value}`)
       .then((datas) => {
-        const res = this.handleProptError(datas);
+        const res = handleProptError(datas);
         return res;
       });
 
   updateData = (projectId, id, data) =>
     axios.put(`/devops/v1/projects/${projectId}/service/${id}`, JSON.stringify(data))
       .then((datas) => {
-        const res = this.handleProptError(datas);
+        const res = handleProptError(datas);
         return res;
       });
 
   addData = (projectId, data) =>
     axios.post(`/devops/v1/projects/${projectId}/service`, JSON.stringify(data))
       .then((datas) => {
-        const res = this.handleProptError(datas);
+        const res = handleProptError(datas);
         return res;
       });
 
   deleteData = (projectId, id) =>
     axios.delete(`/devops/v1/projects/${projectId}/service/${id}`)
       .then((datas) => {
-        const res = this.handleProptError(datas);
+        const res = handleProptError(datas);
         return res;
       });
 
-
-  loadEnv = (projectId) => {
-    return axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
-      .then((data) => {
-        const res = this.handleProptError(data);
-        if (res) {
-          this.setEnv(data);
-        }
-        this.changEnvLoading(false);
-        return res;
-      });
-  };
   loadApp = (projectId, envId) => {
     return axios.get(`/devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=running`)
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           this.setApp(data);
         }
@@ -251,7 +233,7 @@ class NetworkConfigStore {
   loadVersion = (projectId, envId, appId) => {
     return axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version?envId=${envId}`)
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           this.setVersions(data);
         }
@@ -264,18 +246,23 @@ class NetworkConfigStore {
     this.changeLoading(true);
     return axios.get(`/devops/v1/projects/${projectId}/app_instances/options?envId=${envId}&appId=${appId}&appVersionId=${versionId}`)
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         return res;
       });
   };
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
-  }
+
+  /**
+   * 加载项目下的环境
+   * @param projectId
+   */
+  loadEnv = projectId => axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
+    .then((data) => {
+      const res = handleProptError(data);
+      if (res) {
+        this.setEnv(data);
+      }
+    })
+    .catch(err => Choerodon.prompt(err));
 }
 
 const networkConfigStore = new NetworkConfigStore();

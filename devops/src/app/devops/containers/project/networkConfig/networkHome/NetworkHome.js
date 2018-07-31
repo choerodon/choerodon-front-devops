@@ -5,7 +5,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Table, Button, Form, Tooltip, Modal, Progress } from 'choerodon-ui';
 import { Permission, Content, Header, Page, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import NetworkCreate from '../createNetwork';
+import CreateNetwork from '../createNetwork';
 import './NetworkHome.scss';
 import '../../../main.scss';
 import LoadingBar from '../../../../components/loadingBar';
@@ -351,7 +351,7 @@ class NetworkHome extends Component {
         </React.Fragment>
         }
 
-        {this.state.show && <NetworkCreate
+        {this.state.show && <CreateNetwork
           visible={this.state.show}
           store={NetworkConfigStore}
           onClose={this.handleCancelFun}
