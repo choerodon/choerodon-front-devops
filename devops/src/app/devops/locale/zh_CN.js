@@ -288,11 +288,16 @@ const zhCN = {
   'network.form.targetPort.help': '网络选择的目标实例所暴露的端口号',
   'network.env': '环境',
   'network.target': '目标对象',
-  'network.target.type': '选择类型',
+  'network.target.type': '选择类型：',
   'network.target.instance': '选择实例',
   'network.target.param': '填写参数',
   'network.form.app': '应用名称',
   'network.config': '网络配置',
+  'network.config.ip': '外部IP',
+  'network.config.addport': '添加端口',
+  'network.config.port': '端口',
+  'network.config.tport': '目标端口',
+  'network.config.addtarget': '添加参数',
 
   // deploymentApp
   'deploy.title': '应用部署',

@@ -351,8 +351,8 @@ class NetworkHome extends Component {
         </React.Fragment>
         }
 
-        {this.state.show && <CreateNetwork
-          visible={this.state.show}
+        {!this.state.show && <CreateNetwork
+          visible={!this.state.show}
           store={NetworkConfigStore}
           onClose={this.handleCancelFun}
         /> }

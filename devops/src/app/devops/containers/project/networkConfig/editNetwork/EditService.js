@@ -7,7 +7,7 @@ import { stores, Content } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import _ from 'lodash';
 import '../../../main.scss';
-import '../createNetwork/CreateNetwork.scss';
+import './EditNetwork.scss';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;

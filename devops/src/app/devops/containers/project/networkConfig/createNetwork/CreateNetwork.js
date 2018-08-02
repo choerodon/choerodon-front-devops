@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+/* eslint-disable no-useless-return */
+import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -33,6 +34,8 @@ class CreateNetwork extends Component {
       targetType: 'instance',
       configType: 'ip',
     };
+    this.portKeys = 1;
+    this.targetKeys = 1;
   }
 
   componentDidMount() {
@@ -74,7 +77,18 @@ class CreateNetwork extends Component {
    * @param key
    */
   handleTypeChange = (e, key) => {
-    window.console.log(e.target);
+    if (key === 'configType') {
+      // 清除多组port映射
+      const { form } = this.props;
+      this.portKeys = 1;
+      const keys = form.getFieldValue('portKeys');
+      form.resetFields(['port', 'tport']);
+      if (keys.length > 1) {
+        form.setFieldsValue({
+          portKeys: [0],
+        });
+      }
+    }
     this.setState({ [key]: e.target.value });
   };
 
@@ -92,14 +106,124 @@ class CreateNetwork extends Component {
    */
   handleIstSelect = (value) => {
     window.console.log(value);
-  }
+  };
+
+  /**
+   * 移除端口映射
+   * @param k
+   * @param type
+   */
+  removeGroup = (k, type) => {
+    const { form } = this.props;
+    const keys = form.getFieldValue(type);
+    if (keys.length === 1) {
+      return;
+    }
+    form.setFieldsValue({
+      [type]: _.filter(keys, key => key !== k),
+    });
+  };
+
+  /**
+   * 动态生成一组表单项
+   * @param type
+   */
+  addGroup = (type) => {
+    const { form } = this.props;
+    const keys = form.getFieldValue(type);
+    const uuid = type === 'portKeys' ? this.portKeys : this.targetKeys;
+    const nextKeys = _.concat(keys, uuid);
+    this[type] = uuid + 1;
+    form.setFieldsValue({
+      [type]: nextKeys,
+    });
+  };
 
   render() {
+    const { visible, form, intl, store } = this.props;
     const { submitting, targetType, configType } = this.state;
     const { name: menuName } = AppState.currentMenuType;
-    const { visible, form, intl, store } = this.props;
-    const { getFieldDecorator } = form;
+    const { getFieldDecorator, getFieldValue } = form;
     const env = store.getEnv;
+
+    // 生成多组 port
+    getFieldDecorator('portKeys', { initialValue: [0] });
+    const portKeys = getFieldValue('portKeys');
+    const portItems = _.map(portKeys, (k, index) => (<div key={`port-${k}`} className="network-port-wrap">
+      <FormItem
+        className={`c7n-select_${portKeys.length > 1 ? 'port' : '240'} network-panel-form network-port-form`}
+        {...formItemLayout}
+      >
+        {getFieldDecorator(`port[${k}]`, {
+          rules: [{
+            required: true,
+            message: intl.formatMessage({ id: 'required' }),
+          }],
+        })(
+          <Input
+            type="text"
+            label={<FormattedMessage id={'network.config.port'} />}
+          />,
+        )}
+      </FormItem>
+      <FormItem
+        className={`c7n-select_${portKeys.length > 1 ? 'port' : '240'} network-panel-form network-port-form`}
+        {...formItemLayout}
+      >
+        {getFieldDecorator(`tport[${k}]`, {
+          rules: [{
+            required: true,
+            message: intl.formatMessage({ id: 'required' }),
+          }],
+        })(
+          <Input
+            type="text"
+            label={<FormattedMessage id={'network.config.tport'} />}
+          />,
+        )}
+      </FormItem>
+      {portKeys.length > 1 ? (<Icon className="network-port-delete" type="delete" onClick={() => this.removeGroup(k, 'portKeys')} />) : null}
+    </div>));
+
+    // 生成多组 target
+    getFieldDecorator('targetKeys', { initialValue: [0] });
+    const targetKeys = getFieldValue('targetKeys');
+    const targetItems = _.map(targetKeys, (k, index) => (<div key={`target-${k}`} className="network-port-wrap">
+      <FormItem
+        className={`c7n-select_${targetKeys.length > 1 ? 'port' : '240'} network-panel-form network-port-form`}
+        {...formItemLayout}
+      >
+        {getFieldDecorator(`keys[${k}]`, {
+          rules: [{
+            required: true,
+            message: intl.formatMessage({ id: 'required' }),
+          }],
+        })(
+          <Input
+            type="text"
+            label={<FormattedMessage id={'network.config.port'} />}
+          />,
+        )}
+      </FormItem>
+      <FormItem
+        className={`c7n-select_${targetKeys.length > 1 ? 'port' : '240'} network-panel-form network-port-form`}
+        {...formItemLayout}
+      >
+        {getFieldDecorator(`value[${k}]`, {
+          rules: [{
+            required: true,
+            message: intl.formatMessage({ id: 'required' }),
+          }],
+        })(
+          <Input
+            type="text"
+            label={<FormattedMessage id={'network.config.tport'} />}
+          />,
+        )}
+      </FormItem>
+      {targetKeys.length > 1 ? (<Icon className="network-port-delete" type="delete" onClick={() => this.removeGroup(k, 'targetKeys')} />) : null}
+    </div>));
+
     return (
       <div className="c7n-region">
         <Sidebar
@@ -147,24 +271,30 @@ class CreateNetwork extends Component {
                 <Icon type="instance_outline" />
                 <FormattedMessage id={'network.target'} />
               </div>
-              <FormItem
-                className="c7n-select_512"
-                {...formItemLayout}
-              >
-                {getFieldDecorator('target', {
-                  initialValue: targetType,
-                })(<RadioGroup
-                  name="target"
-                  onChange={e => this.handleTypeChange(e, 'targetType')}
+              <div className="network-radio-wrap">
+                <div className="network-radio-label">
+                  <FormattedMessage id={'network.target.type'} />
+                </div>
+                <FormItem
+                  className="c7n-select_512 network-radio-form"
+                  label={<FormattedMessage id={'network.target.type'} />}
+                  {...formItemLayout}
                 >
-                  <Radio value="instance"><FormattedMessage id={'network.target.instance'} /></Radio>
-                  <Radio value="param"><FormattedMessage id={'network.target.param'} /></Radio>
-                </RadioGroup>)}
-              </FormItem>
+                  {getFieldDecorator('target', {
+                    initialValue: targetType,
+                  })(<RadioGroup
+                    name="target"
+                    onChange={e => this.handleTypeChange(e, 'targetType')}
+                  >
+                    <Radio value="instance"><FormattedMessage id={'network.target.instance'} /></Radio>
+                    <Radio value="param"><FormattedMessage id={'network.target.param'} /></Radio>
+                  </RadioGroup>)}
+                </FormItem>
+              </div>
               <div className="network-panel">
-                {targetType === 'instance' ? (<React.Fragment>
+                {targetType === 'instance' ? (<Fragment>
                   <FormItem
-                    className="c7n-select_512"
+                    className="c7n-select_480 network-panel-form"
                     {...formItemLayout}
                   >
                     {getFieldDecorator('application', {
@@ -173,7 +303,7 @@ class CreateNetwork extends Component {
                         message: intl.formatMessage({ id: 'required' }),
                       }],
                     })(<Select
-                      className="c7n-select_512"
+                      className="c7n-select_480"
                       dropdownClassName="c7n-network-env"
                       label={<FormattedMessage id={'network.form.app'} />}
                       optionFilterProp="children"
@@ -193,7 +323,7 @@ class CreateNetwork extends Component {
                     </Select>)}
                   </FormItem>
                   <FormItem
-                    className="c7n-select_512"
+                    className="c7n-select_480 network-panel-form"
                     {...formItemLayout}
                   >
                     {getFieldDecorator('instance', {
@@ -202,7 +332,7 @@ class CreateNetwork extends Component {
                         message: intl.formatMessage({ id: 'required' }),
                       }],
                     })(<Select
-                      className="c7n-select_512"
+                      className="c7n-select_480"
                       dropdownClassName="c7n-network-env"
                       label={<FormattedMessage id={'network.target.instance'} />}
                       optionFilterProp="children"
@@ -221,25 +351,87 @@ class CreateNetwork extends Component {
                       })}
                     </Select>)}
                   </FormItem>
-                </React.Fragment>) : null}
+                </Fragment>) : (<Fragment>
+                  {targetItems}
+                  <FormItem
+                    className="c7n-select_480 network-panel-button"
+                    {...formItemLayout}
+                  >
+                    <Button
+                      type="primary"
+                      funcType="flat"
+                      onClick={() => this.addGroup('targetKeys')}
+                      icon="add"
+                    ><FormattedMessage id={'network.config.addtarget'} /></Button>
+                  </FormItem>
+                </Fragment>)}
               </div>
               <div className="network-panel-title">
                 <Icon type="router" />
                 <FormattedMessage id={'network.config'} />
               </div>
+              <div className="network-radio-wrap">
+                <div className="network-radio-label">
+                  <FormattedMessage id={'network.target.type'} />
+                </div>
+                <FormItem
+                  className="c7n-select_512 network-radio-form"
+                  {...formItemLayout}
+                >
+                  {getFieldDecorator('config', {
+                    initialValue: configType,
+                  })(<RadioGroup
+                    name="config"
+                    onChange={e => this.handleTypeChange(e, 'configType')}
+                  >
+                    <Radio value="ip">ClusterIP</Radio>
+                    <Radio value="port">NodePort</Radio>
+                  </RadioGroup>)}
+                </FormItem>
+              </div>
+              <div className="network-panel">
+                {configType === 'ip' ? (<Fragment>
+                  <FormItem
+                    className="c7n-select_480 network-panel-form"
+                    {...formItemLayout}
+                  >
+                    {getFieldDecorator('ip')(
+                      <Input
+                        type="text"
+                        label={<FormattedMessage id={'network.config.ip'} />}
+                      />,
+                    )}
+                  </FormItem>
+                  {portItems}
+                </Fragment>) : portItems}
+                <FormItem
+                  className="c7n-select_480 network-panel-button"
+                  {...formItemLayout}
+                >
+                  <Button
+                    type="primary"
+                    funcType="flat"
+                    onClick={() => this.addGroup('portKeys')}
+                    icon="add"
+                  ><FormattedMessage id={'network.config.addport'} /></Button>
+                </FormItem>
+              </div>
               <FormItem
-                className="c7n-select_512"
+                className="c7n-select_512 network-form-name"
                 {...formItemLayout}
               >
-                {getFieldDecorator('config', {
-                  initialValue: configType,
-                })(<RadioGroup
-                  name="config"
-                  onChange={e => this.handleTypeChange(e, 'configType')}
-                >
-                  <Radio value="ip">ClusterIP</Radio>
-                  <Radio value="port">NodePort</Radio>
-                </RadioGroup>)}
+                {getFieldDecorator('name', {
+                  rules: [{
+                    required: true,
+                    message: intl.formatMessage({ id: 'required' }),
+                  }],
+                })(
+                  <Input
+                    maxLength={30}
+                    type="text"
+                    label={<FormattedMessage id={'network.form.name'} />}
+                  />,
+                )}
               </FormItem>
             </Form>
           </Content>
