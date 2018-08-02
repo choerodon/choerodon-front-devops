@@ -260,7 +260,7 @@ const zhCN = {
   'network.header.update': '修改网络',
   'network.column.name': '名称',
   'network.column.status': '状态',
-  'network.column.env': '环境名称',
+  'network.column.env': '环境',
   'network.column.ip': '外部IP',
   'network.column.port': '端口',
   'network.column.targetPort': '目标端口',
@@ -298,6 +298,9 @@ const zhCN = {
   'network.config.port': '端口',
   'network.config.tport': '目标端口',
   'network.config.addtarget': '添加参数',
+  'network.config.keyword': '关键字',
+  'network.config.value': '值',
+  'network.failed': '已失败',
 
   // deploymentApp
   'deploy.title': '应用部署',

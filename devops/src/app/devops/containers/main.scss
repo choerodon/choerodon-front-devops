@@ -387,12 +387,6 @@ table {
   &_480 {
     width: $WIDTH512 - 32px;
   }
-  &_240 {
-    width: $WIDTH512 / 2 - 24px;
-  }
-  &_port {
-    width: $WIDTH512 / 2 - 37px;
-  }
 }
 
 // 环境连接状态

@@ -1,4 +1,11 @@
 .c7n-network-create {
+  .ant-input-disabled,
+  .ant-select-disabled {
+    .ant-select-underline,
+    .ant-input-underline {
+      border-bottom-style: dashed;
+    }
+  }
   .c7n-network-env {
     .status-success {
       padding-right: 15px;
@@ -13,7 +20,7 @@
 
   .network-radio-wrap {
     position: relative;
-    padding-left: 65px;
+    padding-left: 73px;
     .network-radio-label {
       position: absolute;
       left: 0;
@@ -45,18 +52,31 @@
     border-radius: 2px;
     .network-panel-form {
       margin-bottom: 12px;
+      .network-app-name {
+        margin-left: 8px;
+      }
     }
     .network-port-wrap {
       display: flex;
       justify-content: space-between;
+      .c7n-select_entry {
+        width: 200px;
+      }
+      .c7n-select_port {
+        width: 219px;
+      }
+      .c7n-select_240 {
+        width: 232px;
+      }
       .network-port-form {
         flex: 0 1 auto;
       }
-      .network-port-delete {
+      .network-group-icon {
         position: relative;
         top: 20px;
         width: 18px;
         height: 18px;
+        font-size: 18px;
         cursor: pointer;
       }
     }

@@ -103,7 +103,8 @@
     line-height: 16px;
     vertical-align: middle;
 
-    div {
+    span {
+      display: inline-block;
       transform: scale(0.8);
     }
   }

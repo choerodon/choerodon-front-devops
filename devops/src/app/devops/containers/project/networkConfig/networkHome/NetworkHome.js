@@ -106,17 +106,17 @@ class NetworkHome extends Component {
         switch (record.status) {
           case 'failed':
             statusDom = (<div className="c7n-network-status c7n-network-status-failed">
-              <div>{<FormattedMessage id />}</div>
+              <FormattedMessage id="network.failed" />
             </div>);
             break;
           case 'operating':
             statusDom = (<div className="c7n-network-status c7n-network-status-operating">
-              <div>{<FormattedMessage id={'operating'} />}</div>
+              <FormattedMessage id="operating" />
             </div>);
             break;
           default:
             statusDom = (<div className="c7n-network-status c7n-network-status-running">
-              <div>{<FormattedMessage id={'running'} />}</div>
+              <FormattedMessage id="running" />
             </div>);
         }
         return (statusDom);
@@ -162,76 +162,29 @@ class NetworkHome extends Component {
         </React.Fragment>
       ),
     }, {
-      title: <FormattedMessage id={'network.column.ip'} />,
-      key: 'ip',
-      filters: [],
-      render: record => (
-        <MouserOverWrapper text={record.externalIp || ''} width={0.1}>
-          {record.externalIp}</MouserOverWrapper>
-      ),
-    }, {
-      title: <FormattedMessage id={'network.column.port'} />,
-      key: 'port',
-      render: record => (
-        <MouserOverWrapper text={record.port || ''} width={0.05}>
-          {record.port}</MouserOverWrapper>
-      ),
-    }, {
-      title: <FormattedMessage id={'network.column.targetPort'} />,
-      key: 'targetPort',
-      render: record => (
-        <MouserOverWrapper text={record.targetPort || ''} width={0.05}>
-          {record.targetPort}</MouserOverWrapper>
-      ),
-    }, {
-      title: <FormattedMessage id={'network.column.app'} />,
-      key: 'appName',
-      filters: [],
-      sorter: true,
-      render: record => (
-        <React.Fragment>
-          <Tooltip title={`${record.appProjectId === parseInt(menu.id, 10) ? this.props.intl.formatMessage({ id: 'project' }) : this.props.intl.formatMessage({ id: 'market' })}`}>
-            <span className={`icon ${record.appProjectId === parseInt(menu.id, 10) ? 'icon-project' : 'icon-apps'} c7n-network-icon`} />
-          </Tooltip>
-          <MouserOverWrapper text={record.appName || ''} width={0.1} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
-            <span>{record.appName}</span>
-          </MouserOverWrapper>
-        </React.Fragment>
-      ),
-    }, {
-      title: <FormattedMessage id={'network.column.version'} />,
-      className: 'c7n-network-col',
-      key: 'version',
+      title: <FormattedMessage id={'network.column.env'} />,
+      key: 'envName',
       sorter: true,
       filters: [],
       render: record => (
         <React.Fragment>
-          {_.map(record.appVersion, versions =>
-            (<div key={versions.id} className={`c7n-network-col_border col-${record.id}-${versions.id}`}>
-              <MouserOverWrapper text={versions.version || ''} width={0.1} className="c7n-network-column-version" >
-                <span>{versions.version}</span>
-              </MouserOverWrapper>
-            </div>))}
+          { record.envStatus ? <Tooltip title={<FormattedMessage id={'connect'} />}> <span className="env-status-success" /></Tooltip> : <Tooltip title={<FormattedMessage id={'disconnect'} />}>
+            <span className="env-status-error" />
+          </Tooltip> }
+          {record.envName}
         </React.Fragment>
       ),
     }, {
-      width: 150,
-      title: <FormattedMessage id={'network.column.instance'} />,
-      className: 'c7n-network-col',
-      key: 'code',
+      title: <FormattedMessage id={'network.column.env'} />,
+      key: 'envName',
+      sorter: true,
       filters: [],
       render: record => (
         <React.Fragment>
-          {_.map(record.appVersion, versions =>
-            (<div key={versions.version} role="none" className={`c7n-network-col_border col-${record.id}-${versions.id}`} onClick={this.showChange.bind(this, record.id, versions.id, versions.appInstance.length)}>
-              {versions.appInstance && versions.appInstance.length > 1
-              && <span className={_.indexOf(upDown, record.id) !== -1
-                ? 'c7n-network-change icon icon-keyboard_arrow_up' : 'c7n-network-change icon icon-keyboard_arrow_down'}
-              />
-              }
-              {_.map(versions.appInstance, datas =>
-                (<MouserOverWrapper key={datas.id} width={0.12} className={`${datas.intanceStatus !== 'running' ? 'c7n-network-status-error' : ''} c7n-network-square`} text={datas.code}>{datas.code}</MouserOverWrapper>))}
-            </div>))}
+          { record.envStatus ? <Tooltip title={<FormattedMessage id={'connect'} />}> <span className="env-status-success" /></Tooltip> : <Tooltip title={<FormattedMessage id={'disconnect'} />}>
+            <span className="env-status-error" />
+          </Tooltip> }
+          {record.envName}
         </React.Fragment>
       ),
     }, {
@@ -351,8 +304,8 @@ class NetworkHome extends Component {
         </React.Fragment>
         }
 
-        {!this.state.show && <CreateNetwork
-          visible={!this.state.show}
+        {this.state.show && <CreateNetwork
+          visible={this.state.show}
           store={NetworkConfigStore}
           onClose={this.handleCancelFun}
         /> }

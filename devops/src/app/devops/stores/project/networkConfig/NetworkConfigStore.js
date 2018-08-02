@@ -5,15 +5,16 @@ import { handleProptError } from '../../../utils';
 const height = window.screen.height;
 @store('NetworkConfigStore')
 class NetworkConfigStore {
+  @observable env = [];
+  @observable app = [];
+  @observable ist = [];
   @observable allData = [];
   @observable isRefresh = false;// 页面的loading
   @observable loading = false; // 打开tab的loading
   @observable singleData = null;
   @observable selectData = [];
-  @observable env = [];
   @observable instance = [];
   @observable versions = [];
-  @observable app = [];
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
@@ -38,16 +39,6 @@ class NetworkConfigStore {
   @action
   setAllData(data) {
     this.allData = data;
-  }
-
-  @computed
-  get getApp() {
-    return this.app.slice();
-  }
-
-  @action
-  setApp(data) {
-    this.app = data;
   }
 
   @computed
@@ -153,6 +144,28 @@ class NetworkConfigStore {
     return this.env;
   }
 
+  /**
+   * 应用
+   */
+  @action setApp(data) {
+    this.app = data;
+  }
+
+  @computed get getApp() {
+    return this.app;
+  }
+
+  /**
+   * 实例
+   */
+  @action setIst(data) {
+    this.ist = data;
+  }
+
+  @computed get getIst() {
+    return this.ist;
+  }
+
   loadData = (isRefresh = false, proId, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
     searchParam: {},
     param: '',
@@ -219,17 +232,6 @@ class NetworkConfigStore {
         return res;
       });
 
-  loadApp = (projectId, envId) => {
-    return axios.get(`/devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=running`)
-      .then((data) => {
-        const res = handleProptError(data);
-        if (res) {
-          this.setApp(data);
-        }
-        this.changeLoading(false);
-        return res;
-      });
-  };
   loadVersion = (projectId, envId, appId) => {
     return axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version?envId=${envId}`)
       .then((data) => {
@@ -242,18 +244,10 @@ class NetworkConfigStore {
       });
   };
 
-  loadInstance = (projectId, envId, appId, versionId) => {
-    this.changeLoading(true);
-    return axios.get(`/devops/v1/projects/${projectId}/app_instances/options?envId=${envId}&appId=${appId}&appVersionId=${versionId}`)
-      .then((data) => {
-        const res = handleProptError(data);
-        return res;
-      });
-  };
-
   /**
    * 加载项目下的环境
    * @param projectId
+   * @returns {Promise<T | never>}
    */
   loadEnv = projectId => axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
     .then((data) => {
@@ -261,6 +255,34 @@ class NetworkConfigStore {
       if (res) {
         this.setEnv(data);
       }
+    })
+    .catch(err => Choerodon.prompt(err));
+
+  /**
+   * 加载应用
+   * @param projectId
+   * @param envId
+   * @returns {Promise<T | never>}
+   */
+  loadApp = (projectId, envId) => axios.get(`/devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=running`)
+    .then((data) => {
+      const res = handleProptError(data);
+      if (res) {
+        this.setApp(data);
+      }
+    })
+    .catch(err => Choerodon.prompt(err));
+
+  /**
+   * 加载实例
+   * @param projectId
+   * @param envId
+   * @param appId
+   * @returns {Promise<T | never>}
+   */
+  loadInstance = (projectId, envId, appId) => axios.get(`/devops/v1/projects/${projectId}/app_instances/options?envId=${envId}&appId=${appId}`)
+    .then((data) => {
+      const res = handleProptError(data);
     })
     .catch(err => Choerodon.prompt(err));
 }
