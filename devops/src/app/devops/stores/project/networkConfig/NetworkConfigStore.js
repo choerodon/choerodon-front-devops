@@ -30,17 +30,6 @@ class NetworkConfigStore {
     return this.pageInfo;
   }
 
-
-  @computed
-  get getAllData() {
-    return this.allData.slice();
-  }
-
-  @action
-  setAllData(data) {
-    this.allData = data;
-  }
-
   @computed
   get getInstance() {
     return this.instance;
@@ -134,6 +123,17 @@ class NetworkConfigStore {
   }
 
   /**
+   * 获取网络列表
+   */
+  @action setAllData(data) {
+    this.allData = data;
+  }
+
+  @computed get getAllData() {
+    return this.allData;
+  }
+
+  /**
    * 环境
    */
   @action setEnv(data) {
@@ -166,31 +166,6 @@ class NetworkConfigStore {
     return this.ist;
   }
 
-  loadData = (isRefresh = false, proId, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
-    searchParam: {},
-    param: '',
-  }) => {
-    if (isRefresh) {
-      this.changeIsRefresh(true);
-    }
-    this.changeLoading(true);
-    return axios.post(`/devops/v1/projects/${proId}/service/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
-      .then((data) => {
-        const res = handleProptError(data);
-        if (res) {
-          this.handleData(data);
-        }
-        this.changeLoading(false);
-        this.changeIsRefresh(false);
-      });
-  };
-
-  handleData =(data) => {
-    this.setAllData(data.content);
-    const { number, size, totalElements } = data;
-    this.setPageInfo({ number, size, totalElements });
-  };
-
   loadDataById = (projectId, id) => {
     this.changeLoading(true);
     return axios.get(`/devops/v1/projects/${projectId}/service/${id}`).then((data) => {
@@ -203,13 +178,6 @@ class NetworkConfigStore {
       return res;
     });
   };
-
-  checkDomainName = (projectId, envId, value) =>
-    axios.get(`/devops/v1/projects/${projectId}/service/check?envId=${envId}&name=${value}`)
-      .then((datas) => {
-        const res = handleProptError(datas);
-        return res;
-      });
 
   updateData = (projectId, id, data) =>
     axios.put(`/devops/v1/projects/${projectId}/service/${id}`, JSON.stringify(data))
@@ -232,15 +200,44 @@ class NetworkConfigStore {
         return res;
       });
 
-  loadVersion = (projectId, envId, appId) => {
-    return axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version?envId=${envId}`)
+  loadVersion = (projectId, envId, appId) => axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version?envId=${envId}`)
+    .then((data) => {
+      const res = handleProptError(data);
+      if (res) {
+        this.setVersions(data);
+      }
+      this.changeLoading(false);
+      return res;
+    });
+
+  /**
+   * 加载网络列表数据
+   * @param isRefresh
+   * @param proId
+   * @param page
+   * @param pageSize
+   * @param sort
+   * @param datas
+   * @returns {JQueryPromise<any>}
+   */
+  loadData = (isRefresh = false, proId, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
+    searchParam: {},
+    param: '',
+  }) => {
+    if (isRefresh) {
+      this.changeIsRefresh(true);
+    }
+    this.changeLoading(true);
+    return axios.post(`/devops/v1/projects/${proId}/service/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          this.setVersions(data);
+          const { number, size, totalElements, content } = res;
+          this.setAllData(content);
+          this.setPageInfo({ number, size, totalElements });
         }
         this.changeLoading(false);
-        return res;
+        this.changeIsRefresh(false);
       });
   };
 
@@ -253,7 +250,7 @@ class NetworkConfigStore {
     .then((data) => {
       const res = handleProptError(data);
       if (res) {
-        this.setEnv(data);
+        this.setEnv(res);
       }
     })
     .catch(err => Choerodon.prompt(err));
@@ -268,7 +265,7 @@ class NetworkConfigStore {
     .then((data) => {
       const res = handleProptError(data);
       if (res) {
-        this.setApp(data);
+        this.setApp(res);
       }
     })
     .catch(err => Choerodon.prompt(err));
@@ -283,8 +280,24 @@ class NetworkConfigStore {
   loadInstance = (projectId, envId, appId) => axios.get(`/devops/v1/projects/${projectId}/app_instances/options?envId=${envId}&appId=${appId}`)
     .then((data) => {
       const res = handleProptError(data);
+      if (res) {
+        this.setIst(res);
+      }
     })
     .catch(err => Choerodon.prompt(err));
+
+  /**
+   * 检查网络名称
+   * @param projectId
+   * @param envId
+   * @param value
+   */
+  checkNetWorkName = (projectId, envId, value) =>
+    axios.get(`/devops/v1/projects/${projectId}/service/check?envId=${envId}&name=${value}`)
+      .then((datas) => {
+        const res = handleProptError(datas);
+        return res;
+      })
 }
 
 const networkConfigStore = new NetworkConfigStore();

@@ -59,14 +59,23 @@
     .network-port-wrap {
       display: flex;
       justify-content: space-between;
-      .c7n-select_entry {
+      .c7n-select_entryS {
         width: 200px;
       }
-      .c7n-select_port {
+      .c7n-select_entryL {
+        width: 209px;
+      }
+      .c7n-select_portL {
         width: 219px;
+      }
+      .c7n-select_portS {
+        width: 140px;
       }
       .c7n-select_240 {
         width: 232px;
+      }
+      .c7n-select_150 {
+        width: 149px;
       }
       .network-port-form {
         flex: 0 1 auto;
