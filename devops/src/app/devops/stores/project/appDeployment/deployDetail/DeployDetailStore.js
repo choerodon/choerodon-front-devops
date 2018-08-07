@@ -56,8 +56,11 @@ class DeployDetailStore {
         const res = this.handleProptError(stage);
         if (res) {
           this.setStage(stage);
+          this.changeLoading(false);
+          return res;
         }
         this.changeLoading(false);
+        return false;
       });
   };
 

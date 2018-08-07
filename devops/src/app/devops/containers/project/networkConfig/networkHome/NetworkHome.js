@@ -227,8 +227,8 @@ class NetworkHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      render: record => (<MouserOverWrapper text={name || ''} width={0.1} className="network-list-name">
-        {name}</MouserOverWrapper>),
+      render: record => (<MouserOverWrapper text={record.name || ''} width={0.1} className="network-list-name">
+        {record.name}</MouserOverWrapper>),
     }, {
       title: <FormattedMessage id={'network.column.env'} />,
       key: 'envName',
