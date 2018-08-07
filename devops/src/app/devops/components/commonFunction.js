@@ -15,17 +15,15 @@ export const commonComponent =(storeName) => {
      */
     loadAllData = (isRefresh = false) => {
       const store = this.props[storeName];
-      const menu = AppState.currentMenuType;
-      const organizationId = menu.id;
-      store.loadData(isRefresh,organizationId)};
+      const { id } = AppState.currentMenuType;
+      store.loadData(isRefresh, id);
+    };
 
     /**
      * 打开删除数据模态框
      * @param id
      */
-    openRemove =(id) => {
-      this.setState({ openRemove: true, id });
-    };
+    openRemove =(id) => this.setState({ openRemove: true, id });
 
     /***
      * 删除数据
@@ -33,13 +31,12 @@ export const commonComponent =(storeName) => {
     handleDelete = () => {
       const store = this.props[storeName];
       const { id } = this.state;
-      const menu = AppState.currentMenuType;
-      const organizationId = menu.id;
+      const { id: projectId } = AppState.currentMenuType;
       const lastDatas = store.getPageInfo.total % 10;
       const page = store.getPageInfo.current;
       const totalPage = Math.ceil(store.getPageInfo.total / store.getPageInfo.pageSize);
       this.setState({ submitting: true });
-      store.deleteData(organizationId, id).then((data) => {
+      store.deleteData(projectId, id).then((data) => {
         if (data) {
           this.setState({ submitting: false });
           if (lastDatas === 1 && page === totalPage) {
@@ -60,16 +57,12 @@ export const commonComponent =(storeName) => {
      * 关闭删除数据的模态框
      */
 
-    closeRemove = () => {
-      this.setState({ openRemove: false });
-    };
+    closeRemove = () => this.setState({ openRemove: false });
 
     /***
      * 处理刷新函数
      */
-    handleRefresh = () => {
-      this.loadAllData(true);
-    };
+    handleRefresh = () =>  this.loadAllData(true);
 
     /***
      * 处理页面跳转
@@ -81,19 +74,18 @@ export const commonComponent =(storeName) => {
     };
 
     /**
-     * table 改变的函数
-     * @param pagination 分页
-     * @param filters 过滤
-     * @param sorter 排序
+     * table 操作
+     * @param pagination
+     * @param filters
+     * @param sorter
+     * @param paras
      */
     tableChange =(pagination, filters, sorter, paras) => {
       const store = this.props[storeName];
-      const menu = AppState.currentMenuType;
-      const organizationId = menu.id;
+      const { id } = AppState.currentMenuType;
       let sort = {field: '', order: 'desc' };
       if (sorter.column) {
         sort.field = sorter.field || sorter.columnKey;
-        // sort = sorter;
         if(sorter.order === 'ascend') {
           sort.order = 'asc';
         } else if(sorter.order === 'descend'){
@@ -104,15 +96,15 @@ export const commonComponent =(storeName) => {
       let page = pagination.current - 1;
       if (Object.keys(filters).length) {
         searchParam = filters;
-        // page = 0;
       }
       const postData = {
         searchParam,
         param: paras.toString(),
       };
       store
-        .loadData(false, organizationId, page, pagination.pageSize, sort, postData);
+        .loadData(false, id, page, pagination.pageSize, sort, postData);
     };
+
     /**
      * 获取屏幕的高度
      * @returns {number}

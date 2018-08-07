@@ -1,5 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
+import _ from 'lodash';
 import { handleProptError } from '../../../utils';
 
 const height = window.screen.height;
@@ -30,13 +31,11 @@ class NetworkConfigStore {
     return this.pageInfo;
   }
 
-  @computed
-  get getInstance() {
+  @computed get getInstance() {
     return this.instance;
   }
 
-  @action
-  setInstance(type = 'add', index = '', data) {
+  @action setInstance(type = 'add', index = '', data) {
     if (type instanceof Array) {
       this.instance = [];
     } else if (type === 'add') {
@@ -54,27 +53,15 @@ class NetworkConfigStore {
         });
       }
     } else if (type === 'remove') {
-      this.instance.splice(index, 1);;
+      this.instance.splice(index, 1);
     }
   }
 
-  @computed
-  get getVersions() {
-    return this.versions.slice();
-  }
-
-  @action
-  setVersions(data) {
-    this.versions = data;
-  }
-
-  @computed
-  get getSelectData() {
+  @computed get getSelectData() {
     return this.selectData.slice();
   }
 
-  @action
-  setSelectData(data) {
+  @action setSelectData(data) {
     this.selectData = data;
   }
 
@@ -86,40 +73,20 @@ class NetworkConfigStore {
     return this.isRefresh;
   }
 
-  @action
-  changeLoading(flag) {
+  @action changeLoading(flag) {
     this.loading = flag;
   }
 
-  @computed
-  get getLoading() {
+  @computed get getLoading() {
     return this.loading;
   }
 
-  @action
-  setSingleData(data) {
+  @action setSingleData(data) {
     this.singleData = data;
   }
 
-  @computed
-  get getSingleData() {
+  @computed get getSingleData() {
     return this.singleData;
-  }
-
-  @action
-  setVersionDto(type = 'add', index = '', data) {
-    if (type === 'add') {
-      this.versionDto = data;
-    } else if (type === 'remove') {
-      this.versionDto.splice(index, 1);
-    } else {
-      this.versionDto = [];
-    }
-  }
-
-  @computed
-  get getVersionDto() {
-    return this.versionDto.slice();
   }
 
   /**
@@ -186,29 +153,17 @@ class NetworkConfigStore {
         return res;
       });
 
-  addData = (projectId, data) =>
-    axios.post(`/devops/v1/projects/${projectId}/service`, JSON.stringify(data))
-      .then((datas) => {
-        const res = handleProptError(datas);
-        return res;
-      });
-
+  /**
+   * 删除网络
+   * @param projectId
+   * @param id
+   */
   deleteData = (projectId, id) =>
     axios.delete(`/devops/v1/projects/${projectId}/service/${id}`)
       .then((datas) => {
         const res = handleProptError(datas);
         return res;
       });
-
-  loadVersion = (projectId, envId, appId) => axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version?envId=${envId}`)
-    .then((data) => {
-      const res = handleProptError(data);
-      if (res) {
-        this.setVersions(data);
-      }
-      this.changeLoading(false);
-      return res;
-    });
 
   /**
    * 加载网络列表数据
@@ -253,7 +208,7 @@ class NetworkConfigStore {
         this.setEnv(res);
       }
     })
-    .catch(err => Choerodon.prompt(err));
+    .catch(err => Choerodon.handleResponseError(err));
 
   /**
    * 加载应用
@@ -268,7 +223,7 @@ class NetworkConfigStore {
         this.setApp(res);
       }
     })
-    .catch(err => Choerodon.prompt(err));
+    .catch(err => Choerodon.handleResponseError(err));
 
   /**
    * 加载实例
@@ -284,7 +239,7 @@ class NetworkConfigStore {
         this.setIst(res);
       }
     })
-    .catch(err => Choerodon.prompt(err));
+    .catch(err => Choerodon.handleResponseError(err));
 
   /**
    * 检查网络名称
@@ -298,6 +253,17 @@ class NetworkConfigStore {
         const res = handleProptError(datas);
         return res;
       })
+      .catch(err => Choerodon.handleResponseError(err));
+
+  /**
+   * 创建网络
+   * @param projectId
+   * @param data
+   * @returns {Promise<T | never> | *}
+   */
+  createNetwork = (projectId, data) =>
+    axios.post(`/devops/v1/projects/${projectId}/service`, JSON.stringify(data))
+      .then(res => handleProptError(res));
 }
 
 const networkConfigStore = new NetworkConfigStore();

@@ -409,3 +409,24 @@ table {
   background-color: #d50000;
   margin-right: 5px;
 }
+
+/*修改UI组件默认样式*/
+.is-required {
+  .ant-select-disabled {
+    .ant-select-selection-label {
+      &:after {
+        color: rgba(0,0,0,.36);
+      }
+    }
+  }
+}
+
+.is-required {
+  .ant-input-disabled {
+    .ant-input-label {
+      &::after {
+        color: rgba(0,0,0,.36);
+      }
+    }
+  }
+}

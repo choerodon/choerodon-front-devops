@@ -15,7 +15,7 @@ import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const { AppState } = stores;
 
-// commonComponent装饰器 内含 openRemove 方法
+// commonComponent装饰器
 @commonComponent('NetworkConfigStore')
 @observer
 class NetworkHome extends Component {
@@ -29,6 +29,7 @@ class NetworkHome extends Component {
     };
   }
   componentDidMount() {
+    // 这个方法定义在 commonComponent装饰器中
     this.loadAllData();
   }
 
@@ -40,15 +41,7 @@ class NetworkHome extends Component {
     this.loadAllData();
   };
 
-  showSideBar =() => {
-    const { NetworkConfigStore } = this.props;
-    NetworkConfigStore.setInstance([]);
-    NetworkConfigStore.setVersionDto([]);
-    NetworkConfigStore.setApp([]);
-    NetworkConfigStore.setVersions([]);
-    NetworkConfigStore.setEnv([]);
-    this.setState({ show: true });
-  };
+  showSideBar =() => this.setState({ show: true });
 
   /**
    * 打开编辑的操作框
@@ -56,11 +49,9 @@ class NetworkHome extends Component {
    */
   editNetwork = (id) => {
     const { NetworkConfigStore } = this.props;
-    NetworkConfigStore.setInstance([]);
-    NetworkConfigStore.setVersionDto([]);
     NetworkConfigStore.setApp([]);
-    NetworkConfigStore.setVersions([]);
     NetworkConfigStore.setEnv([]);
+    NetworkConfigStore.setIst([]);
     this.setState({ showEdit: true, id });
   };
 
@@ -88,35 +79,6 @@ class NetworkHome extends Component {
     return (<div className={`c7n-network-status ${styles}`}>
       <FormattedMessage id={msg} />
     </div>);
-  };
-
-  /**
-   * name 列
-   * @param record
-   * @returns {*}
-   */
-  nameColumn = (record) => {
-    const { commandStatus, error, commandType, name } = record;
-    let statusDom = null;
-    switch (commandStatus) {
-      case 'failed':
-        statusDom = (<Tooltip title={error}>
-          <span className="icon icon-error c7n-status-failed c7n-network-icon" />
-        </Tooltip>);
-        break;
-      case 'doing':
-        statusDom = (<Tooltip title={<FormattedMessage id={`ist_${commandType}`} />}>
-          <Progress type="loading" width={15} className="c7n-network-icon" />
-        </Tooltip>);
-        break;
-      default:
-        statusDom = null;
-    }
-    return (<Fragment>
-      <MouserOverWrapper text={name || ''} width={0.1} className="network-list-name">
-        {name}</MouserOverWrapper>
-      {statusDom}
-    </Fragment>);
   };
 
   /**
@@ -208,7 +170,7 @@ class NetworkHome extends Component {
    * @returns {*}
    */
   opColumn = (record, type, projectId, orgId) => {
-    const { status, envStatus, commandType, id } = record;
+    const { status, envStatus, id } = record;
     let editDom = null;
     let deleteDom = null;
     if (status !== 'operating' && envStatus) {
@@ -223,12 +185,8 @@ class NetworkHome extends Component {
         </Button>
       </Tooltip>);
     } else {
-      editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={`network_${commandType}`} />}>
-        <span className="icon icon-mode_edit c7n-app-icon-disabled" />
-      </Tooltip>);
-      deleteDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={`network_${commandType}`} />}>
-        <span className="icon icon-delete_forever c7n-app-icon-disabled" />
-      </Tooltip>);
+      editDom = (<span className="icon icon-mode_edit c7n-app-icon-disabled" />);
+      deleteDom = (<span className="icon icon-delete_forever c7n-app-icon-disabled" />);
     }
     return (<Fragment>
       <Permission
@@ -269,7 +227,8 @@ class NetworkHome extends Component {
       key: 'name',
       sorter: true,
       filters: [],
-      render: record => this.nameColumn(record),
+      render: record => (<MouserOverWrapper text={name || ''} width={0.1} className="network-list-name">
+        {name}</MouserOverWrapper>),
     }, {
       title: <FormattedMessage id={'network.column.env'} />,
       key: 'envName',

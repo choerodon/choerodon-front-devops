@@ -22,6 +22,9 @@
     position: relative;
     padding-left: 73px;
     .network-radio-label {
+      &_disabled {
+        color: rgba(0,0,0,.36);
+      }
       position: absolute;
       left: 0;
       top: 0;
@@ -35,6 +38,9 @@
   }
 
   .network-panel-title {
+    &_disabled {
+      color: rgba(0,0,0,.36);
+    }
     margin-bottom: 16px;
     span {
       display: inline-block;
@@ -59,23 +65,25 @@
     .network-port-wrap {
       display: flex;
       justify-content: space-between;
-      .c7n-select_entryS {
-        width: 200px;
-      }
-      .c7n-select_entryL {
-        width: 209px;
-      }
-      .c7n-select_portL {
-        width: 219px;
-      }
-      .c7n-select_portS {
-        width: 140px;
-      }
-      .c7n-select_240 {
-        width: 232px;
-      }
-      .c7n-select_150 {
-        width: 149px;
+      .c7n-select {
+        &_entryS {
+          width: 200px;
+        }
+        &_entryL {
+          width: 209px;
+        }
+        &_portL {
+          width: 219px;
+        }
+        &_portS {
+          width: 140px;
+        }
+        &_240 {
+          width: 232px;
+        }
+        &_150 {
+          width: 149px;
+        }
       }
       .network-port-form {
         flex: 0 1 auto;
@@ -86,7 +94,9 @@
         width: 18px;
         height: 18px;
         font-size: 18px;
-        cursor: pointer;
+        &.icon-delete {
+          cursor: pointer;
+        }
       }
     }
   }
@@ -96,5 +106,21 @@
   }
   .network-form-name {
     margin-bottom: 0;
+  }
+
+  // 改变选择器多选时选中项的背景色
+  .network-select-instance {
+    &.ant-select-multiple {
+      .ant-select-selection--multiple {
+        .ant-select-selection__choice {
+          background-color: #3f51b5;
+          border: none;
+          color: #fff;
+        }
+        .ant-select-selection__choice__remove {
+          color: #fff;
+        }
+      }
+    }
   }
 }
