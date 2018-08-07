@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Table, Button, Form, Tooltip, Modal, Progress } from 'choerodon-ui';
+import { Table, Button, Form, Tooltip, Modal, Progress, Popover, Icon } from 'choerodon-ui';
 import { Permission, Content, Header, Page, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import NetworkCreate from '../createNetwork';
+import CreateNetwork from '../createNetwork';
 import './NetworkHome.scss';
 import '../../../main.scss';
 import LoadingBar from '../../../../components/loadingBar';
@@ -15,6 +15,7 @@ import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const { AppState } = stores;
 
+// commonComponent装饰器
 @commonComponent('NetworkConfigStore')
 @observer
 class NetworkHome extends Component {
@@ -22,39 +23,15 @@ class NetworkHome extends Component {
     const menu = AppState.currentMenuType;
     super(props, context);
     this.state = {
-      upDown: [],
       show: false,
       projectId: menu.id,
       openRemove: false,
     };
   }
   componentDidMount() {
+    // 这个方法定义在 commonComponent装饰器中
     this.loadAllData();
   }
-  /**
-   * 展开/收起实例
-   */
-  showChange = (id, networkId, length) => {
-    const { upDown } = this.state;
-    const cols = document.getElementsByClassName(`col-${id}-${networkId}`);
-    if (_.indexOf(upDown, id) === -1) {
-      for (let i = 0; i < cols.length; i += 1) {
-        cols[i].style.height = `${length * 31}px`;
-      }
-      upDown.push(id);
-      this.setState({
-        upDown,
-      });
-    } else {
-      for (let i = 0; i < cols.length; i += 1) {
-        cols[i].style.height = '31px';
-      }
-      _.pull(upDown, id);
-      this.setState({
-        upDown,
-      });
-    }
-  };
 
   /**
    * 关闭侧边栏
@@ -64,18 +41,7 @@ class NetworkHome extends Component {
     this.loadAllData();
   };
 
-  /**
-   *
-   */
-  showSideBar =() => {
-    const { NetworkConfigStore } = this.props;
-    NetworkConfigStore.setInstance([]);
-    NetworkConfigStore.setVersionDto([]);
-    NetworkConfigStore.setApp([]);
-    NetworkConfigStore.setVersions([]);
-    NetworkConfigStore.setEnv([]);
-    this.setState({ show: true });
-  };
+  showSideBar =() => this.setState({ show: true });
 
   /**
    * 打开编辑的操作框
@@ -83,211 +49,213 @@ class NetworkHome extends Component {
    */
   editNetwork = (id) => {
     const { NetworkConfigStore } = this.props;
-    NetworkConfigStore.setInstance([]);
-    NetworkConfigStore.setVersionDto([]);
     NetworkConfigStore.setApp([]);
-    NetworkConfigStore.setVersions([]);
     NetworkConfigStore.setEnv([]);
+    NetworkConfigStore.setIst([]);
     this.setState({ showEdit: true, id });
   };
+
+  /**
+   * 状态 列
+   * @param record
+   * @returns {*}
+   */
+  statusColumn = (record) => {
+    let msg = null;
+    let styles = '';
+    switch (record.status) {
+      case 'failed':
+        msg = 'network.failed';
+        styles = 'c7n-network-status-failed';
+        break;
+      case 'operating':
+        msg = 'operating';
+        styles = 'c7n-network-status-operating';
+        break;
+      default:
+        msg = 'running';
+        styles = 'c7n-network-status-running';
+    }
+    return (<div className={`c7n-network-status ${styles}`}>
+      <FormattedMessage id={msg} />
+    </div>);
+  };
+
+  /**
+   * 配置类型 列
+   * @param record
+   * @returns {Array}
+   */
+  configColumn = (record) => {
+    const { externalIps, ports } = record.config;
+    const iPArr = [];
+    const portArr = [];
+    if (externalIps && externalIps.length) {
+      _.forEach(externalIps, item => iPArr.push(<div key={item} className="network-config-item">{item}</div>));
+    }
+    if (ports && ports.length) {
+      _.forEach(ports, (item) => {
+        const { nodePort, port, targetPort } = item;
+        portArr.push(<div key={port} className="network-config-item">{nodePort} {port} {targetPort}</div>);
+      });
+    }
+    const type = externalIps && externalIps.length ? 'ClusterIP' : 'NodePort';
+    const content = externalIps ? (<Fragment>
+      <div className="network-config-wrap">
+        <div className="network-type-title"><FormattedMessage id={'network.column.ip'} /></div>
+        <div>{iPArr}</div>
+      </div>
+      <div className="network-config-wrap">
+        <div className="network-type-title"><FormattedMessage id={'network.column.port'} /></div>
+        <div>{portArr}</div>
+      </div>
+    </Fragment>) : (<Fragment>
+      <div className="network-config-item"><FormattedMessage id={'network.node.port'} /></div>
+      <div>{portArr}</div>
+    </Fragment>);
+    return (<div className="network-column-config">
+      <span className="network-config-type">{type}</span>
+      <Popover
+        arrowPointAtCenter
+        placement="bottomRight"
+        getPopupContainer={triggerNode => triggerNode.parentNode}
+        content={content}
+      >
+        <Icon type="expand_more" className="network-expend-icon" />
+      </Popover>
+    </div>);
+  };
+
+  /**
+   * 生成 目标对象 列
+   * @param record
+   * @returns {Array}
+   */
+  targetColumn = (record) => {
+    const { appInstance, labels } = record.target;
+    const node = [];
+    if (appInstance && appInstance.length) {
+      _.forEach(appInstance, (item) => {
+        const { id, code } = item;
+        node.push(<div className="network-column-instance" key={id}>{code}</div>);
+      });
+    }
+    if (!_.isEmpty(labels)) {
+      _.forEach(labels, (value, key) => node.push(<div className="network-column-entry" key={key}>
+        <span>{key}</span>
+        <span>{`  =  ${value}`}</span>
+      </div>));
+    }
+    return (<div className="network-column-target">
+      {node[0] || null}
+      <Popover
+        arrowPointAtCenter
+        placement="bottomRight"
+        getPopupContainer={triggerNode => triggerNode.parentNode}
+        content={<Fragment>
+          {node}
+        </Fragment>}
+      >
+        <Icon type="expand_more" className="network-expend-icon" />
+      </Popover>
+    </div>);
+  };
+
+  /**
+   * 操作 列
+   * @param record
+   * @param type
+   * @param projectId
+   * @param orgId
+   * @returns {*}
+   */
+  opColumn = (record, type, projectId, orgId) => {
+    const { status, envStatus, id } = record;
+    let editDom = null;
+    let deleteDom = null;
+    if (status !== 'operating' && envStatus) {
+      editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'edit'} />}>
+        <Button shape="circle" size={'small'} funcType="flat" onClick={this.editNetwork.bind(this, id)}>
+          <span className="icon icon-mode_edit" />
+        </Button>
+      </Tooltip>);
+      deleteDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'delete'} />}>
+        <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, id)}>
+          <span className="icon icon-delete_forever" />
+        </Button>
+      </Tooltip>);
+    } else {
+      editDom = (<span className="icon icon-mode_edit c7n-app-icon-disabled" />);
+      deleteDom = (<span className="icon icon-delete_forever c7n-app-icon-disabled" />);
+    }
+    return (<Fragment>
+      <Permission
+        service={['devops-service.devops-service.update']}
+        type={type}
+        projectId={projectId}
+        organizationId={orgId}
+      >
+        {editDom}
+      </Permission>
+      <Permission
+        service={['devops-service.devops-service.delete']}
+        type={type}
+        projectId={projectId}
+        organizationId={orgId}
+      >
+        {deleteDom}
+      </Permission>
+    </Fragment>);
+  };
+
   render() {
     const { NetworkConfigStore, intl } = this.props;
-    const menu = AppState.currentMenuType;
-    const projectName = menu.name;
-    const { upDown } = this.state;
+    const { show, showEdit, id, openRemove } = this.state;
+    const {
+      type,
+      id: projectId,
+      organizationId: orgId,
+      name: projectName } = AppState.currentMenuType;
     const data = NetworkConfigStore.getAllData;
-    const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
       title: <FormattedMessage id={'network.column.status'} />,
       key: 'status',
       width: 72,
-      render: (record) => {
-        let statusDom = null;
-        switch (record.status) {
-          case 'failed':
-            statusDom = (<div className="c7n-network-status c7n-network-status-failed">
-              <div>{<FormattedMessage id />}</div>
-            </div>);
-            break;
-          case 'operating':
-            statusDom = (<div className="c7n-network-status c7n-network-status-operating">
-              <div>{<FormattedMessage id={'operating'} />}</div>
-            </div>);
-            break;
-          default:
-            statusDom = (<div className="c7n-network-status c7n-network-status-running">
-              <div>{<FormattedMessage id={'running'} />}</div>
-            </div>);
-        }
-        return (statusDom);
-      },
+      render: record => this.statusColumn(record),
     }, {
       title: <FormattedMessage id={'network.column.name'} />,
       key: 'name',
       sorter: true,
       filters: [],
-      render: (record) => {
-        let statusDom = null;
-        switch (record.commandStatus) {
-          case 'failed':
-            statusDom = (<Tooltip title={record.error}>
-              <span className="icon icon-error c7n-status-failed c7n-network-icon" />
-            </Tooltip>);
-            break;
-          case 'doing':
-            statusDom = (<Tooltip title={<FormattedMessage id={`ist_${record.commandType}`} />}>
-              <Progress type="loading" width={15} className="c7n-network-icon" />
-            </Tooltip>);
-            break;
-          default:
-            statusDom = null;
-        }
-        return (<React.Fragment>
-          <MouserOverWrapper text={record.name || ''} width={0.1} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
-            {record.name}</MouserOverWrapper>
-          {statusDom}
-        </React.Fragment>);
-      },
+      render: record => (<MouserOverWrapper text={name || ''} width={0.1} className="network-list-name">
+        {name}</MouserOverWrapper>),
     }, {
       title: <FormattedMessage id={'network.column.env'} />,
       key: 'envName',
       sorter: true,
       filters: [],
       render: record => (
-        <React.Fragment>
+        <Fragment>
           { record.envStatus ? <Tooltip title={<FormattedMessage id={'connect'} />}> <span className="env-status-success" /></Tooltip> : <Tooltip title={<FormattedMessage id={'disconnect'} />}>
             <span className="env-status-error" />
           </Tooltip> }
           {record.envName}
-        </React.Fragment>
+        </Fragment>
       ),
     }, {
-      title: <FormattedMessage id={'network.column.ip'} />,
-      key: 'ip',
+      title: <FormattedMessage id={'network.target'} />,
+      key: 'target',
       filters: [],
-      render: record => (
-        <MouserOverWrapper text={record.externalIp || ''} width={0.1}>
-          {record.externalIp}</MouserOverWrapper>
-      ),
+      render: record => this.targetColumn(record),
     }, {
-      title: <FormattedMessage id={'network.column.port'} />,
-      key: 'port',
-      render: record => (
-        <MouserOverWrapper text={record.port || ''} width={0.05}>
-          {record.port}</MouserOverWrapper>
-      ),
-    }, {
-      title: <FormattedMessage id={'network.column.targetPort'} />,
-      key: 'targetPort',
-      render: record => (
-        <MouserOverWrapper text={record.targetPort || ''} width={0.05}>
-          {record.targetPort}</MouserOverWrapper>
-      ),
-    }, {
-      title: <FormattedMessage id={'network.column.app'} />,
-      key: 'appName',
+      title: <FormattedMessage id={'network.config.column'} />,
+      key: 'config',
       filters: [],
-      sorter: true,
-      render: record => (
-        <React.Fragment>
-          <Tooltip title={`${record.appProjectId === parseInt(menu.id, 10) ? this.props.intl.formatMessage({ id: 'project' }) : this.props.intl.formatMessage({ id: 'market' })}`}>
-            <span className={`icon ${record.appProjectId === parseInt(menu.id, 10) ? 'icon-project' : 'icon-apps'} c7n-network-icon`} />
-          </Tooltip>
-          <MouserOverWrapper text={record.appName || ''} width={0.1} style={{ display: 'inline-block', verticalAlign: 'middle' }} >
-            <span>{record.appName}</span>
-          </MouserOverWrapper>
-        </React.Fragment>
-      ),
+      render: record => this.configColumn(record),
     }, {
-      title: <FormattedMessage id={'network.column.version'} />,
-      className: 'c7n-network-col',
-      key: 'version',
-      sorter: true,
-      filters: [],
-      render: record => (
-        <React.Fragment>
-          {_.map(record.appVersion, versions =>
-            (<div key={versions.id} className={`c7n-network-col_border col-${record.id}-${versions.id}`}>
-              <MouserOverWrapper text={versions.version || ''} width={0.1} className="c7n-network-column-version" >
-                <span>{versions.version}</span>
-              </MouserOverWrapper>
-            </div>))}
-        </React.Fragment>
-      ),
-    }, {
-      width: 150,
-      title: <FormattedMessage id={'network.column.instance'} />,
-      className: 'c7n-network-col',
-      key: 'code',
-      filters: [],
-      render: record => (
-        <React.Fragment>
-          {_.map(record.appVersion, versions =>
-            (<div key={versions.version} role="none" className={`c7n-network-col_border col-${record.id}-${versions.id}`} onClick={this.showChange.bind(this, record.id, versions.id, versions.appInstance.length)}>
-              {versions.appInstance && versions.appInstance.length > 1
-              && <span className={_.indexOf(upDown, record.id) !== -1
-                ? 'c7n-network-change icon icon-keyboard_arrow_up' : 'c7n-network-change icon icon-keyboard_arrow_down'}
-              />
-              }
-              {_.map(versions.appInstance, datas =>
-                (<MouserOverWrapper key={datas.id} width={0.12} className={`${datas.intanceStatus !== 'running' ? 'c7n-network-status-error' : ''} c7n-network-square`} text={datas.code}>{datas.code}</MouserOverWrapper>))}
-            </div>))}
-        </React.Fragment>
-      ),
-    }, {
-      width: '96px',
+      width: '82px',
       key: 'action',
-      render: (record) => {
-        let editDom = null;
-        let deletDom = null;
-        switch (record.status) {
-          case 'operating':
-            editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={`network_${record.commandType}`} />}>
-              <span className="icon icon-mode_edit c7n-app-icon-disabled" />
-            </Tooltip>);
-            deletDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={`network_${record.commandType}`} />}>
-              <span className="icon icon-delete_forever c7n-app-icon-disabled" />
-            </Tooltip>);
-            break;
-          default:
-            editDom = (<React.Fragment>
-              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'edit'} />}>
-                <Button shape="circle" size={'small'} funcType="flat" onClick={this.editNetwork.bind(this, record.id)}>
-                  <span className="icon icon-mode_edit" />
-                </Button>
-              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'network.env.tooltip'} />}>
-                <span className="icon icon-mode_edit c7n-app-icon-disabled" />
-              </Tooltip>}
-            </React.Fragment>);
-            deletDom = (<React.Fragment>
-              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'delete'} />}>
-                <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
-                  <span className="icon icon-delete_forever" />
-                </Button>
-              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'network.env.tooltip'} />}>
-                <span className="icon icon-delete_forever c7n-app-icon-disabled" />
-              </Tooltip>}
-            </React.Fragment>);
-        }
-        return (<div>
-          <Permission
-            service={['devops-service.devops-service.update']}
-            type={type}
-            projectId={projectId}
-            organizationId={orgId}
-          >
-            {editDom}
-          </Permission>
-          <Permission
-            service={['devops-service.devops-service.delete']}
-            type={type}
-            projectId={projectId}
-            organizationId={orgId}
-          >
-            {deletDom}
-          </Permission>
-        </div>);
-      },
+      render: record => this.opColumn(record, type, projectId, orgId),
     }];
     return (
       <Page
@@ -306,7 +274,7 @@ class NetworkHome extends Component {
         ]}
         className="c7n-region c7n-network-wrapper"
       >
-        {NetworkConfigStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
+        {NetworkConfigStore.isRefresh ? <LoadingBar display /> : <Fragment>
           <Header title={<FormattedMessage id={'network.header.title'} />}>
             <Permission
               service={['devops-service.devops-service.create']}
@@ -348,22 +316,22 @@ class NetworkHome extends Component {
               rowKey={record => record.id}
             />
           </Content>
-        </React.Fragment>
+        </Fragment>
         }
 
-        {this.state.show && <NetworkCreate
-          visible={this.state.show}
+        {show && <CreateNetwork
+          visible={show}
           store={NetworkConfigStore}
           onClose={this.handleCancelFun}
         /> }
-        {this.state.showEdit && <EditNetwork
-          id={this.state.id}
-          visible={this.state.showEdit}
+        {showEdit && <EditNetwork
+          id={id}
+          visible={showEdit}
           store={NetworkConfigStore}
           onClose={this.handleCancelFun}
         /> }
         <Modal
-          visible={this.state.openRemove}
+          visible={openRemove}
           title={<FormattedMessage id={'network.delete'} />}
           closable={false}
           footer={[

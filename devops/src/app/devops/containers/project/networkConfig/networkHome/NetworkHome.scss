@@ -1,4 +1,72 @@
 .c7n-network-wrapper {
+  .network-list-name {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .network-expend-icon {
+    line-height: 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #3f51b5;
+  }
+  .network-column-target {
+    display: flex;
+    .network-column-instance {
+      background: rgba(0, 0, 0, 0.08);
+      border-radius: 8px;
+      padding: 0 12px;
+      height: 20px;
+      line-height: 20px;
+      font-size: 12px;
+      margin-bottom: 8px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    & > .network-column-instance {
+      margin-bottom: 0;
+    }
+
+    .network-column-entry {
+      display: flex;
+      padding: 0 12px;
+      margin-bottom: 4px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+      span {
+        flex: 1;
+      }
+    }
+
+    & > .network-column-entry {
+      margin-bottom: 0;
+    }
+  }
+  .network-column-config {
+    display: flex;
+    .network-config-type {
+      line-height: 20px;
+      width: 58px;
+    }
+    .network-config-item {
+      margin-bottom: 6px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+    .network-config-wrap {
+      display: flex;
+      .network-type-title {
+        flex: none;
+        margin-right: 16px;
+        min-width: 84px;
+        margin-bottom: 6px;
+      }
+    }
+  }
+
   .c7n-network-square {
     background-color: rgba(0, 0, 0, 0.08);
     display: inherit;
@@ -6,7 +74,6 @@
     padding: 0 12px;
     margin: 0 5px 5px 5px;
     line-height: 20px;
-    // border-radius: 2px;
     font-size: 10px;
     width: 115px;
   }
@@ -39,12 +106,10 @@
     padding: 1px;
     border-radius: 50%;
     margin-right: 8px;
-    // margin-left: 8px;
     display: inline-block;
   }
 
   .c7n-network-text_gray {
-    // color: rgba(0, 0, 0, 0.26);
     padding-right: 22px;
   }
 
@@ -57,10 +122,6 @@
     &:last-child {
       border-bottom: none;
     }
-  }
-
-  tbody .c7n-network-text_top {
-    // vertical-align: top;
   }
 
   .c7n-network-col {
@@ -103,7 +164,8 @@
     line-height: 16px;
     vertical-align: middle;
 
-    div {
+    span {
+      display: inline-block;
       transform: scale(0.8);
     }
   }

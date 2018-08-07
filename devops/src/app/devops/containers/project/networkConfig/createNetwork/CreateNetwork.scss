@@ -1,0 +1,126 @@
+.c7n-network-create {
+  .ant-input-disabled,
+  .ant-select-disabled {
+    .ant-select-underline,
+    .ant-input-underline {
+      border-bottom-style: dashed;
+    }
+  }
+  .c7n-network-env {
+    .status-success {
+      padding-right: 15px;
+    }
+
+    .status-error {
+      padding-right: 2px;
+      color: #d50000;
+      vertical-align: middle;
+    }
+  }
+
+  .network-radio-wrap {
+    position: relative;
+    padding-left: 73px;
+    .network-radio-label {
+      &_disabled {
+        color: rgba(0,0,0,.36);
+      }
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 13px;
+      line-height: 20px;
+      color: #000;
+    }
+    .network-radio-form {
+      margin-bottom: 8px;
+    }
+  }
+
+  .network-panel-title {
+    &_disabled {
+      color: rgba(0,0,0,.36);
+    }
+    margin-bottom: 16px;
+    span {
+      display: inline-block;
+      vertical-align: middle;
+      font-size: 13px;
+      margin-left: 10px;
+    }
+  }
+  .network-panel {
+    margin-bottom: 32px;
+    padding: 16px;
+    width: 512px;
+    min-height: 150px;
+    box-shadow: 0 1px 0 0 rgba(0,0,0,0.20), 0 0 0 1px rgba(0,0,0,0.12), 0 2px 2px -1px rgba(0,0,0,0.12);
+    border-radius: 2px;
+    .network-panel-form {
+      margin-bottom: 12px;
+      .network-app-name {
+        margin-left: 8px;
+      }
+    }
+    .network-port-wrap {
+      display: flex;
+      justify-content: space-between;
+      .c7n-select {
+        &_entryS {
+          width: 200px;
+        }
+        &_entryL {
+          width: 209px;
+        }
+        &_portL {
+          width: 219px;
+        }
+        &_portS {
+          width: 140px;
+        }
+        &_240 {
+          width: 232px;
+        }
+        &_150 {
+          width: 149px;
+        }
+      }
+      .network-port-form {
+        flex: 0 1 auto;
+      }
+      .network-group-icon {
+        position: relative;
+        top: 20px;
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
+        &.icon-delete {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+  .network-panel-button {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  .network-form-name {
+    margin-bottom: 0;
+  }
+
+  // 改变选择器多选时选中项的背景色
+  .network-select-instance {
+    &.ant-select-multiple {
+      .ant-select-selection--multiple {
+        .ant-select-selection__choice {
+          background-color: #3f51b5;
+          border: none;
+          color: #fff;
+        }
+        .ant-select-selection__choice__remove {
+          color: #fff;
+        }
+      }
+    }
+  }
+}

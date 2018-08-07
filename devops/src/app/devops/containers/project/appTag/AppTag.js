@@ -80,9 +80,7 @@ class AppTag extends Component {
         AppTagStore.createTag(projectId, tag, ref).then((req) => {
           if (req && req.failed) {
             Choerodon.prompt(data.message);
-            this.setState({
-              submitting: false,
-            });
+            this.setState({ submitting: false });
           } else {
             this.loadTagData(projectId);
             this.setState({

@@ -1,4 +1,5 @@
 /* stylelint-disable no-descending-specificity */
+$WIDTH512: 512px;
 
 .c7n-page-height {
   height: calc(100%);
@@ -378,9 +379,14 @@ table {
   margin-right: 0 !important;
 }
 
-// 选择器宽度 512px
-.c7n-select_512 {
-  width: 512px;
+// 选择器宽度
+.c7n-select {
+  &_512 {
+    width: $WIDTH512;
+  }
+  &_480 {
+    width: $WIDTH512 - 32px;
+  }
 }
 
 // 环境连接状态
@@ -402,4 +408,25 @@ table {
   display: inline-block;
   background-color: #d50000;
   margin-right: 5px;
+}
+
+/*修改UI组件默认样式*/
+.is-required {
+  .ant-select-disabled {
+    .ant-select-selection-label {
+      &:after {
+        color: rgba(0,0,0,.36);
+      }
+    }
+  }
+}
+
+.is-required {
+  .ant-input-disabled {
+    .ant-input-label {
+      &::after {
+        color: rgba(0,0,0,.36);
+      }
+    }
+  }
 }

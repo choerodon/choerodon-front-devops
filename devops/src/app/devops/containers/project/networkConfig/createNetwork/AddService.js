@@ -6,7 +6,7 @@ import { Button, Form, Select, Input, Tooltip, Modal, Popover, Icon } from 'choe
 import { stores, Content } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
-import './NetworkCreate.scss';
+import './CreateNetwork.scss';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
