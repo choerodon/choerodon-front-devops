@@ -107,16 +107,8 @@ class DeploymentDetail extends Component {
     DeployDetailStore.getInstanceValue(projectId, id);
     DeployDetailStore.getResourceData(projectId, id);
     DeployDetailStore.getStageData(projectId, id).then((data) => {
-      if (data) {
-        let count = 0;
-        _.forEach((item) => {
-          if (item.log) {
-            count += 1;
-          }
-        });
-        if (!count || !data.length) {
-          this.setState({ expand: true });
-        }
+      if (!data || (data && !data.length)) {
+        this.setState({ expand: true });
       }
     });
   };
