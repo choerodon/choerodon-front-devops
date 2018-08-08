@@ -6,13 +6,14 @@ import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot'
 import classnames from 'classnames';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import CodeMirror from 'react-codemirror';
+import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './Deploydetail.scss';
 import '../../container/containerHome/ContainerHome.scss';
-// import Log from '../../appDeployment/component/log';
 import LoadingBar from '../../../../components/loadingBar';
 import Ace from '../../../../components/yamlAce';
+// import Log from '../../appDeployment/component/log';
 
 const Step = Steps.Step;
 const TabPane = Tabs.TabPane;
@@ -39,12 +40,7 @@ class DeploymentDetail extends Component {
   }
 
   componentDidMount() {
-    const { DeployDetailStore } = this.props;
-    const { id } = this.state;
-    const projectId = AppState.currentMenuType.id;
-    DeployDetailStore.getInstanceValue(projectId, id);
-    DeployDetailStore.getResourceData(projectId, id);
-    DeployDetailStore.getStageData(projectId, id);
+    this.loadInitData();
   }
 
   /**
@@ -102,6 +98,19 @@ class DeploymentDetail extends Component {
       }
     }
     return times;
+  };
+
+  loadInitData = () => {
+    const { DeployDetailStore } = this.props;
+    const { id } = this.state;
+    const projectId = AppState.currentMenuType.id;
+    DeployDetailStore.getInstanceValue(projectId, id);
+    DeployDetailStore.getResourceData(projectId, id);
+    DeployDetailStore.getStageData(projectId, id).then((data) => {
+      if (!data || (data && !data.length)) {
+        this.setState({ expand: true });
+      }
+    });
   };
 
   loadAllData =() => {
@@ -385,8 +394,7 @@ class DeploymentDetail extends Component {
                     options={options}
                     ref={(instance) => { this.codeEditor = instance; }}
                     value={DeployDetailStore.getValue.yaml}
-                  />
-                  }
+                  />}
                 </div>
               </div>
               {stageData.length >= 1 && <div className="c7n-deployDetail-card-content">
