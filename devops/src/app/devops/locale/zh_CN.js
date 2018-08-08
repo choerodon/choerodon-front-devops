@@ -209,11 +209,12 @@ const zhCN = {
   language: 'zh_CN',
 
   // ist
-  ist_create: '创建中',
   ist_stop: '停止中',
-  ist_restart: '重启中',
-  ist_delete: '删除中',
+  ist_sync: '同步中',
   ist_update: '更新中',
+  ist_delete: '删除中',
+  ist_create: '创建中',
+  ist_restart: '重启中',
   'ist.title': '实例',
   'ist.name': '名称：',
   'ist.ctr': '贡献者：',
@@ -286,6 +287,7 @@ const zhCN = {
   'network.nport.check.repeat': '节点端口号重复',
   'network.tport.check.repeat': '目标端口号重复',
   'network.form.version.null': '请先选择一个版本',
+  'network.form.version.disable': '请先选择应用',
   'network.form.version.checked': '该应用下没有多余的可用版本',
   'network.form.app.disable': '请先选择环境',
   'network.form.instance.disable': '请先选择应用',
