@@ -87,7 +87,8 @@ class NetworkHome extends Component {
    * @returns {Array}
    */
   configColumn = (record) => {
-    const { externalIps, ports } = record.config;
+    const { config, type } = record;
+    const { externalIps, ports } = config;
     const iPArr = [];
     const portArr = [];
     if (externalIps && externalIps.length) {
@@ -99,11 +100,11 @@ class NetworkHome extends Component {
         portArr.push(<div key={port} className="network-config-item">{nodePort} {port} {targetPort}</div>);
       });
     }
-    const type = externalIps && externalIps.length ? 'ClusterIP' : 'NodePort';
-    const content = externalIps ? (<Fragment>
+    // const type = externalIps && externalIps.length ? 'ClusterIP' : 'NodePort';
+    const content = (type === 'ClusterIP') ? (<Fragment>
       <div className="network-config-wrap">
         <div className="network-type-title"><FormattedMessage id={'network.column.ip'} /></div>
-        <div>{iPArr}</div>
+        <div>{externalIps ? iPArr : '-'}</div>
       </div>
       <div className="network-config-wrap">
         <div className="network-type-title"><FormattedMessage id={'network.column.port'} /></div>

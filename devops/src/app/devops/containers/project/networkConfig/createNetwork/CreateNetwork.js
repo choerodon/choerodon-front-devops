@@ -6,6 +6,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Form, Select, Input, Modal, Popover, Icon, Radio, Tag } from 'choerodon-ui';
 import { stores, Content } from 'choerodon-front-boot';
 import uuidv1 from 'uuid/v1';
+import classnames from 'classnames';
 import _ from 'lodash';
 import '../../../main.scss';
 import './CreateNetwork.scss';
@@ -40,6 +41,7 @@ class CreateNetwork extends Component {
       targetKeys: 'instance',
       portKeys: 'ClusterIP',
       initName: '',
+      validIp: {},
     };
     this.portKeys = 1;
     this.targetKeys = 0;
@@ -51,9 +53,20 @@ class CreateNetwork extends Component {
     store.loadEnv(id);
   }
 
-  envSelectRef = (node) => {
-    if (node) {
-      this.envSelect = node.rcSelect;
+  setIpInSelect = (value) => {
+    const { getFieldValue, validateFields, setFieldsValue } = this.props.form;
+    const ip = getFieldValue('externalIp') || [];
+    if (!ip.includes(value)) {
+      ip.push(value);
+      setFieldsValue({
+        externalIp: ip,
+      });
+    }
+    validateFields(['externalIp']);
+    if (this.ipSelect) {
+      this.ipSelect.setState({
+        inputValue: '',
+      });
     }
   };
 
@@ -106,16 +119,16 @@ class CreateNetwork extends Component {
           appId: appId || null,
           appInstance: appIst,
           envId,
-          externalIp: externalIp || null,
+          externalIp: externalIp ? externalIp.join(',') : null,
           ports,
           label: !_.isEmpty(label) ? label : null,
           type: config,
         };
         store.createNetwork(id, network).then((res) => {
+          this.setState({ submitting: false });
           if (res) {
             this.handleClose();
           }
-          this.setState({ submitting: false });
         }).catch((error) => {
           this.setState({ submitting: false });
           Choerodon.handleResponseError(error);
@@ -295,12 +308,17 @@ class CreateNetwork extends Component {
   checkIP =(rule, value, callback) => {
     const { intl } = this.props;
     const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
-    if (value) {
-      if (p.test(value)) {
-        callback();
-      } else {
-        callback(intl.formatMessage({ id: 'network.ip.check.failed' }));
-      }
+    const validIp = {};
+    let errorMsg;
+    if (value && value.length) {
+      _.forEach(value, (item, index) => {
+        if (!p.test(item)) {
+          errorMsg = intl.formatMessage({ id: 'network.ip.check.failed' });
+          validIp[item] = true;
+        }
+      });
+      this.setState({ validIp });
+      callback(errorMsg);
     } else {
       callback();
     }
@@ -385,14 +403,55 @@ class CreateNetwork extends Component {
   };
 
   /**
-   * 处理
+   * 处理输入的内容并返回给value
    * @param liNode
    * @param value
    * @returns {*}
    */
-  // handleChoiceRender = (liNode, value) => React.cloneElement(liNode, {
-  //   className: liNode.props.className,
-  // });
+  handleChoiceRender = (liNode, value) => React.cloneElement(liNode, {
+    className: classnames(liNode.props.className, {
+      'ip-check-error': this.state.validIp[value],
+    }),
+  });
+
+  /**
+   * 删除ip选择框中的标签校验标识
+   * @param value
+   */
+  handleChoiceRemove = (value) => {
+    const { validIp } = this.state;
+    // 直接删除
+    if (value in validIp) {
+      delete validIp[value];
+    }
+  };
+
+  /**
+   * ip选择框监听键盘按下事件
+   * @param e
+   */
+  handleInputKeyDown = (e) => {
+    const { value } = e.target;
+    if (e.keyCode === 13 && !e.isDefaultPrevented() && value) {
+      this.setIpInSelect(value);
+    }
+  };
+
+  /**
+   * 获取环境选择器的元素节点
+   * @param node
+   */
+  envSelectRef = (node) => {
+    if (node) {
+      this.envSelect = node.rcSelect;
+    }
+  };
+
+  ipSelectRef = (node) => {
+    if (node) {
+      this.ipSelect = node.rcSelect;
+    }
+  }
 
   render() {
     const { visible, form, intl, store } = this.props;
@@ -708,9 +767,20 @@ class CreateNetwork extends Component {
                         validator: this.checkIP,
                       }],
                     })(
-                      <Input
-                        type="text"
+                      <Select
+                        mode="tags"
+                        ref={this.ipSelectRef}
+                        disabled={!getFieldValue('envId')}
+                        className="c7n-select_512"
                         label={<FormattedMessage id={'network.config.ip'} />}
+                        onInputKeyDown={this.handleInputKeyDown}
+                        choiceRender={this.handleChoiceRender}
+                        onChoiceRemove={this.handleChoiceRemove}
+                        filterOption={false}
+                        notFoundContent={false}
+                        showNotFindInputItem={false}
+                        showNotFindSelectedItem={false}
+                        allowClear
                       />,
                     )}
                   </FormItem>
