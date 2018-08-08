@@ -10,9 +10,10 @@ class NetworkConfigStore {
   @observable app = [];
   @observable ist = [];
   @observable allData = [];
+  @observable singleData = {};
+  @observable editApp = [];
   @observable isRefresh = false;// 页面的loading
   @observable loading = false; // 打开tab的loading
-  @observable singleData = null;
   @observable selectData = [];
   @observable instance = [];
   @observable versions = [];
@@ -73,20 +74,16 @@ class NetworkConfigStore {
     return this.isRefresh;
   }
 
+  /**
+   * 加载网络的状态
+   * @param flag
+   */
   @action changeLoading(flag) {
     this.loading = flag;
   }
 
   @computed get getLoading() {
     return this.loading;
-  }
-
-  @action setSingleData(data) {
-    this.singleData = data;
-  }
-
-  @computed get getSingleData() {
-    return this.singleData;
   }
 
   /**
@@ -133,18 +130,17 @@ class NetworkConfigStore {
     return this.ist;
   }
 
-  loadDataById = (projectId, id) => {
-    this.changeLoading(true);
-    return axios.get(`/devops/v1/projects/${projectId}/service/${id}`).then((data) => {
-      const res = handleProptError(data);
-      if (res) {
-        this.setSingleData(data);
-        return data;
-      }
-      this.changeLoading(false);
-      return res;
-    });
-  };
+  /**
+   * 单个网络
+   * @param data
+   */
+  @action setSingleData(data) {
+    this.singleData = data;
+  }
+
+  @computed get getSingleData() {
+    return this.singleData;
+  }
 
   updateData = (projectId, id, data) =>
     axios.put(`/devops/v1/projects/${projectId}/service/${id}`, JSON.stringify(data))
@@ -199,47 +195,50 @@ class NetworkConfigStore {
   /**
    * 加载项目下的环境
    * @param projectId
-   * @returns {Promise<T | never>}
    */
-  loadEnv = projectId => axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
-    .then((data) => {
-      const res = handleProptError(data);
-      if (res) {
-        this.setEnv(res);
-      }
-    })
-    .catch(err => Choerodon.handleResponseError(err));
+  loadEnv = (projectId) => {
+    axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setEnv(res);
+        }
+      })
+      .catch(err => Choerodon.handleResponseError(err));
+  };
 
   /**
    * 加载应用
    * @param projectId
    * @param envId
-   * @returns {Promise<T | never>}
    */
-  loadApp = (projectId, envId) => axios.get(`/devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=running`)
-    .then((data) => {
-      const res = handleProptError(data);
-      if (res) {
-        this.setApp(res);
-      }
-    })
-    .catch(err => Choerodon.handleResponseError(err));
+  loadApp = (projectId, envId) => {
+    axios.get(`/devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=running`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setApp(res);
+        }
+      })
+      .catch(err => Choerodon.handleResponseError(err));
+  };
 
   /**
    * 加载实例
    * @param projectId
    * @param envId
    * @param appId
-   * @returns {Promise<T | never>}
    */
-  loadInstance = (projectId, envId, appId) => axios.get(`/devops/v1/projects/${projectId}/app_instances/options?envId=${envId}&appId=${appId}`)
-    .then((data) => {
-      const res = handleProptError(data);
-      if (res) {
-        this.setIst(res);
-      }
-    })
-    .catch(err => Choerodon.handleResponseError(err));
+  loadInstance = (projectId, envId, appId) => {
+    axios.get(`/devops/v1/projects/${projectId}/app_instances/options?envId=${envId}&appId=${appId}`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setIst(res);
+        }
+      })
+      .catch(err => Choerodon.handleResponseError(err));
+  };
 
   /**
    * 检查网络名称
@@ -247,23 +246,42 @@ class NetworkConfigStore {
    * @param envId
    * @param value
    */
-  checkNetWorkName = (projectId, envId, value) =>
+  checkNetWorkName = (projectId, envId, value) => {
     axios.get(`/devops/v1/projects/${projectId}/service/check?envId=${envId}&name=${value}`)
       .then((datas) => {
         const res = handleProptError(datas);
         return res;
       })
       .catch(err => Choerodon.handleResponseError(err));
+  };
 
   /**
    * 创建网络
    * @param projectId
    * @param data
-   * @returns {Promise<T | never> | *}
    */
   createNetwork = (projectId, data) =>
     axios.post(`/devops/v1/projects/${projectId}/service`, JSON.stringify(data))
       .then(res => handleProptError(res));
+
+  /**
+   * 根据id加载单个网络
+   * @param projectId
+   * @param id
+   */
+  loadDataById = (projectId, id) => {
+    this.changeLoading(true);
+    axios.get(`/devops/v1/projects/${projectId}/service/${id}`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setSingleData(data);
+          this.loadApp(projectId, res.envId);
+        }
+        this.changeLoading(false);
+      })
+      .catch(err => Choerodon.handleResponseError(err));
+  };
 }
 
 const networkConfigStore = new NetworkConfigStore();
