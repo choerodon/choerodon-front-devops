@@ -1,3 +1,3 @@
-import NetworkCreate from './EditService';
+import EditNetwork from './EditNetwork';
 
-export default NetworkCreate;
+export default EditNetwork;

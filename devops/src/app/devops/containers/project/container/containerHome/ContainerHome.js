@@ -274,7 +274,7 @@ class ContainerHome extends Component {
 
   render() {
     const { ContainerStore } = this.props;
-    const { containerName, showSide } = this.state;
+    const { showSide, podName } = this.state;
     const serviceData = ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
@@ -324,7 +324,7 @@ class ContainerHome extends Component {
           okCancel={false}
           destroyOnClose
         >
-          <Content className="sidebar-content" code={'container.log'} values={{ name: containerName }}>
+          <Content className="sidebar-content" code={'container.log'} values={{ name: podName }}>
             <section className="c7n-podLog-section">
               <CodeMirror
                 ref={(editor) => { this.editorLog = editor; }}

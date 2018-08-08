@@ -143,7 +143,8 @@ class NetworkHome extends Component {
     if (!_.isEmpty(labels)) {
       _.forEach(labels, (value, key) => node.push(<div className="network-column-entry" key={key}>
         <span>{key}</span>
-        <span>{`  =  ${value}`}</span>
+        =
+        <span>{value}</span>
       </div>));
     }
     return (<div className="network-column-target">

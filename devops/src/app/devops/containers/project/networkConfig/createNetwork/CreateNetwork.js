@@ -38,7 +38,7 @@ class CreateNetwork extends Component {
     this.state = {
       submitting: false,
       targetKeys: 'instance',
-      portKeys: 'ip',
+      portKeys: 'ClusterIP',
       initName: '',
     };
     this.portKeys = 1;
@@ -76,6 +76,7 @@ class CreateNetwork extends Component {
           nport,
           targetKeys,
           keywords,
+          config,
           values } = data;
         const appIst = appInstance ? _.map(appInstance, item => Number(item)) : null;
         const ports = [];
@@ -108,6 +109,7 @@ class CreateNetwork extends Component {
           externalIp: externalIp || null,
           ports,
           label: !_.isEmpty(label) ? label : null,
+          type: config,
         };
         store.createNetwork(id, network).then((res) => {
           if (res) {
@@ -383,16 +385,6 @@ class CreateNetwork extends Component {
   };
 
   /**
-   * 处理ip回车事件
-   * @param e
-   */
-  handleIpEnter = (e) => {
-    const { setFieldsValue } = this.props.form;
-    const ipValue = (`<Tag>${e.target.value}</Tag>`);
-    setFieldsValue({ externalIp: ipValue });
-  };
-
-  /**
    * 处理
    * @param liNode
    * @param value
@@ -417,7 +409,7 @@ class CreateNetwork extends Component {
     const ist = store.getIst;
     let portWidthSingle = '240';
     let portWidthMut = 'portL';
-    if (configType === 'port') {
+    if (configType === 'NodePort') {
       portWidthSingle = '150';
       portWidthMut = 'portS';
     }
@@ -425,7 +417,7 @@ class CreateNetwork extends Component {
     getFieldDecorator('portKeys', { initialValue: [0] });
     const portKeys = getFieldValue('portKeys');
     const portItems = _.map(portKeys, (k, index) => (<div key={`port-${k}`} className="network-port-wrap">
-      {configType === 'port' ? (<FormItem
+      {configType === 'NodePort' ? (<FormItem
         className={`c7n-select_${portKeys.length > 1 ? 'portS' : '150'} network-panel-form network-port-form`}
         {...formItemLayout}
       >
@@ -700,13 +692,13 @@ class CreateNetwork extends Component {
                     disabled={!getFieldValue('envId')}
                     onChange={e => this.handleTypeChange(e, 'portKeys')}
                   >
-                    <Radio value="ip">ClusterIP</Radio>
-                    <Radio value="port">NodePort</Radio>
+                    <Radio value="ClusterIP">ClusterIP</Radio>
+                    <Radio value="NodePort">NodePort</Radio>
                   </RadioGroup>)}
                 </FormItem>
               </div>
               <div className="network-panel">
-                {configType === 'ip' ? (<Fragment>
+                {configType === 'ClusterIP' ? (<Fragment>
                   <FormItem
                     className="c7n-select_480 network-panel-form"
                     {...formItemLayout}

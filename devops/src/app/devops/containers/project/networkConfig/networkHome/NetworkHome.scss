@@ -30,7 +30,6 @@
 
     .network-column-entry {
       display: flex;
-      padding: 0 12px;
       margin-bottom: 4px;
       &:last-child {
         margin-bottom: 0;
@@ -38,6 +37,7 @@
       span {
         flex: 1;
         white-space: nowrap;
+        padding: 0 12px;
       }
     }
 
