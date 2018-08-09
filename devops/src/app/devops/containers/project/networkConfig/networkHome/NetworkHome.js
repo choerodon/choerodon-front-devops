@@ -5,10 +5,10 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Table, Button, Form, Tooltip, Modal, Progress, Popover, Icon } from 'choerodon-ui';
 import { Permission, Content, Header, Page, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import CreateNetwork from '../createNetwork';
 import './NetworkHome.scss';
 import '../../../main.scss';
 import LoadingBar from '../../../../components/loadingBar';
+import CreateNetwork from '../createNetwork';
 import EditNetwork from '../editNetwork';
 import { commonComponent } from '../../../../components/commonFunction';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
@@ -100,7 +100,6 @@ class NetworkHome extends Component {
         portArr.push(<div key={port} className="network-config-item">{nodePort} {port} {targetPort}</div>);
       });
     }
-    // const type = externalIps && externalIps.length ? 'ClusterIP' : 'NodePort';
     const content = (type === 'ClusterIP') ? (<Fragment>
       <div className="network-config-wrap">
         <div className="network-type-title"><FormattedMessage id={'network.column.ip'} /></div>
@@ -150,7 +149,7 @@ class NetworkHome extends Component {
     }
     return (<div className="network-column-target">
       {node[0] || null}
-      <Popover
+      {node.length > 1 && (<Popover
         arrowPointAtCenter
         placement="bottomRight"
         getPopupContainer={triggerNode => triggerNode.parentNode}
@@ -159,7 +158,7 @@ class NetworkHome extends Component {
         </Fragment>}
       >
         <Icon type="expand_more" className="network-expend-icon" />
-      </Popover>
+      </Popover>)}
     </div>);
   };
 
@@ -187,7 +186,12 @@ class NetworkHome extends Component {
         </Button>
       </Tooltip>);
     } else {
-      editDom = (<span className="icon icon-mode_edit c7n-app-icon-disabled" />);
+      // editDom = (<span className="icon icon-mode_edit c7n-app-icon-disabled" />);
+      editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'edit'} />}>
+        <Button shape="circle" size={'small'} funcType="flat" onClick={this.editNetwork.bind(this, id)}>
+          <span className="icon icon-mode_edit" />
+        </Button>
+      </Tooltip>);
       deleteDom = (<span className="icon icon-delete_forever c7n-app-icon-disabled" />);
     }
     return (<Fragment>
@@ -327,7 +331,7 @@ class NetworkHome extends Component {
           onClose={this.handleCancelFun}
         /> }
         {showEdit && <EditNetwork
-          id={id}
+          netId={id}
           visible={showEdit}
           store={NetworkConfigStore}
           onClose={this.handleCancelFun}

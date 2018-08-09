@@ -133,6 +133,8 @@ class CreateNetwork extends Component {
           this.setState({ submitting: false });
           Choerodon.handleResponseError(error);
         });
+      } else {
+        this.setState({ submitting: false });
       }
     });
   };
@@ -490,6 +492,7 @@ class CreateNetwork extends Component {
         })(
           <Input
             type="text"
+            maxLength={5}
             label={<FormattedMessage id={'network.config.nodePort'} />}
           />,
         )}
@@ -508,6 +511,7 @@ class CreateNetwork extends Component {
         })(
           <Input
             type="text"
+            maxLength={5}
             disabled={!getFieldValue('envId')}
             label={<FormattedMessage id={'network.config.port'} />}
           />,
@@ -527,6 +531,7 @@ class CreateNetwork extends Component {
         })(
           <Input
             type="text"
+            maxLength={5}
             disabled={!getFieldValue('envId')}
             label={<FormattedMessage id={'network.config.targetPort'} />}
           />,
