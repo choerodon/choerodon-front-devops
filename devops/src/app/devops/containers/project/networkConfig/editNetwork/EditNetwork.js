@@ -38,18 +38,17 @@ class CreateNetwork extends Component {
      ************** */
     this.state = {
       submitting: false,
-      initName: '',
+      targetKeys: 'instance',
+      portKeys: 'ClusterIP',
       validIp: {},
+      initName: '',
     };
     this.portKeys = 1;
     this.targetKeys = 0;
   }
 
   componentDidMount() {
-    const { store, netId } = this.props;
-    const { id } = AppState.currentMenuType;
-    store.loadDataById(id, netId);
-    store.loadEnv(id);
+    this.loadNetworkById();
   }
 
   setIpInSelect = (value) => {
@@ -139,11 +138,34 @@ class CreateNetwork extends Component {
 
   handleClose = () => {
     const { onClose, form, store } = this.props;
-    store.setApp([]);
-    store.setEnv([]);
-    store.setIst([]);
+    store.setSingleData([]);
     form.resetFields();
     onClose();
+  };
+
+  loadNetworkById = () => {
+    const { store, netId } = this.props;
+    const { id } = AppState.currentMenuType;
+    store.loadEnv(id);
+    store.loadDataById(id, netId).then((data) => {
+      if (data) {
+        const { name, type, appId, target } = data;
+        const targetKey = appId && target && target.appInstance.length ? 'instance' : 'param';
+        let appInstance = [];
+        let labels = {};
+        if (target) {
+          appInstance = target.appInstance;
+          labels = target.labels;
+        }
+        this.setState({
+          appInstance,
+          labels,
+          initName: name,
+          targetKey,
+          portKeys: type,
+        });
+      }
+    });
   };
 
   /**
@@ -414,25 +436,14 @@ class CreateNetwork extends Component {
     const { visible, form, intl, store } = this.props;
     const {
       submitting,
-      initName } = this.state;
+      targetKeys: targetType,
+      portKeys: configType,
+      initName,
+      appInstance,
+      labels } = this.state;
     const { name: menuName, id: projectId } = AppState.currentMenuType;
     const { getFieldDecorator, getFieldValue } = form;
-    const {
-      name: networkName,
-      envId,
-      envName,
-      type: configType,
-      appId,
-      appName,
-      target,
-      config } = store.getSingleData;
-    let appInstance = [];
-    let labels = {};
-    if (target) {
-      appInstance = target.appInstance;
-      labels = target.labels;
-    }
-    const targetType = appId && appInstance.length ? 'instance' : 'param';
+    const { envId, envName, appId, config } = store.getSingleData;
     const localApp = _.filter(store.getApp, item => item.projectId === Number(projectId));
     const storeApp = _.filter(store.getApp, item => item.projectId !== Number(projectId));
     const ist = store.getIst;
@@ -556,7 +567,7 @@ class CreateNetwork extends Component {
 
     // 初始化实例
     const initIst = [];
-    if (appInstance.length) {
+    if (appInstance && appInstance.length) {
       _.forEach(appInstance, (item) => {
         initIst.push(Number(item.id));
       });
@@ -580,7 +591,7 @@ class CreateNetwork extends Component {
                 {...formItemLayout}
               >
                 {getFieldDecorator('name', {
-                  initialValue: networkName,
+                  initialValue: initName,
                   rules: [{
                     required: true,
                     message: intl.formatMessage({ id: 'required' }),
@@ -676,7 +687,7 @@ class CreateNetwork extends Component {
                     {...formItemLayout}
                   >
                     {getFieldDecorator('appInstance', {
-                      initialValue: initIst,
+                      initialValue: ist && ist.length ? initIst : undefined,
                       rules: [{
                         required: true,
                         message: intl.formatMessage({ id: 'required' }),
@@ -694,10 +705,8 @@ class CreateNetwork extends Component {
                       filterOption={(input, option) =>
                         option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     >
-                      {_.map(ist, (item) => {
-                        const { id, code } = item;
-                        return (<Option key={id} value={`${id}`}>{code}</Option>);
-                      })}
+                      {_.map(ist, item =>
+                        <Option key={item.id} value={`${item.id}`}>{item.code}</Option>)}
                     </Select>)}
                   </FormItem>
                 </Fragment>) : (<Fragment>
