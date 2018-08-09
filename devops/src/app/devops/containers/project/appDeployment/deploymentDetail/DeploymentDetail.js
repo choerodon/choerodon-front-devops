@@ -33,6 +33,7 @@ class DeploymentDetail extends Component {
     this.state = {
       id: props.match.params.id,
       status: props.match.params.status,
+      overview: props.location.search.indexOf('overview'),
       expand: false,
       current: 1,
       flag: true,
@@ -142,7 +143,7 @@ class DeploymentDetail extends Component {
 
   render() {
     const { DeployDetailStore, intl } = this.props;
-    const { expand, log } = this.state;
+    const { expand, log, overview } = this.state;
     const valueStyle = classnames({
       'c7n-deployDetail-show': expand,
       'c7n-deployDetail-hidden': !expand,
@@ -214,7 +215,7 @@ class DeploymentDetail extends Component {
           'devops-service.application-instance.listResources',
         ]}
       >
-        <Header title={<FormattedMessage id="ist.detail" />} backPath={`/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+        <Header title={<FormattedMessage id="ist.detail" />} backPath={overview ? `/devops/env-overview?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}` : `/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <Button
             onClick={this.loadAllData}
             funcType="flat"

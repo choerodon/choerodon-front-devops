@@ -25,7 +25,7 @@ class DeploymentAppHome extends Component {
       appId: props.match.params.appId || undefined,
       versionId: props.match.params.verId || undefined,
       current: props.match.params.appId ? 2 : 1,
-      envId: undefined,
+      envId: Number(props.location.search.split('envId=')[1]),
       storeId: props.match.params.storeId,
       mode: 'new',
       markers: null,
@@ -245,6 +245,32 @@ class DeploymentAppHome extends Component {
   };
 
   /**
+   * 取消第一步
+   */
+  clearStepOneBack = () => {
+    const { DeploymentAppStore, location } = this.props;
+    DeploymentAppStore.setVersions([]);
+    DeploymentAppStore.setValue(null);
+    this.setState({
+      current: 1,
+      appId: undefined,
+      app: null,
+      versionId: undefined,
+      versionDto: null,
+      envId: undefined,
+      envDto: null,
+      value: null,
+      markers: [],
+      mode: 'new',
+      instanceId: undefined,
+    });
+    if (location.search.indexOf('envId') !== -1) {
+      const { history } = this.props;
+      history.go(-1);
+    }
+  };
+
+  /**
    * 部署应用
    */
   handleDeploy = () => {
@@ -345,7 +371,7 @@ class DeploymentAppHome extends Component {
           >
             {formatMessage({ id: 'next' })}
           </Button>
-          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>{formatMessage({ id: 'cancel' })}</Button>
+          <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOneBack}>{formatMessage({ id: 'cancel' })}</Button>
         </section>
       </div>
     );

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Table, Button, Modal, Tooltip, Popover } from 'choerodon-ui';
+import { Table, Button, Modal, Tooltip } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import CodeMirror from 'react-codemirror';
 import _ from 'lodash';
@@ -179,7 +179,7 @@ class ContainerHome extends Component {
             projectId={projectId}
             type={type}
           >
-            <Popover placement="bottom" content={<div><FormattedMessage id={'container.log'} /></div>}>
+            <Tooltip title={<FormattedMessage id={'container.log'} />}>
               <Button
                 size="small"
                 shape="circle"
@@ -187,7 +187,7 @@ class ContainerHome extends Component {
               >
                 <span className="icon icon-insert_drive_file" />
               </Button>
-            </Popover>
+            </Tooltip>
           </Permission>
         </div>
       ),

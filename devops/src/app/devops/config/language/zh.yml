@@ -21,6 +21,7 @@
 "deployment-pipeline.environment-pipeline": "环境流水线"
 "deployment-pipeline.application-deployment": "应用部署"
 "deployment-pipeline.instance": "实例"
+"deployment-pipeline.environ-overview": "环境总览"
 "deployment-pipeline.service": "网络"
 "deployment-pipeline.ingress": "域名"
 "deployment-pipeline.container": "容器"

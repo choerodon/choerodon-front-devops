@@ -21,6 +21,7 @@
 "deployment-pipeline.environment-pipeline": "Environment Pipeline"
 "deployment-pipeline.application-deployment": "Application Deployment"
 "deployment-pipeline.instance": "Instance"
+"deployment-pipeline.environment-overview": "Environment Overview"
 "deployment-pipeline.service": "Service"
 "deployment-pipeline.ingress": "Ingress"
 "deployment-pipeline.container": "Container"

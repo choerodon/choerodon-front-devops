@@ -55,9 +55,9 @@ class DomainHome extends Component {
   showSideBar =(type, id = '') => {
     this.props.form.resetFields();
     if (type === 'create') {
-      this.setState({ show: true, title: '创建域名', type, id });
+      this.setState({ show: true, title: this.props.intl.formatMessage({ id: 'domain.header.create' }), type, id });
     } else {
-      this.setState({ title: '修改域名', type, id }, () => {
+      this.setState({ title: this.props.intl.formatMessage({ id: 'domain.header.update' }), type, id }, () => {
         this.setState({ show: true });
       });
     }
@@ -94,29 +94,9 @@ class DomainHome extends Component {
     }, {
       title: intl.formatMessage({ id: 'domain.column.name' }),
       key: 'name',
+      dataIndex: 'name',
       sorter: true,
       filters: [],
-      render: (record) => {
-        let statusDom = null;
-        switch (record.commandStatus) {
-          case 'failed':
-            statusDom = (<Tooltip title={record.error}>
-              <span className="icon icon-error c7n-status-failed" />
-            </Tooltip>);
-            break;
-          case 'doing':
-            statusDom = (<Tooltip title={intl.formatMessage({ id: `ist_${record.commandType}` })}>
-              <Progress type="loading" width={15} style={{ marginRight: 5 }} />
-            </Tooltip>);
-            break;
-          default:
-            statusDom = null;
-        }
-        return (<React.Fragment>
-          {record.name}
-          {statusDom}
-        </React.Fragment>);
-      },
     }, {
       title: intl.formatMessage({ id: 'domain.column.domain' }),
       key: 'domain',
@@ -178,10 +158,10 @@ class DomainHome extends Component {
         let deletDom = null;
         switch (record.status) {
           case 'operating':
-            editDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `domain_${record.commandType}` })}>
+            editDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `domain_${record.status}` })}>
               <span className="icon icon-mode_edit c7n-app-icon-disabled" />
             </Tooltip>);
-            deletDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `domain_${record.commandType}` })}>
+            deletDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `domain_${record.status}` })}>
               <span className="icon icon-delete_forever c7n-app-icon-disabled" />
             </Tooltip>);
             break;
