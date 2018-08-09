@@ -1,11 +1,11 @@
 /* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { observable, action, configure } from 'mobx';
+import { observable, action } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Table, Button, Form, Tooltip, Modal, Progress } from 'choerodon-ui';
-import { Permission, Header, Page, Action, stores } from 'choerodon-front-boot';
+import { Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../EnvOverview.scss';
 import '../../domain/domainHome/DomainHome.scss';
@@ -123,7 +123,7 @@ class DomainOverview extends Component {
       sort.field = sorter.field || sorter.columnKey;
       if (sorter.order === 'ascend') {
         sort.order = 'asc';
-      } else if (sorter.order === 'descend'){
+      } else if (sorter.order === 'descend') {
         sort.order = 'desc';
       }
     }

@@ -1,7 +1,7 @@
 /* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { observable, action, computed } from 'mobx';
+import { observable, action } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Tabs, Form, Select, Icon, Tooltip } from 'choerodon-ui';
@@ -95,6 +95,7 @@ class EnvOverviewHome extends Component {
           this.env = env;
           this.envId = env[0].id;
           this.loadIstOverview(env[0].id);
+          this.loadSync(env[0].id);
         }
       });
   };
@@ -233,16 +234,31 @@ class EnvOverviewHome extends Component {
     return stateArr[0] ? stateArr[0].length : 0;
   };
 
-  render() {
-    const { intl, EnvOverviewStore } = this.props;
-    const sync = EnvOverviewStore.getSync;
-    const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
-    const envName = this.env.length ? (<React.Fragment>
+  envNameDom = () => {
+    let envName = this.env.length ? (<React.Fragment>
       {this.env[0].connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
       {this.env[0].name}
     </React.Fragment>) : <FormattedMessage id="envoverview.noEnv" />;
 
-    const envNameDom = this.env.length ? _.map(this.env, d => (<Option key={d.id}>
+    if (this.env.length && this.envId) {
+      _.map(this.env, (d) => {
+        if (d.id === Number(this.envId)) {
+          envName = (<React.Fragment>
+            {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
+            {d.name}
+          </React.Fragment>);
+        }
+      });
+    }
+    return envName;
+  };
+
+  render() {
+    const { intl, EnvOverviewStore } = this.props;
+    const sync = EnvOverviewStore.getSync;
+    const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
+
+    const envNameDom = this.env.length ? _.map(this.env, d => (<Option key={d.id} value={d.id}>
       {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
       {d.name}</Option>)) : [];
 
@@ -284,7 +300,7 @@ class EnvOverviewHome extends Component {
       >
         <Header title={<FormattedMessage id="envoverview.head" />}>
           <Select
-            value={envName}
+            value={this.envNameDom()}
             dropdownClassName="c7n-envow-select-dropdown"
             onChange={this.selectEnv}
             className="c7n-envow-select"
