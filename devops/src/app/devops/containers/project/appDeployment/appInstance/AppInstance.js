@@ -6,9 +6,9 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, Action, stores } from 'choerodon-front-boot';
 import ValueConfig from '../valueConfig';
 import UpgradeIst from '../upgrateIst';
+import DelIst from '../component/delIst/DelIst';
 import '../AppDeploy.scss';
 import '../../../main.scss';
-import DelIst from '../component/delIst/DelIst';
 
 const { AppState } = stores;
 

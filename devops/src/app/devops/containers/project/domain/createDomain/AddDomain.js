@@ -416,7 +416,7 @@ class CreateDomain extends Component {
               message: this.props.intl.formatMessage({ id: 'required' }),
               // transform: value => value && value.toString(),
             }],
-            initialValue: SingleData ? SingleData.envId : undefined,
+            initialValue: SingleData ? SingleData.envId : Number(this.props.envId),
           })(
             <Select
               dropdownClassName="c7n-domain-env"
@@ -456,7 +456,7 @@ class CreateDomain extends Component {
             initialValue: SingleData ? SingleData.name : '',
           })(
             <Input
-              disabled={!(this.props.form.getFieldValue('envId'))}
+              disabled={!(this.props.form.getFieldValue('envId')) || (SingleData && SingleData.name)}
               maxLength={40}
               label={this.props.intl.formatMessage({ id: 'domain.column.name' })}
               size="default"

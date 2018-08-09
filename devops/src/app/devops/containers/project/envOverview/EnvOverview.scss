@@ -3,41 +3,52 @@
 
   .c7n-envow-status-content {
     margin-left: auto;
+    display: flex;
+
+    .c7n-envow-status-wrap {
+      display: flex;
+    }
 
     .c7n-envow-status-text {
-      width: 78px;
-      padding-right: 28px;
       padding-bottom: 10px;
-      font-size: 16px;
-      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
     }
 
     .c7n-envow-status-num {
-      display: inline-block;
-      font-size: 20px;
-      border-radius: 8px;
-      color: white;
-      text-align: center;
-      height: 32px;
-      width: 52px;
+      border-left: 4px solid;
+      padding: 0 16px 0 6px;
+    }
+  }
+
+  .c7n-envow-status-content > div {
+    margin-right: 30px;
+
+    i {
+      font-size: 32px;
+      color: #3f51b5;
     }
   }
 }
 
 .c7n-envow-status-running {
-  background-color: #1ec024;
+  border-left-color: #1ec024 !important;
 }
 
 .c7n-envow-status-operating {
-  background-color: #4d90fe;
+  border-left-color: #4d90fe !important;
 }
 
 .c7n-envow-status-stopped {
-  background-color: #cecece;
+  border-left-color: #cecece !important;
 }
 
 .c7n-envow-status-fail {
-  background-color: #f44336;
+  border-left-color: #f44336 !important;
+}
+
+.c7n-envow-select-dropdown {
+  width: 120px !important;
 }
 
 .c7n-envow-select {
@@ -56,7 +67,7 @@
 }
 
 .c7n-envow-search {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   margin-left: 2px;
 
   .ant-input-wrapper {
@@ -107,5 +118,225 @@
 
   .ant-input-underline {
     display: none;
+  }
+}
+
+.c7n-envow-app-name {
+  font-size: 16px;
+  margin-bottom: 16px;
+  font-weight: 500;
+
+  span {
+    font-size: 24px;
+    margin-right: 4px;
+  }
+}
+
+.c7n-envow-app-wrap {
+  margin-bottom: 24px;
+
+  .ant-collapse {
+    border-left: 0;
+    border-right: 0;
+  }
+
+  .ant-collapse-item-active > .ant-collapse-header {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+    .c7n-deploy-status {
+      display: none;
+    }
+
+    .icon-navigate_next {
+      transform: rotate(90deg) !important;
+    }
+  }
+
+  .ant-collapse > .ant-collapse-item > .ant-collapse-header {
+    background-color: white;
+    padding: 10px;
+
+    .icon-navigate_next {
+      font-size: 18px;
+      line-height: 26px;
+      margin-right: 12px;
+    }
+  }
+}
+
+.c7n-envow-ist-header-wrap {
+  display: flex;
+
+  .c7n-envow-ist-fail {
+    display: inline-block;
+  }
+
+  .c7n-envow-ist-name {
+    width: 50%;
+    border-left: 1px solid rgba(0, 0, 0, 0.12);
+    padding-left: 32px;
+    line-height: 30px;
+  }
+
+  .c7n-envow-ist-version {
+    line-height: 30px;
+    width: 35%;
+  }
+
+  .c7n-envow-ist-action {
+    margin-left: auto;
+  }
+}
+
+.c7n-envow-contaners-title {
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 20px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.c7n-envow-network-title {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.c7n-envow-contaners-wrap {
+  display: flex;
+
+  .c7n-envow-contaners-left {
+    width: 50%;
+  }
+
+  .c7n-envow-contaners-right {
+    .c7n-envow-pod {
+      right: 2%;
+      margin-top: 1%;
+      display: flex;
+      position: absolute;
+
+      .c7n-deploy-status {
+        width: 92px;
+        height: 92px;
+
+        .c7n-deploy-circle-process {
+          width: 92px;
+          height: 92px;
+          stroke-dasharray: 283%;
+        }
+
+        .c7n-deploy-circle-process-ban {
+          width: 92px;
+          height: 92px;
+          stroke-dasharray: 283%;
+        }
+
+        .c7n-deploy-circle_red {
+          width: 92px;
+          height: 92px;
+          stroke-dasharray: 283%;
+        }
+
+        .c7n-deploy-status-num {
+          line-height: 92px;
+          width: 92px;
+          font-size: 20px;
+        }
+      }
+
+      .c7n-envow-pod-action {
+        width: 32px;
+        padding: 14px 0;
+        color: rgba(0, 0, 0, .56);
+
+        i {
+          font-size: 32px;
+          transform: rotate(90deg) !important;
+        }
+
+        i:nth-child(1) {
+          transform: rotate(-90deg) !important;
+        }
+      }
+    }
+  }
+}
+
+.c7n-envow-ls {
+  line-height: 20px;
+  height: 20px;
+  margin-bottom: 10px;
+
+  i {
+    font-size: 18px;
+    margin-right: 6px;
+    height: 20px;
+  }
+
+  button {
+    float: right;
+  }
+}
+
+.c7n-envow-create-btn {
+  font-size: 16px;
+  color: #3f51b5;
+}
+
+.c7n-envow-ls-wrap {
+  margin-bottom: 24px;
+}
+
+.c7n-envow-sync-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.c7n-envow-sync-wrap {
+
+  .c7n-envow-sync-line {
+    display: flex;
+    margin-bottom: 32px;
+
+    .c7n-envow-sync-card {
+      padding: 16px;
+      height: 80px;
+      width: 194px;
+      box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.12), 0 2px 2px -1px rgba(0, 0, 0, 0.12);
+      margin: 2px;
+      text-align: center;
+      display: inline-block;
+      z-index: 9;
+
+      .c7n-envow-sync-step {
+        border-bottom: 1px solid rgba(9, 0, 0, 0.26);;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 500;
+      }
+
+      .c7n-envow-sync-commit {
+        color: #3f51b5;
+        line-height: 20px;
+        margin-top: 6px;
+      }
+
+      div {
+        width: 162px;
+      }
+    }
+
+    .c7n-envow-sync-arrow {
+      display: inline-block;
+      width: 120px;
+      line-height: 80px;
+      text-align: center;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.36);;
+
+      div {
+        transform: scaleX(3);
+      }
+    }
   }
 }

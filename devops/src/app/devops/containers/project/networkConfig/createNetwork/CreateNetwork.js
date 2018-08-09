@@ -611,6 +611,7 @@ class CreateNetwork extends Component {
                     required: true,
                     message: intl.formatMessage({ id: 'required' }),
                   }],
+                  initialValue: Number(this.props.envId),
                 })(<Select
                   ref={this.envSelectRef}
                   className="c7n-select_512"
