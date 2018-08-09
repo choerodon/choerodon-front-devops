@@ -149,7 +149,7 @@ class NetworkHome extends Component {
     }
     return (<div className="network-column-target">
       {node[0] || null}
-      <Popover
+      {node.length > 1 && (<Popover
         arrowPointAtCenter
         placement="bottomRight"
         getPopupContainer={triggerNode => triggerNode.parentNode}
@@ -158,7 +158,7 @@ class NetworkHome extends Component {
         </Fragment>}
       >
         <Icon type="expand_more" className="network-expend-icon" />
-      </Popover>
+      </Popover>)}
     </div>);
   };
 
@@ -172,12 +172,7 @@ class NetworkHome extends Component {
    */
   opColumn = (record, type, projectId, orgId) => {
     const { status, envStatus, id } = record;
-    // let editDom = null;
-    let editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'edit'} />}>
-      <Button shape="circle" size={'small'} funcType="flat" onClick={this.editNetwork.bind(this, id)}>
-        <span className="icon icon-mode_edit" />
-      </Button>
-    </Tooltip>);
+    let editDom = null;
     let deleteDom = null;
     if (status !== 'operating' && envStatus) {
       editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'edit'} />}>
@@ -191,7 +186,12 @@ class NetworkHome extends Component {
         </Button>
       </Tooltip>);
     } else {
-      editDom = (<span className="icon icon-mode_edit c7n-app-icon-disabled" />);
+      // editDom = (<span className="icon icon-mode_edit c7n-app-icon-disabled" />);
+      editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'edit'} />}>
+        <Button shape="circle" size={'small'} funcType="flat" onClick={this.editNetwork.bind(this, id)}>
+          <span className="icon icon-mode_edit" />
+        </Button>
+      </Tooltip>);
       deleteDom = (<span className="icon icon-delete_forever c7n-app-icon-disabled" />);
     }
     return (<Fragment>

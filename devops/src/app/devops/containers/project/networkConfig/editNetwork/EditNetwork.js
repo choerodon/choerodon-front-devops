@@ -38,8 +38,6 @@ class CreateNetwork extends Component {
      ************** */
     this.state = {
       submitting: false,
-      targetKeys: 'instance',
-      portKeys: 'ClusterIP',
       initName: '',
       validIp: {},
     };
@@ -125,15 +123,16 @@ class CreateNetwork extends Component {
           label: !_.isEmpty(label) ? label : null,
           type: config,
         };
-        store.createNetwork(id, network).then((res) => {
-          this.setState({ submitting: false });
-          if (res) {
-            this.handleClose();
-          }
-        }).catch((error) => {
-          this.setState({ submitting: false });
-          Choerodon.handleResponseError(error);
-        });
+        window.console.log(network);
+        // store.createNetwork(id, network).then((res) => {
+        //   this.setState({ submitting: false });
+        //   if (res) {
+        //     this.handleClose();
+        //   }
+        // }).catch((error) => {
+        //   this.setState({ submitting: false });
+        //   Choerodon.handleResponseError(error);
+        // });
       }
     });
   };
@@ -145,20 +144,6 @@ class CreateNetwork extends Component {
     store.setIst([]);
     form.resetFields();
     onClose();
-  };
-
-  /**
-   * 环境选择，加载应用
-   * 环境下可以部署多个应用
-   * @param value
-   */
-  handleEnvSelect = (value) => {
-    if (!value) {
-      return;
-    }
-    const { store } = this.props;
-    const { id } = AppState.currentMenuType;
-    store.loadApp(id, Number(value));
   };
 
   /**
@@ -194,25 +179,6 @@ class CreateNetwork extends Component {
       });
     }
     this.setState({ [key]: e.target.value });
-  };
-
-  /**
-   * 选择应用, 加载实例, 生成初始网络名
-   * @param value
-   * @param options
-   */
-  handleAppSelect = (value, options) => {
-    const { store, form } = this.props;
-    const { id } = AppState.currentMenuType;
-    const envId = form.getFieldValue('envId');
-    let initName = options.key;
-    if (initName.length > 25) {
-      // 初始网络名长度限制
-      initName = initName.slice(0, 25);
-    }
-    initName = `${initName}-${uuidv1().slice(0, 4)}`;
-    this.setState({ initName });
-    store.loadInstance(id, envId, Number(value));
   };
 
   /**
@@ -438,28 +404,16 @@ class CreateNetwork extends Component {
     }
   };
 
-  /**
-   * 获取环境选择器的元素节点
-   * @param node
-   */
-  envSelectRef = (node) => {
-    if (node) {
-      this.envSelect = node.rcSelect;
-    }
-  };
-
   ipSelectRef = (node) => {
     if (node) {
       this.ipSelect = node.rcSelect;
     }
-  }
+  };
 
   render() {
     const { visible, form, intl, store } = this.props;
     const {
       submitting,
-      targetKeys: targetType,
-      portKeys: configType,
       initName } = this.state;
     const { name: menuName, id: projectId } = AppState.currentMenuType;
     const { getFieldDecorator, getFieldValue } = form;
@@ -467,12 +421,18 @@ class CreateNetwork extends Component {
       name: networkName,
       envId,
       envName,
-      type,
+      type: configType,
       appId,
       appName,
       target,
       config } = store.getSingleData;
-    const env = store.getEnv;
+    let appInstance = [];
+    let labels = {};
+    if (target) {
+      appInstance = target.appInstance;
+      labels = target.labels;
+    }
+    const targetType = appId && appInstance.length ? 'instance' : 'param';
     const localApp = _.filter(store.getApp, item => item.projectId === Number(projectId));
     const storeApp = _.filter(store.getApp, item => item.projectId !== Number(projectId));
     const ist = store.getIst;
@@ -593,8 +553,13 @@ class CreateNetwork extends Component {
       </FormItem>
       {targetKeys.length > 1 ? (<Icon className="network-group-icon" type="delete" onClick={() => this.removeGroup(k, 'targetKeys')} />) : null}
     </div>));
-    if (this.envSelect && !getFieldValue('envId')) {
-      this.envSelect.focus();
+
+    // 初始化实例
+    const initIst = [];
+    if (appInstance.length) {
+      _.forEach(appInstance, (item) => {
+        initIst.push(Number(item.id));
+      });
     }
     return (
       <div className="c7n-region">
@@ -602,13 +567,13 @@ class CreateNetwork extends Component {
           destroyOnClose
           cancelText={<FormattedMessage id={'cancel'} />}
           okText={<FormattedMessage id={'create'} />}
-          title={<FormattedMessage id={'network.header.create'} />}
+          title={<FormattedMessage id={'network.header.update'} />}
           visible={visible}
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
           confirmLoading={submitting}
         >
-          <Content code={'network.create'} values={{ name: menuName }} className="c7n-network-create sidebar-content">
+          <Content code={'network.update'} values={{ name: menuName }} className="c7n-network-create sidebar-content">
             <Form layout="vertical">
               <FormItem
                 className="c7n-select_512 network-form-name"
@@ -619,8 +584,6 @@ class CreateNetwork extends Component {
                   rules: [{
                     required: true,
                     message: intl.formatMessage({ id: 'required' }),
-                  }, {
-                    validator: this.checkName,
                   }],
                 })(
                   <Input
@@ -636,40 +599,27 @@ class CreateNetwork extends Component {
                 {...formItemLayout}
               >
                 {getFieldDecorator('envId', {
+                  initialValue: envId,
                   rules: [{
                     required: true,
                     message: intl.formatMessage({ id: 'required' }),
                   }],
                 })(<Select
                   disabled
-                  ref={this.envSelectRef}
                   className="c7n-select_512"
                   dropdownClassName="c7n-network-env"
                   label={<FormattedMessage id={'network.env'} />}
-                  placeholder={intl.formatMessage({ id: 'network.env.placeholder' })}
                   optionFilterProp="children"
-                  onSelect={this.handleEnvSelect}
-                  getPopupContainer={triggerNode => triggerNode.parentNode}
-                  filterOption={(input, option) =>
-                    option.props.children[1].toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                  filter
-                  showSearch
                 >
-                  {_.map(env, (item) => {
-                    const { id, connect, name } = item;
-                    return (<Option key={id} value={id} disabled={!connect}>
-                      {connect ? <span className="env-status-success" /> : <span className="env-status-error" />}
-                      {name}
-                    </Option>);
-                  })}
+                  <Option value={envId}>{envName}</Option>
                 </Select>)}
               </FormItem>
-              <div className={`network-panel-title ${!getFieldValue('envId') ? 'network-panel-title_disabled' : ''}`}>
+              <div className="network-panel-title">
                 <Icon type="instance_outline" />
                 <FormattedMessage id={'network.target'} />
               </div>
               <div className="network-radio-wrap">
-                <div className={`network-radio-label ${!getFieldValue('envId') ? 'network-radio-label_disabled' : ''}`}>
+                <div className="network-radio-label">
                   <FormattedMessage id={'network.target.type'} />
                 </div>
                 <FormItem
@@ -696,6 +646,7 @@ class CreateNetwork extends Component {
                     {...formItemLayout}
                   >
                     {getFieldDecorator('appId', {
+                      initialValue: appId,
                       rules: [{
                         required: true,
                         message: intl.formatMessage({ id: 'required' }),
@@ -706,7 +657,6 @@ class CreateNetwork extends Component {
                       className="c7n-select_480"
                       optionFilterProp="children"
                       disabled={!getFieldValue('envId')}
-                      onSelect={this.handleAppSelect}
                       label={<FormattedMessage id="network.form.app" />}
                       getPopupContainer={triggerNode => triggerNode.parentNode}
                       filterOption={(input, option) =>
@@ -726,6 +676,7 @@ class CreateNetwork extends Component {
                     {...formItemLayout}
                   >
                     {getFieldDecorator('appInstance', {
+                      initialValue: initIst,
                       rules: [{
                         required: true,
                         message: intl.formatMessage({ id: 'required' }),
@@ -745,9 +696,7 @@ class CreateNetwork extends Component {
                     >
                       {_.map(ist, (item) => {
                         const { id, code } = item;
-                        return (<Option key={id} value={`${id}`}>
-                          {code}
-                        </Option>);
+                        return (<Option key={id} value={`${id}`}>{code}</Option>);
                       })}
                     </Select>)}
                   </FormItem>

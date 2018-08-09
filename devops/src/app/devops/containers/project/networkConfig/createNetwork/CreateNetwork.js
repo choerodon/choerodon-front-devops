@@ -133,6 +133,8 @@ class CreateNetwork extends Component {
           this.setState({ submitting: false });
           Choerodon.handleResponseError(error);
         });
+      } else {
+        this.setState({ submitting: false });
       }
     });
   };
