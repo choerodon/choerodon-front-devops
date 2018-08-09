@@ -145,13 +145,6 @@ class NetworkConfigStore {
     return this.singleData;
   }
 
-  updateData = (projectId, id, data) =>
-    axios.put(`/devops/v1/projects/${projectId}/service/${id}`, JSON.stringify(data))
-      .then((datas) => {
-        const res = handleProptError(datas);
-        return res;
-      });
-
   /**
    * 删除网络
    * @param projectId
@@ -268,6 +261,17 @@ class NetworkConfigStore {
   createNetwork = (projectId, data) =>
     axios.post(`/devops/v1/projects/${projectId}/service`, JSON.stringify(data))
       .then(res => handleProptError(res));
+
+  /**
+   * 更新网络
+   * @param projectId
+   * @param id
+   * @param data
+   */
+  updateData = (projectId, id, data) =>
+    axios.put(`/devops/v1/projects/${projectId}/service/${id}`, JSON.stringify(data))
+      .then(res => handleProptError(res));
+
 
   /**
    * 根据id加载单个网络

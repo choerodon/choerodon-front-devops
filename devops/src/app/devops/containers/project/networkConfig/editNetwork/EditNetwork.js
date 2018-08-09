@@ -73,7 +73,7 @@ class CreateNetwork extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { form, store } = this.props;
+    const { form, store, netId } = this.props;
     const { id } = AppState.currentMenuType;
     this.setState({ submitting: true });
     form.validateFieldsAndScroll((err, data) => {
@@ -125,16 +125,17 @@ class CreateNetwork extends Component {
           label: !_.isEmpty(label) ? label : null,
           type: config,
         };
-        window.console.log(network);
-        // store.createNetwork(id, network).then((res) => {
-        //   this.setState({ submitting: false });
-        //   if (res) {
-        //     this.handleClose();
-        //   }
-        // }).catch((error) => {
-        //   this.setState({ submitting: false });
-        //   Choerodon.handleResponseError(error);
-        // });
+        store.updateData(id, netId, network).then((res) => {
+          this.setState({ submitting: false });
+          if (res) {
+            this.handleClose();
+          }
+        }).catch((error) => {
+          this.setState({ submitting: false });
+          Choerodon.handleResponseError(error);
+        });
+      } else {
+        this.setState({ submitting: false });
       }
     });
   };
@@ -641,7 +642,7 @@ class CreateNetwork extends Component {
         <Sidebar
           destroyOnClose
           cancelText={<FormattedMessage id={'cancel'} />}
-          okText={<FormattedMessage id={'create'} />}
+          okText={<FormattedMessage id={'edit'} />}
           title={<FormattedMessage id={'network.header.update'} />}
           visible={visible}
           onOk={this.handleSubmit}
