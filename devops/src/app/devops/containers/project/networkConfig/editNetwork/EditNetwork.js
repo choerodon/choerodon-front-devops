@@ -28,7 +28,7 @@ const formItemLayout = {
 };
 
 @observer
-class CreateNetwork extends Component {
+class EditNetwork extends Component {
   constructor(props) {
     super(props);
     /* **************
@@ -867,4 +867,4 @@ class CreateNetwork extends Component {
   }
 }
 
-export default Form.create({})(withRouter(injectIntl(CreateNetwork)));
+export default Form.create({})(withRouter(injectIntl(EditNetwork)));
