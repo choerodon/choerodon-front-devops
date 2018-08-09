@@ -41,18 +41,31 @@ class NetworkHome extends Component {
     this.loadAllData();
   };
 
-  showSideBar =() => this.setState({ show: true });
+  /**
+   * 打开创建操作框
+   */
+  showSideBar = () => {
+    this.clearStoreData();
+    this.setState({ show: true });
+  };
 
   /**
    * 打开编辑的操作框
    * @param id
    */
   editNetwork = (id) => {
+    this.clearStoreData();
+    this.setState({ showEdit: true, id });
+  };
+
+  /**
+   * 清除缓存数据
+   */
+  clearStoreData = () => {
     const { NetworkConfigStore } = this.props;
     NetworkConfigStore.setApp([]);
     NetworkConfigStore.setEnv([]);
     NetworkConfigStore.setIst([]);
-    this.setState({ showEdit: true, id });
   };
 
   /**
@@ -186,12 +199,7 @@ class NetworkHome extends Component {
         </Button>
       </Tooltip>);
     } else {
-      // editDom = (<span className="icon icon-mode_edit c7n-app-icon-disabled" />);
-      editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'edit'} />}>
-        <Button shape="circle" size={'small'} funcType="flat" onClick={this.editNetwork.bind(this, id)}>
-          <span className="icon icon-mode_edit" />
-        </Button>
-      </Tooltip>);
+      editDom = (<span className="icon icon-mode_edit c7n-app-icon-disabled" />);
       deleteDom = (<span className="icon icon-delete_forever c7n-app-icon-disabled" />);
     }
     return (<Fragment>
@@ -314,7 +322,7 @@ class NetworkHome extends Component {
           <Content code="network" values={{ name: projectName }}>
             <Table
               filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
-              loading={NetworkConfigStore.loading}
+              loading={NetworkConfigStore.getLoading}
               pagination={NetworkConfigStore.getPageInfo}
               columns={columns}
               onChange={this.tableChange}

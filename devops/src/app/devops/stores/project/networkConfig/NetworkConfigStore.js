@@ -66,6 +66,9 @@ class NetworkConfigStore {
     this.selectData = data;
   }
 
+  /**
+   * 点击刷新
+   */
   @action changeIsRefresh(flag) {
     this.isRefresh = flag;
   }
@@ -141,13 +144,6 @@ class NetworkConfigStore {
   @computed get getSingleData() {
     return this.singleData;
   }
-
-  updateData = (projectId, id, data) =>
-    axios.put(`/devops/v1/projects/${projectId}/service/${id}`, JSON.stringify(data))
-      .then((datas) => {
-        const res = handleProptError(datas);
-        return res;
-      });
 
   /**
    * 删除网络
@@ -267,23 +263,33 @@ class NetworkConfigStore {
       .then(res => handleProptError(res));
 
   /**
+   * 更新网络
+   * @param projectId
+   * @param id
+   * @param data
+   */
+  updateData = (projectId, id, data) =>
+    axios.put(`/devops/v1/projects/${projectId}/service/${id}`, JSON.stringify(data))
+      .then(res => handleProptError(res));
+
+
+  /**
    * 根据id加载单个网络
    * @param projectId
    * @param id
    */
-  loadDataById = (projectId, id) => {
-    this.changeLoading(true);
-    axios.get(`/devops/v1/projects/${projectId}/service/${id}`)
-      .then((data) => {
-        const res = handleProptError(data);
-        if (res) {
-          this.setSingleData(data);
+  loadDataById = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/service/${id}`)
+    .then((data) => {
+      const res = handleProptError(data);
+      if (res) {
+        this.setSingleData(data);
+        if (res.appId) {
           this.loadApp(projectId, res.envId, 'update', res.appId);
         }
-        this.changeLoading(false);
-      })
-      .catch(err => Choerodon.handleResponseError(err));
-  };
+        return res;
+      }
+      return false;
+    });
 }
 
 const networkConfigStore = new NetworkConfigStore();

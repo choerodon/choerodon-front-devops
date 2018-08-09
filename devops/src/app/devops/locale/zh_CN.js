@@ -1,3 +1,4 @@
+
 // zh_CN.js
 // 文档地址前缀
 const docServer = 'http://v0-8.choerodon.io/zh/docs';
@@ -10,7 +11,7 @@ const pageDetail = {
   'network.link': `${docServer}/user-guide/deployment-pipeline/service/`,
   'network.create.title': '项目"{name}"中创建网络',
   'network.create.description': '您可在此选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。\n' +
-  '        转发内部网络，则只需定义端口即可，系统会自动为您分配集群内部IP；转发外部网络，则需要定义外部IP及端口。',
+    '        转发内部网络，则只需定义端口即可，系统会自动为您分配集群内部IP；转发外部网络，则需要定义外部IP及端口。',
   'network.create.link': `${docServer}/user-guide/deployment-pipeline/service/`,
   'network.update.title': '对网络"{name}"进行修改',
   'network.update.description': '您可在此修改网络配置信息。',
@@ -531,69 +532,69 @@ const zhCN = {
   'branch.issue.epic': '史诗',
   'branch.issue.subtask': '子任务',
   'branch.devConflictMes': '\"{name}\"合并到develop分支冲突，请在本地查看并合并。\n' +
-  '\n' +
-  '步骤 1. 获取并切换到\"{name}\"分支\n' +
-  'git checkout develop\n' +
-  'git fetch origin \"{name}\":\"{name}\"\n' +
-  'git checkout \"{name}\"\n' +
-  '\n' +
-  '步骤 2. 检查修改\n' +
-  '\n' +
-  '步骤 3. 合并\"{name}\"分支到develop，解决冲突并提交到本地仓库\n' +
-  'git checkout develop\n' +
-  'git pull origin develop\n' +
-  'git merge --no-ff \"{name}\"\n' +
-  '\n' +
-  '步骤 4. 推送develop分支到远程仓库\n' +
-  'git push origin develop\n' +
-  '\n' +
-  '点击取消关闭弹窗或解决冲突后再点击结束。',
+    '\n' +
+    '步骤 1. 获取并切换到\"{name}\"分支\n' +
+    'git checkout develop\n' +
+    'git fetch origin \"{name}\":\"{name}\"\n' +
+    'git checkout \"{name}\"\n' +
+    '\n' +
+    '步骤 2. 检查修改\n' +
+    '\n' +
+    '步骤 3. 合并\"{name}\"分支到develop，解决冲突并提交到本地仓库\n' +
+    'git checkout develop\n' +
+    'git pull origin develop\n' +
+    'git merge --no-ff \"{name}\"\n' +
+    '\n' +
+    '步骤 4. 推送develop分支到远程仓库\n' +
+    'git push origin develop\n' +
+    '\n' +
+    '点击取消关闭弹窗或解决冲突后再点击结束。',
 
   'branch.masterConflictMes': '\"{name}\"合并到master分支冲突，请在本地查看并合并。\n' +
-  '\n' +
-  '步骤 1. 获取并切换到\"{name}\"分支\n' +
-  'git checkout master\n' +
-  'git fetch origin \"{name}\":\"{name}\"\n' +
-  'git checkout \"{name}\"\n' +
-  '\n' +
-  '步骤 2. 检查修改\n' +
-  '\n' +
-  '步骤 3. 合并\"{name}\"分支到master，解决冲突并提交到本地仓库\n' +
-  'git checkout master\n' +
-  'git pull origin master\n' +
-  'git merge --no-ff \"{name}\"\n' +
-  '\n' +
-  '步骤 4. 推送master分支到远程仓库\n' +
-  'git push origin master\n' +
-  '\n' +
-  '点击取消关闭弹窗或解决冲突后再点击结束。',
+    '\n' +
+    '步骤 1. 获取并切换到\"{name}\"分支\n' +
+    'git checkout master\n' +
+    'git fetch origin \"{name}\":\"{name}\"\n' +
+    'git checkout \"{name}\"\n' +
+    '\n' +
+    '步骤 2. 检查修改\n' +
+    '\n' +
+    '步骤 3. 合并\"{name}\"分支到master，解决冲突并提交到本地仓库\n' +
+    'git checkout master\n' +
+    'git pull origin master\n' +
+    'git merge --no-ff \"{name}\"\n' +
+    '\n' +
+    '步骤 4. 推送master分支到远程仓库\n' +
+    'git push origin master\n' +
+    '\n' +
+    '点击取消关闭弹窗或解决冲突后再点击结束。',
 
   'branch.bothConflictMes': '\"{name}\"合并到develop分支和master分支均有冲突，请在本地查看并合并。\n' +
-  '\n' +
-  '步骤 1. 获取并切换到\"{name}\"分支\n' +
-  'git checkout develop\n' +
-  'git fetch origin \"{name}\":\"{name}\"\n' +
-  'git checkout \"{name}\"\n' +
-  '\n' +
-  '步骤 2. 检查修改\n' +
-  '\n' +
-  '步骤 3. 合并\"{name}\"分支到master，解决冲突并提交到本地仓库\n' +
-  'git checkout master\n' +
-  'git pull origin master\n' +
-  'git merge --no-ff \"{name}\"\n' +
-  '\n' +
-  '步骤 4. 推送master分支到远程仓库\n' +
-  'git push origin master\n' +
-  '\n' +
-  '步骤 5. 合并\"{name}\"分支到develop，解决冲突并提交到本地仓库\n' +
-  'git checkout develop\n' +
-  'git pull origin develop\n' +
-  'git merge --no-ff \"{name}\"\n' +
-  '\n' +
-  '步骤 6. 推送develop分支到远程仓库\n' +
-  'git push origin develop\n' +
-  '\n' +
-  '点击取消关闭弹窗或解决冲突后再点击结束。',
+    '\n' +
+    '步骤 1. 获取并切换到\"{name}\"分支\n' +
+    'git checkout develop\n' +
+    'git fetch origin \"{name}\":\"{name}\"\n' +
+    'git checkout \"{name}\"\n' +
+    '\n' +
+    '步骤 2. 检查修改\n' +
+    '\n' +
+    '步骤 3. 合并\"{name}\"分支到master，解决冲突并提交到本地仓库\n' +
+    'git checkout master\n' +
+    'git pull origin master\n' +
+    'git merge --no-ff \"{name}\"\n' +
+    '\n' +
+    '步骤 4. 推送master分支到远程仓库\n' +
+    'git push origin master\n' +
+    '\n' +
+    '步骤 5. 合并\"{name}\"分支到develop，解决冲突并提交到本地仓库\n' +
+    'git checkout develop\n' +
+    'git pull origin develop\n' +
+    'git merge --no-ff \"{name}\"\n' +
+    '\n' +
+    '步骤 6. 推送develop分支到远程仓库\n' +
+    'git push origin develop\n' +
+    '\n' +
+    '点击取消关闭弹窗或解决冲突后再点击结束。',
 
   // ciPipeline
   'ciPipeline.title': '持续集成',

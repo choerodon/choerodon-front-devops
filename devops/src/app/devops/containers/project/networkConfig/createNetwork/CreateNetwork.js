@@ -140,10 +140,7 @@ class CreateNetwork extends Component {
   };
 
   handleClose = () => {
-    const { onClose, form, store } = this.props;
-    store.setApp([]);
-    store.setEnv([]);
-    store.setIst([]);
+    const { onClose, form } = this.props;
     form.resetFields();
     onClose();
   };
@@ -714,12 +711,8 @@ class CreateNetwork extends Component {
                       filterOption={(input, option) =>
                         option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     >
-                      {_.map(ist, (item) => {
-                        const { id, code } = item;
-                        return (<Option key={id} value={`${id}`}>
-                          {code}
-                        </Option>);
-                      })}
+                      {_.map(ist, item =>
+                        <Option key={item.id} value={item.id}>{item.code}</Option>)}
                     </Select>)}
                   </FormItem>
                 </Fragment>) : (<Fragment>

@@ -28,7 +28,7 @@ const formItemLayout = {
 };
 
 @observer
-class CreateNetwork extends Component {
+class EditNetwork extends Component {
   constructor(props) {
     super(props);
     /* **************
@@ -38,18 +38,20 @@ class CreateNetwork extends Component {
      ************** */
     this.state = {
       submitting: false,
-      initName: '',
+      targetKeys: 'instance',
+      portKeys: 'ClusterIP',
       validIp: {},
+      initName: '',
+      initApp: '',
+      labels: {},
+      config: {},
     };
     this.portKeys = 1;
     this.targetKeys = 0;
   }
 
   componentDidMount() {
-    const { store, netId } = this.props;
-    const { id } = AppState.currentMenuType;
-    store.loadDataById(id, netId);
-    store.loadEnv(id);
+    this.loadNetworkById();
   }
 
   setIpInSelect = (value) => {
@@ -71,7 +73,7 @@ class CreateNetwork extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { form, store } = this.props;
+    const { form, store, netId } = this.props;
     const { id } = AppState.currentMenuType;
     this.setState({ submitting: true });
     form.validateFieldsAndScroll((err, data) => {
@@ -123,27 +125,53 @@ class CreateNetwork extends Component {
           label: !_.isEmpty(label) ? label : null,
           type: config,
         };
-        window.console.log(network);
-        // store.createNetwork(id, network).then((res) => {
-        //   this.setState({ submitting: false });
-        //   if (res) {
-        //     this.handleClose();
-        //   }
-        // }).catch((error) => {
-        //   this.setState({ submitting: false });
-        //   Choerodon.handleResponseError(error);
-        // });
+        store.updateData(id, netId, network).then((res) => {
+          this.setState({ submitting: false });
+          if (res) {
+            this.handleClose();
+          }
+        }).catch((error) => {
+          this.setState({ submitting: false });
+          Choerodon.handleResponseError(error);
+        });
+      } else {
+        this.setState({ submitting: false });
       }
     });
   };
 
   handleClose = () => {
     const { onClose, form, store } = this.props;
-    store.setApp([]);
-    store.setEnv([]);
-    store.setIst([]);
+    store.setSingleData([]);
     form.resetFields();
     onClose();
+  };
+
+  loadNetworkById = () => {
+    const { store, netId } = this.props;
+    const { id } = AppState.currentMenuType;
+    store.loadEnv(id);
+    store.loadDataById(id, netId).then((data) => {
+      if (data) {
+        const { name, type, appId, target, config } = data;
+        const targetKeys = appId && target && target.appInstance.length ? 'instance' : 'param';
+        let appInstance = [];
+        let labels = {};
+        if (target) {
+          appInstance = target.appInstance;
+          labels = target.labels;
+        }
+        this.setState({
+          initApp: appId,
+          appInstance,
+          labels,
+          initName: name,
+          targetKeys,
+          portKeys: type,
+          config,
+        });
+      }
+    });
   };
 
   /**
@@ -162,6 +190,7 @@ class CreateNetwork extends Component {
       setFieldsValue({
         [key]: [0],
       });
+      this.setState({ config: {} });
     } else if (e.target.value === 'param') {
       // 切换到“填写参数”时，生成表单项
       // 切换到“选择实例”时，清空生成的表单项
@@ -170,6 +199,8 @@ class CreateNetwork extends Component {
       setFieldsValue({
         [key]: [0],
       });
+      this.setState({ initApp: '', appInstance: null });
+      this.props.store.setIst([]);
     } else {
       this.targetKeys = 0;
       getFieldDecorator('targetKeys', { initialValue: [] });
@@ -177,6 +208,7 @@ class CreateNetwork extends Component {
       setFieldsValue({
         [key]: [],
       });
+      this.setState({ labels: {} });
     }
     this.setState({ [key]: e.target.value });
   };
@@ -210,6 +242,18 @@ class CreateNetwork extends Component {
     setFieldsValue({
       [type]: nextKeys,
     });
+  };
+
+  /**
+   * 选择应用, 加载实例, 生成初始网络名
+   * @param value
+   * @param options
+   */
+  handleAppSelect = (value, options) => {
+    const { store, form } = this.props;
+    const { id } = AppState.currentMenuType;
+    const envId = form.getFieldValue('envId');
+    store.loadInstance(id, envId, Number(value));
   };
 
   /**
@@ -414,36 +458,46 @@ class CreateNetwork extends Component {
     const { visible, form, intl, store } = this.props;
     const {
       submitting,
-      initName } = this.state;
+      targetKeys: targetType,
+      portKeys: configType,
+      initName,
+      appInstance,
+      initApp,
+      labels,
+      config } = this.state;
     const { name: menuName, id: projectId } = AppState.currentMenuType;
-    const { getFieldDecorator, getFieldValue } = form;
-    const {
-      name: networkName,
-      envId,
-      envName,
-      type: configType,
-      appId,
-      appName,
-      target,
-      config } = store.getSingleData;
-    let appInstance = [];
-    let labels = {};
-    if (target) {
-      appInstance = target.appInstance;
-      labels = target.labels;
-    }
-    const targetType = appId && appInstance.length ? 'instance' : 'param';
+    const { getFieldDecorator, getFieldValue, setFieldsValue } = form;
+    const { envId, envName } = store.getSingleData;
     const localApp = _.filter(store.getApp, item => item.projectId === Number(projectId));
     const storeApp = _.filter(store.getApp, item => item.projectId !== Number(projectId));
-    const ist = store.getIst;
     let portWidthSingle = '240';
     let portWidthMut = 'portL';
     if (configType === 'NodePort') {
       portWidthSingle = '150';
       portWidthMut = 'portS';
     }
+
     // 生成多组 port
-    getFieldDecorator('portKeys', { initialValue: [0] });
+    const { ports, externalIp } = config;
+    const initIp = externalIp ? externalIp.split(',') : undefined;
+    const initPort = [0];
+    const nPort = [];
+    const pPort = [];
+    const tPort = [];
+    if (ports && ports.length) {
+      initPort.pop();
+      _.forEach(ports, (item, index) => {
+        const { nodePort, port, targetPort } = item;
+        initPort.push(index);
+        nPort.push(nodePort);
+        pPort.push(port);
+        tPort.push(targetPort);
+      });
+      if (initPort.length !== 1 && this.portKeys === 1) {
+        this.portKeys = ports.length;
+      }
+    }
+    getFieldDecorator('portKeys', { initialValue: initPort });
     const portKeys = getFieldValue('portKeys');
     const portItems = _.map(portKeys, (k, index) => (<div key={`port-${k}`} className="network-port-wrap">
       {configType === 'NodePort' ? (<FormItem
@@ -451,6 +505,7 @@ class CreateNetwork extends Component {
         {...formItemLayout}
       >
         {getFieldDecorator(`nport[${k}]`, {
+          initialValue: nPort[k],
           rules: [{
             required: true,
             message: intl.formatMessage({ id: 'required' }),
@@ -470,6 +525,7 @@ class CreateNetwork extends Component {
         {...formItemLayout}
       >
         {getFieldDecorator(`port[${k}]`, {
+          initialValue: pPort[k],
           rules: [{
             required: true,
             message: intl.formatMessage({ id: 'required' }),
@@ -490,6 +546,7 @@ class CreateNetwork extends Component {
         {...formItemLayout}
       >
         {getFieldDecorator(`tport[${k}]`, {
+          initialValue: tPort[k],
           rules: [{
             required: true,
             message: intl.formatMessage({ id: 'required' }),
@@ -509,7 +566,16 @@ class CreateNetwork extends Component {
     </div>));
 
     // 生成多组 target
-    getFieldDecorator('targetKeys');
+    const initLabels = [];
+    let initKeys = [];
+    let initValues = [];
+    if (!_.isEmpty(labels) && this.targetKeys === 0) {
+      initKeys = _.keys(labels);
+      initValues = _.values(labels);
+      _.forEach(initKeys, (item, index) => initLabels.push(index));
+      this.targetKeys = initKeys.length;
+    }
+    getFieldDecorator('targetKeys', { initialValue: initLabels });
     const targetKeys = getFieldValue('targetKeys');
     const targetItems = _.map(targetKeys, (k, index) => (<div key={`target-${k}`} className="network-port-wrap">
       <FormItem
@@ -517,6 +583,7 @@ class CreateNetwork extends Component {
         {...formItemLayout}
       >
         {getFieldDecorator(`keywords[${k}]`, {
+          initialValue: initKeys[k],
           rules: [{
             required: true,
             message: intl.formatMessage({ id: 'required' }),
@@ -537,6 +604,7 @@ class CreateNetwork extends Component {
         {...formItemLayout}
       >
         {getFieldDecorator(`values[${k}]`, {
+          initialValue: initValues[k],
           rules: [{
             required: true,
             message: intl.formatMessage({ id: 'required' }),
@@ -555,18 +623,26 @@ class CreateNetwork extends Component {
     </div>));
 
     // 初始化实例
+    const ist = store.getIst;
     const initIst = [];
-    if (appInstance.length) {
+    // 将默认选项直接生成，避免加载带来的异步问题
+    const initIstOption = [];
+    if (appInstance && appInstance.length) {
       _.forEach(appInstance, (item) => {
-        initIst.push(Number(item.id));
+        initIst.push(item.id);
+        initIstOption.push(<Option key={item.id} value={item.id}>{item.code}</Option>);
       });
     }
+    // 将默认的选项过滤
+    const istOption = _.map(_.filter(ist, item => _.includes(initIst, item.id)), item =>
+      <Option key={item.id} value={item.id}>{item.code}</Option>);
+
     return (
       <div className="c7n-region">
         <Sidebar
           destroyOnClose
           cancelText={<FormattedMessage id={'cancel'} />}
-          okText={<FormattedMessage id={'create'} />}
+          okText={<FormattedMessage id={'edit'} />}
           title={<FormattedMessage id={'network.header.update'} />}
           visible={visible}
           onOk={this.handleSubmit}
@@ -580,7 +656,7 @@ class CreateNetwork extends Component {
                 {...formItemLayout}
               >
                 {getFieldDecorator('name', {
-                  initialValue: networkName,
+                  initialValue: initName,
                   rules: [{
                     required: true,
                     message: intl.formatMessage({ id: 'required' }),
@@ -646,7 +722,7 @@ class CreateNetwork extends Component {
                     {...formItemLayout}
                   >
                     {getFieldDecorator('appId', {
-                      initialValue: appId,
+                      initialValue: initApp,
                       rules: [{
                         required: true,
                         message: intl.formatMessage({ id: 'required' }),
@@ -657,6 +733,7 @@ class CreateNetwork extends Component {
                       className="c7n-select_480"
                       optionFilterProp="children"
                       disabled={!getFieldValue('envId')}
+                      onSelect={this.handleAppSelect}
                       label={<FormattedMessage id="network.form.app" />}
                       getPopupContainer={triggerNode => triggerNode.parentNode}
                       filterOption={(input, option) =>
@@ -676,7 +753,7 @@ class CreateNetwork extends Component {
                     {...formItemLayout}
                   >
                     {getFieldDecorator('appInstance', {
-                      initialValue: initIst,
+                      initialValue: initIst.length ? initIst : undefined,
                       rules: [{
                         required: true,
                         message: intl.formatMessage({ id: 'required' }),
@@ -694,10 +771,8 @@ class CreateNetwork extends Component {
                       filterOption={(input, option) =>
                         option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     >
-                      {_.map(ist, (item) => {
-                        const { id, code } = item;
-                        return (<Option key={id} value={`${id}`}>{code}</Option>);
-                      })}
+                      {initIstOption}
+                      {istOption}
                     </Select>)}
                   </FormItem>
                 </Fragment>) : (<Fragment>
@@ -747,6 +822,7 @@ class CreateNetwork extends Component {
                     {...formItemLayout}
                   >
                     {getFieldDecorator('externalIp', {
+                      initialValue: initIp,
                       rules: [{
                         validator: this.checkIP,
                       }],
@@ -791,4 +867,4 @@ class CreateNetwork extends Component {
   }
 }
 
-export default Form.create({})(withRouter(injectIntl(CreateNetwork)));
+export default Form.create({})(withRouter(injectIntl(EditNetwork)));
