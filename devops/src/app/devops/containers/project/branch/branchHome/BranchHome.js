@@ -35,7 +35,6 @@ class BranchHome extends Component {
   componentDidMount() {
     const { BranchStore, intl } = this.props;
     BranchStore.loadApps();
-    // this.loadData();
   }
   /**
    * 获取issue的options
@@ -100,7 +99,7 @@ class BranchHome extends Component {
   };
   /**
    * 获取列表的icon
-   * @param type 分支类型
+   * @param name 分支类型
    * @returns {*}
    */
   getIcon =(name) => {
