@@ -5,7 +5,7 @@ import { observable, action, configure } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Table, Button, Form, Tooltip, Modal, Progress, Popover, Icon } from 'choerodon-ui';
-import { Permission, Header, Page, Action, stores } from 'choerodon-front-boot';
+import { Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../EnvOverview.scss';
 import '../../../main.scss';
@@ -272,7 +272,7 @@ class NetworkOverview extends Component {
       sort.field = sorter.field || sorter.columnKey;
       if (sorter.order === 'ascend') {
         sort.order = 'asc';
-      } else if (sorter.order === 'descend'){
+      } else if (sorter.order === 'descend') {
         sort.order = 'desc';
       }
     }

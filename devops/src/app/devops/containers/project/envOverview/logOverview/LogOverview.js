@@ -1,12 +1,10 @@
 /* eslint-disable react/sort-comp */
 import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
-import { observable, action, configure } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Table, Tooltip, Form, Select, Collapse } from 'choerodon-ui';
-import { Permission, Header, Page, Action, stores } from 'choerodon-front-boot';
-import _ from 'lodash';
+import { Table, Form } from 'choerodon-ui';
+import { stores } from 'choerodon-front-boot';
 import '../EnvOverview.scss';
 import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';

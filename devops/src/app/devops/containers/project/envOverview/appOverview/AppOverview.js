@@ -1,11 +1,11 @@
 /* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { observable, action, configure } from 'mobx';
+import { observable, action } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Tabs, Form, Select, Collapse, Icon, Input, Tooltip, Modal, Progress } from 'choerodon-ui';
-import { Permission, Header, Page, Content, Action, stores } from 'choerodon-front-boot';
+import { Button, Form, Collapse, Icon, Input, Tooltip, Modal, Progress } from 'choerodon-ui';
+import { Permission, Content, Action, stores } from 'choerodon-front-boot';
 import CodeMirror from 'react-codemirror';
 import _ from 'lodash';
 import 'codemirror/lib/codemirror.css';
@@ -24,9 +24,7 @@ import CreateNetwork from '../../networkConfig/createNetwork';
 import NetworkConfigStore from '../../../../stores/project/networkConfig';
 
 const { AppState } = stores;
-const TabPane = Tabs.TabPane;
 const Sidebar = Modal.Sidebar;
-const Option = Select.Option;
 const Panel = Collapse.Panel;
 
 @observer
@@ -83,7 +81,6 @@ class AppOverview extends Component {
   @action
   onChange = (e) => {
     this.activeKey = e;
-    console.log(e)
   };
 
   /**
