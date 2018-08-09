@@ -284,7 +284,7 @@ class EnvOverviewHome extends Component {
       >
         <Header title={<FormattedMessage id="envoverview.head" />}>
           <Select
-            defaultValue={envName}
+            value={envName}
             dropdownClassName="c7n-envow-select-dropdown"
             onChange={this.selectEnv}
             className="c7n-envow-select"

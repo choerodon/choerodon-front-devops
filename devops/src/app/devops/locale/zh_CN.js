@@ -778,7 +778,9 @@ const zhCN = {
   'envoverview.sync': '同步中',
   'envoverview.istov': '实例状态总览',
   'envoverview.commit.sync': '提交同步情况',
-  'envoverview.analysis': '解析',
+  'envoverview.analysis': '已解析',
+  'envoverview.gitlab': '配置库',
+  'envoverview.agent': '已执行',
 
   ...pageDetail,
 };

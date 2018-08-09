@@ -52,7 +52,6 @@ class LogOverview extends Component {
       key: 'envName',
       render: record => (
         <Fragment>
-          <span className="icon icon-point branch-column-icon" />
           <a href={record.commitUrl} target="_blank" rel="nofollow me noopener noreferrer">
             <span>{record.commitSha && record.commitSha.slice(0, 8) }</span>
           </a>
@@ -68,7 +67,7 @@ class LogOverview extends Component {
         </div>
         <div className="c7n-envow-sync-line">
           <div className="c7n-envow-sync-card">
-            <div className="c7n-envow-sync-step">GitLab</div>
+            <div className="c7n-envow-sync-step"><FormattedMessage id={'envoverview.gitlab'} /></div>
             <div className="c7n-envow-sync-commit">
               <a href={sync && `${sync.commitUrl}${sync.gitCommit}`} target="_blank" rel="nofollow me noopener noreferrer">
                 {sync && (sync.gitCommit ? sync.gitCommit.slice(0, 8) : null)}
@@ -90,7 +89,7 @@ class LogOverview extends Component {
             <div>→</div>
           </div>
           <div className="c7n-envow-sync-card">
-            <div className="c7n-envow-sync-step">Agent</div>
+            <div className="c7n-envow-sync-step"><FormattedMessage id={'envoverview.agent'} /></div>
             <div className="c7n-envow-sync-commit">
               <a href={sync && `${sync.commitUrl}${sync.agentSyncCommit}`} target="_blank" rel="nofollow me noopener noreferrer">
                 {sync && (sync.agentSyncCommit ? sync.agentSyncCommit.slice(0, 8) : null)}
