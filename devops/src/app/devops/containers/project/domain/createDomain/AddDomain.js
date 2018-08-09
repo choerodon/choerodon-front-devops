@@ -394,6 +394,7 @@ class CreateDomain extends Component {
     const title = this.props.type === 'create' ? <h2 className="c7n-space-first"><FormattedMessage id={'domain.create.title'} values={{ name: menu.name }} /></h2> : <h2 className="c7n-space-first"><FormattedMessage id={'domain.update.title'} values={{ name: SingleData && SingleData.name }} /></h2>;
     const content = this.props.type === 'create' ? this.props.intl.formatMessage({ id: 'domain.create.description' }) :
       this.props.intl.formatMessage({ id: 'domain.update.description' });
+    const envId = this.props.envId ? Number(this.props.envId) : undefined;
     const contentDom = this.props.visible ? (<div className="c7n-region c7n-domainCreate-wrapper">
       {title}
       <div className="page-content-header">
@@ -416,7 +417,7 @@ class CreateDomain extends Component {
               message: this.props.intl.formatMessage({ id: 'required' }),
               // transform: value => value && value.toString(),
             }],
-            initialValue: SingleData ? SingleData.envId : Number(this.props.envId),
+            initialValue: SingleData ? SingleData.envId : envId,
           })(
             <Select
               dropdownClassName="c7n-domain-env"

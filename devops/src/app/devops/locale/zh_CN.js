@@ -440,7 +440,7 @@ const zhCN = {
   'template.name': '名称',
   'template.des': '描述',
   'template.create': '创建应用模板',
-  'template.edit': '修改应用模板',
+  'template.editTitle': '修改应用模板',
   'template.del': '删除模板',
   'template.copy': '复制于',
   'template.url': '地址',

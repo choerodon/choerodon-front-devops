@@ -61,7 +61,7 @@ class EnvOverviewStore {
     return this.sync;
   }
 
-  @computed get getLst() {
+  @computed get getLog() {
     return this.log;
   }
 

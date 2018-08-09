@@ -115,10 +115,43 @@
   icon: cloud_upload
   sort: 3
   project:
+      - "environment-overview":
+          icon: public
+          Routes: /devops/env-overview
+          sort: 1
+          permission:
+            - 'devops-service.application-instance.listByAppId'
+            - 'devops-service.application-instance.listByAppInstanceId'
+            - 'devops-service.application-instance.queryValue'
+            - 'devops-service.application-instance.deploy'
+            - 'devops-service.application-instance.pageInstances'
+            - 'devops-service.application-instance.pageByOptions'
+            - 'devops-service.application-instance.listByAppVersionId'
+            - 'devops-service.application-instance.queryValues'
+            - 'devops-service.application-instance.listResources'
+            - 'devops-service.application-instance.listStages'
+            - 'devops-service.application-instance.delete'
+            - 'devops-service.application-instance.start'
+            - 'devops-service.application-instance.stop'
+            - 'devops-service.application-instance.listByEnv'
+            - 'devops-service.application-instance.listEnvFiles'
+            - 'devops-service.devops-environment.listByProjectIdAndActive'
+            - 'devops-service.application.listByEnvIdAndStatus'
+            - 'devops-service.devops-service.create'
+            - 'devops-service.devops-service.checkName'
+            - 'devops-service.devops-service.pageByOptions'
+            - 'devops-service.devops-service.query'
+            - 'devops-service.devops-service.update'
+            - 'devops-service.devops-service.delete'
+            - 'devops-service.devops-service.listByEnv'
+            - 'devops-service.devops-ingress.pageByOptions'
+            - 'devops-service.devops-ingress.queryDomainId'
+            - 'devops-service.devops-ingress.delete'
+            - 'devops-service.devops-ingress.listByEnv'
     - "environment-pipeline":
         icon: linear_scale
         Routes: /devops/env-pipeline
-        sort: 1
+        sort: 2
         permission:
           - 'devops-service.devops-environment.listByProjectIdAndActive'
           - 'devops-service.devops-environment.create'
@@ -133,32 +166,12 @@
     - "application-deployment":
         icon: jsfiddle
         Routes: /devops/deployment-app
-        sort: 2
+        sort: 3
         permission:
           - 'devops-service.application-instance.deploy'
     - "instance":
         icon: instance_outline
         Routes: /devops/instance
-        sort: 3
-        permission:
-          - 'devops-service.application-instance.listByAppId'
-          - 'devops-service.application-instance.listByAppInstanceId'
-          - 'devops-service.application-instance.queryValue'
-          - 'devops-service.application-instance.deploy'
-          - 'devops-service.application-instance.pageInstances'
-          - 'devops-service.application-instance.pageByOptions'
-          - 'devops-service.application-instance.listByAppVersionId'
-          - 'devops-service.application-instance.queryValues'
-          - 'devops-service.application-instance.listResources'
-          - 'devops-service.application-instance.listStages'
-          - 'devops-service.application-instance.delete'
-          - 'devops-service.application-instance.start'
-          - 'devops-service.application-instance.stop'
-          - 'devops-service.devops-environment.listByProjectIdAndActive'
-          - 'devops-service.application.listByEnvIdAndStatus'
-    - "overview":
-        icon: public
-        Routes: /devops/env-overview
         sort: 4
         permission:
           - 'devops-service.application-instance.listByAppId'
@@ -174,21 +187,8 @@
           - 'devops-service.application-instance.delete'
           - 'devops-service.application-instance.start'
           - 'devops-service.application-instance.stop'
-          - 'devops-service.application-instance.listByEnv'
-          - 'devops-service.application-instance.listEnvFiles'
           - 'devops-service.devops-environment.listByProjectIdAndActive'
           - 'devops-service.application.listByEnvIdAndStatus'
-          - 'devops-service.devops-service.create'
-          - 'devops-service.devops-service.checkName'
-          - 'devops-service.devops-service.pageByOptions'
-          - 'devops-service.devops-service.query'
-          - 'devops-service.devops-service.update'
-          - 'devops-service.devops-service.delete'
-          - 'devops-service.devops-service.listByEnv'
-          - 'devops-service.devops-ingress.pageByOptions'
-          - 'devops-service.devops-ingress.queryDomainId'
-          - 'devops-service.devops-ingress.delete'
-          - 'devops-service.devops-ingress.listByEnv'
     - "service":
         icon: router
         Routes: /devops/service

@@ -42,7 +42,7 @@ class LogOverview extends Component {
       title: <FormattedMessage id={'envoverview.logs.info'} />,
       key: 'message',
       render: record => (<MouserOverWrapper text={record.message || ''} width={0.7}>
-        {record.name}</MouserOverWrapper>),
+        {record.message}</MouserOverWrapper>),
     }, {
       title: <FormattedMessage id={'envoverview.logs.file'} />,
       key: 'filePath',
