@@ -784,6 +784,7 @@ const zhCN = {
   'envoverview.gitlab': '配置库',
   'envoverview.agent': '已执行',
   'envoverview.logs.time': '错误时间',
+  'envoverview.envinfo': '请选择运行中的环境',
 
   ...pageDetail,
 };
