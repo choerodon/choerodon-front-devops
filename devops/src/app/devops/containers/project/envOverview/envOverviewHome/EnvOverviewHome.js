@@ -283,7 +283,7 @@ class EnvOverviewHome extends Component {
           'devops-service.application-instance.start',
           'devops-service.application-instance.stop',
           'devops-service.application-instance.listByEnv',
-          'devops-service.application-instance.listEnvFiles',
+          'devops-service.devops-env-file-error.page',
           'devops-service.devops-environment.listByProjectIdAndActive',
           'devops-service.application.listByEnvIdAndStatus',
           'devops-service.devops-service.create',

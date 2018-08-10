@@ -574,6 +574,14 @@ class AppOverview extends Component {
   };
 
   /**
+   * 阻止Action组件冒泡弹出折叠面板
+   * @param e
+   */
+  handlerAction = (e) => {
+    e.stopPropagation();
+  };
+
+  /**
    * action 权限控制
    * @param record 行数据
    * @returns {*}
@@ -585,6 +593,7 @@ class AppOverview extends Component {
     const { intl } = this.props;
     if (record.status === 'operating' || !record.connect) {
       return (<Action
+        onClick={this.handlerAction}
         data={[
           {
             type,
@@ -597,6 +606,7 @@ class AppOverview extends Component {
       />);
     } else if (record.status === 'failed') {
       return (<Action
+        onClick={this.handlerAction}
         data={[
           {
             type,
@@ -625,6 +635,7 @@ class AppOverview extends Component {
       />);
     } else {
       return (<Action
+        onClick={this.handlerAction}
         data={[
           {
             type,

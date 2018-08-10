@@ -782,6 +782,7 @@ const zhCN = {
   'envoverview.analysis': '已解析',
   'envoverview.gitlab': '配置库',
   'envoverview.agent': '已执行',
+  'envoverview.logs.time': '错误时间',
 
   ...pageDetail,
 };

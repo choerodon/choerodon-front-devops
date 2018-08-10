@@ -143,7 +143,7 @@ class EnvOverviewStore {
 
   loadLog = (proId, envId, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize) => {
     this.changeLoading(true);
-    return axios.get(`/devops/v1/projects/${proId}/app_instances/${envId}/envFiles?page=${page}&size=${pageSize}`)
+    return axios.get(`/devops/v1/projects/${proId}/envs/${envId}/error_file/list_by_page?page=${page}&size=${pageSize}`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
