@@ -53,6 +53,7 @@
     }
     .network-config-item {
       margin-bottom: 6px;
+      white-space: nowrap;
       &:last-child {
         margin-bottom: 0;
       }
@@ -164,6 +165,7 @@
     text-align: center;
     line-height: 16px;
     vertical-align: middle;
+    white-space: nowrap;
 
     span {
       display: inline-block;

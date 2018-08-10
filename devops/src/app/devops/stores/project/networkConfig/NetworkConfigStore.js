@@ -11,16 +11,11 @@ class NetworkConfigStore {
   @observable ist = [];
   @observable allData = [];
   @observable singleData = {};
-  @observable editApp = [];
   @observable isRefresh = false;// 页面的loading
   @observable loading = false; // 打开tab的loading
-  @observable selectData = [];
-  @observable instance = [];
-  @observable versions = [];
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
-  @observable versionDto = [];
 
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
@@ -30,40 +25,6 @@ class NetworkConfigStore {
 
   @computed get getPageInfo() {
     return this.pageInfo;
-  }
-
-  @computed get getInstance() {
-    return this.instance;
-  }
-
-  @action setInstance(type = 'add', index = '', data) {
-    if (type instanceof Array) {
-      this.instance = [];
-    } else if (type === 'add') {
-      if (this.instance.length === 0) {
-        this.instance.push(data);
-      } else {
-        const newData = this.instance;
-        _.map(newData, (ins, i) => {
-          if (ins.id === data.id) {
-            newData[i].options = data.options;
-            this.instance = newData;
-          } else {
-            this.instance.push(data);
-          }
-        });
-      }
-    } else if (type === 'remove') {
-      this.instance.splice(index, 1);
-    }
-  }
-
-  @computed get getSelectData() {
-    return this.selectData.slice();
-  }
-
-  @action setSelectData(data) {
-    this.selectData = data;
   }
 
   /**
@@ -152,10 +113,7 @@ class NetworkConfigStore {
    */
   deleteData = (projectId, id) =>
     axios.delete(`/devops/v1/projects/${projectId}/service/${id}`)
-      .then((datas) => {
-        const res = handleProptError(datas);
-        return res;
-      });
+      .then(data => handleProptError(data));
 
   /**
    * 加载网络列表数据
