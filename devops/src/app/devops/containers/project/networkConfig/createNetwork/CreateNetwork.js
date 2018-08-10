@@ -48,8 +48,11 @@ class CreateNetwork extends Component {
   }
 
   componentDidMount() {
-    const { store } = this.props;
+    const { store, envId } = this.props;
     const { id } = AppState.currentMenuType;
+    if (envId) {
+      this.handleEnvSelect(envId);
+    }
     store.loadEnv(id);
   }
 
