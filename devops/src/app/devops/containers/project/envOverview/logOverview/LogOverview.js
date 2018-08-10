@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Table, Form } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
+import TimePopover from '../../../../components/timePopover';
 import '../EnvOverview.scss';
 import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
@@ -38,23 +39,34 @@ class LogOverview extends Component {
 
     const columns = [{
       title: <FormattedMessage id={'envoverview.logs.info'} />,
-      key: 'message',
-      render: record => (<MouserOverWrapper text={record.message || ''} width={0.7}>
-        {record.message}</MouserOverWrapper>),
+      key: 'error',
+      render: record => (<MouserOverWrapper text={record.error || ''} width={0.7}>
+        {record.error}</MouserOverWrapper>),
     }, {
       title: <FormattedMessage id={'envoverview.logs.file'} />,
       key: 'filePath',
-      dataIndex: 'filePath',
-    }, {
-      title: <FormattedMessage id={'version.commit'} />,
-      key: 'envName',
       render: record => (
         <Fragment>
-          <a href={record.commitUrl} target="_blank" rel="nofollow me noopener noreferrer">
-            <span>{record.commitSha && record.commitSha.slice(0, 8) }</span>
+          <a href={record.fileUrl} target="_blank" rel="nofollow me noopener noreferrer">
+            <span>{record.filePath}</span>
           </a>
         </Fragment>
       ),
+    }, {
+      title: <FormattedMessage id={'version.commit'} />,
+      key: 'commit',
+      render: record => (
+        <Fragment>
+          <a href={record.commitUrl} target="_blank" rel="nofollow me noopener noreferrer">
+            <span>{record.commit && record.commit.slice(0, 8)}</span>
+          </a>
+        </Fragment>
+      ),
+    }, {
+      title: <FormattedMessage id="envoverview.logs.time" />,
+      key: 'errorTime',
+      sorter: true,
+      render: record => <TimePopover content={record.errorTime} />,
     }];
 
 
