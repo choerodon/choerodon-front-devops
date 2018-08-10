@@ -235,6 +235,10 @@ class EnvOverviewHome extends Component {
     return stateArr[0] ? stateArr[0].length : 0;
   };
 
+  /**
+   * 处理环境默认值DOM
+   * @returns {*}
+   */
   envNameDom = () => {
     let envName = this.env.length ? (<React.Fragment>
       {this.env[0].connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
@@ -317,7 +321,7 @@ class EnvOverviewHome extends Component {
             projectId={projectId}
             organizationId={orgId}
           >
-            <Tooltip title={!envState.connect ? '请选择运行中的环境' : null}>
+            <Tooltip title={!envState.connect ? <FormattedMessage id={'envoverview.envinfo'} /> : null}>
               <Button
                 disabled={!envState.connect}
                 onClick={this.deployApp.bind(this, this.envId)}
@@ -333,7 +337,7 @@ class EnvOverviewHome extends Component {
             projectId={projectId}
             organizationId={orgId}
           >
-            <Tooltip title={!envState.connect ? '请选择运行中的环境' : null}>
+            <Tooltip title={!envState.connect ? <FormattedMessage id={'envoverview.envinfo'} /> : null}>
               <Button
                 funcType="flat"
                 disabled={!envState.connect}
@@ -350,7 +354,7 @@ class EnvOverviewHome extends Component {
             projectId={projectId}
             organizationId={orgId}
           >
-            <Tooltip title={!envState.connect ? '请选择运行中的环境' : null}>
+            <Tooltip title={!envState.connect ? <FormattedMessage id={'envoverview.envinfo'} /> : null}>
               <Button
                 funcType="flat"
                 disabled={!envState.connect}
@@ -392,8 +396,8 @@ class EnvOverviewHome extends Component {
               </p>
             </div>
             <div className="c7n-envow-status-content">
-              {sync && sync.devopsSyncCommit === sync.gitCommit
-              && sync.gitCommit === sync.agentSyncCommit ?
+              {(sync && sync.devopsSyncCommit === sync.gitCommit
+              && sync.gitCommit === sync.agentSyncCommit) || !envState.connect ?
                 null :
                 <div>
                   <div className="c7n-envow-status-text"><FormattedMessage id="envoverview.sync" /></div>
