@@ -47,6 +47,7 @@ class EnvOverviewHome extends Component {
    */
   handleRefresh = () => {
     this.tabChange(this.tabKey);
+    this.loadEnvCards();
   };
 
   /**

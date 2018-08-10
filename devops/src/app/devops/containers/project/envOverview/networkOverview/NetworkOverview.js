@@ -136,7 +136,8 @@ class NetworkOverview extends Component {
    * @returns {Array}
    */
   configColumn = (record) => {
-    const { externalIps, ports } = record.config;
+    const { config, type } = record;
+    const { externalIps, ports } = config;
     const iPArr = [];
     const portArr = [];
     if (externalIps && externalIps.length) {
@@ -148,11 +149,10 @@ class NetworkOverview extends Component {
         portArr.push(<div key={port} className="network-config-item">{nodePort} {port} {targetPort}</div>);
       });
     }
-    const type = externalIps && externalIps.length ? 'ClusterIP' : 'NodePort';
-    const content = externalIps ? (<Fragment>
+    const content = (type === 'ClusterIP') ? (<Fragment>
       <div className="network-config-wrap">
         <div className="network-type-title"><FormattedMessage id={'network.column.ip'} /></div>
-        <div>{iPArr}</div>
+        <div>{externalIps ? iPArr : '-'}</div>
       </div>
       <div className="network-config-wrap">
         <div className="network-type-title"><FormattedMessage id={'network.column.port'} /></div>
@@ -192,12 +192,13 @@ class NetworkOverview extends Component {
     if (!_.isEmpty(labels)) {
       _.forEach(labels, (value, key) => node.push(<div className="network-column-entry" key={key}>
         <span>{key}</span>
-        <span>{`  =  ${value}`}</span>
+        =
+        <span>{value}</span>
       </div>));
     }
     return (<div className="network-column-target">
       {node[0] || null}
-      <Popover
+      {node.length > 1 && (<Popover
         arrowPointAtCenter
         placement="bottomRight"
         getPopupContainer={triggerNode => triggerNode.parentNode}
@@ -206,7 +207,7 @@ class NetworkOverview extends Component {
         </Fragment>}
       >
         <Icon type="expand_more" className="network-expend-icon" />
-      </Popover>
+      </Popover>)}
     </div>);
   };
 
@@ -343,7 +344,7 @@ class NetworkOverview extends Component {
         rowKey={record => record.id}
       />
       {this.showEdit && <EditNetwork
-        id={this.id}
+        netId={this.id}
         visible={this.showEdit}
         store={NetworkConfigStore}
         onClose={this.handleCancelFun}

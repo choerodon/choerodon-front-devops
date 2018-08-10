@@ -38,7 +38,7 @@ class CreateDomain extends Component {
     };
   }
   componentDidMount() {
-    const { store, id, visible } = this.props;
+    const { store, id, visible, envId } = this.props;
     if (id && visible) {
       store.loadDataById(this.state.projectId, id)
         .then((data) => {
@@ -62,6 +62,9 @@ class CreateDomain extends Component {
           this.initPathArr(data.pathList.length);
           store.loadNetwork(this.state.projectId, data.envId);
         });
+    }
+    if (envId) {
+      this.selectEnv(envId);
     }
     store.loadEnv(this.state.projectId)
       .then((data) => {
