@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Table, Button, Form, Tooltip, Modal, Progress, Popover, Icon } from 'choerodon-ui';
+import { Table, Button, Form, Tooltip, Modal, Popover, Icon } from 'choerodon-ui';
 import { Permission, Content, Header, Page, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import './NetworkHome.scss';
@@ -26,6 +26,7 @@ class NetworkHome extends Component {
       show: false,
       projectId: menu.id,
       openRemove: false,
+      submitting: false,
     };
   }
   componentDidMount() {
@@ -149,8 +150,13 @@ class NetworkHome extends Component {
     const node = [];
     if (appInstance && appInstance.length) {
       _.forEach(appInstance, (item) => {
-        const { id, code } = item;
-        node.push(<div className="network-column-instance" key={id}>{code}</div>);
+        const { id, code, instanceStatus } = item;
+        const statusStyle = (instanceStatus !== 'operating' && instanceStatus !== 'running')
+          ? 'c7n-network-status-failed' : '';
+        node.push(<div
+          className={`network-column-instance ${statusStyle}`}
+          key={id}
+        ><Tooltip title={<FormattedMessage id={instanceStatus} />} placement="top">{code}</Tooltip></div>);
       });
     }
     if (!_.isEmpty(labels)) {
@@ -224,7 +230,7 @@ class NetworkHome extends Component {
 
   render() {
     const { NetworkConfigStore, intl } = this.props;
-    const { show, showEdit, id, openRemove } = this.state;
+    const { show, showEdit, id, openRemove, submitting } = this.state;
     const {
       type,
       id: projectId,
@@ -234,14 +240,14 @@ class NetworkHome extends Component {
     const columns = [{
       title: <FormattedMessage id={'network.column.status'} />,
       key: 'status',
-      width: 72,
+      width: '82px',
       render: record => this.statusColumn(record),
     }, {
       title: <FormattedMessage id={'network.column.name'} />,
       key: 'name',
       sorter: true,
       filters: [],
-      render: record => (<MouserOverWrapper text={record.name || ''} width={0.1} className="network-list-name">
+      render: record => (<MouserOverWrapper text={record.name || ''} width={0.12} className="network-list-name">
         {record.name}</MouserOverWrapper>),
     }, {
       title: <FormattedMessage id={'network.column.env'} />,
@@ -253,7 +259,8 @@ class NetworkHome extends Component {
           { record.envStatus ? <Tooltip title={<FormattedMessage id={'connect'} />}> <span className="env-status-success" /></Tooltip> : <Tooltip title={<FormattedMessage id={'disconnect'} />}>
             <span className="env-status-error" />
           </Tooltip> }
-          {record.envName}
+          <MouserOverWrapper text={record.envName || ''} width={0.12} className="network-list-name">
+            {record.envName}</MouserOverWrapper>
         </Fragment>
       ),
     }, {
@@ -262,12 +269,13 @@ class NetworkHome extends Component {
       filters: [],
       render: record => this.targetColumn(record),
     }, {
+      width: 108,
       title: <FormattedMessage id={'network.config.column'} />,
       key: 'config',
       filters: [],
       render: record => this.configColumn(record),
     }, {
-      width: '82px',
+      width: 82,
       key: 'action',
       render: record => this.opColumn(record, type, projectId, orgId),
     }];
@@ -345,6 +353,7 @@ class NetworkHome extends Component {
           onClose={this.handleCancelFun}
         /> }
         <Modal
+          confirmLoading={submitting}
           visible={openRemove}
           title={<FormattedMessage id={'network.delete'} />}
           closable={false}

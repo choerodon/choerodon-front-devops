@@ -1,9 +1,9 @@
 /* eslint-disable no-useless-return */
 import React, { Component, Fragment } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Form, Select, Input, Modal, Popover, Icon, Radio, Tag } from 'choerodon-ui';
+import { Button, Form, Select, Input, Modal, Popover, Icon, Radio } from 'choerodon-ui';
 import { stores, Content } from 'choerodon-front-boot';
 import uuidv1 from 'uuid/v1';
 import classnames from 'classnames';

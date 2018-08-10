@@ -237,9 +237,9 @@ class AppTag extends Component {
   changeSize =(e) => {
     e.stopPropagation();
     const { AppTagStore } = this.props;
-    const { size } = this.state;
+    const { size, projectId, filter } = this.state;
     this.setState({ size: size + 10 });
-    AppTagStore.queryBranchData({ projectId: this.state.projectId, size: this.state.size + 10, postData: { searchParam: { branchName: [this.state.filter] }, param: '' } });
+    AppTagStore.queryBranchData({ projectId, size: size + 10, postData: { searchParam: { branchName: [filter] }, param: '' } });
   };
   /**
    * 搜索分支数据
@@ -263,7 +263,6 @@ class AppTag extends Component {
         title: <FormattedMessage id="apptag.tag" />,
         dataIndex: 'tagName',
         filters: [],
-        // filteredValue: this.state.filters.tagName,
         render: (text, record) => (<span>{record.tagName}</span>),
       },
       {
@@ -332,13 +331,13 @@ class AppTag extends Component {
         ]}
       >
         <Modal
-          confirmLoading={this.state.deleteLoading}
-          visible={this.state.visible}
+          confirmLoading={deleteLoading}
+          visible={visible}
           title={<FormattedMessage id={'apptag.action.delete'} />}
           closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
-            <Button key="submit" type="danger" onClick={this.deleteTag} loading={this.state.deleteLoading}>
+            <Button key="submit" type="danger" onClick={this.deleteTag} loading={deleteLoading}>
               {this.props.intl.formatMessage({ id: 'delete' })}
             </Button>,
           ]}
@@ -388,7 +387,6 @@ class AppTag extends Component {
           </Select>
           <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
           <Table
-            // filters={this.state.paras}
             onChange={this.tableChange}
             pagination={AppTagStore.pageInfo}
             columns={tagColumns}

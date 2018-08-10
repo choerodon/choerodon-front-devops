@@ -5,11 +5,12 @@ import { withRouter } from 'react-router-dom';
 import classnames from 'classnames';
 import _ from 'lodash';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Form, Select, Input, Modal, Popover, Icon, Radio, Tag } from 'choerodon-ui';
+import { Button, Form, Select, Input, Modal, Popover, Icon, Radio, Tooltip } from 'choerodon-ui';
 import { stores, Content } from 'choerodon-front-boot';
 import uuidv1 from 'uuid/v1';
 import '../../../main.scss';
 import '../createNetwork/CreateNetwork.scss';
+import './EditNetwork.scss';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -45,6 +46,9 @@ class EditNetwork extends Component {
       initApp: '',
       labels: {},
       config: {},
+      initIst: [],
+      initIstOption: [],
+      deletedInstance: [],
     };
     this.portKeys = 1;
     this.targetKeys = 0;
@@ -161,14 +165,32 @@ class EditNetwork extends Component {
           appInstance = target.appInstance;
           labels = target.labels;
         }
+        const initIst = [];
+        // 将默认选项直接生成，避免加载带来的异步问题
+        const initIstOption = [];
+        const deletedInstance = [];
+        if (appInstance && appInstance.length) {
+          _.forEach(appInstance, (item) => {
+            const { id: istId, code, instanceStatus } = item;
+            initIst.push(istId);
+            initIstOption.push(<Option key={istId} value={istId}>
+              <Tooltip title={<FormattedMessage id={instanceStatus || ''} />} placement="right">{code}</Tooltip>
+            </Option>);
+            if (instanceStatus !== 'running') {
+              deletedInstance.push(istId);
+            }
+          });
+        }
         this.setState({
           initApp: appId,
-          appInstance,
           labels,
           initName: name,
           targetKeys,
           portKeys: type,
           config,
+          initIst,
+          initIstOption,
+          deletedInstance,
         });
       }
     });
@@ -311,6 +333,28 @@ class EditNetwork extends Component {
   };
 
   /**
+   * 实例校验
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkInstance = (rule, value, callback) => {
+    const { intl } = this.props;
+    const { deletedInstance } = this.state;
+    let msg;
+    _.forEach(value, (item) => {
+      if (_.includes(deletedInstance, item) && !msg) {
+        msg = intl.formatMessage({ id: 'network.instance.check.failed' });
+      }
+    });
+    if (msg) {
+      callback(msg);
+    } else {
+      callback();
+    }
+  };
+
+  /**
    * 验证ip
    * @param rule
    * @param value
@@ -414,7 +458,24 @@ class EditNetwork extends Component {
   };
 
   /**
-   * 处理输入的内容并返回给value
+   * 处理实例的内容
+   * @param liNode
+   * @param value
+   * @returns {*}
+   */
+  handleRenderInstance = (liNode, value) => {
+    const { deletedInstance } = this.state;
+    return React.cloneElement(liNode, {
+      className: classnames(liNode.props.className, {
+        'instance-status-disable': _.includes(deletedInstance, value),
+      }),
+      // 防止Tooltip组件的title属性被放到默认属性中
+      title: '',
+    });
+  };
+
+  /**
+   * 处理ip输入的内容并返回给value
    * @param liNode
    * @param value
    * @returns {*}
@@ -461,7 +522,8 @@ class EditNetwork extends Component {
       targetKeys: targetType,
       portKeys: configType,
       initName,
-      appInstance,
+      initIst,
+      initIstOption,
       initApp,
       labels,
       config } = this.state;
@@ -624,18 +686,13 @@ class EditNetwork extends Component {
 
     // 初始化实例
     const ist = store.getIst;
-    const initIst = [];
-    // 将默认选项直接生成，避免加载带来的异步问题
-    const initIstOption = [];
-    if (appInstance && appInstance.length) {
-      _.forEach(appInstance, (item) => {
-        initIst.push(item.id);
-        initIstOption.push(<Option key={item.id} value={item.id}>{item.code}</Option>);
-      });
-    }
     // 将默认的选项过滤
-    const istOption = _.map(_.filter(ist, item => _.includes(initIst, item.id)), item =>
-      <Option key={item.id} value={item.id}>{item.code}</Option>);
+    const istOption = _.map(_.filter(ist, item => !_.includes(initIst, item.id)), (item) => {
+      const { id, code, instanceStatus } = item;
+      return (<Option key={id} value={id}>
+        <Tooltip title={<FormattedMessage id="running" />} placement="right">{code}</Tooltip>
+      </Option>);
+    });
 
     return (
       <div className="c7n-region">
@@ -754,9 +811,12 @@ class EditNetwork extends Component {
                   >
                     {getFieldDecorator('appInstance', {
                       initialValue: initIst.length ? initIst : undefined,
+                      trigger: ['onChange', 'onSubmit'],
                       rules: [{
                         required: true,
                         message: intl.formatMessage({ id: 'required' }),
+                      }, {
+                        validator: this.checkInstance,
                       }],
                     })(<Select
                       filter
@@ -768,8 +828,10 @@ class EditNetwork extends Component {
                       label={<FormattedMessage id="network.target.instance" />}
                       notFoundContent={intl.formatMessage({ id: 'network.form.instance.disable' })}
                       getPopupContainer={triggerNode => triggerNode.parentNode}
+                      choiceRender={this.handleRenderInstance}
                       filterOption={(input, option) =>
-                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                        option.props.children.props.children
+                          .toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     >
                       {initIstOption}
                       {istOption}
