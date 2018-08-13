@@ -52,6 +52,7 @@
     "no-unused-vars": "off",
     "no-console": "error",
     "no-debugger": "off",
+    "no-unused-expressions": "off",
     "jsx-a11y/anchor-is-valid": [
       "warn",
       {
