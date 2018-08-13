@@ -25,7 +25,7 @@ class DeploymentAppHome extends Component {
       appId: props.match.params.appId || undefined,
       versionId: props.match.params.verId || undefined,
       current: props.match.params.appId ? 2 : 1,
-      envId: Number(props.location.search.split('envId=')[1]),
+      envId: props.location.search.split('envId=')[1] ? Number(props.location.search.split('envId=')[1]) : undefined,
       storeId: props.match.params.storeId,
       mode: 'new',
       markers: null,
@@ -50,8 +50,6 @@ class DeploymentAppHome extends Component {
       DeploymentAppStore.setVersions([]);
     }
     DeploymentAppStore.loadEnv();
-    const card = document.getElementsByClassName('deployApp-card')[0];
-    // card.style.minHeight = `${window.innerHeight - 277}px`;
   }
 
 
