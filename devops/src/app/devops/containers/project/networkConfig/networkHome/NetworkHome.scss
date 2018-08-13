@@ -208,4 +208,9 @@
     color: white !important;
     background-color: #d50000 !important;
   }
+
+  .env-status-success,
+  .env-status-error {
+    vertical-align: sub;
+  }
 }
