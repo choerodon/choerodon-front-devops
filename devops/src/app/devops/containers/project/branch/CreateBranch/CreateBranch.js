@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import { Modal, Form, Radio, Input, Select, Tooltip } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import _ from 'lodash';
 import '../../../main.scss';
 import './CreateBranch.scss';
 import '../commom.scss';
