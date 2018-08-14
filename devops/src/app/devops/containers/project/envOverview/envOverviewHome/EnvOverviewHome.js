@@ -94,9 +94,9 @@ class EnvOverviewHome extends Component {
       .then((env) => {
         if (env.length) {
           this.env = env;
-          this.envId = env[0].id;
-          this.loadIstOverview(env[0].id);
-          this.loadSync(env[0].id);
+          const flag = _.filter(env, { id: this.envId }).length;
+          this.loadIstOverview(flag ? this.envId : env[0].id);
+          this.loadSync(flag ? this.envId : env[0].id);
         }
       });
   };
@@ -232,7 +232,11 @@ class EnvOverviewHome extends Component {
     const stateArr = ist ?
       _.map(ist.devopsEnvPreviewAppDTOS, i =>
         _.filter(i.applicationInstanceDTOS, a => a.status === state)) : [];
-    return stateArr[0] ? stateArr[0].length : 0;
+    let length = 0;
+    _.map(stateArr, (l) => {
+      length += l.length;
+    });
+    return length;
   };
 
   /**
@@ -240,11 +244,7 @@ class EnvOverviewHome extends Component {
    * @returns {*}
    */
   envNameDom = () => {
-    let envName = this.env.length ? (<React.Fragment>
-      {this.env[0].connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
-      {this.env[0].name}
-    </React.Fragment>) : <FormattedMessage id="envoverview.noEnv" />;
-
+    let envName = null;
     if (this.env.length && this.envId) {
       _.map(this.env, (d) => {
         if (d.id === Number(this.envId)) {
@@ -254,6 +254,11 @@ class EnvOverviewHome extends Component {
           </React.Fragment>);
         }
       });
+    } else {
+      envName = this.env.length ? (<React.Fragment>
+        {this.env[0].connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
+        {this.env[0].name}
+      </React.Fragment>) : <FormattedMessage id="envoverview.noEnv" />;
     }
     return envName;
   };
