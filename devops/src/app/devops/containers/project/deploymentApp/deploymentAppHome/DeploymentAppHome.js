@@ -30,6 +30,7 @@ class DeploymentAppHome extends Component {
       mode: 'new',
       markers: null,
       projectId: AppState.currentMenuType.id,
+      loading: false,
     };
   }
 
@@ -272,6 +273,9 @@ class DeploymentAppHome extends Component {
    * 部署应用
    */
   handleDeploy = () => {
+    this.setState({
+      loading: true,
+    });
     const { DeploymentAppStore } = this.props;
     const instances = DeploymentAppStore.currentInstance;
     const value = this.state.value || DeploymentAppStore.value.yaml;
@@ -289,9 +293,15 @@ class DeploymentAppHome extends Component {
         if (datas) {
           this.openAppDeployment();
         }
+        this.setState({
+          loading: false,
+        });
       })
       .catch((error) => {
         Choerodon.prompt(error.response.data.message);
+        this.setState({
+          loading: false,
+        });
       });
   };
 
@@ -432,8 +442,10 @@ class DeploymentAppHome extends Component {
             type="primary"
             funcType="raised"
             onClick={this.loadReview}
-            disabled={!(this.state.envId && (this.state.value || (data && data.yaml)) && (this.state.errorLine ? this.state.errorLine.length === 0 : (data && data.errorLines === null)))}
-            >
+            disabled={!(this.state.envId && (this.state.value || (data && data.yaml)) 
+              && (this.state.errorLine ?
+                this.state.errorLine.length === 0 : (data && data.errorLines === null)))}
+          >
             {formatMessage({ id: 'next' })}
           </Button>
           <Button onClick={this.changeStep.bind(this, 1)} funcType="raised">{formatMessage({ id: 'previous' })}</Button>
@@ -474,7 +486,8 @@ class DeploymentAppHome extends Component {
             </RadioGroup>
             {this.state.mode === 'replace' && <Select
               onSelect={this.handleSelectInstance}
-              value={this.state.instanceId || (instances && instances.length === 1 && instances[0].id)}
+              value={this.state.instanceId || 
+                (instances && instances.length === 1 && instances[0].id)}
               label={<FormattedMessage id={'deploy.step.three.mode.replace.label'} />}
               className="deploy-select"
               placeholder="Select a person"
@@ -561,7 +574,7 @@ class DeploymentAppHome extends Component {
         </section>
         <section className="deployApp-section">
           <Permission service={['devops-service.application-instance.deploy']}>
-            <Button type="primary" funcType="raised" disabled={!(app && versionId && envId && mode)} onClick={this.handleDeploy}>{formatMessage({ id: 'deploy.btn.deploy' })}</Button>
+            <Button type="primary" funcType="raised" disabled={!(app && versionId && envId && mode)} onClick={this.handleDeploy} loading={this.state.loading}>{formatMessage({ id: 'deploy.btn.deploy' })}</Button>
           </Permission>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 3)}>{formatMessage({ id: 'previous' })}</Button>
           <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>{formatMessage({ id: 'cancel' })}</Button>

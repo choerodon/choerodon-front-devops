@@ -18,6 +18,7 @@ class ValueConfig extends Component {
     super(props);
     this.state = {
       value: '',
+      loading: false,
     };
   }
   /**
@@ -50,6 +51,9 @@ class ValueConfig extends Component {
    * 修改配置重新部署
    */
   handleOk = () => {
+    this.setState({
+      loading: true,
+    });
     const { store, id, idArr, intl } = this.props;
     const projectId = AppState.currentMenuType.id;
     const value = this.state.value || this.props.store.getValue.yaml;
@@ -72,9 +76,15 @@ class ValueConfig extends Component {
               } else {
                 this.onClose(res);
               }
+              this.setState({
+                loading: false,
+              });
             });
         } else {
           Choerodon.prompt(intl.formatMessage({ id: 'ist.yamlErr' }));
+          this.setState({
+            loading: false,
+          });
         }
       });
   };
@@ -127,6 +137,7 @@ class ValueConfig extends Component {
       onCancel={this.onClose.bind(this, false)}
       cancelText={intl.formatMessage({ id: 'cancel' })}
       okText={intl.formatMessage({ id: 'ist.reDeploy' })}
+      confirmLoading={this.state.loading}
     >
       {sideDom}
     </Sidebar>);
