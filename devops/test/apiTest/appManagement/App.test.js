@@ -36,7 +36,7 @@ describe('App Api', function () {
     return appFunction.editApp(oauth.project, app, false);
   });
   it('[GET] code已存在，不可使用', function () {
-    return appFunction.checkCodeUnique(oauth.project, 'static-07-26', false);
+    return appFunction.checkCodeUnique(oauth.project, 'code', false);
   });
   it('[GET] code不存在，可以使用', function () {
     const newCode = `new-code-${uuidv1().slice(0, 10)}`;
