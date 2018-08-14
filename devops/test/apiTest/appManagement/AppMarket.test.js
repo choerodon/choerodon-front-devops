@@ -24,12 +24,12 @@ describe('appMarket test', function () {
   it('[POST]应用上传成功', function () {
     this.skip();
     const file = path.resolve(__dirname, '../../statics/chart.zip');
-    return appMarket.importAppInMarket(project, file, 'chart.zip');
+    return appMarket.upAppInMarket(project, file, 'chart.zip');
   });
   it('[POST]应用上传失败', function () {
     // this.skip();
     const errorFile = path.resolve(__dirname, '../../statics/chart_error.zip');
-    return appMarket.importAppInMarket(project, errorFile, 'chart_error.zip', false);
+    return appMarket.upAppInMarket(project, errorFile, 'chart_error.zip', false);
   });
   it('[POST]上传应用成功', function () {
     const filecode = 'ce272b30617f1df9c6f227f208cfbf6e';

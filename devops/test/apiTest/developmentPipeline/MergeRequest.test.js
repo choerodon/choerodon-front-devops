@@ -6,7 +6,7 @@ const utils = require('../../Utils');
 
 const organizationId = utils.oauth.organization;
 const projectId = utils.oauth.project;
-const appId = 349;
+const appId = 368;
 
 describe('MergeRequest Api', function () {
   it('[GET] 项目下查询所有已经启用的应用', function () {

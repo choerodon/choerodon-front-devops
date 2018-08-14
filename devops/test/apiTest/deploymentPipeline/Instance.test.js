@@ -3,85 +3,85 @@ const { getInstanceAll, getAllApp, getMultiAppIst, getAppByEnvId, getIstStages, 
 const uuidv1 = require('uuid/v1');
 const utils = require('../../Utils');
 
-const projectId = utils.oauth.project;
+const { project, env } = utils.oauth;
 const pageInfo = { page: 0, size: 15, sort: { field: 'id', order: 'desc' } };
 const query = { searchParam: {}, param: '' };
 const delAppInstanceId = 175;
 const appInstanceId = 176;
 const idArr = {
-  envId: 60,
-  versionId: 313,
-  appId: 322,
+  env,
+  versionId: 322,
+  appId: 368,
 };
 const idArr1 = {
-  envId: 60,
-  appId: 322,
+  env,
+  appId: 368,
 };
 const idArr2 = {
-  envId: 60,
+  env,
 };
 
 describe('Instance Api', function () {
   it('[POST] 分页查询应用实例', function () {
-    return getInstanceAll(projectId, pageInfo, query);
+    return getInstanceAll(project, pageInfo, query);
   });
 
   it('[POST] 根据环境ID分页查询应用实例', function () {
-    return getInstanceAll(projectId, pageInfo, query, idArr2);
+    return getInstanceAll(project, pageInfo, query, idArr2);
   });
 
   it('[POST] 根据环境ID&应用ID分页查询应用实例', function () {
-    return getInstanceAll(projectId, pageInfo, query, idArr1);
+    return getInstanceAll(project, pageInfo, query, idArr1);
   });
 
   it('[POST] 根据环境ID&应用ID&版本ID分页查询应用实例', function () {
-    return getInstanceAll(projectId, pageInfo, query, idArr);
+    return getInstanceAll(project, pageInfo, query, idArr);
   });
 
   it('[GET] 查询项目下所有应用', function () {
-    return getAllApp(projectId);
+    return getAllApp(project);
   });
 
   it('[GET] 多应用实例查询', function () {
-    return getMultiAppIst(projectId);
+    return getMultiAppIst(project);
   });
 
   it('[GET] 根据环境ID分页获取已部署正在运行实例的应用', function () {
-    return getAppByEnvId(projectId, idArr.envId);
+    return getAppByEnvId(project, idArr.envId);
   });
 
   it('[GET] 获取部署实例hook阶段', function () {
-    return getIstStages(projectId, appInstanceId);
+    return getIstStages(project, appInstanceId);
   });
 
   it('[GET] 获取部署实例资源对象', function () {
-    return getIstResources(projectId, appInstanceId);
+    return getIstResources(project, appInstanceId);
   });
 
   it('[GET] 获取部署Value', function () {
-    return getIstValue(projectId, appInstanceId);
+    return getIstValue(project, appInstanceId);
   });
 
   it('[GET] 根据IDS获取部署Value', function () {
-    return getIstValueByIds(projectId, idArr);
+    return getIstValueByIds(project, idArr);
   });
 
   it('[DEL] 删除实例', function () {
     this.skip();
-    return delIstById(projectId, delAppInstanceId);
+    return delIstById(project, delAppInstanceId);
   });
 
   it('[PUT] 停止实例', function () {
     this.skip();
-    return istAction(projectId, appInstanceId, 'stop');
+    return istAction(project, appInstanceId, 'stop');
   });
 
   it('[PUT] 重启实例', function () {
     this.skip();
-    return istAction(projectId, appInstanceId, 'start');
+    return istAction(project, appInstanceId, 'start');
   });
 
   it('[GET] 获取升级实例版本', function () {
-    return istUpdateVersion(projectId, idArr.versionId);
+    return istUpdateVersion(project, idArr.versionId);
   });
 });
