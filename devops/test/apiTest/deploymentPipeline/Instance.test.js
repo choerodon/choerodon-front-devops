@@ -47,6 +47,7 @@ describe('Instance Api', function () {
   });
 
   it('[GET] 根据环境ID分页获取已部署正在运行实例的应用', function () {
+    this.skip();
     return getAppByEnvId(project, idArr.envId);
   });
 
@@ -63,6 +64,7 @@ describe('Instance Api', function () {
   });
 
   it('[GET] 根据IDS获取部署Value', function () {
+    this.skip();
     return getIstValueByIds(project, idArr);
   });
 
