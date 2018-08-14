@@ -27,6 +27,7 @@ const oauth = {
   code: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
   username: signConfig.login.username,
   password: signConfig.login.password,
+  env: signConfig.id.env,
 };
 
 /**
