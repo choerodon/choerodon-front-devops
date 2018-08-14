@@ -33,6 +33,10 @@
         width: 24px;
         height: 24px;
         border: none;
+
+        span {
+          vertical-align: super;
+        }
       }
     }
   }
