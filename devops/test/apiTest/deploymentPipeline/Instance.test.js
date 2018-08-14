@@ -3,22 +3,22 @@ const { getInstanceAll, getAllApp, getMultiAppIst, getAppByEnvId, getIstStages, 
 const uuidv1 = require('uuid/v1');
 const utils = require('../../Utils');
 
-const { project, envId } = utils.oauth;
+const { project, env } = utils.oauth;
 const pageInfo = { page: 0, size: 15, sort: { field: 'id', order: 'desc' } };
 const query = { searchParam: {}, param: '' };
 const delAppInstanceId = 175;
 const appInstanceId = 176;
 const idArr = {
-  envId,
+  env,
   versionId: 322,
   appId: 368,
 };
 const idArr1 = {
-  envId,
+  env,
   appId: 368,
 };
 const idArr2 = {
-  envId,
+  env,
 };
 
 describe('Instance Api', function () {
