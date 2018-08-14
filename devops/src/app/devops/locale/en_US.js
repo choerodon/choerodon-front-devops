@@ -4,7 +4,7 @@ const enUS = {
   detail: 'Detail',
   save: 'Save',
   active: 'Active',
-  stoped: 'Stopped',
+  stopped: 'Stopped',
   refresh: 'Refresh',
   operate: 'Operate',
   cancel: 'Cancel',

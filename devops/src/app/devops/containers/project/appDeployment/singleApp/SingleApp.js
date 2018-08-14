@@ -484,8 +484,8 @@ class SingleApp extends Component {
             organizationId,
             projectId,
             service: ['devops-service.application-instance.start', 'devops-service.application-instance.stop'],
-            text: record.status !== 'stoped' ? intl.formatMessage({ id: 'ist.stop' }) : intl.formatMessage({ id: 'ist.run' }),
-            action: record.status !== 'stoped' ? this.activeIst.bind(this, record.id, 'stop') : this.activeIst.bind(this, record.id, 'start'),
+            text: record.status !== 'stopped' ? intl.formatMessage({ id: 'ist.stop' }) : intl.formatMessage({ id: 'ist.run' }),
+            action: record.status !== 'stopped' ? this.activeIst.bind(this, record.id, 'stop') : this.activeIst.bind(this, record.id, 'start'),
           }, {
             type,
             organizationId,
