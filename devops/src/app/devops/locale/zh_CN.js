@@ -182,7 +182,7 @@ const zhCN = {
   stopping: '停止中',
   deleting: '删除中',
   pending: '部署中',
-  stoped: '已停止',
+  stopped: '已停止',
   stopped: '已停止',
   failedd: '已失败',
   failed: '创建失败',

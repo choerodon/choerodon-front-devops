@@ -415,8 +415,8 @@ class EnvOverviewHome extends Component {
                     <div><FormattedMessage id="operating" /></div>
                   </div>
                   <div className="c7n-envow-status-num c7n-envow-status-stopped">
-                    <div>{this.getIstCount('stoped')}</div>
-                    <div><FormattedMessage id="stoped" /></div>
+                    <div>{this.getIstCount('stopped')}</div>
+                    <div><FormattedMessage id="stopped" /></div>
                   </div>
                   <div className="c7n-envow-status-num c7n-envow-status-fail">
                     <div>{this.getIstCount('failed')}</div>
