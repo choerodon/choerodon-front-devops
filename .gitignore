@@ -5,7 +5,7 @@
 .idea
 .project
 package-lock.json
-
+.vscode
 
 # npm
 node_modules

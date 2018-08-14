@@ -41,6 +41,7 @@ describe('Environment Api', function () {
   });
 
   it('[PUT] 项目下停用单个环境', function () {
+    this.skip();
     return envAction(projectId, envId, false);
   });
 

@@ -72,6 +72,29 @@ class AppMarket {
         }
       });
   }
+
+  cancelAppImport(project, filename) {
+    return chai.request(oauth.gateway)
+      .post(`/devops/v1/projects/${project}/apps_market/import_cancel?file_name=${filename}`)
+      .set('Authorization', global.user_token.token)
+      .then((res) => {
+        expect(res).to.have.status(204);
+      });
+  }
+
+  getAppReadmeByVersion(project, marketId, versionId, flag = true) {
+    return chai.request(oauth.gateway)
+      .get(`/devops/v1/projects/${project}/apps_market/${marketId}/versions/${versionId}/readme`)
+      .set('Authorization', global.user_token.token)
+      .then((res) => {
+        expect(res).to.have.status(200);
+        if (flag) {
+          expect(res.text).to.be.a('string');
+        } else {
+          expect(res.body.failed).to.be.true;
+        }
+      });
+  }
 }
 
 const appMarket = new AppMarket();
