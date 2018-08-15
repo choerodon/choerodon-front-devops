@@ -219,11 +219,12 @@ class EnvOverviewHome extends Component {
    * @param envId
    */
   deployApp = (envId) => {
+    const envID = envId || this.env[0].id;
     const projectId = AppState.currentMenuType.id;
     const projectName = AppState.currentMenuType.name;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}&envId=${envId}`);
+    this.linkToChange(`/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}&envId=${envID}`);
   };
 
   /**
