@@ -542,7 +542,7 @@ class EnvPipelineHome extends Component {
       </div>);
 
     const BoardDom = EnvPipelineStore.getIsLoading ? <LoadingBar display /> :
-      (<Board projectId={projectId} envcardPosition={envcardPosition} />);
+      (<Board projectId={Number(projectId)} envcardPosition={envcardPosition} />);
 
     const leftDom = scrollLeft !== 0 ?
       <div role="none" className="c7n-push-left-ban icon icon-navigate_before" onClick={this.pushScrollRight} />

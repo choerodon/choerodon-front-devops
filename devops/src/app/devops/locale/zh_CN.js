@@ -301,7 +301,7 @@ const zhCN = {
   'network.target': '目标对象',
   'network.target.type': '选择类型：',
   'network.target.instance': '选择实例',
-  'network.target.param': '填写参数',
+  'network.target.param': '填写标签',
   'network.form.app': '应用名称',
   'network.config': '网络配置',
   'network.config.column': '配置类型',
