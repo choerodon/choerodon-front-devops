@@ -15,7 +15,7 @@ class AppDeploymentStore {
   @observable appVersion = [];
   @observable mutiData = [];
   @observable alertType = '';
-  @observable value = [];
+  @observable value = null;
   @observable pageInfo = {};
   @observable appPageInfo = {};
   @observable appPage = 0;

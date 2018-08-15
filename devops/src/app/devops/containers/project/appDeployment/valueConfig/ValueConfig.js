@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { Modal, Button } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 // import yaml from 'js-yaml';
+import YAML from 'yamljs';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import Ace from '../../../../components/yamlAce';
 import _ from 'lodash';
@@ -28,11 +29,10 @@ class ValueConfig extends Component {
    * @param {*} value 修改后的value值
    */
   onChange = (value) => {
-    const oldvalue = this.props.store.getValue.yaml.split('\n');
-    const newvalue = value.split('\n');
-    _.remove(oldvalue, item => item.indexOf('#') > -1);
-    _.remove(newvalue, item => item.indexOf('#') > -1);
-    if (oldvalue.join(' ').replace(/\s|\xA0/g, '') === newvalue.join(' ').replace(/\s|\xA0/g, '')) {
+    const oldYaml = this.props.store.getValue ? this.props.store.getValue.yaml : '';
+    const oldvalue = YAML.parse(oldYaml);
+    const newvalue = YAML.parse(value);
+    if (JSON.stringify(oldvalue) === JSON.stringify(newvalue)) {
       this.setState({
         disabled: true,
       });
