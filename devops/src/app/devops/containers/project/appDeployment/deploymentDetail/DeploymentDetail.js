@@ -33,7 +33,7 @@ class DeploymentDetail extends Component {
     this.state = {
       id: props.match.params.id,
       status: props.match.params.status,
-      overview: props.location.search.indexOf('overview'),
+      overview: props.location.search.indexOf('overview') > 0,
       expand: false,
       current: 1,
       flag: true,
