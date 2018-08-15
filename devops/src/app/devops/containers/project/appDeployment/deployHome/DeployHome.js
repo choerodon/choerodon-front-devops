@@ -220,28 +220,28 @@ class DeployHome extends Component {
             <ButtonGroup>
               <Button
                 funcType="flat"
-                className={tabActive === 'instance' && 'c7n-tab-active'}
+                className={tabActive === 'instance' ? 'c7n-tab-active' : ''}
                 onClick={this.changeTabs.bind(this, 'instance')}
               >
                 <FormattedMessage id="ist.instance" />
               </Button>
               <Button
                 funcType="flat"
-                className={tabActive === 'singleEnv' && 'c7n-tab-active'}
+                className={tabActive === 'singleEnv' ? 'c7n-tab-ative' : ''}
                 onClick={this.changeTabs.bind(this, 'singleEnv')}
               >
                 <FormattedMessage id="ist.singleEnv" />
               </Button>
               <Button
                 funcType="flat"
-                className={tabActive === 'singleApp' && 'c7n-tab-active'}
+                className={tabActive === 'singleApp' ? 'c7n-tab-ative' : ''}
                 onClick={this.changeTabs.bind(this, 'singleApp')}
               >
                 <FormattedMessage id="ist.singleApp" />
               </Button>
               <Button
                 funcType="flat"
-                className={tabActive === 'multiApp' && 'c7n-tab-active'}
+                className={tabActive === 'multiApp' ? 'c7n-tab-ative' : ''}
                 onClick={this.changeTabs.bind(this, 'multiApp')}
               >
                 <FormattedMessage id="ist.multiApp" />

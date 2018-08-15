@@ -184,6 +184,7 @@ class AppStoreHome extends Component {
       <div
         role="none"
         className="c7n-store-card"
+        key={card.id}
         onClick={this.appDetail.bind(this, card.id)}
       >
         {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${Choerodon.fileServer(card.imgUrl)})` }} />
@@ -312,8 +313,8 @@ class AppStoreHome extends Component {
           </div>
           <ButtonGroup>
             <div>
-              <Button onClick={this.listViewChange.bind(this, 'list')} className={listActive === 'list' && 'c7n-tab-active'}><Icon type="format_list_bulleted" /></Button>
-              <Button onClick={this.listViewChange.bind(this, 'card')} className={listActive === 'card' && 'c7n-tab-active'}><Icon type="dashboard" /></Button>
+              <Button onClick={this.listViewChange.bind(this, 'list')} className={listActive === 'list' ? 'c7n-tab-active' : ''}><Icon type="format_list_bulleted" /></Button>
+              <Button onClick={this.listViewChange.bind(this, 'card')} className={listActive === 'card' ? 'c7n-tab-active' : ''}><Icon type="dashboard" /></Button>
             </div>
           </ButtonGroup>
           {AppStoreStore.isLoading ? <LoadingBar display /> :
