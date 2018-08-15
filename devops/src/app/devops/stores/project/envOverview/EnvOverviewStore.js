@@ -97,6 +97,7 @@ class EnvOverviewStore {
     searchParam: {},
     param: '',
   }) => {
+    this.changeLoading(true);
     axios.post(`/devops/v1/projects/${projectId}/app_instances/${envId}/listByEnv`, JSON.stringify(datas))
       .then((data) => {
         if (data && data.failed) {
@@ -104,6 +105,10 @@ class EnvOverviewStore {
         } else {
           this.setIst(data);
         }
+        this.changeLoading(false);
+      }).catch((error) => {
+        this.changeLoading(false);
+        Choerodon.prompt(error.response.data.message);
       });
   };
 
@@ -121,6 +126,9 @@ class EnvOverviewStore {
           this.setPageInfo({ number, size, totalElements });
         }
         this.changeLoading(false);
+      }).catch((error) => {
+        this.changeLoading(false);
+        Choerodon.prompt(error.response.data.message);
       });
   };
 
@@ -138,6 +146,9 @@ class EnvOverviewStore {
           this.setPageInfo({ number, size, totalElements });
         }
         this.changeLoading(false);
+      }).catch((error) => {
+        this.changeLoading(false);
+        Choerodon.prompt(error.response.data.message);
       });
   };
 
@@ -152,6 +163,9 @@ class EnvOverviewStore {
           this.setPageInfo({ number, size, totalElements });
         }
         this.changeLoading(false);
+      }).catch((error) => {
+        this.changeLoading(false);
+        Choerodon.prompt(error.response.data.message);
       });
   };
 

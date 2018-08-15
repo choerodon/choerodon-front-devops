@@ -101,6 +101,9 @@ class EnvOverviewHome extends Component {
           this.env = env;
           const flag = _.filter(env, { id: this.envId }).length;
           this.loadIstOverview(flag ? this.envId : env[0].id);
+          this.loadDomain(flag ? this.envId : env[0].id);
+          this.loadNetwork(flag ? this.envId : env[0].id);
+          this.loadLog(flag ? this.envId : env[0].id);
           this.loadSync(flag ? this.envId : env[0].id);
         }
       });
@@ -438,7 +441,7 @@ class EnvOverviewHome extends Component {
               </div>
             </div>
           </div>
-          <Tabs activeKey={this.tabKey} animated={false} onChange={this.tabChange}>
+          <Tabs className="c7n-envoverview-tabs" activeKey={this.tabKey} animated={false} onChange={this.tabChange}>
             <TabPane tab={`${intl.formatMessage({ id: 'network.column.app' })}`} key="app">
               {this.tabKey === 'app' ? <AppOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId} /> : null}
             </TabPane>

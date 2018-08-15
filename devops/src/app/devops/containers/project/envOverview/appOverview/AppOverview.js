@@ -22,6 +22,7 @@ import DomainStore from '../../../../stores/project/domain';
 import CreateDomain from '../../domain/createDomain';
 import CreateNetwork from '../../networkConfig/createNetwork';
 import NetworkConfigStore from '../../../../stores/project/networkConfig';
+import LoadingBar from '../../../../components/loadingBar';
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -370,6 +371,15 @@ class AppOverview extends Component {
   };
 
   /**
+   * 删除搜索
+   */
+  @action
+  emitEmpty = () => {
+    this.val = '';
+    this.onSearch();
+  }
+
+  /**
    * 处理返回panel Dom
    * @returns {*}
    */
@@ -378,197 +388,200 @@ class AppOverview extends Component {
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const ist = store.getIst;
     if (ist) {
-      return _.map(ist.devopsEnvPreviewAppDTOS, i => (<div className="c7n-envow-app-wrap" key={i.appName}>
-        <div className="c7n-envow-app-name">
-          {i.applicationInstanceDTOS[0].projectId === parseInt(projectId, 10) ? <span className="icon icon-project" /> : <span className="icon icon-apps" />}
-          {i.appName}
-        </div>
-        <Collapse
-          accordion
-          key={`${i.appName}-collapse`}
-          onChange={this.onChange}
-        >
-          {_.map(i.applicationInstanceDTOS, c => (
-            <Panel
-              disabled={c.commandStatus !== 'success' || c.status === 'stopped'}
-              forceRender
-              showArrow={false}
-              header={(<div className="c7n-envow-ist-header-wrap">
-                <Icon type="navigate_next" />
-                <div className="c7n-envow-ist-name">
-                  <div className={`c7n-ist-status c7n-ist-status_${c.status}`}>
-                    <div>{intl.formatMessage({ id: c.status || 'null' })}</div>
-                  </div>
-                  {c.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{c.code}</span> : <div className="c7n-envow-ist-fail">
-                    {c.commandStatus === 'doing' ? (<div>
-                      <span className="c7n-deploy-istCode">{c.code}</span>
-                      <Tooltip title={intl.formatMessage({ id: `ist_${c.commandType}` })}>
-                        <Progress type="loading" width={15} />
-                      </Tooltip>
-                    </div>) :
-                      (<div>
+      if (ist.devopsEnvPreviewAppDTOS.length) {
+        return _.map(ist.devopsEnvPreviewAppDTOS, i => (<div className="c7n-envow-app-wrap" key={i.appName}>
+          <div className="c7n-envow-app-name">
+            {i.applicationInstanceDTOS[0].projectId === parseInt(projectId, 10) ? <span className="icon icon-project" /> : <span className="icon icon-apps" />}
+            {i.appName}
+          </div>
+          <Collapse
+            accordion
+            key={`${i.appName}-collapse`}
+            onChange={this.onChange}
+          >
+            {_.map(i.applicationInstanceDTOS, c => (
+              <Panel
+                disabled={c.commandStatus !== 'success' || c.status === 'stopped'}
+                forceRender
+                showArrow={false}
+                header={(<div className="c7n-envow-ist-header-wrap">
+                  <Icon type="navigate_next" />
+                  <div className="c7n-envow-ist-name">
+                    <div className={`c7n-ist-status c7n-ist-status_${c.status}`}>
+                      <div>{intl.formatMessage({ id: c.status || 'null' })}</div>
+                    </div>
+                    {c.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{c.code}</span> : <div className="c7n-envow-ist-fail">
+                      {c.commandStatus === 'doing' ? (<div>
                         <span className="c7n-deploy-istCode">{c.code}</span>
-                        <Tooltip title={`${c.commandType} ${c.commandStatus}: ${c.error}`}>
-                          <span className="icon icon-error c7n-deploy-ist-operate" />
+                        <Tooltip title={intl.formatMessage({ id: `ist_${c.commandType}` })}>
+                          <Progress type="loading" width={15} />
                         </Tooltip>
-                      </div>)}
-                  </div>}
-                </div>
-                <span className="c7n-envow-ist-version">
-                  <FormattedMessage id={'app.appVersion'} />:&nbsp;&nbsp;
-                  {c.appVersion}
-                </span>
-                <div className="c7n-deploy-status">
-                  <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
-                    <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" />
-                  </svg>
-                  <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle-process'}>
-                    <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" strokeDashoffset={`${251 * ((c.podCount - c.podRunningCount) / c.podCount)}%`} />
-                  </svg>
-                  <span className="c7n-deploy-status-num">{c.podCount}</span>
-                </div>
-                <div className="c7n-envow-ist-action">
-                  {this.columnAction(c)}
-                </div>
-              </div>)}
-              key={c.id}
-            >
-              <div>
+                      </div>) :
+                        (<div>
+                          <span className="c7n-deploy-istCode">{c.code}</span>
+                          <Tooltip title={`${c.commandType} ${c.commandStatus}: ${c.error}`}>
+                            <span className="icon icon-error c7n-deploy-ist-operate" />
+                          </Tooltip>
+                        </div>)}
+                    </div>}
+                  </div>
+                  <span className="c7n-envow-ist-version">
+                    <FormattedMessage id={'app.appVersion'} />:&nbsp;&nbsp;
+                    {c.appVersion}
+                  </span>
+                  <div className="c7n-deploy-status">
+                    <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
+                      <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" />
+                    </svg>
+                    <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle-process'}>
+                      <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" strokeDashoffset={`${251 * ((c.podCount - c.podRunningCount) / c.podCount)}%`} />
+                    </svg>
+                    <span className="c7n-deploy-status-num">{c.podCount}</span>
+                  </div>
+                  <div className="c7n-envow-ist-action">
+                    {this.columnAction(c)}
+                  </div>
+                </div>)}
+                key={c.id}
+              >
                 <div>
-                  <div className="c7n-envow-contaners-wrap">
-                    <div className="c7n-envow-contaners-left">
-                      <div className="c7n-envow-contaners-title">
-                        CONTANERS
-                      </div>
-                      {c.devopsEnvPodDTOS.length ? _.map(c.devopsEnvPodDTOS, p => (<div className="c7n-envow-ls-wrap" key={p.id}>
-                        <div className="c7n-envow-ls">
-                          <Tooltip title={<FormattedMessage id={'container.name'} />}>
-                            <Icon type="kubernetes" />
-                          </Tooltip>
-                          {p.name}
-                          <Permission
-                            service={['devops-service.devops-env-pod-container.queryLogByPod']}
-                            organizationId={orgId}
-                            projectId={projectId}
-                            type={type}
-                          >
-                            <Tooltip title={<FormattedMessage id={'container.log'} />}>
-                              <Button
-                                size="small"
-                                shape="circle"
-                                onClick={this.showLog.bind(this, p)}
-                              >
-                                <span className="icon icon-insert_drive_file" />
-                              </Button>
+                  <div>
+                    <div className="c7n-envow-contaners-wrap">
+                      <div className="c7n-envow-contaners-left">
+                        <div className="c7n-envow-contaners-title">
+                          CONTAINERS
+                        </div>
+                        {c.devopsEnvPodDTOS.length ? _.map(c.devopsEnvPodDTOS, p => (<div className="c7n-envow-ls-wrap" key={p.id}>
+                          <div className="c7n-envow-ls">
+                            <Tooltip title={<FormattedMessage id={'container.name'} />}>
+                              <Icon type="kubernetes" />
                             </Tooltip>
-                          </Permission>
-                        </div>
-                        <div className="c7n-envow-ls">
-                          <Tooltip title={<FormattedMessage id={'container.ip'} />}>
-                            <Icon type="room" />
-                          </Tooltip>
-                          {p.ip}
-                        </div>
-                      </div>)) : null}
-                    </div>
-                    <div className="c7n-envow-contaners-right">
-                      <div className="c7n-envow-pod">
-                        <div className="c7n-deploy-status">
-                          <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
-                            <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="45%" strokeWidth="5%" />
-                          </svg>
-                          <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle-process'}>
-                            <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="45%" strokeWidth="5%" strokeDashoffset={`${283 * ((c.podCount - c.podRunningCount) / c.podCount)}%`} />
-                          </svg>
-                          <span className="c7n-deploy-status-num">{c.podCount}</span>
-                        </div>
-                        <div className="c7n-envow-pod-action">
-                          <Icon type="navigate_next" />
-                          <Icon type="navigate_next" />
+                            {p.name}
+                            <Permission
+                              service={['devops-service.devops-env-pod-container.queryLogByPod']}
+                              organizationId={orgId}
+                              projectId={projectId}
+                              type={type}
+                            >
+                              <Tooltip title={<FormattedMessage id={'container.log'} />}>
+                                <Button
+                                  size="small"
+                                  shape="circle"
+                                  onClick={this.showLog.bind(this, p)}
+                                >
+                                  <span className="icon icon-insert_drive_file" />
+                                </Button>
+                              </Tooltip>
+                            </Permission>
+                          </div>
+                          <div className="c7n-envow-ls">
+                            <Tooltip title={<FormattedMessage id={'container.ip'} />}>
+                              <Icon type="room" />
+                            </Tooltip>
+                            {p.ip}
+                          </div>
+                        </div>)) : null}
+                      </div>
+                      <div className="c7n-envow-contaners-right">
+                        <div className="c7n-envow-pod">
+                          <div className="c7n-deploy-status">
+                            <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
+                              <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="45%" strokeWidth="5%" />
+                            </svg>
+                            <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle-process'}>
+                              <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="45%" strokeWidth="5%" strokeDashoffset={`${283 * ((c.podCount - c.podRunningCount) / c.podCount)}%`} />
+                            </svg>
+                            <span className="c7n-deploy-status-num">{c.podCount}</span>
+                          </div>
+                          <div className="c7n-envow-pod-action">
+                            <Icon type="navigate_next" />
+                            <Icon type="navigate_next" />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="c7n-envow-contaners-title">
-                    NETWORKING
-                  </div>
-                  <div className="c7n-envow-contaners-wrap">
-                    <div className="c7n-envow-contaners-left">
-                      <div className="c7n-envow-network-title">
-                        <FormattedMessage id={'network.header.title'} />
-                      </div>
-                      {c.serviceDTOS.length ? _.map(c.serviceDTOS, s => (<div className="c7n-envow-ls-wrap" key={s.name}>
-                        <div className="c7n-envow-ls">
-                          <Tooltip title={<FormattedMessage id={'network.form.name'} />}>
-                            <Icon type="router" />
-                          </Tooltip>
-                          {s.name}
+                    <div className="c7n-envow-contaners-title">
+                      NETWORKING
+                    </div>
+                    <div className="c7n-envow-contaners-wrap">
+                      <div className="c7n-envow-contaners-left">
+                        <div className="c7n-envow-network-title">
+                          <FormattedMessage id={'network.header.title'} />
                         </div>
-                        <div className="c7n-envow-ls">
-                          <Tooltip title={<FormattedMessage id={'network.form.ip'} />}>
-                            <Icon type="room" />
-                          </Tooltip>
-                          {s.clusterIp}
-                        </div>
-                        <div className="c7n-envow-ls">
-                          <Tooltip title={<FormattedMessage id={'network.form.port'} />}>
-                            <Icon type="room" />
-                          </Tooltip>
-                          {s.port}
-                        </div>
-                        <div className="c7n-envow-ls">
-                          <Tooltip title={<FormattedMessage id={'network.form.targetPort'} />}>
-                            <Icon type="room" />
-                          </Tooltip>
-                          {s.targetPort}
-                        </div>
-                      </div>)) : null}
-                      <Permission
-                        service={['devops-service.devops-service.create']}
-                        type={type}
-                        projectId={projectId}
-                        organizationId={orgId}
-                      >
-                        <Button
-                          className="c7n-envow-create-btn"
-                          funcType="flat"
-                          onClick={this.createNetwork}
+                        {c.serviceDTOS.length ? _.map(c.serviceDTOS, s => (<div className="c7n-envow-ls-wrap" key={s.name}>
+                          <div className="c7n-envow-ls">
+                            <Tooltip title={<FormattedMessage id={'network.form.name'} />}>
+                              <Icon type="router" />
+                            </Tooltip>
+                            {s.name}
+                          </div>
+                          <div className="c7n-envow-ls">
+                            <Tooltip title={<FormattedMessage id={'network.form.ip'} />}>
+                              <Icon type="room" />
+                            </Tooltip>
+                            {s.clusterIp}
+                          </div>
+                          <div className="c7n-envow-ls">
+                            <Tooltip title={<FormattedMessage id={'network.form.port'} />}>
+                              <Icon type="room" />
+                            </Tooltip>
+                            {s.port}
+                          </div>
+                          <div className="c7n-envow-ls">
+                            <Tooltip title={<FormattedMessage id={'network.form.targetPort'} />}>
+                              <Icon type="room" />
+                            </Tooltip>
+                            {s.targetPort}
+                          </div>
+                        </div>)) : null}
+                        <Permission
+                          service={['devops-service.devops-service.create']}
+                          type={type}
+                          projectId={projectId}
+                          organizationId={orgId}
                         >
-                          <span className="icon-playlist_add icon" />
-                          <span><FormattedMessage id={'network.header.create'} /></span>
-                        </Button>
-                      </Permission>
-                    </div>
-                    <div className="c7n-envow-contaners-right">
-                      <div className="c7n-envow-network-title">
-                        <FormattedMessage id={'domain.header.title'} />
+                          <Button
+                            className="c7n-envow-create-btn"
+                            funcType="flat"
+                            onClick={this.createNetwork}
+                          >
+                            <span className="icon-playlist_add icon" />
+                            <span><FormattedMessage id={'network.header.create'} /></span>
+                          </Button>
+                        </Permission>
                       </div>
-                      {c.ingressDTOS.length ? _.map(c.ingressDTOS, d => (<div className="c7n-envow-ls-wrap" key={d.hosts}>
-                        <a rel="nofollow me noopener noreferrer" target="_blank" href={d.hosts}><div className="c7n-envow-ls"><Icon type="language" />{d.hosts}</div></a>
-                      </div>)) : null}
-                      <Permission
-                        service={['devops-service.devops-ingress.create']}
-                        type={type}
-                        projectId={projectId}
-                        organizationId={orgId}
-                      >
-                        <Button
-                          funcType="flat"
-                          className="c7n-envow-create-btn"
-                          onClick={this.createDomain.bind(this, 'create', '')}
+                      <div className="c7n-envow-contaners-right">
+                        <div className="c7n-envow-network-title">
+                          <FormattedMessage id={'domain.header.title'} />
+                        </div>
+                        {c.ingressDTOS.length ? _.map(c.ingressDTOS, d => (<div className="c7n-envow-ls-wrap" key={d.hosts}>
+                          <a rel="nofollow me noopener noreferrer" target="_blank" href={d.hosts}><div className="c7n-envow-ls"><Icon type="language" />{d.hosts}</div></a>
+                        </div>)) : null}
+                        <Permission
+                          service={['devops-service.devops-ingress.create']}
+                          type={type}
+                          projectId={projectId}
+                          organizationId={orgId}
                         >
-                          <span className="icon icon-playlist_add icon" />
-                          <FormattedMessage id={'domain.header.create'} />
-                        </Button>
-                      </Permission>
+                          <Button
+                            funcType="flat"
+                            className="c7n-envow-create-btn"
+                            onClick={this.createDomain.bind(this, 'create', '')}
+                          >
+                            <span className="icon icon-playlist_add icon" />
+                            <FormattedMessage id={'domain.header.create'} />
+                          </Button>
+                        </Permission>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Panel>
-          ))}
-        </Collapse>
-      </div>));
+              </Panel>
+            ))}
+          </Collapse>
+        </div>));
+      }
+      return <span className="c7n-none-des"><FormattedMessage id="envoverview.unlist" /></span>;
     }
     return null;
   };
@@ -695,77 +708,79 @@ class AppOverview extends Component {
     };
 
     return (<div>
-      <div className="c7n-envow-search">
-        <Input
-          placeholder={intl.formatMessage({ id: 'envoverview.search' })}
-          value={this.val}
-          prefix={prefix}
-          suffix={suffix}
-          onChange={this.onChangeSearch}
-          onPressEnter={this.onSearch}
-          // eslint-disable-next-line no-return-assign
-          ref={node => this.searchInput = node}
+      { store.isLoading ? <LoadingBar display /> : <React.Fragment>
+        <div className="c7n-envow-search">
+          <Input
+            placeholder={intl.formatMessage({ id: 'envoverview.search' })}
+            value={this.val}
+            prefix={prefix}
+            suffix={suffix}
+            onChange={this.onChangeSearch}
+            onPressEnter={this.onSearch}
+            // eslint-disable-next-line no-return-assign
+            ref={node => this.searchInput = node}
+          />
+        </div>
+        {this.panelDom()}
+        {this.visible && <ValueConfig
+          store={AppDeploymentStore}
+          visible={this.visible}
+          name={this.name}
+          id={this.id}
+          idArr={this.idArr}
+          onClose={this.handleCancel}
+        /> }
+        {this.visibleUp && <UpgradeIst
+          store={AppDeploymentStore}
+          visible={this.visibleUp}
+          name={this.name}
+          id={this.id}
+          idArr={this.idArr}
+          onClose={this.handleCancelUp}
+        /> }
+        {this.showSide && <Sidebar
+          visible={this.showSide}
+          title={<FormattedMessage id={'container.log.header.title'} />}
+          onOk={this.closeSidebar}
+          className="c7n-podLog-content c7n-region"
+          okText={<FormattedMessage id={'cancel'} />}
+          okCancel={false}
+          destroyOnClose
+        >
+          <Content className="sidebar-content" code={'container.log'} values={{ name: this.containerName }}>
+            <section className="c7n-podLog-section">
+              <CodeMirror
+                ref={(editor) => { this.editorLog = editor; }}
+                value="Loading..."
+                className="c7n-podLog-editor"
+                onChange={code => this.props.ChangeCode(code)}
+                options={options}
+              />
+            </section>
+          </Content>
+        </Sidebar>}
+        <DelIst
+          open={this.openRemove}
+          handleCancel={this.handleCancelUp}
+          handleConfirm={this.handleDelete.bind(this, this.id)}
+          confirmLoading={this.loading}
         />
-      </div>
-      {this.panelDom()}
-      {this.visible && <ValueConfig
-        store={AppDeploymentStore}
-        visible={this.visible}
-        name={this.name}
-        id={this.id}
-        idArr={this.idArr}
-        onClose={this.handleCancel}
-      /> }
-      {this.visibleUp && <UpgradeIst
-        store={AppDeploymentStore}
-        visible={this.visibleUp}
-        name={this.name}
-        id={this.id}
-        idArr={this.idArr}
-        onClose={this.handleCancelUp}
-      /> }
-      {this.showSide && <Sidebar
-        visible={this.showSide}
-        title={<FormattedMessage id={'container.log.header.title'} />}
-        onOk={this.closeSidebar}
-        className="c7n-podLog-content c7n-region"
-        okText={<FormattedMessage id={'cancel'} />}
-        okCancel={false}
-        destroyOnClose
-      >
-        <Content className="sidebar-content" code={'container.log'} values={{ name: this.containerName }}>
-          <section className="c7n-podLog-section">
-            <CodeMirror
-              ref={(editor) => { this.editorLog = editor; }}
-              value="Loading..."
-              className="c7n-podLog-editor"
-              onChange={code => this.props.ChangeCode(code)}
-              options={options}
-            />
-          </section>
-        </Content>
-      </Sidebar>}
-      <DelIst
-        open={this.openRemove}
-        handleCancel={this.handleCancelUp}
-        handleConfirm={this.handleDelete.bind(this, this.id)}
-        confirmLoading={this.loading}
-      />
-      {this.showDomain && <CreateDomain
-        id={this.domainId}
-        envId={this.props.envId}
-        title={this.domainTitle}
-        visible={this.showDomain}
-        type={this.domainType}
-        store={DomainStore}
-        onClose={this.closeDomain}
-      />}
-      {this.showNetwork && <CreateNetwork
-        visible={this.showNetwork}
-        envId={this.props.envId}
-        store={NetworkConfigStore}
-        onClose={this.closeNetwork}
-      />}
+        {this.showDomain && <CreateDomain
+          id={this.domainId}
+          envId={this.props.envId}
+          title={this.domainTitle}
+          visible={this.showDomain}
+          type={this.domainType}
+          store={DomainStore}
+          onClose={this.closeDomain}
+        />}
+        {this.showNetwork && <CreateNetwork
+          visible={this.showNetwork}
+          envId={this.props.envId}
+          store={NetworkConfigStore}
+          onClose={this.closeNetwork}
+        />}
+      </React.Fragment>}
     </div>);
   }
 }

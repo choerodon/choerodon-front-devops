@@ -113,7 +113,7 @@ class LogOverview extends Component {
       </div>
       <Table
         filterBar={false}
-        loading={store.loading}
+        loading={store.isLoading}
         pagination={store.getPageInfo}
         columns={columns}
         onChange={this.tableChange}

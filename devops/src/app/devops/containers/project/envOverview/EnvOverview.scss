@@ -1,3 +1,9 @@
+.c7n-envoverview-tabs {
+  .ant-tabs-bar {
+    margin-bottom: 20px;
+  }
+}
+
 .c7n-envow-status-wrap {
   display: flex;
 
@@ -17,7 +23,7 @@
 
     .c7n-envow-status-num {
       border-left: 4px solid;
-      padding: 0 16px 0 6px;
+      padding: 0 32px 0 6px;
     }
   }
 
@@ -68,7 +74,7 @@
 }
 
 .c7n-envow-search {
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   margin-left: 2px;
 
   .ant-input-wrapper {
@@ -123,18 +129,19 @@
 }
 
 .c7n-envow-app-name {
-  font-size: 16px;
+  font-size: 14px;
   margin-bottom: 16px;
   font-weight: 500;
 
   span {
-    font-size: 24px;
-    margin-right: 4px;
+    font-size: 20px;
+    margin-right: 6px;
+    padding-bottom: 2px;
   }
 }
 
 .c7n-envow-app-wrap {
-  margin-bottom: 24px;
+  margin-bottom: 26px;
 
   .ant-collapse {
     border-left: 0;
@@ -142,7 +149,7 @@
   }
 
   .ant-collapse-item-active > .ant-collapse-header {
-    background-color: rgba(0, 0, 0, 0.04) !important;
+    background-color: rgba(0, 0, 0, 0.004) !important;
     .c7n-deploy-status {
       display: none;
     }
@@ -162,6 +169,10 @@
       margin-right: 12px;
     }
   }
+
+  .ant-collapse-content {
+    padding: 0 40px;
+  }
 }
 
 .c7n-envow-ist-header-wrap {
@@ -174,7 +185,7 @@
   .c7n-envow-ist-name {
     width: 50%;
     border-left: 1px solid rgba(0, 0, 0, 0.12);
-    padding-left: 32px;
+    padding-left: 22px;
     line-height: 30px;
   }
 
@@ -197,7 +208,7 @@
 
 .c7n-envow-network-title {
   color: rgba(0, 0, 0, 0.65);
-  font-size: 16px;
+  font-size: 14px;
   margin-bottom: 12px;
 }
 
@@ -210,7 +221,8 @@
 
   .c7n-envow-contaners-right {
     .c7n-envow-pod {
-      right: 2%;
+      //right: 2%;
+      margin-left: 190px;
       margin-top: 1%;
       display: flex;
       position: absolute;
@@ -270,7 +282,7 @@
 
   i {
     font-size: 18px;
-    margin-right: 6px;
+    margin-right: 4px;
     height: 20px;
   }
 
@@ -280,7 +292,7 @@
 }
 
 .c7n-envow-create-btn {
-  font-size: 16px;
+  //font-size: 16px;
   color: #3f51b5;
 }
 
