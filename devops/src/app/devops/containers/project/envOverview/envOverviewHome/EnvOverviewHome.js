@@ -277,7 +277,8 @@ class EnvOverviewHome extends Component {
       {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
       {d.name}</Option>)) : [];
 
-    const envState = this.env.filter(d => d.id === Number(this.envId))[0] || true;
+    const envState = this.env.length ?
+      this.env.filter(d => d.id === Number(this.envId ? this.envId : this.env[0].id))[0] : true;
 
     return (
       <Page

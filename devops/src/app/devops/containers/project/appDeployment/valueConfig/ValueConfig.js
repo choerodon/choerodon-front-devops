@@ -3,11 +3,9 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Modal, Button } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
-// import yaml from 'js-yaml';
 import YAML from 'yamljs';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import Ace from '../../../../components/yamlAce';
-import _ from 'lodash';
 import '../AppDeploy.scss';
 import '../../../main.scss';
 
