@@ -118,9 +118,9 @@ class CreateDomain extends Component {
     const { store, id, type } = this.props;
     const { projectId, initServiceLen, SingleData } = this.state;
     const service = store.getNetwork;
-    this.props.form.validateFieldsAndScroll((err, data, modify) => {
-      if (type === 'create') {
-        if (!err) {
+    this.props.form.validateFieldsAndScroll((err, data) => {
+      if (!err) {
+        if (type === 'create') {
           const keys = Object.keys(data);
           const postData = { domain: data.domain, name: data.name, envId: data.envId };
           const pathList = [];
@@ -144,9 +144,7 @@ class CreateDomain extends Component {
               this.setState({ submitting: false });
               Choerodon.prompt(err.response.data.message);
             });
-        }
-      } else {
-        if ((!err && modify) || (!err && initServiceLen !== SingleData.pathList.length)) {
+        } else {
           const keys = Object.keys(data);
           const postData = { domain: data.domain, name: data.name, envId: data.envId };
           const pathList = [];
@@ -172,8 +170,6 @@ class CreateDomain extends Component {
               this.setState({ submitting: false });
               Choerodon.prompt(err.response.data.message);
             });
-        } else if (!modify && !err) {
-          this.handleClose();
         }
       }
     });
