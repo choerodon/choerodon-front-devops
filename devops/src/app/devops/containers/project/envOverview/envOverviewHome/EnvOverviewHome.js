@@ -42,6 +42,11 @@ class EnvOverviewHome extends Component {
     this.loadEnvCards();
   }
 
+  componentWillUnmount() {
+    const { EnvOverviewStore } = this.props;
+    EnvOverviewStore.setIst(null);
+  }
+
   /**
    * 刷新函数重调用tabchange
    */
@@ -65,8 +70,8 @@ class EnvOverviewHome extends Component {
       this.loadNetwork(this.envId || this.env[0].id);
     } else if (key === 'log' && this.env.length) {
       this.loadLog(this.envId || this.env[0].id);
-      this.loadSync(this.envId || this.env[0].id);
     }
+    this.loadSync(this.envId || this.env[0].id);
   };
 
   /**
