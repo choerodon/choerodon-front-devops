@@ -188,16 +188,16 @@ class NetworkConfigStore {
    * @param envId
    * @param appId
    */
-  loadInstance = (projectId, envId, appId) => {
-    axios.get(`/devops/v1/projects/${projectId}/app_instances/options?envId=${envId}&appId=${appId}`)
-      .then((data) => {
-        const res = handleProptError(data);
-        if (res) {
-          this.setIst(res);
-        }
-      })
-      .catch(err => Choerodon.handleResponseError(err));
-  };
+  loadInstance = (projectId, envId, appId) => axios.get(`/devops/v1/projects/${projectId}/app_instances/options?envId=${envId}&appId=${appId}`)
+    .then((data) => {
+      const res = handleProptError(data);
+      if (res) {
+        this.setIst(res);
+        return res;
+      }
+      return res;
+    })
+    .catch(err => Choerodon.handleResponseError(err));
 
   /**
    * 检查网络名称

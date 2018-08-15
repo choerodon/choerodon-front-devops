@@ -30,7 +30,6 @@ const Panel = Collapse.Panel;
 
 @observer
 class AppOverview extends Component {
-  @observable val = '';
   @observable pageSize = 10;
   @observable visible = false;
   @observable visibleUp = false;
@@ -47,12 +46,23 @@ class AppOverview extends Component {
   @observable showDomain = false;
   @observable showNetwork = false;
   @observable domainId = null;
+  @observable appId = null;
+  @observable istId = null;
+  @observable appName = '';
   @observable domainType = '';
   @observable domainTitle = '';
   constructor(props, context) {
     super(props, context);
     this.state = {
     };
+  }
+
+  componentDidMount() {
+    const { store } = this.props;
+    const refresh = store.getRefresh;
+    if (refresh) {
+      this.emitEmpty();
+    }
   }
 
   /**
@@ -62,10 +72,11 @@ class AppOverview extends Component {
     this.searchInput.focus();
     const { store, envId } = this.props;
     const projectId = AppState.currentMenuType.id;
+    const val = store.getVal;
     const searchParam = {};
     const postData = {
       searchParam,
-      param: this.val.toString(),
+      param: val.toString(),
     };
     store.loadIstOverview(projectId, envId, postData);
   };
@@ -76,7 +87,8 @@ class AppOverview extends Component {
    */
   @action
   onChangeSearch = (e) => {
-    this.val = e.target.value;
+    const { store } = this.props;
+    store.setVal(e.target.value);
   };
 
   @action
@@ -363,10 +375,13 @@ class AppOverview extends Component {
   };
 
   /**
-   * 打开创建环境
+   * 打开创建网络
    */
   @action
-  createNetwork = () => {
+  createNetwork = (appId = null, istId = null, appName = '') => {
+    this.appId = appId;
+    this.istId = istId;
+    this.appName = appName;
     this.showNetwork = true;
   };
 
@@ -375,9 +390,10 @@ class AppOverview extends Component {
    */
   @action
   emitEmpty = () => {
-    this.val = '';
+    const { store } = this.props;
+    store.setVal('');
     this.onSearch();
-  }
+  };
 
   /**
    * 处理返回panel Dom
@@ -416,6 +432,7 @@ class AppOverview extends Component {
                         <Tooltip title={intl.formatMessage({ id: `ist_${c.commandType}` })}>
                           <Progress type="loading" width={15} />
                         </Tooltip>
+
                       </div>) :
                         (<div>
                           <span className="c7n-deploy-istCode">{c.code}</span>
@@ -543,7 +560,7 @@ class AppOverview extends Component {
                           <Button
                             className="c7n-envow-create-btn"
                             funcType="flat"
-                            onClick={this.createNetwork}
+                            onClick={this.createNetwork.bind(this, c.appId, c.id, i.appName)}
                           >
                             <span className="icon-playlist_add icon" />
                             <span><FormattedMessage id={'network.header.create'} /></span>
@@ -697,8 +714,9 @@ class AppOverview extends Component {
     const { intl, store } = this.props;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
 
+    const val = store.getVal;
     const prefix = <Icon type="search" onClick={this.onSearch} />;
-    const suffix = this.val ? <Icon type="close" onClick={this.emitEmpty} /> : null;
+    const suffix = val ? <Icon type="close" onClick={this.emitEmpty} /> : null;
 
     const options = {
       readOnly: true,
@@ -712,7 +730,7 @@ class AppOverview extends Component {
         <div className="c7n-envow-search">
           <Input
             placeholder={intl.formatMessage({ id: 'envoverview.search' })}
-            value={this.val}
+            value={val}
             prefix={prefix}
             suffix={suffix}
             onChange={this.onChangeSearch}
@@ -777,6 +795,9 @@ class AppOverview extends Component {
         {this.showNetwork && <CreateNetwork
           visible={this.showNetwork}
           envId={this.props.envId}
+          appId={this.appId}
+          appName={this.appName}
+          istId={this.istId}
           store={NetworkConfigStore}
           onClose={this.closeNetwork}
         />}

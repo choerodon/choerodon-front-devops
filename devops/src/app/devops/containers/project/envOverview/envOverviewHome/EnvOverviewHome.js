@@ -51,6 +51,8 @@ class EnvOverviewHome extends Component {
    * 刷新函数重调用tabchange
    */
   handleRefresh = () => {
+    const { EnvOverviewStore } = this.props;
+    EnvOverviewStore.setVal('');
     this.tabChange(this.tabKey);
     this.loadEnvCards();
   };
@@ -443,28 +445,28 @@ class EnvOverviewHome extends Component {
           </div>
           <Tabs className="c7n-envoverview-tabs" activeKey={this.tabKey} animated={false} onChange={this.tabChange}>
             <TabPane tab={`${intl.formatMessage({ id: 'network.column.app' })}`} key="app">
-              {this.tabKey === 'app' ? <AppOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId} /> : null}
+              {this.tabKey === 'app' ? <AppOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId || (this.env.length ? this.env[0].id : null)} /> : null}
             </TabPane>
             <TabPane tab={`${intl.formatMessage({ id: 'network.header.title' })}`} key="network">
-              {this.tabKey === 'network' ? <NetworkOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId} /> : null}
+              {this.tabKey === 'network' ? <NetworkOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId || (this.env.length ? this.env[0].id : null)} /> : null}
             </TabPane>
             <TabPane tab={`${intl.formatMessage({ id: 'domain.header.title' })}`} key="domain">
-              {this.tabKey === 'domain' ? <DomainOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId} /> : null}
+              {this.tabKey === 'domain' ? <DomainOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId || (this.env.length ? this.env[0].id : null)} /> : null}
             </TabPane>
             <TabPane tab={`${intl.formatMessage({ id: 'envoverview.logs' })}`} key="log">
-              {this.tabKey === 'log' ? <LogOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId} /> : null}
+              {this.tabKey === 'log' ? <LogOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId || (this.env.length ? this.env[0].id : null)} /> : null}
             </TabPane>
           </Tabs>
         </Content>
         {this.showNetwork && <CreateNetwork
           visible={this.showNetwork}
           store={NetworkConfigStore}
-          envId={this.envId}
+          envId={this.envId || this.env[0].id}
           onClose={this.closeNetwork}
         />}
         {this.showDomain && <CreateDomain
           id={this.domainId}
-          envId={this.envId}
+          envId={this.envId || this.env[0].id}
           title={this.domainTitle}
           visible={this.showDomain}
           type={this.domainType}

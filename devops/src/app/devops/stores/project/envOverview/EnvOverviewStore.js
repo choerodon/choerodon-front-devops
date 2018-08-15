@@ -5,6 +5,7 @@ const height = window.screen.height;
 @store('EnvOverviewStore')
 class EnvOverviewStore {
   @observable isLoading = true;
+  @observable val = '';
   @observable envcard = [];
   @observable ist = null;
   @observable log = null;
@@ -51,6 +52,14 @@ class EnvOverviewStore {
 
   @computed get getEnvcard() {
     return this.envcard;
+  }
+
+  @action setVal(val) {
+    this.val = val;
+  }
+
+  @computed get getVal() {
+    return this.val;
   }
 
   @computed get getIst() {
