@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Modal } from 'choerodon-ui';
+import { Modal, Button } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 // import yaml from 'js-yaml';
+import YAML from 'yamljs';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import Ace from '../../../../components/yamlAce';
+import _ from 'lodash';
 import '../AppDeploy.scss';
 import '../../../main.scss';
 
@@ -19,6 +21,7 @@ class ValueConfig extends Component {
     this.state = {
       value: '',
       loading: false,
+      disabled: true,
     };
   }
   /**
@@ -26,6 +29,18 @@ class ValueConfig extends Component {
    * @param {*} value 修改后的value值
    */
   onChange = (value) => {
+    const oldYaml = this.props.store.getValue ? this.props.store.getValue.yaml : '';
+    const oldvalue = YAML.parse(oldYaml);
+    const newvalue = YAML.parse(value);
+    if (JSON.stringify(oldvalue) === JSON.stringify(newvalue)) {
+      this.setState({
+        disabled: true,
+      });
+    } else {
+      this.setState({
+        disabled: false,
+      });
+    }
     const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     store.checkYaml(value, projectId)
@@ -137,7 +152,22 @@ class ValueConfig extends Component {
       onCancel={this.onClose.bind(this, false)}
       cancelText={intl.formatMessage({ id: 'cancel' })}
       okText={intl.formatMessage({ id: 'ist.reDeploy' })}
-      confirmLoading={this.state.loading}
+      footer={
+        <div className="ant-modal-btns">
+          <Button 
+            key="submit" 
+            type="primary" 
+            funcType="raised"
+            onClick={this.handleOk}
+            loading={this.state.loading}
+            className="ant-modal-btn-ok"
+            disabled={this.state.disabled}
+          >
+            {intl.formatMessage({ id: 'ist.reDeploy' })}
+          </Button>
+          <Button funcType="raised" className="ant-modal-btn-cancel" key="back" onClick={this.onClose.bind(this, false)}>{intl.formatMessage({ id: 'cancel' })}</Button>
+        </div>
+      }
     >
       {sideDom}
     </Sidebar>);
