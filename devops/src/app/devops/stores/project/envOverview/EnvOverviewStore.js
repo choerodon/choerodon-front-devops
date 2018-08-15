@@ -5,6 +5,7 @@ const height = window.screen.height;
 @store('EnvOverviewStore')
 class EnvOverviewStore {
   @observable isLoading = true;
+  @observable val = '';
   @observable envcard = [];
   @observable ist = null;
   @observable log = null;
@@ -53,6 +54,14 @@ class EnvOverviewStore {
     return this.envcard;
   }
 
+  @action setVal(val) {
+    this.val = val;
+  }
+
+  @computed get getVal() {
+    return this.val;
+  }
+
   @computed get getIst() {
     return this.ist;
   }
@@ -97,6 +106,7 @@ class EnvOverviewStore {
     searchParam: {},
     param: '',
   }) => {
+    this.changeLoading(true);
     axios.post(`/devops/v1/projects/${projectId}/app_instances/${envId}/listByEnv`, JSON.stringify(datas))
       .then((data) => {
         if (data && data.failed) {
@@ -104,6 +114,10 @@ class EnvOverviewStore {
         } else {
           this.setIst(data);
         }
+        this.changeLoading(false);
+      }).catch((error) => {
+        this.changeLoading(false);
+        Choerodon.prompt(error.response.data.message);
       });
   };
 
@@ -121,6 +135,9 @@ class EnvOverviewStore {
           this.setPageInfo({ number, size, totalElements });
         }
         this.changeLoading(false);
+      }).catch((error) => {
+        this.changeLoading(false);
+        Choerodon.prompt(error.response.data.message);
       });
   };
 
@@ -138,6 +155,9 @@ class EnvOverviewStore {
           this.setPageInfo({ number, size, totalElements });
         }
         this.changeLoading(false);
+      }).catch((error) => {
+        this.changeLoading(false);
+        Choerodon.prompt(error.response.data.message);
       });
   };
 
@@ -152,6 +172,9 @@ class EnvOverviewStore {
           this.setPageInfo({ number, size, totalElements });
         }
         this.changeLoading(false);
+      }).catch((error) => {
+        this.changeLoading(false);
+        Choerodon.prompt(error.response.data.message);
       });
   };
 

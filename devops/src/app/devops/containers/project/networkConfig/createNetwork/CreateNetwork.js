@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Form, Select, Input, Modal, Popover, Icon, Radio } from 'choerodon-ui';
+import { Button, Form, Select, Input, Modal, Popover, Icon, Radio, Tooltip } from 'choerodon-ui';
 import { stores, Content } from 'choerodon-front-boot';
 import uuidv1 from 'uuid/v1';
 import classnames from 'classnames';
@@ -42,16 +42,23 @@ class CreateNetwork extends Component {
       portKeys: 'ClusterIP',
       initName: '',
       validIp: {},
+      initIst: [],
+      initIstOption: [],
     };
     this.portKeys = 1;
     this.targetKeys = 0;
   }
 
   componentDidMount() {
-    const { store, envId } = this.props;
+    const { store, envId, appId, appName } = this.props;
     const { id } = AppState.currentMenuType;
     if (envId) {
+      const options = { key: appName };
       this.handleEnvSelect(envId);
+      if (appId) {
+        this.handleAppSelect(appId, options);
+        this.loadIstById();
+      }
     }
     store.loadEnv(id);
   }
@@ -138,6 +145,32 @@ class CreateNetwork extends Component {
         });
       } else {
         this.setState({ submitting: false });
+      }
+    });
+  };
+
+  loadIstById = () => {
+    const { store, envId, appId } = this.props;
+    const { id } = AppState.currentMenuType;
+    store.loadEnv(id);
+    store.loadInstance(id, envId, appId).then((data) => {
+      if (data) {
+        const initIst = [];
+        // 将默认选项直接生成，避免加载带来的异步问题
+        const initIstOption = [];
+        if (data && data.length) {
+          _.forEach(data, (item) => {
+            const { id: istId, code } = item;
+            initIst.push(istId);
+            initIstOption.push(<Option key={istId} value={istId}>
+              {code}
+            </Option>);
+          });
+        }
+        this.setState({
+          initIst,
+          initIstOption,
+        });
       }
     });
   };
@@ -588,6 +621,14 @@ class CreateNetwork extends Component {
     if (this.envSelect && !getFieldValue('envId')) {
       this.envSelect.focus();
     }
+    const istOption = _.map(_.filter(ist, item =>
+      !_.includes(this.state.initIst, item.id)), (item) => {
+      const { id, code } = item;
+      return (<Option key={id} value={id}>
+        {code}
+      </Option>);
+    });
+
     return (
       <div className="c7n-region">
         <Sidebar
@@ -671,6 +712,7 @@ class CreateNetwork extends Component {
                         required: true,
                         message: intl.formatMessage({ id: 'required' }),
                       }],
+                      initialValue: this.props.appId ? Number(this.props.appId) : undefined,
                     })(<Select
                       filter
                       showSearch
@@ -697,9 +739,13 @@ class CreateNetwork extends Component {
                     {...formItemLayout}
                   >
                     {getFieldDecorator('appInstance', {
+                      initialValue: this.state.initIst.length ? this.state.initIst : undefined,
+                      trigger: ['onChange', 'onSubmit'],
                       rules: [{
                         required: true,
                         message: intl.formatMessage({ id: 'required' }),
+                      }, {
+                        validator: this.checkInstance,
                       }],
                     })(<Select
                       filter
@@ -711,11 +757,13 @@ class CreateNetwork extends Component {
                       label={<FormattedMessage id="network.target.instance" />}
                       notFoundContent={intl.formatMessage({ id: 'network.form.instance.disable' })}
                       getPopupContainer={triggerNode => triggerNode.parentNode}
+                      choiceRender={this.handleRenderInstance}
                       filterOption={(input, option) =>
-                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                        option.props.children.props.children
+                          .toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     >
-                      {_.map(ist, item =>
-                        <Option key={item.id} value={item.id}>{item.code}</Option>)}
+                      {this.state.initIstOption}
+                      {istOption}
                     </Select>)}
                   </FormItem>
                 </Fragment>) : (<Fragment>
