@@ -559,7 +559,7 @@ class SingleApp extends Component {
               </div>}
             >
               <div className="c7n-option-popover">
-                <span className="icon icon-apps c7n-icon-publish" />
+                <i className="icon icon-apps c7n-icon-publish" />
                 {d.name}
               </div>
             </Popover>
@@ -580,7 +580,7 @@ class SingleApp extends Component {
               </div>}
             >
               <div className="c7n-option-popover">
-                <span className="icon icon-project c7n-icon-publish" />
+                <i className="icon icon-project c7n-icon-publish" />
                 {d.name}
               </div>
             </Popover>
@@ -619,7 +619,7 @@ class SingleApp extends Component {
     const envID = envId || (envCard.length ? envCard[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
     const appName = (appNames.length ? (<React.Fragment>
-      {appNames[0].projectId === projectId ? <span className="icon icon-project c7n-icon-publish" /> : <span className="icon icon-apps c7n-icon-publish" />}
+      {appNames[0].projectId === projectId ? <i className="icon icon-project c7n-icon-publish" /> : <i className="icon icon-apps c7n-icon-publish" />}
       {appNames[0].name}</React.Fragment>) : undefined);
     const appVersion = appVer.length ?
       _.map(appVer, d => d.version && <Option key={d.id}>{d.version}</Option>) : undefined;
@@ -693,7 +693,7 @@ class SingleApp extends Component {
           (<div>
             <span className="c7n-deploy-istCode">{record.code}</span>
             <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
-              <span className="icon icon-error c7n-deploy-ist-operate" />
+              <i className="icon icon-error c7n-deploy-ist-operate" />
             </Tooltip>
           </div>)}
       </div>),
@@ -752,7 +752,7 @@ class SingleApp extends Component {
           (<div>
             <span className="c7n-deploy-istCode">{record.code}</span>
             <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
-              <span className="icon icon-error c7n-deploy-ist-operate" />
+              <i className="icon icon-error c7n-deploy-ist-operate" />
             </Tooltip>
           </div>)}
       </div>),

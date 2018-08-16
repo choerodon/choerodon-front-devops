@@ -156,11 +156,11 @@ class BranchHome extends Component {
         title: <FormattedMessage id="branch.commit" />,
         render: (text, record) => (<div>
           <div>
-            <span className="icon icon-point branch-column-icon" />
+            <i className="icon icon-point branch-column-icon" />
             <a href={record.commitUrl} target="_blank" rel="nofollow me noopener noreferrer">
               <span>{record.sha && record.sha.slice(0, 8) }</span>
             </a>
-            <span className="icon icon-schedule branch-col-icon branch-column-icon" style={{ paddingLeft: 16, fontSize: 16, marginBottom: 2 }} />
+            <i className="icon icon-schedule branch-col-icon branch-column-icon" style={{ paddingLeft: 16, fontSize: 16, marginBottom: 2 }} />
             <TimePopover content={record.commitDate} style={{ display: 'inline-block', color: 'rgba(0, 0, 0, 0.65)' }} />
           </div>
           {record.commitUserUrl && record.commitUserName ? <Tooltip title={record.commitUserName}>
@@ -218,7 +218,7 @@ class BranchHome extends Component {
                     title={<FormattedMessage id="branch.edit" />}
                   >
                     <Button size={'small'} shape="circle" onClick={this.handleEdit.bind(this, record.branchName)}>
-                      <span className="icon icon-mode_edit" />
+                      <i className="icon icon-mode_edit" />
                     </Button>
                   </Tooltip>
                 </Permission>
@@ -228,7 +228,7 @@ class BranchHome extends Component {
                 >
                   <a href={record.commitUrl && `${record.commitUrl.split('/commit')[0]}/merge_requests/new?change_branches=true&merge_request[source_branch]=${record.branchName}&merge_request[target_branch]=master`} target="_blank" rel="nofollow me noopener noreferrer">
                     <Button size={'small'} shape="circle">
-                      <span className="icon icon-merge_request" />
+                      <i className="icon icon-merge_request" />
                     </Button>
                   </a>
                 </Tooltip>
@@ -238,7 +238,7 @@ class BranchHome extends Component {
                     title={<FormattedMessage id="delete" />}
                   >
                     <Button size={'small'} shape="circle" onClick={this.openRemove.bind(this, record.branchName)}>
-                      <span className="icon icon-delete" />
+                      <i className="icon icon-delete" />
                     </Button>
                   </Tooltip>
                 </Permission>
@@ -325,7 +325,7 @@ class BranchHome extends Component {
           </div>
         </section>}
       >
-        <span className="icon icon-help branch-icon-help" />
+        <i className="icon icon-help branch-icon-help" />
       </Popover>
     </div>);
     return (
@@ -510,7 +510,7 @@ class BranchHome extends Component {
               ghost
               onClick={this.showSidebar}
             >
-              <span className="icon icon-playlist_add" />
+              <i className="icon icon-playlist_add" />
               <FormattedMessage id="branch.create" />
             </Button>
           </Permission> : null}
@@ -519,7 +519,7 @@ class BranchHome extends Component {
             ghost="true"
             onClick={this.handleRefresh}
           >
-            <span className="icon icon-refresh" />
+            <i className="icon icon-refresh" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
@@ -538,7 +538,7 @@ class BranchHome extends Component {
               <span className="c7n-external-link-content">
                 <FormattedMessage id="learnmore" />
               </span>
-              <span className="icon icon-open_in_new" />
+              <i className="icon icon-open_in_new" />
             </a>
           </p>
           <Select

@@ -143,7 +143,7 @@ class Repository extends Component {
           {record.sonarUrl ? <Tooltip title={<FormattedMessage id="repository.quality" />} placement="bottom">
             <a href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
               <Button shape="circle" size={'small'}>
-                <span className="icon icon-quality" />
+                <i className="icon icon-quality" />
               </Button>
             </a>
           </Tooltip> : null }
@@ -153,7 +153,7 @@ class Repository extends Component {
               onCopy={this.handleCopy}
             >
               <Button className="repo-copy-btn" shape="circle" size={'small'}>
-                <span className="icon icon-library_books" />
+                <i className="icon icon-library_books" />
               </Button>
             </CopyToClipboard>
           </Tooltip>
@@ -169,7 +169,7 @@ class Repository extends Component {
           <Button
             onClick={this.handleRefresh}
           >
-            <span className="icon-refresh icon" />
+            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>

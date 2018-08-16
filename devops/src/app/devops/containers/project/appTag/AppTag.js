@@ -357,7 +357,7 @@ class AppTag extends Component {
               <Button
                 onClick={this.showSideBar}
               >
-                <span className="icon-playlist_add icon" />
+                <i className="icon-playlist_add icon" />
                 <FormattedMessage id="apptag.create" />
               </Button>
             </Permission>
@@ -365,7 +365,7 @@ class AppTag extends Component {
           <Button
             onClick={this.handleRefresh}
           >
-            <span className="icon-refresh icon" />
+            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
@@ -418,7 +418,7 @@ class AppTag extends Component {
                   <span className="c7n-external-link-content">
                     <FormattedMessage id="learnmore" />
                   </span>
-                  <span className="icon icon-open_in_new" />
+                  <i className="icon icon-open_in_new" />
                 </a>
               </p>
               <Form layout="vertical" className="c7n-sidebar-form">

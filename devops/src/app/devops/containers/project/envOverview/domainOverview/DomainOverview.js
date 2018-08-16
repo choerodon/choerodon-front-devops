@@ -178,7 +178,7 @@ class DomainOverview extends Component {
         switch (record.commandStatus) {
           case 'failed':
             statusDom = (<Tooltip title={record.error}>
-              <span className="icon icon-error c7n-status-failed" />
+              <i className="icon icon-error c7n-status-failed" />
             </Tooltip>);
             break;
           case 'doing':
@@ -240,29 +240,29 @@ class DomainOverview extends Component {
         switch (record.status) {
           case 'operating':
             editDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `domain_${record.status}` })}>
-              <span className="icon icon-mode_edit c7n-app-icon-disabled" />
+              <i className="icon icon-mode_edit c7n-app-icon-disabled" />
             </Tooltip>);
             deletDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `domain_${record.status}` })}>
-              <span className="icon icon-delete_forever c7n-app-icon-disabled" />
+              <i className="icon icon-delete_forever c7n-app-icon-disabled" />
             </Tooltip>);
             break;
           default:
             editDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'edit' })}</div>}>
                 <Button shape="circle" size={'small'} funcType="flat" onClick={this.createDomain.bind(this, 'edit', record.id)}>
-                  <span className="icon icon-mode_edit" />
+                  <i className="icon icon-mode_edit" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
-                <span className="icon icon-mode_edit c7n-app-icon-disabled" />
+                <i className="icon icon-mode_edit c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
             deletDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'delete' })}</div>}>
                 <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemoveDomain.bind(this, record.id)}>
-                  <span className="icon icon-delete_forever" />
+                  <i className="icon icon-delete_forever" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
-                <span className="icon icon-delete_forever c7n-app-icon-disabled" />
+                <i className="icon icon-delete_forever c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
         }

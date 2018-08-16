@@ -88,7 +88,7 @@ class EnvCard extends Component {
                         shape="circle"
                         onClick={this.copyKey.bind(this, cardData.id, cardData.update)}
                       >
-                        <span className="icon icon-vpn_key" />
+                        <i className="icon icon-vpn_key" />
                       </Button>
                     </Tooltip>
                   </Permission>}
@@ -104,7 +104,7 @@ class EnvCard extends Component {
                         shape="circle"
                         onClick={this.editEnv.bind(this, cardData.id)}
                       >
-                        <span className="icon icon-mode_edit" />
+                        <i className="icon icon-mode_edit" />
                       </Button>
                     </Tooltip>
                   </Permission>
@@ -120,7 +120,7 @@ class EnvCard extends Component {
                         shape="circle"
                         onClick={this.banEnv.bind(this, cardData.id)}
                       >
-                        <span className="icon icon-remove_circle_outline" />
+                        <i className="icon icon-remove_circle_outline" />
                       </Button>
                     </Tooltip>
                   </Permission>

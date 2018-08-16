@@ -228,7 +228,7 @@ class AddAppRelease extends Component {
       key: 'check',
       width: '50px',
       render: record => (
-        app && record.id === app.id && <span className="icon icon-check icon-select" />
+        app && record.id === app.id && <i className="icon icon-check icon-select" />
       ),
 
     }, {
@@ -295,7 +295,7 @@ class AddAppRelease extends Component {
         <div>
           <Tooltip trigger="hover" placement="bottom" content={<div>{this.props.intl.formatMessage({ id: 'delete' })}</div>}>
             <Button shape="circle" funcType="flat" onClick={this.removeVersion.bind(this, record.id)}>
-              <span className="icon icon-delete" />
+              <i className="icon icon-delete" />
             </Button>
           </Tooltip>
         </div>
@@ -308,7 +308,7 @@ class AddAppRelease extends Component {
         </p>
         <section className="deployAddApp-section">
           <Permission service={['devops-service.application-version.pageByApp']}>
-            <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.handleAddVersion}><span className="icon icon-add" />{this.props.intl.formatMessage({ id: 'release.add.step.two.btn.add' })}</Button>
+            <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.handleAddVersion}><i className="icon icon-add" />{this.props.intl.formatMessage({ id: 'release.add.step.two.btn.add' })}</Button>
           </Permission>
         </section>
         <section className="deployAddApp-section">
@@ -350,7 +350,7 @@ class AddAppRelease extends Component {
             </RadioGroup>
           </div>
           <p style={{ marginLeft: 30, marginTop: 24 }}>
-            <span className="icon icon-error release-icon-error" />
+            <i className="icon icon-error release-icon-error" />
             <span className="deploy-tip-text">{this.props.intl.formatMessage({ id: 'release.add.step.three.tooltip' })}</span>
           </p>
         </section>
@@ -386,7 +386,7 @@ class AddAppRelease extends Component {
                 role="none"
               >
                 {this.state.showBtn && <div className="c7n-appRelease-img-child">
-                  <span className="icon icon-photo_camera" />
+                  <i className="icon icon-photo_camera" />
                   <Input id="file" type="file" onChange={this.selectFile} style={{ display: 'none' }} />
                 </div>
                 }
@@ -427,7 +427,7 @@ class AddAppRelease extends Component {
         </section>
         <section className="deployAddApp-section">
           <p>
-            <span className="icon icon-error release-icon-error" />
+            <i className="icon icon-error release-icon-error" />
             <span className="deploy-tip-text">{this.props.intl.formatMessage({ id: 'release.add.step.four.tooltip' })}</span>
           </p>
         </section>
@@ -480,7 +480,7 @@ class AddAppRelease extends Component {
           </div>
         </section>
         <section>
-          <span className="icon icon-error release-icon-error" /><span>{this.props.intl.formatMessage({ id: 'release.add.step.five.tooltip' })}</span>
+          <i className="icon icon-error release-icon-error" /><span>{this.props.intl.formatMessage({ id: 'release.add.step.five.tooltip' })}</span>
         </section>
         <section className="deployAddApp-section">
           <Permission service={['devops-service.application-market.create']}>

@@ -436,7 +436,7 @@ class CiPipelineHome extends Component {
             funcType="flat"
             onClick={this.handleRefresh}
           >
-            <span className="icon-refresh icon" />
+            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
@@ -455,7 +455,7 @@ class CiPipelineHome extends Component {
               <span className="c7n-external-link-content">
                 <FormattedMessage id="learnmore" />
               </span>
-              <span className="icon icon-open_in_new" />
+              <i className="icon icon-open_in_new" />
             </a>
           </p>
           {this.filterBar}

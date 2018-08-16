@@ -407,7 +407,7 @@ class AppOverview extends Component {
       if (ist.devopsEnvPreviewAppDTOS.length) {
         return _.map(ist.devopsEnvPreviewAppDTOS, i => (<div className="c7n-envow-app-wrap" key={i.appName}>
           <div className="c7n-envow-app-name">
-            {i.applicationInstanceDTOS[0].projectId === parseInt(projectId, 10) ? <span className="icon icon-project" /> : <span className="icon icon-apps" />}
+            {i.applicationInstanceDTOS[0].projectId === parseInt(projectId, 10) ? <i className="icon icon-project" /> : <i className="icon icon-apps" />}
             {i.appName}
           </div>
           <Collapse
@@ -437,7 +437,7 @@ class AppOverview extends Component {
                         (<div>
                           <span className="c7n-deploy-istCode">{c.code}</span>
                           <Tooltip title={`${c.commandType} ${c.commandStatus}: ${c.error}`}>
-                            <span className="icon icon-error c7n-deploy-ist-operate" />
+                            <i className="icon icon-error c7n-deploy-ist-operate" />
                           </Tooltip>
                         </div>)}
                     </div>}
@@ -486,7 +486,7 @@ class AppOverview extends Component {
                                   shape="circle"
                                   onClick={this.showLog.bind(this, p)}
                                 >
-                                  <span className="icon icon-insert_drive_file" />
+                                  <i className="icon icon-insert_drive_file" />
                                 </Button>
                               </Tooltip>
                             </Permission>
@@ -567,7 +567,7 @@ class AppOverview extends Component {
                             funcType="flat"
                             onClick={this.createNetwork.bind(this, c.appId, c.id, i.appName)}
                           >
-                            <span className="icon-playlist_add icon" />
+                            <i className="icon-playlist_add icon" />
                             <span><FormattedMessage id={'network.header.create'} /></span>
                           </Button>
                         </Permission>
@@ -590,7 +590,7 @@ class AppOverview extends Component {
                             className="c7n-envow-create-btn"
                             onClick={this.createDomain.bind(this, 'create', '')}
                           >
-                            <span className="icon icon-playlist_add icon" />
+                            <i className="icon icon-playlist_add icon" />
                             <FormattedMessage id={'domain.header.create'} />
                           </Button>
                         </Permission>

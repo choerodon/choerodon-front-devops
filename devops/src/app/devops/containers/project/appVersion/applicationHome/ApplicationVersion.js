@@ -109,7 +109,7 @@ class ApplicationVersion extends Component {
             <Button
               onClick={this.handleRefresh}
             >
-              <span className="icon-refresh icon" />
+              <i className="icon-refresh icon" />
               <FormattedMessage id="refresh" />
             </Button>
           </Header>
@@ -128,7 +128,7 @@ class ApplicationVersion extends Component {
                 <span className="c7n-external-link-content">
                   <FormattedMessage id="learnmore" />
                 </span>
-                <span className="icon icon-open_in_new" />
+                <i className="icon icon-open_in_new" />
               </a>
             </p>
             {contentDom}

@@ -159,29 +159,29 @@ class DomainHome extends Component {
         switch (record.status) {
           case 'operating':
             editDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `domain_${record.status}` })}>
-              <span className="icon icon-mode_edit c7n-app-icon-disabled" />
+              <i className="icon icon-mode_edit c7n-app-icon-disabled" />
             </Tooltip>);
             deletDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `domain_${record.status}` })}>
-              <span className="icon icon-delete_forever c7n-app-icon-disabled" />
+              <i className="icon icon-delete_forever c7n-app-icon-disabled" />
             </Tooltip>);
             break;
           default:
             editDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'edit' })}</div>}>
                 <Button shape="circle" size={'small'} funcType="flat" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
-                  <span className="icon icon-mode_edit" />
+                  <i className="icon icon-mode_edit" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
-                <span className="icon icon-mode_edit c7n-app-icon-disabled" />
+                <i className="icon icon-mode_edit c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
             deletDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'delete' })}</div>}>
                 <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
-                  <span className="icon icon-delete_forever" />
+                  <i className="icon icon-delete_forever" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
-                <span className="icon icon-delete_forever c7n-app-icon-disabled" />
+                <i className="icon icon-delete_forever c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
         }
@@ -232,7 +232,7 @@ class DomainHome extends Component {
                 funcType="flat"
                 onClick={this.showSideBar.bind(this, 'create', '')}
               >
-                <span className="icon icon-playlist_add icon" />
+                <i className="icon icon-playlist_add icon" />
                 <FormattedMessage id={'domain.header.create'} />
               </Button>
             </Permission>
@@ -246,7 +246,7 @@ class DomainHome extends Component {
                 funcType="flat"
                 onClick={this.loadAllData}
               >
-                <span className="icon-refresh icon" />
+                <i className="icon-refresh icon" />
                 <FormattedMessage id={'refresh'} />
               </Button>
             </Permission>

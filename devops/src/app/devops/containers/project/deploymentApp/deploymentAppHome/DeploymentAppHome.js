@@ -330,7 +330,7 @@ class DeploymentAppHome extends Component {
         </p>
         <section className="deployApp-section">
           <div className="deploy-title">
-            <span className="icon icon-widgets section-title-icon" />
+            <i className="icon icon-widgets section-title-icon" />
             <span className="section-title">{formatMessage({ id: 'deploy.step.one.app' })}</span>
           </div>
           <div className="deploy-text">
@@ -345,14 +345,14 @@ class DeploymentAppHome extends Component {
                 onClick={this.showSideBar}
               >
                 {formatMessage({ id: 'deploy.app.add' })}
-                <span className="icon icon-open_in_new icon-small" />
+                <i className="icon icon-open_in_new icon-small" />
               </a>
             </Permission>
           </div>
         </section>
         <section className="deployApp-section">
           <div className="deploy-title">
-            <span className="icon icon-version section-title-icon " />
+            <i className="icon icon-version section-title-icon " />
             <span className="section-title">{formatMessage({ id: 'deploy.step.one.version.title' })}</span>
           </div>
           <Select
@@ -400,7 +400,7 @@ class DeploymentAppHome extends Component {
         </p>
         <section className="deployApp-section">
           <div className="deploy-title">
-            <span className="icon icon-donut_large section-title-icon " />
+            <i className="icon icon-donut_large section-title-icon " />
             <span className="section-title">{formatMessage({ id: 'deploy.step.two.env.title' })}</span>
           </div>
           <Select
@@ -422,7 +422,7 @@ class DeploymentAppHome extends Component {
         </section>
         <section className="deployApp-section">
           <div className="deploy-title">
-            <span className="icon icon-description section-title-icon " />
+            <i className="icon icon-description section-title-icon " />
             <span className="section-title">{formatMessage({ id: 'deploy.step.two.config' })}</span>
           </div>
           {data && (<AceForYaml
@@ -469,7 +469,7 @@ class DeploymentAppHome extends Component {
         </p>
         <section className="deployApp-section">
           <div className="deploy-title">
-            <span className="icon icon-jsfiddle section-title-icon " />
+            <i className="icon icon-jsfiddle section-title-icon " />
             <span className="section-title">{formatMessage({ id: 'deploy.step.three.mode.title' })}</span>
           </div>
           <div className="section-text-margin">
@@ -480,7 +480,7 @@ class DeploymentAppHome extends Component {
             >
               <Radio className="deploy-radio" value={'new'}>{formatMessage({ id: 'deploy.step.three.mode.new' })}</Radio>
               <Radio className="deploy-radio" value={'replace'} disabled={instances.length === 0}>{formatMessage({ id: 'deploy.step.three.mode.replace' })}
-                <span className="icon icon-error section-instance-icon" />
+                <i className="icon icon-error section-instance-icon" />
                 <span className="deploy-tip-text">{formatMessage({ id: 'deploy.step.three.mode.help' })}</span>
               </Radio>
             </RadioGroup>
@@ -539,28 +539,28 @@ class DeploymentAppHome extends Component {
       <section className="deployApp-review">
         <section>
           <div>
-            <div className="deployApp-title"><span className="icon icon-widgets" />{formatMessage({ id: 'deploy.step.four.app' })}：</div>
+            <div className="deployApp-title"><i className="icon icon-widgets" />{formatMessage({ id: 'deploy.step.four.app' })}：</div>
             <div className="deployApp-text">{this.state.app && this.state.app.name}
               <span className="deployApp-value">({this.state.app && this.state.app.code})</span>
             </div>
           </div>
           <div>
-            <div className="deployApp-title"><span className="icon icon-version" />{formatMessage({ id: 'deploy.step.four.version' })}：</div>
+            <div className="deployApp-title"><i className="icon icon-version" />{formatMessage({ id: 'deploy.step.four.version' })}：</div>
             <div className="deployApp-text">{this.state.versionDto && this.state.versionDto.version}</div>
           </div>
           <div>
-            <div className="deployApp-title"><span className="icon icon-donut_large" />{formatMessage({ id: 'deploy.step.two.env.title' })}：</div>
+            <div className="deployApp-title"><i className="icon icon-donut_large" />{formatMessage({ id: 'deploy.step.two.env.title' })}：</div>
             <div className="deployApp-text">{this.state.envDto && this.state.envDto.name}
               <span className="deployApp-value">({this.state.envDto && this.state.envDto.code})</span>
             </div>
           </div>
           <div>
-            <div className="deployApp-title"><span className="icon icon-jsfiddle" />{formatMessage({ id: 'deploy.step.three.mode' })}：</div>
+            <div className="deployApp-title"><i className="icon icon-jsfiddle" />{formatMessage({ id: 'deploy.step.three.mode' })}：</div>
             <div className="deployApp-text">{this.state.mode === 'new' ? formatMessage({ id: 'deploy.step.three.mode.new' }) : formatMessage({ id: 'deploy.step.three.mode.replace' })} {this.state.mode === 'replace' &&
             <span className="deployApp-value">({ this.state.instanceId ? this.state.instanceDto.code : (instances && instances.length === 1 && instances[0].code)})</span>}</div>
           </div>
           <div>
-            <div className="deployApp-title"><span className="icon icon-description" />{formatMessage({ id: 'deploy.step.two.config' })}：</div>
+            <div className="deployApp-title"><i className="icon icon-description" />{formatMessage({ id: 'deploy.step.two.config' })}：</div>
           </div>
           {data && <div>
             {<AceForYaml

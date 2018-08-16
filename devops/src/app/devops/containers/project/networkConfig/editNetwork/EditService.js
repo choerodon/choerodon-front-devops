@@ -446,7 +446,7 @@ class EditService extends Component {
                               </p>
                             </div>}
                           >
-                            <span className="icon icon-project" />
+                            <i className="icon icon-project" />
                             <span style={{ paddingLeft: 8 }}>{v.name}</span>
                           </Popover>
                         </Option>
@@ -472,7 +472,7 @@ class EditService extends Component {
                               </p>
                             </div>}
                           >
-                            <span className="icon icon-apps" />
+                            <i className="icon icon-apps" />
                             <span style={{ paddingLeft: 8 }}>{v.name}</span>
                           </Popover>
                         </Option>
@@ -592,8 +592,8 @@ class EditService extends Component {
                   className="c7n-domain-icon-delete"
                   onClick={this.removeVersion.bind(this, index)}
                 >
-                  <span className="icon icon-delete" />
-                </Button> : <span className="icon icon-delete c7n-app-icon-disabled" />}
+                  <i className="icon icon-delete" />
+                </Button> : <i className="icon icon-delete c7n-app-icon-disabled" />}
               </div>))}
               <div className="c7n-domain-btn-wrapper">
                 {addStatus ? <Button className="c7n-domain-btn" onClick={this.addVersion} type="primary" icon="add"><FormattedMessage id={'network.btn.add'} /></Button>

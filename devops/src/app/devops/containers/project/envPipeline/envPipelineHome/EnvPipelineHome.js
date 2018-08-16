@@ -354,7 +354,7 @@ class EnvPipelineHome extends Component {
                     shape="circle"
                     onClick={this.actEnv.bind(this, env.id)}
                   >
-                    <span className="icon icon-finished" />
+                    <i className="icon icon-finished" />
                   </Button>
                 </Tooltip>
               </Permission>
@@ -373,7 +373,7 @@ class EnvPipelineHome extends Component {
     const suffix = (<Popover placement="right" trigger="hover" content={this.state.copyMsg}>
       <div onMouseEnter={this.mouseEnter}>
         <CopyToBoard text={shell || this.state.token} onCopy={this.handleCopy}>
-          <span className="icon icon-library_books" />
+          <i className="icon icon-library_books" />
         </CopyToBoard>
       </div>
     </Popover>);
@@ -388,7 +388,7 @@ class EnvPipelineHome extends Component {
                 <FormattedMessage id={'env.create.description'} />
                 <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <FormattedMessage id={'learnmore'} />
-                  <span className="icon-open_in_new icon" />
+                  <i className="icon-open_in_new icon" />
                 </a>
               </p>
               <Form className="c7n-sidebar-form" layout="vertical">
@@ -451,7 +451,7 @@ class EnvPipelineHome extends Component {
                 <FormattedMessage id={'env.token.description'} />
                 <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <FormattedMessage id={'learnmore'} />
-                  <span className="icon icon-open_in_new" />
+                  <i className="icon icon-open_in_new" />
                 </a>
               </p>
               <div className="c7n-env-shell-wrap">
@@ -475,7 +475,7 @@ class EnvPipelineHome extends Component {
                 <FormattedMessage id={'env.token.description'} />
                 <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <FormattedMessage id={'learnmore'} />
-                  <span className="icon icon-open_in_new" />
+                  <i className="icon icon-open_in_new" />
                 </a>
               </p>
               <div className="c7n-env-shell-wrap">
@@ -499,7 +499,7 @@ class EnvPipelineHome extends Component {
                 <FormattedMessage id={'env.update.description'} />
                 <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <FormattedMessage id={'learnmore'} />
-                  <span className="icon icon-open_in_new" />
+                  <i className="icon icon-open_in_new" />
                 </a>
               </p>
               <Form>
@@ -582,7 +582,7 @@ class EnvPipelineHome extends Component {
               funcType="flat"
               onClick={this.showSideBar.bind(this, 'create')}
             >
-              <span className="icon-playlist_add icon" />
+              <i className="icon-playlist_add icon" />
               <FormattedMessage id="envPl.create" />
             </Button>
           </Permission>
@@ -590,7 +590,7 @@ class EnvPipelineHome extends Component {
             funcType="flat"
             onClick={this.reload}
           >
-            <span className="icon-refresh icon" />
+            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
@@ -635,7 +635,7 @@ class EnvPipelineHome extends Component {
               <span className="c7n-external-link-content">
                 <FormattedMessage id="learnmore" />
               </span>
-              <span className="icon icon-open_in_new" />
+              <i className="icon icon-open_in_new" />
             </a>
           </p>
           {BoardDom}
@@ -656,7 +656,7 @@ class EnvPipelineHome extends Component {
                 <span className="c7n-external-link-content">
                   <FormattedMessage id="learnmore" />
                 </span>
-                <span className="icon icon-open_in_new" />
+                <i className="icon icon-open_in_new" />
               </a>
             </p>
             <div className="c7n-outer-container">

@@ -136,14 +136,14 @@ class TemplateHome extends Component {
           <Permission type={type} organizationId={orgId} service={['devops-service.application-template.update']} >
             <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="edit" />}>
               <Button shape="circle" size={'small'} onClick={this.showSideBar.bind(this, 'edit', record.id)}>
-                <span className="icon icon-mode_edit" />
+                <i className="icon icon-mode_edit" />
               </Button>
             </Tooltip>
           </Permission>
           <Permission type={type} organizationId={orgId} service={['devops-service.application-template.delete']} >
             <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="delete" />}>
               <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
-                <span className="icon icon-delete_forever" />
+                <i className="icon icon-delete_forever" />
               </Button>
             </Tooltip>
           </Permission>
@@ -328,7 +328,7 @@ class TemplateHome extends Component {
             <span className="c7n-external-link-content">
               <FormattedMessage id="learnmore" />
             </span>
-            <span className="icon icon-open_in_new" />
+            <i className="icon icon-open_in_new" />
           </a>
         </p>
       </div> : <div>
@@ -346,7 +346,7 @@ class TemplateHome extends Component {
             <span className="c7n-external-link-content">
               <FormattedMessage id="learnmore" />
             </span>
-            <span className="icon icon-open_in_new" />
+            <i className="icon icon-open_in_new" />
           </a>
         </p>
       </div>}
@@ -490,7 +490,7 @@ class TemplateHome extends Component {
                 funcType="flat"
                 onClick={this.showSideBar.bind(this, 'create')}
               >
-                <span className="icon-playlist_add icon" />
+                <i className="icon-playlist_add icon" />
                 <FormattedMessage id="template.create" />
               </Button>
             </Permission>
@@ -503,7 +503,7 @@ class TemplateHome extends Component {
                 funcType="flat"
                 onClick={this.handleRefresh}
               >
-                <span className="icon-refresh icon" />
+                <i className="icon-refresh icon" />
                 <FormattedMessage id="refresh" />
               </Button>
             </Permission>
@@ -523,7 +523,7 @@ class TemplateHome extends Component {
                 <span className="c7n-external-link-content">
                   <FormattedMessage id="learnmore" />
                 </span>
-                <span className="icon icon-open_in_new" />
+                <i className="icon icon-open_in_new" />
               </a>
             </p>
             {this.state.show && <Sidebar

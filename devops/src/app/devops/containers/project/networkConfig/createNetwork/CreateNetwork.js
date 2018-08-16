@@ -319,7 +319,7 @@ class CreateNetwork extends Component {
           </p>
         </Fragment>}
       >
-        <span className="icon icon-project" />
+        <i className="icon icon-project" />
         <span className="network-app-name">{name}</span>
       </Popover>
     </Option>);

@@ -566,8 +566,8 @@ class CreateDomain extends Component {
             )}
           </FormItem>
           { pathArr.length > 1 ? <Button shape="circle" className="c7n-domain-icon-delete" onClick={this.removePath.bind(this, index)}>
-            <span className="icon icon-delete" />
-          </Button> : <span className="icon icon-delete c7n-app-icon-disabled" />}
+            <i className="icon icon-delete" />
+          </Button> : <i className="icon icon-delete c7n-app-icon-disabled" />}
         </div>))}
         <div className="c7n-domain-btn-wrapper">
           <Tooltip title={addStatus ? this.props.intl.formatMessage({ id: 'domain.path.isnull' }) : ''}>
