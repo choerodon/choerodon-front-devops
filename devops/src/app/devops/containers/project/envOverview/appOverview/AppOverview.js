@@ -534,14 +534,14 @@ class AppOverview extends Component {
                           </div>
                           <div className="c7n-envow-ls">
                             <Tooltip title={<FormattedMessage id={'network.form.ip'} />}>
-                              <Icon type="room" />
+                              <Icon type="IP_out" />
                             </Tooltip>
                             {s.clusterIp}
                           </div>
                           <div className="c7n-envow-ls">
                             <span>
                               <Tooltip title={<FormattedMessage id={'network.form.port'} />}>
-                                <Icon type="room" />
+                                <Icon type="port" />
                               </Tooltip>
                               {s.port}
                             </span>
@@ -550,7 +550,7 @@ class AppOverview extends Component {
                             </span>
                             <span>
                               <Tooltip title={<FormattedMessage id={'network.form.targetPort'} />}>
-                                <Icon type="room" />
+                                <Icon type="aim_port" />
                               </Tooltip>
                               {s.targetPort}
                             </span>

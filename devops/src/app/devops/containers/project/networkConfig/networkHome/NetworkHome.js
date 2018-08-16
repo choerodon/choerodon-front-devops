@@ -255,13 +255,13 @@ class NetworkHome extends Component {
       sorter: true,
       filters: [],
       render: record => (
-        <Fragment>
+        <div className="env-status-wrap">
           { record.envStatus ? <Tooltip title={<FormattedMessage id={'connect'} />}> <span className="env-status-success" /></Tooltip> : <Tooltip title={<FormattedMessage id={'disconnect'} />}>
             <span className="env-status-error" />
           </Tooltip> }
           <MouserOverWrapper text={record.envName || ''} width={0.12} className="network-list-name">
             {record.envName}</MouserOverWrapper>
-        </Fragment>
+        </div>
       ),
     }, {
       title: <FormattedMessage id={'network.target'} />,
