@@ -116,9 +116,6 @@ class EnvOverviewStore {
           this.setIst(data);
         }
         this.changeLoading(false);        
-      }).catch((error) => {
-        this.changeLoading(false);
-        Choerodon.prompt(error.response.data.message);
       });
   };
 
@@ -180,7 +177,7 @@ class EnvOverviewStore {
       }
     }).catch((error) => {
       this.setSync(null);
-      Choerodon.prompt(error.response.data.message);
+      Choerodon.prompt(error);
     });
 
   handleProptError =(error) => {
