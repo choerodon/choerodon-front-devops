@@ -107,6 +107,7 @@ class EnvOverviewStore {
     param: '',
   }) => {
     this.changeLoading(true);
+    this.setIst(null);
     axios.post(`/devops/v1/projects/${projectId}/app_instances/${envId}/listByEnv`, JSON.stringify(datas))
       .then((data) => {
         if (data && data.failed) {
@@ -114,7 +115,7 @@ class EnvOverviewStore {
         } else {
           this.setIst(data);
         }
-        this.changeLoading(false);
+        this.changeLoading(false);        
       }).catch((error) => {
         this.changeLoading(false);
         Choerodon.prompt(error.response.data.message);
@@ -135,9 +136,6 @@ class EnvOverviewStore {
           this.setPageInfo({ number, size, totalElements });
         }
         this.changeLoading(false);
-      }).catch((error) => {
-        this.changeLoading(false);
-        Choerodon.prompt(error.response.data.message);
       });
   };
 
@@ -155,9 +153,6 @@ class EnvOverviewStore {
           this.setPageInfo({ number, size, totalElements });
         }
         this.changeLoading(false);
-      }).catch((error) => {
-        this.changeLoading(false);
-        Choerodon.prompt(error.response.data.message);
       });
   };
 
@@ -172,16 +167,15 @@ class EnvOverviewStore {
           this.setPageInfo({ number, size, totalElements });
         }
         this.changeLoading(false);
-      }).catch((error) => {
-        this.changeLoading(false);
-        Choerodon.prompt(error.response.data.message);
       });
   };
 
   loadSync = (proId, envId) => axios.get(`/devops/v1/projects/${proId}/envs/${envId}/status`)
     .then((data) => {
-      const res = this.handleProptError(data);
-      if (res) {
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+        this.setSync(null);
+      } else {
         this.setSync(data);
       }
     }).catch((error) => {
@@ -192,8 +186,10 @@ class EnvOverviewStore {
   handleProptError =(error) => {
     if (error && error.failed) {
       Choerodon.prompt(error.message);
+      this.changeLoading(false);
       return false;
     } else {
+      this.changeLoading(false);
       return error;
     }
   }

@@ -82,15 +82,19 @@
   }
 
   .ant-input-content {
-    width: 50%;
-    height: 48px;
+    width: 40%;
+    height: 38px;
     background: #fff;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+
+    .ant-input-rendered-wrapper {
+      position: initial;
+    }
   }
 
   input {
     font-size: 14px;
-    line-height: 48px;
+    line-height: 38px;
   }
 
   .ant-input-prefix {
@@ -98,7 +102,7 @@
     left: 0;
     z-index: 99;
     width: 56px;
-    top: 12px;
+    line-height: 48px;
     text-align: center;
 
     i {
@@ -109,7 +113,7 @@
 
   .ant-input-suffix {
     font-size: 14px;
-    line-height: 48px;
+    line-height: 38px;
     padding-right: 10px;
   }
 
@@ -120,7 +124,7 @@
   .ant-input-placeholder {
     z-index: 99;
     font-size: 14px;
-    line-height: 48px;
+    line-height: 38px;
   }
 
   .ant-input-underline {
@@ -221,8 +225,7 @@
 
   .c7n-envow-contaners-right {
     .c7n-envow-pod {
-      //right: 2%;
-      margin-left: 190px;
+      margin-left: 18%;
       margin-top: 1%;
       display: flex;
       position: absolute;
@@ -280,6 +283,15 @@
   height: 20px;
   margin-bottom: 10px;
 
+  .c7n-envow-ls-arrow {
+    font-size: 30px;
+    color: rgba(0, 0, 0, 0.64);
+    vertical-align: bottom;
+    height: 24px;
+    margin: 0 8px;
+    display: inline-block;
+  }
+
   i {
     font-size: 18px;
     margin-right: 4px;
@@ -292,7 +304,6 @@
 }
 
 .c7n-envow-create-btn {
-  //font-size: 16px;
   color: #3f51b5;
 }
 
