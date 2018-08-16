@@ -246,7 +246,25 @@ class CreateNetwork extends Component {
     }
     initName = `${initName}-${uuidv1().slice(0, 4)}`;
     this.setState({ initName });
-    store.loadInstance(id, envId, Number(value));
+    store.loadInstance(id, envId, Number(value)).then((data) => {
+      if (data) {
+        const initIst = [];
+        // 将默认选项直接生成，避免加载带来的异步问题
+        const initIstOption = [];
+        if (data && data.length) {
+          _.forEach(data, (item) => {
+            const { id: istIds, code } = item;
+            initIstOption.push(<Option key={istIds} value={istIds}>
+              {code}
+            </Option>);
+          });
+        }
+        this.setState({
+          initIst,
+          initIstOption,
+        });
+      }
+    });
   };
 
   /**
