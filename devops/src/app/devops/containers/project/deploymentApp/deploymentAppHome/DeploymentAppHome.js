@@ -86,6 +86,7 @@ class DeploymentAppHome extends Component {
         .then((data) => {
           this.setState({ errorLine: data.errorLines });
         });
+      this.handleSelectEnv(envId);
     }
   };
 
