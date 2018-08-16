@@ -1,0 +1,7 @@
+dashboard:
+- code: "DevopsDoc"
+  icon: devops
+  title: "持续交付文档"
+  description: "持续交付文档"
+  level: project
+  sort: 1
