@@ -539,16 +539,21 @@ class AppOverview extends Component {
                             {s.clusterIp}
                           </div>
                           <div className="c7n-envow-ls">
-                            <Tooltip title={<FormattedMessage id={'network.form.port'} />}>
-                              <Icon type="room" />
-                            </Tooltip>
-                            {s.port}
-                          </div>
-                          <div className="c7n-envow-ls">
-                            <Tooltip title={<FormattedMessage id={'network.form.targetPort'} />}>
-                              <Icon type="room" />
-                            </Tooltip>
-                            {s.targetPort}
+                            <span>
+                              <Tooltip title={<FormattedMessage id={'network.form.port'} />}>
+                                <Icon type="room" />
+                              </Tooltip>
+                              {s.port}
+                            </span>
+                            <span className="c7n-envow-ls-arrow">
+                              →
+                            </span>
+                            <span>
+                              <Tooltip title={<FormattedMessage id={'network.form.targetPort'} />}>
+                                <Icon type="room" />
+                              </Tooltip>
+                              {s.targetPort}
+                            </span>
                           </div>
                         </div>)) : null}
                         <Permission
