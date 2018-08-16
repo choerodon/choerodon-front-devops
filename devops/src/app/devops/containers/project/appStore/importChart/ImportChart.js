@@ -434,7 +434,7 @@ class ImportChart extends Component {
               <span className="c7n-external-link-content">
                 <FormattedMessage id="learnmore" />
               </span>
-              <span className="icon icon-open_in_new" />
+              <i className="icon icon-open_in_new" />
             </a>
           </p>
           <div className="c7n-store-card-wrap" style={{ minHeight: window.innerHeight - 277 }}>

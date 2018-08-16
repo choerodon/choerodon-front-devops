@@ -188,7 +188,7 @@ class HighlightAce extends Component {
           ref={(instance) => { this.ace = instance; }} // Let's put things into scope
         />
         {isFileError && <div className="ace-error-message">
-          <span className="icon icon-error config-icon-error" /> <span className="config-error-mes">{formatMessage({ id: 'yaml.error.tooltip' })}</span>
+          <i className="icon icon-error config-icon-error" /> <span className="config-error-mes">{formatMessage({ id: 'yaml.error.tooltip' })}</span>
         </div>}
       </div>
     );

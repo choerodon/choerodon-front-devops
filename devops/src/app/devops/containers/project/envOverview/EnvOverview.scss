@@ -28,8 +28,6 @@
   }
 
   .c7n-envow-status-content > div {
-    margin-right: 30px;
-
     i {
       font-size: 32px;
       color: #3f51b5;
@@ -134,7 +132,7 @@
 
 .c7n-envow-app-name {
   font-size: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   font-weight: 500;
 
   span {
@@ -165,7 +163,7 @@
 
   .ant-collapse > .ant-collapse-item > .ant-collapse-header {
     background-color: white;
-    padding: 10px;
+    padding: 6px;
 
     .icon-navigate_next {
       font-size: 18px;
@@ -284,7 +282,7 @@
   margin-bottom: 10px;
 
   .c7n-envow-ls-arrow {
-    font-size: 30px;
+    font-size: 20px;
     color: rgba(0, 0, 0, 0.64);
     vertical-align: bottom;
     height: 24px;

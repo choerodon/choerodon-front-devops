@@ -89,7 +89,7 @@ class MutiDeployment extends Component {
         trDom.push(<tr>
           <td>
             <MouserOverWrapper text={app.applicationName} width={0.12}>
-              {app.projectId === projectId ? <Tooltip title={<FormattedMessage id="project" />}><span className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id="market" />}><span className="icon icon-apps c7n-icon-publish" /></Tooltip>}
+              {app.projectId === projectId ? <Tooltip title={<FormattedMessage id="project" />}><i className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id="market" />}><i className="icon icon-apps c7n-icon-publish" /></Tooltip>}
               {app.applicationName}
             </MouserOverWrapper>
           </td>

@@ -196,17 +196,17 @@ class NetworkHome extends Component {
     if (status !== 'operating' && envStatus) {
       editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'edit'} />}>
         <Button shape="circle" size={'small'} funcType="flat" onClick={this.editNetwork.bind(this, id)}>
-          <span className="icon icon-mode_edit" />
+          <i className="icon icon-mode_edit" />
         </Button>
       </Tooltip>);
       deleteDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'delete'} />}>
         <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, id)}>
-          <span className="icon icon-delete_forever" />
+          <i className="icon icon-delete_forever" />
         </Button>
       </Tooltip>);
     } else {
-      editDom = (<span className="icon icon-mode_edit c7n-app-icon-disabled" />);
-      deleteDom = (<span className="icon icon-delete_forever c7n-app-icon-disabled" />);
+      editDom = (<i className="icon icon-mode_edit c7n-app-icon-disabled" />);
+      deleteDom = (<i className="icon icon-delete_forever c7n-app-icon-disabled" />);
     }
     return (<Fragment>
       <Permission
@@ -308,7 +308,7 @@ class NetworkHome extends Component {
                 funcType="flat"
                 onClick={this.showSideBar}
               >
-                <span className="icon-playlist_add icon" />
+                <i className="icon-playlist_add icon" />
                 <span><FormattedMessage id={'network.header.create'} /></span>
               </Button>
             </Permission>
@@ -322,7 +322,7 @@ class NetworkHome extends Component {
                 funcType="flat"
                 onClick={this.handleRefresh}
               >
-                <span className="icon-refresh icon" />
+                <i className="icon-refresh icon" />
                 <span><FormattedMessage id={'refresh'} /></span>
               </Button>
             </Permission>

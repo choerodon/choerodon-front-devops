@@ -182,7 +182,7 @@ class EditBranch extends Component {
               <span className="c7n-external-link-content">
                 <FormattedMessage id="learnmore" />
               </span>
-              <span className="icon icon-open_in_new" />
+              <i className="icon icon-open_in_new" />
             </a>
           </p>
           <Form layout="vertical" onSubmit={this.handleOk} className="c7n-sidebar-form">

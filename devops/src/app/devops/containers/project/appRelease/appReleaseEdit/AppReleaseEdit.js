@@ -150,7 +150,7 @@ class AppReleaseEdit extends Component {
               role="none"
             >
               {this.state.showBtn && <div className="c7n-appRelease-img-child">
-                <span className="icon icon-photo_camera" />
+                <i className="icon icon-photo_camera" />
                 <Input id="file" type="file" onChange={this.selectFile} style={{ display: 'none' }} />
               </div>
               }

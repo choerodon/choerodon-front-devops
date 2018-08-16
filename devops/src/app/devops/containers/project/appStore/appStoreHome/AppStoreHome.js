@@ -230,7 +230,7 @@ class AppStoreHome extends Component {
                 shape="circle"
                 onClick={this.appDetail.bind(this, record.id)}
               >
-                <span className="icon icon-insert_drive_file" />
+                <i className="icon icon-insert_drive_file" />
               </Button>
             </Popover>
           </Permission>
@@ -263,7 +263,7 @@ class AppStoreHome extends Component {
               funcType="flat"
               onClick={this.importChart}
             >
-              <span className="icon icon-get_app" />
+              <i className="icon icon-get_app" />
               <FormattedMessage id="appstore.import" />
             </Button>
           </Permission>
@@ -274,7 +274,7 @@ class AppStoreHome extends Component {
               funcType="flat"
               onClick={this.exportChart}
             >
-              <span className="icon-file_upload icon" />
+              <i className="icon-file_upload icon" />
               <FormattedMessage id="appstore.export" />
             </Button>
           </Permission>
@@ -282,7 +282,7 @@ class AppStoreHome extends Component {
             funcType="flat"
             onClick={this.reload}
           >
-            <span className="icon-refresh icon" />
+            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
@@ -296,7 +296,7 @@ class AppStoreHome extends Component {
               <span className="c7n-external-link-content">
                 <FormattedMessage id="learnmore" />
               </span>
-              <span className="icon icon-open_in_new" />
+              <i className="icon icon-open_in_new" />
             </a>
           </p>
           <div className="c7n-store-search">

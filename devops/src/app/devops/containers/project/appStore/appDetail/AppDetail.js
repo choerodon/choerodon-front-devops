@@ -132,7 +132,7 @@ class AppDetail extends Component {
             funcType="flat"
             onClick={this.reload}
           >
-            <span className="icon-refresh icon" />
+            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>

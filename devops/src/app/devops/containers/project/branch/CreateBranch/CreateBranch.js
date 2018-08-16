@@ -296,7 +296,7 @@ class CreateBranch extends Component {
               <span className="c7n-external-link-content">
                 <FormattedMessage id="learnmore" />
               </span>
-              <span className="icon icon-open_in_new" />
+              <i className="icon icon-open_in_new" />
             </a>
           </p>
           <Form layout="vertical" onSubmit={this.handleOk} className="c7n-sidebar-form">
@@ -350,7 +350,7 @@ class CreateBranch extends Component {
                 >
                   <OptGroup label={intl.formatMessage({ id: 'branch.branch' })} key="proGroup">
                     {branches.content.map(s => (
-                      <Option value={s.branchName} key={s.branchName}><span className="icon icon-branch c7n-branch-formItem-icon" />{s.branchName}</Option>
+                      <Option value={s.branchName} key={s.branchName}><i className="icon icon-branch c7n-branch-formItem-icon" />{s.branchName}</Option>
                     ))}
                     {branches.totalElements > branches.numberOfElements && branches.numberOfElements > 0 ? <Option key="more">
                       <div role="none" onClick={this.changeSize.bind(this, 'branch')} className="c7n-option-popover c7n-dom-more">
@@ -360,7 +360,7 @@ class CreateBranch extends Component {
                   </OptGroup>
                   <OptGroup label={intl.formatMessage({ id: 'branch.tag' })} key="more">
                     {tags.content.map(s => (
-                      <Option value={s.tagName} key={s.tagName}><span className="icon icon-local_offer c7n-branch-formItem-icon" />{s.tagName}</Option>
+                      <Option value={s.tagName} key={s.tagName}><i className="icon icon-local_offer c7n-branch-formItem-icon" />{s.tagName}</Option>
                     ))}
                     {tags.totalElements > tags.numberOfElements && tags.numberOfElements > 0 ? <Option value="more">
                       <div role="none" onClick={this.changeSize.bind(this, 'tag')} className="c7n-option-popover c7n-dom-more">

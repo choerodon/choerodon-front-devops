@@ -232,7 +232,7 @@ class AppReleaseHome extends Component {
           <Button
             onClick={this.handleRefresh}
           >
-            <span className="icon-refresh icon" />
+            <i className="icon-refresh icon" />
             <FormattedMessage id={'refresh'} />
           </Button>
         </Header>

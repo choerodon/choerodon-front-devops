@@ -226,17 +226,17 @@ class NetworkOverview extends Component {
     if (status !== 'operating' && envStatus) {
       editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'edit'} />}>
         <Button shape="circle" size={'small'} funcType="flat" onClick={this.editNetwork.bind(this, id)}>
-          <span className="icon icon-mode_edit" />
+          <i className="icon icon-mode_edit" />
         </Button>
       </Tooltip>);
       deleteDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'delete'} />}>
         <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemoveModal.bind(this, id)}>
-          <span className="icon icon-delete_forever" />
+          <i className="icon icon-delete_forever" />
         </Button>
       </Tooltip>);
     } else {
-      editDom = (<span className="icon icon-mode_edit c7n-app-icon-disabled" />);
-      deleteDom = (<span className="icon icon-delete_forever c7n-app-icon-disabled" />);
+      editDom = (<i className="icon icon-mode_edit c7n-app-icon-disabled" />);
+      deleteDom = (<i className="icon icon-delete_forever c7n-app-icon-disabled" />);
     }
     return (<Fragment>
       <Permission

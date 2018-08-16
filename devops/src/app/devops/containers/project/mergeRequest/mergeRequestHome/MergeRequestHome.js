@@ -221,7 +221,7 @@ class MergeRequestHome extends Component {
                 shape="circle"
                 onClick={this.linkToMerge.bind(this, record.iid)}
               >
-                <span className="icon icon-find_in_page" />
+                <i className="icon icon-find_in_page" />
               </Button>
             </Tooltip>
           </Permission>
@@ -308,7 +308,7 @@ class MergeRequestHome extends Component {
                 shape="circle"
                 onClick={this.linkToMerge.bind(this, record.iid)}
               >
-                <span className="icon icon-find_in_page" />
+                <i className="icon icon-find_in_page" />
               </Button>
             </Tooltip>
           </Permission>
@@ -409,7 +409,7 @@ class MergeRequestHome extends Component {
                 shape="circle"
                 onClick={this.linkToMerge.bind(this, record.iid)}
               >
-                <span className="icon icon-find_in_page" />
+                <i className="icon icon-find_in_page" />
               </Button>
             </Tooltip>
           </Permission>
@@ -431,14 +431,14 @@ class MergeRequestHome extends Component {
             funcType="flat"
             onClick={this.linkToNewMerge}
           >
-            <span className="icon-playlist_add icon" />
+            <i className="icon-playlist_add icon" />
             <FormattedMessage id="merge.createMerge" />
           </Button>
           <Button
             funcType="flat"
             onClick={this.reload}
           >
-            <span className="icon-refresh icon" />
+            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
@@ -457,7 +457,7 @@ class MergeRequestHome extends Component {
               <span className="c7n-external-link-content">
                 <FormattedMessage id="learnmore" />
               </span>
-              <span className="icon icon-open_in_new" />
+              <i className="icon icon-open_in_new" />
             </a>
           </p>
           <Select

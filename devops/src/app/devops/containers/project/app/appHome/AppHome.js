@@ -124,23 +124,23 @@ class AppHome extends Component {
           {record.sonarUrl ? <Tooltip title={<FormattedMessage id="app.quality" />} placement="bottom">
             <a href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
               <Button shape="circle" size={'small'}>
-                <span className="icon icon-quality" />
+                <i className="icon icon-quality" />
               </Button>
             </a>
           </Tooltip> : null }
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="edit" /> : <FormattedMessage id="app.start" />}</React.Fragment>}</div>}>
               {record.active && record.synchro ? <Button shape="circle" size={'small'} onClick={this.showSideBar.bind(this, 'edit', record.id)}>
-                <span className="icon icon-mode_edit" />
-              </Button> : <span className="icon icon-mode_edit c7n-app-icon-disabled" /> }
+                <i className="icon icon-mode_edit" />
+              </Button> : <i className="icon icon-mode_edit c7n-app-icon-disabled" /> }
             </Tooltip>
           </Permission>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']} >
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="app.stop" /> : <FormattedMessage id="app.run" />}</React.Fragment>}</div>}>
               {record.synchro ? <Button shape="circle" size={'small'} onClick={this.changeAppStatus.bind(this, record.id, record.active)}>
-                {record.active ? <span className="icon icon-remove_circle_outline" /> : <span className="icon icon-finished" />}
+                {record.active ? <i className="icon icon-remove_circle_outline" /> : <i className="icon icon-finished" />}
               </Button> : <React.Fragment>
-                {record.active ? <span className="icon icon-remove_circle_outline c7n-app-icon-disabled" /> : <span className="icon icon-finished c7n-app-icon-disabled" />}
+                {record.active ? <i className="icon icon-remove_circle_outline c7n-app-icon-disabled" /> : <i className="icon icon-finished c7n-app-icon-disabled" />}
               </React.Fragment> }
             </Tooltip>
           </Permission>
@@ -345,7 +345,7 @@ class AppHome extends Component {
             <span className="c7n-external-link-content">
               <FormattedMessage id="learnmore" />
             </span>
-            <span className="icon icon-open_in_new" />
+            <i className="icon icon-open_in_new" />
           </a>
         </p>
       </div> : <div>
@@ -363,7 +363,7 @@ class AppHome extends Component {
             <span className="c7n-external-link-content">
               <FormattedMessage id="learnmore" />
             </span>
-            <span className="icon icon-open_in_new" />
+            <i className="icon icon-open_in_new" />
           </a>
         </p>
       </div>}
@@ -494,14 +494,14 @@ class AppHome extends Component {
               <Button
                 onClick={this.showSideBar.bind(this, 'create')}
               >
-                <span className="icon-playlist_add icon" />
+                <i className="icon-playlist_add icon" />
                 <FormattedMessage id="app.create" />
               </Button>
             </Permission>
             <Button
               onClick={this.handleRefresh}
             >
-              <span className="icon-refresh icon" />
+              <i className="icon-refresh icon" />
               <FormattedMessage id="refresh" />
             </Button>
           </Header>
@@ -520,7 +520,7 @@ class AppHome extends Component {
                 <span className="c7n-external-link-content">
                   <FormattedMessage id="learnmore" />
                 </span>
-                <span className="icon icon-open_in_new" />
+                <i className="icon icon-open_in_new" />
               </a>
             </p>
             {this.state.show && <Sidebar

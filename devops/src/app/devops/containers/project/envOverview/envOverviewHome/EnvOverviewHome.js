@@ -343,7 +343,7 @@ class EnvOverviewHome extends Component {
                 disabled={!envState.connect}
                 onClick={this.deployApp.bind(this, this.envId)}
               >
-                <span className="icon-jsfiddle icon" />
+                <i className="icon-jsfiddle icon" />
                 <FormattedMessage id="deploy.header.title" />
               </Button>
             </Tooltip>
@@ -360,7 +360,7 @@ class EnvOverviewHome extends Component {
                 disabled={!envState.connect}
                 onClick={this.createNetwork}
               >
-                <span className="icon-playlist_add icon" />
+                <i className="icon-playlist_add icon" />
                 <span><FormattedMessage id={'network.header.create'} /></span>
               </Button>
             </Tooltip>
@@ -377,7 +377,7 @@ class EnvOverviewHome extends Component {
                 disabled={!envState.connect}
                 onClick={this.createDomain.bind(this, 'create', '')}
               >
-                <span className="icon icon-playlist_add icon" />
+                <i className="icon icon-playlist_add icon" />
                 <FormattedMessage id={'domain.header.create'} />
               </Button>
             </Tooltip>
@@ -385,7 +385,7 @@ class EnvOverviewHome extends Component {
           <Button
             onClick={this.handleRefresh}
           >
-            <span className="icon-refresh icon" />
+            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
@@ -408,7 +408,7 @@ class EnvOverviewHome extends Component {
                   <span className="c7n-external-link-content">
                     <FormattedMessage id="learnmore" />
                   </span>
-                  <span className="icon icon-open_in_new" />
+                  <i className="icon icon-open_in_new" />
                 </a>
               </p>
             </div>

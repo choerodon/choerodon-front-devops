@@ -63,33 +63,33 @@ class ContainerHome extends Component {
           case 'Completed':
             dom = (<div>
               <MouserOverWrapper text={record.status} width={0.073}>
-                <span className="icon icon-check_circle c7n-icon-success" />
+                <i className="icon icon-check_circle c7n-icon-success c7n-container-i" />
                 <span className="c7n-container-title">{record.status}</span>
               </MouserOverWrapper>
             </div>);
             break;
           case 'Running':
             dom = (<div>
-              <span className="icon icon-check_circle c7n-icon-running" />
+              <i className="icon icon-check_circle c7n-icon-running c7n-container-i" />
               <span className="c7n-container-title">{record.status}</span>
             </div>);
             break;
           case 'Error':
             dom = (<div>
-              <span className="icon icon-cancel c7n-icon-failed" />
+              <i className="icon icon-cancel c7n-icon-failed c7n-container-i" />
               <span className="c7n-container-title">{record.status}</span>
             </div>);
             break;
           case 'Pending':
             dom = (<div>
-              <span className="icon icon-timelapse c7n-icon-pending" />
+              <i className="icon icon-timelapse c7n-icon-pending c7n-container-i" />
               <span className="c7n-container-title">{record.status}</span>
             </div>);
             break;
           default:
             dom = (<div>
               <MouserOverWrapper text={record.status} width={0.073}>
-                <span className="icon icon-help c7n-icon-help" />
+                <i className="icon icon-help c7n-icon-help c7n-container-i" />
                 <span className="c7n-container-title">{record.status}</span>
               </MouserOverWrapper>
             </div>);
@@ -114,7 +114,7 @@ class ContainerHome extends Component {
       filterMultiple: false,
       render: (text, record) => (<div>
         <div className="c7n-container-col-inside">
-          {record.projectId === projectId ? <Tooltip title={<FormattedMessage id={'project'} />}><span className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id={'market'} />}><span className="icon icon-apps c7n-icon-publish" /></Tooltip>}
+          {record.projectId === projectId ? <Tooltip title={<FormattedMessage id={'project'} />}><i className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id={'market'} />}><i className="icon icon-apps c7n-icon-publish" /></Tooltip>}
           <span>{record.appName}</span>
         </div>
         <div>
@@ -159,7 +159,7 @@ class ContainerHome extends Component {
       }],
       filterMultiple: false,
       render: (text, record) => (<div className="c7n-container-table">
-        {record.ready ? <span className="icon icon-done" /> : <span className="icon icon-close" />}
+        {record.ready ? <i className="icon icon-done" /> : <i className="icon icon-close" />}
       </div>),
     }, {
       width: 93,
@@ -185,7 +185,7 @@ class ContainerHome extends Component {
                 shape="circle"
                 onClick={this.showLog.bind(this, record)}
               >
-                <span className="icon icon-insert_drive_file" />
+                <i className="icon icon-insert_drive_file" />
               </Button>
             </Tooltip>
           </Permission>
@@ -282,7 +282,7 @@ class ContainerHome extends Component {
         <Button
           onClick={this.handleRefresh}
         >
-          <span className="icon-refresh icon" />
+          <i className="icon-refresh icon" />
           <span>{<FormattedMessage id={'refresh'} />}</span>
         </Button>
       </Header>
