@@ -150,7 +150,7 @@ class CreateNetwork extends Component {
   };
 
   loadIstById = () => {
-    const { store, envId, appId } = this.props;
+    const { store, envId, appId, istId } = this.props;
     const { id } = AppState.currentMenuType;
     store.loadEnv(id);
     store.loadInstance(id, envId, appId).then((data) => {
@@ -159,10 +159,10 @@ class CreateNetwork extends Component {
         // 将默认选项直接生成，避免加载带来的异步问题
         const initIstOption = [];
         if (data && data.length) {
+          initIst.push(istId.toString());
           _.forEach(data, (item) => {
-            const { id: istId, code } = item;
-            initIst.push(istId);
-            initIstOption.push(<Option key={istId} value={istId}>
+            const { id: istIds, code } = item;
+            initIstOption.push(<Option key={istIds} value={istIds}>
               {code}
             </Option>);
           });
@@ -486,7 +486,7 @@ class CreateNetwork extends Component {
     if (node) {
       this.ipSelect = node.rcSelect;
     }
-  }
+  };
 
   render() {
     const { visible, form, intl, store } = this.props;
@@ -494,6 +494,8 @@ class CreateNetwork extends Component {
       submitting,
       targetKeys: targetType,
       portKeys: configType,
+      initIst,
+      initIstOption,
       initName } = this.state;
     const { name: menuName, id: projectId } = AppState.currentMenuType;
     const { getFieldDecorator, getFieldValue } = form;
@@ -621,8 +623,9 @@ class CreateNetwork extends Component {
     if (this.envSelect && !getFieldValue('envId')) {
       this.envSelect.focus();
     }
+
     const istOption = _.map(_.filter(ist, item =>
-      !_.includes(this.state.initIst, item.id)), (item) => {
+      !_.includes(initIst, item.id)), (item) => {
       const { id, code } = item;
       return (<Option key={id} value={id}>
         {code}
@@ -744,8 +747,6 @@ class CreateNetwork extends Component {
                       rules: [{
                         required: true,
                         message: intl.formatMessage({ id: 'required' }),
-                      }, {
-                        validator: this.checkInstance,
                       }],
                     })(<Select
                       filter
@@ -757,13 +758,11 @@ class CreateNetwork extends Component {
                       label={<FormattedMessage id="network.target.instance" />}
                       notFoundContent={intl.formatMessage({ id: 'network.form.instance.disable' })}
                       getPopupContainer={triggerNode => triggerNode.parentNode}
-                      choiceRender={this.handleRenderInstance}
                       filterOption={(input, option) =>
                         option.props.children.props.children
                           .toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     >
-                      {this.state.initIstOption}
-                      {istOption}
+                      {initIstOption}
                     </Select>)}
                   </FormItem>
                 </Fragment>) : (<Fragment>

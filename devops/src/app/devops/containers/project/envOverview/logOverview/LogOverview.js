@@ -40,7 +40,8 @@ class LogOverview extends Component {
     const columns = [{
       title: <FormattedMessage id={'envoverview.logs.info'} />,
       key: 'error',
-      render: record => (<MouserOverWrapper text={record.error || ''} width={0.7}>
+      width: '50%',
+      render: record => (<MouserOverWrapper text={record.error || ''} width={0.5}>
         {record.error}</MouserOverWrapper>),
     }, {
       title: <FormattedMessage id={'envoverview.logs.file'} />,
