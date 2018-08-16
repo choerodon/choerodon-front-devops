@@ -310,15 +310,14 @@ class AppDeploymentStore {
     }
   });
 
-  loadValue(projectId, appId, envId, verId) {
-    return axios.get(`devops/v1/projects/${projectId}/app_instances/value?appId=${appId}&envId=${envId}&appVersionId=${verId}`)
+  loadValue = (projectId, id) =>
+    axios.get(`/devops/v1/projects/${projectId}/app_instances/${id}/value`)
       .then((data) => {
-        if (data) {
+        const res = this.handleProptError(data);
+        if (res) {
           this.setValue(data);
         }
-        return data;
       });
-  }
 
   checkYaml = (value, projectId) => axios.post(`/devops/v1/projects/${projectId}/app_instances/value_format`, { yaml: value });
 
@@ -341,6 +340,14 @@ class AppDeploymentStore {
       }
       return data;
     });
+  handleProptError =(error) => {
+    if (error && error.failed) {
+      Choerodon.prompt(error.message);
+      return false;
+    } else {
+      return error;
+    }
+  }
 }
 
 const appDeploymentStore = new AppDeploymentStore();

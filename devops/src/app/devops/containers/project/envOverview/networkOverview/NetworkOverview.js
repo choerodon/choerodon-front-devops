@@ -306,19 +306,6 @@ class NetworkOverview extends Component {
       render: record => (<MouserOverWrapper text={record.name || ''} width={0.1} className="network-list-name">
         {record.name}</MouserOverWrapper>),
     }, {
-      title: <FormattedMessage id={'network.column.env'} />,
-      key: 'envName',
-      sorter: true,
-      filters: [],
-      render: record => (
-        <Fragment>
-          { record.envStatus ? <Tooltip title={<FormattedMessage id={'connect'} />}> <span className="env-status-success" /></Tooltip> : <Tooltip title={<FormattedMessage id={'disconnect'} />}>
-            <span className="env-status-error" />
-          </Tooltip> }
-          {record.envName}
-        </Fragment>
-      ),
-    }, {
       title: <FormattedMessage id={'network.target'} />,
       key: 'target',
       filters: [],

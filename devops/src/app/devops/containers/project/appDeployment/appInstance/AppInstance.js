@@ -80,7 +80,7 @@ class AppInstance extends Component {
       name,
     });
     store.setAlertType('valueConfig');
-    store.loadValue(projectId, appId, envId, verId)
+    store.loadValue(projectId, id)
       .then((res) => {
         if (res && res.failed) {
           Choerodon.prompt(res.message);
@@ -104,7 +104,7 @@ class AppInstance extends Component {
   upgradeIst = (name, id, envId, verId, appId) => {
     const { store, intl } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    store.loadValue(projectId, appId, envId, verId)
+    store.loadValue(projectId, id)
       .then((res) => {
         if (res && res.failed) {
           Choerodon.prompt(res.message);

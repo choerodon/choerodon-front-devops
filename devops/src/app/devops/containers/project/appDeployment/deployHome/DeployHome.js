@@ -227,21 +227,21 @@ class DeployHome extends Component {
               </Button>
               <Button
                 funcType="flat"
-                className={tabActive === 'singleEnv' ? 'c7n-tab-ative' : ''}
+                className={tabActive === 'singleEnv' ? 'c7n-tab-active' : ''}
                 onClick={this.changeTabs.bind(this, 'singleEnv')}
               >
                 <FormattedMessage id="ist.singleEnv" />
               </Button>
               <Button
                 funcType="flat"
-                className={tabActive === 'singleApp' ? 'c7n-tab-ative' : ''}
+                className={tabActive === 'singleApp' ? 'c7n-tab-active' : ''}
                 onClick={this.changeTabs.bind(this, 'singleApp')}
               >
                 <FormattedMessage id="ist.singleApp" />
               </Button>
               <Button
                 funcType="flat"
-                className={tabActive === 'multiApp' ? 'c7n-tab-ative' : ''}
+                className={tabActive === 'multiApp' ? 'c7n-tab-active' : ''}
                 onClick={this.changeTabs.bind(this, 'multiApp')}
               >
                 <FormattedMessage id="ist.multiApp" />

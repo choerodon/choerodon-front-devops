@@ -139,7 +139,7 @@ class AppOverview extends Component {
   @action
   updateConfig = (name, id, envId, verId, appId) => {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    AppDeploymentStore.loadValue(projectId, appId, envId, verId)
+    AppDeploymentStore.loadValue(projectId, id)
       .then((res) => {
         if (res && res.failed) {
           Choerodon.prompt(res.message);
@@ -164,7 +164,7 @@ class AppOverview extends Component {
   upgradeIst = (name, id, envId, verId, appId) => {
     const { intl } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    AppDeploymentStore.loadValue(projectId, appId, envId, verId)
+    AppDeploymentStore.loadValue(projectId, id)
       .then((res) => {
         if (res && res.failed) {
           Choerodon.prompt(res.message);
@@ -577,7 +577,7 @@ class AppOverview extends Component {
                           <FormattedMessage id={'domain.header.title'} />
                         </div>
                         {c.ingressDTOS.length ? _.map(c.ingressDTOS, d => (<div className="c7n-envow-ls-wrap" key={d.hosts}>
-                          <a rel="nofollow me noopener noreferrer" target="_blank" href={d.hosts}><div className="c7n-envow-ls"><Icon type="language" />{d.hosts}</div></a>
+                          <div className="c7n-envow-ls"><Icon type="language" />{d.hosts}</div>
                         </div>)) : null}
                         <Permission
                           service={['devops-service.devops-ingress.create']}
