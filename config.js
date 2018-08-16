@@ -43,6 +43,9 @@ const config = {
     'primary-color': '#3F51B5',
     'icon-font-size-base': '16px',
   },
+  dashboard: {
+    devops: 'src/app/devops/dashboard/*',
+  },
 };
 
 module.exports = config;

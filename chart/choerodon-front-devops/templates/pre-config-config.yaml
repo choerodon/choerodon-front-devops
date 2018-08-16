@@ -29,8 +29,6 @@ spec:
           value: {{ .Values.preJob.preConfig.mysql.password }}
         - name: DB_NAME
           value: {{ .Values.preJob.preConfig.mysql.dbname }}
-#        - name: ENABLE_DELETE
-#          value: {{ .Values.preJob.preConfig.mysql.enabledelete | quote }}
         - name: UP_ATTRS
           value: {{ .Values.preJob.preConfig.mysql.upattrs }}
         command:
@@ -39,5 +37,6 @@ spec:
         - '
           cd /usr/share/nginx/html;
           python sql.py -d {{ .Values.preJob.preConfig.mysql.enabledelete }};
+          python dashboard.py -o sql
           '
       restartPolicy: Never
