@@ -2,14 +2,10 @@ import React, { Component } from 'react';
 import { DashBoardNavBar } from 'choerodon-front-boot';
 import './index.scss';
 
-class Guide extends Component {
+class DevopsDoc extends Component {
   render() {
-    return (
-      <div>
-        Hello Devops!
-      </div>
-    );
+    return (<div />);
   }
 }
 
-export default Guide;
+export default DevopsDoc;

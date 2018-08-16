@@ -8,17 +8,31 @@ const height = window.screen.height;
 @store('SelectAppStore')
 class SelectAppStore {
   @observable localData = [];
+
   @observable storeData = [];
+
   @observable isRefresh= false;// 页面的loading
+
   @observable loading = false; // 打开tab的loading
+
   @observable singleData = null;
+
   @observable selectData = [];
+
   @observable localPageInfo = {
     current: 1, total: 0, pageSize: 15,
   };
+
   @observable storePageInfo = {
     current: 1, total: 0, pageSize: 15,
   };
+
+
+  @observable searchValue = '';
+
+  @action setSearchValue(value) {
+    this.searchValue = value;
+  }
 
   /**
    * 项目应用数据
@@ -106,6 +120,7 @@ class SelectAppStore {
         this.changeLoading(false);
       });
   };
+
   loadApps = ({ projectId, page = this.storePageInfo.current - 1, size = this.storePageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
     param: '',
   } }) => {
@@ -115,7 +130,9 @@ class SelectAppStore {
         if (data && data.failed) {
           Choerodon.prompt(data.message);
         } else {
-          this.handleData(data, 'store');
+          if (this.searchValue === '' || this.searchValue === postData.param) {
+            this.handleData(data, 'store');
+          }
           this.changeLoading(false);
         }
       });
