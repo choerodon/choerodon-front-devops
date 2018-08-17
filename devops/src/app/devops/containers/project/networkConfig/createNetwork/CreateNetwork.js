@@ -743,9 +743,8 @@ class CreateNetwork extends Component {
                       onSelect={this.handleAppSelect}
                       label={<FormattedMessage id="network.form.app" />}
                       getPopupContainer={triggerNode => triggerNode.parentNode}
-                      filterOption={(input, option) =>
-                        option.props.children.props.children[1].props.children
-                          .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                      filterOption={(input, option) => option.props.children.props.children[1]
+                        .props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     >
                       <OptGroup label={<FormattedMessage id={'project'} />} key={'project'}>
                         {_.map(localApp, node => this.makeAppGroup(node))}

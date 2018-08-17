@@ -260,6 +260,7 @@ const zhCN = {
   network_create: '网络创建中，请耐心等待',
   network_delete: '网络删除中，请耐心等待',
   network_update: '网络更新中，请耐心等待',
+  network_operating: '网络操作中，请耐心等待',
   'network.header.title': '网络',
   'network.header.create': '创建网络',
   'network.header.update': '修改网络',

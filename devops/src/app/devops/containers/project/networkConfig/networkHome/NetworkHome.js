@@ -24,11 +24,11 @@ class NetworkHome extends Component {
     super(props, context);
     this.state = {
       show: false,
-      projectId: menu.id,
       openRemove: false,
       submitting: false,
     };
   }
+
   componentDidMount() {
     // 这个方法定义在 commonComponent装饰器中
     this.loadAllData();
@@ -116,15 +116,15 @@ class NetworkHome extends Component {
     }
     const content = (type === 'ClusterIP') ? (<Fragment>
       <div className="network-config-wrap">
-        <div className="network-type-title"><FormattedMessage id={'network.column.ip'} /></div>
+        <div className="network-type-title"><FormattedMessage id="network.column.ip" /></div>
         <div>{externalIps ? iPArr : '-'}</div>
       </div>
       <div className="network-config-wrap">
-        <div className="network-type-title"><FormattedMessage id={'network.column.port'} /></div>
+        <div className="network-type-title"><FormattedMessage id="network.column.port" /></div>
         <div>{portArr}</div>
       </div>
     </Fragment>) : (<Fragment>
-      <div className="network-config-item"><FormattedMessage id={'network.node.port'} /></div>
+      <div className="network-config-item"><FormattedMessage id="network.node.port" /></div>
       <div>{portArr}</div>
     </Fragment>);
     return (<div className="network-column-config">
@@ -156,7 +156,9 @@ class NetworkHome extends Component {
         node.push(<div
           className={`network-column-instance ${statusStyle}`}
           key={id}
-        ><Tooltip title={<FormattedMessage id={instanceStatus} />} placement="top">{code}</Tooltip></div>);
+        >
+          <Tooltip title={<FormattedMessage id={instanceStatus} />} placement="top">{code}</Tooltip>
+        </div>);
       });
     }
     if (!_.isEmpty(labels)) {
@@ -191,22 +193,27 @@ class NetworkHome extends Component {
    */
   opColumn = (record, type, projectId, orgId) => {
     const { status, envStatus, id } = record;
+    const { intl } = this.props;
     let editDom = null;
     let deleteDom = null;
     if (status !== 'operating' && envStatus) {
-      editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'edit'} />}>
-        <Button shape="circle" size={'small'} funcType="flat" onClick={this.editNetwork.bind(this, id)}>
+      editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="edit" />}>
+        <Button shape="circle" size="small" funcType="flat" onClick={this.editNetwork.bind(this, id)}>
           <i className="icon icon-mode_edit" />
         </Button>
       </Tooltip>);
-      deleteDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'delete'} />}>
-        <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, id)}>
+      deleteDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="delete" />}>
+        <Button shape="circle" size="small" funcType="flat" onClick={this.openRemove.bind(this, id)}>
           <i className="icon icon-delete_forever" />
         </Button>
       </Tooltip>);
     } else {
-      editDom = (<i className="icon icon-mode_edit c7n-app-icon-disabled" />);
-      deleteDom = (<i className="icon icon-delete_forever c7n-app-icon-disabled" />);
+      editDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `network_${status}` })}>
+        <i className="icon icon-mode_edit c7n-app-icon-disabled" />
+      </Tooltip>);
+      deleteDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `network_${status}` })}>
+        <si className="icon icon-delete_forever c7n-app-icon-disabled" />
+      </Tooltip>);
     }
     return (<Fragment>
       <Permission
@@ -238,25 +245,25 @@ class NetworkHome extends Component {
       name: projectName } = AppState.currentMenuType;
     const data = NetworkConfigStore.getAllData;
     const columns = [{
-      title: <FormattedMessage id={'network.column.status'} />,
+      title: <FormattedMessage id="network.column.status" />,
       key: 'status',
       width: '82px',
       render: record => this.statusColumn(record),
     }, {
-      title: <FormattedMessage id={'network.column.name'} />,
+      title: <FormattedMessage id="network.column.name" />,
       key: 'name',
       sorter: true,
       filters: [],
       render: record => (<MouserOverWrapper text={record.name || ''} width={0.12} className="network-list-name">
         {record.name}</MouserOverWrapper>),
     }, {
-      title: <FormattedMessage id={'network.column.env'} />,
+      title: <FormattedMessage id="network.column.env" />,
       key: 'envName',
       sorter: true,
       filters: [],
       render: record => (
         <div className="env-status-wrap">
-          { record.envStatus ? <Tooltip title={<FormattedMessage id={'connect'} />}> <span className="env-status-success" /></Tooltip> : <Tooltip title={<FormattedMessage id={'disconnect'} />}>
+          { record.envStatus ? <Tooltip title={<FormattedMessage id="connect" />}> <span className="env-status-success" /></Tooltip> : <Tooltip title={<FormattedMessage id="disconnect" />}>
             <span className="env-status-error" />
           </Tooltip> }
           <MouserOverWrapper text={record.envName || ''} width={0.12} className="network-list-name">
@@ -264,13 +271,13 @@ class NetworkHome extends Component {
         </div>
       ),
     }, {
-      title: <FormattedMessage id={'network.target'} />,
+      title: <FormattedMessage id="network.target" />,
       key: 'target',
       filters: [],
       render: record => this.targetColumn(record),
     }, {
       width: 108,
-      title: <FormattedMessage id={'network.config.column'} />,
+      title: <FormattedMessage id="network.config.column" />,
       key: 'config',
       filters: [],
       render: record => this.configColumn(record),
@@ -297,7 +304,7 @@ class NetworkHome extends Component {
         className="c7n-region c7n-network-wrapper"
       >
         {NetworkConfigStore.isRefresh ? <LoadingBar display /> : <Fragment>
-          <Header title={<FormattedMessage id={'network.header.title'} />}>
+          <Header title={<FormattedMessage id="network.header.title" />}>
             <Permission
               service={['devops-service.devops-service.create']}
               type={type}
@@ -309,7 +316,7 @@ class NetworkHome extends Component {
                 onClick={this.showSideBar}
               >
                 <i className="icon-playlist_add icon" />
-                <span><FormattedMessage id={'network.header.create'} /></span>
+                <span><FormattedMessage id="network.header.create" /></span>
               </Button>
             </Permission>
             <Permission
@@ -323,7 +330,7 @@ class NetworkHome extends Component {
                 onClick={this.handleRefresh}
               >
                 <i className="icon-refresh icon" />
-                <span><FormattedMessage id={'refresh'} /></span>
+                <span><FormattedMessage id="refresh" /></span>
               </Button>
             </Permission>
           </Header>
@@ -355,16 +362,16 @@ class NetworkHome extends Component {
         <Modal
           confirmLoading={submitting}
           visible={openRemove}
-          title={<FormattedMessage id={'network.delete'} />}
+          title={<FormattedMessage id="network.delete" />}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove}><FormattedMessage id={'cancel'} /></Button>,
+            <Button key="back" onClick={this.closeRemove}><FormattedMessage id="cancel" /></Button>,
             <Button key="submit" type="danger" onClick={this.handleDelete}>
-              <FormattedMessage id={'delete'} />
+              <FormattedMessage id="delete" />
             </Button>,
           ]}
         >
-          <p><FormattedMessage id={'network.delete.tooltip'} />？</p>
+          <p><FormattedMessage id="network.delete.tooltip" />？</p>
         </Modal>
       </Page>
     );
