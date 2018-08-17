@@ -27,8 +27,12 @@
     }
   }
 
-  .c7n-envow-status-content > div {
-    i {
+  .c7n-envow-status-content  {
+    .c7n-envow-sync-wrap {
+      padding-right: 10px;
+    }
+
+    div i {
       font-size: 32px;
       color: #3f51b5;
       animation: ant-progress-rotate 1.4s linear infinite;
