@@ -19,6 +19,7 @@ const { AppState } = stores;
 class DomainOverview extends Component {
   @observable openRemove = false;
   @observable showDomain = false;
+  @observable submitting = false;
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -38,6 +39,7 @@ class DomainOverview extends Component {
   /**
    * 删除数据
    */
+  @action
   handleDelete = () => {
     const { store, envId } = this.props;
     const { id: projectId } = AppState.currentMenuType;

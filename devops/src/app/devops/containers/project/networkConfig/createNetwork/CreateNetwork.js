@@ -50,10 +50,10 @@ class CreateNetwork extends Component {
   }
 
   componentDidMount() {
-    const { store, envId, appId, appName } = this.props;
+    const { store, envId, appId, appCode } = this.props;
     const { id } = AppState.currentMenuType;
     if (envId) {
-      const options = { key: appName };
+      const options = { key: appCode };
       this.handleEnvSelect(envId);
       if (appId) {
         this.handleAppSelect(appId, options);

@@ -4,7 +4,7 @@ import { axios, store } from 'choerodon-front-boot';
 const height = window.screen.height;
 @store('EnvOverviewStore')
 class EnvOverviewStore {
-  @observable isLoading = true;
+  @observable isLoading = false;
   @observable val = '';
   @observable envcard = [];
   @observable ist = null;

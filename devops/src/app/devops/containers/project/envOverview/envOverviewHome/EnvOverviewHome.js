@@ -73,7 +73,9 @@ class EnvOverviewHome extends Component {
     } else if (key === 'log' && this.env.length) {
       this.loadLog(this.envId || this.env[0].id);
     }
-    this.loadSync(this.envId || this.env[0].id);
+    if (this.env.length) {
+      this.loadSync(this.envId || this.env[0].id);
+    }
   };
 
   /**
