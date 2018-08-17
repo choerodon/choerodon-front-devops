@@ -382,6 +382,23 @@ class EnvOverviewHome extends Component {
               </Button>
             </Tooltip>
           </Permission>
+          <Tooltip title={sync && sync.commitUrl ?
+            sync.commitUrl.substr(0, sync.commitUrl.length - 7) : null}
+          >
+            <a
+              href={sync && sync.commitUrl ?
+                sync.commitUrl.substr(0, sync.commitUrl.length - 7) : null}
+              target="_blank"
+              rel="nofollow me noopener noreferrer"
+            >
+              <Button
+                funcType="flat"
+              >
+                <Icon type="account_balance" />
+                <FormattedMessage id={'envoverview.gitlab'} />
+              </Button>
+            </a>
+          </Tooltip>
           <Button
             onClick={this.handleRefresh}
           >
