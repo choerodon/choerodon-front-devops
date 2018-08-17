@@ -801,7 +801,7 @@ class AppOverview extends Component {
           visible={this.showNetwork}
           envId={this.props.envId}
           appId={this.appId}
-          appName={this.appName}
+          appCode={this.appCode}
           istId={this.istId}
           store={NetworkConfigStore}
           onClose={this.closeNetwork}
