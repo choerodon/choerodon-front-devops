@@ -6,14 +6,23 @@ const { AppState } = stores;
 @store('DeploymentAppStore')
 class DeploymentAppStore {
   @observable apps = [];
+
   @observable currentApp = {};
+
   @observable versions = [];
+
   @observable currentVersion = {};
+
   @observable envs = [];
+
   @observable currentEnv = {};
+
   @observable value = null;
+
   @observable currentMode = 'new';
+
   @observable instances = [];
+
   @observable currentInstance = {};
 
   loadApps(id, projectId = AppState.currentMenuType.id) {
@@ -129,6 +138,7 @@ class DeploymentAppStore {
   @computed get getCurrentStage() {
     return this.showArr.lastIndexOf(true) + 1;
   }
+
   handleProptError =(error) => {
     if (error && error.failed) {
       Choerodon.prompt(error.message);
