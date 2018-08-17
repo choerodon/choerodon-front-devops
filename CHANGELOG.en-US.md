@@ -1,6 +1,25 @@
 # Changelog
 All notable changes to choerodon-front-devops will be documented in this file.
 
+## [0.9.0] - 2018-08-17
+### Added
+- New Environmental overview module to facilitate the management of the deployment of an environment-related entities
+- Front-end api test
+
+### Changed
+- Modify the network page
+- Create a network by filling out the label
+- Increase the NodePort type of the network
+- Remove the application version of the network association
+- Unmodified configuration information can not be redeployed
+- Optimizing the data loading effect of each module
+- Modify the container log to select the background color, and non-edit status can not be copied
+
+### Fixed
+- Switch tabs will have data retention issues
+- Troubleshooting asynchronous coverage problems when deploying a search application
+- Inconsistency between local time and service hours
+
 ## [0.8.0] - 2018-07-20
 ### Added
 - `Repository`, `branch management`, `tag` and `merge request`, achieving more flexible branch management models.

@@ -416,7 +416,7 @@ class EnvOverviewHome extends Component {
               {(sync && sync.devopsSyncCommit === sync.gitCommit
               && sync.gitCommit === sync.agentSyncCommit) || !envState.connect ?
                 null :
-                <div>
+                <div className="c7n-envow-sync-wrap">
                   <div className="c7n-envow-status-text"><FormattedMessage id="envoverview.sync" /></div>
                   <div><Icon type="autorenew" /></div>
                 </div>}
