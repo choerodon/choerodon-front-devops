@@ -93,7 +93,7 @@ class DeployAppHome extends Component {
         onRow={(record) => {
           const a = record;
           return {
-            onClick: this.hanldeSelectApp.bind(this, record),
+            onClick: this.handleSelectApp.bind(this, record),
           };
         }}
         onChange={this.tableChange}
@@ -110,46 +110,50 @@ class DeployAppHome extends Component {
    * @returns {*}
    */
   getMarketTable = () => {
+    const { intl } = this.props;
+    const { app, isMarket } = this.state;
     const dataSource = SelectAppStore.getStoreData;
     const column = [{
       key: 'check',
       width: '50px',
       render: record => (
-        this.state.app && this.state.isMarket && record.appId === this.state.app.appId && <i className="icon icon-check icon-select" />
+        app && isMarket && record.appId === app.appId && <i className="icon icon-check icon-select" />
       ),
 
     }, {
-      title: <FormattedMessage id={'appstore.name'} />,
+      title: <FormattedMessage id="appstore.name" />,
       dataIndex: 'name',
       key: 'name',
     }, {
-      title: <FormattedMessage id={'appstore.contributor'} />,
+      title: <FormattedMessage id="appstore.contributor" />,
       dataIndex: 'contributor',
       key: 'contributor',
     }, {
-      title: <FormattedMessage id={'appstore.category'} />,
+      title: <FormattedMessage id="appstore.category" />,
       dataIndex: 'category',
       key: 'category',
     }, {
-      title: <FormattedMessage id={'appstore.description'} />,
+      title: <FormattedMessage id="appstore.description" />,
       dataIndex: 'description',
       key: 'description',
     }];
-    return (<Table
-      onRow={(record) => {
-        const a = record;
-        return {
-          onClick: this.hanldeSelectApp.bind(this, record),
-        };
-      }}
-      filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
-      rowClassName={'col-check'}
-      onChange={this.tableChange}
-      columns={column}
-      rowKey={record => record.id}
-      dataSource={dataSource}
-      pagination={SelectAppStore.getStorePageInfo}
-    />);
+    return (
+      <Table
+        onRow={(record) => {
+          const a = record;
+          return {
+            onClick: this.handleSelectApp.bind(this, record),
+          };
+        }}
+        filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
+        rowClassName="col-check"
+        onChange={this.tableChange}
+        columns={column}
+        rowKey={record => record.id}
+        dataSource={dataSource}
+        pagination={SelectAppStore.getStorePageInfo}
+      />
+    );
   };
 
   /**
@@ -198,21 +202,33 @@ class DeployAppHome extends Component {
   /**
    * 清空搜索框数据
    */
-  clearInputValue = () => {
-    const { projectId } = this.state;
+  clearInputValue = (key) => {
+    const { projectId, activeKey } = this.state;
+    const keys = key || activeKey;
+    SelectAppStore.setSearchValue('');
     this.setState({ val: '' });
-    SelectAppStore.loadData({
-      projectId,
-      postData: { param: '', searchParam: {} },
-    });
+    if (keys === '1') {
+      SelectAppStore.loadData({
+        projectId,
+        page: 0,
+        size: SelectAppStore.localPageInfo.pageSize,
+      });
+    } else {
+      SelectAppStore.loadApps({
+        projectId,
+        page: 0,
+        size: SelectAppStore.storePageInfo.pageSize,
+      });
+    }
   };
 
   /**
    * 点击选择数据
    * @param record
    */
-  hanldeSelectApp = (record) => {
-    this.setState({ app: record, isMarket: this.state.activeTab === '2' });
+  handleSelectApp = (record) => {
+    const { activeTab } = this.state;
+    this.setState({ app: record, isMarket: activeTab === '2' });
   };
 
   /**
@@ -222,7 +238,7 @@ class DeployAppHome extends Component {
    * @param sorter 排序
    */
   tableChange =(pagination, filters, sorter, paras) => {
-    const key = this.state.activeTab;
+    const { activeTab } = this.state;
     const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     const sort = { field: 'id', order: 'desc' };
@@ -238,14 +254,13 @@ class DeployAppHome extends Component {
     let searchParam = {};
     const page = pagination.current - 1;
     if (Object.keys(filters).length) {
-      // page = 0;
       searchParam = filters;
     }
     const postData = {
       searchParam,
       param: paras.toString(),
     };
-    if (key === '1') {
+    if (activeTab === '1') {
       SelectAppStore.loadData({
         projectId: organizationId,
         sorter: sort,
@@ -269,23 +284,9 @@ class DeployAppHome extends Component {
    * @param key
    */
   changeTab =(key) => {
-    const { projectId } = this.state;
-    if (key === '1') {
-      SelectAppStore.loadData({
-        projectId,
-        page: 0,
-        size: SelectAppStore.localPageInfo.pageSize,
-      });
-    } else {
-      SelectAppStore.loadApps({
-        projectId,
-        page: 0,
-        size: SelectAppStore.storePageInfo.pageSize,
-      });
-    }
+    this.clearInputValue(key);
     this.setState({
       activeTab: key,
-      page: 0,
     });
   };
 
@@ -305,7 +306,7 @@ class DeployAppHome extends Component {
   render() {
     const { intl: { formatMessage }, show, handleCancel } = this.props;
     const {
-      val, view, isMarket, app,
+      val, view, isMarket, app, activeTab,
     } = this.state;
     const localDataSource = SelectAppStore.getAllData;
     const storeDataSource = SelectAppStore.getStoreData;
@@ -313,7 +314,7 @@ class DeployAppHome extends Component {
     const { total: st, current: sc, pageSize: sp } = SelectAppStore.getStorePageInfo;
     const projectName = AppState.currentMenuType.name;
     const prefix = <Icon type="search" onClick={this.handleSearch} />;
-    const suffix = val ? <Icon type="close" onClick={this.clearInputValue} /> : null;
+    const suffix = val ? <Icon type="close" onClick={() => this.clearInputValue(activeTab)} /> : null;
     const loading = SelectAppStore.getLoading;
     return (
       <SideBar
@@ -361,7 +362,7 @@ class DeployAppHome extends Component {
                               key={card.id}
                               role="none"
                               className={`c7n-store-card ${app && app.id === card.id && !isMarket && 'c7n-card-active'}`}
-                              onClick={this.hanldeSelectApp.bind(this, card)}
+                              onClick={this.handleSelectApp.bind(this, card)}
                             >
                               {app && !isMarket && app.id === card.id && <span className="span-icon-check"><i className="icon icon-check" /></span> }
                               <div className="c7n-store-card-icon" />
@@ -420,7 +421,7 @@ class DeployAppHome extends Component {
                               key={card.id}
                               role="none"
                               className={`c7n-store-card ${app && isMarket && app.appId === card.appId && 'c7n-card-active'}`}
-                              onClick={this.hanldeSelectApp.bind(this, card)}
+                              onClick={this.handleSelectApp.bind(this, card)}
                             >
                               {app && app.appId === card.appId && isMarket && <span className="span-icon-check"><i className="icon icon-check " /></span> }
                               {card.imgUrl ? <div className="c7n-store-card-icon" style={{ backgroundImage: `url(${Choerodon.fileServer(card.imgUrl)})` }} />

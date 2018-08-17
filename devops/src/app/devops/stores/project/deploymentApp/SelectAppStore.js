@@ -1,9 +1,7 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-// import { Observable } from 'rxjs';
-// import { formJS } from 'immutable';
 
-const height = window.screen.height;
+const { height } = window.screen;
 
 @store('SelectAppStore')
 class SelectAppStore {
@@ -11,7 +9,7 @@ class SelectAppStore {
 
   @observable storeData = [];
 
-  @observable isRefresh= false;// 页面的loading
+  @observable isRefresh= false; // 页面的loading
 
   @observable loading = false; // 打开tab的loading
 
@@ -91,6 +89,7 @@ class SelectAppStore {
   @computed get getIsRefresh() {
     return this.isRefresh;
   }
+
   @action changeLoading(flag) {
     this.loading = flag;
   }
@@ -107,34 +106,47 @@ class SelectAppStore {
     return this.singleData;
   }
 
-  loadData = ({ projectId, page = this.localPageInfo.current - 1, size = this.localPageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
-    param: '',
-  } }) => {
+  loadData = (
+    {
+      projectId,
+      page = this.localPageInfo.current - 1,
+      size = this.localPageInfo.pageSize,
+      sort = { field: 'id', order: 'desc' },
+      postData = { searchParam: {}, param: '' },
+    },
+  ) => {
     this.changeLoading(true);
     return axios.post(`/devops/v1/projects/${projectId}/apps/list_by_options?active=true&page=${page}&size=${size}&sort=${sort.field},${sort.order}&has_version=true`, JSON.stringify(postData))
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
-          this.handleData(data, 'local');
+          if (this.searchValue === '' || this.searchValue === postData.param) {
+            this.handleData(data, 'local');
+          }
         }
         this.changeLoading(false);
       });
   };
 
-  loadApps = ({ projectId, page = this.storePageInfo.current - 1, size = this.storePageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
-    param: '',
-  } }) => {
+  loadApps = (
+    {
+      projectId,
+      page = this.storePageInfo.current - 1,
+      size = this.storePageInfo.pageSize,
+      sort = { field: 'id', order: 'desc' },
+      postData = { searchParam: {}, param: '' },
+    },
+  ) => {
     this.changeLoading(true);
     return axios.post(`devops/v1/projects/${projectId}/apps_market/list_all?page=${page}&size=${size}`, JSON.stringify(postData))
       .then((data) => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else {
+        const res = this.handleProptError(data);
+        if (res) {
           if (this.searchValue === '' || this.searchValue === postData.param) {
             this.handleData(data, 'store');
           }
-          this.changeLoading(false);
         }
+        this.changeLoading(false);
       });
   };
 
@@ -144,7 +156,9 @@ class SelectAppStore {
    * @param type
    */
   handleData =(data, type) => {
-    const { number, size, totalElements, content } = data;
+    const {
+      number, size, totalElements, content,
+    } = data;
     if (type === 'local') {
       this.setAllData(content);
       this.setLocalPageInfo({ number, size, totalElements });
