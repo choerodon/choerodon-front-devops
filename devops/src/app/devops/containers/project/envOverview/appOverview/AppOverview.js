@@ -378,10 +378,10 @@ class AppOverview extends Component {
    * 打开创建网络
    */
   @action
-  createNetwork = (appId = null, istId = null, appName = '') => {
+  createNetwork = (appId = null, istId = null, appCode = '') => {
     this.appId = appId;
     this.istId = istId;
-    this.appName = appName;
+    this.appCode = appCode;
     this.showNetwork = true;
   };
 
@@ -565,7 +565,7 @@ class AppOverview extends Component {
                           <Button
                             className="c7n-envow-create-btn"
                             funcType="flat"
-                            onClick={this.createNetwork.bind(this, c.appId, c.id, i.appName)}
+                            onClick={this.createNetwork.bind(this, c.appId, c.id, i.appCode)}
                           >
                             <i className="icon-playlist_add icon" />
                             <span><FormattedMessage id={'network.header.create'} /></span>
@@ -801,7 +801,7 @@ class AppOverview extends Component {
           visible={this.showNetwork}
           envId={this.props.envId}
           appId={this.appId}
-          appName={this.appName}
+          appCode={this.appCode}
           istId={this.istId}
           store={NetworkConfigStore}
           onClose={this.closeNetwork}

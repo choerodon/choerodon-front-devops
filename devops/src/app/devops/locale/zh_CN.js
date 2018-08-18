@@ -154,7 +154,7 @@ const pageDetail = {
   'repository.link': `${docServer}/user-guide/development-pipeline/repository/`,
 
   // 环境总览
-  'envoverview.description': '环境总览描述处。',
+  'envoverview.description': '环境总览页面包含了某个环境内所有与应用部署相关的详情。您可以直接通过环境总览对某个环境下所有与部署相关的实体进行查看或管理。',
   'envoverview.title': '项目\"{name}\"的环境总览',
   'envoverview.link': `${docServer}/user-guide/development-pipeline/tag/`,
   'envoverview.unlist': '暂无可用应用',
@@ -260,6 +260,7 @@ const zhCN = {
   network_create: '网络创建中，请耐心等待',
   network_delete: '网络删除中，请耐心等待',
   network_update: '网络更新中，请耐心等待',
+  network_operating: '网络操作中，请耐心等待',
   'network.header.title': '网络',
   'network.header.create': '创建网络',
   'network.header.update': '修改网络',

@@ -73,7 +73,9 @@ class EnvOverviewHome extends Component {
     } else if (key === 'log' && this.env.length) {
       this.loadLog(this.envId || this.env[0].id);
     }
-    this.loadSync(this.envId || this.env[0].id);
+    if (this.env.length) {
+      this.loadSync(this.envId || this.env[0].id);
+    }
   };
 
   /**
@@ -382,6 +384,23 @@ class EnvOverviewHome extends Component {
               </Button>
             </Tooltip>
           </Permission>
+          <Tooltip title={sync && sync.commitUrl ?
+            sync.commitUrl.substr(0, sync.commitUrl.length - 7) : null}
+          >
+            <a
+              href={sync && sync.commitUrl ?
+                sync.commitUrl.substr(0, sync.commitUrl.length - 7) : null}
+              target="_blank"
+              rel="nofollow me noopener noreferrer"
+            >
+              <Button
+                funcType="flat"
+              >
+                <Icon type="account_balance" />
+                <FormattedMessage id={'envoverview.gitlab'} />
+              </Button>
+            </a>
+          </Tooltip>
           <Button
             onClick={this.handleRefresh}
           >
@@ -416,7 +435,7 @@ class EnvOverviewHome extends Component {
               {(sync && sync.devopsSyncCommit === sync.gitCommit
               && sync.gitCommit === sync.agentSyncCommit) || !envState.connect ?
                 null :
-                <div>
+                <div className="c7n-envow-sync-wrap">
                   <div className="c7n-envow-status-text"><FormattedMessage id="envoverview.sync" /></div>
                   <div><Icon type="autorenew" /></div>
                 </div>}

@@ -22,6 +22,7 @@ configure({ enforceActions: false });
 class NetworkOverview extends Component {
   @observable openRemove = false;
   @observable showEdit = false;
+  @observable submitting = false;
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -44,6 +45,7 @@ class NetworkOverview extends Component {
   /**
    * 删除数据
    */
+  @action
   handleDelete = () => {
     const { store, envId } = this.props;
     const { id: projectId } = AppState.currentMenuType;

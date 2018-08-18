@@ -15,7 +15,7 @@ const TimePopoverRequiredProps = {
 };
 
 function TimePopover({ content, title, style }) {
-  const timestamp = Math.min(Date.now(), new Date(content).getTime());
+  const timestamp = Math.min(Date.now(), new Date(content.replace(/-/g, '/')).getTime());
   return (<div style={style}>
     <Tooltip
       title={formatDate(timestamp)}

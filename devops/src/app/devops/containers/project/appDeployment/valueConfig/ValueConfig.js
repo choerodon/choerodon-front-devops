@@ -27,23 +27,23 @@ class ValueConfig extends Component {
    * @param {*} value 修改后的value值
    */
   onChange = (value) => {
-    const oldYaml = this.props.store.getValue ? this.props.store.getValue.yaml : '';
-    const oldvalue = YAML.parse(oldYaml);
-    const newvalue = YAML.parse(value);
-    if (JSON.stringify(oldvalue) === JSON.stringify(newvalue)) {
-      this.setState({
-        disabled: true,
-      });
-    } else {
-      this.setState({
-        disabled: false,
-      });
-    }
     const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
     store.checkYaml(value, projectId)
       .then((data) => {
         this.setState({ errorLine: data });
+        const oldYaml = this.props.store.getValue ? this.props.store.getValue.yaml : '';
+        const oldvalue = YAML.parse(oldYaml);
+        const newvalue = YAML.parse(value);
+        if (JSON.stringify(oldvalue) === JSON.stringify(newvalue)) {
+          this.setState({
+            disabled: true,
+          });
+        } else {
+          this.setState({
+            disabled: false,
+          });
+        }
       });
     this.setState({
       value,

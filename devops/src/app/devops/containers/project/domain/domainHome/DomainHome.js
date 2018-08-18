@@ -25,6 +25,7 @@ class DomainHome extends Component {
       editVisible: false,
       projectId: menu.id,
       openRemove: false,
+      submitting: false,
       show: false,
     };
   }
@@ -279,7 +280,7 @@ class DomainHome extends Component {
           closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
-            <Button key="submit" type="danger" onClick={this.handleDelete}>
+            <Button key="submit" loading={this.state.submitting} type="danger" onClick={this.handleDelete}>
               {intl.formatMessage({ id: 'delete' })}
             </Button>,
           ]}
