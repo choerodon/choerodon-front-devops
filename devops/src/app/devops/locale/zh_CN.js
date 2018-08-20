@@ -184,7 +184,6 @@ const zhCN = {
   deleting: '删除中',
   pending: '部署中',
   stopped: '已停止',
-  stopped: '已停止',
   failedd: '已失败',
   failed: '创建失败',
   deleted: '已删除',
@@ -257,9 +256,8 @@ const zhCN = {
   'ist.delDes': '删除实例将不可恢复，其配置网络同时失效，确定要删除该实例吗？',
 
   // network
-  network_create: '网络创建中，请耐心等待',
   network_delete: '网络删除中，请耐心等待',
-  network_update: '网络更新中，请耐心等待',
+  network_failed: '网络配置失败',
   network_operating: '网络操作中，请耐心等待',
   'network.header.title': '网络',
   'network.header.create': '创建网络',
