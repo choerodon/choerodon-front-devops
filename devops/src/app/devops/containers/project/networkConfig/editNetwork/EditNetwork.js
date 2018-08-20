@@ -167,7 +167,7 @@ class EditNetwork extends Component {
         const {
           name, type, appId, target, config,
         } = data;
-        const targetKeys = appId && target && target.appInstance.length ? 'instance' : 'param';
+        const targetKeys = (appId && target && target.appInstance.length) || target.labels === null ? 'instance' : 'param';
         let appInstance = [];
         let labels = {};
         target && ({ appInstance, labels } = target);

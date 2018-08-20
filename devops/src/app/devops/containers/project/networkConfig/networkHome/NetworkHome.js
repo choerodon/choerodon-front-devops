@@ -157,7 +157,10 @@ class NetworkHome extends Component {
           className={`network-column-instance ${statusStyle}`}
           key={id}
         >
-          <Tooltip title={<FormattedMessage id={instanceStatus} />} placement="top">{code}</Tooltip>
+          <Tooltip
+            title={instanceStatus ? <FormattedMessage id={instanceStatus} /> : ''}
+            placement="top"
+          >{code}</Tooltip>
         </div>);
       });
     }
@@ -196,23 +199,32 @@ class NetworkHome extends Component {
     const { intl } = this.props;
     let editDom = null;
     let deleteDom = null;
-    if (status !== 'operating' && envStatus) {
-      editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="edit" />}>
-        <Button shape="circle" size="small" funcType="flat" onClick={this.editNetwork.bind(this, id)}>
-          <i className="icon icon-mode_edit" />
-        </Button>
-      </Tooltip>);
-      deleteDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="delete" />}>
-        <Button shape="circle" size="small" funcType="flat" onClick={this.openRemove.bind(this, id)}>
-          <i className="icon icon-delete_forever" />
-        </Button>
-      </Tooltip>);
+    if (envStatus) {
+      if (status === 'running') {
+        editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="edit" />}>
+          <Button shape="circle" size="small" funcType="flat" onClick={this.editNetwork.bind(this, id)}>
+            <i className="icon icon-mode_edit" />
+          </Button>
+        </Tooltip>);
+        deleteDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="delete" />}>
+          <Button shape="circle" size="small" funcType="flat" onClick={this.openRemove.bind(this, id)}>
+            <i className="icon icon-delete_forever" />
+          </Button>
+        </Tooltip>);
+      } else {
+        editDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `network_${status}` })}>
+          <i className="icon icon-mode_edit c7n-app-icon-disabled" />
+        </Tooltip>);
+        deleteDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `network_${status}` })}>
+          <i className="icon icon-delete_forever c7n-app-icon-disabled" />
+        </Tooltip>);
+      }
     } else {
-      editDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `network_${status}` })}>
+      editDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: 'network.env.tooltip' })}>
         <i className="icon icon-mode_edit c7n-app-icon-disabled" />
       </Tooltip>);
-      deleteDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `network_${status}` })}>
-        <si className="icon icon-delete_forever c7n-app-icon-disabled" />
+      deleteDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: 'network.env.tooltip' })}>
+        <i className="icon icon-delete_forever c7n-app-icon-disabled" />
       </Tooltip>);
     }
     return (<Fragment>
@@ -365,9 +377,9 @@ class NetworkHome extends Component {
           title={<FormattedMessage id="network.delete" />}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove}><FormattedMessage id={'cancel'} /></Button>,
+            <Button key="back" onClick={this.closeRemove}><FormattedMessage id="cancel" /></Button>,
             <Button key="submit" loading={this.state.submitting} type="danger" onClick={this.handleDelete}>
-              <FormattedMessage id={'delete'} />
+              <FormattedMessage id="delete" />
             </Button>,
           ]}
         >
