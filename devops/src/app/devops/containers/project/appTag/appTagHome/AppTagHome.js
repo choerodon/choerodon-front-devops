@@ -5,10 +5,10 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import { Button, Tooltip, Table, Select, Modal, Form, Input, Icon } from 'choerodon-ui';
-import TimePopover from '../../../components/timePopover';
-import MouserOverWrapper from '../../../components/MouseOverWrapper';
-import '../../main.scss';
-import './AppTag.scss';
+import TimePopover from '../../../../components/timePopover/index';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper/index';
+import '../../../main.scss';
+import './AppTagHome.scss';
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -26,7 +26,7 @@ const formItemLayout = {
 };
 
 @observer
-class AppTag extends Component {
+class AppTagHome extends Component {
   constructor(props) {
     super(props);
     const menu = AppState.currentMenuType;
@@ -491,4 +491,4 @@ class AppTag extends Component {
   }
 }
 
-export default Form.create({})(withRouter(injectIntl(AppTag)));
+export default Form.create({})(withRouter(injectIntl(AppTagHome)));

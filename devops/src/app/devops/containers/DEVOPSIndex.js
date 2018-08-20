@@ -22,9 +22,10 @@ const Container = asyncRouter(() => import('./project/container'));
 const AppRelease = asyncRouter(() => import('./project/appRelease'));
 const Branch = asyncRouter(() => import('./project/branch'));
 const MergeRequest = asyncRouter(() => import('./project/mergeRequest'));
-const AppTag = asyncRouter(() => import('./project/appTag'), () => import('../stores/project/appTag'));
-const Repository = asyncRouter(() => import('./project/repository'), () => import('../stores/project/repository'));
+const AppTag = asyncRouter(() => import('./project/appTag'));
+const Repository = asyncRouter(() => import('./project/repository'));
 const EnvOverview = asyncRouter(() => import('./project/envOverview'));
+const Certificate = asyncRouter(() => import('./project/certificate'));
 
 @inject('AppState')
 class DEVOPSIndex extends React.Component {
@@ -52,6 +53,7 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/merge-request`} component={MergeRequest} />
           <Route path={`${match.url}/tag`} component={AppTag} />
           <Route path={`${match.url}/repository`} component={Repository} />
+          <Route path={`${match.url}/certificate`} component={Certificate} />
           <Route path={'*'} component={nomatch} />
         </Switch>
       </IntlProviderAsync>

@@ -160,6 +160,13 @@ const pageDetail = {
   'envoverview.unlist': '暂无可用应用',
   'envOverview.confirm.reDeploy': '确认部署',
   'envOverview.confirm.content.reDeploy': '未修改配置信息是否重新部署?',
+
+  // 证书
+  'ctf.description': '域名证书是受法律认可的证书文件，确定了域名注册者对域名的拥有权与拥有时限。您在每个环境中添加的所有域名都需要有域名证书。',
+  'ctf.title': '项目\"{name}\"的证书',
+  'ctf.link': `${docServer}/user-guide/development-pipeline/certificate`,
+  'ctf.createCtf': '在项目\"{name}\"中创建证书',
+  'ctf.createDescription': '您可以在此处选择环境，并在该环境下面配置相应的参数创建证书。',
 };
 
 const zhCN = {
@@ -725,6 +732,11 @@ const zhCN = {
   'envoverview.agent': '已执行',
   'envoverview.logs.time': '错误时间',
   'envoverview.envinfo': '请选择运行中的环境',
+
+  // 证书管理
+  'ctf.head': '证书',
+  'ctf.create': '创建证书',
+  'ctf.envName': '环境名称',
 
   ...pageDetail,
 };

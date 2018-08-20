@@ -5,9 +5,9 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { Select, Icon, Button, Table, Tooltip } from 'choerodon-ui';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import MouserOverWrapper from '../../../components/MouseOverWrapper';
-import '../../main.scss';
-import './Repository.scss';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper/index';
+import '../../../main.scss';
+import './RepositoryHome.scss';
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -21,7 +21,7 @@ const repoColor = [
 ];
 
 @observer
-class Repository extends Component {
+class RepositoryHome extends Component {
   constructor(props) {
     super(props);
     const menu = AppState.currentMenuType;
@@ -190,4 +190,4 @@ class Repository extends Component {
   }
 }
 
-export default withRouter(injectIntl(Repository));
+export default withRouter(injectIntl(RepositoryHome));

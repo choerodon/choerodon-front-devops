@@ -22,7 +22,7 @@ All notable changes to choerodon-front-devops will be documented in this file.
 
 ## [0.8.0] - 2018-07-20
 ### Added
-- `Repository`, `branch management`, `tag` and `merge request`, achieving more flexible branch management models.
+- `RepositoryHome`, `branch management`, `tag` and `merge request`, achieving more flexible branch management models.
 - Job operation event message in `container`. 
 - Code quality checking in CI pipeline.
 - Sonarqube code quality checking link in `application management`.
