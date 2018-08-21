@@ -11,7 +11,12 @@
   "scripts": {
     "start": "choerodon-front-boot start --config ../config.js",
     "build": "choerodon-front-boot build --config ../config.js",
-    "test": "mocha"
+    "test": "mocha",
+    "lint": "npm run lint:es && npm run lint:style",
+    "lint:es": "eslint src/**/*.js ../config.js",
+    "lint:style": "stylelint src/**/*.scss --syntax scss",
+    "lint-staged": "lint-staged",
+    "lint-staged:es": "eslint"
   },
   "dependencies": {
     "choerodon-front-boot": "^0.7.1",
@@ -36,5 +41,14 @@
     "chai-http": "^4.0.0",
     "mocha": "^5.2.0",
     "uuid": "^3.3.2"
-  }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx}": [
+      "npm run lint-staged:es"
+    ],
+    "src/**/*.scss": "stylelint --syntax scss"
+  },
+  "pre-commit": [
+    "lint-staged"
+  ]
 }
