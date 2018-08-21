@@ -400,7 +400,7 @@ class AppOverview extends Component {
    * @returns {*}
    */
   panelDom = () => {
-    const { intl, store } = this.props;
+    const { intl, store, envState } = this.props;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const ist = store.getIst;
     if (ist) {
@@ -417,7 +417,7 @@ class AppOverview extends Component {
           >
             {_.map(i.applicationInstanceDTOS, c => (
               <Panel
-                disabled={c.commandStatus !== 'success' || c.status === 'stopped'}
+                disabled={c.status !== 'running' || c.commandStatus === 'doing'}
                 forceRender
                 showArrow={false}
                 header={(<div className="c7n-envow-ist-header-wrap">
@@ -564,14 +564,17 @@ class AppOverview extends Component {
                           projectId={projectId}
                           organizationId={orgId}
                         >
-                          <Button
-                            className="c7n-envow-create-btn"
-                            funcType="flat"
-                            onClick={this.createNetwork.bind(this, c.appId, c.id, i.appCode)}
-                          >
-                            <i className="icon-playlist_add icon" />
-                            <span><FormattedMessage id={'network.header.create'} /></span>
-                          </Button>
+                          <Tooltip title={!envState ? <FormattedMessage id={'envoverview.envinfo'} /> : null}>
+                            <Button
+                              className="c7n-envow-create-btn"
+                              funcType="flat"
+                              disabled={!envState}
+                              onClick={this.createNetwork.bind(this, c.appId, c.id, i.appCode)}
+                            >
+                              <i className="icon-playlist_add icon" />
+                              <span><FormattedMessage id={'network.header.create'} /></span>
+                            </Button>
+                          </Tooltip>
                         </Permission>
                       </div>
                       <div className="c7n-envow-contaners-right">
@@ -587,14 +590,17 @@ class AppOverview extends Component {
                           projectId={projectId}
                           organizationId={orgId}
                         >
-                          <Button
-                            funcType="flat"
-                            className="c7n-envow-create-btn"
-                            onClick={this.createDomain.bind(this, 'create', '')}
-                          >
-                            <i className="icon icon-playlist_add icon" />
-                            <FormattedMessage id={'domain.header.create'} />
-                          </Button>
+                          <Tooltip title={!envState ? <FormattedMessage id={'envoverview.envinfo'} /> : null}>
+                            <Button
+                              funcType="flat"
+                              disabled={!envState}
+                              className="c7n-envow-create-btn"
+                              onClick={this.createDomain.bind(this, 'create', '')}
+                            >
+                              <i className="icon icon-playlist_add icon" />
+                              <FormattedMessage id={'domain.header.create'} />
+                            </Button>
+                          </Tooltip>
                         </Permission>
                       </div>
                     </div>
