@@ -265,7 +265,7 @@ class IssueDetail extends Component {
                     <span className="issue-detail-content-title" style={{ marginLeft: 0 }}>{issue.reporterName}</span>
                   </div>
                   <div className="issue-detail-content-title" style={{ marginLeft: 0 }}>{formatMessage({ id: 'branch.issue.assignee' })}：</div>
-                  {issue.assigneeImageUrl ? <div className="issue-user-img" style={{ backgroundImage: `url(${issue.assigneeImageUrl})` }} /> : <React.Fragment>{issue.assigneeName ? <div  className="issue-user-img">{this.getName(issue.assigneeName)}</div> : formatMessage({ id: 'branch.issue.no' })}</React.Fragment> }
+                  {issue.assigneeImageUrl ? <div className="issue-user-img" style={{ backgroundImage: `url(${issue.assigneeImageUrl})` }} /> : <React.Fragment>{issue.assigneeName ? <div className="issue-user-img">{this.getName(issue.assigneeName)}</div> : formatMessage({ id: 'branch.issue.no' })}</React.Fragment> }
                   <div className="issue-detail-content-title" style={{ marginLeft: 0, display: 'inline-block' }}>{issue.assigneeName}</div>
                 </div>
                 <div>

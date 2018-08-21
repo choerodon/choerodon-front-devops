@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 /**
  * yaml 编辑框的高亮效果
  */
@@ -7,9 +8,9 @@ import ace from 'brace';
 import PropTypes from 'prop-types';
 import { getIn, toJS } from 'immutable';
 import _ from 'lodash';
-import './AceForYaml.scss';
 import 'brace/mode/yaml';
 import 'brace/theme/dawn';
+import './AceForYaml.scss';
 
 const { Range } = ace.acequire('ace/range');
 /* eslint-disable react/no-string-refs */
@@ -63,26 +64,19 @@ class HighlightAce extends Component {
       // this.handleError();
     }
   }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.readOnly) {
       this.ace.editor.setReadOnly(true);
     }
   }
-  componentWillUpdate(){
+
+  componentWillUpdate() {
     if (this.props.errorLines) {
       this.handleError();
     }
   }
-  handleError =() => {
-    const error = this.props.errorLines;
-    const eles = document.getElementsByClassName('ace_gutter-cell');
-    if(eles.length) {
-      for (let i = 0; i < error.length; i += 1){
-        eles[error[i].lineNumber - 1].className = 'ace_gutter-cell ace_error';
-        eles[error[i].lineNumber - 1].title = error[i].errorMsg;
-      }
-    }
-  };
+
   onChange =_.debounce((values, options) => {
     const { isTriggerChange } = this.state;
     const editor = this.ace.editor;
@@ -115,6 +109,7 @@ class HighlightAce extends Component {
       this.setState({ isTriggerChange: true });
     }
   }, 1000);
+
   setOptions =() => {
     const editor = this.ace.editor;
     // eslint-disable-next-line
@@ -123,15 +118,27 @@ class HighlightAce extends Component {
     // require('brace/theme/dawn');
 
     editor.setPrintMarginColumn(0);
-    //editor.setHighlightGutterLine(false);
-    //editor.setWrapBehavioursEnabled(false);
+    // editor.setHighlightGutterLine(false);
+    // editor.setWrapBehavioursEnabled(false);
     // editor.getSession().setMode('ace/mode/yaml');
     // editor.setTheme('ace/theme/dawn');
   };
+
+  handleError =() => {
+    const error = this.props.errorLines;
+    const eles = document.getElementsByClassName('ace_gutter-cell');
+    if (eles.length) {
+      for (let i = 0; i < error.length; i += 1) {
+        eles[error[i].lineNumber - 1].className = 'ace_gutter-cell ace_error';
+        eles[error[i].lineNumber - 1].title = error[i].errorMsg;
+      }
+    }
+  };
+
   handleLoad =() => {
     const editor = this.ace.editor;
     this.setState({ isTriggerChange: false });
-    editor.renderer.setAnnotations([{ row: 6, column: 1, type: 'error', text: 'Some error.'}]);
+    editor.renderer.setAnnotations([{ row: 6, column: 1, type: 'error', text: 'Some error.' }]);
     editor.setValue(this.props.value);
     if (this.props.highlightMarkers && this.props.highlightMarkers.length) {
       this.handleHighLight();
@@ -141,6 +148,7 @@ class HighlightAce extends Component {
     const sourceData = this.props.value.split('\n');
     this.setState({ sourceData });
   };
+
   /**
    * 设置高亮
    */
@@ -161,10 +169,10 @@ class HighlightAce extends Component {
       <div>
         <div className="ace-error">
           <span className="deployApp-config-block deployApp-config-lastModify" /> <span className="deployApp-config-title">上次部署修改</span>
-          <span className="deployApp-config-block deployApp-config-modify" /> <span className='deployApp-config-title'>本次修改</span>
+          <span className="deployApp-config-block deployApp-config-modify" /> <span className="deployApp-config-title">本次修改</span>
         </div>
         <ReactAce
-          annotations={[{ row: 6, column: 1, type: 'error', text: 'Some error.'}]}
+          annotations={[{ row: 6, column: 1, type: 'error', text: 'Some error.' }]}
           mode="yaml"
           theme="dawn"
           showGutter

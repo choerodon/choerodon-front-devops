@@ -55,12 +55,8 @@ class ExportChartStore {
       Choerodon.prompt(error.message);
     });
 
-  loadVersionsByAppId =(appId, projectId) => {
-    return axios.get(`/devops/v1/projects/${projectId}/apps_market/${appId}/versions?is_publish=true`);
-  };
-  exportChart = (proId, data) => {
-    return axios.post(`/devops/v1/projects/${proId}/apps_market/export`, data, { responseType: 'blob' });
-  };
+  loadVersionsByAppId =(appId, projectId) => axios.get(`/devops/v1/projects/${projectId}/apps_market/${appId}/versions?is_publish=true`);
+  exportChart = (proId, data) => axios.post(`/devops/v1/projects/${proId}/apps_market/export`, data, { responseType: 'blob' });
   handleData =(data) => {
     this.setApp(data.content);
     const { number, size, totalElements } = data;

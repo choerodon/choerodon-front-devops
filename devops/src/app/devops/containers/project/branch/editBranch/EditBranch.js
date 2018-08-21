@@ -139,7 +139,7 @@ class EditBranch extends Component {
     if (input !== '') {
       store.loadIssue(this.state.projectId, input, false);
     } else {
-      store.loadIssue(this.state.projectId, '',  true);
+      store.loadIssue(this.state.projectId, '', true);
     }
   };
 

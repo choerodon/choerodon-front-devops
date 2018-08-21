@@ -353,7 +353,8 @@ class CiPipelineHome extends Component {
               : null
           }
           <Tooltip
-            title={(jobs[i].stage === 'sonarqube' && jobs[i].status === 'failed') ? `${jobs[i].stage} : ${jobs[i].description}` : `${jobs[i].stage} : ${jobs[i].status}`}>
+            title={(jobs[i].stage === 'sonarqube' && jobs[i].status === 'failed') ? `${jobs[i].stage} : ${jobs[i].description}` : `${jobs[i].stage} : ${jobs[i].status}`}
+          >
             {jobs[i].stage === 'sonarqube' ? <i
               className={`icon ${ICONS[jobs[i].status || 'skipped'].icon || ''}
                 c7n-icon-${jobs[i].status} c7n-icon-lg`}

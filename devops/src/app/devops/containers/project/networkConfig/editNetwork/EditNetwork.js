@@ -315,7 +315,7 @@ class EditNetwork extends Component {
                 <span>{code}</span>
               </p>
             </Fragment>
-)}
+          )}
         >
           <i className="icon icon-project" />
           <span className="network-app-name">{name}</span>

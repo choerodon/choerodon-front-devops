@@ -243,26 +243,24 @@ class CreateDomain extends Component {
     const { SingleData } = this.state;
     if (SingleData && SingleData.name === value) {
       callback();
-    } else {
-      if (p.test(value)) {
-        const { store } = this.props;
-        const envId = this.props.form.getFieldValue('envId');
-        if (envId) {
-          store.checkName(this.state.projectId, value, envId)
-            .then((data) => {
-              if (data) {
-                callback();
-              } else {
-                callback(this.props.intl.formatMessage({ id: 'domain.name.check.exist' }));
-              }
-            })
-            .catch(() => callback());
-        } else {
-          callback(this.props.intl.formatMessage({ id: 'network.form.app.disable' }));
-        }
+    } else if (p.test(value)) {
+      const { store } = this.props;
+      const envId = this.props.form.getFieldValue('envId');
+      if (envId) {
+        store.checkName(this.state.projectId, value, envId)
+          .then((data) => {
+            if (data) {
+              callback();
+            } else {
+              callback(this.props.intl.formatMessage({ id: 'domain.name.check.exist' }));
+            }
+          })
+          .catch(() => callback());
       } else {
-        callback(this.props.intl.formatMessage({ id: 'domain.names.check.failed' }));
+        callback(this.props.intl.formatMessage({ id: 'network.form.app.disable' }));
       }
+    } else {
+      callback(this.props.intl.formatMessage({ id: 'domain.names.check.failed' }));
     }
   }, 1000);
   /**
