@@ -158,6 +158,8 @@ const pageDetail = {
   'envoverview.title': '项目\"{name}\"的环境总览',
   'envoverview.link': `${docServer}/user-guide/development-pipeline/tag/`,
   'envoverview.unlist': '暂无可用应用',
+  'envOverview.confirm.reDeploy': '确认部署',
+  'envOverview.confirm.content.reDeploy': '未修改配置信息是否重新部署?',
 };
 
 const zhCN = {
