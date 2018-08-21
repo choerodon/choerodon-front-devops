@@ -464,7 +464,7 @@ class EnvOverviewHome extends Component {
           </div>
           <Tabs className="c7n-envoverview-tabs" activeKey={this.tabKey} animated={false} onChange={this.tabChange}>
             <TabPane tab={`${intl.formatMessage({ id: 'network.column.app' })}`} key="app">
-              {this.tabKey === 'app' ? <AppOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId || (this.env.length ? this.env[0].id : null)} /> : null}
+              {this.tabKey === 'app' ? <AppOverview store={EnvOverviewStore} tabkey={this.tabKey} envState={envState.connect} envId={this.envId || (this.env.length ? this.env[0].id : null)} /> : null}
             </TabPane>
             <TabPane tab={`${intl.formatMessage({ id: 'network.header.title' })}`} key="network">
               {this.tabKey === 'network' ? <NetworkOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId || (this.env.length ? this.env[0].id : null)} /> : null}
