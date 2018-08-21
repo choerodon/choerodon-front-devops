@@ -101,9 +101,9 @@ class AppTagStore {
           this.setLoading(false);
           const result = handleProptError(data);
           if (result) {
-            const { content, totalElements, number } = result;
+            const { content, totalElements, number, size } = result;
             this.setTagData(content);
-            this.setPageInfo({ current: number + 1, pageSize: sizes, total: totalElements });
+            this.setPageInfo({ current: number + 1, pageSize: size, total: totalElements });
           }
         }).catch((err) => {
           Choerodon.prompt(err);

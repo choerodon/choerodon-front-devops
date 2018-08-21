@@ -737,6 +737,15 @@ const zhCN = {
   'ctf.head': '证书',
   'ctf.create': '创建证书',
   'ctf.envName': '环境名称',
+  'ctf.column.name': '证书名称',
+  'ctf.column.ingress': '域名地址',
+  'ctf.column.env': '环境名称',
+  'ctf.column.status': '证书状态',
+  'ctf.detail': '证书详情',
+  'ctf.column.operating': '申请中',
+  'ctf.column.active': '已生效',
+  'ctf.column.overdue': '已过期',
+  'ctf.cert.detail': '证书详情',
 
   ...pageDetail,
 };

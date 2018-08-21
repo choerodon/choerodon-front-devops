@@ -138,11 +138,12 @@ class AppTagHome extends Component {
    * @param pagination
    * @param filters
    * @param sorter
+   * @param paras
    */
   tableChange = (pagination, filters, sorter, paras) => {
     const { AppTagStore } = this.props;
     const { projectId } = this.state;
-    this.setState({ page: pagination.current - 1 });
+    this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
     let searchParam = {};
     if (Object.keys(filters).length) {
       searchParam = filters;
@@ -164,16 +165,19 @@ class AppTagHome extends Component {
    */
   handleSelect = (id, option) => {
     const { AppTagStore } = this.props;
-    const { projectId, page, pageSize } = this.state;
-    this.setState({ appId: id, appName: option.props.children });
+    const { projectId } = this.state;
+    this.setState({ appId: id, appName: option.props.children, page: 0, pageSize: 10 });
     AppTagStore.setSelectApp(id);
-    this.loadTagData(projectId, page, pageSize);
+    this.loadTagData(projectId);
   };
 
   /**
    * 页面内刷新，选择器变回默认选项
    */
-  handleRefresh = () => this.loadTagData(this.state.projectId);
+  handleRefresh = () => {
+    const { page, pageSize } = this.state;
+    this.loadTagData(this.state.projectId, page, pageSize);
+  };
 
   /**
    * 加载应用信息
