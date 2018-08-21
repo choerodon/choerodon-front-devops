@@ -56,9 +56,14 @@ class CertificateHome extends Component {
         >
           <Select
             label={intl.formatMessage({ id: 'ctf.envName' })}
-            className="c7n-app-select c7n-select_512"
-            onChange={this.handleEnvSelect}
+            className="c7n-select_512 c7n-ctf-select"
+            onSelect={this.handleEnvSelect}
+            optionFilterProp="children"
+            filterOption={(input, option) => option.props.children
+              .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            getPopupContainer={triggerNode => triggerNode.parentNode}
             allowClear
+            filter
             showSearch
           >
             <Option value="jack">Jack</Option>
