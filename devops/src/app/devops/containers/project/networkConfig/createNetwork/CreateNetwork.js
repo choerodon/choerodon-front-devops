@@ -546,7 +546,7 @@ class CreateNetwork extends Component {
           <Input
             type="text"
             maxLength={5}
-            label={<FormattedMessage id={'network.config.nodePort'} />}
+            label={<FormattedMessage id="network.config.nodePort" />}
           />,
         )}
       </FormItem>) : null}
@@ -566,7 +566,7 @@ class CreateNetwork extends Component {
             type="text"
             maxLength={5}
             disabled={!getFieldValue('envId')}
-            label={<FormattedMessage id={'network.config.port'} />}
+            label={<FormattedMessage id="network.config.port" />}
           />,
         )}
       </FormItem>
@@ -586,7 +586,7 @@ class CreateNetwork extends Component {
             type="text"
             maxLength={5}
             disabled={!getFieldValue('envId')}
-            label={<FormattedMessage id={'network.config.targetPort'} />}
+            label={<FormattedMessage id="network.config.targetPort" />}
           />,
         )}
       </FormItem>
@@ -612,7 +612,7 @@ class CreateNetwork extends Component {
           <Input
             type="text"
             disabled={!getFieldValue('envId')}
-            label={<FormattedMessage id={'network.config.keyword'} />}
+            label={<FormattedMessage id="network.config.keyword" />}
           />,
         )}
       </FormItem>
@@ -632,7 +632,7 @@ class CreateNetwork extends Component {
           <Input
             type="text"
             disabled={!getFieldValue('envId')}
-            label={<FormattedMessage id={'network.config.value'} />}
+            label={<FormattedMessage id="network.config.value" />}
           />,
         )}
       </FormItem>
@@ -642,27 +642,27 @@ class CreateNetwork extends Component {
       this.envSelect.focus();
     }
 
-    const istOption = _.map(_.filter(ist, item =>
-      !_.includes(initIst, item.id)), (item) => {
-      const { id, code } = item;
-      return (<Option key={id} value={id}>
-        {code}
-      </Option>);
-    });
+    const istOption = _.map(_.filter(ist, item => !_.includes(initIst, item.id)),
+      (item) => {
+        const { id, code } = item;
+        return (<Option key={id} value={id}>
+          {code}
+        </Option>);
+      });
 
     return (
       <div className="c7n-region">
         <Sidebar
           destroyOnClose
-          cancelText={<FormattedMessage id={'cancel'} />}
-          okText={<FormattedMessage id={'create'} />}
-          title={<FormattedMessage id={'network.header.create'} />}
+          cancelText={<FormattedMessage id="cancel" />}
+          okText={<FormattedMessage id="create" />}
+          title={<FormattedMessage id="network.header.create" />}
           visible={visible}
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
           confirmLoading={submitting}
         >
-          <Content code={'network.create'} values={{ name: menuName }} className="c7n-network-create sidebar-content">
+          <Content code="network.create" values={{ name: menuName }} className="c7n-network-create sidebar-content">
             <Form layout="vertical">
               <FormItem
                 className="c7n-select_512"
@@ -678,13 +678,13 @@ class CreateNetwork extends Component {
                   ref={this.envSelectRef}
                   className="c7n-select_512"
                   dropdownClassName="c7n-network-env"
-                  label={<FormattedMessage id={'network.env'} />}
+                  label={<FormattedMessage id="network.env" />}
                   placeholder={intl.formatMessage({ id: 'network.env.placeholder' })}
                   optionFilterProp="children"
                   onSelect={this.handleEnvSelect}
                   getPopupContainer={triggerNode => triggerNode.parentNode}
-                  filterOption={(input, option) =>
-                    option.props.children[1].toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  filterOption={(input, option) => option.props.children[1]
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   filter
                   showSearch
                 >
@@ -699,15 +699,15 @@ class CreateNetwork extends Component {
               </FormItem>
               <div className={`network-panel-title ${!getFieldValue('envId') ? 'network-panel-title_disabled' : ''}`}>
                 <Icon type="instance_outline" />
-                <FormattedMessage id={'network.target'} />
+                <FormattedMessage id="network.target" />
               </div>
               <div className="network-radio-wrap">
                 <div className={`network-radio-label ${!getFieldValue('envId') ? 'network-radio-label_disabled' : ''}`}>
-                  <FormattedMessage id={'network.target.type'} />
+                  <FormattedMessage id="network.target.type" />
                 </div>
                 <FormItem
                   className="c7n-select_512 network-radio-form"
-                  label={<FormattedMessage id={'network.target.type'} />}
+                  label={<FormattedMessage id="network.target.type" />}
                   {...formItemLayout}
                 >
                   {getFieldDecorator('target', {
@@ -717,8 +717,8 @@ class CreateNetwork extends Component {
                     disabled={!getFieldValue('envId')}
                     onChange={e => this.handleTypeChange(e, 'targetKeys')}
                   >
-                    <Radio value="instance"><FormattedMessage id={'network.target.instance'} /></Radio>
-                    <Radio value="param"><FormattedMessage id={'network.target.param'} /></Radio>
+                    <Radio value="instance"><FormattedMessage id="network.target.instance" /></Radio>
+                    <Radio value="param"><FormattedMessage id="network.target.param" /></Radio>
                   </RadioGroup>)}
                 </FormItem>
               </div>
@@ -746,10 +746,10 @@ class CreateNetwork extends Component {
                       filterOption={(input, option) => option.props.children.props.children[1]
                         .props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     >
-                      <OptGroup label={<FormattedMessage id={'project'} />} key={'project'}>
+                      <OptGroup label={<FormattedMessage id="project" />} key="project">
                         {_.map(localApp, node => this.makeAppGroup(node))}
                       </OptGroup>
-                      <OptGroup label={<FormattedMessage id={'market'} />} key={'markert'}>
+                      <OptGroup label={<FormattedMessage id="market" />} key="markert">
                         {_.map(storeApp, node => this.makeAppGroup(node))}
                       </OptGroup>
                     </Select>)}
@@ -775,9 +775,8 @@ class CreateNetwork extends Component {
                       label={<FormattedMessage id="network.target.instance" />}
                       notFoundContent={intl.formatMessage({ id: 'network.form.instance.disable' })}
                       getPopupContainer={triggerNode => triggerNode.parentNode}
-                      filterOption={(input, option) =>
-                        option.props.children.props.children
-                          .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                      filterOption={(input, option) => option.props.children.props.children
+                        .toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     >
                       {initIstOption}
                     </Select>)}
@@ -794,17 +793,17 @@ class CreateNetwork extends Component {
                       funcType="flat"
                       onClick={() => this.addGroup('targetKeys')}
                       icon="add"
-                    ><FormattedMessage id={'network.config.addtarget'} /></Button>
+                    ><FormattedMessage id="network.config.addtarget" /></Button>
                   </FormItem>
                 </Fragment>)}
               </div>
               <div className={`network-panel-title ${!getFieldValue('envId') ? 'network-panel-title_disabled' : ''}`}>
                 <Icon type="router" />
-                <FormattedMessage id={'network.config'} />
+                <FormattedMessage id="network.config" />
               </div>
               <div className="network-radio-wrap">
                 <div className={`network-radio-label ${!getFieldValue('envId') ? 'network-radio-label_disabled' : ''}`}>
-                  <FormattedMessage id={'network.target.type'} />
+                  <FormattedMessage id="network.target.type" />
                 </div>
                 <FormItem
                   className="c7n-select_512 network-radio-form"
@@ -838,7 +837,7 @@ class CreateNetwork extends Component {
                         ref={this.ipSelectRef}
                         disabled={!getFieldValue('envId')}
                         className="c7n-select_512"
-                        label={<FormattedMessage id={'network.config.ip'} />}
+                        label={<FormattedMessage id="network.config.ip" />}
                         onInputKeyDown={this.handleInputKeyDown}
                         choiceRender={this.handleChoiceRender}
                         onChoiceRemove={this.handleChoiceRemove}
@@ -862,7 +861,7 @@ class CreateNetwork extends Component {
                     funcType="flat"
                     onClick={() => this.addGroup('portKeys')}
                     icon="add"
-                  ><FormattedMessage id={'network.config.addport'} /></Button>
+                  ><FormattedMessage id="network.config.addport" /></Button>
                 </FormItem>
               </div>
               <FormItem
@@ -881,7 +880,7 @@ class CreateNetwork extends Component {
                   <Input
                     maxLength={30}
                     type="text"
-                    label={<FormattedMessage id={'network.form.name'} />}
+                    label={<FormattedMessage id="network.form.name" />}
                   />,
                 )}
               </FormItem>
