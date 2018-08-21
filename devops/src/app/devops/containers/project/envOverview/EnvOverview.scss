@@ -224,9 +224,12 @@
   }
 
   .c7n-envow-contaners-right {
+    .c7n-envow-pod-ip {
+      margin-top: 1%;
+    }
+
     .c7n-envow-pod {
       margin-left: 18%;
-      margin-top: 1%;
       display: flex;
       position: absolute;
 

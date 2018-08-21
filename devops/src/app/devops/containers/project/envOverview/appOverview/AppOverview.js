@@ -463,12 +463,12 @@ class AppOverview extends Component {
               >
                 <div>
                   <div>
-                    <div className="c7n-envow-contaners-wrap">
+                    {c.devopsEnvPodDTOS.length ? _.map(c.devopsEnvPodDTOS, p => (<div className="c7n-envow-contaners-wrap" key={p.id}>
                       <div className="c7n-envow-contaners-left">
                         <div className="c7n-envow-contaners-title">
                           CONTAINERS
                         </div>
-                        {c.devopsEnvPodDTOS.length ? _.map(c.devopsEnvPodDTOS, p => (<div className="c7n-envow-ls-wrap" key={p.id}>
+                        <div className="c7n-envow-ls-wrap">
                           <div className="c7n-envow-ls">
                             <Tooltip title={<FormattedMessage id={'container.name'} />}>
                               <Icon type="kubernetes" />
@@ -491,16 +491,16 @@ class AppOverview extends Component {
                               </Tooltip>
                             </Permission>
                           </div>
-                          <div className="c7n-envow-ls">
+                          {p.ip ? (<div className="c7n-envow-ls">
                             <Tooltip title={<FormattedMessage id={'container.ip'} />}>
                               <Icon type="room" />
                             </Tooltip>
                             {p.ip}
-                          </div>
-                        </div>)) : null}
+                          </div>) : null}
+                        </div>
                       </div>
                       <div className="c7n-envow-contaners-right">
-                        <div className="c7n-envow-pod">
+                        <div className={p.ip ? 'c7n-envow-pod-ip c7n-envow-pod' : 'c7n-envow-pod'}>
                           <div className="c7n-deploy-status">
                             <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
                               <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="45%" strokeWidth="5%" />
@@ -516,7 +516,7 @@ class AppOverview extends Component {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div>)) : null}
                     <div className="c7n-envow-contaners-title">
                       NETWORKING
                     </div>
@@ -608,6 +608,14 @@ class AppOverview extends Component {
                 </div>
               </Panel>
             ))}
+            {/* 处理Safari浏览器下，折叠面板渲染最后一个节点panel卡顿问题 */}
+            <Panel
+              forceRender
+              style={{ display: 'none' }}
+              key={`${i.appName}-none`}
+            >
+              none
+            </Panel>
           </Collapse>
         </div>));
       }
