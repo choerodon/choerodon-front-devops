@@ -74,7 +74,7 @@
 .c7n-podLog-section {
   margin: 32px 0;
   .CodeMirror-selected {
-    background-color: rgba(255,255,255,.25) !important;
+    background-color: rgba(255, 255, 255, .25) !important;
   }
 }
 
@@ -132,10 +132,6 @@
   font-size: 18px;
   color: #ffb100;
   vertical-align: middle;
-}
-
-.c7n-deploy-text_gray {
-  color: rgba(0, 0, 0, 0.36);
 }
 
 .c7n-podLog-editor {

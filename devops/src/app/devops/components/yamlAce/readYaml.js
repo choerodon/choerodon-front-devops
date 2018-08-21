@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 /**
  * yaml 编辑框的高亮效果
  */
@@ -47,6 +48,34 @@ class HighlightAce extends Component {
   }
 
   /**
+   * 显示报错行
+   */
+  onChange =_.debounce((values, options) => {
+    const editor = this.ace.editor;
+    const { isTriggerChange } = this.state;
+    if (isTriggerChange) {
+      this.handleModifyHighLight(values, options);
+    } else {
+      this.setState({ isTriggerChange: true });
+    }
+  }, 1000);
+
+  /**
+   * 设置属性
+   */
+  setOptions =() => {
+    const editor = this.ace.editor;
+    editor.setAutoScrollEditorIntoView(true);
+    editor.$blockScrolling = Infinity;
+    if (this.props.readOnly) {
+      this.ace.editor.setReadOnly(true);
+    }
+    editor.setPrintMarginColumn(0);
+    // editor.getSession().setMode('ace/mode/yaml');
+    // editor.setTheme('ace/theme/dawn');
+  };
+
+  /**
    * 清除更改的高亮
    */
   handleClearMarkers = () => {
@@ -63,18 +92,7 @@ class HighlightAce extends Component {
       return marker;
     });
   };
-  /**
-   * 显示报错行
-   */
-  onChange =_.debounce((values, options) => {
-    const editor = this.ace.editor;
-    const { isTriggerChange } = this.state;
-    if (isTriggerChange) {
-      this.handleModifyHighLight(values, options);
-    } else {
-      this.setState({ isTriggerChange: true });
-    }
-  }, 1000);
+  
   /**
    * 设置本次修改的高亮
    */
@@ -102,20 +120,7 @@ class HighlightAce extends Component {
     const modifyMarkers = editor.session.getMarkers();
     this.props.onChange(values, modifyMarkers);
   }
-  /**
-   * 设置属性
-   */
-  setOptions =() => {
-    const editor = this.ace.editor;
-    editor.setAutoScrollEditorIntoView(true);
-    editor.$blockScrolling = Infinity;
-    if (this.props.readOnly) {
-      this.ace.editor.setReadOnly(true);
-    }
-    editor.setPrintMarginColumn(0);
-    // editor.getSession().setMode('ace/mode/yaml');
-    // editor.setTheme('ace/theme/dawn');
-  };
+
   /**
    * 处理yaml格式错误显示
    */
@@ -140,6 +145,7 @@ class HighlightAce extends Component {
       }
     }
   };
+
   /**
    * 初始化值和高亮
    */
@@ -153,6 +159,7 @@ class HighlightAce extends Component {
     const sourceData = this.props.value.split('\n');
     this.setState({ sourceData });
   };
+  
   /**
    * 设置高亮
    */

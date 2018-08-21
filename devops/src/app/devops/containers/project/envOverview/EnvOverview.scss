@@ -25,9 +25,7 @@
       border-left: 4px solid;
       padding: 0 32px 0 6px;
     }
-  }
 
-  .c7n-envow-status-content  {
     .c7n-envow-sync-wrap {
       padding-right: 10px;
     }
@@ -66,7 +64,7 @@
   .ant-select-selection__rendered {
     margin-bottom: 0;
   }
-  .ant-select-selection{
+  .ant-select-selection {
     color: #3f51b5;
   }
 
@@ -284,7 +282,7 @@
   line-height: 20px;
   height: 20px;
   margin-bottom: 10px;
-  
+
   .c7n-envow-ls-arrow-wrap {
     display: inline-block;
     line-height: 17px;
@@ -340,7 +338,7 @@
       z-index: 9;
 
       .c7n-envow-sync-step {
-        border-bottom: 1px solid rgba(9, 0, 0, 0.26);;
+        border-bottom: 1px solid rgba(9, 0, 0, 0.26);
         font-size: 14px;
         line-height: 20px;
         font-weight: 500;
@@ -363,7 +361,7 @@
       line-height: 80px;
       text-align: center;
       font-size: 16px;
-      color: rgba(0, 0, 0, 0.36);;
+      color: rgba(0, 0, 0, 0.36);
 
       div {
         transform: scaleX(3);

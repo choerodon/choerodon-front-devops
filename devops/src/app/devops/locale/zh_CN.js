@@ -73,9 +73,9 @@ const pageDetail = {
   'container.log.description': '您可在此查看该容器的日志进行错误定位和状态监控。',
 
   // template
-  'template.head': '组织\"{name}\"的应用模板',
-  'template.createHead': '在组织\"{name}\"中创建应用模板',
-  'template.edit': '对应用模板\"{name}\"进行修改',
+  'template.head': '组织"{name}"的应用模板',
+  'template.createHead': '在组织"{name}"中创建应用模板',
+  'template.edit': '对应用模板"{name}"进行修改',
   'template.editDescription': '您可在此修改应用名称及描述。',
   'template.delDescription': '确定要删除该应用模板吗？',
   'template.createDescription': '请在下面输入应用模板编码、名称、描述，创建默认空白模板。您也可以通过复制于现有模板，以便节省部分操作，提升效率。',
@@ -83,33 +83,33 @@ const pageDetail = {
   'template.link': `${docServer}/user-guide/application-management/application-template/`,
 
   // app
-  'app.head': '项目\"{name}\"的应用',
-  'app.createApp': '在项目\"{name}\"中创建应用',
-  'app.editApp': '对应用\"{name}\"进行修改',
+  'app.head': '项目"{name}"的应用',
+  'app.createApp': '在项目"{name}"中创建应用',
+  'app.editApp': '对应用"{name}"进行修改',
   'app.editDescription': '您可在此修改应用名称。',
   'app.description': '应用是满足用户某些需求的程序代码的集合，可以是某个解耦的微服务或是某个单体应用。您可在此创建应用、修改应用名称、停用应用、启用应用及分支管理。',
   'app.createDescription': '请在下面输入应用编码及名称，也可以选择某个应用模板，快速创建应用。平台会为您自动创建对应的git库以便管理该应用代码。',
   'app.link': `${docServer}/user-guide/application-management/application/`,
 
   // branch
-  'branch.head': '项目\"{name}\"的分支',
-  'branch.createHead': '在应用\"{name}\"中创建分支',
+  'branch.head': '项目"{name}"的分支',
+  'branch.createHead': '在应用"{name}"中创建分支',
   'branch.createDes': '您在此选择该分支要解决的问题、分支来源，修改默认的分支类型及分支名称，即可创建分支。',
-  'branch.mergeDev': '是否将分支\"{name}\"合并到develop分支？',
-  'branch.noCommitDev': '是否将分支\"{name}\"分支无提交，是否删除？',
-  'branch.noCommit': '是否将分支\"{name}\"分支无提交，不生成版本号，是否删除？',
-  'branch.mergeDevMas': '是否将分支\"{name}\"合并到master，develop分支，并以为\"{version}\"版本号？',
+  'branch.mergeDev': '是否将分支"{name}"合并到develop分支？',
+  'branch.noCommitDev': '是否将分支"{name}"分支无提交，是否删除？',
+  'branch.noCommit': '是否将分支"{name}"分支无提交，不生成版本号，是否删除？',
+  'branch.mergeDevMas': '是否将分支"{name}"合并到master，develop分支，并以为"{version}"版本号？',
   'branch.description': '分支是将您的开发工作从主线上分离开来，以免影响主线。您可在此查看各应用的分支，创建分支，并将代码拉至本地开发后提交代码。',
   'branch.link': `${docServer}/user-guide/development-pipeline/branch/`,
   'branch.editDes': '您可在此修改该分支关联的问题。',
-  'branch.editHead': '修改分支\"{name}\"关联的问题',
-  'branch.detailHead': '分支\"{name}\"关联的问题',
+  'branch.editHead': '修改分支"{name}"关联的问题',
+  'branch.detailHead': '分支"{name}"关联的问题',
   // instance
-  'ist.head': '项目\"{name}\"的实例',
-  'ist.editHead': '对\"{name}\"进行修改',
+  'ist.head': '项目"{name}"的实例',
+  'ist.editHead': '对"{name}"进行修改',
   'ist.editDes': '对实例配置信息进行修改后重新部署。',
   'ist.upgradeDes': '选择新版本，并对实例配置信息进行修改后升级实例。',
-  'ist.isthead': '查看应用\"{name}\"的实例详情',
+  'ist.isthead': '查看应用"{name}"的实例详情',
   'ist.istDes': '您可在此查看该实例的运行详情及部署详情。运行详情包括各资源对象的基本信息；部署详情包括配置信息及部署阶段及日志。',
   'ist.description': '实例是一次应用部署生成的应用实体。您可在此用四种视图查看该项目的实例情况及相关应用、环境信息。',
   'ist.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
@@ -127,12 +127,12 @@ const pageDetail = {
   'appstore.link': `${docServer}/user-guide/application-management/application-market/`,
 
   // appVersion
-  'appVer.head': '项目\"{name}\"的应用版本',
+  'appVer.head': '项目"{name}"的应用版本',
   'appVer.description': '应用版本是应用迭代升级生成的版本。您可在此查看版本号、应用编码、应用名称以及版本生成时间。',
   'appVer.link': `${docServer}/user-guide/application-management/application-version/`,
 
   // ci-pipeline
-  'ciPipeline.head': '项目\"{name}\"的持续集成',
+  'ciPipeline.head': '项目"{name}"的持续集成',
   'ciPipeline.description': '您可在此查看各应用所有持续集成流水线的运行情况。',
   'ciPipeline.link': `${docServer}/user-guide/development-pipeline/continuous-integration/`,
 
@@ -143,19 +143,19 @@ const pageDetail = {
 
   // app-tag
   'apptag.description': '标记是用于标识某一时间点形成的稳定可发布的代码版本。您可在此查看各应用的所有标记及相关提交信息，还可以基于某一分支创建标记。',
-  'apptag.title': '项目\"{name}\"的标记',
+  'apptag.title': '项目"{name}"的标记',
   'apptag.link': `${docServer}/user-guide/development-pipeline/tag/`,
-  'apptag.createTag': '在应用\"{name}\"中创建标记',
+  'apptag.createTag': '在应用"{name}"中创建标记',
   'apptag.createDescription': '您在此填写标记名称，选择标记来源，即可基于某一分支创建标记。',
 
   // repository
   'repository.description': '代码仓库是部分实现特定功能的程序代码集合。您可在此查看该项目下的代码仓库、仓库地址及其关联的应用名称，还可以一键复制仓库地址以便克隆代码。',
-  'repository.title': '项目\"{name}\"的代码仓库',
+  'repository.title': '项目"{name}"的代码仓库',
   'repository.link': `${docServer}/user-guide/development-pipeline/repository/`,
 
   // 环境总览
   'envoverview.description': '环境总览页面包含了某个环境内所有与应用部署相关的详情。您可以直接通过环境总览对某个环境下所有与部署相关的实体进行查看或管理。',
-  'envoverview.title': '项目\"{name}\"的环境总览',
+  'envoverview.title': '项目"{name}"的环境总览',
   'envoverview.link': `${docServer}/user-guide/development-pipeline/tag/`,
   'envoverview.unlist': '暂无可用应用',
   'envOverview.confirm.reDeploy': '确认部署',
@@ -534,70 +534,6 @@ const zhCN = {
   'branch.issue.bug': '故障',
   'branch.issue.epic': '史诗',
   'branch.issue.subtask': '子任务',
-  'branch.devConflictMes': '\"{name}\"合并到develop分支冲突，请在本地查看并合并。\n' +
-    '\n' +
-    '步骤 1. 获取并切换到\"{name}\"分支\n' +
-    'git checkout develop\n' +
-    'git fetch origin \"{name}\":\"{name}\"\n' +
-    'git checkout \"{name}\"\n' +
-    '\n' +
-    '步骤 2. 检查修改\n' +
-    '\n' +
-    '步骤 3. 合并\"{name}\"分支到develop，解决冲突并提交到本地仓库\n' +
-    'git checkout develop\n' +
-    'git pull origin develop\n' +
-    'git merge --no-ff \"{name}\"\n' +
-    '\n' +
-    '步骤 4. 推送develop分支到远程仓库\n' +
-    'git push origin develop\n' +
-    '\n' +
-    '点击取消关闭弹窗或解决冲突后再点击结束。',
-
-  'branch.masterConflictMes': '\"{name}\"合并到master分支冲突，请在本地查看并合并。\n' +
-    '\n' +
-    '步骤 1. 获取并切换到\"{name}\"分支\n' +
-    'git checkout master\n' +
-    'git fetch origin \"{name}\":\"{name}\"\n' +
-    'git checkout \"{name}\"\n' +
-    '\n' +
-    '步骤 2. 检查修改\n' +
-    '\n' +
-    '步骤 3. 合并\"{name}\"分支到master，解决冲突并提交到本地仓库\n' +
-    'git checkout master\n' +
-    'git pull origin master\n' +
-    'git merge --no-ff \"{name}\"\n' +
-    '\n' +
-    '步骤 4. 推送master分支到远程仓库\n' +
-    'git push origin master\n' +
-    '\n' +
-    '点击取消关闭弹窗或解决冲突后再点击结束。',
-
-  'branch.bothConflictMes': '\"{name}\"合并到develop分支和master分支均有冲突，请在本地查看并合并。\n' +
-    '\n' +
-    '步骤 1. 获取并切换到\"{name}\"分支\n' +
-    'git checkout develop\n' +
-    'git fetch origin \"{name}\":\"{name}\"\n' +
-    'git checkout \"{name}\"\n' +
-    '\n' +
-    '步骤 2. 检查修改\n' +
-    '\n' +
-    '步骤 3. 合并\"{name}\"分支到master，解决冲突并提交到本地仓库\n' +
-    'git checkout master\n' +
-    'git pull origin master\n' +
-    'git merge --no-ff \"{name}\"\n' +
-    '\n' +
-    '步骤 4. 推送master分支到远程仓库\n' +
-    'git push origin master\n' +
-    '\n' +
-    '步骤 5. 合并\"{name}\"分支到develop，解决冲突并提交到本地仓库\n' +
-    'git checkout develop\n' +
-    'git pull origin develop\n' +
-    'git merge --no-ff \"{name}\"\n' +
-    '\n' +
-    '步骤 6. 推送develop分支到远程仓库\n' +
-    'git push origin develop\n' +
-    '\n' +
-    '点击取消关闭弹窗或解决冲突后再点击结束。',
 
   // ciPipeline
   'ciPipeline.title': '持续集成',

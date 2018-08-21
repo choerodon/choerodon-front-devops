@@ -264,13 +264,11 @@ class BranchStore {
         const res = handleProptError(datas);
         return res;
       });
-  deleteData = (proId = AppState.currentMenuType.id, appId, name) => {
-    return axios.delete(`/devops/v1/projects/${proId}/apps/${appId}/git/branch?branchName=${name}`)
-      .then((datas) => {
-        const res = handleProptError(datas);
-        return res;
-      });
-  };
+  deleteData = (proId = AppState.currentMenuType.id, appId, name) => axios.delete(`/devops/v1/projects/${proId}/apps/${appId}/git/branch?branchName=${name}`)
+    .then((datas) => {
+      const res = handleProptError(datas);
+      return res;
+    });
 }
 
 const branchStore = new BranchStore();
