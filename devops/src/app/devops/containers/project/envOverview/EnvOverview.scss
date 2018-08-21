@@ -284,11 +284,15 @@
   line-height: 20px;
   height: 20px;
   margin-bottom: 10px;
-
+  
+  .c7n-envow-ls-arrow-wrap {
+    display: inline-block;
+    line-height: 17px;
+  }
   .c7n-envow-ls-arrow {
     font-size: 20px;
     color: rgba(0, 0, 0, 0.64);
-    vertical-align: bottom;
+    vertical-align: middle;
     height: 24px;
     margin: 0 8px;
     display: inline-block;
