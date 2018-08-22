@@ -216,8 +216,20 @@
   margin-bottom: 12px;
 }
 
+.c7n-envow-width_50 {
+  width: 50%;
+
+  .c7n-envow-contaners-left {
+    width: 100% !important;
+  }
+}
+
 .c7n-envow-contaners-wrap {
   display: flex;
+
+  .c7n-envow-hidden {
+    visibility: hidden;
+  }
 
   .c7n-envow-contaners-left {
     width: 50%;
@@ -230,6 +242,7 @@
 
     .c7n-envow-pod {
       margin-left: 18%;
+      margin-top: -16px;
       display: flex;
       position: absolute;
 
@@ -371,4 +384,8 @@
       }
     }
   }
+}
+
+.c7n-envow-none {
+  display: none;
 }

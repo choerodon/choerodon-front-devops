@@ -18,14 +18,13 @@
   ],
   "extends": "airbnb",
   "rules": {
-    "react/jsx-no-bind": [
-      "error",
-      {
-        "ignoreRefs": true,
-        "allowArrowFunctions": true,
-        "allowBind": true
-      }
-    ],
+    "react/jsx-no-bind": ["error", {
+      "ignoreRefs": true,
+      "allowArrowFunctions": true,
+      "allowFunctions": false,
+      "allowBind": true,
+      "ignoreDOMComponents": true
+    }],
     "react/prefer-stateless-function": ["off",
       {
         "ignorePureComponents": true
