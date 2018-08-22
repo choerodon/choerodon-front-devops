@@ -1,0 +1,78 @@
+.c7n-ctf-create{
+  .c7n-creation-radio {
+    position: relative;
+    padding-left: 73px;
+    .creation-radio-label {
+      &_disabled {
+        color: rgba(0,0,0,.36);
+      }
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 13px;
+      line-height: 20px;
+      color: #000;
+    }
+    .creation-radio-form {
+      margin-bottom: 8px;
+    }
+  }
+
+  // 创建侧边栏的单选
+  .c7n-creation-title {
+    &_disabled {
+      color: rgba(0,0,0,.36);
+    }
+    margin-bottom: 16px;
+    span {
+      display: inline-block;
+      vertical-align: middle;
+      font-size: 13px;
+      margin-left: 10px;
+    }
+  }
+
+  // 创建侧边栏中的卡片区域
+  .c7n-creation-panel {
+    margin-bottom: 32px;
+    padding: 16px;
+    width: 512px;
+    min-height: 150px;
+    box-shadow: 0 1px 0 0 rgba(0,0,0,0.20), 0 0 0 1px rgba(0,0,0,0.12), 0 2px 2px -1px rgba(0,0,0,0.12);
+    border-radius: 2px;
+    .creation-panel-button {
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .creation-form-name {
+      margin-bottom: 0;
+    }
+
+    .creation-panel-group {
+      display: flex;
+      justify-content: space-between;
+      .c7n-select_454 {
+        width: 454px;
+      }
+      .creation-group-form {
+        margin-bottom: 12px;
+      }
+    }
+
+    // 多组的删除图标
+    .creation-panel-icon {
+      position: relative;
+      top: 20px;
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+      &.icon-delete {
+        cursor: pointer;
+      }
+    }
+
+    .c7n-ctf-upload {
+
+    }
+  }
+}

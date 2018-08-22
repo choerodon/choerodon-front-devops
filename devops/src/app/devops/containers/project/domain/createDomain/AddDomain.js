@@ -353,7 +353,7 @@ class CreateDomain extends Component {
    * @type {Function}
    */
   checkDomain =(rule, value, callback) => {
-    const patt = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)$/;
+    const patt = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)+)$/;
     if (patt.test(value)) {
       callback();
     } else {

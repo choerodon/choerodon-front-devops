@@ -8,6 +8,7 @@ const { AppState } = stores;
 @store('CertificateStore')
 class CertificateStore {
   @observable envData = [];
+
   @observable certData = [{
     id: 10,
     certName: 'test-env-Cert',
@@ -16,7 +17,9 @@ class CertificateStore {
     status: 'operating',
     domains: ['localhost:9090', 'localhost:9091', 'localhost:9092'],
   }];
+
   @observable loading = false;
+
   @observable pageInfo = {
     current: 0,
     total: 0,
@@ -55,6 +58,10 @@ class CertificateStore {
     return this.pageInfo;
   }
 
+  /**
+   * 加载项目下所有环境
+   * @param projectId
+   */
   loadEnvData = (projectId) => {
     const activeEnv = axios.get(`/devops/v1/projects/${projectId}/envs?active=true`);
     const invalidEnv = axios.get(`/devops/v1/projects/${projectId}/envs?active=false`);
@@ -65,9 +72,18 @@ class CertificateStore {
     });
   };
 
-  loadCertData = ({ projectId, envId, page = 0, sizes = 10, sort = { field: 'id', order: 'asc' }, postData = { searchParam: {}, param: '' } }) => {
+  /**
+   * 加载证书列表
+   * @param projectId
+   * @param envId
+   * @param page
+   * @param sizes
+   * @param sort
+   * @param postData
+   */
+  loadCertData = ({ projectId, page = 0, sizes = 10, sort = { field: 'id', order: 'asc' }, postData = { searchParam: {}, param: '' } }) => {
     this.setCertLoading(true);
-    axios.post(`/devops/v1/projects/${projectId}/envs/${envId}/cert?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+    axios.post(`/devops/v1/projects/${projectId}/cert?page=${page}&size=${sizes}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
       .then((data) => {
         this.setCtfLoading(false);
         const res = handleProptError(data);
@@ -82,6 +98,16 @@ class CertificateStore {
         Choerodon.handleResponseError(err);
       });
   };
+
+  /**
+   * 名字唯一性检查
+   * @param projectId
+   * @param value
+   * @param envId
+   */
+  checkCertName = (projectId, value, envId) => {};
+
+  deleteCertById = (projectId, certId) => axios.delete(`/devops/v1/projects/${projectId}/cert/${certId}/delete`);
 }
 
 const certificateStore = new CertificateStore();

@@ -3,20 +3,22 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-import { Table, Icon, Select, Button, Popover, Tooltip } from 'choerodon-ui';
+import { Table, Icon, Select, Button, Popover, Tooltip, Modal } from 'choerodon-ui';
 import _ from 'lodash';
 import '../../../main.scss';
 import './CertificateHome.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import CreateCert from '../createCert';
 
 const { AppState } = stores;
 const { Option } = Select;
+const { Sidebar } = Modal;
 @observer
 class CertificateHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectEnv: null,
+      deleteCert: null,
       page: 0,
       pageSize: 10,
       param: [],
@@ -25,6 +27,9 @@ class CertificateHome extends Component {
         columnKey: 'id',
         order: 'desc',
       },
+      deleteStatus: false,
+      removeDisplay: false,
+      createDisplay: false,
     };
   }
 
@@ -34,21 +39,31 @@ class CertificateHome extends Component {
     CertificateStore.loadEnvData(projectId);
   }
 
-  openCreateModal =() => {};
-
   /**
-   * 选择环境，加载环境下证书
-   * @param e
+   * 创建证书侧边栏
    */
-  handleEnvSelect = (e) => {
-    if (!e) return;
-    const { CertificateStore } = this.props;
-    this.setState({ selectEnv: e });
-    this.loadCertData(e, 0, 10);
+  openCreateModal = () => this.setState({ createDisplay: true });
+
+  closeCreateModal = () => {
+    this.setState({ createDisplay: false });
   };
 
-  handleDelete = (id) => {
-    window.console.log(id);
+  /**
+   * 删除证书
+   */
+  handleDelete = () => {
+    const { CertificateStore } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    const { deleteCert } = this.state;
+    this.setState({ deleteStatus: true });
+    CertificateStore.deleteCertById(projectId, deleteCert).then(() => {
+      const { page, pageSize } = this.state;
+      this.loadCertData(page, pageSize);
+      this.setState({ deleteStatus: false, removeDisplay: false });
+    }).catch((err) => {
+      this.setState({ deleteStatus: false });
+      Choerodon.handleResponseError(err);
+    });
   };
 
   /**
@@ -82,21 +97,30 @@ class CertificateHome extends Component {
    * 刷新
    */
   reload = () => {
-    const { selectEnv, page, pageSize } = this.state;
-    this.loadCertData(selectEnv, page, pageSize);
+    const { page, pageSize } = this.state;
+    this.loadCertData(page, pageSize);
   };
 
   /**
    * 加载数据
-   * @param selectEnv
    * @param page
    * @param pageSize
    */
-  loadCertData = (selectEnv, page, pageSize) => {
+  loadCertData = (page, pageSize) => {
     const { CertificateStore } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    CertificateStore.loadCertData({ projectId, envId: selectEnv, page, pageSize });
+    CertificateStore.loadCertData({ projectId, page, pageSize });
   };
+
+  /**
+   * 显示删除确认框
+   */
+  openRemoveModal = id => this.setState({
+    removeDisplay: true,
+    deleteCert: id,
+  });
+
+  closeRemoveModal = () => this.setState({ removeDisplay: false });
 
   /**
    * 操作列
@@ -113,7 +137,13 @@ class CertificateHome extends Component {
         overlayClassName="c7n-ctf-overlay"
         arrowPointAtCenter
         title={intl.formatMessage({ id: 'ctf.cert.detail' })}
-        content={_.map(domains, item => <p key={item} className="c7n-ctf-detail">{item}</p>)}
+        content={<div className="c7n-overlay-content">
+          <div className="c7n-overlay-item">
+            <p className="c7n-ctf-detail">CommonName</p>
+            <p className="c7n-ctf-detail">DNSNames</p>
+          </div>
+          <div className="c7n-overlay-item">{_.map(domains, item => <p key={item} className="c7n-ctf-detail">{item}</p>)}</div>
+        </div>}
         getPopupContainer={triggerNode => triggerNode.parentNode}
         trigger="hover"
         placement="bottomRight"
@@ -132,7 +162,7 @@ class CertificateHome extends Component {
             shape="circle"
             size="small"
             funcType="flat"
-            onClick={this.handleDelete.bind(this, id)}
+            onClick={this.openRemoveModal.bind(this, id)}
           />
         </Tooltip>
       </Permission>
@@ -141,15 +171,15 @@ class CertificateHome extends Component {
 
   render() {
     const { intl, CertificateStore } = this.props;
-    const { selectEnv, param, filters, sort: { columnKey, order } } = this.state;
+    const {
+      param,
+      filters,
+      sort: { columnKey, order },
+      removeDisplay,
+      deleteStatus,
+      createDisplay,
+    } = this.state;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
-    const envData = CertificateStore.getEnvData;
-    const options = envData ? _.map(envData, (item) => {
-      const { id, name: envName, connect } = item;
-      return (<Option key={id} value={id}>
-        {connect ? <span className="env-status-success" /> : <span className="env-status-error" />}
-        {envName}</Option>);
-    }) : [];
     const columns = [{
       title: <FormattedMessage id="ctf.column.name" />,
       key: 'certName',
@@ -157,7 +187,7 @@ class CertificateHome extends Component {
       filters: [],
       sortOrder: columnKey === 'certName' && order,
       filteredValue: filters.certName || [],
-      render: (text, record) => (<MouserOverWrapper text={text || ''} width={0.12}>
+      render: (text, record) => (<MouserOverWrapper text={text || ''} width={0.25}>
         {text}</MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="ctf.column.ingress" />,
@@ -166,6 +196,8 @@ class CertificateHome extends Component {
       filters: [],
       sortOrder: columnKey === 'commonName' && order,
       filteredValue: filters.commonName || [],
+      render: (text, record) => (<MouserOverWrapper text={text || ''} width={0.25}>
+        {text}</MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="ctf.column.env" />,
       key: 'envName',
@@ -221,20 +253,6 @@ class CertificateHome extends Component {
           code="ctf"
           value={{ name }}
         >
-          <Select
-            value={selectEnv || (envData.length && envData[0].id) || ''}
-            label={intl.formatMessage({ id: 'ctf.envName' })}
-            className="c7n-select_512 c7n-ctf-select"
-            onSelect={this.handleEnvSelect}
-            optionFilterProp="children"
-            filterOption={(input, option) => option.props.children[1]
-              .toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            getPopupContainer={triggerNode => triggerNode.parentNode}
-            filter
-            showSearch
-          >
-            {options}
-          </Select>
           <Table
             filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
             onChange={this.tableChange}
@@ -246,6 +264,25 @@ class CertificateHome extends Component {
             rowKey={record => record.id}
           />
         </Content>
+        {createDisplay && <CreateCert
+          visible={createDisplay}
+          store={CertificateStore}
+          handleClose={this.closeCreateModal}
+        />}
+        <Modal
+          confirmLoading={deleteStatus}
+          visible={removeDisplay}
+          title={<FormattedMessage id="ctf.delete" />}
+          closable={false}
+          footer={[
+            <Button key="back" onClick={this.closeRemoveModal}><FormattedMessage id="cancel" /></Button>,
+            <Button key="submit" loading={deleteStatus} type="danger" onClick={this.handleDelete}>
+              <FormattedMessage id="delete" />
+            </Button>,
+          ]}
+        >
+          <p><FormattedMessage id="ctf.delete.tooltip" /></p>
+        </Modal>
       </Page>
     );
   }
