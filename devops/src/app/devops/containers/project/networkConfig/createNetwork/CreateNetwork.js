@@ -775,7 +775,7 @@ class CreateNetwork extends Component {
                       label={<FormattedMessage id="network.target.instance" />}
                       notFoundContent={intl.formatMessage({ id: 'network.form.instance.disable' })}
                       getPopupContainer={triggerNode => triggerNode.parentNode}
-                      filterOption={(input, option) => option.props.children.props.children
+                      filterOption={(input, option) => option.props.children
                         .toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     >
                       {initIstOption}

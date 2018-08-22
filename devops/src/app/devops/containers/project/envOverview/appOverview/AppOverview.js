@@ -463,44 +463,51 @@ class AppOverview extends Component {
               >
                 <div>
                   <div>
-                    {c.devopsEnvPodDTOS.length ? _.map(c.devopsEnvPodDTOS, p => (<div className="c7n-envow-contaners-wrap" key={p.id}>
-                      <div className="c7n-envow-contaners-left">
-                        <div className="c7n-envow-contaners-title">
-                          CONTAINERS
-                        </div>
-                        <div className="c7n-envow-ls-wrap">
-                          <div className="c7n-envow-ls">
-                            <Tooltip title={<FormattedMessage id={'container.name'} />}>
-                              <Icon type="kubernetes" />
-                            </Tooltip>
-                            {p.name}
-                            <Permission
-                              service={['devops-service.devops-env-pod-container.queryLogByPod']}
-                              organizationId={orgId}
-                              projectId={projectId}
-                              type={type}
-                            >
-                              <Tooltip title={<FormattedMessage id={'container.log'} />}>
-                                <Button
-                                  size="small"
-                                  shape="circle"
-                                  onClick={this.showLog.bind(this, p)}
-                                >
-                                  <i className="icon icon-insert_drive_file" />
-                                </Button>
+                    <div className="c7n-envow-contaners-title c7n-envow-width_50">
+                      CONTAINERS
+                    </div>
+                    <div className="c7n-envow-contaners-wrap">
+                      <div className="c7n-envow-width_50">
+                        {c.devopsEnvPodDTOS.length ? _.map(c.devopsEnvPodDTOS, p => (<div className="c7n-envow-contaners-left" key={p.id}>
+                          <div className="c7n-envow-ls-wrap">
+                            <div className="c7n-envow-ls">
+                              <Tooltip title={<FormattedMessage id={'container.name'} />}>
+                                <Icon type="kubernetes" />
                               </Tooltip>
-                            </Permission>
+                              {p.name}
+                              <Permission
+                                service={['devops-service.devops-env-pod-container.queryLogByPod']}
+                                organizationId={orgId}
+                                projectId={projectId}
+                                type={type}
+                              >
+                                <Tooltip title={<FormattedMessage id={'container.log'} />}>
+                                  <Button
+                                    size="small"
+                                    shape="circle"
+                                    onClick={this.showLog.bind(this, p)}
+                                  >
+                                    <i className="icon icon-insert_drive_file" />
+                                  </Button>
+                                </Tooltip>
+                              </Permission>
+                            </div>
+                            {p.ip ? (<div className="c7n-envow-ls">
+                              <Tooltip title={<FormattedMessage id={'container.ip'} />}>
+                                <Icon type="room" />
+                              </Tooltip>
+                              {p.ip}
+                            </div>) : (<div className="c7n-envow-ls c7n-envow-hidden">
+                              <Tooltip title={<FormattedMessage id={'container.ip'} />}>
+                                <Icon type="room" />
+                              </Tooltip>
+                              {p.ip}
+                            </div>)}
                           </div>
-                          {p.ip ? (<div className="c7n-envow-ls">
-                            <Tooltip title={<FormattedMessage id={'container.ip'} />}>
-                              <Icon type="room" />
-                            </Tooltip>
-                            {p.ip}
-                          </div>) : null}
-                        </div>
+                        </div>)) : null}
                       </div>
                       <div className="c7n-envow-contaners-right">
-                        <div className={p.ip ? 'c7n-envow-pod-ip c7n-envow-pod' : 'c7n-envow-pod'}>
+                        <div className="c7n-envow-pod">
                           <div className="c7n-deploy-status">
                             <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
                               <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="45%" strokeWidth="5%" />
@@ -516,7 +523,7 @@ class AppOverview extends Component {
                           </div>
                         </div>
                       </div>
-                    </div>)) : null}
+                    </div>
                     <div className="c7n-envow-contaners-title">
                       NETWORKING
                     </div>
@@ -610,8 +617,8 @@ class AppOverview extends Component {
             ))}
             {/* 处理Safari浏览器下，折叠面板渲染最后一个节点panel卡顿问题 */}
             <Panel
+              className="c7n-envow-none"
               forceRender
-              style={{ display: 'none' }}
               key={`${i.appName}-none`}
             >
               none

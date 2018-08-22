@@ -19,7 +19,7 @@
     "lint-staged:es": "eslint"
   },
   "dependencies": {
-    "choerodon-front-boot": "^0.7.1",
+    "choerodon-front-boot": "^0.7.3",
     "markdown-react-js": "^1.0.0",
     "quill-delta-to-html": "^0.8.4",
     "react-codemirror": "^1.0.0",
