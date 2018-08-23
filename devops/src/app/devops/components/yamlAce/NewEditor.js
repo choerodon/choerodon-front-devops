@@ -10,14 +10,9 @@ import './yamlCodeMirror.scss';
 
 require('codemirror/lib/codemirror.css');
 require('codemirror/mode/yaml/yaml');
-// require('codemirror/theme/base16-light.css');
 require('codemirror/theme/neat.css');
 
 require('codemirror/addon/fold/foldgutter.css');
-// require('codemirror/addon/fold/foldcode');
-// require('codemirror/addon/fold/foldgutter.js');
-// require('codemirror/addon/fold/brace-fold.js');
-// require('codemirror/addon/fold/comment-fold.js');
 /* eslint-disable */
 class NewEditor extends Component {
   static propTypes = {
@@ -42,16 +37,15 @@ class NewEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-
-    }
-    ;
+    };
   }
 
   componentDidMount() {
     const editor = this.aceEditor.getCodeMirror();
+    const { highlightMarkers } = this.props;
     editor.setOption('styleSelectedText',false);
     editor.setSize('100%', (editor.getDoc().size * 19) + 8);
-    if (this.props.highlightMarkers) {
+    if (highlightMarkers) {
       this.handleHighLight();
     }
   }
@@ -87,7 +81,6 @@ class NewEditor extends Component {
       editor.addLineClass(start.line, 'background', 'lastModifyLine-line');
       editor.markText(from, to, { className: 'lastModifyLine-text' });
     }
-    // this.props.onChange(values);
     this.handleModifyHighLight(values, options);
   };
   /**
@@ -100,7 +93,12 @@ class NewEditor extends Component {
    * 处理yaml格式错误显示
    */
   handleError =() => {
-    const error = this.props.errorLines;
+    const { value, errorLines, change } = this.props;
+    const error = errorLines;
+    if (value && this.aceEditor && !change) {
+      const editor = this.aceEditor.getCodeMirror();
+      editor.setValue(value);
+    }
     if (error && error.length) {
       const eles = document.getElementsByClassName('CodeMirror-linenumber CodeMirror-gutter-elt');
       if (eles.length) {

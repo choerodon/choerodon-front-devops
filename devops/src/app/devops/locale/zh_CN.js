@@ -1,7 +1,7 @@
 
 // zh_CN.js
 // 文档地址前缀
-const docServer = 'http://v0-8.choerodon.io/zh/docs';
+const docServer = 'http://v0-9.choerodon.io/zh/docs';
 // 界面标题描述统一管理
 const pageDetail = {
 

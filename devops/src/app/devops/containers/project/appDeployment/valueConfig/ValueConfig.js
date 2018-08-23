@@ -163,6 +163,7 @@ class ValueConfig extends Component {
               value={data.yaml}
               highlightMarkers={data.highlightMarkers}
               onChange={this.onChange}
+              change
             /> }
           </div>
         </div>

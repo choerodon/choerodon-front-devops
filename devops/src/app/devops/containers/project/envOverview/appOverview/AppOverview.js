@@ -139,7 +139,7 @@ class AppOverview extends Component {
   @action
   updateConfig = (name, id, envId, verId, appId) => {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    AppDeploymentStore.loadValue(projectId, id)
+    AppDeploymentStore.loadValue(projectId, id, verId)
       .then((res) => {
         if (res && res.failed) {
           Choerodon.prompt(res.message);
@@ -164,22 +164,22 @@ class AppOverview extends Component {
   upgradeIst = (name, id, envId, verId, appId) => {
     const { intl } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    AppDeploymentStore.loadValue(projectId, id)
-      .then((res) => {
-        if (res && res.failed) {
-          Choerodon.prompt(res.message);
+    AppDeploymentStore.loadUpVersion(projectId, verId)
+      .then((val) => {
+        if (val && val.failed) {
+          Choerodon.prompt(val.message);
+        } else if (val.length === 0) {
+          Choerodon.prompt(intl.formatMessage({ id: 'ist.noUpVer' }));
         } else {
-          AppDeploymentStore.loadUpVersion(projectId, verId)
-            .then((val) => {
-              if (val && val.failed) {
-                Choerodon.prompt(val.message);
-              } else if (val.length === 0) {
-                Choerodon.prompt(intl.formatMessage({ id: 'ist.noUpVer' }));
+          this.id = id;
+          this.name = name;
+          this.idArr = [envId, val[0].id, appId];
+          AppDeploymentStore.loadValue(projectId, id, val[0].id)
+            .then((res) => {
+              if (res && res.failed) {
+                Choerodon.prompt(res.message);
               } else {
                 this.visibleUp = true;
-                this.id = id;
-                this.name = name;
-                this.idArr = [envId, verId, appId];
               }
             });
         }
@@ -741,7 +741,6 @@ class AppOverview extends Component {
   render() {
     const { intl, store } = this.props;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
-
     const val = store.getVal;
     const prefix = <Icon type="search" onClick={this.onSearch} />;
     const suffix = val ? <Icon type="close" onClick={this.emitEmpty} /> : null;
@@ -780,7 +779,7 @@ class AppOverview extends Component {
           store={AppDeploymentStore}
           visible={this.visibleUp}
           name={this.name}
-          id={this.id}
+          appInstanceId={this.id}
           idArr={this.idArr}
           onClose={this.handleCancelUp}
         /> }

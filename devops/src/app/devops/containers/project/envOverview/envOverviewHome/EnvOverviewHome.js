@@ -102,13 +102,14 @@ class EnvOverviewHome extends Component {
     EnvOverviewStore.loadActiveEnv(projectId)
       .then((env) => {
         if (env.length) {
-          this.env = env;
+          const envSort = _.concat(_.filter(env, ['connect', true]), _.filter(env, ['connect', false]));
+          this.env = envSort;
           const flag = _.filter(env, { id: this.envId }).length;
-          this.loadIstOverview(flag ? this.envId : env[0].id);
-          this.loadDomain(flag ? this.envId : env[0].id);
-          this.loadNetwork(flag ? this.envId : env[0].id);
-          this.loadLog(flag ? this.envId : env[0].id);
-          this.loadSync(flag ? this.envId : env[0].id);
+          this.loadIstOverview(flag ? this.envId : envSort[0].id);
+          this.loadDomain(flag ? this.envId : envSort[0].id);
+          this.loadNetwork(flag ? this.envId : envSort[0].id);
+          this.loadLog(flag ? this.envId : envSort[0].id);
+          this.loadSync(flag ? this.envId : envSort[0].id);
         }
       });
   };

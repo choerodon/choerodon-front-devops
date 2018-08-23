@@ -21,6 +21,9 @@ class UpgradeIst extends Component {
       id: undefined,
       value: '',
       verValue: undefined,
+      loading: false,
+      oldData: null,
+      change: false,
     };
   }
 
@@ -37,6 +40,7 @@ class UpgradeIst extends Component {
       });
     this.setState({
       value,
+      change: true,
     });
   };
 
@@ -54,14 +58,15 @@ class UpgradeIst extends Component {
    * 修改配置升级实例
    */
   handleOk = () => {
-    const { store, id, idArr, intl } = this.props;
+    this.setState({ loading: true });
+    const { store, appInstanceId, idArr, intl } = this.props;
     const projectId = AppState.currentMenuType.id;
     const value = this.state.value || this.props.store.getValue.yaml;
     const verValue = this.props.store.getVerValue;
     const verId = this.state.id || verValue[0].id;
     const data = {
       values: value,
-      appInstanceId: id,
+      appInstanceId: appInstanceId,
       environmentId: idArr[0],
       appVerisonId: verId,
       appId: idArr[2],
@@ -78,27 +83,54 @@ class UpgradeIst extends Component {
               } else {
                 this.onClose(res);
               }
+              this.setState({ loading: false });
             });
         } else {
           Choerodon.prompt(intl.formatMessage({ id: 'ist.yamlErr' }));
+          this.setState({ loading: false });
         }
       });
   };
 
   handleChange(id) {
+    const { store, appInstanceId, idArr } = this.props;
+    const projectId = AppState.currentMenuType.id;
     this.setState({
       id,
     });
+    store.loadValue(projectId, appInstanceId, id)
+      .then((res) => {
+        if (res) {
+          this.setState({ oldData: res, change: false });
+        }
+      });
+  }
+
+  aceDom = (data) => {
+    const { errorLine, change } = this.state;
+    if (data) {
+      let error = data.errorLines;
+      if (this.state.errorLine !== undefined) {
+        error = errorLine;
+      }
+      return (<Ace
+        newLines={data.newLines}
+        isFileError={!!data.errorLines}
+        errorLines={error}
+        totalLine={data.totalLine}
+        value={data.yaml}
+        highlightMarkers={data.highlightMarkers}
+        onChange={this.onChange}
+        change={change}
+      />);
+    }
   }
 
   render() {
-    const { intl } = this.props;
-    const data = this.props.store.getValue;
+    const { intl, store } = this.props;
+    const { oldData } = this.state;
+    const data =  oldData || store.getValue;
     const verValue = this.props.store.getVerValue;
-    let error = data.errorLines;
-    if (this.state.errorLine !== undefined) {
-      error = this.state.errorLine;
-    }
     const sideDom = (<div className="c7n-region">
       <h2 className="c7n-space-first">
         <FormattedMessage
@@ -141,17 +173,7 @@ class UpgradeIst extends Component {
       </div>)}
       <div className="c7n-ace-section">
         <div className="c7n-body-section c7n-border-done">
-          <div>
-            {data && <Ace
-              newLines={data.newLines}
-              isFileError={!!data.errorLines}
-              errorLines={error}
-              totalLine={data.totalLine}
-              value={data.yaml}
-              highlightMarkers={data.highlightMarkers}
-              onChange={this.onChange}
-            /> }
-          </div>
+        {this.aceDom(data)}
         </div>
       </div>
     </div>);
@@ -162,6 +184,7 @@ class UpgradeIst extends Component {
       onCancel={this.onClose.bind(this, false)}
       cancelText={intl.formatMessage({ id: 'cancel' })}
       okText={intl.formatMessage({ id: 'ist.upgrade' })}
+      confirmLoading={this.state.loading}
     >
       {sideDom}
     </Sidebar>);
