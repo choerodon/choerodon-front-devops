@@ -310,13 +310,15 @@ class AppDeploymentStore {
     }
   });
 
-  loadValue = (projectId, id) =>
-    axios.get(`/devops/v1/projects/${projectId}/app_instances/${id}/value`)
+  loadValue = (projectId, id, verId) =>
+    axios.get(`devops/v1/projects/${projectId}/app_instances/${id}/appVersion/${verId}/value`)
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
           this.setValue(data);
+          return res;
         }
+        return false;
       });
 
   checkYaml = (value, projectId) => axios.post(`/devops/v1/projects/${projectId}/app_instances/value_format`, { yaml: value });

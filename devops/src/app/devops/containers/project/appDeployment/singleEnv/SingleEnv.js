@@ -186,7 +186,7 @@ class SingleEnvironment extends Component {
       name,
     });
     store.setAlertType('valueConfig');
-    store.loadValue(projectId, id)
+    store.loadValue(projectId, id, verId)
       .then((res) => {
         if (res && res.failed) {
           Choerodon.prompt(res.message);
@@ -211,22 +211,24 @@ class SingleEnvironment extends Component {
   upgradeIst = (name, id, envId, verId, appId) => {
     const { store, intl } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    store.loadValue(projectId, id)
-      .then((res) => {
-        if (res && res.failed) {
-          Choerodon.prompt(res.message);
+    store.loadUpVersion(projectId, verId)
+      .then((val) => {
+        if (val && val.failed) {
+          Choerodon.prompt(val.message);
+        } else if (val.length === 0) {
+          Choerodon.prompt(intl.formatMessage({ id: 'ist.noUpVer' }));
         } else {
-          store.loadUpVersion(projectId, verId)
-            .then((val) => {
-              if (val && val.failed) {
-                Choerodon.prompt(val.message);
-              } else if (val.length === 0) {
-                Choerodon.prompt(intl.formatMessage({ id: 'ist.noUpVer' }));
+          this.setState({
+            idArr: [envId, val[0].id, appId],
+            id,
+            name,
+          });
+          store.loadValue(projectId, id, val[0].id)
+            .then((res) => {
+              if (res && res.failed) {
+                Choerodon.prompt(res.message);
               } else {
                 this.setState({
-                  idArr: [envId, verId, appId],
-                  id,
-                  name,
                   visibleUp: true,
                 });
               }
@@ -581,7 +583,7 @@ class SingleEnvironment extends Component {
           store={this.props.store}
           visible={this.state.visibleUp}
           name={this.state.name}
-          id={this.state.id}
+          appInstanceId={this.state.id}
           idArr={this.state.idArr}
           onClose={this.handleCancelUp}
         /> }

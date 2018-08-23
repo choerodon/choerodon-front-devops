@@ -436,6 +436,7 @@ class DeploymentAppHome extends Component {
             value={data.yaml}
             highlightMarkers={data.highlightMarkers}
             onChange={this.handleChangeValue}
+            change
           />)}
         </section>
         <section className="deployApp-section">

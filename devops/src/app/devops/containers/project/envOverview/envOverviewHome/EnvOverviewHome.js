@@ -84,6 +84,8 @@ class EnvOverviewHome extends Component {
    */
   @action
   selectEnv = (value) => {
+    const { EnvOverviewStore } = this.props;
+    EnvOverviewStore.setTpEnvId(value);
     this.envId = value || this.env[0].id;
     this.loadIstOverview(value);
     this.loadDomain(value);
@@ -102,13 +104,15 @@ class EnvOverviewHome extends Component {
     EnvOverviewStore.loadActiveEnv(projectId)
       .then((env) => {
         if (env.length) {
-          this.env = env;
-          const flag = _.filter(env, { id: this.envId }).length;
-          this.loadIstOverview(flag ? this.envId : env[0].id);
-          this.loadDomain(flag ? this.envId : env[0].id);
-          this.loadNetwork(flag ? this.envId : env[0].id);
-          this.loadLog(flag ? this.envId : env[0].id);
-          this.loadSync(flag ? this.envId : env[0].id);
+          const envSort = _.concat(_.filter(env, ['connect', true]), _.filter(env, ['connect', false]));
+          const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
+          this.env = envSort;
+          const flag = _.filter(env, { id: tpEnvId }).length;
+          this.loadIstOverview(flag ? tpEnvId : envSort[0].id);
+          this.loadDomain(flag ? tpEnvId : envSort[0].id);
+          this.loadNetwork(flag ? tpEnvId : envSort[0].id);
+          this.loadLog(flag ? tpEnvId : envSort[0].id);
+          this.loadSync(flag ? tpEnvId : envSort[0].id);
         }
       });
   };
@@ -257,10 +261,12 @@ class EnvOverviewHome extends Component {
    * @returns {*}
    */
   envNameDom = () => {
+    const { EnvOverviewStore } = this.props;
     let envName = null;
-    if (this.env.length && this.envId) {
+    const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
+    if (this.env.length && tpEnvId) {
       _.map(this.env, (d) => {
-        if (d.id === Number(this.envId)) {
+        if (d.id === Number(tpEnvId)) {
           envName = (<React.Fragment>
             {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
             {d.name}

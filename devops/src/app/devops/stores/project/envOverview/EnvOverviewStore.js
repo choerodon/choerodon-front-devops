@@ -12,6 +12,7 @@ class EnvOverviewStore {
   @observable domin = null;
   @observable sync = null;
   @observable network = null;
+  @observable tpEnvId = null;
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
@@ -56,6 +57,14 @@ class EnvOverviewStore {
 
   @action setVal(val) {
     this.val = val;
+  }
+
+  @action setTpEnvId(tpEnvId) {
+    this.tpEnvId = tpEnvId;
+  }
+
+  @computed get getTpEnvId() {
+    return this.tpEnvId;
   }
 
   @computed get getVal() {
