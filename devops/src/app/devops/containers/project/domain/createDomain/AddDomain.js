@@ -404,11 +404,11 @@ class CreateDomain extends Component {
   };
 
   render() {
-    const { store, form, intl } = this.props;
+    const { store, form, intl, type, visible } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
     const menu = AppState.currentMenuType;
+    const { pathArr, SingleData, env, portInNetwork } = this.state;
     const network = store.getNetwork;
-    const { pathArr, SingleData, portInNetwork } = this.state;
     let addStatus = true;
     // 判断path是否有值
     if (pathArr.length) {
@@ -417,11 +417,18 @@ class CreateDomain extends Component {
         addStatus = false;
       }
     }
-    const title = this.props.type === 'create' ? <h2 className="c7n-space-first"><FormattedMessage id="domain.create.title" values={{ name: menu.name }} /></h2> : <h2 className="c7n-space-first"><FormattedMessage id="domain.update.title" values={{ name: SingleData && SingleData.name }} /></h2>;
-    const content = this.props.type === 'create' ? this.props.intl.formatMessage({ id: 'domain.create.description' })
-      : this.props.intl.formatMessage({ id: 'domain.update.description' });
+    const portWithNetwork = {};
+    _.forEach(network, (item) => {
+      const { config: { ports }, id } = item;
+      const port = [];
+      _.forEach(ports, p => port.push(p.port));
+      portWithNetwork[id] = port;
+    });
+    const title = type === 'create' ? <h2 className="c7n-space-first"><FormattedMessage id="domain.create.title" values={{ name: menu.name }} /></h2> : <h2 className="c7n-space-first"><FormattedMessage id="domain.update.title" values={{ name: SingleData && SingleData.name }} /></h2>;
+    const content = type === 'create' ? intl.formatMessage({ id: 'domain.create.description' })
+      : intl.formatMessage({ id: 'domain.update.description' });
     const envId = this.props.envId ? Number(this.props.envId) : undefined;
-    const contentDom = this.props.visible ? (<div className="c7n-region c7n-domainCreate-wrapper">
+    const contentDom = visible ? (<div className="c7n-region c7n-domainCreate-wrapper">
       {title}
       <div className="page-content-header">
         <p className="description">
@@ -457,7 +464,7 @@ class CreateDomain extends Component {
               filterOption={(input, option) => option.props.children[2]
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              {this.state.env.dataSource.map(v => (
+              {env.dataSource.map(v => (
                 <Option value={v.id} key={`${v.id}-env`} disabled={!v.connect}>
                   {!v.connect && <span className="env-status-error" />}
                   {v.connect && <span className="env-status-success" />}
@@ -512,111 +519,117 @@ class CreateDomain extends Component {
             />,
           )}
         </FormItem>
-        {pathArr.length >= 1 && pathArr.map((data, index) => (<div className="domain-network-wrap" key={data.pathIndex}>
-          <FormItem
-            className="domain-network-item"
-            {...formItemLayout}
-            key={data.pathIndex}
-          >
-            {getFieldDecorator(`path-${data.pathIndex}`, {
-              rules: [{
-                validator: this.checkPath,
-              }],
-              initialValue: SingleData && this.state.initServiceLen > index
-                ? SingleData.pathList[index].path.slice(1) : '',
-            })(
-              <Input
-                prefix="/"
-                onChange={this.checkAllPath.bind(this, true)}
-                disabled={!(this.props.form.getFieldValue('domain'))}
-                maxLength={10}
-                label={this.props.intl.formatMessage({ id: 'domain.column.path' })}
-                size="default"
-              />,
-            )}
-          </FormItem>
-          <FormItem
-            className="domain-network-item"
-            {...formItemLayout}
-          >
-            {getFieldDecorator(`network-${data.networkIndex}`, {
-              rules: [{
-                required: true,
-                message: this.props.intl.formatMessage({ id: 'required' }),
-              }, {
-                validator: this.checkService,
-              }],
-              initialValue: SingleData && this.state.initServiceLen > index
-                ? SingleData.pathList[index].serviceId : undefined,
-            })(
-              <Select
+        {pathArr.length >= 1 && pathArr.map((data, index) => {
+          const hasServerInit = SingleData && this.state.initServiceLen > index;
+          const portOption = (type === 'edit' && portInNetwork.length === 0 && hasServerInit)
+            ? portWithNetwork[SingleData.pathList[index].serviceId] : portInNetwork;
+
+          return (<div className="domain-network-wrap" key={data.pathIndex}>
+            <FormItem
+              className="domain-network-item"
+              {...formItemLayout}
+              key={data.pathIndex}
+            >
+              {getFieldDecorator(`path-${data.pathIndex}`, {
+                rules: [{
+                  validator: this.checkPath,
+                }],
+                initialValue: SingleData && this.state.initServiceLen > index
+                  ? SingleData.pathList[index].path.slice(1) : '',
+              })(
+                <Input
+                  prefix="/"
+                  onChange={this.checkAllPath.bind(this, true)}
+                  disabled={!(this.props.form.getFieldValue('domain'))}
+                  maxLength={10}
+                  label={this.props.intl.formatMessage({ id: 'domain.column.path' })}
+                  size="default"
+                />,
+              )}
+            </FormItem>
+            <FormItem
+              className="domain-network-item"
+              {...formItemLayout}
+            >
+              {getFieldDecorator(`network-${data.networkIndex}`, {
+                rules: [{
+                  required: true,
+                  message: this.props.intl.formatMessage({ id: 'required' }),
+                }, {
+                  validator: this.checkService,
+                }],
+                initialValue: hasServerInit
+                  ? SingleData.pathList[index].serviceId : undefined,
+              })(
+                <Select
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                  disabled={!(getFieldValue('envId'))}
+                  filter
+                  label={intl.formatMessage({ id: 'domain.column.network' })}
+                  showSearch
+                  dropdownMatchSelectWidth
+                  onSelect={this.handleSelectNetwork.bind(this, network)}
+                  size="default"
+                  optionFilterProp="children"
+                  optionLabelProp="children"
+                  filterOption={
+                    (input, option) => option.props.children[1]
+                      .toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {this.state[data.pathIndex].deletedService.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
+                    {<React.Fragment>
+                      {datas.status && datas.status === 'deleted' ? <div className={datas.status && datas.status === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
+                        {datas.status && datas.status === 'deleted' && <div>{this.props.intl.formatMessage({ id: 'deleted' })}</div>}
+                      </div> : <React.Fragment>
+                        {datas.status && datas.status === 'failed' ? <div className={datas.status && datas.status === 'failed' && 'c7n-domain-create-status c7n-domain-create-status_failed'}>
+                          {datas.status && datas.status === 'failed' && <div>{this.props.intl.formatMessage({ id: 'failed' })}</div> }
+                        </div> : <div className={datas.status && datas.status === 'operating' && 'c7n-domain-create-status c7n-domain-create-status_operating'}>
+                          {datas.status && datas.status === 'operating' && <div>{this.props.intl.formatMessage({ id: 'operating' })}</div>}
+                        </div> }
+                      </React.Fragment> }
+                    </React.Fragment>}
+                    {datas.name}</Option>))}
+                  {network.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
+                    <div className="c7n-domain-create-status c7n-domain-create-status_running">
+                      <div>{this.props.intl.formatMessage({ id: 'running' })}</div>
+                    </div>
+                    {datas.name}</Option>))}
+                </Select>,
+              )}
+            </FormItem>
+            <FormItem
+              className="domain-network-item"
+              {...formItemLayout}
+            >
+              {getFieldDecorator(`port-${data.portIndex}`, {
+                rules: [{
+                  required: true,
+                  message: intl.formatMessage({ id: 'required' }),
+                }],
+                initialValue: SingleData && this.state.initServiceLen > index
+                  ? SingleData.pathList[index].servicePort : undefined,
+              })(<Select
                 getPopupContainer={triggerNode => triggerNode.parentNode}
-                disabled={!(getFieldValue('envId'))}
+                disabled={!(getFieldValue(`network-${data.networkIndex}`))}
                 filter
-                label={intl.formatMessage({ id: 'domain.column.network' })}
+                label={intl.formatMessage({ id: 'domain.column.port' })}
                 showSearch
                 dropdownMatchSelectWidth
-                onSelect={this.handleSelectNetwork.bind(this, network)}
                 size="default"
                 optionFilterProp="children"
                 optionLabelProp="children"
-                filterOption={
-                  (input, option) => option.props.children[1]
-                    .toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
+                filterOption={(input, option) => option.props.children.toString()
+                  .toLowerCase().indexOf(input.toString().toLowerCase()) >= 0}
               >
-                {this.state[data.pathIndex].deletedService.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
-                  {<React.Fragment>
-                    {datas.status && datas.status === 'deleted' ? <div className={datas.status && datas.status === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
-                      {datas.status && datas.status === 'deleted' && <div>{this.props.intl.formatMessage({ id: 'deleted' })}</div>}
-                    </div> : <React.Fragment>
-                      {datas.status && datas.status === 'failed' ? <div className={datas.status && datas.status === 'failed' && 'c7n-domain-create-status c7n-domain-create-status_failed'}>
-                        {datas.status && datas.status === 'failed' && <div>{this.props.intl.formatMessage({ id: 'failed' })}</div> }
-                      </div> : <div className={datas.status && datas.status === 'operating' && 'c7n-domain-create-status c7n-domain-create-status_operating'}>
-                        {datas.status && datas.status === 'operating' && <div>{this.props.intl.formatMessage({ id: 'operating' })}</div>}
-                      </div> }
-                    </React.Fragment> }
-                  </React.Fragment>}
-                  {datas.name}</Option>))}
-                {network.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
-                  <div className="c7n-domain-create-status c7n-domain-create-status_running">
-                    <div>{this.props.intl.formatMessage({ id: 'running' })}</div>
-                  </div>
-                  {datas.name}</Option>))}
-              </Select>,
-            )}
-          </FormItem>
-          <FormItem
-            className="domain-network-item"
-            {...formItemLayout}
-          >
-            {getFieldDecorator(`port-${data.portIndex}`, {
-              rules: [{
-                required: true,
-                message: intl.formatMessage({ id: 'required' }),
-              }],
-              initialValue: SingleData && this.state.initServiceLen > index
-                ? SingleData.pathList[index].servicePort : undefined,
-            })(<Select
-              getPopupContainer={triggerNode => triggerNode.parentNode}
-              disabled={!(getFieldValue(`network-${data.networkIndex}`))}
-              filter
-              label={intl.formatMessage({ id: 'domain.column.port' })}
-              showSearch
-              dropdownMatchSelectWidth
-              size="default"
-              optionFilterProp="children"
-              optionLabelProp="children"
-              filterOption={(input, option) => option.props.children.toString()
-                .toLowerCase().indexOf(input.toString().toLowerCase()) >= 0}
-            >
-              {_.map(portInNetwork, item => (<Option key={item} value={item}>{item}</Option>))}
-            </Select>)}
-          </FormItem>
-          { pathArr.length > 1 ? <Button shape="circle" className="c7n-domain-icon-delete" onClick={this.removePath.bind(this, index)}>
-            <i className="icon icon-delete" />
-          </Button> : <i className="icon icon-delete c7n-app-icon-disabled" />}
-        </div>))}
+                {_.map(portOption, item => (<Option key={item} value={item}>{item}</Option>))}
+              </Select>)}
+            </FormItem>
+            { pathArr.length > 1 ? <Button shape="circle" className="c7n-domain-icon-delete" onClick={this.removePath.bind(this, index)}>
+              <i className="icon icon-delete" />
+            </Button> : <i className="icon icon-delete c7n-app-icon-disabled" />}
+          </div>);
+        })}
         <div className="c7n-domain-btn-wrapper">
           <Tooltip title={addStatus ? this.props.intl.formatMessage({ id: 'domain.path.isnull' }) : ''}>
             <Button className="c7n-domain-btn" onClick={this.addPath} type="primary" disabled={addStatus} icon="add">{this.props.intl.formatMessage({ id: 'domain.path.add' })}</Button>
