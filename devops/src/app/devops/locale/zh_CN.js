@@ -763,6 +763,9 @@ const zhCN = {
   'ctf.domain.check.repeat': '域名重复',
   'ctf.add.cert': '添加证书文件',
   'ctf.add.describe': '您可以在此选择相应的文件，并进行上传。',
+  'ctf.target.type': '选择类型',
+  'ctf.keyFile': '上传 Key 文件',
+  'ctf.certFile': '上传 Cert 文件',
 
   ...pageDetail,
 };

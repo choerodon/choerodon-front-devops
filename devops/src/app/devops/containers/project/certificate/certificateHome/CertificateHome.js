@@ -35,8 +35,7 @@ class CertificateHome extends Component {
 
   componentDidMount() {
     const { CertificateStore } = this.props;
-    const { id: projectId } = AppState.currentMenuType;
-    CertificateStore.loadEnvData(projectId);
+    // CertificateStore.loadCertData();
   }
 
   /**
@@ -106,7 +105,7 @@ class CertificateHome extends Component {
    * @param page
    * @param pageSize
    */
-  loadCertData = (page, pageSize) => {
+  loadCertData = (page = 0, pageSize = 10) => {
     const { CertificateStore } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     CertificateStore.loadCertData({ projectId, page, pageSize });

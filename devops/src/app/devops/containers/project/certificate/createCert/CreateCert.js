@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { stores, Content } from 'choerodon-front-boot';
 import _ from 'lodash';
-import { Button, Form, Select, Input, Modal, Popover, Icon, Radio, Tooltip } from 'choerodon-ui';
+import { Button, Form, Select, Input, Modal, Icon, Radio, Upload } from 'choerodon-ui';
 import '../../../main.scss';
 import './CreateCert.scss';
 
@@ -60,6 +60,12 @@ class CreateCert extends Component {
       type: 'apply',
     };
     this.domainCount = 1;
+  }
+
+  componentDidMount() {
+    const { store } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    store.loadEnvData(projectId);
   }
 
   handleSubmit = (e) => {
@@ -144,6 +150,14 @@ class CreateCert extends Component {
    */
   handleTypeChange = e => this.setState({ type: e.target.value });
 
+  /**
+   * 显示上传文件信息
+   * @param info
+   */
+  handleUpload = (info) => {
+    console.log(info);
+  };
+
   render() {
     const { visible, form, intl, store, handleClose } = this.props;
     const { submitting, type } = this.state;
@@ -178,6 +192,12 @@ class CreateCert extends Component {
       {domains.length > 1 ? (<Icon className="creation-panel-icon" type="delete" onClick={() => this.removeGroup(k)} />) : null}
     </div>));
     const env = store.getEnvData;
+    // 上传配置
+    const uploadProps = {
+      action: '',
+      onChange: this.handleUpload,
+      multiple: false,
+    };
     return (<div className="c7n-region">
       <Sidebar
         destroyOnClose
@@ -251,7 +271,7 @@ class CreateCert extends Component {
               </div>
               <FormItem
                 className="c7n-select_512 creation-radio-form"
-                label={<FormattedMessage id="network.target.type" />}
+                label={<FormattedMessage id="ctf.target.type" />}
                 {...formItemLayout}
               >
                 {getFieldDecorator('type', {
@@ -278,13 +298,30 @@ class CreateCert extends Component {
                   icon="add"
                 ><FormattedMessage id="ctf.config.add" /></Button>
               </FormItem>
-              {type === 'upload' ? (<div className="c7n-ctf-upload">
-                <p>
-                  <FormattedMessage id="ctf.add.cert" />
-
-                </p>
-                <p><FormattedMessage id="ctf.add.describe" /></p>
-              </div>) : null}
+              {type === 'upload' ? (<Fragment>
+                <div className="ctf-upload-head">
+                  <p className="ctf-upload-title"><FormattedMessage id="ctf.add.cert" /></p>
+                  <p className="ctf-upload-text"><FormattedMessage id="ctf.add.describe" /></p>
+                </div>
+                <div className="ctf-upload-item">
+                  <FormItem
+                    label={<FormattedMessage id="ctf.keyFile" />}
+                    {...formItemLayout}
+                  >
+                    {getFieldDecorator('keyFile', {
+                      rules: [{
+                        required: true,
+                        message: intl.formatMessage({ id: 'required' }),
+                      }],
+                    })(<Upload {...uploadProps}>
+                      <Button className="ctf-upload-button">
+                        <Icon type="file_upload" />
+                        <FormattedMessage id="ctf.keyFile" />
+                      </Button>
+                    </Upload>)}
+                  </FormItem>
+                </div>
+              </Fragment>) : null}
             </div>
           </Form>
         </Content>
