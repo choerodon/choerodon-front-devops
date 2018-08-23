@@ -766,6 +766,7 @@ const zhCN = {
   'ctf.target.type': '选择类型',
   'ctf.keyFile': '上传 Key 文件',
   'ctf.certFile': '上传 Cert 文件',
+  'ctf.required': '请上传文件',
 
   ...pageDetail,
 };

@@ -58,6 +58,8 @@ class CreateCert extends Component {
     this.state = {
       submitting: false,
       type: 'apply',
+      keyFileList: [],
+      certFileList: [],
     };
     this.domainCount = 1;
   }
@@ -155,12 +157,21 @@ class CreateCert extends Component {
    * @param info
    */
   handleUpload = (info) => {
-    console.log(info);
+    if (info) {
+      const keyFileList = [];
+      keyFileList.push(info.file);
+      this.setState({ keyFileList });
+    }
+  };
+
+  handleRemoveFile = () => {
+    console.log('remove');
+    this.setState({ keyFileList: [] });
   };
 
   render() {
     const { visible, form, intl, store, handleClose } = this.props;
-    const { submitting, type } = this.state;
+    const { submitting, type, keyFileList, certFileList } = this.state;
     const { name: menuName, id: projectId } = AppState.currentMenuType;
     const { getFieldDecorator, getFieldValue } = form;
     getFieldDecorator('domains', { initialValue: [0] });
@@ -197,6 +208,7 @@ class CreateCert extends Component {
       action: '',
       onChange: this.handleUpload,
       multiple: false,
+      onRemove: this.handleRemoveFile,
     };
     return (<div className="c7n-region">
       <Sidebar
@@ -311,10 +323,13 @@ class CreateCert extends Component {
                     {getFieldDecorator('keyFile', {
                       rules: [{
                         required: true,
-                        message: intl.formatMessage({ id: 'required' }),
+                        message: intl.formatMessage({ id: 'ctf.required' }),
                       }],
-                    })(<Upload {...uploadProps}>
-                      <Button className="ctf-upload-button">
+                    })(<Upload disabled={keyFileList.length > 0} {...uploadProps}>
+                      <Button
+                        disabled={keyFileList.length > 0}
+                        className="ctf-upload-button"
+                      >
                         <Icon type="file_upload" />
                         <FormattedMessage id="ctf.keyFile" />
                       </Button>
