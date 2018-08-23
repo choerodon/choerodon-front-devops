@@ -29,10 +29,6 @@
     width: 512px;
   }
 
-  .c7n-domain-icon-delete {
-    margin-top: 10px;
-  }
-
   .c7n-domain-btn {
     background: white !important;
     padding-left: 0;
@@ -48,6 +44,24 @@
     width: 32px;
     display: inline-block;
     padding: 22px 0 0 3px;
+  }
+  .domain-network-wrap {
+    display: flex;
+    width: 542px;
+    .domain-network-item {
+      flex: 1;
+      margin-right: 16px;
+      &:nth-last-child(2) {
+        margin-right: 0;
+      }
+      .ant-input-content {
+        padding-top: 18px;
+      }
+    }
+    .c7n-domain-icon-delete {
+      margin-top: 10px;
+      flex: 0 0 32px;
+    }
   }
 }
 

@@ -10,8 +10,8 @@ const pageDetail = {
   'network.description': '网络是一种管理内部服务连通方式的策略，实现容器内部资源的负载均衡以及流量转发。配置后，平台会将网络流量定向转发到指定的单个或者多个实例容器组，完成服务的连通与流转。',
   'network.link': `${docServer}/user-guide/deployment-pipeline/service/`,
   'network.create.title': '项目"{name}"中创建网络',
-  'network.create.description': '您可在此选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。\n' +
-    '        转发内部网络，则只需定义端口即可，系统会自动为您分配集群内部IP；转发外部网络，则需要定义外部IP及端口。',
+  'network.create.description': '您可在此选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。\n'
+    + '        转发内部网络，则只需定义端口即可，系统会自动为您分配集群内部IP；转发外部网络，则需要定义外部IP及端口。',
   'network.create.link': `${docServer}/user-guide/deployment-pipeline/service/`,
   'network.update.title': '对网络"{name}"进行修改',
   'network.update.description': '您可在此修改网络配置信息。',
@@ -581,6 +581,7 @@ const zhCN = {
   'domain.column.network': '网络',
   'domain.column.path': '路径',
   'domain.column.domain': '地址',
+  'domain.column.port': '端口',
   'domain.form.domain': '域名地址',
   domain_create: '域名创建中，请耐心等待',
   domain_delete: '域名删除中，请耐心等待',

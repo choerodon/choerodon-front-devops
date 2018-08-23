@@ -29,9 +29,11 @@ class DomainHome extends Component {
       show: false,
     };
   }
+
   componentDidMount() {
     this.loadAllData();
   }
+
   /**
    * 展开/收起实例
    */
@@ -71,6 +73,7 @@ class DomainHome extends Component {
     const projectName = menu.name;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
+      key: 'status',
       title: intl.formatMessage({ id: 'domain.column.status' }),
       render: (record) => {
         let statusDom = null;
@@ -110,9 +113,9 @@ class DomainHome extends Component {
       filters: [],
       render: record => (
         <React.Fragment>
-          { record.envStatus ? <Tooltip title={<FormattedMessage id={'connect'} />}>
+          { record.envStatus ? <Tooltip title={<FormattedMessage id="connect" />}>
             <span className="env-status-success" />
-          </Tooltip> : <Tooltip title={<FormattedMessage id={'disconnect'} />}>
+          </Tooltip> : <Tooltip title={<FormattedMessage id="disconnect" />}>
             <span className="env-status-error" />
           </Tooltip> }
           {record.envName}
@@ -126,10 +129,9 @@ class DomainHome extends Component {
       filters: [],
       render: record => (
         <div>
-          {_.map(record.pathList, router =>
-            (<div className="c7n-network-col_border" key={router.path}>
-              <span>{router.path}</span>
-            </div>))}
+          {_.map(record.pathList, router => (<div className="c7n-network-col_border" key={`${record.id}-${router.path}`}>
+            <span>{router.path}</span>
+          </div>))}
         </div>
       ),
     }, {
@@ -139,14 +141,13 @@ class DomainHome extends Component {
       filters: [],
       render: record => (
         <div>
-          {_.map(record.pathList, instance =>
-            (<div className="c7n-network-col_border" key={`${instance.path}-${instance.serviceId}`}>
-              <Tooltip title={intl.formatMessage({ id: `${instance.serviceStatus || 'null'}` })} placement="top">
-                <span className={instance.serviceStatus === 'running' ? 'env-status-success' : 'env-status-error'} />
-              </Tooltip>
-              {instance.serviceName}
-            </div>
-            ))}
+          {_.map(record.pathList, instance => (<div className="c7n-network-col_border" key={`${record.id}-${instance.path}-${instance.serviceId}`}>
+            <Tooltip title={intl.formatMessage({ id: `${instance.serviceStatus || 'null'}` })} placement="top">
+              <span className={instance.serviceStatus === 'running' ? 'env-status-success' : 'env-status-error'} />
+            </Tooltip>
+            {instance.serviceName}
+          </div>
+          ))}
         </div>
       ),
     }, {
@@ -169,7 +170,7 @@ class DomainHome extends Component {
           default:
             editDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'edit' })}</div>}>
-                <Button shape="circle" size={'small'} funcType="flat" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
+                <Button shape="circle" size="small" funcType="flat" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                   <i className="icon icon-mode_edit" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
@@ -178,7 +179,7 @@ class DomainHome extends Component {
             </React.Fragment>);
             deletDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'delete' })}</div>}>
-                <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
+                <Button shape="circle" size="small" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
                   <i className="icon icon-delete_forever" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
@@ -234,7 +235,7 @@ class DomainHome extends Component {
                 onClick={this.showSideBar.bind(this, 'create', '')}
               >
                 <i className="icon icon-playlist_add icon" />
-                <FormattedMessage id={'domain.header.create'} />
+                <FormattedMessage id="domain.header.create" />
               </Button>
             </Permission>
             <Permission
@@ -248,11 +249,11 @@ class DomainHome extends Component {
                 onClick={this.loadAllData}
               >
                 <i className="icon-refresh icon" />
-                <FormattedMessage id={'refresh'} />
+                <FormattedMessage id="refresh" />
               </Button>
             </Permission>
           </Header>
-          <Content code={'domain'} values={{ name: projectName }}>
+          <Content code="domain" values={{ name: projectName }}>
             <Table
               filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
               loading={DomainStore.loading}
@@ -276,10 +277,10 @@ class DomainHome extends Component {
         />}
         <Modal
           visible={this.state.openRemove}
-          title={<FormattedMessage id={'domain.header.delete'} />}
+          title={<FormattedMessage id="domain.header.delete" />}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
+            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,
             <Button key="submit" loading={this.state.submitting} type="danger" onClick={this.handleDelete}>
               {intl.formatMessage({ id: 'delete' })}
             </Button>,
