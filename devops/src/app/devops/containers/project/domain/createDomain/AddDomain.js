@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { Button, Form, Select, Input, Modal, Tooltip } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { stores, Content } from 'choerodon-front-boot';
+import classnames from 'classnames';
 import _ from 'lodash';
 import '../../../main.scss';
 import './CreateDomain.scss';
@@ -298,7 +299,7 @@ class CreateDomain extends Component {
         paths.push(p);
       }
     }
-    if (paths.includes(`/${value}`) && !value) {
+    if (paths.includes(`/${value}`) && value) {
       callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
     } else if (value) {
       if (patt.test(value)) {
@@ -384,6 +385,14 @@ class CreateDomain extends Component {
       } else {
         callback();
       }
+    }
+  };
+
+  checkPorts = (ports, rule, value, callback) => {
+    if (!ports.includes(value)) {
+      callback(this.props.intl.formatMessage({ id: 'domain.network.check.failed' }));
+    } else {
+      callback();
     }
   };
 
@@ -521,6 +530,11 @@ class CreateDomain extends Component {
         </FormItem>
         {pathArr.length >= 1 && pathArr.map((data, index) => {
           const hasServerInit = SingleData && this.state.initServiceLen > index;
+          const initPort = hasServerInit
+            ? SingleData.pathList[index].servicePort : undefined;
+          const initNetwork = hasServerInit
+            ? SingleData.pathList[index].serviceId : undefined;
+          // 生成端口选项
           const portOption = (type === 'edit' && portInNetwork.length === 0 && hasServerInit)
             ? portWithNetwork[SingleData.pathList[index].serviceId] : portInNetwork;
 
@@ -558,8 +572,7 @@ class CreateDomain extends Component {
                 }, {
                   validator: this.checkService,
                 }],
-                initialValue: hasServerInit
-                  ? SingleData.pathList[index].serviceId : undefined,
+                initialValue: initNetwork,
               })(
                 <Select
                   getPopupContainer={triggerNode => triggerNode.parentNode}
@@ -603,12 +616,14 @@ class CreateDomain extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator(`port-${data.portIndex}`, {
+                trigger: ['onChange', 'onSubmit'],
                 rules: [{
                   required: true,
                   message: intl.formatMessage({ id: 'required' }),
+                }, {
+                  validator: this.checkPorts.bind(this, portOption),
                 }],
-                initialValue: SingleData && this.state.initServiceLen > index
-                  ? SingleData.pathList[index].servicePort : undefined,
+                initialValue: initPort,
               })(<Select
                 getPopupContainer={triggerNode => triggerNode.parentNode}
                 disabled={!(getFieldValue(`network-${data.networkIndex}`))}

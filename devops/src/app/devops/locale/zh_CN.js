@@ -594,6 +594,7 @@ const zhCN = {
   'domain.network.check.failed': '请移除不可用的网络',
   'domain.path.add': '添加路径',
   'domain.path.isnull': '请先填写路径',
+  'domain.port.notExist': '请更新端口',
 
   // appstore
   'appstore.title': '应用市场',
