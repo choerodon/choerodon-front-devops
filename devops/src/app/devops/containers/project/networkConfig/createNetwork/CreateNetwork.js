@@ -783,18 +783,13 @@ class CreateNetwork extends Component {
                   </FormItem>
                 </Fragment>) : (<Fragment>
                   {targetItems}
-                  <FormItem
-                    className="c7n-select_480 network-panel-button"
-                    {...formItemLayout}
-                  >
-                    <Button
-                      disabled={!getFieldValue('envId')}
-                      type="primary"
-                      funcType="flat"
-                      onClick={() => this.addGroup('targetKeys')}
-                      icon="add"
-                    ><FormattedMessage id="network.config.addtarget" /></Button>
-                  </FormItem>
+                  <Button
+                    disabled={!getFieldValue('envId')}
+                    type="primary"
+                    funcType="flat"
+                    onClick={() => this.addGroup('targetKeys')}
+                    icon="add"
+                  ><FormattedMessage id="network.config.addtarget" /></Button>
                 </Fragment>)}
               </div>
               <div className={`network-panel-title ${!getFieldValue('envId') ? 'network-panel-title_disabled' : ''}`}>
@@ -851,18 +846,13 @@ class CreateNetwork extends Component {
                   </FormItem>
                   {portItems}
                 </Fragment>) : portItems}
-                <FormItem
-                  className="c7n-select_480 network-panel-button"
-                  {...formItemLayout}
-                >
-                  <Button
-                    disabled={!getFieldValue('envId')}
-                    type="primary"
-                    funcType="flat"
-                    onClick={() => this.addGroup('portKeys')}
-                    icon="add"
-                  ><FormattedMessage id="network.config.addport" /></Button>
-                </FormItem>
+                <Button
+                  disabled={!getFieldValue('envId')}
+                  type="primary"
+                  funcType="flat"
+                  onClick={() => this.addGroup('portKeys')}
+                  icon="add"
+                ><FormattedMessage id="network.config.addport" /></Button>
               </div>
               <FormItem
                 className="c7n-select_512 network-form-name"
