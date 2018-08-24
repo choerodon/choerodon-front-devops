@@ -881,20 +881,15 @@ class EditNetwork extends Component {
                 ) : (
                   <Fragment>
                     {targetItems}
-                    <FormItem
-                      className="c7n-select_480 network-panel-button"
-                      {...formItemLayout}
+                    <Button
+                      disabled={!getFieldValue('envId')}
+                      type="primary"
+                      funcType="flat"
+                      onClick={() => this.addGroup('targetKeys')}
+                      icon="add"
                     >
-                      <Button
-                        disabled={!getFieldValue('envId')}
-                        type="primary"
-                        funcType="flat"
-                        onClick={() => this.addGroup('targetKeys')}
-                        icon="add"
-                      >
-                        <FormattedMessage id="network.config.addtarget" />
-                      </Button>
-                    </FormItem>
+                      <FormattedMessage id="network.config.addtarget" />
+                    </Button>
                   </Fragment>
                 )}
               </div>
@@ -957,20 +952,15 @@ class EditNetwork extends Component {
                     {portItems}
                   </Fragment>
                 ) : portItems}
-                <FormItem
-                  className="c7n-select_480 network-panel-button"
-                  {...formItemLayout}
+                <Button
+                  disabled={!getFieldValue('envId')}
+                  type="primary"
+                  funcType="flat"
+                  onClick={() => this.addGroup('portKeys')}
+                  icon="add"
                 >
-                  <Button
-                    disabled={!getFieldValue('envId')}
-                    type="primary"
-                    funcType="flat"
-                    onClick={() => this.addGroup('portKeys')}
-                    icon="add"
-                  >
-                    <FormattedMessage id="network.config.addport" />
-                  </Button>
-                </FormItem>
+                  <FormattedMessage id="network.config.addport" />
+                </Button>
               </div>
             </Form>
           </Content>
