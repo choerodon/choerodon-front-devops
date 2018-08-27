@@ -5,12 +5,11 @@ import { withRouter } from 'react-router-dom';
 import { Select, Button, Radio, Steps } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores, axios } from 'choerodon-front-boot';
 import _ from 'lodash';
+import YAML from 'yamljs';
 import '../../../main.scss';
 import './DeployApp.scss';
 import AceForYaml from '../../../../components/yamlAce';
 import SelectApp from '../selectApp';
-import YAML from "yamljs";
-
 
 const RadioGroup = Radio.Group;
 const Step = Steps.Step;
