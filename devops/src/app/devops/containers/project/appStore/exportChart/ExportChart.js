@@ -61,6 +61,7 @@ class ExportChart extends Component {
   changeStep = (index) => {
     this.setState({ current: index });
   };
+
   /**
    * table app表格搜索
    * @param pagination 分页
@@ -100,6 +101,7 @@ class ExportChart extends Component {
         size: pagination.pageSize,
       });
   };
+
   /**
    * 加载应用版本
    * @param appId 应用id
@@ -118,13 +120,14 @@ class ExportChart extends Component {
         }
       });
   };
+
   /**
    * 选择版本
    * @param index
    * @param value
    */
   handleSelectVersion = (index, value) => {
-    const selectedRows = this.state.selectedRows;
+    const { selectedRows } = this.state;
     const version = [];
     if (value.length) {
       value.map((v) => {
@@ -137,17 +140,19 @@ class ExportChart extends Component {
     selectedRows[index].versions = version;
     this.setState({ selectedRows });
   };
+
   /**
    * 取消选择版本
    * @param index
    */
   clearVersions =(index, value) => {
-    const selectedRows = this.state.selectedRows;
+    const { selectedRows } = this.state;
     const version = selectedRows[index].versions;
     _.remove(version, v => v.id === parseInt(value, 10));
     selectedRows[index].versions = version;
     this.setState({ selectedRows });
   };
+
   /**
    * 展开/收起实例
    */
@@ -172,6 +177,7 @@ class ExportChart extends Component {
       });
     }
   };
+
   /**
    * 取消
    */
@@ -182,6 +188,7 @@ class ExportChart extends Component {
     const type = AppState.currentMenuType.type;
     this.props.history.push(`/devops/app-market?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
   };
+
   /**
    * 判断第二步是否可点击下一步
    * @returns {boolean}
@@ -197,6 +204,7 @@ class ExportChart extends Component {
     }
     return disabled;
   };
+
   /**
    * 导出文件
    */
@@ -219,6 +227,7 @@ class ExportChart extends Component {
         this.handleBack();
       });
   };
+
   /**
    * 取所有的版本
    */
@@ -240,6 +249,7 @@ class ExportChart extends Component {
         });
     }
   };
+
   /**
    * 渲染第一步
    */
@@ -351,7 +361,7 @@ class ExportChart extends Component {
                 onDeselect={this.clearVersions.bind(this, index)}
                 value={selectedRows[index].versions && selectedRows[index].versions.length ? _.map(selectedRows[index].versions, 'id') : undefined}
                 onChange={this.handleSelectVersion.bind(this, index)}
-                className={'c7n-step-select'}
+                className="c7n-step-select"
                 loading={this.state.isLoading}
                 onFocus={this.loadVersion.bind(this, app.id, index)}
                 filter
@@ -364,9 +374,8 @@ class ExportChart extends Component {
                 optionLabelProp="children"
                 notFoundContent={intl.formatMessage({ id: 'appstore.noVer' })}
                 filterOption={
-                  (input, option) =>
-                    option.props.children
-                      .toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  (input, option) => option.props.children
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
                 { this.state[index] && this.state[index].versions.map(v => (
@@ -400,6 +409,7 @@ class ExportChart extends Component {
       </div>
     );
   }
+
   /**
    * 渲染第三步
    * @returns {*}
@@ -420,7 +430,7 @@ class ExportChart extends Component {
       title: intl.formatMessage({ id: 'network.column.version' }),
       key: 'version',
       render: record => (<div>
-        <div role={'none'} className={`c7n-step-table-column col-${record.id}`} onClick={this.handleChangeStatus.bind(this, record.id, record.versions.length)}>
+        <div role="none" className={`c7n-step-table-column col-${record.id}`} onClick={this.handleChangeStatus.bind(this, record.id, record.versions.length)}>
           {record.versions && document.getElementsByClassName(`${record.id}-col-parents`)[0] && parseInt(window.getComputedStyle(document.getElementsByClassName(`${record.id}-col-parents`)[0]).height, 10) > 31
           && <span className={_.indexOf(upDown, record.id) !== -1
             ? 'icon icon-keyboard_arrow_up c7n-step-table-icon' : 'icon icon-keyboard_arrow_down c7n-step-table-icon'}

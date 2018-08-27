@@ -10,6 +10,7 @@ class Home extends Component {
     this.state = {
     };
   }
+
   render() {
     return (
       <div>
@@ -20,4 +21,3 @@ class Home extends Component {
 }
 
 export default withRouter(Home);
-

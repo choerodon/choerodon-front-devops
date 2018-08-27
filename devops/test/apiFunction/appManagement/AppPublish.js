@@ -1,8 +1,8 @@
 const chai = require('chai');
-const { oauth } = require('../../Utils');
 const chaiHttp = require('chai-http');
 const fs = require('fs');
 const path = require('path');
+const { oauth } = require('../../Utils');
 
 const { expect } = chai;
 

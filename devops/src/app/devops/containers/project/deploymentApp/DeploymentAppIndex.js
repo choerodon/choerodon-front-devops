@@ -11,7 +11,7 @@ const DeploymentAppIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={DeploymentApp} />
     <Route exact path={`${match.url}/:appId/:verId`} component={DeploymentApp} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 

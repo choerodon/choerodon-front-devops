@@ -1,4 +1,4 @@
-/* eslint-disable react/forbid-prop-types */
+/* eslint-disable */
 /**
  * yaml 编辑框的高亮效果
  */
@@ -20,6 +20,7 @@ class HighlightAce extends Component {
     value: PropTypes.string.isRequired,
     highlightMarkers: PropTypes.object,
   };
+
   static defaultProps = {
     options: {
       gutter: false,
@@ -29,11 +30,11 @@ class HighlightAce extends Component {
       softWrap: false,
     },
   };
+
   constructor(props) {
     super(props);
     this.state = {
       isTriggerChange: false,
-      height: '300px',
     };
   }
 
@@ -84,7 +85,6 @@ class HighlightAce extends Component {
     const prevLineLength = this.state.lines || lines;
     const lineHeight = editor.renderer.lineHeight;
     const height = `${lines * lineHeight}px`;
-    this.setState({ height });
     if (isTriggerChange) {
       const { sourceData } = this.state;
       const start = options.start;
@@ -161,7 +161,7 @@ class HighlightAce extends Component {
       editor.session.addMarker(range, 'lineHeight-text', 'text', false);
       return diff;
     });
-  }
+  };
 
   render() {
     const { value, width, options, className, totalLine, errorLines } = this.props;

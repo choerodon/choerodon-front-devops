@@ -30,11 +30,8 @@ class CreateBranch extends Component {
     const menu = AppState.currentMenuType;
     super(props);
     this.state = {
-      name: 'feature',
-      value: '',
       projectId: menu.id,
       submitting: false,
-      initValue: null,
       type: 'custom',
       branchSize: 3,
       tagSize: 3,
@@ -88,6 +85,7 @@ class CreateBranch extends Component {
       </span>
     </span>);
   };
+
   /**
    * 获取列表的icon
    * @param type 分支类型
@@ -120,6 +118,7 @@ class CreateBranch extends Component {
     }
     return icon;
   };
+
   /**
    * 提交分支数据
    * @param e
@@ -148,6 +147,7 @@ class CreateBranch extends Component {
       }
     });
   };
+
   /**
    * 验证分支名的正则
    * @param rule
@@ -168,6 +168,7 @@ class CreateBranch extends Component {
       callback();
     }
   };
+
   /**
    * 关闭弹框
    */
@@ -175,6 +176,7 @@ class CreateBranch extends Component {
     this.props.form.resetFields();
     this.props.onClose();
   };
+
   /**
    * 切换分支类型
    * @param value
@@ -186,6 +188,7 @@ class CreateBranch extends Component {
     }
     this.setState({ type });
   };
+
   /**
    * 切换issue
    * @param value
@@ -229,6 +232,7 @@ class CreateBranch extends Component {
       store.loadIssue(this.state.projectId, '', true);
     }
   };
+
   /**
    * 改变长度
    * @param type
@@ -249,6 +253,7 @@ class CreateBranch extends Component {
       store.loadTagData(this.state.projectId, 0, tagSize + 10, { searchParam: { tagName: [this.state.filter] }, param: '' });
     }
   };
+
   /**
    * 搜索分支数据
    */
@@ -306,13 +311,13 @@ class CreateBranch extends Component {
             >
               {getFieldDecorator('issueId')(
                 <Select
-                  dropdownClassName={'createBranch-dropdown'}
+                  dropdownClassName="createBranch-dropdown"
                   onFilterChange={this.searchIssue}
                   loading={store.issueLoading}
                   onSelect={this.changeIssue}
                   key="service"
                   allowClear
-                  label={<FormattedMessage id={'branch.issueName'} />}
+                  label={<FormattedMessage id="branch.issueName" />}
                   filter
                   dropdownMatchSelectWidth
                   size="default"
@@ -342,7 +347,7 @@ class CreateBranch extends Component {
                 <Select
                   key="service"
                   allowClear
-                  label={<FormattedMessage id={'branch.source'} />}
+                  label={<FormattedMessage id="branch.source" />}
                   filter
                   onFilterChange={this.searchData}
                   size="default"
@@ -373,7 +378,7 @@ class CreateBranch extends Component {
               )}
             </FormItem>
             <FormItem
-              className={'c7n-formItem_180'}
+              className="c7n-formItem_180"
               {...formItemLayout}
             >
               {getFieldDecorator('type', {
@@ -388,7 +393,7 @@ class CreateBranch extends Component {
                   onChange={this.changeType}
                   key="service"
                   allowClear
-                  label={<FormattedMessage id={'branch.type'} />}
+                  label={<FormattedMessage id="branch.type" />}
                   filter
                   dropdownMatchSelectWidth
                   onSelect={this.selectTemplate}
@@ -418,7 +423,7 @@ class CreateBranch extends Component {
               })(
                 <Input
                   maxLength={64}
-                  label={<FormattedMessage id={'branch.name'} />}
+                  label={<FormattedMessage id="branch.name" />}
                   prefix={`${this.state.type === 'custom' ? '' : `${this.state.type}-`}`}
                 />,
               )}

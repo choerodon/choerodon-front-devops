@@ -11,12 +11,14 @@ class Logs extends Component {
     this.state = {
     };
   }
+
   componentDidMount() {
     const editor = this.codeEditor.getCodeMirror();
     if (this.props.value) {
       editor.setValue(this.props.value);
     }
   }
+
   componentWillReceiveProps() {
     const editor = this.codeEditor.getCodeMirror();
     if (this.props.value) {

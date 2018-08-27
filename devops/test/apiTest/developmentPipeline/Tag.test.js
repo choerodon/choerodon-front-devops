@@ -1,5 +1,5 @@
-const tagFunction = require('../../apiFunction/developmentPipeline/TagFunction');
 const uuidv1 = require('uuid/v1');
+const tagFunction = require('../../apiFunction/developmentPipeline/TagFunction');
 const { oauth, login } = require('../../Utils');
 
 /**
@@ -14,13 +14,13 @@ function getRandom(min, max) {
   return Math.floor(Math.random() * ((max - min) + 1)) + min;
 }
 
-describe('Tag Api', function () {
+describe('Tag Api', () => {
   it('[POST] 创建标签', function () {
     const tag = `${getRandom(200, 310)}.${getRandom(10, 200)}.${getRandom(0, 100)}`;
     this.skip();
     return tagFunction.createTag(tag);
   });
-  it('[POST] 应用不在该项目下，无法创建标签', function () {
+  it('[POST] 应用不在该项目下，无法创建标签', () => {
     const tag = `${getRandom(200, 310)}.${getRandom(10, 20)}.${getRandom(0, 100)}`;
     const randomAppId = getRandom(3000, 5000);
     return tagFunction.createTag(tag, randomAppId, 'master', false);
@@ -30,13 +30,9 @@ describe('Tag Api', function () {
     this.skip();
     return tagFunction.createTag(tag, '347', '不存在的分支', false);
   });
-  it('[GET] 标签名可用', function () {
-    return tagFunction.checkTag('0.0.100');
-  });
-  it('[GET] 标签名重复，不可用', function () {
-    return tagFunction.checkTag('0.0.1', false);
-  });
-  it('[POST] 分页获取tag列表', function () {
+  it('[GET] 标签名可用', () => tagFunction.checkTag('0.0.100'));
+  it('[GET] 标签名重复，不可用', () => tagFunction.checkTag('0.0.1', false));
+  it('[POST] 分页获取tag列表', () => {
     const info = {
       searchParam: { tagName: ['0.0.1'] },
       param: '',

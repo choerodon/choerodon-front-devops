@@ -1,3 +1,4 @@
+/* eslint-disable react/no-access-state-in-setstate */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';

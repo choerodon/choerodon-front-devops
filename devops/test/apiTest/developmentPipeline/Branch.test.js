@@ -1,8 +1,8 @@
-const branchFunction = require('../../apiFunction/developmentPipeline/BranchFunction');
 const uuidv1 = require('uuid/v1');
+const branchFunction = require('../../apiFunction/developmentPipeline/BranchFunction');
 const { oauth, login } = require('../../Utils');
 
-describe('Branch api', function () {
+describe('Branch api', () => {
   it('[POST] 创建custom分支', function () {
     const { project } = oauth;
     const data = {
@@ -69,7 +69,7 @@ describe('Branch api', function () {
     this.skip();
     return branchFunction.createBranch(project, 347, data);
   });
-  it('[POST] 分支已存在', function () {
+  it('[POST] 分支已存在', () => {
     const { project } = oauth;
     const data = {
       branchName: 'feature-devops0725-1',
@@ -79,19 +79,19 @@ describe('Branch api', function () {
     };
     return branchFunction.createBranch(project, 347, data, false);
   });
-  it('[POST] 获取分支列表', function () {
+  it('[POST] 获取分支列表', () => {
     const { project } = oauth;
     return branchFunction.getBranchList({ project, app: 347 });
   });
-  it('[GET] 根据分支名查询分支', function () {
+  it('[GET] 根据分支名查询分支', () => {
     const { project } = oauth;
     return branchFunction.queryBranchByName(project, 347, 'master');
   });
-  it('[GET] 根据分支名查询不存在的分支', function () {
+  it('[GET] 根据分支名查询不存在的分支', () => {
     const { project } = oauth;
     return branchFunction.queryBranchByName(project, 347, '不存在的分支', false);
   });
-  it('[PUT] 修改分支关联问题', function () {
+  it('[PUT] 修改分支关联问题', () => {
     const { project } = oauth;
     const data = {
       branchName: '关联问题测试',

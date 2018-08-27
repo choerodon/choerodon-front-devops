@@ -38,13 +38,13 @@ class LogOverview extends Component {
     const sync = store.getSync;
 
     const columns = [{
-      title: <FormattedMessage id={'envoverview.logs.info'} />,
+      title: <FormattedMessage id="envoverview.logs.info" />,
       key: 'error',
       width: '50%',
       render: record => (<MouserOverWrapper text={record.error || ''} width={0.5}>
         {record.error}</MouserOverWrapper>),
     }, {
-      title: <FormattedMessage id={'envoverview.logs.file'} />,
+      title: <FormattedMessage id="envoverview.logs.file" />,
       key: 'filePath',
       render: record => (
         <Fragment>
@@ -54,7 +54,7 @@ class LogOverview extends Component {
         </Fragment>
       ),
     }, {
-      title: <FormattedMessage id={'version.commit'} />,
+      title: <FormattedMessage id="version.commit" />,
       key: 'commit',
       render: record => (
         <Fragment>
@@ -74,11 +74,11 @@ class LogOverview extends Component {
     return (<div>
       <div className="c7n-envow-sync-wrap">
         <div className="c7n-envow-sync-title">
-          <FormattedMessage id={'envoverview.commit.sync'} />
+          <FormattedMessage id="envoverview.commit.sync" />
         </div>
         <div className="c7n-envow-sync-line">
           <div className="c7n-envow-sync-card">
-            <div className="c7n-envow-sync-step"><FormattedMessage id={'envoverview.gitlab'} /></div>
+            <div className="c7n-envow-sync-step"><FormattedMessage id="envoverview.gitlab" /></div>
             <div className="c7n-envow-sync-commit">
               <a href={sync && `${sync.commitUrl}${sync.gitCommit}`} target="_blank" rel="nofollow me noopener noreferrer">
                 {sync && (sync.gitCommit ? sync.gitCommit.slice(0, 8) : null)}
@@ -89,7 +89,7 @@ class LogOverview extends Component {
             <div>→</div>
           </div>
           <div className="c7n-envow-sync-card">
-            <div className="c7n-envow-sync-step"><FormattedMessage id={'envoverview.analysis'} /></div>
+            <div className="c7n-envow-sync-step"><FormattedMessage id="envoverview.analysis" /></div>
             <div className="c7n-envow-sync-commit">
               <a href={sync && `${sync.commitUrl}${sync.devopsSyncCommit}`} target="_blank" rel="nofollow me noopener noreferrer">
                 {sync && (sync.devopsSyncCommit ? sync.devopsSyncCommit.slice(0, 8) : null)}
@@ -100,7 +100,7 @@ class LogOverview extends Component {
             <div>→</div>
           </div>
           <div className="c7n-envow-sync-card">
-            <div className="c7n-envow-sync-step"><FormattedMessage id={'envoverview.agent'} /></div>
+            <div className="c7n-envow-sync-step"><FormattedMessage id="envoverview.agent" /></div>
             <div className="c7n-envow-sync-commit">
               <a href={sync && `${sync.commitUrl}${sync.agentSyncCommit}`} target="_blank" rel="nofollow me noopener noreferrer">
                 {sync && (sync.agentSyncCommit ? sync.agentSyncCommit.slice(0, 8) : null)}
@@ -110,7 +110,7 @@ class LogOverview extends Component {
         </div>
       </div>
       <div className="c7n-envow-sync-title">
-        <FormattedMessage id={'envoverview.logs.err'} />
+        <FormattedMessage id="envoverview.logs.err" />
       </div>
       <Table
         filterBar={false}

@@ -5,14 +5,23 @@ const height = window.screen.height;
 @store('EnvOverviewStore')
 class EnvOverviewStore {
   @observable isLoading = false;
+
   @observable val = '';
+
   @observable envcard = [];
+
   @observable ist = null;
+
   @observable log = null;
+
   @observable domin = null;
+
   @observable sync = null;
+
   @observable network = null;
+
   @observable tpEnvId = null;
+
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };

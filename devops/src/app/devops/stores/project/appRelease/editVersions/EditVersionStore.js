@@ -6,12 +6,19 @@ const height = window.screen.height;
 @store('EditVersionStore')
 class EditVersionStore {
   @observable unReleaseData = [];
+
   @observable releaseData = [];
-  @observable isRefresh= false;// 页面的loading
-  @observable loading = false; // 打开tab的loading
+
+  @observable isRefresh= false;
+
+  // 页面的loading
+  @observable loading = false;
+
+  // 打开tab的loading
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
+
   @observable unPageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
@@ -65,6 +72,7 @@ class EditVersionStore {
   @computed get getIsRefresh() {
     return this.isRefresh;
   }
+
   @action changeLoading(flag) {
     this.loading = flag;
   }
@@ -112,12 +120,11 @@ class EditVersionStore {
     }
   };
 
-  updateData = (projectId, id, data) => 
-    axios.put(`/devops/v1/projects/${projectId}/apps_market/${id}/versions`, JSON.stringify(data))
-      .then((datas) => {
-        const res = handleProptError(datas);
-        return res;
-      });
+  updateData = (projectId, id, data) => axios.put(`/devops/v1/projects/${projectId}/apps_market/${id}/versions`, JSON.stringify(data))
+    .then((datas) => {
+      const res = handleProptError(datas);
+      return res;
+    });
 }
 
 const editVersionStore = new EditVersionStore();

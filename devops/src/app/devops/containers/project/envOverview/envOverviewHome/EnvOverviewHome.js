@@ -25,13 +25,21 @@ const Option = Select.Option;
 @observer
 class EnvOverviewHome extends Component {
   @observable tabKey = 'app';
+
   @observable env = [];
+
   @observable envId = null;
+
   @observable showDomain = false;
+
   @observable showNetwork = false;
+
   @observable domainId = null;
+
   @observable domainType = '';
+
   @observable domainTitle = '';
+
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -246,9 +254,8 @@ class EnvOverviewHome extends Component {
   getIstCount = (state) => {
     const { EnvOverviewStore } = this.props;
     const ist = EnvOverviewStore.getIst;
-    const stateArr = ist ?
-      _.map(ist.devopsEnvPreviewAppDTOS, i =>
-        _.filter(i.applicationInstanceDTOS, a => a.status === state)) : [];
+    const stateArr = ist
+      ? _.map(ist.devopsEnvPreviewAppDTOS, i => _.filter(i.applicationInstanceDTOS, a => a.status === state)) : [];
     let length = 0;
     _.map(stateArr, (l) => {
       length += l.length;
@@ -291,8 +298,8 @@ class EnvOverviewHome extends Component {
       {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
       {d.name}</Option>)) : [];
 
-    const envState = this.env.length ?
-      this.env.filter(d => d.id === Number(this.envId ? this.envId : this.env[0].id))[0] : true;
+    const envState = this.env.length
+      ? this.env.filter(d => d.id === Number(this.envId ? this.envId : this.env[0].id))[0] : true;
 
     return (
       <Page
@@ -346,7 +353,7 @@ class EnvOverviewHome extends Component {
             projectId={projectId}
             organizationId={orgId}
           >
-            <Tooltip title={!envState.connect ? <FormattedMessage id={'envoverview.envinfo'} /> : null}>
+            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
               <Button
                 disabled={!envState.connect}
                 onClick={this.deployApp.bind(this, this.envId)}
@@ -362,14 +369,14 @@ class EnvOverviewHome extends Component {
             projectId={projectId}
             organizationId={orgId}
           >
-            <Tooltip title={!envState.connect ? <FormattedMessage id={'envoverview.envinfo'} /> : null}>
+            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
               <Button
                 funcType="flat"
                 disabled={!envState.connect}
                 onClick={this.createNetwork}
               >
                 <i className="icon-playlist_add icon" />
-                <span><FormattedMessage id={'network.header.create'} /></span>
+                <span><FormattedMessage id="network.header.create" /></span>
               </Button>
             </Tooltip>
           </Permission>
@@ -379,23 +386,23 @@ class EnvOverviewHome extends Component {
             projectId={projectId}
             organizationId={orgId}
           >
-            <Tooltip title={!envState.connect ? <FormattedMessage id={'envoverview.envinfo'} /> : null}>
+            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
               <Button
                 funcType="flat"
                 disabled={!envState.connect}
                 onClick={this.createDomain.bind(this, 'create', '')}
               >
                 <i className="icon icon-playlist_add icon" />
-                <FormattedMessage id={'domain.header.create'} />
+                <FormattedMessage id="domain.header.create" />
               </Button>
             </Tooltip>
           </Permission>
-          <Tooltip title={sync && sync.commitUrl ?
-            sync.commitUrl.substr(0, sync.commitUrl.length - 7) : null}
+          <Tooltip title={sync && sync.commitUrl
+            ? sync.commitUrl.substr(0, sync.commitUrl.length - 7) : null}
           >
             <a
-              href={sync && sync.commitUrl ?
-                sync.commitUrl.substr(0, sync.commitUrl.length - 7) : null}
+              href={sync && sync.commitUrl
+                ? sync.commitUrl.substr(0, sync.commitUrl.length - 7) : null}
               target="_blank"
               rel="nofollow me noopener noreferrer"
             >
@@ -403,7 +410,7 @@ class EnvOverviewHome extends Component {
                 funcType="flat"
               >
                 <Icon type="account_balance" />
-                <FormattedMessage id={'envoverview.gitlab'} />
+                <FormattedMessage id="envoverview.gitlab" />
               </Button>
             </a>
           </Tooltip>
@@ -439,9 +446,9 @@ class EnvOverviewHome extends Component {
             </div>
             <div className="c7n-envow-status-content">
               {(sync && sync.devopsSyncCommit === sync.gitCommit
-              && sync.gitCommit === sync.agentSyncCommit) || !envState.connect ?
-                null :
-                <div className="c7n-envow-sync-wrap">
+              && sync.gitCommit === sync.agentSyncCommit) || !envState.connect
+                ? null
+                : <div className="c7n-envow-sync-wrap">
                   <div className="c7n-envow-status-text"><FormattedMessage id="envoverview.sync" /></div>
                   <div><Icon type="autorenew" /></div>
                 </div>}

@@ -67,7 +67,6 @@ class CiPipelineHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      page: 0,
       param: [],
     };
   }
@@ -87,15 +86,12 @@ class CiPipelineHome extends Component {
           className="c7n-app-select_512"
           value={CiPipelineStore.currentApp.id}
           label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           filter
           onChange={this.handleChange.bind(this)}
         >
           {
-            _.map(CiPipelineStore.apps, (app, index) => 
-              <Option key={index} value={app.id}>{app.name}</Option>,
-            )
+            _.map(CiPipelineStore.apps, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
           }
         </Select>
       </div>
@@ -176,6 +172,28 @@ class CiPipelineHome extends Component {
     );
   }
 
+  handleTableChange = (pagination, filters, sorter, param) => {
+    this.setState({ param });
+    CiPipelineStore.setLoading(true);
+    CiPipelineStore.loadPipelines(
+      CiPipelineStore.currentApp.id,
+      pagination.current - 1,
+      pagination.pageSize,
+    );
+  };
+
+  handleRefresh =() => {
+    this.setState({
+      param: [],
+    });
+    CiPipelineStore.setLoading(true);
+    CiPipelineStore.loadPipelines(
+      CiPipelineStore.currentApp.id,
+      CiPipelineStore.pagination.current - 1,
+      CiPipelineStore.pagination.pageSize,
+    );
+  };
+
   handleChange(appId) {
     const currentApp = CiPipelineStore.apps.find(app => app.id === appId);
     CiPipelineStore.setCurrentApp(currentApp);
@@ -190,26 +208,6 @@ class CiPipelineHome extends Component {
     }
     this.handleRefresh();
   }
-
-  handleTableChange = (pagination, filters, sorter, param) => {
-    this.setState({ param });
-    CiPipelineStore.setLoading(true);
-    CiPipelineStore.loadPipelines(
-      CiPipelineStore.currentApp.id,
-      pagination.current - 1,
-      pagination.pageSize);
-  };
-
-  handleRefresh =() => {
-    this.setState({
-      param: [],
-    });
-    CiPipelineStore.setLoading(true);
-    CiPipelineStore.loadPipelines(
-      CiPipelineStore.currentApp.id,
-      CiPipelineStore.pagination.current - 1,
-      CiPipelineStore.pagination.pageSize);
-  };
 
   renderStatus = (status, record) => (
     <div className="c7n-status">
@@ -249,8 +247,8 @@ class CiPipelineHome extends Component {
         </Tooltip>
       </div>
       {
-        record.latest ? 
-          (
+        record.latest 
+          ? (
             <Tooltip
               placement="top"
               title="Latest pipeline for this branch"
@@ -298,8 +296,8 @@ class CiPipelineHome extends Component {
           >
             <span>
               {
-                _.find(CiPipelineStore.commits, { id: sha }) ? 
-                  _.find(CiPipelineStore.commits, { id: sha }).shortId
+                _.find(CiPipelineStore.commits, { id: sha }) 
+                  ? _.find(CiPipelineStore.commits, { id: sha }).shortId
                   : ''
               }
             </span>
@@ -310,16 +308,16 @@ class CiPipelineHome extends Component {
         <Tooltip
           placement="top"
           title={
-            _.find(CiPipelineStore.commits, { id: sha }) ? 
-              _.find(CiPipelineStore.commits, { id: sha }).authorName
+            _.find(CiPipelineStore.commits, { id: sha }) 
+              ? _.find(CiPipelineStore.commits, { id: sha }).authorName
               : ''
           }
           trigger="hover"
         >
           <span className="c7n-avatar mr7">
             {
-              _.find(CiPipelineStore.commits, { id: sha }) ? 
-                _.find(CiPipelineStore.commits, { id: sha }).authorName.substring(0, 1)
+              _.find(CiPipelineStore.commits, { id: sha }) 
+                ? _.find(CiPipelineStore.commits, { id: sha }).authorName.substring(0, 1)
                 : ''
             }
           </span>
@@ -332,8 +330,8 @@ class CiPipelineHome extends Component {
         >
           <span className="gray">
             {
-              _.find(CiPipelineStore.commits, { id: sha }) ? 
-                _.find(CiPipelineStore.commits, { id: sha }).title
+              _.find(CiPipelineStore.commits, { id: sha }) 
+                ? _.find(CiPipelineStore.commits, { id: sha }).title
                 : ''
             }
           </span>
@@ -346,10 +344,10 @@ class CiPipelineHome extends Component {
     const pipeStage = [];
     if (jobs && jobs.length) {
       for (let i = 0, l = jobs.length; i < l; i += 1) {
-        pipeStage.push(<span className="c7n-jobs">
+        pipeStage.push(<span className="c7n-jobs" key={i}>
           {
-            i !== 0 ?
-              <span className="c7n-split-before" />
+            i !== 0
+              ? <span className="c7n-split-before" />
               : null
           }
           <Tooltip

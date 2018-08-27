@@ -26,7 +26,6 @@ class DeploymentAppHome extends Component {
       versionId: props.match.params.verId || undefined,
       current: props.match.params.appId ? 2 : 1,
       envId: props.location.search.split('envId=')[1] ? Number(props.location.search.split('envId=')[1]) : undefined,
-      storeId: props.match.params.storeId,
       mode: 'new',
       markers: null,
       projectId: AppState.currentMenuType.id,
@@ -211,18 +210,6 @@ class DeploymentAppHome extends Component {
   };
 
   /**
-   * 返回到上一级
-   */
-  openAppDeployment() {
-    const projectName = AppState.currentMenuType.name;
-    const projectId = AppState.currentMenuType.id;
-    const type = AppState.currentMenuType.type;
-    this.props.history.push(
-      `/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
-    );
-  }
-
-  /**
    * 取消第一步
    */
   clearStepOne = () => {
@@ -286,8 +273,8 @@ class DeploymentAppHome extends Component {
       environmentId: this.state.envId,
       values: value,
       type: this.state.mode === 'new' ? 'create' : 'update',
-      appInstanceId: this.state.mode === 'new' ?
-        null : this.state.instanceId || (instances && instances.length === 1 && instances[0].id),
+      appInstanceId: this.state.mode === 'new'
+        ? null : this.state.instanceId || (instances && instances.length === 1 && instances[0].id),
     };
     DeploymentAppStore.deploymentApp(applicationDeployDTO)
       .then((datas) => {
@@ -308,14 +295,15 @@ class DeploymentAppHome extends Component {
 
 
   loadReview = async () => {
-    const { value, versionId } = this.state;
+    const { value, versionId, projectId } = this.state;
     if (value) {
-      const yaml = await axios.post(`/devops/v1/projects/${this.state.projectId}/app_instances/previewValue?appVersionId=${versionId}`, { yaml: value })
+      const yaml = await axios.post(`/devops/v1/projects/${projectId}/app_instances/previewValue?appVersionId=${versionId}`, { yaml: value })
         .then(data => data);
       this.setState({ yaml });
     }
     this.changeStep(3);
   };
+
   /**
    * 渲染第一步
    */
@@ -359,7 +347,7 @@ class DeploymentAppHome extends Component {
           <Select
             notFoundContent={formatMessage({ id: 'network.form.version.disable' })}
             value={this.state.versionId ? parseInt(this.state.versionId, 10) : undefined}
-            label={<FormattedMessage id={'deploy.step.one.version'} />}
+            label={<FormattedMessage id="deploy.step.one.version" />}
             className="section-text-margin"
             onSelect={this.handleSelectVersion}
             style={{ width: 482 }}
@@ -445,8 +433,8 @@ class DeploymentAppHome extends Component {
             funcType="raised"
             onClick={this.loadReview}
             disabled={!(this.state.envId && (this.state.value || (data && data.yaml)) 
-              && (this.state.errorLine ?
-                this.state.errorLine.length === 0 : (data && data.errorLines === null)))}
+              && (this.state.errorLine
+                ? this.state.errorLine.length === 0 : (data && data.errorLines === null)))}
           >
             {formatMessage({ id: 'next' })}
           </Button>
@@ -456,6 +444,7 @@ class DeploymentAppHome extends Component {
       </div>
     );
   };
+
   /**
    * 渲染第三步
    * @returns {*}
@@ -480,17 +469,17 @@ class DeploymentAppHome extends Component {
               value={this.state.mode}
               label={<span className="deploy-text">{formatMessage({ id: 'deploy.step.three.mode' })}</span>}
             >
-              <Radio className="deploy-radio" value={'new'}>{formatMessage({ id: 'deploy.step.three.mode.new' })}</Radio>
-              <Radio className="deploy-radio" value={'replace'} disabled={instances.length === 0}>{formatMessage({ id: 'deploy.step.three.mode.replace' })}
+              <Radio className="deploy-radio" value="new">{formatMessage({ id: 'deploy.step.three.mode.new' })}</Radio>
+              <Radio className="deploy-radio" value="replace" disabled={instances.length === 0}>{formatMessage({ id: 'deploy.step.three.mode.replace' })}
                 <i className="icon icon-error section-instance-icon" />
                 <span className="deploy-tip-text">{formatMessage({ id: 'deploy.step.three.mode.help' })}</span>
               </Radio>
             </RadioGroup>
             {this.state.mode === 'replace' && <Select
               onSelect={this.handleSelectInstance}
-              value={this.state.instanceId || 
-                (instances && instances.length === 1 && instances[0].id)}
-              label={<FormattedMessage id={'deploy.step.three.mode.replace.label'} />}
+              value={this.state.instanceId 
+                || (instances && instances.length === 1 && instances[0].id)}
+              label={<FormattedMessage id="deploy.step.three.mode.replace.label" />}
               className="deploy-select"
               placeholder="Select a person"
               optionFilterProp="children"
@@ -558,8 +547,8 @@ class DeploymentAppHome extends Component {
           </div>
           <div>
             <div className="deployApp-title"><i className="icon icon-jsfiddle" />{formatMessage({ id: 'deploy.step.three.mode' })}：</div>
-            <div className="deployApp-text">{this.state.mode === 'new' ? formatMessage({ id: 'deploy.step.three.mode.new' }) : formatMessage({ id: 'deploy.step.three.mode.replace' })} {this.state.mode === 'replace' &&
-            <span className="deployApp-value">({ this.state.instanceId ? this.state.instanceDto.code : (instances && instances.length === 1 && instances[0].code)})</span>}</div>
+            <div className="deployApp-text">{this.state.mode === 'new' ? formatMessage({ id: 'deploy.step.three.mode.new' }) : formatMessage({ id: 'deploy.step.three.mode.replace' })} {this.state.mode === 'replace'
+            && <span className="deployApp-value">({ this.state.instanceId ? this.state.instanceDto.code : (instances && instances.length === 1 && instances[0].code)})</span>}</div>
           </div>
           <div>
             <div className="deployApp-title"><i className="icon icon-description" />{formatMessage({ id: 'deploy.step.two.config' })}：</div>
@@ -585,6 +574,18 @@ class DeploymentAppHome extends Component {
     );
   };
 
+  /**
+   * 返回到上一级
+   */
+  openAppDeployment() {
+    const projectName = AppState.currentMenuType.name;
+    const projectId = AppState.currentMenuType.id;
+    const type = AppState.currentMenuType.type;
+    this.props.history.push(
+      `/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
+    );
+  }
+
   render() {
     const { DeploymentAppStore, intl } = this.props;
     const { formatMessage } = intl;
@@ -607,8 +608,8 @@ class DeploymentAppHome extends Component {
         ]}
         className="c7n-region c7n-deployApp"
       >
-        <Header title={<FormattedMessage id={'deploy.header.title'} />} />
-        <Content className="c7n-deployApp-wrapper" code={'deploy'} values={{ name: projectName }}>
+        <Header title={<FormattedMessage id="deploy.header.title" />} />
+        <Content className="c7n-deployApp-wrapper" code="deploy" values={{ name: projectName }}>
           <div className="deployApp-card">
             <Steps current={this.state.current}>
               <Step

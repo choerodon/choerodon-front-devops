@@ -7,12 +7,21 @@ const height = window.screen.height;
 @store('NetworkConfigStore')
 class NetworkConfigStore {
   @observable env = [];
+
   @observable app = [];
+
   @observable ist = [];
+
   @observable allData = [];
+
   @observable singleData = {};
-  @observable isRefresh = false;// 页面的loading
-  @observable loading = false; // 打开tab的loading
+
+  @observable isRefresh = false;
+
+  // 页面的loading
+  @observable loading = false;
+
+  // 打开tab的loading
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
@@ -111,9 +120,8 @@ class NetworkConfigStore {
    * @param projectId
    * @param id
    */
-  deleteData = (projectId, id) =>
-    axios.delete(`/devops/v1/projects/${projectId}/service/${id}`)
-      .then(data => handleProptError(data));
+  deleteData = (projectId, id) => axios.delete(`/devops/v1/projects/${projectId}/service/${id}`)
+    .then(data => handleProptError(data));
 
   /**
    * 加载网络列表数据
@@ -216,9 +224,8 @@ class NetworkConfigStore {
    * @param projectId
    * @param data
    */
-  createNetwork = (projectId, data) =>
-    axios.post(`/devops/v1/projects/${projectId}/service`, JSON.stringify(data))
-      .then(res => handleProptError(res));
+  createNetwork = (projectId, data) => axios.post(`/devops/v1/projects/${projectId}/service`, JSON.stringify(data))
+    .then(res => handleProptError(res));
 
   /**
    * 更新网络
@@ -226,9 +233,8 @@ class NetworkConfigStore {
    * @param id
    * @param data
    */
-  updateData = (projectId, id, data) =>
-    axios.put(`/devops/v1/projects/${projectId}/service/${id}`, JSON.stringify(data))
-      .then(res => handleProptError(res));
+  updateData = (projectId, id, data) => axios.put(`/devops/v1/projects/${projectId}/service/${id}`, JSON.stringify(data))
+    .then(res => handleProptError(res));
 
 
   /**

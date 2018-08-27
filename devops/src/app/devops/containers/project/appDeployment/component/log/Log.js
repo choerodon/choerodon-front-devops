@@ -7,6 +7,7 @@ class Log extends Component {
     this.state = {
     };
   }
+
   componentDidMount() {
     const ele = document.getElementById('editor');
     let editor;
@@ -24,6 +25,7 @@ class Log extends Component {
       editor.clearSelection();
     }
   }
+
   componentWillReceiveProps() {
     const ele = document.getElementById('editor');
     let editor;

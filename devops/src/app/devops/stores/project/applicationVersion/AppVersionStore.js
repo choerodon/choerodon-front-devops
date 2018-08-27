@@ -7,8 +7,13 @@ const height = window.screen.height;
 @store('AppVersionStore')
 class AppVersionStore {
   @observable allData = [];
-  @observable isRefresh = false;// 页面的loading
-  @observable loading = false; // 打开tab的loading
+
+  @observable isRefresh = false;
+
+  // 页面的loading
+  @observable loading = false;
+
+  // 打开tab的loading
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
@@ -39,6 +44,7 @@ class AppVersionStore {
   @computed get getIsRefresh() {
     return this.isRefresh;
   }
+
   @action changeLoading(flag) {
     this.loading = flag;
   }
@@ -65,12 +71,14 @@ class AppVersionStore {
         this.changeIsRefresh(false);
       });
   };
+
   handleData =(data) => {
     this.setAllData(data.content);
     const { number, size, totalElements } = data;
     const page = { number, size, totalElements };
     this.setPageInfo(page);
   }
+
   handleProptError =(error) => {
     if (error && error.failed) {
       Choerodon.prompt(error.message);

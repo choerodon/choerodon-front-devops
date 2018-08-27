@@ -27,6 +27,28 @@ const formItemLayout = {
 
 @observer
 class AppTag extends Component {
+  /**
+   * 标记名称的校验规则：\d+(\.\d+){2}
+   */
+  checkTagName = _.debounce((rule, value, callback) => {
+    const { AppTagStore, intl } = this.props;
+    const { projectId, appId } = this.state;
+    // eslint-disable-next-line no-useless-escape
+    const pa = /^\d+(\.\d+){2}$/;
+    if (value && pa.test(value)) {
+      AppTagStore.checkTagName(projectId, value)
+        .then((data) => {
+          if (data) {
+            callback();
+          } else {
+            callback(intl.formatMessage({ id: 'apptag.checkName' }));
+          }
+        });
+    } else {
+      callback(intl.formatMessage({ id: 'apptag.checkNameReg' }));
+    }
+  }, 1000);
+
   constructor(props) {
     super(props);
     const menu = AppState.currentMenuType;
@@ -42,7 +64,6 @@ class AppTag extends Component {
       visible: false,
       tag: null,
       size: 3,
-      filters: {},
     };
   }
 
@@ -122,7 +143,7 @@ class AppTag extends Component {
   tableChange = (pagination, filters, sorter, paras) => {
     const { AppTagStore } = this.props;
     const { projectId } = this.state;
-    this.setState({ page: pagination.current - 1, filters, paras });
+    this.setState({ page: pagination.current - 1 });
     let searchParam = {};
     if (Object.keys(filters).length) {
       searchParam = filters;
@@ -179,28 +200,6 @@ class AppTag extends Component {
   };
 
   /**
-   * 标记名称的校验规则：\d+(\.\d+){2}
-   */
-  checkTagName = _.debounce((rule, value, callback) => {
-    const { AppTagStore, intl } = this.props;
-    const { projectId, appId } = this.state;
-    // eslint-disable-next-line no-useless-escape
-    const pa = /^\d+(\.\d+){2}$/;
-    if (value && pa.test(value)) {
-      AppTagStore.checkTagName(projectId, value)
-        .then((data) => {
-          if (data) {
-            callback();
-          } else {
-            callback(intl.formatMessage({ id: 'apptag.checkName' }));
-          }
-        });
-    } else {
-      callback(intl.formatMessage({ id: 'apptag.checkNameReg' }));
-    }
-  }, 1000);
-
-  /**
    * 打开确认确认窗口
    * @param tag
    */
@@ -231,6 +230,7 @@ class AppTag extends Component {
    * 取消删除
    */
   closeRemove = () => this.setState({ visible: false });
+
   /**
    * 加载更多
    */
@@ -241,6 +241,7 @@ class AppTag extends Component {
     this.setState({ size: size + 10 });
     AppTagStore.queryBranchData({ projectId, size: size + 10, postData: { searchParam: { branchName: [filter] }, param: '' } });
   };
+
   /**
    * 搜索分支数据
    * @param input
@@ -308,7 +309,7 @@ class AppTag extends Component {
             >
               <Button
                 shape="circle"
-                size={'small'}
+                size="small"
                 onClick={this.openRemove.bind(this, record.tagName)}
               >
                 <Icon type="delete_forever" />
@@ -333,10 +334,10 @@ class AppTag extends Component {
         <Modal
           confirmLoading={deleteLoading}
           visible={visible}
-          title={<FormattedMessage id={'apptag.action.delete'} />}
+          title={<FormattedMessage id="apptag.action.delete" />}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
+            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,
             <Button key="submit" type="danger" onClick={this.deleteTag} loading={deleteLoading}>
               {this.props.intl.formatMessage({ id: 'delete' })}
             </Button>,
@@ -374,15 +375,12 @@ class AppTag extends Component {
             className="c7n-select_512"
             value={AppTagStore.getSelectApp}
             label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
             onChange={(value, option) => this.handleSelect(value, option)}
           >
             {
-              _.map(appData, (app, index) =>
-                <Option key={index} value={app.id}>{app.name}</Option>,
-              )
+              _.map(appData, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
             }
           </Select>
           <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
@@ -468,9 +466,7 @@ class AppTag extends Component {
                       >
                         <OptGroup label={<FormattedMessage id="apptag.branch" />}>
                           {
-                            _.map(AppTagStore.getBranchData.content, item =>
-                              <Option key={item.branchName} value={item.branchName}><Icon className="apptag-branch-icon" type="branch" />{item.branchName}</Option>,
-                            )
+                            _.map(AppTagStore.getBranchData.content, item => <Option key={item.branchName} value={item.branchName}><Icon className="apptag-branch-icon" type="branch" />{item.branchName}</Option>)
                           }
                           {AppTagStore.getBranchData.totalElements > AppTagStore.getBranchData.numberOfElements && AppTagStore.getBranchData.numberOfElements > 0 ? <Option key="more">
                             <div role="none" onClick={this.changeSize} className="c7n-option-popover c7n-dom-more">

@@ -21,9 +21,6 @@ class ApplicationVersion extends Component {
     const menu = AppState.currentMenuType;
     this.state = {
       page: 0,
-      id: '',
-      projectId: menu.id,
-      show: false,
     };
   }
 
@@ -38,8 +35,8 @@ class ApplicationVersion extends Component {
     const thisProps = fromJS(this.props || {});
     const thisState = fromJS(this.state || {});
     const nextStates = fromJS(nextState || {});
-    if (thisProps.size !== nextProps.size ||
-      thisState.size !== nextState.size) {
+    if (thisProps.size !== nextProps.size
+      || thisState.size !== nextState.size) {
       return true;
     }
     if (is(thisState, nextStates)) {
@@ -81,6 +78,7 @@ class ApplicationVersion extends Component {
     },
     ];
   } ;
+
   render() {
     const { AppVersionStore, intl } = this.props;
     const serviceData = AppVersionStore.getAllData;
