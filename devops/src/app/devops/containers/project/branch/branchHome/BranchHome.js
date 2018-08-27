@@ -24,10 +24,6 @@ class BranchHome extends Component {
     const menu = AppState.currentMenuType;
     this.state = {
       projectId: menu.id,
-      appId: props.match.params.id,
-      appName: props.match.params.name,
-      page: 0,
-      pageSize: 10,
       filters: {},
     };
   }
@@ -36,6 +32,7 @@ class BranchHome extends Component {
     const { BranchStore, intl } = this.props;
     BranchStore.loadApps();
   }
+
   /**
    * 获取issue的options
    * @param s
@@ -97,6 +94,7 @@ class BranchHome extends Component {
     }
     return names;
   };
+
   /**
    * 获取列表的icon
    * @param name 分支类型
@@ -165,7 +163,7 @@ class BranchHome extends Component {
           </div>
           {record.commitUserUrl && record.commitUserName ? <Tooltip title={record.commitUserName}>
             <div className="branch-user-img" style={{ backgroundImage: `url(${record.commitUserUrl})` }} />
-          </Tooltip> : <Tooltip title={record.commitUserName}><div className="branch-user-img" >{record.commitUserName && record.commitUserName.slice(0, 1)}</div></Tooltip> }
+          </Tooltip> : <Tooltip title={record.commitUserName}><div className="branch-user-img">{record.commitUserName && record.commitUserName.slice(0, 1)}</div></Tooltip> }
           <MouserOverWrapper text={record.commitContent} width={0.2} className="branch-col-icon">
             {record.commitContent}
           </MouserOverWrapper>
@@ -175,8 +173,8 @@ class BranchHome extends Component {
         title: <FormattedMessage id="branch.time" />,
         dataIndex: 'commit.committedDate',
         render: (text, record) => (<div>
-          {record.createUserName && record.createUserUrl ?
-            <React.Fragment>
+          {record.createUserName && record.createUserUrl
+            ? <React.Fragment>
               <div className="branch-user-img" style={{ backgroundImage: `url(${record.createUserUrl})` }} />
               <div style={{ display: 'inline-block' }}>
                 <span style={{ paddingRight: 5 }}>{record.createUserName}</span>
@@ -186,7 +184,7 @@ class BranchHome extends Component {
             </React.Fragment>
             : <React.Fragment>
               {record.createUserName ? <div>
-                <div className="branch-user-img" >{record.createUserRealName && this.getName(record.createUserRealName)}</div>
+                <div className="branch-user-img">{record.createUserRealName && this.getName(record.createUserRealName)}</div>
                 <div style={{ display: 'inline-block' }}>
                   <span style={{ paddingRight: 5 }}>{record.createUserName}</span>
                   {record.createUserName !== record.createUserRealName
@@ -201,7 +199,7 @@ class BranchHome extends Component {
         dataIndex: 'commit.message',
         render: (text, record) => (<div>
           {record.typeCode ? this.getOptionContent(record) : null}
-          <a onClick={this.showIssue.bind(this, record.issueId, record.branchName)} role={'none'}><Tooltip title={record.issueName}>{record.issueCode}</Tooltip></a>
+          <a onClick={this.showIssue.bind(this, record.issueId, record.branchName)} role="none"><Tooltip title={record.issueName}>{record.issueCode}</Tooltip></a>
         </div>),
       },
       {
@@ -210,14 +208,14 @@ class BranchHome extends Component {
         key: 'action',
         render: (test, record) => (
           <div>
-            {record.branchName !== 'master' ?
-              <React.Fragment>
+            {record.branchName !== 'master'
+              ? <React.Fragment>
                 <Permission projectId={this.state.projectId} organizationId={orgId} type={type} service={['devops-service.devops-git.update']}>
                   <Tooltip
                     placement="bottom"
                     title={<FormattedMessage id="branch.edit" />}
                   >
-                    <Button size={'small'} shape="circle" onClick={this.handleEdit.bind(this, record.branchName)}>
+                    <Button size="small" shape="circle" onClick={this.handleEdit.bind(this, record.branchName)}>
                       <i className="icon icon-mode_edit" />
                     </Button>
                   </Tooltip>
@@ -227,7 +225,7 @@ class BranchHome extends Component {
                   title={<FormattedMessage id="branch.request" />}
                 >
                   <a href={record.commitUrl && `${record.commitUrl.split('/commit')[0]}/merge_requests/new?change_branches=true&merge_request[source_branch]=${record.branchName}&merge_request[target_branch]=master`} target="_blank" rel="nofollow me noopener noreferrer">
-                    <Button size={'small'} shape="circle">
+                    <Button size="small" shape="circle">
                       <i className="icon icon-merge_request" />
                     </Button>
                   </a>
@@ -237,7 +235,7 @@ class BranchHome extends Component {
                     placement="bottom"
                     title={<FormattedMessage id="delete" />}
                   >
-                    <Button size={'small'} shape="circle" onClick={this.openRemove.bind(this, record.branchName)}>
+                    <Button size="small" shape="circle" onClick={this.openRemove.bind(this, record.branchName)}>
                       <i className="icon icon-delete" />
                     </Button>
                   </Tooltip>
@@ -279,7 +277,7 @@ class BranchHome extends Component {
               </p>
             </div>
           </div>
-          <div className="c7n-branch-block" >
+          <div className="c7n-branch-block">
             <span className="branch-popover-span span-bugfix" />
             <div className="branch-popover-content">
               <p className="branch-popover-p">
@@ -358,6 +356,7 @@ class BranchHome extends Component {
     BranchStore.setBranchData({ content: [] });
     BranchStore.loadBranchList({ projectId });
   };
+
   /**
    * 修改相关联问题
    * @param name
@@ -406,6 +405,7 @@ class BranchHome extends Component {
     BranchStore.setCreateBranchShow(false);
     // this.loadData(BranchStore.app);
   };
+
   /**
    * 打开删除框
    * @param name
@@ -413,6 +413,7 @@ class BranchHome extends Component {
   openRemove = (name) => {
     this.setState({ visible: true, name });
   };
+
   /**
    * 关闭删除框
    */
@@ -438,6 +439,7 @@ class BranchHome extends Component {
       Choerodon.handleResponseError(error);
     });
   };
+
   /**
    * table筛选
    * @param pagination
@@ -546,23 +548,20 @@ class BranchHome extends Component {
             value={BranchStore.app ? BranchStore.app : undefined}
             className="branch-select_512"
             label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
-            filterOption={(input, option) =>
-              option.props.children.props.children.props.children
-                .toLowerCase().indexOf(input.toLowerCase()) >= 0
+            filterOption={(input, option) => option.props.children.props.children.props.children
+              .toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
             filter
           >
             {
-              _.map(apps, (app, index) =>
-                (
-                  <Option value={app.id} key={index}>
-                    <Tooltip title={app.code}>
-                      <span style={{ width: '100%', display: 'inline-block' }}>
-                        {app.name}
-                      </span>
-                    </Tooltip>
-                  </Option>),
-              )
+              _.map(apps, (app, index) => (
+                <Option value={app.id} key={index}>
+                  <Tooltip title={app.code}>
+                    <span style={{ width: '100%', display: 'inline-block' }}>
+                      {app.name}
+                    </span>
+                  </Tooltip>
+                </Option>))
             }
           </Select>
           {this.tableBranch}
@@ -589,10 +588,10 @@ class BranchHome extends Component {
         <Modal
           confirmLoading={this.state.submitting}
           visible={this.state.visible}
-          title={<FormattedMessage id={'branch.action.delete'} />}
+          title={<FormattedMessage id="branch.action.delete" />}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
+            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,
             <Button key="submit" type="danger" onClick={this.handleDelete} loading={this.state.submitting}>
               {this.props.intl.formatMessage({ id: 'delete' })}
             </Button>,

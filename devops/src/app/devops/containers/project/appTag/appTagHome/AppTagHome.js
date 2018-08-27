@@ -33,6 +33,7 @@ class AppTagHome extends Component {
   checkTagName = _.debounce((rule, value, callback) => {
     const { AppTagStore, intl } = this.props;
     const { projectId, appId } = this.state;
+    // eslint-disable-next-line no-useless-escape
     const pa = /^\d+(\.\d+){2}$/;
     if (value && pa.test(value)) {
       AppTagStore.checkTagName(projectId, value)
@@ -143,7 +144,7 @@ class AppTagHome extends Component {
   tableChange = (pagination, filters, sorter, paras) => {
     const { AppTagStore } = this.props;
     const { projectId } = this.state;
-    this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
+    this.setState({ page: pagination.current - 1 });
     let searchParam = {};
     if (Object.keys(filters).length) {
       searchParam = filters;
@@ -377,9 +378,8 @@ class AppTagHome extends Component {
           <Select
             className="c7n-select_512"
             value={AppTagStore.getSelectApp}
-            label={intl.formatMessage({ id: 'deploy.step.one.app' })}
-            filterOption={(input, option) => option.props.children
-              .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
             onChange={(value, option) => this.handleSelect(value, option)}
           >
@@ -470,10 +470,7 @@ class AppTagHome extends Component {
                       >
                         <OptGroup label={<FormattedMessage id="apptag.branch" />}>
                           {
-                            _.map(AppTagStore.getBranchData.content,
-                              item => <Option key={item.branchName} value={item.branchName}>
-                                <Icon className="apptag-branch-icon" type="branch" />
-                                {item.branchName}</Option>)
+                            _.map(AppTagStore.getBranchData.content, item => <Option key={item.branchName} value={item.branchName}><Icon className="apptag-branch-icon" type="branch" />{item.branchName}</Option>)
                           }
                           {AppTagStore.getBranchData.totalElements > AppTagStore.getBranchData.numberOfElements && AppTagStore.getBranchData.numberOfElements > 0 ? <Option key="more">
                             <div role="none" onClick={this.changeSize} className="c7n-option-popover c7n-dom-more">

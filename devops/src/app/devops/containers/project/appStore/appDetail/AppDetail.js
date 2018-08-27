@@ -136,8 +136,8 @@ class AppDetail extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        {AppStoreStore.isLoading ? <LoadingBar display /> :
-          (<div className="c7n-store-app-content">
+        {AppStoreStore.isLoading ? <LoadingBar display />
+          : (<div className="c7n-store-app-content">
             <div className="c7n-store-detail-head">
               <div className="c7n-store-detail-left">
                 <div className="c7n-store-img-wrap">
@@ -157,8 +157,7 @@ class AppDetail extends Component {
                     defaultValue={appVers.length ? appVers[0].version : ''}
                     className="c7n-store-select"
                     optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     onChange={this.handleChange}
                     filter
                     showSearch

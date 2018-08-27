@@ -6,7 +6,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import '../../../main.scss';
-import './../AppRelease.scss';
+import '../AppRelease.scss';
 import VersionTable from '../versionTable';
 import TimePopover from '../../../../components/timePopover';
 
@@ -23,10 +23,8 @@ class AddAppRelease extends Component {
     this.state = {
       appId: props.match.params.appId || undefined,
       current: props.match.params.appId ? 2 : 1,
-      envId: undefined,
       projectId: AppState.currentMenuType.id,
       mode: 'organization',
-      markers: null,
     };
   }
 
@@ -54,6 +52,7 @@ class AddAppRelease extends Component {
     }
     return status;
   }
+
   /**
    * 处理图片回显
    * @param img
@@ -64,6 +63,7 @@ class AddAppRelease extends Component {
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
   };
+
   /**
    * 改变步骤条
    * @param index
@@ -87,6 +87,7 @@ class AddAppRelease extends Component {
       `/devops/app-release/1?type=${type}&id=${projectId}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`,
     );
   }
+
   handleSubmit =(e) => {
     e.preventDefault();
     const { EditReleaseStore } = this.props;
@@ -128,12 +129,14 @@ class AddAppRelease extends Component {
   showBth =() => {
     this.setState({ showBtn: true });
   };
+
   /**
    * 图标的上传button隐藏
    */
   hideBth =() => {
     this.setState({ showBtn: false });
   };
+
   /**
    * 触发上传按钮
    */
@@ -142,6 +145,7 @@ class AddAppRelease extends Component {
     const ele = document.getElementById('file');
     ele.click();
   };
+
   /**
    * 选择文件
    * @param e
@@ -164,6 +168,7 @@ class AddAppRelease extends Component {
       });
     this.setState({ isClick: false, showBtn: false });
   };
+
   /**
    * 选择要发布的应用
    * @param record
@@ -179,6 +184,7 @@ class AddAppRelease extends Component {
       this.setState({ appId: record.id });
     }
   }
+
   /**
    * table app表格搜索
    * @param pagination 分页
@@ -216,6 +222,7 @@ class AddAppRelease extends Component {
         size: pagination.pageSize,
       });
   };
+
   /**
    * 渲染第一步
    */
@@ -232,13 +239,13 @@ class AddAppRelease extends Component {
       ),
 
     }, {
-      title: <FormattedMessage id={'app.name'} />,
+      title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
     }, {
-      title: <FormattedMessage id={'app.code'} />,
+      title: <FormattedMessage id="app.code" />,
       dataIndex: 'code',
       key: 'code',
       sorter: true,
@@ -252,7 +259,7 @@ class AddAppRelease extends Component {
         <section className="deployAddApp-section">
           <div>
             <Table
-              rowClassName={'col-check'}
+              rowClassName="col-check"
               filterBarPlaceholder={formatMessage({ id: 'filter' })}
               onRow={(record) => {
                 const { isClick } = this.state;
@@ -275,6 +282,7 @@ class AddAppRelease extends Component {
       </div>
     );
   }
+
   /**
    * 渲染第二步
    */
@@ -282,10 +290,10 @@ class AddAppRelease extends Component {
     const { EditReleaseStore } = this.props;
     const data = EditReleaseStore.selectData;
     const columns = [{
-      title: <FormattedMessage id={'deploy.ver'} />,
+      title: <FormattedMessage id="deploy.ver" />,
       dataIndex: 'version',
     }, {
-      title: <FormattedMessage id={'app.createTime'} />,
+      title: <FormattedMessage id="app.createTime" />,
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }, {
       width: 64,
@@ -327,6 +335,7 @@ class AddAppRelease extends Component {
       </div>
     );
   };
+
   /**
    * 渲染第三步
    * @returns {*}
@@ -345,8 +354,8 @@ class AddAppRelease extends Component {
         <section className="deployAddApp-section">
           <div className="section-text-margin">
             <RadioGroup onChange={this.handleChangeMode} value={this.state.mode} label={<span className="deploy-text">{this.props.intl.formatMessage({ id: 'release.add.step.three.title' })}</span>}>
-              <Radio style={radioStyle} value={'organization'}>{this.props.intl.formatMessage({ id: 'organization' })}</Radio>
-              <Radio style={radioStyle} value={'public'}>{this.props.intl.formatMessage({ id: 'public' })}</Radio>
+              <Radio style={radioStyle} value="organization">{this.props.intl.formatMessage({ id: 'organization' })}</Radio>
+              <Radio style={radioStyle} value="public">{this.props.intl.formatMessage({ id: 'public' })}</Radio>
             </RadioGroup>
           </div>
           <p style={{ marginLeft: 30, marginTop: 24 }}>
@@ -362,6 +371,7 @@ class AddAppRelease extends Component {
       </div>
     );
   }
+
   /**
    * 渲染第四步
    * @returns {*}
@@ -401,7 +411,7 @@ class AddAppRelease extends Component {
             onChange={(value) => { this.setState({ contributor: value.target.value }); }}
             style={{ width: 512 }}
             maxLength={30}
-            label={<span className="apprelease-formItem-label"><FormattedMessage id={'appstore.contributor'} /></span>}
+            label={<span className="apprelease-formItem-label"><FormattedMessage id="appstore.contributor" /></span>}
             size="default"
           />
         </section>
@@ -411,7 +421,7 @@ class AddAppRelease extends Component {
             style={{ width: 512 }}
             onChange={(value) => { this.setState({ category: value.target.value }); }}
             maxLength={10}
-            label={<span className="apprelease-formItem-label"><FormattedMessage id={'appstore.category'} /></span>}
+            label={<span className="apprelease-formItem-label"><FormattedMessage id="appstore.category" /></span>}
             size="default"
           />
         </section>
@@ -421,7 +431,7 @@ class AddAppRelease extends Component {
             onChange={(value) => { this.setState({ description: value.target.value }); }}
             style={{ width: 512 }}
             maxLength={100}
-            label={<span className="apprelease-formItem-label"><FormattedMessage id={'appstore.description'} /></span>}
+            label={<span className="apprelease-formItem-label"><FormattedMessage id="appstore.description" /></span>}
             autosize={{ minRows: 2, maxRows: 6 }}
           />
         </section>
@@ -497,6 +507,7 @@ class AddAppRelease extends Component {
     const { EditReleaseStore } = this.props;
     EditReleaseStore.changeShow(true);
   };
+
   removeVersion = (id) => {
     const { EditReleaseStore } = this.props;
     const data = _.cloneDeep(EditReleaseStore.selectData.slice());
@@ -521,8 +532,8 @@ class AddAppRelease extends Component {
         ]}
         className="c7n-region"
       >
-        <Header title={<FormattedMessage id={'release.home.header.title'} />} backPath={`/devops/app-release/1?type=${type}&id=${id}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`} />
-        <Content className="c7n-deployApp-wrapper" style={{ paddingBottom: '16px' }} code={'release.add'} values={{ name: projectName }}>
+        <Header title={<FormattedMessage id="release.home.header.title" />} backPath={`/devops/app-release/1?type=${type}&id=${id}&name=${projectName}&organizationId=${AppState.currentMenuType.organizationId}`} />
+        <Content className="c7n-deployApp-wrapper" style={{ paddingBottom: '16px' }} code="release.add" values={{ name: projectName }}>
           <div className="deployApp-card">
             <Steps current={this.state.current}>
               <Step

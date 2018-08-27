@@ -1,6 +1,6 @@
 /* eslint-disable prefer-arrow-callback,no-undef */
-const domainFunction = require('../../apiFunction/deploymentPipeline/DomainFunction');
 const uuidv1 = require('uuid/v1');
+const domainFunction = require('../../apiFunction/deploymentPipeline/DomainFunction');
 const utils = require('../../Utils');
 
 const projectId = utils.oauth.project;

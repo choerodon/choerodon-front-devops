@@ -26,13 +26,14 @@ class Board extends Component {
   }
 
   pushScrollRight = () => {
+    const { moveRight } = this.state;
     scrollLeft -= 300;
     if (scrollLeft < 0) {
       scrollLeft = 0;
     }
     this.setState({
       move: false,
-      moveRight: this.state.moveRight - 300,
+      moveRight: moveRight - 300,
     });
     document.getElementsByClassName('c7n-inner-container')[0].scroll({ left: scrollLeft, behavior: 'smooth' });
   };
@@ -93,8 +94,8 @@ class Board extends Component {
 
     return (
       <div className="c7n-outer-container">
-        {scrollLeft !== 0 ?
-          <div role="none" className="c7n-push-left icon icon-navigate_before" onClick={this.pushScrollRight} />
+        {scrollLeft !== 0
+          ? <div role="none" className="c7n-push-left icon icon-navigate_before" onClick={this.pushScrollRight} />
           : ''}
         <div className="c7n-inner-container">
           <div className="c7n-env-board">

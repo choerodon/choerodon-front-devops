@@ -13,7 +13,7 @@ const TemplateHome = asyncRouter(() => import('./templateHome'), () => import('.
 const EnvironmentIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={TemplateHome} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 

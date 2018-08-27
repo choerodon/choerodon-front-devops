@@ -1,16 +1,16 @@
-const appPublish = require('../../apiFunction/appManagement/AppPublish');
 const uuidv1 = require('uuid/v1');
+const appPublish = require('../../apiFunction/appManagement/AppPublish');
 const { oauth, login } = require('../../Utils');
 const path = require('path');
 
-describe('AppPublish Api', function() {
-  it('[POST] 查询已启用但未发布且有版本的应用', function() {
+describe('AppPublish Api', () => {
+  it('[POST] 查询已启用但未发布且有版本的应用', () => {
     const data = { searchParam: {}, param: '' };
     const project = oauth.project;
     return appPublish.getUnPublishList({ project, data });
   });
 
-  it('[GET] 查询单个应用市场的应用详情', function() {
+  it('[GET] 查询单个应用市场的应用详情', () => {
     const project = oauth.project;
     const data = {
       id: 88,
@@ -19,7 +19,7 @@ describe('AppPublish Api', function() {
     return appPublish.getApplicationDetail({ project, data });
   });
 
-  it('[PUT] 更新单个应用市场的应用', function() {
+  it('[PUT] 更新单个应用市场的应用', function () {
     const project = oauth.project;
     const data = {
       contributor: `贡献-${uuidv1().slice(0, 15)}`,
@@ -27,13 +27,13 @@ describe('AppPublish Api', function() {
       description: `描述-${uuidv1().slice(0, 15)}`,
       id: 88,
       appId: 368,
-      publishLevel: 'orgnization'
+      publishLevel: 'orgnization',
     };
     this.skip();
     return appPublish.updateApplicationDetail({ project, data });
   });
 
-  it('[PUT] 发布单个未发布的应用的所有版本', function() {
+  it('[PUT] 发布单个未发布的应用的所有版本', function () {
     const project = oauth.project;
     const appVersions = [
       {
@@ -53,7 +53,7 @@ describe('AppPublish Api', function() {
     });
   });
 
-  it('[POST] 发布单个应用', function() {
+  it('[POST] 发布单个应用', function () {
     const project = oauth.project;
     const appVersions = [
       {
@@ -76,16 +76,16 @@ describe('AppPublish Api', function() {
       publishLevel: 'orgnization',
     };
     this.skip();
-    return appPublish.publishApplication({project, appVersions, data});
+    return appPublish.publishApplication({ project, appVersions, data });
   });
 
-  it('[POST] 获取单个应用的已发布的版本', function() {
+  it('[POST] 获取单个应用的已发布的版本', () => {
     const project = oauth.project;
     const id = 87;
     return appPublish.getApplicationVersions({ project, id, is_publish: true });
   });
 
-  it('[POST] 获取单个应用的未发布的版本', function() {
+  it('[POST] 获取单个应用的未发布的版本', () => {
     const project = oauth.project;
     const id = 87;
     return appPublish.getApplicationVersions({
@@ -95,7 +95,7 @@ describe('AppPublish Api', function() {
     });
   });
 
-  it('[POST] 上传单个应用的图标', function() {
+  it('[POST] 上传单个应用的图标', () => {
     const file_name = 'icon.jpg';
     const filePath = path.join(__dirname, file_name);
     return appPublish.sendApplicationIcon({ filePath, file_name });

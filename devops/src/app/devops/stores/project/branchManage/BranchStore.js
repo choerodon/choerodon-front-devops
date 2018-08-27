@@ -7,26 +7,43 @@ const { AppState } = stores;
 @store('BranchStore')
 class BranchStore {
   @observable apps = [];
+
   @observable app = null;
+
   @observable branchData = { content: [] };
+
   @observable tagData = { content: [] };
+
   @observable tags = [];
+
   @observable currentBranch = {};
+
   @observable loading = false;
+
   @observable issue = [];
+
   @observable branch = null;
+
   @observable issueDto = null;
+
   @observable issueTime = [];
+
   @observable issueLoading = false;
+
   @observable issueInitValue = null;
+
   @observable branchList = [];
+
   @observable createBranchShow = false;
+
   @observable confirmShow = false;
+
   @observable pageInfo = {
     current: 1,
     total: 0,
     pageSize: 10,
   };
+
   @action setPageInfo(page) {
     this.pageInfo = page;
   }
@@ -108,9 +125,11 @@ class BranchStore {
   @action setIssueTime(time) {
     this.issueTime = time;
   }
+
   @action setIssueLoading(flag) {
     this.issueLoading = flag;
   }
+
   @action setIssueInitValue(value) {
     this.issueInitValue = value;
   }
@@ -214,14 +233,13 @@ class BranchStore {
     }
   };
 
-  loadTagData = (projectId, page = 0, sizes = 10, postData = { searchParam: {}, param: '' }) =>
-    axios.post(`/devops/v1/projects/${projectId}/apps/${this.app}/git/tags_list_options?page=0&size=${sizes}`, JSON.stringify(postData))
-      .then((data) => {
-        const res = handleProptError(data);
-        if (res) {
-          this.setTagData(data);
-        }
-      });
+  loadTagData = (projectId, page = 0, sizes = 10, postData = { searchParam: {}, param: '' }) => axios.post(`/devops/v1/projects/${projectId}/apps/${this.app}/git/tags_list_options?page=0&size=${sizes}`, JSON.stringify(postData))
+    .then((data) => {
+      const res = handleProptError(data);
+      if (res) {
+        this.setTagData(data);
+      }
+    });
 
   loadBranchByName = (projectId, appId, name) => axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/branch?branchName=${name}`)
     .then((branch) => {
@@ -258,12 +276,12 @@ class BranchStore {
       return res;
     });
 
-  createBranch =(projectId, appId, postData) =>
-    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git/branch`, postData)
-      .then((datas) => {
-        const res = handleProptError(datas);
-        return res;
-      });
+  createBranch =(projectId, appId, postData) => axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git/branch`, postData)
+    .then((datas) => {
+      const res = handleProptError(datas);
+      return res;
+    });
+
   deleteData = (proId = AppState.currentMenuType.id, appId, name) => axios.delete(`/devops/v1/projects/${proId}/apps/${appId}/git/branch?branchName=${name}`)
     .then((datas) => {
       const res = handleProptError(datas);

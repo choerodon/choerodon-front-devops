@@ -10,7 +10,7 @@ const MergeRequestHome = asyncRouter(() => import('./mergeRequestHome'), () => i
 const MergeRequestIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={MergeRequestHome} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 

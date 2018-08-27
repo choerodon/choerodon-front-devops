@@ -54,7 +54,7 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/tag`} component={AppTag} />
           <Route path={`${match.url}/repository`} component={Repository} />
           <Route path={`${match.url}/certificate`} component={Certificate} />
-          <Route path={'*'} component={nomatch} />
+          <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>
     );

@@ -10,7 +10,7 @@ const DomainHome = asyncRouter(() => import('./domainHome'), () => import('../..
 const domainIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={DomainHome} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 

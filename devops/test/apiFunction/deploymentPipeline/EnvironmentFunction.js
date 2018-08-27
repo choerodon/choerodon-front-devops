@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const utils = require('../../Utils');
 const _ = require('lodash');
+const utils = require('../../Utils');
 
 chai.should();
 chai.use(chaiHttp);

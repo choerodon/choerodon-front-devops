@@ -1,5 +1,5 @@
-const appMarket = require('../../apiFunction/appManagement/AppMarket');
 const uuidv1 = require('uuid/v1');
+const appMarket = require('../../apiFunction/appManagement/AppMarket');
 const { oauth, login } = require('../../Utils');
 const path = require('path');
 

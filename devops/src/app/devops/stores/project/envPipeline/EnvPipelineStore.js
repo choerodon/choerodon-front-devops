@@ -5,14 +5,23 @@ import { axios, store } from 'choerodon-front-boot';
 @store('EnvPipelineStore')
 class EnvPipelineStore {
   @observable isLoading = true;
+
   @observable envcardPosition = [];
+
   @observable disEnvcardPosition = [];
+
   @observable envdata = [];
+
   @observable ist = [];
+
   @observable envId = null;
+
   @observable show = false;
+
   @observable ban = false;
+
   @observable sideType = 'key';
+
   @observable shell = '';
 
   @action setIst(ist) {
@@ -52,8 +61,7 @@ class EnvPipelineStore {
   switchData(a, b) {
     const t1 = _.findIndex(this.envcardPosition, o => o.sequence === a);
     const t2 = _.findIndex(this.envcardPosition, o => o.sequence === b);
-    [this.envcardPosition[t1], this.envcardPosition[t2]] =
-      [this.envcardPosition[t2], this.envcardPosition[t1]];
+    [this.envcardPosition[t1], this.envcardPosition[t2]] = [this.envcardPosition[t2], this.envcardPosition[t1]];
   }
 
   @computed
@@ -140,23 +148,21 @@ class EnvPipelineStore {
     return axios.put(`/devops/v1/projects/${projectId}/envs`, JSON.stringify(data));
   }
 
-  loadEnvById = (projectId, id) =>
-    axios.get(`/devops/v1/projects/${projectId}/envs/${id}`).then((data) => {
-      if (data && data.failed) {
-        Choerodon.prompt(data.message);
-      } else {
-        this.setEnvData(data);
-      }
-    });
+  loadEnvById = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/envs/${id}`).then((data) => {
+    if (data && data.failed) {
+      Choerodon.prompt(data.message);
+    } else {
+      this.setEnvData(data);
+    }
+  });
 
-  loadShell = (projectId, id, update) =>
-    axios.get(`/devops/v1/projects/${projectId}/envs/${id}/shell?update=${update}`).then((data) => {
-      if (data && data.failed) {
-        Choerodon.prompt(data.message);
-      } else {
-        this.setShell(data);
-      }
-    });
+  loadShell = (projectId, id, update) => axios.get(`/devops/v1/projects/${projectId}/envs/${id}/shell?update=${update}`).then((data) => {
+    if (data && data.failed) {
+      Choerodon.prompt(data.message);
+    } else {
+      this.setShell(data);
+    }
+  });
 
   loadInstance = (projectId, page, size = 10, sorter = { id: 'asc' }, envId, datas = {
     searchParam: {},

@@ -7,7 +7,7 @@ import { stores, Content } from 'choerodon-front-boot';
 import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
-import './../AppRelease.scss';
+import '../AppRelease.scss';
 
 const Sidebar = Modal.Sidebar;
 const { AppState } = stores;
@@ -17,9 +17,7 @@ class VersionTable extends Component {
     const menu = AppState.currentMenuType;
     super(props);
     this.state = {
-      id: props.match.params.id || '',
       projectId: menu.id,
-      show: false,
       selectedRowKeys: [],
     };
   }
@@ -40,10 +38,10 @@ class VersionTable extends Component {
     const { store } = this.props;
     const data = store.getVersionData;
     const columns = [{
-      title: <FormattedMessage id={'deploy.ver'} />,
+      title: <FormattedMessage id="deploy.ver" />,
       dataIndex: 'version',
     }, {
-      title: <FormattedMessage id={'app.createTime'} />,
+      title: <FormattedMessage id="app.createTime" />,
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }];
     const rowSelection = {
@@ -64,6 +62,7 @@ class VersionTable extends Component {
       onChange={this.versionTableChange}
     />);
   };
+
   /**
    * table app表格搜索
    * @param pagination 分页
@@ -105,10 +104,12 @@ class VersionTable extends Component {
         size: pagination.pageSize,
       });
   };
+
   handleSelectData =() => {
     const selectData = _.map(this.props.store.selectData, 'id') || [];
     this.setState({ selectedRowKeys: selectData });
   }
+
   /**
    * 关闭弹框
    */
@@ -129,7 +130,7 @@ class VersionTable extends Component {
 
   render() {
     const { store } = this.props;
-    const contentDom = (<Content className="c7n-region version-wrapper sidebar-content" code={'release.addVersion'} values={{ name: store.app && store.app.name }}>
+    const contentDom = (<Content className="c7n-region version-wrapper sidebar-content" code="release.addVersion" values={{ name: store.app && store.app.name }}>
       {this.getSidebarTable()}
     </Content>);
     return (
@@ -137,7 +138,7 @@ class VersionTable extends Component {
         okText={this.props.intl.formatMessage({ id: 'release.addVersion.btn.confirm' })}
         cancelText={this.props.intl.formatMessage({ id: 'cancel' })}
         visible={this.props.show}
-        title={<FormattedMessage id={'release.addVersion.header.title'} />}
+        title={<FormattedMessage id="release.addVersion.header.title" />}
         onCancel={this.handleClose}
         onOk={this.handleAddVersion}
       >

@@ -10,7 +10,7 @@ const ContainerHome = asyncRouter(() => import('./containerHome'), () => import(
 const EnvironmentIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={ContainerHome} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 

@@ -44,15 +44,15 @@ class MutiDeployment extends Component {
           const versionDom = [];
           app.envInstances.map((env, insIndex) => {
             if (env.envId === e.id) {
-              versionDom.push(<td>
-                { env.envVersions.map(version => (<div className="c7n-deploy-muti-row">
-                  <div className="c7n-deploy-muti_card" >
+              versionDom.push(<td key={env.envId}>
+                { env.envVersions.map(version => (<div className="c7n-deploy-muti-row" key={version.versionId}>
+                  <div className="c7n-deploy-muti_card">
                     <Popover
                       placement="bottom"
                       title={<FormattedMessage id="ist.title" />}
                       content={version.instances.length ? version.instances.map(ist => (
-                        <div>
-                          <div className={`c7n-ist-status c7n-ist-status_${ist.instanceStatus}`} >
+                        <div key={ist.instanceId}>
+                          <div className={`c7n-ist-status c7n-ist-status_${ist.instanceStatus}`}>
                             <div>{intl.formatMessage({ id: ist.instanceStatus || 'null' })}</div>
                           </div>
                           <span>{ist.instanceName}</span>
@@ -79,14 +79,14 @@ class MutiDeployment extends Component {
                 </div>))}
               </td>);
             } else if (versionDom.length === 0 && insIndex === (app.envInstances.length - 1)) {
-              versionDom.push(<td />);
+              versionDom.push(<td key={env.envId} />);
             }
             return versionDom;
           });
           return tdDom.push(versionDom);
         });
 
-        trDom.push(<tr>
+        trDom.push(<tr key={app.applicationId}>
           <td>
             <MouserOverWrapper text={app.applicationName} width={0.12}>
               {app.projectId === projectId ? <Tooltip title={<FormattedMessage id="project" />}><i className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id="market" />}><i className="icon icon-apps c7n-icon-publish" /></Tooltip>}
@@ -107,7 +107,7 @@ class MutiDeployment extends Component {
         </tr>);
         return trDom;
       });
-      envDom = envNames.map(env => (<td>
+      envDom = envNames.map(env => (<td key={env.id}>
         {env.connect ? <Tooltip title={<FormattedMessage id="connect" />}><span className="c7n-ist-status_on" /></Tooltip> : <Tooltip title={<FormattedMessage id="disconnect" />}><span className="c7n-ist-status_off" /></Tooltip>}
         {env.name}
       </td>));

@@ -6,20 +6,32 @@ import { axios, store } from 'choerodon-front-boot';
 const height = window.screen.height;
 @store('EditReleaseStore')
 class EditReleaseStore {
-  @observable isRefresh= false;// 页面的loading
-  @observable loading = false; // 打开tab的loading
+  @observable isRefresh= false;
+
+  // 页面的loading
+  @observable loading = false;
+
+  // 打开tab的loading
   @observable singleData = null;
+
   @observable selectData = [];
+
   @observable apps = [];
+
   @observable app = null;
+
   @observable show = false;
+
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
+
   @observable versionPage = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
+
   @observable versionData = [];
+
   @observable type = [];
 
   @observable selectPageInfo = {
@@ -63,6 +75,7 @@ class EditReleaseStore {
     this.selectData = data;
     this.setSelectPageInfo({ pageSize: 10, total: data.length, current: 0 });
   }
+
   @computed get getSelectData() {
     return this.selectData.slice();
   }
@@ -86,6 +99,7 @@ class EditReleaseStore {
   @computed get getIsRefresh() {
     return this.isRefresh;
   }
+
   @action changeLoading(flag) {
     this.loading = flag;
   }
@@ -105,9 +119,11 @@ class EditReleaseStore {
   @action setType(data) {
     this.type = data;
   }
+
   @action changeShow(flag) {
     this.show = flag;
   }
+
   @action setApp(data) {
     this.app = data;
   }
@@ -166,6 +182,7 @@ class EditReleaseStore {
         });
     }
   };
+
   handleVersionData = (data) => {
     const { number, size, totalElements } = data;
     const page = { number, size, totalElements };
@@ -173,48 +190,45 @@ class EditReleaseStore {
     this.setVersionData(data.content);
   };
 
-  loadDataById =(projectId, id) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps_market/${id}/detail`).then((data) => {
-      const res = this.handleProptError(data);
-      if (res) {
-        this.setSingleData(data);
-        this.setSelectData(data.appVersions);
-      }
+  loadDataById =(projectId, id) => axios.get(`/devops/v1/projects/${projectId}/apps_market/${id}/detail`).then((data) => {
+    const res = this.handleProptError(data);
+    if (res) {
+      this.setSingleData(data);
+      this.setSelectData(data.appVersions);
+    }
+  });
+
+  updateData = (projectId, id, data) => axios.put(`/devops/v1/projects/${projectId}/apps_market/${id}`, JSON.stringify(data))
+    .then((datas) => {
+      const res = this.handleProptError(datas);
+      return res;
     });
 
-  updateData = (projectId, id, data) =>
-    axios.put(`/devops/v1/projects/${projectId}/apps_market/${id}`, JSON.stringify(data))
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
+  addData = (projectId, data, img) => axios.post(`/devops/v1/projects/${projectId}/apps_market`, JSON.stringify(data))
+    .then((datas) => {
+      const res = this.handleProptError(datas);
+      return res;
+    });
 
-  addData = (projectId, data, img) =>
-    axios.post(`/devops/v1/projects/${projectId}/apps_market`, JSON.stringify(data))
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
-  uploadFile = (backName = 'devops-service', fileName, img) =>
-    axios.post(`/file/v1/files?bucket_name=${backName}&file_name=${fileName}`, img, {
-      header: { 'Content-Type': 'multipart/form-data' },
-    })
-      .then((datas) => {
-        let url;
-        const res = this.handleProptError(datas);
-        if (res) {
-          const index = datas.indexOf('devops-service');
-          url = res.substr(index, datas.length);
-        }
-        return url;
-      });
+  uploadFile = (backName = 'devops-service', fileName, img) => axios.post(`/file/v1/files?bucket_name=${backName}&file_name=${fileName}`, img, {
+    header: { 'Content-Type': 'multipart/form-data' },
+  })
+    .then((datas) => {
+      let url;
+      const res = this.handleProptError(datas);
+      if (res) {
+        const index = datas.indexOf('devops-service');
+        url = res.substr(index, datas.length);
+      }
+      return url;
+    });
 
-  deleteData =(projectId, id) =>
-    axios.post(`devops/v1/projects/${projectId}/apps_market/${id}/unpublish`)
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
+  deleteData =(projectId, id) => axios.post(`devops/v1/projects/${projectId}/apps_market/${id}/unpublish`)
+    .then((datas) => {
+      const res = this.handleProptError(datas);
+      return res;
+    });
+
   loadApp = (projectId, id) => {
     axios.get(`/devops/v1/projects/${projectId}/apps/${id}/detail`)
       .then((data) => {
@@ -237,4 +251,3 @@ class EditReleaseStore {
 
 const editReleaseStore = new EditReleaseStore();
 export default editReleaseStore;
-

@@ -20,7 +20,6 @@ class EditVersion extends Component {
       name: props.match.params.name || '',
       id: props.match.params.id || '',
       projectId: menu.id,
-      show: false,
       selectedRowKeys: [],
       key: '1',
     };
@@ -40,10 +39,10 @@ class EditVersion extends Component {
     const { EditVersionStore } = this.props;
     const data = EditVersionStore.getUnReleaseData;
     const columns = [{
-      title: <FormattedMessage id={'deploy.ver'} />,
+      title: <FormattedMessage id="deploy.ver" />,
       dataIndex: 'version',
     }, {
-      title: <FormattedMessage id={'app.createTime'} />,
+      title: <FormattedMessage id="app.createTime" />,
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }];
     const rowSelection = {
@@ -63,6 +62,7 @@ class EditVersion extends Component {
       rowKey={record => record.id}
     />);
   };
+
   /**
    * 获取已发布版本
    * @returns {*}
@@ -71,13 +71,13 @@ class EditVersion extends Component {
     const { EditVersionStore } = this.props;
     const data = EditVersionStore.getReleaseData;
     const columns = [{
-      title: <FormattedMessage id={'deploy.ver'} />,
+      title: <FormattedMessage id="deploy.ver" />,
       dataIndex: 'version',
     }, {
-      title: <FormattedMessage id={'app.createTime'} />,
+      title: <FormattedMessage id="app.createTime" />,
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }, {
-      title: <FormattedMessage id={'release.editVersion.publishTime'} />,
+      title: <FormattedMessage id="release.editVersion.publishTime" />,
       render: (text, record) => <TimePopover content={record.updatedDate} />,
     }];
     return (<Table
@@ -90,6 +90,7 @@ class EditVersion extends Component {
       rowKey={record => record.id}
     />);
   }
+
   /**
    * table app表格搜索
    * @param pagination 分页
@@ -131,6 +132,7 @@ class EditVersion extends Component {
         id: this.state.id,
       });
   };
+
   /**
    * 切换tabs
    * @param value
@@ -141,6 +143,7 @@ class EditVersion extends Component {
     EditVersionStore
       .loadData({ projectId: this.state.projectId, id: this.state.id, key: value });
   }
+
   /**
    * 返回上一级目录
    */
@@ -149,6 +152,7 @@ class EditVersion extends Component {
     const { id, name, organizationId } = menu;
     this.props.history.push(`/devops/app-release/2?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
   }
+
   /**
    * 发布应用版本
    */
@@ -167,18 +171,21 @@ class EditVersion extends Component {
         Choerodon.prompt(err.response.message);
       });
   }
+
   /**
    * 打开弹框
    */
   handleOpen = () => {
     this.setState({ visible: true });
   }
+
   /**
    * 关闭弹框
    */
   handleClose = () => {
     this.setState({ visible: false });
   }
+
   render() {
     const menu = AppState.currentMenuType;
     const { key } = this.state;
@@ -190,15 +197,15 @@ class EditVersion extends Component {
           'devops-service.application-market.updateVersions',
         ]}
       >
-        <Header title={<FormattedMessage id={'release.editVersion.header.title'} />} backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
-        <Content code={'release.editVersion'} values={{ name: this.state.name }}>
+        <Header title={<FormattedMessage id="release.editVersion.header.title" />} backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
+        <Content code="release.editVersion" values={{ name: this.state.name }}>
           <Tabs defaultActiveKey={this.state.key || '1'} onChange={this.changeTabs}>
-            <TabPane tab={<FormattedMessage id={'release.editVersion.version.unpublish'} />} key="1">
+            <TabPane tab={<FormattedMessage id="release.editVersion.version.unpublish" />} key="1">
               <div className="version-table-wrap">
                 {this.getSidebarTable()}
               </div>
             </TabPane>
-            <TabPane tab={<FormattedMessage id={'release.editVersion.version.publish'} />} key="2">
+            <TabPane tab={<FormattedMessage id="release.editVersion.version.publish" />} key="2">
               <div className="version-table-wrap">
                 {this.getPublishTable()}
               </div>

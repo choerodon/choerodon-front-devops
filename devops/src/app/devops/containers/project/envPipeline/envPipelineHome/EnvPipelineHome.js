@@ -36,41 +36,6 @@ const formItemLayout = {
 
 @observer
 class EnvPipelineHome extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      id: null,
-      openRemove: false,
-      submitting: false,
-      token: null,
-      envName: '',
-      copyMsg: props.intl.formatMessage({ id: 'envPl.code.copy.tooltip' }),
-      moveBan: false,
-      moveRight: 300,
-    };
-  }
-
-  componentDidMount() {
-    this.loadEnvs();
-  }
-
-  /**
-   * 刷新函数
-   */
-  reload = () => {
-    this.loadEnvs();
-  };
-
-  /**
-   * 加载环境数据
-   */
-  loadEnvs = () => {
-    const { EnvPipelineStore } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    EnvPipelineStore.loadEnv(projectId, true);
-    EnvPipelineStore.loadEnv(projectId, false);
-  };
-
   /**
    * 环境编码校验
    * @param rule 校验规则
@@ -121,6 +86,39 @@ class EnvPipelineHome extends Component {
       callback();
     }
   }, 1000);
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      submitting: false,
+      token: null,
+      envName: '',
+      copyMsg: props.intl.formatMessage({ id: 'envPl.code.copy.tooltip' }),
+      moveBan: false,
+      moveRight: 300,
+    };
+  }
+
+  componentDidMount() {
+    this.loadEnvs();
+  }
+
+  /**
+   * 刷新函数
+   */
+  reload = () => {
+    this.loadEnvs();
+  };
+
+  /**
+   * 加载环境数据
+   */
+  loadEnvs = () => {
+    const { EnvPipelineStore } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    EnvPipelineStore.loadEnv(projectId, true);
+    EnvPipelineStore.loadEnv(projectId, false);
+  };
 
   /**
    * 弹出侧边栏
@@ -225,13 +223,12 @@ class EnvPipelineHome extends Component {
               if (res && res.failed) {
                 this.setState({
                   submitting: false,
-                  buttonClicked: false,
                 });
                 Choerodon.prompt(res.message);
               } else {
                 this.loadEnvs();
                 EnvPipelineStore.setSideType('token');
-                this.setState({ envName, token: res, isLoading: false, submitting: false });
+                this.setState({ envName, token: res, submitting: false });
               }
             }
           });
@@ -253,14 +250,13 @@ class EnvPipelineHome extends Component {
               if (res && res.failed) {
                 this.setState({
                   submitting: false,
-                  buttonClicked: false,
                 });
                 Choerodon.prompt(res.message);
               } else if (res) {
                 this.loadEnvs();
                 EnvPipelineStore.setShow(false);
                 this.props.form.resetFields();
-                this.setState({ isLoading: false, submitting: false });
+                this.setState({ submitting: false });
               }
             });
         }
@@ -287,13 +283,14 @@ class EnvPipelineHome extends Component {
    * 点击右滑动
    */
   pushScrollRight = () => {
+    const { moveRight } = this.state;
     scrollLeft -= 300;
     if (scrollLeft < 0) {
       scrollLeft = 0;
     }
     this.setState({
       moveBan: false,
-      moveRight: this.state.moveRight - 300,
+      moveRight: moveRight - 300,
     });
     document.getElementsByClassName('c7n-inner-container-ban')[0].scroll({ left: scrollLeft, behavior: 'smooth' });
   };
@@ -336,38 +333,37 @@ class EnvPipelineHome extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     const projectName = AppState.currentMenuType.name;
-    let DisEnvDom = (<span className={'c7n-none-des'}>{this.props.intl.formatMessage({ id: 'envPl.status.stop' })}</span>);
+    let DisEnvDom = (<span className="c7n-none-des">{this.props.intl.formatMessage({ id: 'envPl.status.stop' })}</span>);
     if (disEnvcardPosition.length) {
-      DisEnvDom = _.map(disEnvcardPosition, env =>
-        (<div className="c7n-env-card c7n-env-card-ban">
-          <div className="c7n-env-card-header">
-            {env.name}
-            <div className="c7n-env-card-action">
-              <Permission
-                service={['devops-service.devops-environment.queryByEnvIdAndActive']}
-                organizationId={organizationId}
-                projectId={projectId}
-                type={type}
-              >
-                <Tooltip title={<FormattedMessage id={'envPl.status.restart'} />}>
-                  <Button
-                    shape="circle"
-                    onClick={this.actEnv.bind(this, env.id)}
-                  >
-                    <i className="icon icon-finished" />
-                  </Button>
-                </Tooltip>
-              </Permission>
-            </div>
+      DisEnvDom = _.map(disEnvcardPosition, env => (<div className="c7n-env-card c7n-env-card-ban" key={env.id}>
+        <div className="c7n-env-card-header">
+          {env.name}
+          <div className="c7n-env-card-action">
+            <Permission
+              service={['devops-service.devops-environment.queryByEnvIdAndActive']}
+              organizationId={organizationId}
+              projectId={projectId}
+              type={type}
+            >
+              <Tooltip title={<FormattedMessage id="envPl.status.restart" />}>
+                <Button
+                  shape="circle"
+                  onClick={this.actEnv.bind(this, env.id)}
+                >
+                  <i className="icon icon-finished" />
+                </Button>
+              </Tooltip>
+            </Permission>
           </div>
-          <div className="c7n-env-state c7n-env-state-ban">
-            <FormattedMessage id={'envPl.status.stopped'} />
-          </div>
-          <div className="c7n-env-des">
-            <span className="c7n-env-des-head">{this.props.intl.formatMessage({ id: 'envPl.description' })}</span>
-            {env.description}
-          </div>
-        </div>));
+        </div>
+        <div className="c7n-env-state c7n-env-state-ban">
+          <FormattedMessage id="envPl.status.stopped" />
+        </div>
+        <div className="c7n-env-des">
+          <span className="c7n-env-des-head">{this.props.intl.formatMessage({ id: 'envPl.description' })}</span>
+          {env.description}
+        </div>
+      </div>));
     }
 
     const suffix = (<Popover placement="right" trigger="hover" content={this.state.copyMsg}>
@@ -378,16 +374,15 @@ class EnvPipelineHome extends Component {
       </div>
     </Popover>);
 
-    const formContent =
-      (<div className="c7n-region">{
+    const formContent = (<div className="c7n-region">{
         (() => {
           if (sideType === 'create') {
             return (<div>
-              <h2 className="c7n-space-first"><FormattedMessage id={'env.create.title'} values={{ name: projectName }} /></h2>
+              <h2 className="c7n-space-first"><FormattedMessage id="env.create.title" values={{ name: projectName }} /></h2>
               <p>
-                <FormattedMessage id={'env.create.description'} />
+                <FormattedMessage id="env.create.description" />
                 <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <FormattedMessage id={'learnmore'} />
+                  <FormattedMessage id="learnmore" />
                   <i className="icon-open_in_new icon" />
                 </a>
               </p>
@@ -406,7 +401,7 @@ class EnvPipelineHome extends Component {
                   })(
                     <Input
                       maxLength={30}
-                      label={<FormattedMessage id={'envPl.form.code'} />}
+                      label={<FormattedMessage id="envPl.form.code" />}
                     />,
                   )}
                 </FormItem>
@@ -424,13 +419,13 @@ class EnvPipelineHome extends Component {
                   })(
                     <Input
                       maxLength={10}
-                      label={<FormattedMessage id={'envPl.form.name'} />}
+                      label={<FormattedMessage id="envPl.form.name" />}
                     />,
                   )}
                 </FormItem>
                 <FormItem
                   {...formItemLayout}
-                  label={<FormattedMessage id={'envPl.form.description'} />}
+                  label={<FormattedMessage id="envPl.form.description" />}
                 >
                   {getFieldDecorator('description', {
                     initialValue: envData ? envData.description : '',
@@ -438,7 +433,7 @@ class EnvPipelineHome extends Component {
                     <TextArea
                       autosize={{ minRows: 2 }}
                       maxLength={60}
-                      label={<FormattedMessage id={'envPl.form.description'} />}
+                      label={<FormattedMessage id="envPl.form.description" />}
                     />,
                   )}
                 </FormItem>
@@ -446,17 +441,17 @@ class EnvPipelineHome extends Component {
             </div>);
           } else if (sideType === 'token') {
             return (<div className="c7n-env-token c7n-sidebar-form">
-              <h2 className="c7n-space-first"><FormattedMessage id={'env.token.title'} values={{ name: this.state.envName }} /></h2>
+              <h2 className="c7n-space-first"><FormattedMessage id="env.token.title" values={{ name: this.state.envName }} /></h2>
               <p>
-                <FormattedMessage id={'env.token.description'} />
+                <FormattedMessage id="env.token.description" />
                 <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <FormattedMessage id={'learnmore'} />
+                  <FormattedMessage id="learnmore" />
                   <i className="icon icon-open_in_new" />
                 </a>
               </p>
               <div className="c7n-env-shell-wrap">
                 <TextArea
-                  label={<FormattedMessage id={'envPl.token'} />}
+                  label={<FormattedMessage id="envPl.token" />}
                   className="c7n-input-readOnly"
                   autosize
                   copy
@@ -470,17 +465,17 @@ class EnvPipelineHome extends Component {
             </div>);
           } else if (sideType === 'key') {
             return (<div className="c7n-env-token c7n-sidebar-form">
-              <h2 className="c7n-space-first"><FormattedMessage id={'env.token.title'} values={{ name: envData ? envData.name : '' }} /></h2>
+              <h2 className="c7n-space-first"><FormattedMessage id="env.token.title" values={{ name: envData ? envData.name : '' }} /></h2>
               <p>
-                <FormattedMessage id={'env.token.description'} />
+                <FormattedMessage id="env.token.description" />
                 <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <FormattedMessage id={'learnmore'} />
+                  <FormattedMessage id="learnmore" />
                   <i className="icon icon-open_in_new" />
                 </a>
               </p>
               <div className="c7n-env-shell-wrap">
                 <TextArea
-                  label={<FormattedMessage id={'envPl.token'} />}
+                  label={<FormattedMessage id="envPl.token" />}
                   className="c7n-input-readOnly"
                   autosize
                   copy
@@ -494,11 +489,11 @@ class EnvPipelineHome extends Component {
             </div>);
           } else {
             return (<div className="c7n-sidebar-form">
-              <h2 className="c7n-space-first"><FormattedMessage id={'env.update.title'} values={{ name: envData ? envData.code : '' }} /></h2>
+              <h2 className="c7n-space-first"><FormattedMessage id="env.update.title" values={{ name: envData ? envData.code : '' }} /></h2>
               <p>
-                <FormattedMessage id={'env.update.description'} />
+                <FormattedMessage id="env.update.description" />
                 <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <FormattedMessage id={'learnmore'} />
+                  <FormattedMessage id="learnmore" />
                   <i className="icon icon-open_in_new" />
                 </a>
               </p>
@@ -517,7 +512,7 @@ class EnvPipelineHome extends Component {
                   })(
                     <Input
                       maxLength={10}
-                      label={<FormattedMessage id={'envPl.form.name'} />}
+                      label={<FormattedMessage id="envPl.form.name" />}
                     />,
                   )}
                 </FormItem>
@@ -530,7 +525,7 @@ class EnvPipelineHome extends Component {
                     <TextArea
                       autosize={{ minRows: 2 }}
                       maxLength={60}
-                      label={<FormattedMessage id={'envPl.form.description'} />}
+                      label={<FormattedMessage id="envPl.form.description" />}
                     />,
                   )}
                 </FormItem>
@@ -539,13 +534,13 @@ class EnvPipelineHome extends Component {
           }
         })()
       }
-      </div>);
+    </div>);
 
-    const BoardDom = EnvPipelineStore.getIsLoading ? <LoadingBar display /> :
-      (<Board projectId={Number(projectId)} envcardPosition={envcardPosition} />);
+    const BoardDom = EnvPipelineStore.getIsLoading ? <LoadingBar display />
+      : (<Board projectId={Number(projectId)} envcardPosition={envcardPosition} />);
 
-    const leftDom = scrollLeft !== 0 ?
-      <div role="none" className="c7n-push-left-ban icon icon-navigate_before" onClick={this.pushScrollRight} />
+    const leftDom = scrollLeft !== 0
+      ? <div role="none" className="c7n-push-left-ban icon icon-navigate_before" onClick={this.pushScrollRight} />
       : null;
 
     const rightStyle = classNames({
@@ -571,7 +566,7 @@ class EnvPipelineHome extends Component {
           'devops-service.application-instance.pageByOptions',
         ]}
       >
-        <Header title={<FormattedMessage id={'envPl.title'} />}>
+        <Header title={<FormattedMessage id="envPl.title" />}>
           <Permission
             service={['devops-service.devops-environment.create']}
             organizationId={organizationId}

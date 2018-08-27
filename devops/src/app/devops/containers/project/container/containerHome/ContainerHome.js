@@ -25,9 +25,6 @@ class ContainerHome extends Component {
     super(props);
     this.state = {
       page: 0,
-      id: '',
-      show: false,
-      name: '',
       showSide: false,
     };
     this.timer = null;
@@ -52,7 +49,7 @@ class ContainerHome extends Component {
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     return [{
-      title: <FormattedMessage id={'container.status'} />,
+      title: <FormattedMessage id="container.status" />,
       dataIndex: 'status',
       key: 'status',
       width: 110,
@@ -97,7 +94,7 @@ class ContainerHome extends Component {
         return dom;
       },
     }, {
-      title: <FormattedMessage id={'container.name'} />,
+      title: <FormattedMessage id="container.name" />,
       key: 'name',
       dataIndex: 'name',
       sorter: true,
@@ -107,14 +104,14 @@ class ContainerHome extends Component {
         {record.name}
       </MouserOverWrapper>),
     }, {
-      title: <FormattedMessage id={'container.app'} />,
+      title: <FormattedMessage id="container.app" />,
       dataIndex: 'app',
       key: 'app',
       filters: [],
       filterMultiple: false,
       render: (text, record) => (<div>
         <div className="c7n-container-col-inside">
-          {record.projectId === projectId ? <Tooltip title={<FormattedMessage id={'project'} />}><i className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id={'market'} />}><i className="icon icon-apps c7n-icon-publish" /></Tooltip>}
+          {record.projectId === projectId ? <Tooltip title={<FormattedMessage id="project" />}><i className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id="market" />}><i className="icon icon-apps c7n-icon-publish" /></Tooltip>}
           <span>{record.appName}</span>
         </div>
         <div>
@@ -139,7 +136,7 @@ class ContainerHome extends Component {
         </div>
       ),
     }, {
-      title: <FormattedMessage id={'container.ip'} />,
+      title: <FormattedMessage id="container.ip" />,
       dataIndex: 'ip',
       key: 'ip',
       sorter: true,
@@ -147,7 +144,7 @@ class ContainerHome extends Component {
       filterMultiple: false,
     }, {
       width: 58,
-      title: <FormattedMessage id={'container.usable'} />,
+      title: <FormattedMessage id="container.usable" />,
       dataIndex: 'ready',
       key: 'ready',
       filters: [{
@@ -163,7 +160,7 @@ class ContainerHome extends Component {
       </div>),
     }, {
       width: 93,
-      title: <FormattedMessage id={'container.createTime'} />,
+      title: <FormattedMessage id="container.createTime" />,
       dataIndex: 'creationDate',
       key: 'creationDate',
       sorter: true,
@@ -179,7 +176,7 @@ class ContainerHome extends Component {
             projectId={projectId}
             type={type}
           >
-            <Tooltip title={<FormattedMessage id={'container.log'} />}>
+            <Tooltip title={<FormattedMessage id="container.log" />}>
               <Button
                 size="small"
                 shape="circle"
@@ -278,15 +275,15 @@ class ContainerHome extends Component {
     const serviceData = ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
-      <Header title={<FormattedMessage id={'container.header.title'} />} >
+      <Header title={<FormattedMessage id="container.header.title" />}>
         <Button
           onClick={this.handleRefresh}
         >
           <i className="icon-refresh icon" />
-          <span>{<FormattedMessage id={'refresh'} />}</span>
+          <span>{<FormattedMessage id="refresh" />}</span>
         </Button>
       </Header>
-      <Content className="page-content" code={'container'} values={{ name: projectName }}>
+      <Content className="page-content" code="container" values={{ name: projectName }}>
         <Table
           filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
           loading={ContainerStore.loading}
@@ -317,14 +314,14 @@ class ContainerHome extends Component {
         {contentDom}
         <Sidebar
           visible={showSide}
-          title={<FormattedMessage id={'container.log.header.title'} />}
+          title={<FormattedMessage id="container.log.header.title" />}
           onOk={this.closeSidebar}
           className="c7n-podLog-content c7n-region"
-          okText={<FormattedMessage id={'cancel'} />}
+          okText={<FormattedMessage id="cancel" />}
           okCancel={false}
           destroyOnClose
         >
-          <Content className="sidebar-content" code={'container.log'} values={{ name: podName }}>
+          <Content className="sidebar-content" code="container.log" values={{ name: podName }}>
             <section className="c7n-podLog-section">
               <CodeMirror
                 ref={(editor) => { this.editorLog = editor; }}

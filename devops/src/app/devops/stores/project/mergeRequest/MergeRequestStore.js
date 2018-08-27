@@ -8,25 +8,35 @@ const { AppState } = stores;
 @store('MergeRequestStore')
 class MergeRequestStore {
   @observable loading = true;
+
   @observable apps = [];
+
   @observable mergeData = {
     closed: [],
     merged: [],
     opened: [],
     all: [],
   };
+
   @observable assignee = {};
+
   @observable params = [];
+
   @observable pageInfo = {
     closed: {},
     merged: {},
     opened: {},
     all: {},
   };
+
   @observable currentApp = {};
+
   @observable url = '';
+
   @observable id = null;
+
   @observable assigneeCount = 0;
+
   @observable count = {
     closeCount: 0,
     mergeCount: 0,
@@ -186,8 +196,8 @@ class MergeRequestStore {
             }, key);
             this.setMerge(content, key);
             if (key === 'opened') {
-              const assignee = pageResult ?
-                _.filter(content, a => a.assignee && a.assignee.id === userId) : [];
+              const assignee = pageResult
+                ? _.filter(content, a => a.assignee && a.assignee.id === userId) : [];
               this.setAssignee(assignee);
               this.setAssigneeCount(assignee.length);
             }

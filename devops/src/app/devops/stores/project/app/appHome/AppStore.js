@@ -8,10 +8,17 @@ const height = window.screen.height;
 @store('AppStore')
 class AppStore {
   @observable allData = [];
-  @observable isRefresh= false;// 页面的loading
-  @observable loading = false; // 打开tab的loading
+
+  @observable isRefresh= false;
+
+  // 页面的loading
+  @observable loading = false;
+
+  // 打开tab的loading
   @observable singleData = null;
+
   @observable selectData = [];
+
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
@@ -34,6 +41,7 @@ class AppStore {
   @action setAllData(data) {
     this.allData = data;
   }
+
   @computed get getSelectData() {
     return this.singleData.slice();
   }
@@ -49,6 +57,7 @@ class AppStore {
   @computed get getIsRefresh() {
     return this.isRefresh;
   }
+
   @action changeLoading(flag) {
     this.loading = flag;
   }
@@ -86,6 +95,7 @@ class AppStore {
         this.changeIsRefresh(false);
       });
   };
+
   handleData =(data) => {
     this.setAllData(data.content);
     const { number, size, totalElements } = data;
@@ -93,56 +103,50 @@ class AppStore {
     this.setPageInfo(page);
   };
 
-  loadSelectData =orgId =>
-    axios.get(`/devops/v1/projects/${orgId}/apps/template`)
-      .then((data) => {
-        const res = this.handleProptError(data);
-        if (res) {
-          this.setSelectData(res);
-        }
-      });
-
-  loadDataById =(projectId, id) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/${id}/detail`).then((data) => {
+  loadSelectData =orgId => axios.get(`/devops/v1/projects/${orgId}/apps/template`)
+    .then((data) => {
       const res = this.handleProptError(data);
       if (res) {
-        this.setSingleData(data);
+        this.setSelectData(res);
       }
     });
 
-  checkCode =(projectId, code) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/checkCode?code=${code}`)
-      .then((data) => {
-        const res = this.handleProptError(data);
-        return res;
-      });
+  loadDataById =(projectId, id) => axios.get(`/devops/v1/projects/${projectId}/apps/${id}/detail`).then((data) => {
+    const res = this.handleProptError(data);
+    if (res) {
+      this.setSingleData(data);
+    }
+  });
 
-  checkName = (projectId, name) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/checkName?name=${name}`)
-      .then((data) => {
-        const res = this.handleProptError(data);
-        return res;
-      });
+  checkCode =(projectId, code) => axios.get(`/devops/v1/projects/${projectId}/apps/checkCode?code=${code}`)
+    .then((data) => {
+      const res = this.handleProptError(data);
+      return res;
+    });
 
-  updateData = (projectId, data) =>
-    axios.put(`/devops/v1/projects/${projectId}/apps`, JSON.stringify(data))
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
+  checkName = (projectId, name) => axios.get(`/devops/v1/projects/${projectId}/apps/checkName?name=${name}`)
+    .then((data) => {
+      const res = this.handleProptError(data);
+      return res;
+    });
 
-  addData = (projectId, data) =>
-    axios.post(`/devops/v1/projects/${projectId}/apps`, JSON.stringify(data))
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
-  changeAppStatus = (projectId, id, status) =>
-    axios.put(`/devops/v1/projects/${projectId}/apps/${id}?active=${status}`)
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
+  updateData = (projectId, data) => axios.put(`/devops/v1/projects/${projectId}/apps`, JSON.stringify(data))
+    .then((datas) => {
+      const res = this.handleProptError(datas);
+      return res;
+    });
+
+  addData = (projectId, data) => axios.post(`/devops/v1/projects/${projectId}/apps`, JSON.stringify(data))
+    .then((datas) => {
+      const res = this.handleProptError(datas);
+      return res;
+    });
+
+  changeAppStatus = (projectId, id, status) => axios.put(`/devops/v1/projects/${projectId}/apps/${id}?active=${status}`)
+    .then((datas) => {
+      const res = this.handleProptError(datas);
+      return res;
+    });
 
   handleProptError =(error) => {
     if (error && error.failed) {

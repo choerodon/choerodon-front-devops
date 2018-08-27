@@ -4,12 +4,19 @@ import { axios, store } from 'choerodon-front-boot';
 @store('AppStoreStore')
 class AppStoreStore {
   @observable isLoading = true;
+
   @observable backPath = false;
+
   @observable listActive = 'card';
+
   @observable readme = false;
+
   @observable appCards = [];
+
   @observable app = [];
+
   @observable pageInfo = {};
+
   @observable impApp = {};
 
   @action setPageInfo(page) {

@@ -19,9 +19,6 @@ class MergeRequestHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      val: '',
-      pageSize: 20,
-      page: 0,
       tabKey: 'opened',
     };
   }
@@ -51,23 +48,9 @@ class MergeRequestHome extends Component {
       MergeRequestStore.currentApp.id,
       this.state.tabKey,
       MergeRequestStore.pageInfo.current - 1,
-      MergeRequestStore.pageInfo.pageSize);
+      MergeRequestStore.pageInfo.pageSize,
+    );
   };
-
-  handleChange(id) {
-    this.setState({
-      id,
-      tabKey: 'opened',
-    });
-    const { MergeRequestStore } = this.props;
-    const currentApp = MergeRequestStore.apps.find(app => app.id === id);
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    MergeRequestStore.setCurrentApp(currentApp);
-    MergeRequestStore.setAssignee([]);
-    MergeRequestStore.setAssigneeCount(0);
-    MergeRequestStore.loadMergeRquest(id, 'opened');
-    MergeRequestStore.loadUrl(projectId, id);
-  }
 
   tabChange = (key) => {
     this.setState({
@@ -100,7 +83,8 @@ class MergeRequestHome extends Component {
       MergeRequestStore.currentApp.id,
       keys,
       pagination.current - 1,
-      pagination.pageSize);
+      pagination.pageSize,
+    );
   };
 
   /**
@@ -123,6 +107,20 @@ class MergeRequestHome extends Component {
     const url = `${MergeRequestStore.getUrl}/merge_requests/new`;
     window.open(url);
   };
+
+  handleChange(id) {
+    this.setState({
+      tabKey: 'opened',
+    });
+    const { MergeRequestStore } = this.props;
+    const currentApp = MergeRequestStore.apps.find(app => app.id === id);
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    MergeRequestStore.setCurrentApp(currentApp);
+    MergeRequestStore.setAssignee([]);
+    MergeRequestStore.setAssigneeCount(0);
+    MergeRequestStore.loadMergeRquest(id, 'opened');
+    MergeRequestStore.loadUrl(projectId, id);
+  }
 
   render() {
     const { MergeRequestStore, intl } = this.props;
@@ -464,15 +462,12 @@ class MergeRequestHome extends Component {
             className="c7n-app-select_512"
             value={MergeRequestStore.currentApp.id}
             label={intl.formatMessage({ id: 'deploy.step.one.app' })}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
             onChange={this.handleChange.bind(this)}
           >
             {
-              _.map(appData, (app, index) =>
-                <Option key={index} value={app.id}>{app.name}</Option>,
-              )
+              _.map(appData, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
             }
           </Select>
           <Tabs activeKey={tabKey} onChange={this.tabChange} animated={false}>

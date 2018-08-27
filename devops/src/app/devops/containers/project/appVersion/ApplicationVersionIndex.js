@@ -10,7 +10,7 @@ const AppVersionHome = asyncRouter(() => import('./applicationHome'), () => impo
 const EnvironmentIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={AppVersionHome} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 

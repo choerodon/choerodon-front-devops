@@ -21,8 +21,11 @@ configure({ enforceActions: false });
 @observer
 class NetworkOverview extends Component {
   @observable openRemove = false;
+
   @observable showEdit = false;
+
   @observable submitting = false;
+
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -153,15 +156,15 @@ class NetworkOverview extends Component {
     }
     const content = (type === 'ClusterIP') ? (<Fragment>
       <div className="network-config-wrap">
-        <div className="network-type-title"><FormattedMessage id={'network.column.ip'} /></div>
+        <div className="network-type-title"><FormattedMessage id="network.column.ip" /></div>
         <div>{externalIps ? iPArr : '-'}</div>
       </div>
       <div className="network-config-wrap">
-        <div className="network-type-title"><FormattedMessage id={'network.column.port'} /></div>
+        <div className="network-type-title"><FormattedMessage id="network.column.port" /></div>
         <div>{portArr}</div>
       </div>
     </Fragment>) : (<Fragment>
-      <div className="network-config-item"><FormattedMessage id={'network.node.port'} /></div>
+      <div className="network-config-item"><FormattedMessage id="network.node.port" /></div>
       <div>{portArr}</div>
     </Fragment>);
     return (<div className="network-column-config">
@@ -226,13 +229,13 @@ class NetworkOverview extends Component {
     let editDom = null;
     let deleteDom = null;
     if (status !== 'operating' && envStatus) {
-      editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'edit'} />}>
-        <Button shape="circle" size={'small'} funcType="flat" onClick={this.editNetwork.bind(this, id)}>
+      editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="edit" />}>
+        <Button shape="circle" size="small" funcType="flat" onClick={this.editNetwork.bind(this, id)}>
           <i className="icon icon-mode_edit" />
         </Button>
       </Tooltip>);
-      deleteDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id={'delete'} />}>
-        <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemoveModal.bind(this, id)}>
+      deleteDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="delete" />}>
+        <Button shape="circle" size="small" funcType="flat" onClick={this.openRemoveModal.bind(this, id)}>
           <i className="icon icon-delete_forever" />
         </Button>
       </Tooltip>);
@@ -296,24 +299,24 @@ class NetworkOverview extends Component {
     const data = store.getNetwork;
     const { type, id: projectId, organizationId: orgId } = AppState.currentMenuType;
     const columns = [{
-      title: <FormattedMessage id={'network.column.status'} />,
+      title: <FormattedMessage id="network.column.status" />,
       key: 'status',
       width: 72,
       render: record => this.statusColumn(record),
     }, {
-      title: <FormattedMessage id={'network.column.name'} />,
+      title: <FormattedMessage id="network.column.name" />,
       key: 'name',
       sorter: true,
       filters: [],
       render: record => (<MouserOverWrapper text={record.name || ''} width={0.1} className="network-list-name">
         {record.name}</MouserOverWrapper>),
     }, {
-      title: <FormattedMessage id={'network.target'} />,
+      title: <FormattedMessage id="network.target" />,
       key: 'target',
       filters: [],
       render: record => this.targetColumn(record),
     }, {
-      title: <FormattedMessage id={'network.config.column'} />,
+      title: <FormattedMessage id="network.config.column" />,
       key: 'config',
       filters: [],
       render: record => this.configColumn(record),
@@ -340,16 +343,16 @@ class NetworkOverview extends Component {
       />}
       <Modal
         visible={this.openRemove}
-        title={<FormattedMessage id={'network.delete'} />}
+        title={<FormattedMessage id="network.delete" />}
         closable={false}
         footer={[
-          <Button key="back" onClick={this.closeRemove}><FormattedMessage id={'cancel'} /></Button>,
+          <Button key="back" onClick={this.closeRemove}><FormattedMessage id="cancel" /></Button>,
           <Button key="submit" type="danger" onClick={this.handleDelete} loading={this.submitting}>
-            <FormattedMessage id={'delete'} />
+            <FormattedMessage id="delete" />
           </Button>,
         ]}
       >
-        <p><FormattedMessage id={'network.delete.tooltip'} />？</p>
+        <p><FormattedMessage id="network.delete.tooltip" />？</p>
       </Modal>
     </div>);
   }

@@ -27,10 +27,8 @@ class SingleApp extends Component {
       verId: null,
       envId: null,
       visibleUp: false,
-      pageSize: 10,
       page: 0,
       openRemove: false,
-      alertType: '',
       loading: false,
       selectPubPage: 0,
       selectProPage: 0,
@@ -38,7 +36,6 @@ class SingleApp extends Component {
       appProLength: 0,
       appPubDom: [],
       appProDom: [],
-      filterValue: '',
     };
   }
 
@@ -157,7 +154,7 @@ class SingleApp extends Component {
   linkVersionFeature = (id, istName) => {
     const { store } = this.props;
     store.setAlertType('versionFeature');
-    this.setState({ id, instanceName: istName });
+    this.setState({ id });
     store.changeShow(true);
   };
 
@@ -189,7 +186,7 @@ class SingleApp extends Component {
       searchParam,
       param: param.toString(),
     };
-    this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
+    this.setState({ page: pagination.current - 1 });
     store.loadInstanceAll(projectId, pagination.current - 1,
       pagination.pageSize, sort, envID, verId, appID, postData);
     store.setIstTableFilter(param);
@@ -298,14 +295,6 @@ class SingleApp extends Component {
   };
 
   /**
-   * 打开删除数据模态框
-   * @param id
-   */
-  handleOpen(id) {
-    this.setState({ openRemove: true, id });
-  }
-
-  /**
    * 删除数据
    */
   handleDelete = (id) => {
@@ -372,13 +361,14 @@ class SingleApp extends Component {
    * 点击右滑动
    */
   pushScrollRight = () => {
+    const { moveRight } = this.state;
     scrollLeft -= 250;
     if (scrollLeft < 0) {
       scrollLeft = 0;
     }
     this.setState({
       moveBan: false,
-      moveRight: this.state.moveRight - 250,
+      moveRight: moveRight - 250,
     });
     document.getElementsByClassName('c7n-single-env-inner')[0].scroll({ left: scrollLeft, behavior: 'smooth' });
   };
@@ -504,19 +494,20 @@ class SingleApp extends Component {
   appDomMore = (type, e) => {
     e.stopPropagation();
     const { store } = this.props;
+    const { selectProPage, selectPubPage } = this.state;
     const filterValue = store.getFilterValue;
     if (type === 'pro') {
-      const temp = this.state.selectProPage + 1;
+      const temp = selectProPage + 1;
       this.setState({
         selectProPage: temp,
       });
-      this.loadSelectData([temp, this.state.selectPubPage], filterValue);
+      this.loadSelectData([temp, selectPubPage], filterValue);
     } else {
-      const temp = this.state.selectPubPage + 1;
+      const temp = selectPubPage + 1;
       this.setState({
         selectPubPage: temp,
       });
-      this.loadSelectData([this.state.selectProPage, temp], filterValue);
+      this.loadSelectData([selectProPage, temp], filterValue);
     }
   };
 
@@ -531,8 +522,7 @@ class SingleApp extends Component {
     const proPageSize = (10 * pageArr[0]) + 3;
     const pubPageSize = (10 * pageArr[1]) + 3;
     if (filterValue) {
-      allItems = allItems.filter(item =>
-        item.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0);
+      allItems = allItems.filter(item => item.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0);
     }
     if (allItems.length) {
       _.map(allItems, (d) => {
@@ -595,7 +585,6 @@ class SingleApp extends Component {
       appProDom,
       appPubLength: pubLength,
       appProLength: proLength,
-      filterValue,
     });
   };
 
@@ -609,6 +598,13 @@ class SingleApp extends Component {
     this.loadSelectData([0, 0], value);
   };
 
+  /**
+   * 打开删除数据模态框
+   * @param id
+   */
+  handleOpen(id) {
+    this.setState({ openRemove: true, id });
+  }
 
   render() {
     const { store, intl } = this.props;
@@ -623,11 +619,11 @@ class SingleApp extends Component {
     const appName = (appNames.length ? (<React.Fragment>
       {appNames[0].projectId === projectId ? <i className="icon icon-project c7n-icon-publish" /> : <i className="icon icon-apps c7n-icon-publish" />}
       {appNames[0].name}</React.Fragment>) : undefined);
-    const appVersion = appVer.length ?
-      _.map(appVer, d => d.version && <Option key={d.id}>{d.version}</Option>) : undefined;
+    const appVersion = appVer.length
+      ? _.map(appVer, d => d.version && <Option key={d.id}>{d.version}</Option>) : undefined;
 
-    const leftDom = scrollLeft !== 0 ?
-      <div role="none" className="c7n-env-push-left icon icon-navigate_before" onClick={this.pushScrollRight} />
+    const leftDom = scrollLeft !== 0
+      ? <div role="none" className="c7n-env-push-left icon icon-navigate_before" onClick={this.pushScrollRight} />
       : null;
 
     const rightStyle = classNames({
@@ -636,17 +632,16 @@ class SingleApp extends Component {
     });
 
     const rightDom = this.state.moveBan ? null : <div role="none" className={rightStyle} onClick={this.pushScrollLeft} />;
-    const envCardDom = envCard.length ? _.map(envCard, d =>
-      (<div className="c7n-app-square">
-        <div role="none" className={envID === d.id ? 'c7n-app-card c7n-app-card-active' : 'c7n-app-card'} key={d.id} onClick={this.loadDetail.bind(this, d.id)}>
-          <div className={d.connect ? 'c7n-app-state' : 'c7n-app-state-pending'}>
-            {d.connect ? <FormattedMessage id="running" /> : <FormattedMessage id="disconnect" />}
-          </div>
-          <div className="c7n-app-name"><Tooltip title={d.name || ''}>{d.name}</Tooltip></div>
+    const envCardDom = envCard.length ? _.map(envCard, d => (<div className="c7n-app-square" key={d.id}>
+      <div role="none" className={envID === d.id ? 'c7n-app-card c7n-app-card-active' : 'c7n-app-card'} key={d.id} onClick={this.loadDetail.bind(this, d.id)}>
+        <div className={d.connect ? 'c7n-app-state' : 'c7n-app-state-pending'}>
+          {d.connect ? <FormattedMessage id="running" /> : <FormattedMessage id="disconnect" />}
         </div>
-        <span className="c7n-app-arrow">→</span>
-      </div>)) :
-      (<div className="c7n-app-square">
+        <div className="c7n-app-name"><Tooltip title={d.name || ''}>{d.name}</Tooltip></div>
+      </div>
+      <span className="c7n-app-arrow">→</span>
+    </div>))
+      : (<div className="c7n-app-square">
         <div className="c7n-app-card" key="noEnv">
           <div className="c7n-app-state-ban">
             <FormattedMessage id="ist.noAdd" />
@@ -691,8 +686,8 @@ class SingleApp extends Component {
           <Tooltip title={intl.formatMessage({ id: `ist_${record.commandType}` })}>
             <Progress type="loading" width="15px" />
           </Tooltip>
-        </div>) :
-          (<div>
+        </div>)
+          : (<div>
             <span className="c7n-deploy-istCode">{record.code}</span>
             <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
               <i className="icon icon-error c7n-deploy-ist-operate" />
@@ -750,8 +745,8 @@ class SingleApp extends Component {
           <Tooltip title={intl.formatMessage({ id: `ist_${record.commandType}` })}>
             <Progress type="loading" width="15px" />
           </Tooltip>
-        </div>) :
-          (<div>
+        </div>)
+          : (<div>
             <span className="c7n-deploy-istCode">{record.code}</span>
             <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
               <i className="icon icon-error c7n-deploy-ist-operate" />
@@ -850,8 +845,7 @@ class SingleApp extends Component {
           className="c7n-app-select_312"
           onChange={this.loadVerId}
           optionFilterProp="children"
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           filter
           allowClear
           showSearch

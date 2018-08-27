@@ -103,7 +103,7 @@ class SingleEnvironment extends Component {
   linkVersionFeature = (id, istName) => {
     const { store } = this.props;
     store.setAlertType('versionFeature');
-    this.setState({ id, instanceName: istName });
+    this.setState({ id });
     store.changeShow(true);
   };
 
@@ -272,14 +272,6 @@ class SingleEnvironment extends Component {
   };
 
   /**
-   * 打开删除数据模态框
-   * @param id
-   */
-  handleOpen(id) {
-    this.setState({ openRemove: true, id });
-  }
-
-  /**
    * 删除数据
    */
   handleDelete = (id) => {
@@ -434,6 +426,14 @@ class SingleEnvironment extends Component {
     }
   };
 
+  /**
+   * 打开删除数据模态框
+   * @param id
+   */
+  handleOpen(id) {
+    this.setState({ openRemove: true, id });
+  }
+
   render() {
     const { store, intl } = this.props;
     const ist = store.getIstAll;
@@ -466,10 +466,10 @@ class SingleEnvironment extends Component {
       {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
       {d.name}</Option>)) : [];
 
-    const appNameDom = appNames.length ? _.map(appNames, d => (<div role="none" className={appID === d.id ? 'c7n-deploy-single_card c7n-deploy-single_card-active' : 'c7n-deploy-single_card'} onClick={this.loadDetail.bind(this, this.state.envId, d.id)}>
+    const appNameDom = appNames.length ? _.map(appNames, d => (<div role="none" className={appID === d.id ? 'c7n-deploy-single_card c7n-deploy-single_card-active' : 'c7n-deploy-single_card'} onClick={this.loadDetail.bind(this, this.state.envId, d.id)} key={d.id}>
       {d.projectId === projectId ? <i className="icon icon-project c7n-icon-publish" /> : <i className="icon icon-apps c7n-icon-publish" />}
       <div className="c7n-text-ellipsis"><Tooltip title={d.name || ''}>{d.name}</Tooltip></div>
-    </div>)) : (<div className="c7n-deploy-single_card" >
+    </div>)) : (<div className="c7n-deploy-single_card">
       <div className="c7n-deploy-square"><div>App</div></div>
       <FormattedMessage id="ist.noApp" />
     </div>);
@@ -509,8 +509,8 @@ class SingleEnvironment extends Component {
           <Tooltip title={intl.formatMessage({ id: `ist_${record.commandType}` })}>
             <Progress type="loading" width="15px" />
           </Tooltip>
-        </div>) :
-          (<div>
+        </div>)
+          : (<div>
             <span className="c7n-deploy-istCode">{record.code}</span>
             <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
               <i className="icon icon-error c7n-deploy-ist-operate" />

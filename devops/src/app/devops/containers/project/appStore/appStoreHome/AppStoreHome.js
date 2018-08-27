@@ -20,7 +20,6 @@ class AppStoreHome extends Component {
     this.state = {
       val: '',
       pageSize: 20,
-      page: 0,
     };
   }
 
@@ -70,7 +69,7 @@ class AppStoreHome extends Component {
       searchParam,
       param: param.toString(),
     };
-    this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
+    this.setState({ pageSize: pagination.pageSize });
     AppStoreStore.loadApps(projectId, pagination.current - 1, pagination.pageSize, sort, postData);
   };
 
@@ -317,8 +316,8 @@ class AppStoreHome extends Component {
               <Button onClick={this.listViewChange.bind(this, 'card')} className={listActive === 'card' ? 'c7n-tab-active' : ''}><Icon type="dashboard" /></Button>
             </div>
           </ButtonGroup>
-          {AppStoreStore.isLoading ? <LoadingBar display /> :
-            (<div className="c7n-store-list-wrap">
+          {AppStoreStore.isLoading ? <LoadingBar display />
+            : (<div className="c7n-store-list-wrap">
               {listActive === 'card' ? appCardsDom : appListDom}
             </div>)}
           <div className="c7n-store-pagination">
