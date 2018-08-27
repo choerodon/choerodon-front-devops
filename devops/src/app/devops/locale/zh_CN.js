@@ -351,7 +351,7 @@ const zhCN = {
   'deploy.step.three.mode.new': '新建实例',
   'deploy.step.three.mode.replace': '替换实例',
   'deploy.step.three.mode.replace.label': '选择要的替换实例',
-  'deploy.step.three.mode.help': '替换实例会更新该实例的镜像及配置信息，请确认要替换的实例选择无误。',
+  'deploy.step.three.mode.help': '替换实例会更新该实例的镜像及配置信息，未修改配置信息且版本相同不可选择替换。',
   'deploy.step.four.title': '确认信息及部署',
   'deploy.step.four.app': '应用名称',
   'deploy.step.four.version': '应用版本',

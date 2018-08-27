@@ -9,6 +9,7 @@ import '../../../main.scss';
 import './DeployApp.scss';
 import AceForYaml from '../../../../components/yamlAce';
 import SelectApp from '../selectApp';
+import YAML from "yamljs";
 
 
 const RadioGroup = Radio.Group;
@@ -31,6 +32,7 @@ class DeploymentAppHome extends Component {
       markers: null,
       projectId: AppState.currentMenuType.id,
       loading: false,
+      changeYaml: false,
     };
   }
 
@@ -81,6 +83,10 @@ class DeploymentAppHome extends Component {
     const { appId, versionId, envId, mode } = this.state;
     this.setState({ current: index });
     if (index === 2 && appId && versionId && envId) {
+      this.setState({
+        changeYaml: false,
+        mode: 'new',
+      });
       DeploymentAppStore.setValue(null);
       DeploymentAppStore.loadValue(appId, versionId, envId)
         .then((data) => {
@@ -198,6 +204,18 @@ class DeploymentAppHome extends Component {
     DeploymentAppStore.checkYaml(value)
       .then((data) => {
         this.setState({ errorLine: data });
+        const oldYaml = DeploymentAppStore.getValue ? DeploymentAppStore.getValue.yaml : '';
+        const oldvalue = YAML.parse(oldYaml);
+        const newvalue = YAML.parse(value);
+        if (JSON.stringify(oldvalue) === JSON.stringify(newvalue)) {
+          this.setState({
+            changeYaml: false,
+          });
+        } else {
+          this.setState({
+            changeYaml: true,
+          });
+        }
       });
   };
 
@@ -241,6 +259,7 @@ class DeploymentAppHome extends Component {
       markers: [],
       mode: 'new',
       instanceId: undefined,
+      changeYaml: false,
     });
   };
 
@@ -263,6 +282,7 @@ class DeploymentAppHome extends Component {
       markers: [],
       mode: 'new',
       instanceId: undefined,
+      changeYaml: false,
     });
     if (location.search.indexOf('envId') !== -1) {
       const { history } = this.props;
@@ -308,9 +328,9 @@ class DeploymentAppHome extends Component {
 
 
   loadReview = async () => {
-    const { value, versionId } = this.state;
+    const { value, versionId, projectId } = this.state;
     if (value) {
-      const yaml = await axios.post(`/devops/v1/projects/${this.state.projectId}/app_instances/previewValue?appVersionId=${versionId}`, { yaml: value })
+      const yaml = await axios.post(`/devops/v1/projects/${projectId}/app_instances/previewValue?appVersionId=${versionId}`, { yaml: value })
         .then(data => data);
       this.setState({ yaml });
     }
@@ -498,7 +518,7 @@ class DeploymentAppHome extends Component {
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0}
               filter
             >
-              {instances.map(v => (<Option value={v.id} key={v.id}>
+              {instances.map(v => (<Option value={v.id} key={v.id} disabled={this.state.changeYaml ? false : v.appVersion === this.state.versionDto.version}>
                 {v.code}
               </Option>))}
             </Select>}
