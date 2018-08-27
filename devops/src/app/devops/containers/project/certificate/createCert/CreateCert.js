@@ -34,20 +34,15 @@ class CreateCert extends Component {
       const { store, form } = this.props;
       const { id: projectId } = AppState.currentMenuType;
       const envId = form.getFieldValue('envId');
-      if (envId) {
-        callback();
-        store.checkCertName(projectId, value, envId)
-          .then((data) => {
-            if (data) {
-              callback();
-            } else {
-              callback(intl.formatMessage({ id: 'ctf.name.check.exist' }));
-            }
-          })
-          .catch(() => callback());
-      } else {
-        callback(intl.formatMessage({ id: 'ctf.form.app.disable' }));
-      }
+      store.checkCertName(projectId, value, envId)
+        .then((data) => {
+          if (data) {
+            callback();
+          } else {
+            callback(intl.formatMessage({ id: 'ctf.name.check.exist' }));
+          }
+        })
+        .catch(() => callback());
     } else {
       callback(intl.formatMessage({ id: 'ctf.names.check.failed' }));
     }
@@ -57,9 +52,9 @@ class CreateCert extends Component {
     super(props);
     this.state = {
       submitting: false,
-      type: 'apply',
-      keyFileList: [],
-      certFileList: [],
+      type: 'request',
+      keyLoad: false,
+      certLoad: false,
     };
     this.domainCount = 1;
   }
@@ -72,18 +67,50 @@ class CreateCert extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { form, store } = this.props;
+    const { form, store, handleClose } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ submitting: true });
     form.validateFieldsAndScroll((err, data) => {
       if (!err) {
-        window.console.log(data);
-        this.setState({ submitting: false });
+        const { type, certName, envId, domains, key, cert } = data;
+        if (type === 'upload') {
+          const formdata = new FormData(data);
+          this.setState({ submitting: false });
+          for (const keys of formdata.entries()) {
+            window.console.log(keys);
+          }
+          // const p = store.createCert(projectId, formdata);
+          // this.handleResponse(p);
+        } else if (type === 'request') {
+          const certData = { type, certName, envId, domains };
+          // const p = store.createCert(projectId, certData);
+          // this.handleResponse(p);
+        }
       } else {
         this.setState({ submitting: false });
       }
     });
   };
+
+  /**
+   * 处理创建证书请求所返回的数据
+   * @param promiss
+   */
+  handleResponse = (promiss) => {
+    const { handleClose } = this.props;
+    promiss.then((res) => {
+      if (res && res.failed) {
+        Choerodon.prompt(res.message);
+      } else {
+        handleClose();
+      }
+      this.setState({ submitting: false });
+    })
+      .catch((error) => {
+        this.setState({ submitting: false });
+        Choerodon.handleResponseError(error);
+      });
+  }
 
   /**
    * 域名格式检查
@@ -95,7 +122,7 @@ class CreateCert extends Component {
     const { intl, form } = this.props;
     const { getFieldValue } = form;
     const p = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)+)$/;
-    const keyCount = _.countBy(getFieldValue('domain'));
+    const keyCount = _.countBy(getFieldValue('domains'));
     if (p.test(value)) {
       if (keyCount[value] < 2) {
         callback();
@@ -112,12 +139,12 @@ class CreateCert extends Component {
    */
   addDomain = () => {
     const { getFieldValue, setFieldsValue } = this.props.form;
-    const keys = getFieldValue('domains');
+    const keys = getFieldValue('domainArr');
     const uuid = this.domainCount;
     const nextKeys = _.concat(keys, uuid);
     this.domainCount = uuid + 1;
     setFieldsValue({
-      domains: nextKeys,
+      domainArr: nextKeys,
     });
   };
 
@@ -127,12 +154,12 @@ class CreateCert extends Component {
    */
   removeGroup = (k) => {
     const { getFieldValue, setFieldsValue } = this.props.form;
-    const keys = getFieldValue('domains');
+    const keys = getFieldValue('domainArr');
     if (keys.length === 1) {
       return;
     }
     setFieldsValue({
-      domains: _.filter(keys, key => key !== k),
+      domainArr: _.filter(keys, key => key !== k),
     });
   };
 
@@ -153,39 +180,80 @@ class CreateCert extends Component {
   handleTypeChange = e => this.setState({ type: e.target.value });
 
   /**
-   * 显示上传文件信息
-   * @param info
+   * 表单中Upload的onChange
+   * 响应 上传、删除
+   * @param type
+   * @param e
+   * @returns {*}
    */
-  handleUpload = (info) => {
-    if (info) {
-      const keyFileList = [];
-      keyFileList.push(info.file);
-      this.setState({ keyFileList });
+  handleUpload = (type, e) => {
+    const { file, fileList } = e;
+    const keyFileList = [];
+    const fileType = type === '.key' ? 'keyLoad' : 'certLoad';
+    this.setState({ [fileType]: true });
+    if (_.isArray(e)) {
+      return e;
+    } else if (fileList.length) {
+      // 上传
+      const isKeyFile = file.name.endsWith(type);
+      if (!isKeyFile) {
+        this.setState({ [fileType]: false });
+      } else {
+        keyFileList.push(file);
+        this.setState({ [fileType]: true });
+      }
+    } else {
+      // 移除
+      this.setState({ [fileType]: false });
     }
+    return keyFileList;
   };
 
-  handleRemoveFile = () => {
-    console.log('remove');
-    this.setState({ keyFileList: [] });
+  /**
+   * 始终返回false，阻止自动上传
+   * @param type
+   * @param file
+   * @returns {boolean}
+   */
+  beforeUploadFile = (type, file) => {
+    const { intl } = this.props;
+    const isKeyFile = file.name.endsWith(type);
+    if (!isKeyFile) {
+      Choerodon.prompt(intl.formatMessage({ id: 'file.type.error' }));
+    } else {
+      Choerodon.prompt(`${file.name} ${intl.formatMessage({ id: 'file.uploaded.success' })}`);
+    }
+    return false;
   };
 
   render() {
     const { visible, form, intl, store, handleClose } = this.props;
-    const { submitting, type, keyFileList, certFileList } = this.state;
-    const { name: menuName, id: projectId } = AppState.currentMenuType;
     const { getFieldDecorator, getFieldValue } = form;
-    getFieldDecorator('domains', { initialValue: [0] });
+    const { submitting, type, keyLoad, certLoad } = this.state;
+    const { name: menuName, id: projectId } = AppState.currentMenuType;
+    // 上传配置
+    const uploadKeyProps = {
+      action: '//jsonplaceholder.typicode.com/posts/',
+      beforeUpload: this.beforeUploadFile.bind(this, '.key'),
+      multiple: false,
+    };
+    const uploadCertProps = {
+      action: '//jsonplaceholder.typicode.com/posts/',
+      beforeUpload: this.beforeUploadFile.bind(this, '.crt'),
+      multiple: false,
+    };
+    getFieldDecorator('domainArr', { initialValue: [0] });
     // 设置环境选择器自动聚焦
     // if (this.envSelect && !getFieldValue('envId')) {
     //   this.envSelect.focus();
     // }
-    const domains = getFieldValue('domains');
-    const domainItems = _.map(domains, (k, index) => (<div key={`domain-${k}`} className="creation-panel-group">
+    const domainArr = getFieldValue('domainArr');
+    const domainItems = _.map(domainArr, (k, index) => (<div key={`domains-${k}`} className="creation-panel-group">
       <FormItem
-        className={`c7n-select_${domains.length > 1 ? 454 : 480} creation-group-form`}
+        className={`c7n-select_${domainArr.length > 1 ? 454 : 480} creation-group-form`}
         {...formItemLayout}
       >
-        {getFieldDecorator(`domain[${k}]`, {
+        {getFieldDecorator(`domains[${k}]`, {
           rules: [{
             required: true,
             message: intl.formatMessage({ id: 'required' }),
@@ -200,16 +268,9 @@ class CreateCert extends Component {
           />,
         )}
       </FormItem>
-      {domains.length > 1 ? (<Icon className="creation-panel-icon" type="delete" onClick={() => this.removeGroup(k)} />) : null}
+      {domainArr.length > 1 ? (<Icon className="creation-panel-icon" type="delete" onClick={() => this.removeGroup(k)} />) : null}
     </div>));
     const env = store.getEnvData;
-    // 上传配置
-    const uploadProps = {
-      action: '',
-      onChange: this.handleUpload,
-      multiple: false,
-      onRemove: this.handleRemoveFile,
-    };
     return (<div className="c7n-region">
       <Sidebar
         destroyOnClose
@@ -258,7 +319,7 @@ class CreateCert extends Component {
               className="c7n-select_512"
               {...formItemLayout}
             >
-              {getFieldDecorator('name', {
+              {getFieldDecorator('certName', {
                 rules: [{
                   required: true,
                   message: intl.formatMessage({ id: 'required' }),
@@ -287,12 +348,12 @@ class CreateCert extends Component {
                 {...formItemLayout}
               >
                 {getFieldDecorator('type', {
-                  initialValue: 'apply',
+                  initialValue: 'request',
                 })(<RadioGroup
                   name="type"
                   onChange={this.handleTypeChange}
                 >
-                  <Radio value="apply"><FormattedMessage id="ctf.apply" /></Radio>
+                  <Radio value="request"><FormattedMessage id="ctf.apply" /></Radio>
                   <Radio value="upload"><FormattedMessage id="ctf.upload" /></Radio>
                 </RadioGroup>)}
               </FormItem>
@@ -320,18 +381,43 @@ class CreateCert extends Component {
                     label={<FormattedMessage id="ctf.keyFile" />}
                     {...formItemLayout}
                   >
-                    {getFieldDecorator('keyFile', {
+                    {getFieldDecorator('key', {
+                      valuePropName: 'fileList',
+                      getValueFromEvent: this.handleUpload.bind(this, '.key'),
                       rules: [{
                         required: true,
-                        message: intl.formatMessage({ id: 'ctf.required' }),
+                        message: intl.formatMessage({ id: 'ctf.key.required' }),
                       }],
-                    })(<Upload disabled={keyFileList.length > 0} {...uploadProps}>
+                    })(<Upload disabled={keyLoad} {...uploadKeyProps}>
                       <Button
-                        disabled={keyFileList.length > 0}
+                        disabled={keyLoad}
                         className="ctf-upload-button"
                       >
                         <Icon type="file_upload" />
                         <FormattedMessage id="ctf.keyFile" />
+                      </Button>
+                    </Upload>)}
+                  </FormItem>
+                </div>
+                <div className="ctf-upload-item">
+                  <FormItem
+                    label={<FormattedMessage id="ctf.certFile" />}
+                    {...formItemLayout}
+                  >
+                    {getFieldDecorator('cert', {
+                      valuePropName: 'fileList',
+                      getValueFromEvent: this.handleUpload.bind(this, '.crt'),
+                      rules: [{
+                        required: true,
+                        message: intl.formatMessage({ id: 'ctf.cert.required' }),
+                      }],
+                    })(<Upload disabled={certLoad} {...uploadCertProps}>
+                      <Button
+                        disabled={certLoad}
+                        className="ctf-upload-button"
+                      >
+                        <Icon type="file_upload" />
+                        <FormattedMessage id="ctf.certFile" />
                       </Button>
                     </Upload>)}
                   </FormItem>

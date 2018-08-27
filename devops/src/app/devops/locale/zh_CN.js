@@ -163,9 +163,9 @@ const pageDetail = {
 
   // 证书
   'ctf.description': '域名证书是受法律认可的证书文件，确定了域名注册者对域名的拥有权与拥有时限。您在每个环境中添加的所有域名都需要有域名证书。',
-  'ctf.title': '项目\"{name}\"的证书',
+  'ctf.title': '项目"{name}"的证书',
   'ctf.link': `${docServer}/user-guide/development-pipeline/certificate`,
-  'ctf.create.title': '项目\"{name}\"中创建证书',
+  'ctf.create.title': '项目"{name}"中创建证书',
   'ctf.create.description': '您可以在此处选择环境，并在该环境下面配置相应的参数创建证书。',
   'ctf.create.link': `${docServer}/user-guide/deployment-pipeline/certificate`,
 };
@@ -220,6 +220,10 @@ const zhCN = {
   finish: '结束',
   ok: '确定',
   language: 'zh_CN',
+
+  'file.uploaded.failed': '上传失败！',
+  'file.uploaded.success': '上传成功！',
+  'file.type.error': '文件格式类型错误！',
 
   // ist
   ist_stop: '停止中',
@@ -766,7 +770,8 @@ const zhCN = {
   'ctf.target.type': '选择类型',
   'ctf.keyFile': '上传 Key 文件',
   'ctf.certFile': '上传 Cert 文件',
-  'ctf.required': '请上传文件',
+  'ctf.key.required': '请上传Key格式的文件',
+  'ctf.cert.required': '请上传Cert格式的文件',
 
   ...pageDetail,
 };

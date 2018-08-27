@@ -35,7 +35,7 @@ class CertificateHome extends Component {
 
   componentDidMount() {
     const { CertificateStore } = this.props;
-    // CertificateStore.loadCertData();
+    this.loadCertData();
   }
 
   /**
@@ -89,7 +89,7 @@ class CertificateHome extends Component {
       param,
     };
     CertificateStore
-      .loadCertData(projectId, pagination.current - 1, pagination.pageSize, postData);
+      .loadCertData({ projectId, page: pagination.current - 1, pageSize: pagination.pageSize, postData });
   };
 
   /**

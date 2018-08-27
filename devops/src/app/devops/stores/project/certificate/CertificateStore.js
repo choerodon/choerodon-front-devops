@@ -9,14 +9,7 @@ const { AppState } = stores;
 class CertificateStore {
   @observable envData = [];
 
-  @observable certData = [{
-    id: 10,
-    certName: 'test-env-Cert',
-    commonName: 'localhost:9090',
-    envName: 'Staging',
-    status: 'operating',
-    domains: ['localhost:9090', 'localhost:9091', 'localhost:9092'],
-  }];
+  @observable certData = [];
 
   @observable loading = false;
 
@@ -83,18 +76,18 @@ class CertificateStore {
    */
   loadCertData = ({ projectId, page = 0, sizes = 10, sort = { field: 'id', order: 'asc' }, postData = { searchParam: {}, param: '' } }) => {
     this.setCertLoading(true);
-    axios.post(`/devops/v1/projects/${projectId}/cert?page=${page}&size=${sizes}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+    axios.post(`/devops/v1/projects/${projectId}/certifications/list_by_options?page=${page}&size=${sizes}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
       .then((data) => {
-        this.setCtfLoading(false);
+        this.setCertLoading(false);
         const res = handleProptError(data);
         if (res) {
           const { content, totalElements, number, size } = res;
           this.setPageInfo({ current: number + 1, pageSize: size, total: totalElements });
-          this.setCtfData(content);
+          this.setCertData(content);
         }
       })
       .catch((err) => {
-        this.setCtfLoading(false);
+        this.setCertLoading(false);
         Choerodon.handleResponseError(err);
       });
   };
@@ -105,9 +98,23 @@ class CertificateStore {
    * @param value
    * @param envId
    */
-  checkCertName = (projectId, value, envId) => {};
+  checkCertName = (projectId, value, envId) => Promise.resolve(true);
 
-  deleteCertById = (projectId, certId) => axios.delete(`/devops/v1/projects/${projectId}/cert/${certId}/delete`);
+  /**
+   * 创建证书
+   * @param projectId
+   * @param data
+   * @returns {JQueryXHR | * | void}
+   */
+  createCert = (projectId, data) => axios.post(`/devops/v1/projects/${projectId}/certifications`, data, { header: { 'Content-Type': 'multipart/form-data' } });
+
+  /**
+   * 删除证书
+   * @param projectId
+   * @param certId
+   * @returns {*}
+   */
+  deleteCertById = (projectId, certId) => axios.delete(`/devops/v1/projects/${projectId}/certifications?cert_id=${certId}`);
 }
 
 const certificateStore = new CertificateStore();
