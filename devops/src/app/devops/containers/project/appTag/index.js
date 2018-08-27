@@ -1,3 +1,3 @@
-import AppTag from './AppTag';
+import AppTagIndex from './AppTagIndex';
 
-export default AppTag;
+export default AppTagIndex;

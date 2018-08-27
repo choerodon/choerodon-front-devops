@@ -1,3 +1,3 @@
-import repository from './Repository';
+import RepositoryIndex from './RepositoryIndex';
 
-export default repository;
+export default RepositoryIndex;

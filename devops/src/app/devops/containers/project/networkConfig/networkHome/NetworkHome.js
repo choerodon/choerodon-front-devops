@@ -20,7 +20,6 @@ const { AppState } = stores;
 @observer
 class NetworkHome extends Component {
   constructor(props, context) {
-    const menu = AppState.currentMenuType;
     super(props, context);
     this.state = {
       show: false,

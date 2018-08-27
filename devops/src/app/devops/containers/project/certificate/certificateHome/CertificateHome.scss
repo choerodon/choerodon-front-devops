@@ -1,0 +1,59 @@
+.c7n-ctf-wrapper {
+  .c7n-ctf {
+    &-select {
+      margin-bottom: 16px;
+    }
+
+    &-status {
+      color: #fff;
+      border-radius: 2px;
+      padding: 0 6px;
+      width: 58px;
+      height: 20px;
+      text-align: center;
+    }
+
+    &-operating {
+      background: #4d90fe;
+    }
+
+    &-active {
+      background: #00bfa5;
+    }
+
+    &-overdue {
+      background: rgba(0,0,0,.26);
+    }
+  }
+
+  .c7n-ctf-detail-icon {
+    display: inline-block;
+    line-height: 24px;
+    height: 24px;
+    text-align: center;
+    margin-right: 6px;
+    vertical-align: top;
+  }
+
+  .c7n-ctf-overlay {
+    .ant-popover-title {
+      border: none;
+      font-weight: bold;
+      padding-top: 15px;
+    }
+    .c7n-overlay-content {
+      display: flex;
+      .c7n-overlay-item {
+        flex: 1;
+        margin-right: 23px;
+        &:last-child {
+          margin-right: 0;
+        }
+        .c7n-ctf-detail {
+          margin-bottom: 8px;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+}

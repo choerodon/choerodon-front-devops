@@ -347,7 +347,7 @@ class ImportChart extends Component {
       title: intl.formatMessage({ id: 'app.version' }),
       key: 'version',
       render: record => (<div>
-        <div role={'none'} className={`c7n-step-table-column col-${record.id}`} onClick={this.handleChangeStatus.bind(this, record.id, record.appVersions.length)}>
+        <div role="none" className={`c7n-step-table-column col-${record.id}`} onClick={this.handleChangeStatus.bind(this, record.id, record.appVersions.length)}>
           {record.appVersions && document.getElementsByClassName(`${record.id}-col-parent`)[0] && parseInt(window.getComputedStyle(document.getElementsByClassName(`${record.id}-col-parent`)[0]).height, 10) > 31
           && <span className={_.indexOf(upDown, record.id) !== -1
             ? 'icon icon-keyboard_arrow_up c7n-step-table-icon' : 'icon icon-keyboard_arrow_down c7n-step-table-icon'}

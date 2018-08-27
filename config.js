@@ -35,7 +35,6 @@ const config = {
   routes: null, // by default, routes use main in package.json
   server: 'http://api.staging.saas.hand-china.com', // api server
   // server: 'http://api.alpha.saas.hand-china.com',
-  // server: 'https://api.choerodon.com.cn',
   clientid: 'localhost',
   fileServer: 'http://minio.staging.saas.hand-china.com',
   titlename: 'Choerodon', // html title

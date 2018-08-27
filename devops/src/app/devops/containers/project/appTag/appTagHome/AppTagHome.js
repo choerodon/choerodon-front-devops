@@ -5,10 +5,10 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import { Button, Tooltip, Table, Select, Modal, Form, Input, Icon } from 'choerodon-ui';
-import TimePopover from '../../../components/timePopover';
-import MouserOverWrapper from '../../../components/MouseOverWrapper';
-import '../../main.scss';
-import './AppTag.scss';
+import TimePopover from '../../../../components/timePopover/index';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper/index';
+import '../../../main.scss';
+import './AppTagHome.scss';
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -26,7 +26,28 @@ const formItemLayout = {
 };
 
 @observer
-class AppTag extends Component {
+class AppTagHome extends Component {
+  /**
+   * 标记名称的校验规则：\d+(\.\d+){2}
+   */
+  checkTagName = _.debounce((rule, value, callback) => {
+    const { AppTagStore, intl } = this.props;
+    const { projectId, appId } = this.state;
+    const pa = /^\d+(\.\d+){2}$/;
+    if (value && pa.test(value)) {
+      AppTagStore.checkTagName(projectId, value)
+        .then((data) => {
+          if (data) {
+            callback();
+          } else {
+            callback(intl.formatMessage({ id: 'apptag.checkName' }));
+          }
+        });
+    } else {
+      callback(intl.formatMessage({ id: 'apptag.checkNameReg' }));
+    }
+  }, 1000);
+
   constructor(props) {
     super(props);
     const menu = AppState.currentMenuType;
@@ -42,7 +63,6 @@ class AppTag extends Component {
       visible: false,
       tag: null,
       size: 3,
-      filters: {},
     };
   }
 
@@ -118,11 +138,12 @@ class AppTag extends Component {
    * @param pagination
    * @param filters
    * @param sorter
+   * @param paras
    */
   tableChange = (pagination, filters, sorter, paras) => {
     const { AppTagStore } = this.props;
     const { projectId } = this.state;
-    this.setState({ page: pagination.current - 1, filters, paras });
+    this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
     let searchParam = {};
     if (Object.keys(filters).length) {
       searchParam = filters;
@@ -144,16 +165,19 @@ class AppTag extends Component {
    */
   handleSelect = (id, option) => {
     const { AppTagStore } = this.props;
-    const { projectId, page, pageSize } = this.state;
-    this.setState({ appId: id, appName: option.props.children });
+    const { projectId } = this.state;
+    this.setState({ appId: id, appName: option.props.children, page: 0, pageSize: 10 });
     AppTagStore.setSelectApp(id);
-    this.loadTagData(projectId, page, pageSize);
+    this.loadTagData(projectId);
   };
 
   /**
    * 页面内刷新，选择器变回默认选项
    */
-  handleRefresh = () => this.loadTagData(this.state.projectId);
+  handleRefresh = () => {
+    const { page, pageSize } = this.state;
+    this.loadTagData(this.state.projectId, page, pageSize);
+  };
 
   /**
    * 加载应用信息
@@ -177,28 +201,6 @@ class AppTag extends Component {
     AppTagStore
       .queryTagData(projectId, page, pageSize);
   };
-
-  /**
-   * 标记名称的校验规则：\d+(\.\d+){2}
-   */
-  checkTagName = _.debounce((rule, value, callback) => {
-    const { AppTagStore, intl } = this.props;
-    const { projectId, appId } = this.state;
-    // eslint-disable-next-line no-useless-escape
-    const pa = /^\d+(\.\d+){2}$/;
-    if (value && pa.test(value)) {
-      AppTagStore.checkTagName(projectId, value)
-        .then((data) => {
-          if (data) {
-            callback();
-          } else {
-            callback(intl.formatMessage({ id: 'apptag.checkName' }));
-          }
-        });
-    } else {
-      callback(intl.formatMessage({ id: 'apptag.checkNameReg' }));
-    }
-  }, 1000);
 
   /**
    * 打开确认确认窗口
@@ -231,6 +233,7 @@ class AppTag extends Component {
    * 取消删除
    */
   closeRemove = () => this.setState({ visible: false });
+
   /**
    * 加载更多
    */
@@ -241,6 +244,7 @@ class AppTag extends Component {
     this.setState({ size: size + 10 });
     AppTagStore.queryBranchData({ projectId, size: size + 10, postData: { searchParam: { branchName: [filter] }, param: '' } });
   };
+
   /**
    * 搜索分支数据
    * @param input
@@ -249,7 +253,7 @@ class AppTag extends Component {
     this.setState({ filter: input });
     const { AppTagStore } = this.props;
     AppTagStore.queryBranchData({ projectId: this.state.projectId, size: this.state.size, postData: { searchParam: { branchName: [input] }, param: '' } });
-  }
+  };
 
   render() {
     const { intl, AppTagStore, form } = this.props;
@@ -308,7 +312,7 @@ class AppTag extends Component {
             >
               <Button
                 shape="circle"
-                size={'small'}
+                size="small"
                 onClick={this.openRemove.bind(this, record.tagName)}
               >
                 <Icon type="delete_forever" />
@@ -333,10 +337,10 @@ class AppTag extends Component {
         <Modal
           confirmLoading={deleteLoading}
           visible={visible}
-          title={<FormattedMessage id={'apptag.action.delete'} />}
+          title={<FormattedMessage id="apptag.action.delete" />}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
+            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,
             <Button key="submit" type="danger" onClick={this.deleteTag} loading={deleteLoading}>
               {this.props.intl.formatMessage({ id: 'delete' })}
             </Button>,
@@ -373,16 +377,14 @@ class AppTag extends Component {
           <Select
             className="c7n-select_512"
             value={AppTagStore.getSelectApp}
-            label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            label={intl.formatMessage({ id: 'deploy.step.one.app' })}
+            filterOption={(input, option) => option.props.children
+              .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
             onChange={(value, option) => this.handleSelect(value, option)}
           >
             {
-              _.map(appData, (app, index) =>
-                <Option key={index} value={app.id}>{app.name}</Option>,
-              )
+              _.map(appData, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
             }
           </Select>
           <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
@@ -468,9 +470,10 @@ class AppTag extends Component {
                       >
                         <OptGroup label={<FormattedMessage id="apptag.branch" />}>
                           {
-                            _.map(AppTagStore.getBranchData.content, item =>
-                              <Option key={item.branchName} value={item.branchName}><Icon className="apptag-branch-icon" type="branch" />{item.branchName}</Option>,
-                            )
+                            _.map(AppTagStore.getBranchData.content,
+                              item => <Option key={item.branchName} value={item.branchName}>
+                                <Icon className="apptag-branch-icon" type="branch" />
+                                {item.branchName}</Option>)
                           }
                           {AppTagStore.getBranchData.totalElements > AppTagStore.getBranchData.numberOfElements && AppTagStore.getBranchData.numberOfElements > 0 ? <Option key="more">
                             <div role="none" onClick={this.changeSize} className="c7n-option-popover c7n-dom-more">
@@ -491,4 +494,4 @@ class AppTag extends Component {
   }
 }
 
-export default Form.create({})(withRouter(injectIntl(AppTag)));
+export default Form.create({})(withRouter(injectIntl(AppTagHome)));
