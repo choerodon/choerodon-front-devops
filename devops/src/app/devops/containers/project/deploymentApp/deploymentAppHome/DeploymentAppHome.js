@@ -501,7 +501,7 @@ class DeploymentAppHome extends Component {
               label={<span className="deploy-text">{formatMessage({ id: 'deploy.step.three.mode' })}</span>}
             >
               <Radio className="deploy-radio" value={'new'}>{formatMessage({ id: 'deploy.step.three.mode.new' })}</Radio>
-              <Radio className="deploy-radio" value={'replace'} disabled={instances.length === 0 || (instances.length === 1 && (instances[0].appVersion === this.state.versionDto.version))}>{formatMessage({ id: 'deploy.step.three.mode.replace' })}
+              <Radio className="deploy-radio" value="replace" disabled={instances.length === 0 || (instances.length === 1 && (instances[0].appVersion === this.state.versionDto.version))}>{formatMessage({ id: 'deploy.step.three.mode.replace' })}
                 <i className="icon icon-error section-instance-icon" />
                 <span className="deploy-tip-text">{formatMessage({ id: 'deploy.step.three.mode.help' })}</span>
               </Radio>
