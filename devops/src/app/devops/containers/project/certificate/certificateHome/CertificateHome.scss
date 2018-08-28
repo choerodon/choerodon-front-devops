@@ -22,7 +22,10 @@
     }
 
     &-overdue {
-      background: rgba(0,0,0,.26);
+      background: rgba(0, 0, 0, .26);
+    }
+    &-failed {
+      background: #d50000;
     }
   }
 

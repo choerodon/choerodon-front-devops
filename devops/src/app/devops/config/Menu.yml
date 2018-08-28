@@ -27,7 +27,7 @@
         permission:
           - 'devops-service.application-version.pageByOptions'
     - "application-release":
-        icon: near_me
+        icon: publish2
         Routes: /devops/app-release
         sort: 4
         permission:

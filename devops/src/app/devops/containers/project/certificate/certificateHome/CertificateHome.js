@@ -23,9 +23,10 @@ class CertificateHome extends Component {
       pageSize: 10,
       param: [],
       filters: {},
-      sort: {
+      postData: { searchParam: {}, param: '' },
+      sorter: {
         columnKey: 'id',
-        order: 'desc',
+        order: 'descend',
       },
       deleteStatus: false,
       removeDisplay: false,
@@ -41,10 +42,19 @@ class CertificateHome extends Component {
   /**
    * 创建证书侧边栏
    */
-  openCreateModal = () => this.setState({ createDisplay: true });
+  openCreateModal = () => {
+    const { CertificateStore } = this.props;
+    CertificateStore.setEnvData([]);
+    this.setState({ createDisplay: true });
+  }
 
+  /**
+   * 关闭创建侧边栏
+   */
   closeCreateModal = () => {
     this.setState({ createDisplay: false });
+    const { page, pageSize, sort, postData } = this.state;
+    this.loadCertData(page, pageSize, sort, postData);
   };
 
   /**
@@ -56,8 +66,8 @@ class CertificateHome extends Component {
     const { deleteCert } = this.state;
     this.setState({ deleteStatus: true });
     CertificateStore.deleteCertById(projectId, deleteCert).then(() => {
-      const { page, pageSize } = this.state;
-      this.loadCertData(page, pageSize);
+      const { page, pageSize, sort, postData } = this.state;
+      this.loadCertData(page, pageSize, sort, postData);
       this.setState({ deleteStatus: false, removeDisplay: false });
     }).catch((err) => {
       this.setState({ deleteStatus: false });
@@ -75,7 +85,8 @@ class CertificateHome extends Component {
   tableChange = (pagination, filters, sorter, paras) => {
     const { CertificateStore } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
+    const { current, pageSize } = pagination;
+    const page = current - 1;
     let searchParam = {};
     let param = '';
     if (Object.keys(filters).length) {
@@ -88,31 +99,35 @@ class CertificateHome extends Component {
       searchParam,
       param,
     };
+    this.setState({ page, pageSize, filters, postData, sorter });
     CertificateStore
-      .loadCertData({ projectId, page: pagination.current - 1, pageSize: pagination.pageSize, postData });
+      .loadCertData(projectId, page, pageSize, sorter, postData);
   };
 
   /**
    * 刷新
    */
   reload = () => {
-    const { page, pageSize } = this.state;
-    this.loadCertData(page, pageSize);
+    const { page, pageSize, sort, postData } = this.state;
+    this.loadCertData(page, pageSize, sort, postData);
   };
 
   /**
    * 加载数据
    * @param page
-   * @param pageSize
+   * @param sizes
+   * @param sort
+   * @param filter
    */
-  loadCertData = (page = 0, pageSize = 10) => {
+  loadCertData = (page = 0, sizes = 10, sort = { field: 'id', order: 'descend' }, filter = { searchParam: {}, param: '' }) => {
     const { CertificateStore } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    CertificateStore.loadCertData({ projectId, page, pageSize });
+    CertificateStore.loadCertData(projectId, page, sizes, sort, filter);
   };
 
   /**
    * 显示删除确认框
+   * @param id
    */
   openRemoveModal = id => this.setState({
     removeDisplay: true,
@@ -139,7 +154,7 @@ class CertificateHome extends Component {
         content={<div className="c7n-overlay-content">
           <div className="c7n-overlay-item">
             <p className="c7n-ctf-detail">CommonName</p>
-            <p className="c7n-ctf-detail">DNSNames</p>
+            {domains && domains.length > 1 ? <p className="c7n-ctf-detail">DNSNames</p> : null}
           </div>
           <div className="c7n-overlay-item">{_.map(domains, item => <p key={item} className="c7n-ctf-detail">{item}</p>)}</div>
         </div>}
@@ -173,7 +188,7 @@ class CertificateHome extends Component {
     const {
       param,
       filters,
-      sort: { columnKey, order },
+      sorter: { columnKey, order },
       removeDisplay,
       deleteStatus,
       createDisplay,
@@ -184,7 +199,6 @@ class CertificateHome extends Component {
       key: 'certName',
       dataIndex: 'certName',
       filters: [],
-      sortOrder: columnKey === 'certName' && order,
       filteredValue: filters.certName || [],
       render: (text, record) => (<MouserOverWrapper text={text || ''} width={0.25}>
         {text}</MouserOverWrapper>),
@@ -193,7 +207,6 @@ class CertificateHome extends Component {
       key: 'commonName',
       dataIndex: 'commonName',
       filters: [],
-      sortOrder: columnKey === 'commonName' && order,
       filteredValue: filters.commonName || [],
       render: (text, record) => (<MouserOverWrapper text={text || ''} width={0.25}>
         {text}</MouserOverWrapper>),
@@ -201,6 +214,7 @@ class CertificateHome extends Component {
       title: <FormattedMessage id="ctf.column.env" />,
       key: 'envName',
       dataIndex: 'envName',
+      sorter: true,
       filters: [],
       sortOrder: columnKey === 'envName' && order,
       filteredValue: filters.envName || [],

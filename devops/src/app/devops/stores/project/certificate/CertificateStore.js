@@ -3,6 +3,10 @@ import { axios, store, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import { handleProptError } from '../../../utils';
 
+const ORDER = {
+  ascend: 'asc',
+  descend: 'desc',
+};
 const { AppState } = stores;
 
 @store('CertificateStore')
@@ -68,15 +72,14 @@ class CertificateStore {
   /**
    * 加载证书列表
    * @param projectId
-   * @param envId
    * @param page
    * @param sizes
    * @param sort
-   * @param postData
+   * @param filter
    */
-  loadCertData = ({ projectId, page = 0, sizes = 10, sort = { field: 'id', order: 'asc' }, postData = { searchParam: {}, param: '' } }) => {
+  loadCertData = (projectId, page, sizes, sort, filter) => {
     this.setCertLoading(true);
-    axios.post(`/devops/v1/projects/${projectId}/certifications/list_by_options?page=${page}&size=${sizes}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+    axios.post(`/devops/v1/projects/${projectId}/certifications/list_by_options?page=${page}&size=${sizes}&sort=${sort.field},${ORDER[sort.order]}`, JSON.stringify(filter))
       .then((data) => {
         this.setCertLoading(false);
         const res = handleProptError(data);
@@ -104,9 +107,8 @@ class CertificateStore {
    * 创建证书
    * @param projectId
    * @param data
-   * @returns {JQueryXHR | * | void}
    */
-  createCert = (projectId, data) => axios.post(`/devops/v1/projects/${projectId}/certifications`, data, { header: { 'Content-Type': 'multipart/form-data' } });
+  createCert = (projectId, data) => axios.post(`/devops/v1/projects/${projectId}/certifications`, data, { headers: { 'Content-Type': 'multipart/form-data' } });
 
   /**
    * 删除证书
