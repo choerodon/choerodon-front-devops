@@ -72,17 +72,19 @@ class EnvOverviewHome extends Component {
   @action
   tabChange = (key) => {
     this.tabKey = key;
+    const { EnvOverviewStore } = this.props;
+    const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
     if (key === 'app' && this.env.length) {
-      this.loadIstOverview(this.envId || this.env[0].id);
+      this.loadIstOverview(tpEnvId || this.env[0].id);
     } else if (key === 'domain' && this.env.length) {
-      this.loadDomain(this.envId || this.env[0].id);
+      this.loadDomain(tpEnvId || this.env[0].id);
     } else if (key === 'network' && this.env.length) {
-      this.loadNetwork(this.envId || this.env[0].id);
+      this.loadNetwork(tpEnvId || this.env[0].id);
     } else if (key === 'log' && this.env.length) {
-      this.loadLog(this.envId || this.env[0].id);
+      this.loadLog(tpEnvId || this.env[0].id);
     }
     if (this.env.length) {
-      this.loadSync(this.envId || this.env[0].id);
+      this.loadSync(tpEnvId || this.env[0].id);
     }
   };
 
