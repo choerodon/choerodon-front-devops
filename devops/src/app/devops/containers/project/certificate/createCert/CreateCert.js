@@ -72,19 +72,27 @@ class CreateCert extends Component {
     this.setState({ submitting: true });
     form.validateFieldsAndScroll((err, data) => {
       if (!err) {
-        const { type, certName, envId, domains, key, cert } = data;
-        if (type === 'upload') {
-          const formdata = new FormData(data);
-          this.setState({ submitting: false });
-          for (const keys of formdata.entries()) {
-            window.console.log(keys);
-          }
-          // const p = store.createCert(projectId, formdata);
-          // this.handleResponse(p);
-        } else if (type === 'request') {
-          const certData = { type, certName, envId, domains };
-          // const p = store.createCert(projectId, certData);
-          // this.handleResponse(p);
+        if (data.type === 'upload') {
+          const { key, cert } = data;
+          const formdata = new FormData();
+          _.forEach(data, (value, k) => {
+            if (k !== 'domainArr' && k !== 'key' && k !== 'cert') {
+              formdata.append(k, value);
+            }
+          });
+          formdata.append('key', key[0]);
+          formdata.append('cert', cert[0]);
+          const p = store.createCert(projectId, formdata);
+          this.handleResponse(p);
+        } else if (data.type === 'request') {
+          const formdata = new FormData();
+          _.forEach(data, (value, k) => {
+            if (k !== 'domainArr' && k !== 'key' && k !== 'cert') {
+              formdata.append(k, value);
+            }
+          });
+          const p = store.createCert(projectId, formdata);
+          this.handleResponse(p);
         }
       } else {
         this.setState({ submitting: false });
@@ -94,23 +102,22 @@ class CreateCert extends Component {
 
   /**
    * 处理创建证书请求所返回的数据
-   * @param promiss
+   * @param promise
    */
-  handleResponse = (promiss) => {
+  handleResponse = (promise) => {
     const { handleClose } = this.props;
-    promiss.then((res) => {
+    promise.then((res) => {
+      this.setState({ submitting: false });
       if (res && res.failed) {
         Choerodon.prompt(res.message);
       } else {
         handleClose();
       }
+    }).catch((error) => {
       this.setState({ submitting: false });
-    })
-      .catch((error) => {
-        this.setState({ submitting: false });
-        Choerodon.handleResponseError(error);
-      });
-  }
+      Choerodon.handleResponseError(error);
+    });
+  };
 
   /**
    * 域名格式检查
@@ -189,22 +196,22 @@ class CreateCert extends Component {
   handleUpload = (type, e) => {
     const { file, fileList } = e;
     const keyFileList = [];
-    const fileType = type === '.key' ? 'keyLoad' : 'certLoad';
-    this.setState({ [fileType]: true });
+    const fileLoadType = type === '.key' ? 'keyLoad' : 'certLoad';
+    this.setState({ [fileLoadType]: true });
     if (_.isArray(e)) {
       return e;
     } else if (fileList.length) {
-      // 上传
-      const isKeyFile = file.name.endsWith(type);
-      if (!isKeyFile) {
-        this.setState({ [fileType]: false });
+      // 上传，且只能上传一个文件
+      const isType = file.name.endsWith(type);
+      if (!isType) {
+        this.setState({ [fileLoadType]: false });
       } else {
         keyFileList.push(file);
-        this.setState({ [fileType]: true });
+        this.setState({ [fileLoadType]: true });
       }
     } else {
       // 移除
-      this.setState({ [fileType]: false });
+      this.setState({ [fileLoadType]: false });
     }
     return keyFileList;
   };

@@ -754,6 +754,7 @@ const zhCN = {
   'ctf.column.operating': '申请中',
   'ctf.column.active': '已生效',
   'ctf.column.overdue': '已过期',
+  'ctf.column.failed': ' 失败 ',
   'ctf.cert.detail': '证书详情',
   'ctf.name.check.exist': '证书名称已存在',
   'ctf.form.app.disable': '请先选择环境',
