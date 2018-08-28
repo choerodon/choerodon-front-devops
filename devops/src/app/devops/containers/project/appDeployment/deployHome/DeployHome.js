@@ -21,8 +21,6 @@ class DeployHome extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      tabActive: 'instance',
-      page: 0,
     };
   }
 

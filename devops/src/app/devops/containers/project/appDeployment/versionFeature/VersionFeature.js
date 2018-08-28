@@ -15,7 +15,6 @@ class VersionFeature extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      visible: this.props.visible,
       loading: false,
       data: false,
     };
@@ -100,7 +99,7 @@ class VersionFeature extends Component {
         onOk={this.props.onClose}
         className="c7n-feature-content"
       >
-        <div className="c7n-region c7n-feature-wrapper" >
+        <div className="c7n-region c7n-feature-wrapper">
           <h2 className="c7n-space-first">查看版本&quot;{this.props.version}&quot;的特性</h2>
           <p>
             这些权限会影响此项目及其所有资源。

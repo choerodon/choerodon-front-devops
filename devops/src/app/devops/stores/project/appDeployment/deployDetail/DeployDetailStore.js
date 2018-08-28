@@ -4,9 +4,13 @@ import { axios, store } from 'choerodon-front-boot';
 @store('DeployDetailStore')
 class DeployDetailStore {
   @observable isLoading = true;
+
   @observable logVisible = false;
+
   @observable value = '';
+
   @observable stage = [];
+
   @observable resource = null;
 
   @action changeLogVisible(flag) {
@@ -64,24 +68,22 @@ class DeployDetailStore {
       });
   };
 
-  getInstanceValue = (projectId, id) =>
-    axios.get(`/devops/v1/projects/${projectId}/app_instances/${id}/value`)
-      .then((stage) => {
-        const res = this.handleProptError(stage);
-        if (res) {
-          this.setValue(stage);
-        }
-      });
+  getInstanceValue = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/app_instances/${id}/value`)
+    .then((stage) => {
+      const res = this.handleProptError(stage);
+      if (res) {
+        this.setValue(stage);
+      }
+    });
 
 
-  getResourceData = (proId, id) =>
-    axios.get(`/devops/v1/projects/${proId}/app_instances/${id}/resources`)
-      .then((stage) => {
-        const res = this.handleProptError(stage);
-        if (res) {
-          this.setResource(stage);
-        }
-      });
+  getResourceData = (proId, id) => axios.get(`/devops/v1/projects/${proId}/app_instances/${id}/resources`)
+    .then((stage) => {
+      const res = this.handleProptError(stage);
+      if (res) {
+        this.setResource(stage);
+      }
+    });
 
   loadAllData = (projectId, id) => {
     this.changeLoading(true);
@@ -99,6 +101,7 @@ class DeployDetailStore {
         this.changeLoading(false);
       });
   };
+
   handleProptError =(error) => {
     if (error && error.failed) {
       Choerodon.prompt(error.message);

@@ -30,6 +30,46 @@ const formItemLayout = {
 @commonComponent('AppStore')
 @observer
 class AppHome extends Component {
+  /**
+   *
+   * @type 隔断时间提交验证数据
+   */
+  postName =_.debounce((projectId, value, callback) => {
+    const { AppStore, intl } = this.props;
+    AppStore.checkName(projectId, value)
+      .then((data) => {
+        if (data) {
+          callback();
+        } else {
+          callback(intl.formatMessage({ id: 'template.checkName' }));
+        }
+      });
+  }, 1000);
+
+  /**
+   * 校验应用编码规则
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkCode =_.debounce((rule, value, callback) => {
+    const { AppStore, intl } = this.props;
+    // eslint-disable-next-line no-useless-escape
+    const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
+    if (value && pa.test(value)) {
+      AppStore.checkCode(this.state.projectId, value)
+        .then((data) => {
+          if (data) {
+            callback();
+          } else {
+            callback(intl.formatMessage({ id: 'template.checkCode' }));
+          }
+        });
+    } else {
+      callback(intl.formatMessage({ id: 'template.checkCodeReg' }));
+    }
+  }, 1000);
+
   constructor(props) {
     const menu = AppState.currentMenuType;
     super(props);
@@ -37,10 +77,8 @@ class AppHome extends Component {
       page: 0,
       id: '',
       projectId: menu.id,
-      openRemove: false,
       show: false,
       submitting: false,
-      pageSize: 10,
     };
   }
 
@@ -56,8 +94,8 @@ class AppHome extends Component {
     const thisProps = fromJS(this.props || {});
     const thisState = fromJS(this.state || {});
     const nextStates = fromJS(nextState || {});
-    if (thisProps.size !== nextProps.size ||
-      thisState.size !== nextState.size) {
+    if (thisProps.size !== nextProps.size
+      || thisState.size !== nextState.size) {
       return true;
     }
     if (is(thisState, nextStates)) {
@@ -123,21 +161,21 @@ class AppHome extends Component {
         <div>
           {record.sonarUrl ? <Tooltip title={<FormattedMessage id="app.quality" />} placement="bottom">
             <a href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
-              <Button shape="circle" size={'small'}>
+              <Button shape="circle" size="small">
                 <i className="icon icon-quality" />
               </Button>
             </a>
           </Tooltip> : null }
-          <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']} >
+          <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']}>
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="edit" /> : <FormattedMessage id="app.start" />}</React.Fragment>}</div>}>
-              {record.active && record.synchro ? <Button shape="circle" size={'small'} onClick={this.showSideBar.bind(this, 'edit', record.id)}>
+              {record.active && record.synchro ? <Button shape="circle" size="small" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                 <i className="icon icon-mode_edit" />
               </Button> : <i className="icon icon-mode_edit c7n-app-icon-disabled" /> }
             </Tooltip>
           </Permission>
-          <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']} >
+          <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']}>
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="app.stop" /> : <FormattedMessage id="app.run" />}</React.Fragment>}</div>}>
-              {record.synchro ? <Button shape="circle" size={'small'} onClick={this.changeAppStatus.bind(this, record.id, record.active)}>
+              {record.synchro ? <Button shape="circle" size="small" onClick={this.changeAppStatus.bind(this, record.id, record.active)}>
                 {record.active ? <i className="icon icon-remove_circle_outline" /> : <i className="icon icon-finished" />}
               </Button> : <React.Fragment>
                 {record.active ? <i className="icon icon-remove_circle_outline c7n-app-icon-disabled" /> : <i className="icon icon-finished c7n-app-icon-disabled" />}
@@ -191,44 +229,7 @@ class AppHome extends Component {
       callback();
     }
   };
-  /**
-   *
-   * @type 隔断时间提交验证数据
-   */
-  postName =_.debounce((projectId, value, callback) => {
-    const { AppStore, intl } = this.props;
-    AppStore.checkName(projectId, value)
-      .then((data) => {
-        if (data) {
-          callback();
-        } else {
-          callback(intl.formatMessage({ id: 'template.checkName' }));
-        }
-      });
-  }, 1000);
-  /**
-   * 校验应用编码规则
-   * @param rule
-   * @param value
-   * @param callback
-   */
-  checkCode =_.debounce((rule, value, callback) => {
-    const { AppStore, intl } = this.props;
-    // eslint-disable-next-line no-useless-escape
-    const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
-    if (value && pa.test(value)) {
-      AppStore.checkCode(this.state.projectId, value)
-        .then((data) => {
-          if (data) {
-            callback();
-          } else {
-            callback(intl.formatMessage({ id: 'template.checkCode' }));
-          }
-        });
-    } else {
-      callback(intl.formatMessage({ id: 'template.checkCodeReg' }));
-    }
-  }, 1000);
+
   /**
    * 提交数据
    * @param e
@@ -274,7 +275,7 @@ class AppHome extends Component {
             .then((res) => {
               if (res) {
                 this.loadAllData(this.state.page);
-                this.setState({ isLoading: false, show: false });
+                this.setState({ show: false });
               }
               this.setState({
                 submitting: false,
@@ -291,6 +292,7 @@ class AppHome extends Component {
       });
     }
   };
+
   /**
    * 关闭操作框
    */
@@ -299,6 +301,7 @@ class AppHome extends Component {
     this.loadAllData();
     this.props.form.resetFields();
   };
+
   /**
    * 打开操作面板
    * @param type 操作类型
@@ -319,9 +322,11 @@ class AppHome extends Component {
       this.setState({ show: true, type, id });
     }
   };
+
   selectTemplate =(value, option) => {
     this.setState({ copyFrom: option.key });
   };
+
   render() {
     const { AppStore, intl } = this.props;
     const { getFieldDecorator } = this.props.form;
@@ -434,9 +439,8 @@ class AppHome extends Component {
               size="default"
               optionFilterProp="children"
               filterOption={
-                (input, option) =>
-                  option.props.children.props.children.props.children
-                    .toLowerCase().indexOf(input.toLowerCase()) >= 0
+                (input, option) => option.props.children.props.children.props.children
+                  .toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
             >
               {selectData && selectData.length > 0 && selectData.map(s => (

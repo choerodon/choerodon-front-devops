@@ -4,7 +4,9 @@ import { axios, store } from 'choerodon-front-boot';
 @store('ExportChartStore')
 class ExportChartStore {
   @observable isLoading = true;
+
   @observable app = [];
+
   @observable pageInfo = {};
   // @observable versions = {};
 
@@ -56,7 +58,9 @@ class ExportChartStore {
     });
 
   loadVersionsByAppId =(appId, projectId) => axios.get(`/devops/v1/projects/${projectId}/apps_market/${appId}/versions?is_publish=true`);
+
   exportChart = (proId, data) => axios.post(`/devops/v1/projects/${proId}/apps_market/export`, data, { responseType: 'blob' });
+
   handleData =(data) => {
     this.setApp(data.content);
     const { number, size, totalElements } = data;

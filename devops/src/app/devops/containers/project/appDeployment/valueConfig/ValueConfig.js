@@ -20,9 +20,10 @@ class ValueConfig extends Component {
       value: '',
       loading: false,
       disabled: true,
-      isNotchange: false,
+      isNotChange: false,
     };
   }
+
   /**
    * 事件处理，修改value值后写入store
    * @param {*} value 修改后的value值
@@ -62,6 +63,7 @@ class ValueConfig extends Component {
     });
     this.props.onClose(res);
   };
+
   /**
    * 点击重新部署，判断是否显示弹窗
    */
@@ -119,6 +121,7 @@ class ValueConfig extends Component {
         }
       });
   };
+
   /**
    * 未修改配置取消重新部署
    */

@@ -36,7 +36,6 @@ class DeploymentDetail extends Component {
       overview: props.location.search.indexOf('overview') > 0,
       expand: false,
       current: 1,
-      flag: true,
     };
   }
 
@@ -135,10 +134,6 @@ class DeploymentDetail extends Component {
   handleClose =() => {
     const { DeployDetailStore } = this.props;
     DeployDetailStore.changeLogVisible(false);
-  };
-
-  handleValue=(key) => {
-    this.setState({ flag: key });
   };
 
   render() {
@@ -243,7 +238,6 @@ class DeploymentDetail extends Component {
             </a>
           </p>
           <Tabs
-            onChange={this.handleValue}
             className="c7n-deployDetail-tab"
             defaultActiveKey={this.state.status === 'running' ? '1' : '2'}
           >
@@ -382,16 +376,15 @@ class DeploymentDetail extends Component {
                 <h2 className="c7n-space-first c7n-h2-inline c7n-deployDetail-title">{intl.formatMessage({ id: 'deploy.info' })}</h2>
                 <div role="none" className="c7n-deployDetail-expand" onClick={this.changeStatus}>
                   <Button shape="circle">
-                    {this.state.expand ?
-                      <i className="icon icon-expand_more" />
+                    {this.state.expand
+                      ? <i className="icon icon-expand_more" />
                       : <i className="icon icon-expand_less" />
                     }
                   </Button>
                 </div>
                 <div className={valueStyle}>
                   {DeployDetailStore.getValue && this.state.expand
-                  &&
-                  <Ace
+                  && <Ace
                     options={options}
                     ref={(instance) => { this.codeEditor = instance; }}
                     value={DeployDetailStore.getValue.yaml}

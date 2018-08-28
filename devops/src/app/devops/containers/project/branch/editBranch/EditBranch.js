@@ -30,13 +30,11 @@ class EditBranch extends Component {
     const menu = AppState.currentMenuType;
     super(props);
     this.state = {
-      name: 'feature',
-      value: '',
       projectId: menu.id,
       submitting: false,
-      initValue: null,
     };
   }
+
   /**
    * 获取issue的正文
    * @param s
@@ -194,12 +192,12 @@ class EditBranch extends Component {
                 initialValue: issue.length ? issueId : undefined,
               })(
                 <Select
-                  dropdownClassName={'createBranch-dropdown'}
+                  dropdownClassName="createBranch-dropdown"
                   onFilterChange={this.searchIssue}
                   loading={store.issueLoading}
                   key="service"
                   allowClear
-                  label={<FormattedMessage id={'branch.issueName'} />}
+                  label={<FormattedMessage id="branch.issueName" />}
                   filter
                   dropdownMatchSelectWidth
                   onSelect={this.selectTemplate}

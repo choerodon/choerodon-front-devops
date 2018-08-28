@@ -6,12 +6,19 @@ const height = window.screen.height;
 @store('AppReleaseStore')
 class AppReleaseStore {
   @observable unReleaseData = [];
+
   @observable releaseData = [];
-  @observable isRefresh= false;// 页面的loading
-  @observable loading = false; // 打开tab的loading
+
+  @observable isRefresh= false;
+
+  // 页面的loading
+  @observable loading = false;
+
+  // 打开tab的loading
   @observable unPageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
+
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
@@ -65,6 +72,7 @@ class AppReleaseStore {
   @computed get getIsRefresh() {
     return this.isRefresh;
   }
+
   @action changeLoading(flag) {
     this.loading = flag;
   }

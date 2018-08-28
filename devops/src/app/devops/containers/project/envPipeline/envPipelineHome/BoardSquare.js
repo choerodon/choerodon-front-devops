@@ -38,8 +38,8 @@ class BoardSquare extends Component {
         <Square>
           {this.props.children}
         </Square>
-        {isOver &&
-        <div className="c7n-env-moveing" />
+        {isOver
+        && <div className="c7n-env-moveing" />
         }
         <span className="c7n-env-arrow">→</span>
       </div>,

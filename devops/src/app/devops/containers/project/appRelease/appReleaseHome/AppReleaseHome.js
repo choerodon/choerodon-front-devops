@@ -16,13 +16,12 @@ class AppReleaseHome extends Component {
     const menu = AppState.currentMenuType;
     super(props);
     this.state = {
-      openRemove: false,
-      show: false,
       projectId: menu.id,
       key: props.match.params.key === '2' ? '2' : '1',
       filters: [],
     };
   }
+
   componentDidMount() {
     const { AppReleaseStore } = this.props;
     AppReleaseStore.loadData({ projectId: this.state.projectId, key: this.state.key });
@@ -31,19 +30,19 @@ class AppReleaseHome extends Component {
   getColumn = () => {
     const { type, id: orgId } = AppState.currentMenuType;
     return [{
-      title: <FormattedMessage id={'app.name'} />,
+      title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
     }, {
-      title: <FormattedMessage id={'app.code'} />,
+      title: <FormattedMessage id="app.code" />,
       dataIndex: 'code',
       key: 'code',
       sorter: true,
       filters: [],
     }, {
-      title: <FormattedMessage id={'release.column.level'} />,
+      title: <FormattedMessage id="release.column.level" />,
       key: 'publishLevel',
       sorter: true,
       filters: [{
@@ -63,14 +62,14 @@ class AppReleaseHome extends Component {
         <div>
           <Permission service={['devops-service.application-market.update']}>
             <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'edit' })}</div>}>
-              <Button shape="circle" size={'small'} onClick={this.handleEdit.bind(this, record.id)}>
+              <Button shape="circle" size="small" onClick={this.handleEdit.bind(this, record.id)}>
                 <Icon type="mode_edit" />
               </Button>
             </Tooltip>
           </Permission>
           <Permission service={['devops-service.application-market.updateVersions']}>
             <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'release.action.version' })}</div>}>
-              <Button shape="circle" size={'small'} onClick={this.handleEditVersion.bind(this, record)}>
+              <Button shape="circle" size="small" onClick={this.handleEditVersion.bind(this, record)}>
                 <Icon type="versionline" />
               </Button>
             </Tooltip>
@@ -79,6 +78,7 @@ class AppReleaseHome extends Component {
       ),
     }];
   } ;
+
   /**
    * 修改基本信息
    * @param ids
@@ -87,6 +87,7 @@ class AppReleaseHome extends Component {
     const { name, id, organizationId } = AppState.currentMenuType;
     this.props.history.push(`/devops/app-release/edit/${ids}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
   };
+
   /**
    *发布应用
    * @param record 发布的数据
@@ -96,6 +97,7 @@ class AppReleaseHome extends Component {
     editReleaseStore.setApp(record);
     this.props.history.push(`/devops/app-release/add/${record.id}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
   }
+
   /**
    * 版本控制
    * @param ids
@@ -104,6 +106,7 @@ class AppReleaseHome extends Component {
     const { name, id, organizationId } = AppState.currentMenuType;
     this.props.history.push(`/devops/app-release/app/${ids.name}/edit-version/${ids.id}?type=project&id=${id}&name=${name}&organizationId=${organizationId}`);
   }
+
   /**
    * 控制显示为项目下的数据
    * @returns {*}
@@ -114,13 +117,13 @@ class AppReleaseHome extends Component {
     const { filters } = this.state;
 
     const column = [{
-      title: <FormattedMessage id={'app.name'} />,
+      title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
       key: 'name',
       sorter: true,
       filters: [],
     }, {
-      title: <FormattedMessage id={'app.code'} />,
+      title: <FormattedMessage id="app.code" />,
       dataIndex: 'code',
       key: 'code',
       sorter: true,
@@ -131,7 +134,7 @@ class AppReleaseHome extends Component {
       render: (test, record) => (
         <div>
           <Permission service={['devops-service.application-market.create']}>
-            <Tooltip placement="bottom" title={<FormattedMessage id={'release.action.publish'} />}>
+            <Tooltip placement="bottom" title={<FormattedMessage id="release.action.publish" />}>
               <Button shape="circle" onClick={this.handleCreate.bind(this, record)}><Icon type="publish2" /></Button>
             </Tooltip>
           </Permission>
@@ -150,6 +153,7 @@ class AppReleaseHome extends Component {
       />
     );
   }
+
   /**
    * 切换tabs
    * @param value
@@ -204,6 +208,7 @@ class AppReleaseHome extends Component {
         size: pagination.pageSize,
       });
   };
+
   handleRefresh =() => {
     const { AppReleaseStore } = this.props;
     this.setState({ filters: [] });
@@ -228,20 +233,20 @@ class AppReleaseHome extends Component {
         ]}
         className="c7n-region app-release-wrapper"
       >
-        <Header title={<FormattedMessage id={'release.home.header.title'} />}>
+        <Header title={<FormattedMessage id="release.home.header.title" />}>
           <Button
             onClick={this.handleRefresh}
           >
             <i className="icon-refresh icon" />
-            <FormattedMessage id={'refresh'} />
+            <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code={'release'} values={{ name: AppState.currentMenuType.name }}>
+        <Content code="release" values={{ name: AppState.currentMenuType.name }}>
           <Tabs defaultActiveKey={this.state.key} onChange={this.handleChangeTabs} animated={false}>
-            <TabPane tab={<FormattedMessage id={'release.home.app.unpublish'} />} key="1">
+            <TabPane tab={<FormattedMessage id="release.home.app.unpublish" />} key="1">
               {this.showProjectTable()}
             </TabPane>
-            <TabPane tab={<FormattedMessage id={'release.home.app.publish'} />} key="2">
+            <TabPane tab={<FormattedMessage id="release.home.app.publish" />} key="2">
               <Table
                 filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
                 loading={AppReleaseStore.loading}

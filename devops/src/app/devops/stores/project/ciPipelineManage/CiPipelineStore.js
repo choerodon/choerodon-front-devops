@@ -7,10 +7,15 @@ const { AppState } = stores;
 @store('CiPipelineStore')
 class CiPipelineStore {
   @observable apps = [];
+
   @observable currentApp = {};
+
   @observable ciPipelines = [];
+
   @observable commits = [];
+
   @observable pagination = {};
+
   @observable loading = true;
 
   loadInitData = () => {

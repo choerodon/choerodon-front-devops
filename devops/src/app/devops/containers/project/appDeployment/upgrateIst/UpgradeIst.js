@@ -20,7 +20,6 @@ class UpgradeIst extends Component {
     this.state = {
       id: undefined,
       value: '',
-      verValue: undefined,
       loading: false,
       oldData: null,
       change: false,
@@ -54,6 +53,7 @@ class UpgradeIst extends Component {
     });
     this.props.onClose(res);
   };
+
   /**
    * 修改配置升级实例
    */
@@ -66,7 +66,7 @@ class UpgradeIst extends Component {
     const verId = this.state.id || verValue[0].id;
     const data = {
       values: value,
-      appInstanceId: appInstanceId,
+      appInstanceId,
       environmentId: idArr[0],
       appVerisonId: verId,
       appId: idArr[2],
@@ -92,20 +92,6 @@ class UpgradeIst extends Component {
       });
   };
 
-  handleChange(id) {
-    const { store, appInstanceId, idArr } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    this.setState({
-      id,
-    });
-    store.loadValue(projectId, appInstanceId, id)
-      .then((res) => {
-        if (res) {
-          this.setState({ oldData: res, change: false });
-        }
-      });
-  }
-
   aceDom = (data) => {
     const { errorLine, change } = this.state;
     if (data) {
@@ -126,10 +112,24 @@ class UpgradeIst extends Component {
     }
   }
 
+  handleChange(id) {
+    const { store, appInstanceId, idArr } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    this.setState({
+      id,
+    });
+    store.loadValue(projectId, appInstanceId, id)
+      .then((res) => {
+        if (res) {
+          this.setState({ oldData: res, change: false });
+        }
+      });
+  }
+
   render() {
     const { intl, store } = this.props;
     const { oldData } = this.state;
-    const data =  oldData || store.getValue;
+    const data = oldData || store.getValue;
     const verValue = this.props.store.getVerValue;
     const sideDom = (<div className="c7n-region">
       <h2 className="c7n-space-first">
@@ -155,15 +155,12 @@ class UpgradeIst extends Component {
           notFoundContent={this.props.intl.formatMessage({ id: 'ist.noUpVer' })}
           value={this.state.id || (verValue.length ? verValue[0].id : undefined)}
           label={this.props.intl.formatMessage({ id: 'deploy.step.one.version.title' })}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           filter
           onChange={this.handleChange.bind(this)}
         >
           {
-            _.map(verValue, app =>
-              <Option key={app.id} value={app.id}>{app.version}</Option>,
-            )
+            _.map(verValue, app => <Option key={app.id} value={app.id}>{app.version}</Option>)
           }
         </Select>
         {verValue.length === 0 ? <div>
@@ -173,7 +170,7 @@ class UpgradeIst extends Component {
       </div>)}
       <div className="c7n-ace-section">
         <div className="c7n-body-section c7n-border-done">
-        {this.aceDom(data)}
+          {this.aceDom(data)}
         </div>
       </div>
     </div>);

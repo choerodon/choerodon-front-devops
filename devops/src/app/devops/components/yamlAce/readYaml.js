@@ -1,4 +1,4 @@
-/* eslint-disable react/forbid-prop-types */
+/* eslint-disable */
 /**
  * yaml 编辑框的高亮效果
  */
@@ -18,6 +18,7 @@ class HighlightAce extends Component {
     value: PropTypes.string.isRequired,
     highlightMarkers: PropTypes.array,
   };
+
   static defaultProps = {
     options: {
       gutter: false,
@@ -27,6 +28,7 @@ class HighlightAce extends Component {
       softWrap: false,
     },
   };
+
   constructor(props) {
     super(props);
     this.state = {

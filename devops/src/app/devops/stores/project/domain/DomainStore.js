@@ -8,12 +8,21 @@ const height = window.screen.height;
 @store('DomainStore')
 class DomainStore {
   @observable allData = [];
-  @observable isRefresh = false;// 页面的loading
-  @observable loading = false; // 打开tab的loading
+
+  @observable isRefresh = false;
+
+  // 页面的loading
+  @observable loading = false;
+
+  // 打开tab的loading
   @observable singleData = null;
+
   @observable network = [];
+
   @observable env = [];
+
   @observable dto = [];
+
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
@@ -75,6 +84,7 @@ class DomainStore {
   @computed get getIsRefresh() {
     return this.isRefresh;
   }
+
   @action
   setSingleData(data) {
     this.singleData = data;
@@ -113,75 +123,68 @@ class DomainStore {
         this.changeIsRefresh(false);
       });
   };
+
   handleData =(data) => {
     this.setAllData(data.content);
     const { number, size, totalElements } = data;
     this.setPageInfo({ number, size, totalElements });
   };
 
-  loadDataById = (projectId, id) =>
-    axios.get(`/devops/v1/projects/${projectId}/ingress/${id}`).then((data) => {
+  loadDataById = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/ingress/${id}`).then((data) => {
+    const res = this.handleProptError(data);
+    if (res) {
+      this.setSingleData(data);
+    }
+    return res;
+  });
+
+  loadEnv = projectId => axios.get(`devops/v1/projects/${projectId}/envs?active=true`)
+    .then((data) => {
       const res = this.handleProptError(data);
       if (res) {
-        this.setSingleData(data);
+        this.setEnv(data);
       }
       return res;
     });
 
-  loadEnv = projectId =>
-    axios.get(`devops/v1/projects/${projectId}/envs?active=true`)
-      .then((data) => {
-        const res = this.handleProptError(data);
-        if (res) {
-          this.setEnv(data);
-        }
-        return res;
-      });
 
+  checkName = (projectId, envId, value) => axios.get(`/devops/v1/projects/${projectId}/ingress/check_name?name=${envId}&envId=${value}`).then((datas) => {
+    const res = this.handleProptError(datas);
+    return res;
+  });
 
-  checkName = (projectId, envId, value) =>
-    axios.get(`/devops/v1/projects/${projectId}/ingress/check_name?name=${envId}&envId=${value}`).then((datas) => {
+  checkPath =(projectId, domain, value, id = '') => axios.get(`/devops/v1/projects/${projectId}/ingress/check_domain?domain=${domain}&path=${value}&id=${id}`)
+    .then((datas) => {
       const res = this.handleProptError(datas);
       return res;
     });
 
-  checkPath =(projectId, domain, value, id = '') =>
-    axios.get(`/devops/v1/projects/${projectId}/ingress/check_domain?domain=${domain}&path=${value}&id=${id}`)
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
+  updateData = (projectId, id, data) => axios.put(`/devops/v1/projects/${projectId}/ingress/${id}`, JSON.stringify(data))
+    .then((datas) => {
+      const res = this.handleProptError(datas);
+      return res;
+    });
 
-  updateData = (projectId, id, data) =>
-    axios.put(`/devops/v1/projects/${projectId}/ingress/${id}`, JSON.stringify(data))
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
+  addData = (projectId, data) => axios.post(`/devops/v1/projects/${projectId}/ingress`, JSON.stringify(data))
+    .then((datas) => {
+      const res = this.handleProptError(datas);
+      return res;
+    });
 
-  addData = (projectId, data) =>
-    axios.post(`/devops/v1/projects/${projectId}/ingress`, JSON.stringify(data))
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
+  deleteData = (projectId, id) => axios.delete(`/devops/v1/projects/${projectId}/ingress/${id}`)
+    .then((datas) => {
+      const res = this.handleProptError(datas);
+      return res;
+    });
 
-  deleteData = (projectId, id) =>
-    axios.delete(`/devops/v1/projects/${projectId}/ingress/${id}`)
-      .then((datas) => {
-        const res = this.handleProptError(datas);
-        return res;
-      });
-
-  loadNetwork = (projectId, envId) =>
-    axios.get(`/devops/v1/projects/${projectId}/service?envId=${envId}`)
-      .then((data) => {
-        const res = this.handleProptError(data);
-        if (res) {
-          this.setNetwork(data);
-        }
-        return res;
-      });
+  loadNetwork = (projectId, envId) => axios.get(`/devops/v1/projects/${projectId}/service?envId=${envId}`)
+    .then((data) => {
+      const res = this.handleProptError(data);
+      if (res) {
+        this.setNetwork(data);
+      }
+      return res;
+    });
 
   handleProptError =(error) => {
     if (error && error.failed) {

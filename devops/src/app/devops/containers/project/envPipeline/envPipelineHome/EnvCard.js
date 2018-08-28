@@ -70,10 +70,10 @@ class EnvCard extends Component {
     });
     return connectDragSource(
       <div className={envCardStyle}>
-        <Tooltip placement="bottom" title={cardData.update ? <FormattedMessage id={'envPl.status.update'} /> : null}>
+        <Tooltip placement="bottom" title={cardData.update ? <FormattedMessage id="envPl.status.update" /> : null}>
           <div className="c7n-env-card-header">
-            {cardData ?
-              (<React.Fragment>
+            {cardData
+              ? (<React.Fragment>
                 <span>{cardData.name}</span>
                 <div className="c7n-env-card-action">
                   {cardData.connect ? null : <Permission
@@ -82,7 +82,7 @@ class EnvCard extends Component {
                     projectId={projectId}
                     type={type}
                   >
-                    <Tooltip title={<FormattedMessage id={'envPl.active'} />}>
+                    <Tooltip title={<FormattedMessage id="envPl.active" />}>
                       <Button
                         funcType="flat"
                         shape="circle"
@@ -98,7 +98,7 @@ class EnvCard extends Component {
                     projectId={projectId}
                     type={type}
                   >
-                    <Tooltip title={<FormattedMessage id={'envPl.edit'} />}>
+                    <Tooltip title={<FormattedMessage id="envPl.edit" />}>
                       <Button
                         funcType="flat"
                         shape="circle"
@@ -114,7 +114,7 @@ class EnvCard extends Component {
                     projectId={projectId}
                     type={type}
                   >
-                    <Tooltip title={<FormattedMessage id={'envPl.stop'} />}>
+                    <Tooltip title={<FormattedMessage id="envPl.stop" />}>
                       <Button
                         funcType="flat"
                         shape="circle"

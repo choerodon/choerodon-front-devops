@@ -20,11 +20,6 @@ class IssueDetail extends Component {
     const menu = AppState.currentMenuType;
     super(props);
     this.state = {
-      name: 'feature',
-      value: '',
-      projectId: menu.id,
-      submitting: false,
-      initValue: null,
     };
   }
 
@@ -44,6 +39,7 @@ class IssueDetail extends Component {
     }
     return icon;
   };
+
   /**
    * 返回优先级的字的颜色
    * @param priorityCode
@@ -60,6 +56,7 @@ class IssueDetail extends Component {
     }
     return color;
   };
+
   /**
    * 获取头像的首字母
    * @param name
@@ -75,6 +72,7 @@ class IssueDetail extends Component {
     }
     return names;
   };
+
   /**
    * 将quill特有的文本结构转为html
    * @param {*} description
@@ -89,6 +87,7 @@ class IssueDetail extends Component {
       return text;
     }
   };
+
   handleClose = () => {
     this.props.form.resetFields();
     this.props.onClose();
@@ -134,6 +133,7 @@ class IssueDetail extends Component {
     }
     return `${d[2]}/${MONTH[d[1] * 1]}${formatMessage({ id: 'branch.issue.month' })}/${d[0].slice(2)} ${t[0] < 12 ? t[0] : (t[0] * 1) - 12}:${t[1]} ${t[0] * 1 < 12 ? formatMessage({ id: 'branch.issue.am' }) : formatMessage({ id: 'branch.issue.pm' })}`;
   };
+
   /**
    * 富文本编辑转换
    * @param description
@@ -141,14 +141,15 @@ class IssueDetail extends Component {
    */
   text2Delta =(description) => {
     if (
-      description &&
-      description.indexOf('[') === 0 &&
-      description[description.length - 1] === ']'
+      description
+      && description.indexOf('[') === 0
+      && description[description.length - 1] === ']'
     ) {
       return JSON.parse(description);
     }
     return description || '';
   }
+
   render() {
     const { visible, intl, store } = this.props;
     const { formatMessage } = intl;
@@ -164,7 +165,7 @@ class IssueDetail extends Component {
           }}
         />}
         visible={visible}
-        okText={<FormattedMessage id={'envPl.close'} />}
+        okText={<FormattedMessage id="envPl.close" />}
         okCancel={false}
         onOk={this.handleClose}
       >
@@ -175,11 +176,11 @@ class IssueDetail extends Component {
           </section>
           <section className="branch-issue-status">
             <div className="issue-status">
-              <span className="issue-status-icon-large" >
+              <span className="issue-status-icon-large">
                 <i className={`icon icon-${this.getStatusIcon(issue.statusCode)}`} style={{ color: issue.statusColor }} />
               </span>
               <div>
-                <div className="issue-status-title">{<FormattedMessage id={'network.column.status'} />}</div>
+                <div className="issue-status-title">{<FormattedMessage id="network.column.status" />}</div>
                 <div className="issue-status-text" style={{ color: issue.statusColor }}>{issue.statusName}</div>
               </div>
             </div>
@@ -188,12 +189,12 @@ class IssueDetail extends Component {
                 <i className="icon icon-flag" style={{ color: '#3575DF' }} />
               </span>
               <div>
-                <div className="issue-status-title" >{<FormattedMessage id={'branch.issue.priority'} />}</div>
+                <div className="issue-status-title">{<FormattedMessage id="branch.issue.priority" />}</div>
                 <div className="issue-status-text" style={{ color: this.getAssigeColor(issue.priorityCode) }}>{issue.priorityName}</div>
               </div>
             </div>
             <div className="issue-status">
-              <span className="issue-status-icon-small" style={{ backgroundColor: 'rgb(216, 216, 216)' }} >
+              <span className="issue-status-icon-small" style={{ backgroundColor: 'rgb(216, 216, 216)' }}>
                 <i className="icon icon-directions_run" />
               </span>
               <div>
@@ -202,7 +203,7 @@ class IssueDetail extends Component {
               </div>
             </div>
             <div className="issue-status">
-              <span className="issue-status-icon-small" style={{ backgroundColor: 'rgb(216, 216, 216)' }} >
+              <span className="issue-status-icon-small" style={{ backgroundColor: 'rgb(216, 216, 216)' }}>
                 <i className="icon icon-event_note" />
               </span>
               <div>
@@ -215,7 +216,7 @@ class IssueDetail extends Component {
             <div className="issue-detail-head-wrapper">
               <div className="issue-detail-head">
                 <i className="icon icon-error_outline" />
-                <span>{<FormattedMessage id={'detail'} />}</span>
+                <span>{<FormattedMessage id="detail" />}</span>
               </div>
               <div className="issue-detail-head-hr" />
             </div>
@@ -250,7 +251,7 @@ class IssueDetail extends Component {
                       percent={time
                         ? (time * 100) / (time + issue.remainingTime && issue.remainingTime) : 0}
                       showInfo={false}
-                      status={'success'}
+                      status="success"
                     />
                   </div>
                   <span>{`${time}h/${time + issue.remainingTime && issue.remainingTime}h`}</span>
@@ -286,7 +287,7 @@ class IssueDetail extends Component {
             <div className="issue-detail-head-wrapper" style={{ marginTop: 22 }}>
               <div className="issue-detail-head">
                 <i className="icon icon-subject" />
-                {<FormattedMessage id={'template.des'} />}
+                {<FormattedMessage id="template.des" />}
               </div>
               <div className="issue-detail-head-hr" />
             </div>

@@ -18,8 +18,11 @@ const { AppState } = stores;
 @observer
 class DomainOverview extends Component {
   @observable openRemove = false;
+
   @observable showDomain = false;
+
   @observable submitting = false;
+
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -209,10 +212,9 @@ class DomainOverview extends Component {
       filters: [],
       render: record => (
         <div>
-          {_.map(record.pathList, router =>
-            (<div className="c7n-network-col_border" key={router.path}>
-              <span>{router.path}</span>
-            </div>))}
+          {_.map(record.pathList, router => (<div className="c7n-network-col_border" key={router.path}>
+            <span>{router.path}</span>
+          </div>))}
         </div>
       ),
     }, {
@@ -222,14 +224,13 @@ class DomainOverview extends Component {
       filters: [],
       render: record => (
         <div>
-          {_.map(record.pathList, instance =>
-            (<div className="c7n-network-col_border" key={`${instance.path}-${instance.serviceId}`}>
-              <Tooltip title={intl.formatMessage({ id: `${instance.serviceStatus || 'null'}` })} placement="top">
-                <span className={instance.serviceStatus === 'running' ? 'env-status-success' : 'env-status-error'} />
-              </Tooltip>
-              {instance.serviceName}
-            </div>
-            ))}
+          {_.map(record.pathList, instance => (<div className="c7n-network-col_border" key={`${instance.path}-${instance.serviceId}`}>
+            <Tooltip title={intl.formatMessage({ id: `${instance.serviceStatus || 'null'}` })} placement="top">
+              <span className={instance.serviceStatus === 'running' ? 'env-status-success' : 'env-status-error'} />
+            </Tooltip>
+            {instance.serviceName}
+          </div>
+          ))}
         </div>
       ),
     }, {
@@ -251,7 +252,7 @@ class DomainOverview extends Component {
           default:
             editDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'edit' })}</div>}>
-                <Button shape="circle" size={'small'} funcType="flat" onClick={this.createDomain.bind(this, 'edit', record.id)}>
+                <Button shape="circle" size="small" funcType="flat" onClick={this.createDomain.bind(this, 'edit', record.id)}>
                   <i className="icon icon-mode_edit" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
@@ -260,7 +261,7 @@ class DomainOverview extends Component {
             </React.Fragment>);
             deletDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'delete' })}</div>}>
-                <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemoveDomain.bind(this, record.id)}>
+                <Button shape="circle" size="small" funcType="flat" onClick={this.openRemoveDomain.bind(this, record.id)}>
                   <i className="icon icon-delete_forever" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
@@ -308,10 +309,10 @@ class DomainOverview extends Component {
       />}
       <Modal
         visible={this.openRemove}
-        title={<FormattedMessage id={'domain.header.delete'} />}
+        title={<FormattedMessage id="domain.header.delete" />}
         closable={false}
         footer={[
-          <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id={'cancel'} />}</Button>,
+          <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,
           <Button key="submit" type="danger" onClick={this.handleDelete} loading={this.submitting}>
             {intl.formatMessage({ id: 'delete' })}
           </Button>,

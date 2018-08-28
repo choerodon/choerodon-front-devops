@@ -10,7 +10,9 @@ const orderMapping = {
 @store('RepositoryStore')
 class RepositoryStore {
   @observable repoData = [];
+
   @observable loading = true;
+
   @observable pageInfo = {
     current: 1,
     pageSize: 10,

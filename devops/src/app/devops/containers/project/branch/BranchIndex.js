@@ -14,7 +14,7 @@ const BranchHome = asyncRouter(() => import('./branchHome'), () => import('../..
 const EnvironmentIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={BranchHome} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 

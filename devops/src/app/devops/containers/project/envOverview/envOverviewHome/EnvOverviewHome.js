@@ -283,12 +283,10 @@ class EnvOverviewHome extends Component {
     const { intl, EnvOverviewStore } = this.props;
     const sync = EnvOverviewStore.getSync;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
-    const envNameDom = this.env.length ? _.map(this.env, (d) => {
-      const { id, connect, name: envName } = d;
-      return (<Option key={id} value={id || ''}>
-        {connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
-        {envName}</Option>);
-    }) : [];
+
+    const envNameDom = this.env.length ? _.map(this.env, d => (<Option key={d.id} value={d.id}>
+      {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
+      {d.name}</Option>)) : [];
 
     const envState = this.env.length
       ? this.env.filter(d => d.id === Number(this.envId ? this.envId : this.env[0].id))[0] : true;

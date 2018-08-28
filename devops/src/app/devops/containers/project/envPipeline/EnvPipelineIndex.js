@@ -10,7 +10,7 @@ const AppHome = asyncRouter(() => import('./envPipelineHome'), () => import('../
 const EnvPipelineIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={AppHome} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 

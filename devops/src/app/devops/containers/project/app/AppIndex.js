@@ -14,7 +14,7 @@ const App = asyncRouter(() => import('./appHome'), () => import('../../../stores
 const EnvironmentIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={App} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 

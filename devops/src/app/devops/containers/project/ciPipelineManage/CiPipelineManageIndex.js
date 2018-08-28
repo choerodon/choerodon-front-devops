@@ -10,7 +10,7 @@ const CiPipelineHome = asyncRouter(() => import('./ciPipelineHome'));
 const CiPipelineIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={CiPipelineHome} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 

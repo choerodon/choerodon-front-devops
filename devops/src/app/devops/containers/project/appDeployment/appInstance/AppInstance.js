@@ -60,7 +60,6 @@ class AppInstance extends Component {
     store.setAlertType('versionFeature');
     this.setState({
       id,
-      instanceName: istName,
     });
   };
 
@@ -171,7 +170,7 @@ class AppInstance extends Component {
       searchParam,
       param: param.toString(),
     };
-    this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
+    this.setState({ page: pagination.current - 1 });
     store.loadInstanceAll(projectId, pagination.current - 1, pagination.pageSize, sort,
       null, null, null, postData);
     store.setIstTableFilter(param);
@@ -206,14 +205,6 @@ class AppInstance extends Component {
       store.loadInstanceAll(projectId, this.state.page);
     }
   };
-
-  /**
-   * 打开删除数据模态框
-   * @param id
-   */
-  handleOpen(id) {
-    this.setState({ openRemove: true, id });
-  }
 
   /**
    * 删除数据
@@ -341,6 +332,14 @@ class AppInstance extends Component {
     }
   };
 
+  /**
+   * 打开删除数据模态框
+   * @param id
+   */
+  handleOpen(id) {
+    this.setState({ openRemove: true, id });
+  }
+
   render() {
     const { store, intl } = this.props;
     const ist = store.getIstAll;
@@ -382,8 +381,8 @@ class AppInstance extends Component {
           <Tooltip title={intl.formatMessage({ id: `ist_${record.commandType}` })}>
             <Progress type="loading" width={15} />
           </Tooltip>
-        </div>) :
-          (<div>
+        </div>)
+          : (<div>
             <span className="c7n-deploy-istCode">{record.code}</span>
             <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
               <i className="icon icon-error c7n-deploy-ist-operate" />

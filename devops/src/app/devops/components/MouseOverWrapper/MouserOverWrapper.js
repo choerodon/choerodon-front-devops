@@ -14,9 +14,11 @@ export default class MouserOverWrapper extends Component {
     ]),
     width: PropTypes.number.isRequired,
   };
+
   static defaultProps = {
     text: '',
   };
+
   chineseLength =(str) => {
     let len = 0;
     for (let i = 0; i < str.length; i += 1) {
@@ -26,6 +28,7 @@ export default class MouserOverWrapper extends Component {
     }
     return len;
   };
+
   numberLength =(str) => {
     let len = 0;
     for (let i = 0; i < str.length; i += 1) {
@@ -35,6 +38,7 @@ export default class MouserOverWrapper extends Component {
     }
     return len;
   };
+
   render() {
     const { text, width, className, style } = this.props;
     const menuWidth = document.getElementsByClassName('common-menu')[0].offsetWidth;
@@ -68,7 +72,7 @@ export default class MouserOverWrapper extends Component {
     if (text && domWidth <= iWidth * width) {
       return <div style={textStyle} className={className}> {this.props.children}</div>;
     } else {
-      return (<Tooltip title={text} placement="topLeft" >
+      return (<Tooltip title={text} placement="topLeft">
         <div style={textStyle} className={className}>
           {this.props.children}
         </div>

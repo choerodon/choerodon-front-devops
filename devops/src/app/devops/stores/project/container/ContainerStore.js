@@ -5,10 +5,17 @@ const height = window.screen.height;
 @store('ContainerStore')
 class ContainerStore {
   @observable allData = [];
-  @observable isRefresh = false;// 页面的loading
-  @observable loading = false; // 打开tab的loading
+
+  @observable isRefresh = false;
+
+  // 页面的loading
+  @observable loading = false;
+
+  // 打开tab的loading
   @observable show = false;
+
   @observable logs = '';
+
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
@@ -22,9 +29,11 @@ class ContainerStore {
   @computed get getPageInfo() {
     return this.pageInfo;
   }
+
   @action changeShow(flag) {
     this.show = flag;
   }
+
   @computed get getAllData() {
     return this.allData;
   }
@@ -32,6 +41,7 @@ class ContainerStore {
   @action setAllData(data) {
     this.allData = data;
   }
+
   @action changeIsRefresh(flag) {
     this.isRefresh = flag;
   }
@@ -87,6 +97,7 @@ class ContainerStore {
     return axios.get(`devops/v1/projects/${projectId}/app_pod/${id}/containers/logs`)
       .then(datas => this.handleProptError(datas));
   }
+
   handleProptError =(error) => {
     if (error && error.failed) {
       Choerodon.prompt(error.message);

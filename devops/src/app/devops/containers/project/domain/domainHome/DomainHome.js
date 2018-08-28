@@ -20,10 +20,6 @@ class DomainHome extends Component {
     const menu = AppState.currentMenuType;
     super(props, context);
     this.state = {
-      upDown: -1,
-      createVisible: false,
-      editVisible: false,
-      projectId: menu.id,
       openRemove: false,
       submitting: false,
       show: false,
@@ -33,15 +29,6 @@ class DomainHome extends Component {
   componentDidMount() {
     this.loadAllData();
   }
-
-  /**
-   * 展开/收起实例
-   */
-  showChange = (upDown) => {
-    this.setState({
-      upDown: upDown * -1,
-    });
-  };
 
   /**
    * 关闭侧边栏

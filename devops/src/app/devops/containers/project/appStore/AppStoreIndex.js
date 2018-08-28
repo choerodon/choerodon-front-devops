@@ -16,7 +16,7 @@ const AppStoreIndex = ({ match }) => (
     <Route exact path={`${match.url}/:id/app`} component={AppDetail} />
     <Route exact path={`${match.url}/import`} component={ImportChart} />
     <Route exact path={`${match.url}/export`} component={ExportChart} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 

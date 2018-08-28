@@ -31,6 +31,68 @@ const formItemLayout = {
 @commonComponent('TemplateStore')
 @observer
 class TemplateHome extends Component {
+  /**
+   * 检查编码是否合法
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkCode = Debounce((rule, value, callback) => {
+    const { TemplateStore, intl } = this.props;
+    // eslint-disable-next-line no-useless-escape
+    const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
+    if (value && pa.test(value)) {
+      TemplateStore.checkCode(this.state.organizationId, value)
+        .then((data) => {
+          if (data) {
+            callback();
+          } else {
+            callback(intl.formatMessage({ id: 'template.checkCode' }));
+          }
+        }).catch((error) => {
+          Choerodon.prompt(error.response.data.message);
+        });
+    } else {
+      callback(intl.formatMessage({ id: 'template.checkCodeReg' }));
+    }
+  }, 1000);
+
+  /**
+   * 检查名称唯一性
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkName = Debounce((rule, value, callback) => {
+    const { TemplateStore, intl } = this.props;
+    const singleData = TemplateStore.singleData;
+    if (singleData && value !== singleData.name) {
+      TemplateStore.checkName(this.state.organizationId, value)
+        .then((data) => {
+          if (data) {
+            callback();
+          } else {
+            callback(intl.formatMessage({ id: 'template.checkName' }));
+          }
+        }).catch((error) => {
+          Choerodon.prompt(error.response.data.message);
+        });
+    } else if (!singleData) {
+      TemplateStore.checkName(this.state.organizationId, value)
+        .then((data) => {
+          if (data) {
+            callback();
+          } else {
+            callback(intl.formatMessage({ id: 'template.checkName' }));
+          }
+        }).catch((error) => {
+          Choerodon.prompt(error.response.data.message);
+        });
+    } else {
+      callback();
+    }
+  }, 1000);
+
   constructor(props) {
     super(props);
     const menu = AppState.currentMenuType;
@@ -40,7 +102,6 @@ class TemplateHome extends Component {
       openRemove: false,
       show: false,
       submitting: false,
-      pageSize: 10,
     };
   }
 
@@ -131,18 +192,18 @@ class TemplateHome extends Component {
       width: 80,
       key: 'action',
       render: (test, record) => (
-        !record.type &&
-        <div>
-          <Permission type={type} organizationId={orgId} service={['devops-service.application-template.update']} >
+        !record.type
+        && <div>
+          <Permission type={type} organizationId={orgId} service={['devops-service.application-template.update']}>
             <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="edit" />}>
-              <Button shape="circle" size={'small'} onClick={this.showSideBar.bind(this, 'edit', record.id)}>
+              <Button shape="circle" size="small" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                 <i className="icon icon-mode_edit" />
               </Button>
             </Tooltip>
           </Permission>
-          <Permission type={type} organizationId={orgId} service={['devops-service.application-template.delete']} >
+          <Permission type={type} organizationId={orgId} service={['devops-service.application-template.delete']}>
             <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="delete" />}>
-              <Button shape="circle" size={'small'} funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
+              <Button shape="circle" size="small" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
                 <i className="icon icon-delete_forever" />
               </Button>
             </Tooltip>
@@ -151,67 +212,6 @@ class TemplateHome extends Component {
       ),
     }];
   } ;
-
-  /**
-   * 检查编码是否合法
-   * @param rule
-   * @param value
-   * @param callback
-   */
-  checkCode = Debounce((rule, value, callback) => {
-    const { TemplateStore, intl } = this.props;
-    // eslint-disable-next-line no-useless-escape
-    const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
-    if (value && pa.test(value)) {
-      TemplateStore.checkCode(this.state.organizationId, value)
-        .then((data) => {
-          if (data) {
-            callback();
-          } else {
-            callback(intl.formatMessage({ id: 'template.checkCode' }));
-          }
-        }).catch((error) => {
-          Choerodon.prompt(error.response.data.message);
-        });
-    } else {
-      callback(intl.formatMessage({ id: 'template.checkCodeReg' }));
-    }
-  }, 1000);
-  /**
-   * 检查名称唯一性
-   * @param rule
-   * @param value
-   * @param callback
-   */
-  checkName = Debounce((rule, value, callback) => {
-    const { TemplateStore, intl } = this.props;
-    const singleData = TemplateStore.singleData;
-    if (singleData && value !== singleData.name) {
-      TemplateStore.checkName(this.state.organizationId, value)
-        .then((data) => {
-          if (data) {
-            callback();
-          } else {
-            callback(intl.formatMessage({ id: 'template.checkName' }));
-          }
-        }).catch((error) => {
-          Choerodon.prompt(error.response.data.message);
-        });
-    } else if (!singleData) {
-      TemplateStore.checkName(this.state.organizationId, value)
-        .then((data) => {
-          if (data) {
-            callback();
-          } else {
-            callback(intl.formatMessage({ id: 'template.checkName' }));
-          }
-        }).catch((error) => {
-          Choerodon.prompt(error.response.data.message);
-        });
-    } else {
-      callback();
-    }
-  }, 1000);
 
   /**
    * 提交数据
@@ -259,7 +259,7 @@ class TemplateHome extends Component {
             .then((res) => {
               if (res) {
                 this.loadAllData();
-                this.setState({ isLoading: false, show: false });
+                this.setState({ show: false });
                 this.setState({
                   submitting: false,
                 });
@@ -431,9 +431,8 @@ class TemplateHome extends Component {
               size="default"
               optionFilterProp="children"
               filterOption={
-                (input, option) =>
-                  option.props.children.props.children.props.children
-                    .toLowerCase().indexOf(input.toLowerCase()) >= 0
+                (input, option) => option.props.children.props.children.props.children
+                  .toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
             >
               {selectData && selectData.length > 0 && selectData.map(s => (

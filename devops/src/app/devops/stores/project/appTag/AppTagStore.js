@@ -18,15 +18,21 @@ function handleProptError(data) {
 @store('AppTagStore')
 class AppTagStore {
   @observable tagData = [];
+
   @observable appData = [];
+
   @observable selectedApp = null;
+
   @observable defaultAppName = null;
+
   @observable loading = false;
+
   @observable pageInfo = {
     current: 0,
     total: 0,
     pageSize: 10,
   };
+
   @observable branchData = [];
 
   @action setTagData(data) {
@@ -156,8 +162,7 @@ class AppTagStore {
    * @param projectId
    * @param value
    */
-  checkTagName = (projectId, name) =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags_check?tag_name=${name}`);
+  checkTagName = (projectId, name) => axios.get(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags_check?tag_name=${name}`);
 
   /**
    * 创建tag
@@ -167,16 +172,14 @@ class AppTagStore {
    * @param ref
    * @returns {JQueryXHR | * | void}
    */
-  createTag = (projectId, tag, ref) =>
-    axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags?tag=${tag}&ref=${ref}`);
+  createTag = (projectId, tag, ref) => axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags?tag=${tag}&ref=${ref}`);
 
   /**
    * 删除标记
    * @param projectId
    * @param tag
    */
-  deleteTag = (projectId, tag) =>
-    axios.delete(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags?tag=${tag}`);
+  deleteTag = (projectId, tag) => axios.delete(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags?tag=${tag}`);
 }
 
 const appTagStore = new AppTagStore();

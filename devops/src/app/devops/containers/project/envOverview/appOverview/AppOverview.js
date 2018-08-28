@@ -31,26 +31,47 @@ const Panel = Collapse.Panel;
 @observer
 class AppOverview extends Component {
   @observable pageSize = 10;
+
   @observable visible = false;
+
   @observable visibleUp = false;
+
   @observable openRemove = false;
+
   @observable page = 0;
+
   @observable loading = false;
+
   @observable ist = {};
+
   @observable idArr = [];
+
   @observable name = '';
+
   @observable showSide = false;
+
   @observable containerName = '';
+
   @observable podName = '';
+
   @observable activeKey = [];
+
   @observable showDomain = false;
+
   @observable showNetwork = false;
+
   @observable domainId = null;
+
   @observable appId = null;
+
   @observable istId = null;
+
   @observable appName = '';
+
   @observable domainType = '';
+
   @observable domainTitle = '';
+
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -433,8 +454,8 @@ class AppOverview extends Component {
                           <Progress type="loading" width={15} />
                         </Tooltip>
 
-                      </div>) :
-                        (<div>
+                      </div>)
+                        : (<div>
                           <span className="c7n-deploy-istCode">{c.code}</span>
                           <Tooltip title={`${c.commandType} ${c.commandStatus}: ${c.error}`}>
                             <i className="icon icon-error c7n-deploy-ist-operate" />
@@ -443,7 +464,7 @@ class AppOverview extends Component {
                     </div>}
                   </div>
                   <span className="c7n-envow-ist-version">
-                    <FormattedMessage id={'app.appVersion'} />:&nbsp;&nbsp;
+                    <FormattedMessage id="app.appVersion" />:&nbsp;&nbsp;
                     {c.appVersion}
                   </span>
                   <div className="c7n-deploy-status">
@@ -471,7 +492,7 @@ class AppOverview extends Component {
                         {c.devopsEnvPodDTOS.length ? _.map(c.devopsEnvPodDTOS, p => (<div className="c7n-envow-contaners-left" key={p.id}>
                           <div className="c7n-envow-ls-wrap">
                             <div className="c7n-envow-ls">
-                              <Tooltip title={<FormattedMessage id={'container.name'} />}>
+                              <Tooltip title={<FormattedMessage id="container.name" />}>
                                 <Icon type="kubernetes" />
                               </Tooltip>
                               {p.name}
@@ -481,7 +502,7 @@ class AppOverview extends Component {
                                 projectId={projectId}
                                 type={type}
                               >
-                                <Tooltip title={<FormattedMessage id={'container.log'} />}>
+                                <Tooltip title={<FormattedMessage id="container.log" />}>
                                   <Button
                                     size="small"
                                     shape="circle"
@@ -493,12 +514,12 @@ class AppOverview extends Component {
                               </Permission>
                             </div>
                             {p.ip ? (<div className="c7n-envow-ls">
-                              <Tooltip title={<FormattedMessage id={'container.ip'} />}>
+                              <Tooltip title={<FormattedMessage id="container.ip" />}>
                                 <Icon type="room" />
                               </Tooltip>
                               {p.ip}
                             </div>) : (<div className="c7n-envow-ls c7n-envow-hidden">
-                              <Tooltip title={<FormattedMessage id={'container.ip'} />}>
+                              <Tooltip title={<FormattedMessage id="container.ip" />}>
                                 <Icon type="room" />
                               </Tooltip>
                               {p.ip}
@@ -530,17 +551,17 @@ class AppOverview extends Component {
                     <div className="c7n-envow-contaners-wrap">
                       <div className="c7n-envow-contaners-left">
                         <div className="c7n-envow-network-title">
-                          <FormattedMessage id={'network.header.title'} />
+                          <FormattedMessage id="network.header.title" />
                         </div>
                         {c.serviceDTOS.length ? _.map(c.serviceDTOS, s => (<div className="c7n-envow-ls-wrap" key={s.name}>
                           <div className="c7n-envow-ls">
-                            <Tooltip title={<FormattedMessage id={'network.form.name'} />}>
+                            <Tooltip title={<FormattedMessage id="network.form.name" />}>
                               <Icon type="router" />
                             </Tooltip>
                             {s.name}
                           </div>
                           <div className="c7n-envow-ls">
-                            <Tooltip title={<FormattedMessage id={'network.form.ip'} />}>
+                            <Tooltip title={<FormattedMessage id="network.form.ip" />}>
                               <Icon type="IP_out" />
                             </Tooltip>
                             {s.clusterIp}
@@ -548,7 +569,7 @@ class AppOverview extends Component {
                           <div className="c7n-envow-ls">
                             <div className="c7n-envow-ls-arrow-wrap">
                               <span>
-                                <Tooltip title={<FormattedMessage id={'network.form.port'} />}>
+                                <Tooltip title={<FormattedMessage id="network.form.port" />}>
                                   <Icon type="port" />
                                 </Tooltip>
                                 {s.port}
@@ -557,7 +578,7 @@ class AppOverview extends Component {
                                 →
                               </span>
                               <span>
-                                <Tooltip title={<FormattedMessage id={'network.form.targetPort'} />}>
+                                <Tooltip title={<FormattedMessage id="network.form.targetPort" />}>
                                   <Icon type="aim_port" />
                                 </Tooltip>
                                 {s.targetPort}
@@ -571,7 +592,7 @@ class AppOverview extends Component {
                           projectId={projectId}
                           organizationId={orgId}
                         >
-                          <Tooltip title={!envState ? <FormattedMessage id={'envoverview.envinfo'} /> : null}>
+                          <Tooltip title={!envState ? <FormattedMessage id="envoverview.envinfo" /> : null}>
                             <Button
                               className="c7n-envow-create-btn"
                               funcType="flat"
@@ -579,14 +600,14 @@ class AppOverview extends Component {
                               onClick={this.createNetwork.bind(this, c.appId, c.id, i.appCode)}
                             >
                               <i className="icon-playlist_add icon" />
-                              <span><FormattedMessage id={'network.header.create'} /></span>
+                              <span><FormattedMessage id="network.header.create" /></span>
                             </Button>
                           </Tooltip>
                         </Permission>
                       </div>
                       <div className="c7n-envow-contaners-right">
                         <div className="c7n-envow-network-title">
-                          <FormattedMessage id={'domain.header.title'} />
+                          <FormattedMessage id="domain.header.title" />
                         </div>
                         {c.ingressDTOS.length ? _.map(c.ingressDTOS, d => (<div className="c7n-envow-ls-wrap" key={d.hosts}>
                           <div className="c7n-envow-ls"><Icon type="language" />{d.hosts}</div>
@@ -597,7 +618,7 @@ class AppOverview extends Component {
                           projectId={projectId}
                           organizationId={orgId}
                         >
-                          <Tooltip title={!envState ? <FormattedMessage id={'envoverview.envinfo'} /> : null}>
+                          <Tooltip title={!envState ? <FormattedMessage id="envoverview.envinfo" /> : null}>
                             <Button
                               funcType="flat"
                               disabled={!envState}
@@ -605,7 +626,7 @@ class AppOverview extends Component {
                               onClick={this.createDomain.bind(this, 'create', '')}
                             >
                               <i className="icon icon-playlist_add icon" />
-                              <FormattedMessage id={'domain.header.create'} />
+                              <FormattedMessage id="domain.header.create" />
                             </Button>
                           </Tooltip>
                         </Permission>
@@ -785,14 +806,14 @@ class AppOverview extends Component {
         /> }
         {this.showSide && <Sidebar
           visible={this.showSide}
-          title={<FormattedMessage id={'container.log.header.title'} />}
+          title={<FormattedMessage id="container.log.header.title" />}
           onOk={this.closeSidebar}
           className="c7n-podLog-content c7n-region"
-          okText={<FormattedMessage id={'cancel'} />}
+          okText={<FormattedMessage id="cancel" />}
           okCancel={false}
           destroyOnClose
         >
-          <Content className="sidebar-content" code={'container.log'} values={{ name: this.containerName }}>
+          <Content className="sidebar-content" code="container.log" values={{ name: this.containerName }}>
             <section className="c7n-podLog-section">
               <CodeMirror
                 ref={(editor) => { this.editorLog = editor; }}

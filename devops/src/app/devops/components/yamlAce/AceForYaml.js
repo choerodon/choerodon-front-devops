@@ -1,3 +1,4 @@
+/* eslint-disable react/no-typos */
 /**
  * yaml 编辑框的高亮效果
  */
@@ -24,6 +25,7 @@ class AceForYaml extends Component {
     options: PropTypes.object.isRequired,
     showDiff: PropTypes.bool,
   };
+
   static defaultProps = {
     showDiff: true,
     options: {
@@ -34,6 +36,7 @@ class AceForYaml extends Component {
       softWrap: false,
     },
   };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -58,6 +61,7 @@ class AceForYaml extends Component {
       this.ace.editor.setReadOnly(true);
     }
   }
+
   onChange =(values) => {
     const number = this.state.number;
     const diffLen = this.state.diffLen;
@@ -65,6 +69,7 @@ class AceForYaml extends Component {
       this.props.onChange(values);
     }
   };
+
   setOptions =() => {
     const editor = this.ace.editor;
     // eslint-disable-next-line
@@ -76,8 +81,8 @@ class AceForYaml extends Component {
     editor.getSession().setMode('ace/mode/yaml');
   };
 
-  getRangeObj =range =>
-    new Range(range.start.row, range.start.column, range.end.row, range.end.column + 2);
+  getRangeObj =range => new Range(range.start.row, range.start.column, range.end.row, range.end.column + 2);
+
   // 比较数据函数
   handleDataDiff =() => {
     const { sourceData, value } = this.props;

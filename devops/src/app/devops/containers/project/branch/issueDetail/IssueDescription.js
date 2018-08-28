@@ -60,7 +60,7 @@ class IssueDescription extends Component {
                 <Lightbox
                   mainSrc={item.insert.image}
                   onCloseRequest={() => this.onOpenLightboxChange(`${index}`)}
-                  imageTitle={'images'}
+                  imageTitle="images"
                 />
               ) : (
                 ''
@@ -101,7 +101,7 @@ class IssueDescription extends Component {
             <Lightbox
               mainSrc={this.state.src}
               onCloseRequest={() => this.setState({ open: false })}
-              imageTitle={'images'}
+              imageTitle="images"
             />
           ) : null
         }

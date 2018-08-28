@@ -29,10 +29,10 @@ class AppReleaseEdit extends Component {
     this.state = {
       id: props.match.params.id || '',
       projectId: menu.id,
-      show: false,
       isClick: false,
     };
   }
+
   componentDidMount() {
     const { EditReleaseStore } = this.props;
     const { projectId, id } = this.state;
@@ -49,6 +49,7 @@ class AppReleaseEdit extends Component {
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
   };
+
   /**
    * 提交数据
    * @param e
@@ -77,18 +78,21 @@ class AppReleaseEdit extends Component {
       }
     });
   };
+
   /**
    * 图标的上传button显示
    */
   showBth =() => {
     this.setState({ showBtn: true });
   };
+
   /**
    * 图标的上传button隐藏
    */
   hideBth =() => {
     this.setState({ showBtn: false });
   };
+
   /**
    * 触发上传按钮
    */
@@ -97,6 +101,7 @@ class AppReleaseEdit extends Component {
     const ele = document.getElementById('file');
     ele.click();
   };
+
   /**
    * 选择文件
    * @param e
@@ -118,6 +123,7 @@ class AppReleaseEdit extends Component {
       });
     this.setState({ isClick: false, showBtn: false });
   };
+
   /**
    * 返回上一级
    */
@@ -128,6 +134,7 @@ class AppReleaseEdit extends Component {
     EditReleaseStore.setSingleData(null);
     this.props.history.push(`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`);
   };
+
   render() {
     const { EditReleaseStore } = this.props;
     const { getFieldDecorator } = this.props.form;
@@ -172,7 +179,7 @@ class AppReleaseEdit extends Component {
           })(
             <Input
               maxLength={30}
-              label={<FormattedMessage id={'appstore.contributor'} />}
+              label={<FormattedMessage id="appstore.contributor" />}
               size="default"
             />,
           )}
@@ -191,7 +198,7 @@ class AppReleaseEdit extends Component {
           })(
             <Input
               maxLength={10}
-              label={<FormattedMessage id={'appstore.category'} />}
+              label={<FormattedMessage id="appstore.category" />}
               size="default"
             />,
           )}
@@ -211,7 +218,7 @@ class AppReleaseEdit extends Component {
           })(
             <TextArea
               maxLength={100}
-              label={<FormattedMessage id={'appstore.description'} />}
+              label={<FormattedMessage id="appstore.description" />}
               autosize={{ minRows: 2, maxRows: 6 }}
             />,
           )}
@@ -230,7 +237,7 @@ class AppReleaseEdit extends Component {
               style={{ marginRight: 12 }}
               loading={this.state.submitting}
             >
-              {<FormattedMessage id={'save'} />}
+              {<FormattedMessage id="save" />}
             </Button>
           </Permission>
           <Button
@@ -238,7 +245,7 @@ class AppReleaseEdit extends Component {
             disabled={this.state.submitting}
             onClick={this.handleBack}
           >
-            {<FormattedMessage id={'cancel'} />}
+            {<FormattedMessage id="cancel" />}
           </Button>
         </FormItem>
       </Form>
@@ -251,8 +258,8 @@ class AppReleaseEdit extends Component {
         ]}
         className="c7n-region"
       >
-        <Header title={<FormattedMessage id={'release.edit.header.title'} />} backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
-        <Content className="c7n-appRelease-wrapper" code={'release.edit'} vales={{ name: AppState.currentMenuType.name }}>
+        <Header title={<FormattedMessage id="release.edit.header.title" />} backPath={`/devops/app-release/2?type=${menu.type}&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`} />
+        <Content className="c7n-appRelease-wrapper" code="release.edit" vales={{ name: AppState.currentMenuType.name }}>
           {contentDom}
         </Content>
       </Page>

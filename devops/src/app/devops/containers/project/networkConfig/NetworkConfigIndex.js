@@ -10,7 +10,7 @@ const NetworkHome = asyncRouter(() => import('./networkHome'), () => import('../
 const networkConfigIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={NetworkHome} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 

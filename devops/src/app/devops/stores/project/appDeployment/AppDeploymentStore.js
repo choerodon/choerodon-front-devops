@@ -4,28 +4,51 @@ import { axios, store } from 'choerodon-front-boot';
 @store('AppDeploymentStore')
 class AppDeploymentStore {
   @observable isLoading = true;
+
   @observable deployData = [];
+
   @observable appNames = [];
+
   @observable appNameByEnv = [];
+
   @observable envcard = [];
+
   @observable size = 10;
+
   @observable show = false;
+
   @observable featureData = [];
+
   @observable istAll = [];
+
   @observable appVersion = [];
+
   @observable mutiData = [];
+
   @observable alertType = '';
+
   @observable value = null;
+
   @observable pageInfo = {};
+
   @observable appPageInfo = {};
+
   @observable appPage = 0;
+
   @observable appPageSize = 1;
+
   @observable tabActive = 'instance';
+
   @observable filterValue = '';
+
   @observable envId = false;
+
   @observable verId = false;
+
   @observable appId = false;
+
   @observable istParams = [];
+
   @observable verValue = undefined;
 
   @action setIstTableFilter(param) {
@@ -310,16 +333,15 @@ class AppDeploymentStore {
     }
   });
 
-  loadValue = (projectId, id, verId) =>
-    axios.get(`devops/v1/projects/${projectId}/app_instances/${id}/appVersion/${verId}/value`)
-      .then((data) => {
-        const res = this.handleProptError(data);
-        if (res) {
-          this.setValue(data);
-          return res;
-        }
-        return false;
-      });
+  loadValue = (projectId, id, verId) => axios.get(`devops/v1/projects/${projectId}/app_instances/${id}/appVersion/${verId}/value`)
+    .then((data) => {
+      const res = this.handleProptError(data);
+      if (res) {
+        this.setValue(data);
+        return res;
+      }
+      return false;
+    });
 
   checkYaml = (value, projectId) => axios.post(`/devops/v1/projects/${projectId}/app_instances/value_format`, { yaml: value });
 
@@ -342,6 +364,7 @@ class AppDeploymentStore {
       }
       return data;
     });
+
   handleProptError =(error) => {
     if (error && error.failed) {
       Choerodon.prompt(error.message);

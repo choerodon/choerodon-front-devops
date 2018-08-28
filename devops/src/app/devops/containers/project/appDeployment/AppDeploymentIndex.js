@@ -12,7 +12,7 @@ const appDeploymentIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={AppHome} />
     <Route exact path={`${match.url}/:id/:status/detail`} component={DeploymentDetail} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 
