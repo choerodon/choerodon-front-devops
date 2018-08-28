@@ -267,11 +267,12 @@ class EnvOverviewHome extends Component {
    * @returns {*}
    */
   envNameDom = () => {
-    const { intl } = this.props;
+    const { intl, EnvOverviewStore } = this.props;
+    const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
     let envName = '';
     if (this.env.length) {
-      if (this.envId) {
-        envName = this.envId;
+      if (tpEnvId) {
+        envName = tpEnvId;
       } else {
         envName = this.env[0].id;
       }
@@ -283,6 +284,7 @@ class EnvOverviewHome extends Component {
 
   render() {
     const { intl, EnvOverviewStore } = this.props;
+    const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
     const sync = EnvOverviewStore.getSync;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
 
@@ -291,7 +293,7 @@ class EnvOverviewHome extends Component {
       {d.name}</Option>)) : [];
 
     const envState = this.env.length
-      ? this.env.filter(d => d.id === Number(this.envId ? this.envId : this.env[0].id))[0] : true;
+      ? this.env.filter(d => d.id === Number(tpEnvId || this.env[0].id))[0] : true;
 
     return (
       <Page
