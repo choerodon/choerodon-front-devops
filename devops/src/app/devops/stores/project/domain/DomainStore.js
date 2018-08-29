@@ -1,8 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-// import _ from 'lodash';
-// import { Observable } from 'rxjs';
-// import { formJS } from 'immutable';
+import { handleProptError } from '../../../utils';
 
 const height = window.screen.height;
 @store('DomainStore')
@@ -26,6 +24,16 @@ class DomainStore {
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
+
+  @observable certificates = [];
+
+  @action setCertificates(data) {
+    this.certificates = data;
+  }
+
+  @computed get getCertificates() {
+    return this.certificates;
+  }
 
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
@@ -115,7 +123,7 @@ class DomainStore {
     this.changeLoading(true);
     return axios.post(`/devops/v1/projects/${proId}/ingress/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           this.handleData(data);
         }
@@ -131,7 +139,7 @@ class DomainStore {
   };
 
   loadDataById = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/ingress/${id}`).then((data) => {
-    const res = this.handleProptError(data);
+    const res = handleProptError(data);
     if (res) {
       this.setSingleData(data);
     }
@@ -140,7 +148,7 @@ class DomainStore {
 
   loadEnv = projectId => axios.get(`devops/v1/projects/${projectId}/envs?active=true`)
     .then((data) => {
-      const res = this.handleProptError(data);
+      const res = handleProptError(data);
       if (res) {
         this.setEnv(data);
       }
@@ -149,51 +157,53 @@ class DomainStore {
 
 
   checkName = (projectId, envId, value) => axios.get(`/devops/v1/projects/${projectId}/ingress/check_name?name=${envId}&envId=${value}`).then((datas) => {
-    const res = this.handleProptError(datas);
+    const res = handleProptError(datas);
     return res;
   });
 
   checkPath =(projectId, domain, value, id = '') => axios.get(`/devops/v1/projects/${projectId}/ingress/check_domain?domain=${domain}&path=${value}&id=${id}`)
     .then((datas) => {
-      const res = this.handleProptError(datas);
+      const res = handleProptError(datas);
       return res;
     });
 
   updateData = (projectId, id, data) => axios.put(`/devops/v1/projects/${projectId}/ingress/${id}`, JSON.stringify(data))
     .then((datas) => {
-      const res = this.handleProptError(datas);
+      const res = handleProptError(datas);
       return res;
     });
 
   addData = (projectId, data) => axios.post(`/devops/v1/projects/${projectId}/ingress`, JSON.stringify(data))
     .then((datas) => {
-      const res = this.handleProptError(datas);
+      const res = handleProptError(datas);
       return res;
     });
 
   deleteData = (projectId, id) => axios.delete(`/devops/v1/projects/${projectId}/ingress/${id}`)
     .then((datas) => {
-      const res = this.handleProptError(datas);
+      const res = handleProptError(datas);
       return res;
     });
 
   loadNetwork = (projectId, envId) => axios.get(`/devops/v1/projects/${projectId}/service?envId=${envId}`)
     .then((data) => {
-      const res = this.handleProptError(data);
+      const res = handleProptError(data);
       if (res) {
         this.setNetwork(data);
       }
       return res;
     });
 
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
-  }
+  loadCertByEnv = (projectId, envId, domain) => {
+    axios.post(`/devops/v1/projects/${projectId}/certifications/active?env_id=${envId}&domain=${domain}`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setCertificates(res);
+        }
+      })
+      .catch(err => Choerodon.handleResponseError(err));
+  };
 }
 
 const domainStore = new DomainStore();

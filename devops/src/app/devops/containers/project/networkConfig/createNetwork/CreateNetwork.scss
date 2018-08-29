@@ -1,11 +1,4 @@
 .c7n-network-create {
-  .ant-input-disabled,
-  .ant-select-disabled {
-    .ant-select-underline,
-    .ant-input-underline {
-      border-bottom-style: dashed;
-    }
-  }
   .c7n-network-env {
     .status-success {
       padding-right: 15px;

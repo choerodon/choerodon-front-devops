@@ -165,7 +165,7 @@ class CertificateHome extends Component {
         <Icon type="find_in_page" className="c7n-ctf-detail-icon" />
       </Popover>
       <Permission
-        service={['devops-service.devops-environment.listByProjectIdAndActive']}
+        service={['devops-service.certification.delete']}
         type={type}
         projectId={projectId}
         organizationId={orgId}
@@ -236,14 +236,19 @@ class CertificateHome extends Component {
     return (
       <Page
         className="c7n-region c7n-ctf-wrapper"
-        service={['devops-service.devops-environment.listByProjectIdAndActive']}
+        service={[
+          'devops-service.devops-environment.listByProjectIdAndActive',
+          'devops-service.certification.listByOptions',
+          'devops-service.certification.create',
+          'devops-service.certification.delete',
+        ]}
       >
         <Header title={<FormattedMessage id="ctf.head" />}>
           <Permission
             type={type}
             projectId={projectId}
             organizationId={orgId}
-            service={['devops-service.devops-environment.listByProjectIdAndActive']}
+            service={['devops-service.certification.create']}
           >
             <Button
               funcType="flat"

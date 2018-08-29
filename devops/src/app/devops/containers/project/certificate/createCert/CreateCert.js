@@ -257,7 +257,7 @@ class CreateCert extends Component {
     const domainArr = getFieldValue('domainArr');
     const domainItems = _.map(domainArr, (k, index) => (<div key={`domains-${k}`} className="creation-panel-group">
       <FormItem
-        className={`c7n-select_${domainArr.length > 1 ? 454 : 480} creation-group-form`}
+        className={`c7n-select_${domainArr.length > 1 ? 454 : 480} creation-form-item`}
         {...formItemLayout}
       >
         {getFieldDecorator(`domains[${k}]`, {
@@ -347,7 +347,7 @@ class CreateCert extends Component {
             </div>
             <div className="c7n-creation-radio">
               <div className="creation-radio-label">
-                <FormattedMessage id="network.target.type" />
+                <FormattedMessage id="choose" />
               </div>
               <FormItem
                 className="c7n-select_512 creation-radio-form"

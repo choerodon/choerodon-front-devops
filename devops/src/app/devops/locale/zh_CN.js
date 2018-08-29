@@ -220,6 +220,7 @@ const zhCN = {
   finish: '结束',
   ok: '确定',
   language: 'zh_CN',
+  choose: '选择类型',
 
   'file.uploaded.failed': '上传失败！',
   'file.uploaded.success': '上传成功！',
@@ -313,7 +314,6 @@ const zhCN = {
   'network.env': '环境',
   'network.env.placeholder': '请选择环境',
   'network.target': '目标对象',
-  'network.target.type': '选择类型：',
   'network.target.instance': '选择实例',
   'network.target.param': '填写标签',
   'network.form.app': '应用名称',
@@ -583,6 +583,10 @@ const zhCN = {
   'version.createTime': '时间',
 
   // domain
+  domain_create: '域名创建中，请耐心等待',
+  domain_delete: '域名删除中，请耐心等待',
+  domain_update: '域名更新中，请耐心等待',
+  domain_operating: '域名操作中，请耐心等待',
   'domain.header.title': '域名',
   'domain.header.create': '创建域名',
   'domain.header.update': '修改域名',
@@ -595,10 +599,7 @@ const zhCN = {
   'domain.column.domain': '地址',
   'domain.column.port': '端口',
   'domain.form.domain': '域名地址',
-  domain_create: '域名创建中，请耐心等待',
-  domain_delete: '域名删除中，请耐心等待',
-  domain_update: '域名更新中，请耐心等待',
-  domain_operating: '域名操作中，请耐心等待',
+  'domain.form.cert': '域名证书',
   'domain.name.check.exist': '名称已存在',
   'domain.name.check.failed': '由小写字母，数字，\'-\'或\'.\'组成，以字母、数字开始和结束',
   'domain.names.check.failed': '由小写字母，数字，\'-\'组成，以字母、数字开始和结束',
@@ -607,6 +608,10 @@ const zhCN = {
   'domain.path.add': '添加路径',
   'domain.path.isnull': '请先填写路径',
   'domain.port.notExist': '请更新端口',
+  'domain.protocol': '网络协议',
+  'domain.protocol.normal': '普通协议',
+  'domain.protocol.secret': '加密协议',
+  'domain.cert.none': '未检索到证书',
 
   // appstore
   'appstore.title': '应用市场',
