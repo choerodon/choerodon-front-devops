@@ -25,6 +25,7 @@
 "deployment-pipeline.service": "网络"
 "deployment-pipeline.ingress": "域名"
 "deployment-pipeline.container": "容器"
+"deployment-pipeline.certificate": "证书"
 
 # 0.8版本废弃项
 "application-market": "应用市场"

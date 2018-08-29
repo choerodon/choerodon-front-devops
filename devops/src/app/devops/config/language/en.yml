@@ -25,6 +25,7 @@
 "deployment-pipeline.service": "Service"
 "deployment-pipeline.ingress": "Ingress"
 "deployment-pipeline.container": "Container"
+"deployment-pipeline.certificate": "Certificate"
 
 # 0.8废弃
 "application-market": "Application Market"

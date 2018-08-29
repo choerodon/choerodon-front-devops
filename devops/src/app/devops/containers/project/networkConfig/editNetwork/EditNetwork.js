@@ -9,7 +9,6 @@ import {
   Button, Form, Select, Input, Modal, Popover, Icon, Radio, Tooltip,
 } from 'choerodon-ui';
 import { stores, Content } from 'choerodon-front-boot';
-import uuidv1 from 'uuid/v1';
 import '../../../main.scss';
 import '../createNetwork/CreateNetwork.scss';
 import './EditNetwork.scss';
@@ -788,11 +787,11 @@ class EditNetwork extends Component {
               </div>
               <div className="network-radio-wrap">
                 <div className="network-radio-label">
-                  <FormattedMessage id="network.target.type" />
+                  <FormattedMessage id="choose" />
                 </div>
                 <FormItem
                   className="c7n-select_512 network-radio-form"
-                  label={<FormattedMessage id="network.target.type" />}
+                  label={<FormattedMessage id="choose" />}
                   {...formItemLayout}
                 >
                   {getFieldDecorator('target', {
@@ -899,7 +898,7 @@ class EditNetwork extends Component {
               </div>
               <div className="network-radio-wrap">
                 <div className={`network-radio-label ${!getFieldValue('envId') ? 'network-radio-label_disabled' : ''}`}>
-                  <FormattedMessage id="network.target.type" />
+                  <FormattedMessage id="choose" />
                 </div>
                 <FormItem
                   className="c7n-select_512 network-radio-form"
