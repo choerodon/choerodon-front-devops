@@ -20,6 +20,8 @@
   },
   "dependencies": {
     "choerodon-front-boot": "^0.7.3",
+    "file-loader": "^2.0.0",
+    "hterm-umdjs": "^1.4.1",
     "markdown-react-js": "^1.0.0",
     "quill-delta-to-html": "^0.8.4",
     "react-codemirror": "^1.0.0",

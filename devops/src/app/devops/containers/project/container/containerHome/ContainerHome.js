@@ -1,19 +1,23 @@
+/* eslint-disable dot-notation */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { observable, action } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Table, Button, Modal, Tooltip } from 'choerodon-ui';
+import { Table, Button, Modal, Tooltip, Icon } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import CodeMirror from 'react-codemirror';
 import _ from 'lodash';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/base16-dark.css';
+import { hterm, lib } from 'hterm-umdjs';
 import { commonComponent } from '../../../../components/commonFunction';
 import TimePopover from '../../../../components/timePopover';
 import LoadingBar from '../../../../components/loadingBar';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import '../../../main.scss';
 import './ContainerHome.scss';
+import './Term.scss';
 
 const Sidebar = Modal.Sidebar;
 const { AppState } = stores;
@@ -21,11 +25,18 @@ const { AppState } = stores;
 @commonComponent('ContainerStore')
 @observer
 class ContainerHome extends Component {
+  @observable term = null;
+
+  @observable conn = null;
+
+  @observable io = null;
+
   constructor(props) {
     super(props);
     this.state = {
       page: 0,
       showSide: false,
+      showDebug: false,
     };
     this.timer = null;
   }
@@ -37,12 +48,126 @@ class ContainerHome extends Component {
   componentWillUnmount() {
     if (this.state.ws) {
       this.closeSidebar();
+    } else if (this.conn) {
+      this.closeTerm();
     }
   }
 
   /**
+   * TerminalReady
+   */
+  @action
+  onTerminalReady() {
+    this.io = this.term.io.push();
+    this.onTerminalResponseReceived();
+  }
+
+  /**
+   * Called when .../shell/... resource is fetched
+   */
+  @action
+  onTerminalResponseReceived() {
+    const { namespace, envId, logId, podName, containerName } = this.state;
+    const authToken = document.cookie.split('=')[1];
+    this.conn = new WebSocket(`POD_WEBSOCKET_URL/ws/exec?key=env:${namespace}.envId:${envId}.exec:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
+    this.conn.onopen = this.onConnectionOpen.bind(this);
+    this.conn.onmessage = this.onConnectionMessage.bind(this);
+    this.conn.onclose = this.onConnectionClose.bind(this);
+  }
+
+  /**
+   * Attached to SockJS.onopen
+   */
+  @action
+  onConnectionOpen() {
+    this.io.onVTKeystroke = this.onTerminalVTKeystroke.bind(this);
+    this.io.sendString = this.onTerminalSendString.bind(this);
+    this.io.onTerminalResize = this.onTerminalResize.bind(this);
+  }
+
+  /**
+   * Attached to SockJS.onmessage
+   * @param evt
+   */
+  onConnectionMessage(evt) {
+    const msg = { Data: evt.data };
+    this.io.print(msg['Data']);
+  }
+
+  /**
+   * Attached to SockJS.onclose
+   * @param evt
+   */
+  onConnectionClose(evt) {
+    if (evt && evt.reason !== '' && evt.code < 1000) {
+      this.io.showOverlay(evt.reason, null);
+    } else {
+      this.io.showOverlay('Connection closed', null);
+    }
+    this.conn.close();
+    this.term.uninstallKeyboard();
+    this.term.io.flush();
+  }
+
+  /**
+   * Attached to hterm.io.onVTKeystroke
+   * @param str
+   */
+  onTerminalVTKeystroke(str) {
+    // this.conn.send(JSON.stringify({ Op: 'stdin', Data: str }));
+    this.conn.send(str);
+  }
+
+  /**
+   * Attached to hterm.io.sendString
+   * @param str
+   */
+  onTerminalSendString(str) {
+    // this.conn.send(JSON.stringify({ Op: 'stdin', Data: str }));
+    this.conn.send(str);
+  }
+
+  /**
+   * Attached to hterm.io.onTerminalResize
+   * @param columns
+   * @param rows
+   */
+  onTerminalResize(columns, rows) {
+    // this.conn.send(JSON.stringify({ Op: 'resize', Cols: columns, Rows: rows }));
+  }
+
+  /**
+   * 打开Term
+   */
+  @action
+  openTerminal() {
+    const target = document.getElementById('c7n-shell-term');
+    hterm.defaultStorage = new lib.Storage.Memory();
+    if (!this.term) {
+      this.term = new hterm.Terminal();
+      this.term.decorate(target);
+    }
+    target.firstChild.style.position = null;
+    this.term.installKeyboard();
+    this.term.setCursorVisible(true);
+    this.term.onTerminalReady = this.onTerminalReady.bind(this);
+  }
+
+  /**
+   * 关闭Term
+   */
+  closeTerm = () => {
+    this.term.clear();
+    this.setState({
+      showDebug: false,
+    });
+    if (this.conn) {
+      this.onConnectionClose();
+    }
+  };
+
+  /**
    * 获取行
-   *
    */
   getColumn = () => {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
@@ -166,7 +291,7 @@ class ContainerHome extends Component {
       sorter: true,
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }, {
-      width: 56,
+      width: 80,
       key: 'action',
       render: (test, record) => (
         <div>
@@ -182,7 +307,23 @@ class ContainerHome extends Component {
                 shape="circle"
                 onClick={this.showLog.bind(this, record)}
               >
-                <i className="icon icon-insert_drive_file" />
+                <Icon type="insert_drive_file" />
+              </Button>
+            </Tooltip>
+          </Permission>
+          <Permission
+            service={['devops-service.devops-env-pod-container.queryLogByPod']}
+            organizationId={organizationId}
+            projectId={projectId}
+            type={type}
+          >
+            <Tooltip title={<FormattedMessage id="container.term" />}>
+              <Button
+                size="small"
+                shape="circle"
+                onClick={this.showTerm.bind(this, record)}
+              >
+                <Icon type="debug" />
               </Button>
             </Tooltip>
           </Permission>
@@ -191,6 +332,9 @@ class ContainerHome extends Component {
     }];
   };
 
+  /**
+   * 加载日志
+   */
   loadLog = () => {
     const authToken = document.cookie.split('=')[1];
     const logs = [];
@@ -230,6 +374,7 @@ class ContainerHome extends Component {
     }, 1000);
   };
 
+
   /**
    * 显示日志
    * @param record 容器record
@@ -257,7 +402,6 @@ class ContainerHome extends Component {
   closeSidebar = () => {
     clearInterval(this.timer);
     this.timer = null;
-    const { ContainerStore } = this.props;
     const { ws, page } = this.state;
     if (ws) {
       ws.close();
@@ -269,9 +413,30 @@ class ContainerHome extends Component {
     this.loadAllData(page);
   };
 
+  /**
+   * 显示运行命令窗口
+   * @param record 容器record
+   */
+  showTerm = (record) => {
+    const { ContainerStore } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    ContainerStore.loadPodParam(projectId, record.id)
+      .then((data) => {
+        this.setState({
+          envId: record.envId,
+          namespace: record.namespace,
+          podName: data.podName,
+          containerName: data.containerName,
+          logId: data.logId,
+          showDebug: true,
+        });
+        this.openTerminal();
+      });
+  };
+
   render() {
     const { ContainerStore } = this.props;
-    const { showSide, podName } = this.state;
+    const { showSide, podName, containerName, showDebug } = this.state;
     const serviceData = ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
@@ -332,6 +497,34 @@ class ContainerHome extends Component {
               />
             </section>
           </Content>
+        </Sidebar>
+        <Sidebar
+          visible={showDebug}
+          title={<FormattedMessage id="container.term" />}
+          onOk={this.closeTerm.bind(this)}
+          className="c7n-podLog-content c7n-region"
+          okText={<FormattedMessage id="cancel" />}
+          okCancel={false}
+          destroyOnClose
+        >
+          <div className="c7n-content-card-wrap c7n-shell-content-card">
+            <div className="c7n-content-card">
+              <div className="c7n-content-card-content">
+                <div className="c7n-content-card-content-title c7n-md-title c7n-padding">
+                  <div className="c7n-shell-title">
+                    <FormattedMessage id="container.term.ex" />&nbsp;
+                    {containerName}&nbsp;In&nbsp;{podName}
+                  </div>
+                </div>
+                <div className="c7n-content-card-transclude-content">
+                  <div className="c7n-content">
+                    <div className="c7n-shell-term" id="c7n-shell-term" />
+                  </div>
+                </div>
+                <div className="c7n-content-card-content-footer" />
+              </div>
+            </div>
+          </div>
         </Sidebar>
       </Page>
     );

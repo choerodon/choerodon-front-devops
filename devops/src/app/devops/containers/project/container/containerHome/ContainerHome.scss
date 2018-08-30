@@ -52,8 +52,13 @@
 
 .c7n-podLog-content {
   width: 100%;
+
   .page-content-header {
     max-width: 100%;
+  }
+
+  .ant-modal-body {
+    height: 80% !important;
   }
 }
 

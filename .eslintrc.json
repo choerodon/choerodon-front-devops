@@ -71,6 +71,7 @@
     "react/jsx-wrap-multilines": "off",
     "react/jsx-closing-tag-location": "off",
     "react/jsx-one-expression-per-line": "off",
+    "react/sort-comp": "off",
     "prefer-destructuring": "off"
   },
   "globals": {

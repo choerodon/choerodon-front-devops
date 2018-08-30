@@ -577,6 +577,8 @@ const zhCN = {
   'container.disable': '不可用',
   'container.createTime': '已创建',
   'container.log': '容器日志',
+  'container.term': '运行命令',
+  'container.term.ex': '命令行',
   'container.log.header.title': '查看容器日志',
 
   // version feature

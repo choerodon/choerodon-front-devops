@@ -1,0 +1,109 @@
+.c7n-content-card-wrap {
+  display: block;
+  height: 95%;
+  margin: 2.5 * 8px;
+  margin-bottom: 0;
+}
+
+.c7n-content-card-content {
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, .12);
+  border-radius: 2px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .2), 0 1px 1px 0 rgba(0, 0, 0, .14), 0 2px 1px -1px rgba(0, 0, 0, .12);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.c7n-content-card {
+  height: 100%;
+
+  .c7n-content {
+    &.c7n-content-padded {
+      display: block;
+      padding: 2 * 8px;
+    }
+  }
+}
+
+.c7n-content-card-content-title {
+  border-bottom: 1px solid rgba(0, 0, 0, .12);
+  box-sizing: border-box;
+  height: 7 * 8px;
+  line-height: 5 * 8px;
+  margin: 0;
+
+  .c7n-title {
+    font-weight: 400;
+
+    a {
+      color: rgba(0, 0, 0, .87);
+    }
+  }
+}
+
+.c7n-content-card-content-footer {
+  border-top: 1px solid rgba(0, 0, 0, .12);
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.c7n-shell-term {
+  width: 100%;
+
+  iframe {
+    position: relative !important;
+  }
+}
+
+// The style below is to make the shell view card full width & height.
+.c7n-content-card-wrap {
+  .c7n-shell-content-card {
+    box-sizing: border-box;
+    height: 90%;
+    margin: 0;
+    padding: 2.5 * 8px;
+
+    .c7n-content-card {
+      height: 100%;
+    }
+  }
+}
+
+.c7n-content-card-transclude-content {
+  display: flex;
+  flex: 1;
+
+}
+.c7n-content {
+  display: flex;
+  flex: 1;
+}
+
+.c7n-padding {
+  padding: 8px;
+}
+
+.c7n-md-title {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: .005em;
+}
+
+.c7n-shell-toolbar-select {
+  display: inline-flex;
+  margin: 0;
+
+  .md-select-value {
+    font-size: 20px;
+    min-width: 20 * 8px;
+  }
+
+  &:not([disabled]) {
+    &:focus {
+      .md-select-value {
+        color: rgba(0, 0, 0, .87);
+      }
+    }
+  }
+}
