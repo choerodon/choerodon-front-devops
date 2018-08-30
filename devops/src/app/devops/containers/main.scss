@@ -383,6 +383,9 @@ table {
   &_480 {
     width: $WIDTH512 - 32px;
   }
+  &_160 {
+    width: ($WIDTH512 - 32px) /3;
+  }
 }
 
 // 环境连接状态
