@@ -512,9 +512,8 @@ class ContainerHome extends Component {
               <div className="c7n-content-card-content">
                 <div className="c7n-content-card-content-title c7n-md-title c7n-padding">
                   <div className="c7n-shell-title">
-                    命令行
-                    {containerName}
-                    在 {podName}
+                    <FormattedMessage id="container.term.ex" />&nbsp;
+                    {containerName}&nbsp;In&nbsp;{podName}
                   </div>
                 </div>
                 <div className="c7n-content-card-transclude-content">
