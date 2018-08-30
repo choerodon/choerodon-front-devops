@@ -43,7 +43,9 @@ class DomainHome extends Component {
    *打开域名创建弹框
    */
   showSideBar =(type, id = '') => {
-    this.props.form.resetFields();
+    const { form, DomainStore } = this.props;
+    form.resetFields();
+    DomainStore.setCertificates([]);
     if (type === 'create') {
       this.setState({ show: true, title: this.props.intl.formatMessage({ id: 'domain.header.create' }), type, id });
     } else {

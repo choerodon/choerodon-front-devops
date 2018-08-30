@@ -1,19 +1,17 @@
 import React, { Component } from 'react';
-import { Table, Button } from 'choerodon-ui';
+import { Table, Button, Select } from 'choerodon-ui';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { fromJS, is } from 'immutable';
-import { commonComponent } from '../../../../components/commonFunction';
+import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
-import Loadingbar from '../../../../components/loadingBar';
 import './ApplicationVersion.scss';
 import '../../../main.scss';
 
-
 const { AppState } = stores;
-@commonComponent('AppVersionStore')
+const { Option } = Select;
+
 @observer
 class ApplicationVersion extends Component {
   constructor(props) {
@@ -21,117 +19,154 @@ class ApplicationVersion extends Component {
     const menu = AppState.currentMenuType;
     this.state = {
       page: 0,
+      pageSize: 10,
+      param: [],
+      filters: {},
+      postData: { searchParam: {}, param: '' },
+      sorter: {
+        filed: 'id',
+        columnKey: 'id',
+        order: 'descend',
+      },
+      appId: null,
     };
   }
 
   componentDidMount() {
-    this.loadAllData(this.state.page);
+    const { AppVersionStore } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    AppVersionStore.queryAppData(projectId);
+    this.loadAllData();
   }
 
-  shouldComponentUpdate = (nextProps, nextState) => {
-    if (this.props.form.isFieldsTouched()) {
-      return true;
+  /**
+   * 选择应用
+   * @param e
+   */
+  handleAppSelect = e => this.setState({ appId: e }, () => this.loadAllData());
+
+  tableChange = (pagination, filters, sorter, paras) => {
+    const { current, pageSize } = pagination;
+    const page = current - 1;
+    const sort = _.isEmpty(sorter) ? {
+      filed: 'id',
+      columnKey: 'id',
+      order: 'descend',
+    } : sorter;
+    let searchParam = {};
+    let param = '';
+    if (Object.keys(filters).length) {
+      searchParam = filters;
     }
-    const thisProps = fromJS(this.props || {});
-    const thisState = fromJS(this.state || {});
-    const nextStates = fromJS(nextState || {});
-    if (thisProps.size !== nextProps.size
-      || thisState.size !== nextState.size) {
-      return true;
+    if (paras.length) {
+      param = paras[0].toString();
     }
-    if (is(thisState, nextStates)) {
-      return false;
-    }
-    return true;
+    const postData = {
+      searchParam,
+      param,
+    };
+    this.setState({ page, pageSize, filters, postData, sorter: sort });
+    this.loadAllData(page, pageSize, sort, postData);
   };
 
-  getColumn = () => {
-    const { type, id: orgId } = AppState.currentMenuType;
-    return [{
+  /**
+   * 刷新
+   */
+  handleRefresh = () => {
+    const { page, pageSize, sorter, postData } = this.state;
+    this.loadAllData(page, pageSize, sorter, postData);
+  };
+
+  loadAllData = (page = 0, sizes = 10, sort = { field: 'id', order: 'descend' }, filter = { searchParam: {}, param: '' }) => {
+    const { AppVersionStore } = this.props;
+    const { appId } = this.state;
+    const { id: projectId } = AppState.currentMenuType;
+    AppVersionStore.loadData(projectId, appId, page, sizes, sort, filter);
+  };
+
+  render() {
+    const { AppVersionStore, intl } = this.props;
+    const versionData = AppVersionStore.getAllData;
+    const appData = AppVersionStore.getAppData;
+    const { name } = AppState.currentMenuType;
+    const {
+      param,
+      filters,
+      sorter: { columnKey, order },
+      appId,
+    } = this.state;
+    const columns = [{
       title: <FormattedMessage id="app.appVersion" />,
       dataIndex: 'version',
       key: 'version',
       sorter: true,
+      sortOrder: columnKey === 'version' && order,
       filters: [],
-      filterMultiple: false,
-    },
-    {
+      filteredValue: filters.version || [],
+    }, {
       title: <FormattedMessage id="app.code" />,
       dataIndex: 'appCode',
       key: 'appCode',
       sorter: true,
+      sortOrder: columnKey === 'appCode' && order,
       filters: [],
-      filterMultiple: false,
+      filteredValue: filters.appCode || [],
     }, {
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'appName',
       key: 'appName',
       sorter: true,
+      sortOrder: columnKey === 'appName' && order,
       filters: [],
-      filterMultiple: false,
+      filteredValue: filters.appName || [],
     }, {
       title: <FormattedMessage id="app.createTime" />,
       dataIndex: 'creationDate',
       key: 'creationDate',
       sorter: true,
       render: (text, record) => <TimePopover content={record.creationDate} />,
-    },
-    ];
-  } ;
-
-  render() {
-    const { AppVersionStore, intl } = this.props;
-    const serviceData = AppVersionStore.getAllData;
-    const { type, id: orgId } = AppState.currentMenuType;
-    const menu = AppState.currentMenuType;
-    const contentDom = (
-      <Table
-        filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
-        loading={AppVersionStore.loading}
-        pagination={AppVersionStore.pageInfo}
-        columns={this.getColumn()}
-        dataSource={serviceData}
-        rowKey={record => record.id}
-        onChange={this.tableChange}
-      />);
+    }];
 
     return (
       <Page
         className="c7n-region c7n-appVersion-wrapper"
         service={[
+          'devops-service.application.listByActive',
           'devops-service.application-version.pageByOptions',
         ]}
       >
-        {AppVersionStore.isRefresh ? <Loadingbar display /> : <React.Fragment>
-          <Header title={<FormattedMessage id="app.version" />}>
-            <Button
-              onClick={this.handleRefresh}
-            >
-              <i className="icon-refresh icon" />
-              <FormattedMessage id="refresh" />
-            </Button>
-          </Header>
-          <Content>
-            <h2 className="c7n-space-first">
-              <FormattedMessage
-                id="appVer.head"
-                values={{
-                  name: `${menu.name}`,
-                }}
-              />
-            </h2>
-            <p>
-              <FormattedMessage id="appVer.description" />
-              <a href={intl.formatMessage({ id: 'appVer.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                <span className="c7n-external-link-content">
-                  <FormattedMessage id="learnmore" />
-                </span>
-                <i className="icon icon-open_in_new" />
-              </a>
-            </p>
-            {contentDom}
-          </Content>
-        </React.Fragment>}
+        <Header title={<FormattedMessage id="app.version" />}>
+          <Button
+            onClick={this.handleRefresh}
+          >
+            <i className="icon-refresh icon" />
+            <FormattedMessage id="refresh" />
+          </Button>
+        </Header>
+        <Content code="appVer" value={{ name }}>
+          <Select
+            className="c7n-select_512 c7n-appVersion-select"
+            value={appId}
+            label={this.props.intl.formatMessage({ id: 'chooseApp' })}
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filter
+            onChange={this.handleAppSelect}
+          >
+            {
+              _.map(appData, app => <Option key={app.id} value={app.id}>{app.name}</Option>)
+            }
+          </Select>
+          <Table
+            filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
+            loading={AppVersionStore.loading}
+            pagination={AppVersionStore.pageInfo}
+            columns={columns}
+            filters={param || []}
+            dataSource={versionData}
+            rowKey={record => record.id}
+            onChange={this.tableChange}
+          />
+        </Content>
       </Page>
     );
   }

@@ -76,7 +76,7 @@ class CreateDomain extends Component {
   }
 
   componentDidMount() {
-    const { store, id, visible, envId } = this.props;
+    const { store, id, visible, envId, form } = this.props;
     const { projectId } = this.state;
     if (id && visible) {
       store.loadDataById(projectId, id)
@@ -97,16 +97,23 @@ class CreateDomain extends Component {
               this.setState({ [i]: { deletedService: [] } });
             }
           }
-          this.setState({ initServiceLen: len, SingleData: data, protocol: certId ? 'secret' : 'normal' });
+          this.setState({
+            initServiceLen: len,
+            SingleData: data,
+            protocol: certId ? 'secret' : 'normal',
+            selectEnv: domainEnv,
+          });
           this.initPathArr(pathList.length);
           if (certId && domain && domainEnv) {
             store.loadCertByEnv(projectId, domainEnv, domain);
+            form.setFieldsValue({ certId });
           }
           store.loadNetwork(projectId, domainEnv);
         });
     }
+    // 环境总览传入envId
     if (envId) {
-      this.selectEnv(envId);
+      this.handleSelectEnv(envId);
     }
     store.loadEnv(projectId)
       .then((data) => {
@@ -262,9 +269,10 @@ class CreateDomain extends Component {
    * 选择环境
    * @param value
    */
-  selectEnv = (value) => {
+  handleSelectEnv = (value) => {
     const { store, form } = this.props;
     store.loadNetwork(this.state.projectId, value);
+    store.setCertificates([]);
     form.resetFields();
     this.setState({
       pathArr: [{ pathIndex: 0, networkIndex: 0, portIndex: 0 }],
@@ -446,8 +454,8 @@ class CreateDomain extends Component {
   render() {
     const { store, form, intl, type, visible, envId } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
-    const menu = AppState.currentMenuType;
-    const { pathArr, SingleData, env, portInNetwork, protocol } = this.state;
+    const { name } = AppState.currentMenuType;
+    const { pathArr, SingleData, env, portInNetwork, protocol, initServiceLen, submitting } = this.state;
     const network = store.getNetwork;
     let addStatus = true;
     // 判断path是否有值
@@ -464,24 +472,15 @@ class CreateDomain extends Component {
       _.forEach(ports, p => port.push(p.port));
       portWithNetwork[id] = port;
     });
-    const title = type === 'create' ? <h2 className="c7n-space-first"><FormattedMessage id="domain.create.title" values={{ name: menu.name }} /></h2> : <h2 className="c7n-space-first"><FormattedMessage id="domain.update.title" values={{ name: SingleData && SingleData.name }} /></h2>;
-    const content = type === 'create' ? intl.formatMessage({ id: 'domain.create.description' })
-      : intl.formatMessage({ id: 'domain.update.description' });
     const initEnvId = envId ? Number(envId) : undefined;
-    const contentDom = visible ? (<div className="c7n-region c7n-domainCreate-wrapper">
-      {title}
-      <div className="page-content-header">
-        <p className="description">
-          {content}
-          <a href={intl.formatMessage({ id: 'domain.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-            <FormattedMessage id="learnmore" />
-            <i className="icon icon-open_in_new" />
-          </a>
-        </p>
-      </div>
+    const contentDom = visible ? (<Content
+      code={`domain.${type === 'create' ? 'create' : 'update'}`}
+      values={{ name }}
+      className="sidebar-content c7n-domainCreate-wrapper"
+    >
       <Form layout="vertical" onSubmit={this.handleSubmit}>
         <FormItem
-          className="c7n-domain-formItem"
+          className="c7n-domain-formItem c7n-select_512"
           {...formItemLayout}
         >
           {getFieldDecorator('envId', {
@@ -494,10 +493,10 @@ class CreateDomain extends Component {
             <Select
               dropdownClassName="c7n-domain-env"
               onFocus={this.loadEnv}
-              loading={this.state.env.loading}
+              loading={env.loading}
               filter
               getPopupContainer={triggerNode => triggerNode.parentNode}
-              onSelect={this.selectEnv}
+              onSelect={this.handleSelectEnv}
               showSearch
               label={intl.formatMessage({ id: 'domain.column.env' })}
               optionFilterProp="children"
@@ -515,7 +514,7 @@ class CreateDomain extends Component {
           )}
         </FormItem>
         <FormItem
-          className="c7n-domain-formItem"
+          className="c7n-domain-formItem c7n-select_512"
           {...formItemLayout}
         >
           {getFieldDecorator('name', {
@@ -542,7 +541,7 @@ class CreateDomain extends Component {
         </div>
         <div className="c7n-creation-radio">
           <div className="creation-radio-label">
-            <FormattedMessage id="choose" />
+            <FormattedMessage id="chooseType" />
           </div>
           <FormItem
             className="c7n-select_512 creation-radio-form"
@@ -595,14 +594,13 @@ class CreateDomain extends Component {
                 required: true,
                 message: intl.formatMessage({ id: 'required' }),
               }],
-              initialValue: SingleData ? SingleData.certId : '',
             })(<Select
               className="c7n-select_512"
               optionFilterProp="children"
               label={<FormattedMessage id="domain.form.cert" />}
               notFoundContent={<FormattedMessage id="domain.cert.none" />}
               getPopupContainer={triggerNode => triggerNode.parentNode}
-              filterOption={(input, option) => option.props.children[1]
+              filterOption={(input, option) => option.props.children
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0}
               filter
               showSearch
@@ -614,7 +612,7 @@ class CreateDomain extends Component {
           </FormItem>) : null}
         </div>
         {pathArr.length >= 1 && pathArr.map((data, index) => {
-          const hasServerInit = SingleData && this.state.initServiceLen > index;
+          const hasServerInit = SingleData && initServiceLen > index;
           const initPort = hasServerInit
             ? SingleData.pathList[index].servicePort : undefined;
           const initNetwork = hasServerInit
@@ -625,7 +623,7 @@ class CreateDomain extends Component {
 
           return (<div className="domain-network-wrap" key={data.pathIndex}>
             <FormItem
-              className="domain-network-item"
+              className="domain-network-item c7n-select_160"
               {...formItemLayout}
               key={data.pathIndex}
             >
@@ -633,7 +631,7 @@ class CreateDomain extends Component {
                 rules: [{
                   validator: this.checkPath,
                 }],
-                initialValue: SingleData && this.state.initServiceLen > index
+                initialValue: SingleData && initServiceLen > index
                   ? SingleData.pathList[index].path.slice(1) : '',
               })(
                 <Input
@@ -647,7 +645,7 @@ class CreateDomain extends Component {
               )}
             </FormItem>
             <FormItem
-              className="domain-network-item"
+              className="domain-network-item c7n-select_160"
               {...formItemLayout}
             >
               {getFieldDecorator(`network-${data.networkIndex}`, {
@@ -697,7 +695,7 @@ class CreateDomain extends Component {
               )}
             </FormItem>
             <FormItem
-              className="domain-network-item"
+              className="domain-network-item c7n-select_160"
               {...formItemLayout}
             >
               {getFieldDecorator(`port-${data.portIndex}`, {
@@ -736,21 +734,21 @@ class CreateDomain extends Component {
           </Tooltip>
         </div>
       </Form>
-    </div>) : null;
-    return (
+    </Content>) : null;
+    return (<div className="c7n-region">
       <Sidebar
+        destroyOnClose
         okText={type === 'create' ? intl.formatMessage({ id: 'create' }) : intl.formatMessage({ id: 'save' })}
         cancelText={intl.formatMessage({ id: 'cancel' })}
         visible={visible}
-        title={title}
+        title={intl.formatMessage({ id: `domain.${type === 'create' ? 'create' : 'update'}.head` })}
         onCancel={this.handleClose}
         onOk={this.handleSubmit}
-        className="c7n-podLog-content"
-        confirmLoading={this.state.submitting}
+        confirmLoading={submitting}
       >
-        {visible ? contentDom : null}
+        {contentDom}
       </Sidebar>
-    );
+    </div>);
   }
 }
 

@@ -25,6 +25,7 @@ class CertificateHome extends Component {
       filters: {},
       postData: { searchParam: {}, param: '' },
       sorter: {
+        field: 'id',
         columnKey: 'id',
         order: 'descend',
       },
@@ -35,7 +36,6 @@ class CertificateHome extends Component {
   }
 
   componentDidMount() {
-    const { CertificateStore } = this.props;
     this.loadCertData();
   }
 
@@ -83,10 +83,13 @@ class CertificateHome extends Component {
    * @param paras
    */
   tableChange = (pagination, filters, sorter, paras) => {
-    const { CertificateStore } = this.props;
-    const { id: projectId } = AppState.currentMenuType;
     const { current, pageSize } = pagination;
     const page = current - 1;
+    const sort = _.isEmpty(sorter) ? {
+      filed: 'id',
+      columnKey: 'id',
+      order: 'descend',
+    } : sorter;
     let searchParam = {};
     let param = '';
     if (Object.keys(filters).length) {
@@ -99,17 +102,16 @@ class CertificateHome extends Component {
       searchParam,
       param,
     };
-    this.setState({ page, pageSize, filters, postData, sorter });
-    CertificateStore
-      .loadCertData(projectId, page, pageSize, sorter, postData);
+    this.setState({ page, pageSize, filters, postData, sorter: sort });
+    this.loadCertData(page, pageSize, sort, postData);
   };
 
   /**
    * 刷新
    */
   reload = () => {
-    const { page, pageSize, sort, postData } = this.state;
-    this.loadCertData(page, pageSize, sort, postData);
+    const { page, pageSize, sorter, postData } = this.state;
+    this.loadCertData(page, pageSize, sorter, postData);
   };
 
   /**

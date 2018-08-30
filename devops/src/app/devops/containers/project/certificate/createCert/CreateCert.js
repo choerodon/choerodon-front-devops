@@ -347,7 +347,7 @@ class CreateCert extends Component {
             </div>
             <div className="c7n-creation-radio">
               <div className="creation-radio-label">
-                <FormattedMessage id="choose" />
+                <FormattedMessage id="chooseType" />
               </div>
               <FormItem
                 className="c7n-select_512 creation-radio-form"

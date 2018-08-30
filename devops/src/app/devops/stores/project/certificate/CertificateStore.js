@@ -101,7 +101,7 @@ class CertificateStore {
    * @param value
    * @param envId
    */
-  checkCertName = (projectId, value, envId) => Promise.resolve(true);
+  checkCertName = (projectId, value, envId) => axios.get(`/devops/v1/projects/${projectId}/certifications/unique?env_id=${envId}&cert_name=${value}`);
 
   /**
    * 创建证书
