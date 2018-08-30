@@ -378,13 +378,13 @@ class AppTagHome extends Component {
           <Select
             className="c7n-select_512"
             value={AppTagStore.getSelectApp}
-            label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
+            label={this.props.intl.formatMessage({ id: 'chooseApp' })}
             filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
             onChange={(value, option) => this.handleSelect(value, option)}
           >
             {
-              _.map(appData, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
+              _.map(appData, app => <Option key={app.id} value={app.id}>{app.name}</Option>)
             }
           </Select>
           <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>

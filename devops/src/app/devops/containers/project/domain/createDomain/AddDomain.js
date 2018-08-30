@@ -76,7 +76,7 @@ class CreateDomain extends Component {
   }
 
   componentDidMount() {
-    const { store, id, visible, envId } = this.props;
+    const { store, id, visible, envId, form } = this.props;
     const { projectId } = this.state;
     if (id && visible) {
       store.loadDataById(projectId, id)
@@ -97,16 +97,23 @@ class CreateDomain extends Component {
               this.setState({ [i]: { deletedService: [] } });
             }
           }
-          this.setState({ initServiceLen: len, SingleData: data, protocol: certId ? 'secret' : 'normal' });
+          this.setState({
+            initServiceLen: len,
+            SingleData: data,
+            protocol: certId ? 'secret' : 'normal',
+            selectEnv: domainEnv,
+          });
           this.initPathArr(pathList.length);
           if (certId && domain && domainEnv) {
             store.loadCertByEnv(projectId, domainEnv, domain);
+            form.setFieldsValue({ certId });
           }
           store.loadNetwork(projectId, domainEnv);
         });
     }
+    // 环境总览传入envId
     if (envId) {
-      this.selectEnv(envId);
+      this.handleSelectEnv(envId);
     }
     store.loadEnv(projectId)
       .then((data) => {
@@ -262,9 +269,10 @@ class CreateDomain extends Component {
    * 选择环境
    * @param value
    */
-  selectEnv = (value) => {
+  handleSelectEnv = (value) => {
     const { store, form } = this.props;
     store.loadNetwork(this.state.projectId, value);
+    store.setCertificates([]);
     form.resetFields();
     this.setState({
       pathArr: [{ pathIndex: 0, networkIndex: 0, portIndex: 0 }],
@@ -497,7 +505,7 @@ class CreateDomain extends Component {
               loading={this.state.env.loading}
               filter
               getPopupContainer={triggerNode => triggerNode.parentNode}
-              onSelect={this.selectEnv}
+              onSelect={this.handleSelectEnv}
               showSearch
               label={intl.formatMessage({ id: 'domain.column.env' })}
               optionFilterProp="children"
@@ -542,7 +550,7 @@ class CreateDomain extends Component {
         </div>
         <div className="c7n-creation-radio">
           <div className="creation-radio-label">
-            <FormattedMessage id="choose" />
+            <FormattedMessage id="chooseType" />
           </div>
           <FormItem
             className="c7n-select_512 creation-radio-form"
@@ -595,14 +603,13 @@ class CreateDomain extends Component {
                 required: true,
                 message: intl.formatMessage({ id: 'required' }),
               }],
-              initialValue: SingleData ? SingleData.certId : '',
             })(<Select
               className="c7n-select_512"
               optionFilterProp="children"
               label={<FormattedMessage id="domain.form.cert" />}
               notFoundContent={<FormattedMessage id="domain.cert.none" />}
               getPopupContainer={triggerNode => triggerNode.parentNode}
-              filterOption={(input, option) => option.props.children[1]
+              filterOption={(input, option) => option.props.children
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0}
               filter
               showSearch

@@ -127,7 +127,7 @@ const pageDetail = {
   'appstore.link': `${docServer}/user-guide/application-management/application-market/`,
 
   // appVersion
-  'appVer.head': '项目"{name}"的应用版本',
+  'appVer.title': '项目"{name}"的应用版本',
   'appVer.description': '应用版本是应用迭代升级生成的版本。您可在此查看版本号、应用编码、应用名称以及版本生成时间。',
   'appVer.link': `${docServer}/user-guide/application-management/application-version/`,
 
@@ -220,7 +220,8 @@ const zhCN = {
   finish: '结束',
   ok: '确定',
   language: 'zh_CN',
-  choose: '选择类型',
+  chooseType: '选择类型',
+  chooseApp: '选择应用',
 
   'file.uploaded.failed': '上传失败！',
   'file.uploaded.success': '上传成功！',

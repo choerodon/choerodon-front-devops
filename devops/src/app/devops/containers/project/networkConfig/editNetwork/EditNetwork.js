@@ -787,11 +787,11 @@ class EditNetwork extends Component {
               </div>
               <div className="network-radio-wrap">
                 <div className="network-radio-label">
-                  <FormattedMessage id="choose" />
+                  <FormattedMessage id="chooseType" />
                 </div>
                 <FormItem
                   className="c7n-select_512 network-radio-form"
-                  label={<FormattedMessage id="choose" />}
+                  label={<FormattedMessage id="chooseType" />}
                   {...formItemLayout}
                 >
                   {getFieldDecorator('target', {
@@ -898,7 +898,7 @@ class EditNetwork extends Component {
               </div>
               <div className="network-radio-wrap">
                 <div className={`network-radio-label ${!getFieldValue('envId') ? 'network-radio-label_disabled' : ''}`}>
-                  <FormattedMessage id="choose" />
+                  <FormattedMessage id="chooseType" />
                 </div>
                 <FormItem
                   className="c7n-select_512 network-radio-form"
