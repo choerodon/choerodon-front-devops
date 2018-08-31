@@ -72,7 +72,9 @@ const pageDetail = {
   'container.description': '容器便于您查看和管理Kubernetes中应用实例生成的容器， 可以实时查看相关容器的地址、创建时间、状态，确定容器是否正常运行且通过健康检查，并且可以查看容器日志进行错误定位和状态监控。',
   'container.link': `${docServer}/user-guide/deployment-pipeline/container/`,
   'container.log.title': '查看容器"{name}"的日志',
+  'container.term.title': '在容器组"{name}"中运行命令',
   'container.log.description': '您可在此查看该容器的日志进行错误定位和状态监控。',
+  'container.term.description': '您可在此选择容器组下的Pod运行命令进行相关信息实时查看。',
 
   // template
   'template.head': '组织"{name}"的应用模板',
@@ -579,6 +581,7 @@ const zhCN = {
   'container.log': '容器日志',
   'container.term': '运行命令',
   'container.term.ex': '命令行',
+  'container.term.log': '日志',
   'container.log.header.title': '查看容器日志',
 
   // version feature

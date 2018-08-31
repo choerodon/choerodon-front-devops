@@ -1,7 +1,6 @@
 .c7n-content-card-wrap {
   display: block;
-  height: 95%;
-  margin: 2.5 * 8px;
+  height: 85%;
   margin-bottom: 0;
 }
 
@@ -29,9 +28,29 @@
 .c7n-content-card-content-title {
   border-bottom: 1px solid rgba(0, 0, 0, .12);
   box-sizing: border-box;
-  height: 7 * 8px;
-  line-height: 5 * 8px;
+  height: 36px;
+  line-height: 28px;
   margin: 0;
+
+  .c7n-podShell-title {
+    padding: 5px;
+    box-sizing: border-box;
+    height: 36px;
+    line-height: 28px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  .ant-select-selection-selected-value, .ant-select-arrow > i {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .ant-select-underline {
+    display: none;
+  }
 
   .c7n-title {
     font-weight: 400;
@@ -60,7 +79,7 @@
 .c7n-content-card-wrap {
   .c7n-shell-content-card {
     box-sizing: border-box;
-    height: 90%;
+    height: 100%;
     margin: 0;
     padding: 2.5 * 8px;
 
@@ -81,12 +100,12 @@
 }
 
 .c7n-padding {
-  padding: 8px;
+  padding: 5px;
 }
 
 .c7n-md-title {
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 400;
   letter-spacing: .005em;
 }
 
@@ -95,7 +114,7 @@
   margin: 0;
 
   .md-select-value {
-    font-size: 20px;
+    font-size: 14px;
     min-width: 20 * 8px;
   }
 
