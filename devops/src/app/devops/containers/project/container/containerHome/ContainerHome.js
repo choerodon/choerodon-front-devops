@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Table, Button, Modal, Tooltip, Icon } from 'choerodon-ui';
+import { Table, Button, Modal, Tooltip, Icon, Select } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import CodeMirror from 'react-codemirror';
 import _ from 'lodash';
@@ -20,6 +20,7 @@ import './ContainerHome.scss';
 import './Term.scss';
 
 const Sidebar = Modal.Sidebar;
+const Option = Select.Option;
 const { AppState } = stores;
 
 @commonComponent('ContainerStore')
@@ -37,6 +38,7 @@ class ContainerHome extends Component {
       page: 0,
       showSide: false,
       showDebug: false,
+      containerArr: [],
     };
     this.timer = null;
   }
@@ -52,6 +54,36 @@ class ContainerHome extends Component {
       this.closeTerm();
     }
   }
+
+  /**
+  * 切换container日志
+  * @param value
+  */
+  containerChange = (value) => {
+    if (this.state.ws) {
+      this.state.ws.close();
+    }
+    this.setState({
+      containerName: value.split('+')[1],
+      logId: value.split('+')[0],
+    });
+    this.loadLog();
+  };
+
+  /**
+   * 切换container shell
+   * @param value
+   */
+  termChange = (value) => {
+    if (this.conn) {
+      this.onConnectionClose();
+    }
+    this.setState({
+      containerName: value.split('+')[1],
+      logId: value.split('+')[0],
+    });
+    this.onTerminalReady();
+  };
 
   /**
    * TerminalReady
@@ -82,7 +114,6 @@ class ContainerHome extends Component {
   onConnectionOpen() {
     this.io.onVTKeystroke = this.onTerminalVTKeystroke.bind(this);
     this.io.sendString = this.onTerminalSendString.bind(this);
-    this.io.onTerminalResize = this.onTerminalResize.bind(this);
   }
 
   /**
@@ -114,7 +145,6 @@ class ContainerHome extends Component {
    * @param str
    */
   onTerminalVTKeystroke(str) {
-    // this.conn.send(JSON.stringify({ Op: 'stdin', Data: str }));
     this.conn.send(str);
   }
 
@@ -123,17 +153,7 @@ class ContainerHome extends Component {
    * @param str
    */
   onTerminalSendString(str) {
-    // this.conn.send(JSON.stringify({ Op: 'stdin', Data: str }));
     this.conn.send(str);
-  }
-
-  /**
-   * Attached to hterm.io.onTerminalResize
-   * @param columns
-   * @param rows
-   */
-  onTerminalResize(columns, rows) {
-    // this.conn.send(JSON.stringify({ Op: 'resize', Cols: columns, Rows: rows }));
   }
 
   /**
@@ -384,14 +404,17 @@ class ContainerHome extends Component {
     const projectId = AppState.currentMenuType.id;
     ContainerStore.loadPodParam(projectId, record.id)
       .then((data) => {
-        this.setState({
-          envId: record.envId,
-          namespace: record.namespace,
-          podName: data.podName,
-          containerName: data.containerName,
-          logId: data.logId,
-          showSide: true,
-        });
+        if (data.length) {
+          this.setState({
+            envId: record.envId,
+            namespace: record.namespace,
+            containerArr: data,
+            podName: data[0].podName,
+            containerName: data[0].containerName,
+            logId: data[0].logId,
+            showSide: true,
+          });
+        }
         this.loadLog();
       });
   };
@@ -425,9 +448,10 @@ class ContainerHome extends Component {
         this.setState({
           envId: record.envId,
           namespace: record.namespace,
-          podName: data.podName,
-          containerName: data.containerName,
-          logId: data.logId,
+          containerArr: data,
+          podName: data[0].podName,
+          containerName: data[0].containerName,
+          logId: data[0].logId,
           showDebug: true,
         });
         this.openTerminal();
@@ -436,7 +460,7 @@ class ContainerHome extends Component {
 
   render() {
     const { ContainerStore } = this.props;
-    const { showSide, podName, containerName, showDebug } = this.state;
+    const { showSide, podName, containerArr, showDebug } = this.state;
     const serviceData = ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
@@ -460,6 +484,8 @@ class ContainerHome extends Component {
         />
       </Content>
     </React.Fragment>);
+
+    const containerDom = containerArr.length && (_.map(containerArr, c => <Option key={c.logId} value={`${c.logId}+${c.containerName}`}>{c.containerName}</Option>));
 
     const options = {
       readOnly: true,
@@ -488,13 +514,22 @@ class ContainerHome extends Component {
         >
           <Content className="sidebar-content" code="container.log" values={{ name: podName }}>
             <section className="c7n-podLog-section">
-              <CodeMirror
-                ref={(editor) => { this.editorLog = editor; }}
-                value="Loading..."
-                className="c7n-podLog-editor"
-                onChange={code => this.props.ChangeCode(code)}
-                options={options}
-              />
+              <div className="c7n-podLog-hei-wrap">
+                <div className="c7n-podShell-title">
+                  <FormattedMessage id="container.term.log" />&nbsp;
+                  <Select defaultValue={containerArr.length && `${containerArr[0].logId}+${containerArr[0].containerName}`} onChange={this.containerChange}>
+                    {containerDom}
+                  </Select>
+                  &nbsp;In&nbsp;{podName}
+                </div>
+                <CodeMirror
+                  ref={(editor) => { this.editorLog = editor; }}
+                  value="Loading..."
+                  className="c7n-podLog-editor"
+                  onChange={code => this.props.ChangeCode(code)}
+                  options={options}
+                />
+              </div>
             </section>
           </Content>
         </Sidebar>
@@ -507,24 +542,29 @@ class ContainerHome extends Component {
           okCancel={false}
           destroyOnClose
         >
-          <div className="c7n-content-card-wrap c7n-shell-content-card">
-            <div className="c7n-content-card">
-              <div className="c7n-content-card-content">
-                <div className="c7n-content-card-content-title c7n-md-title c7n-padding">
-                  <div className="c7n-shell-title">
-                    <FormattedMessage id="container.term.ex" />&nbsp;
-                    {containerName}&nbsp;In&nbsp;{podName}
+          <Content className="sidebar-content" code="container.term" values={{ name: podName }}>
+            <div className="c7n-content-card-wrap c7n-shell-content-card">
+              <div className="c7n-content-card">
+                <div className="c7n-content-card-content">
+                  <div className="c7n-content-card-content-title c7n-md-title c7n-padding">
+                    <div className="c7n-shell-title">
+                      <FormattedMessage id="container.term.ex" />&nbsp;
+                      <Select defaultValue={containerArr.length && `${containerArr[0].logId}+${containerArr[0].containerName}`} onChange={this.termChange}>
+                        {containerDom}
+                      </Select>
+                      &nbsp;In&nbsp;{podName}
+                    </div>
                   </div>
-                </div>
-                <div className="c7n-content-card-transclude-content">
-                  <div className="c7n-content">
-                    <div className="c7n-shell-term" id="c7n-shell-term" />
+                  <div className="c7n-content-card-transclude-content">
+                    <div className="c7n-content">
+                      <div className="c7n-shell-term" id="c7n-shell-term" />
+                    </div>
                   </div>
+                  <div className="c7n-content-card-content-footer" />
                 </div>
-                <div className="c7n-content-card-content-footer" />
               </div>
             </div>
-          </div>
+          </Content>
         </Sidebar>
       </Page>
     );

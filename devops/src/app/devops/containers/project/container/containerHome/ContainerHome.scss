@@ -60,6 +60,10 @@
   .ant-modal-body {
     height: 80% !important;
   }
+
+  .sidebar-content {
+    height: 100%;
+  }
 }
 
 .c7n-podLog-icon {
@@ -77,7 +81,38 @@
 }
 
 .c7n-podLog-section {
-  margin: 32px 0;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, .12);
+  border-radius: 2px;
+  height: 85%;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .2), 0 1px 1px 0 rgba(0, 0, 0, .14), 0 2px 1px -1px rgba(0, 0, 0, .12);
+
+  .c7n-podLog-hei-wrap {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .c7n-podShell-title {
+    padding: 5px;
+    box-sizing: border-box;
+    height: 36px;
+    line-height: 28px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  .ant-select-underline {
+    display: none;
+  }
+
+  .ant-select-selection-selected-value, .ant-select-arrow > i {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
   .CodeMirror-selected {
     background-color: rgba(255, 255, 255, .25) !important;
   }
@@ -140,8 +175,13 @@
 }
 
 .c7n-podLog-editor {
+  height: 100%;
+  display: flex;
+  flex: 1;
+
   .CodeMirror {
-    height: 500px;
+    height: 100%;
+    flex: 1;
   }
 }
 
