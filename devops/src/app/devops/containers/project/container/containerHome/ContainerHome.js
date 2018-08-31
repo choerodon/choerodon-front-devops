@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Table, Button, Modal, Tooltip, Popover } from 'choerodon-ui';
+import { Table, Button, Modal, Tooltip, Popover, Select } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import CodeMirror from 'react-codemirror';
 import _ from 'lodash';
@@ -16,6 +16,7 @@ import '../../../main.scss';
 import './ContainerHome.scss';
 
 const Sidebar = Modal.Sidebar;
+const Option = Select.Option;
 const { AppState } = stores;
 
 @commonComponent('ContainerStore')
@@ -28,6 +29,7 @@ class ContainerHome extends Component {
       id: '',
       show: false,
       name: '',
+      containerArr: [],
       showSide: false,
     };
     this.timer = null;
@@ -42,6 +44,21 @@ class ContainerHome extends Component {
       this.closeSidebar();
     }
   }
+
+  /**
+   * 切换container日志
+   * @param value
+   */
+  containerChange = (value) => {
+    if (this.state.ws) {
+      this.state.ws.close();
+    }
+    this.setState({
+      containerName: value.split('+')[1],
+      logId: value.split('+')[0],
+    });
+    this.loadLog();
+  };
 
   /**
    * 获取行
@@ -242,14 +259,17 @@ class ContainerHome extends Component {
     const projectId = AppState.currentMenuType.id;
     ContainerStore.loadPodParam(projectId, record.id)
       .then((data) => {
-        this.setState({
-          envId: record.envId,
-          namespace: record.namespace,
-          podName: data.podName,
-          containerName: data.containerName,
-          logId: data.logId,
-          showSide: true,
-        });
+        if(data.length) {
+          this.setState({
+            envId: record.envId,
+            namespace: record.namespace,
+            containerArr: data,
+            podName: data[0].podName,
+            containerName: data[0].containerName,
+            logId: data[0].logId,
+            showSide: true,
+          });
+        }
         this.loadLog();
       });
   };
@@ -260,7 +280,6 @@ class ContainerHome extends Component {
   closeSidebar = () => {
     clearInterval(this.timer);
     this.timer = null;
-    const { ContainerStore } = this.props;
     const { ws, page } = this.state;
     if (ws) {
       ws.close();
@@ -274,7 +293,7 @@ class ContainerHome extends Component {
 
   render() {
     const { ContainerStore } = this.props;
-    const { containerName, showSide } = this.state;
+    const { podName, containerArr, showSide } = this.state;
     const serviceData = ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
@@ -298,6 +317,8 @@ class ContainerHome extends Component {
         />
       </Content>
     </React.Fragment>);
+
+    const containerDom = containerArr.length && (_.map(containerArr, c => <Option key={c.logId} value={`${c.logId}+${c.containerName}`}>{c.containerName}</Option>));
 
     const options = {
       readOnly: true,
@@ -324,8 +345,15 @@ class ContainerHome extends Component {
           okCancel={false}
           destroyOnClose
         >
-          <Content className="sidebar-content" code={'container.log'} values={{ name: containerName }}>
+          <Content className="sidebar-content" code={'container.log'} values={{ name: podName }}>
             <section className="c7n-podLog-section">
+              <div className="c7n-podShell-title">
+                日志&nbsp;
+                <Select defaultValue={containerArr.length && `${containerArr[0].logId}+${containerArr[0].containerName}`} onChange={this.containerChange}>
+                  {containerDom}
+                </Select>
+                &nbsp;In&nbsp;{podName}
+              </div>
               <CodeMirror
                 ref={(editor) => { this.editorLog = editor; }}
                 value="No Logs"
