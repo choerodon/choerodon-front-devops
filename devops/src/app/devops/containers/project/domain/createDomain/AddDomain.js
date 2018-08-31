@@ -73,6 +73,7 @@ class CreateDomain extends Component {
       protocol: 'normal',
       selectEnv: null,
     };
+    this.pathKeys = 1;
   }
 
   componentDidMount() {
@@ -230,40 +231,60 @@ class CreateDomain extends Component {
     }
   };
 
+  addPath = () => {
+    const { getFieldValue, setFieldsValue } = this.props.form;
+    const keys = getFieldValue('paths');
+    const uuid = this.pathKeys;
+    const nextKeys = _.concat(keys, uuid);
+    this.pathKeys = uuid + 1;
+    setFieldsValue({
+      paths: nextKeys,
+    });
+  };
   /**
    * 添加路径
    */
-  addPath =() => {
-    const { pathArr } = this.state;
-    let index = 0;
-    if (pathArr.length) {
-      index = pathArr[pathArr.length - 1].pathIndex + 1;
-      pathArr.push({
-        pathIndex: index,
-        networkIndex: index,
-        portIndex: index,
-      });
-      this.checkAllPath(true);
-    } else {
-      index = 0;
-      pathArr.push({
-        pathIndex: 0,
-        networkIndex: 0,
-        portIndex: 0,
-      });
-    }
-    this.setState({ pathArr, [index]: { deletedService: this.state[index - 1].deletedService } });
-  };
+  // addPath =() => {
+  //   const { pathArr } = this.state;
+  //   let index = 0;
+  //   if (pathArr.length) {
+  //     index = pathArr[pathArr.length - 1].pathIndex + 1;
+  //     pathArr.push({
+  //       pathIndex: index,
+  //       networkIndex: index,
+  //       portIndex: index,
+  //     });
+  //     this.checkAllPath(true);
+  //   } else {
+  //     index = 0;
+  //     pathArr.push({
+  //       pathIndex: 0,
+  //       networkIndex: 0,
+  //       portIndex: 0,
+  //     });
+  //   }
+  //   this.setState({ pathArr, [index]: { deletedService: this.state[index - 1].deletedService } });
+  // };
 
+  removePath = (k) => {
+    const { getFieldValue, setFieldsValue } = this.props.form;
+    const keys = getFieldValue('paths');
+    if (keys.length === 1) {
+      return;
+    }
+    setFieldsValue({
+      paths: _.filter(keys, key => key !== k),
+    });
+  };
   /**
    * 删除路径
    * @param index 路径数组的索引
    */
-  removePath =(index) => {
-    const { pathArr, initServiceLen } = this.state;
-    pathArr.splice(index, 1);
-    this.setState({ pathArr, initServiceLen: initServiceLen - 1 });
-  };
+  // removePath =(index) => {
+  //   const { pathArr, initServiceLen } = this.state;
+  //   pathArr.splice(index, 1);
+  //   this.setState({ pathArr, initServiceLen: initServiceLen - 1 });
+  // };
 
   /**
    * 选择环境
@@ -300,70 +321,42 @@ class CreateDomain extends Component {
    */
   checkAllPath = (flag) => {
     this.setState({ pathChange: flag });
-  }
+  };
 
-  /**
-   * 检查域名和路径组合的唯一性
-   * @type {Function}
-   */
-  checkPath =(rule, value, callback) => {
-    const { pathArr } = this.state;
-    const patt = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)$/;
-    const domain = this.props.form.getFieldValue('domain');
-    const index = parseInt(rule.field.split('-')[1], 10);
-    const paths = [];
-    for (let i = 0; i < pathArr.length; i += 1) {
-      const p = `/${this.props.form.getFieldValue(`path-${pathArr[i].pathIndex}`)}`;
-      if (i !== index) {
-        paths.push(p);
-      }
-    }
-    if (paths.includes(`/${value}`) && value) {
-      callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
-    } else if (value) {
-      if (patt.test(value)) {
-        if (paths.includes(`/${value}`)) {
-          callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
+  checkPath = (rule, value, callback) => {
+    const { form, intl, store, type } = this.props;
+    const { initServiceLen, projectId } = this.state;
+    const { getFieldValue, getFieldError } = form;
+    const p = /^\/([a-zA-Z0-9]+(\/[a-zA-Z0-9]+)*)*$/;
+    const count = _.countBy(getFieldValue('paths'));
+    const domain = getFieldValue('domain');
+    const domainError = getFieldError('domain');
+    if (p.test(`/${value}`)) {
+      if (count[`/${value}`] < 2 && !domainError) {
+        let checkPromise = null;
+        if (type === 'edit') {
+          // && initServiceLen > index
+          // const {
+          //   SingleData: {
+          //     id,
+          //     pathList,
+          //     domain: dataDomain,
+          //   },
+          // } = this.state;
+          // if (pathList[index].path.slice(1) === value && domain === dataDomain) {
+          //   callback();
+          // } else {
+          //   checkPromise = store.checkPath(projectId, domain, `/${value}`, id);
+          // }
         } else {
-          const { store } = this.props;
-          if (this.props.type === 'edit' && this.state.initServiceLen > index) {
-            const { id } = this.state.SingleData;
-            const v = this.state.SingleData.pathList[index].path
-              .slice(1, this.state.SingleData.pathList[index].path.length);
-            if (v === value && domain === this.state.SingleData.domain) {
-              callback();
-            } else {
-              store.checkPath(this.state.projectId, domain, `/${value}`, id)
-                .then((data) => {
-                  if (data) {
-                    callback();
-                  } else {
-                    callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
-                  }
-                })
-                .catch((error) => {
-                  callback();
-                });
-            }
-          } else {
-            store.checkPath(this.state.projectId, domain, `/${value}`)
-              .then((data) => {
-                if (data) {
-                  callback();
-                } else {
-                  callback(this.props.intl.formatMessage({ id: 'domain.path.check.exist' }));
-                }
-              })
-              .catch((error) => {
-                callback();
-              });
-          }
+          checkPromise = store.checkPath(projectId, domain, `/${value}`);
         }
+        this.handleCheckResponse(checkPromise, callback);
       } else {
-        callback(this.props.intl.formatMessage({ id: 'domain.name.check.failed' }));
+        callback(intl.formatMessage({ id: 'domain.path.check.exist' }));
       }
     } else {
-      callback();
+      callback(intl.formatMessage({ id: 'domain.path.check.failed' }));
     }
   };
 
@@ -372,20 +365,86 @@ class CreateDomain extends Component {
    * @type {Function}
    */
   checkDomain = (rule, value, callback) => {
-    const { intl, form } = this.props;
+    const { intl, form: { getFieldValue, getFieldError }, store } = this.props;
+    const { projectId } = this.state;
     const patt = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)+)$/;
     if (patt.test(value)) {
+      let checkPromise = null;
+      const paths = getFieldValue('paths');
+      if (paths.length === 1) {
+        const path = getFieldValue();
+        checkPromise = store.checkPath(projectId, value, );
+      }
+      const checkComb = [];
+      // _.forEach(paths, )
       callback();
     } else {
-      callback(intl.formatMessage({ id: 'domain.name.check.failed' }));
+      callback(intl.formatMessage({ id: 'domain.domain.check.failed' }));
     }
-    const { pathArr } = this.state;
-    const fields = [];
-    pathArr.map((path) => {
-      fields.push(`path-${path.pathIndex}`);
-      return fields;
-    });
-    form.validateFields(fields, { force: true });
+  };
+
+  /**
+   * 检查域名和路径组合的唯一性
+   * @type {Function}
+   */
+  oldCheckPath = (rule, value, callback) => {
+    const { form: { getFieldValue, getFieldError }, intl, store, type } = this.props;
+    const { pathArr, initServiceLen, projectId } = this.state;
+    const patt = /^\/([a-zA-Z0-9]+(\/[a-zA-Z0-9]+)*)*$/;
+    const domain = getFieldValue('domain');
+    const domainError = getFieldError('domain');
+    const index = parseInt(rule.field.split('-')[1], 10);
+    // 获取所有path
+    const paths = [];
+    for (let i = 0; i < pathArr.length; i += 1) {
+      const p = `/${getFieldValue(`path-${pathArr[i].pathIndex}`)}`;
+      paths.push(p);
+    }
+    const pathCount = _.countBy(paths);
+    if (pathCount[`/${value}`] > 1) {
+      callback(intl.formatMessage({ id: 'domain.path.check.exist' }));
+    } else if (patt.test(`/${value}`) && !domainError) {
+      let checkPromise = null;
+      if (type === 'edit' && initServiceLen > index) {
+        const {
+          SingleData: {
+            id,
+            pathList,
+            domain: dataDomain,
+          },
+        } = this.state;
+        if (pathList[index].path.slice(1) === value && domain === dataDomain) {
+          callback();
+        } else {
+          checkPromise = store.checkPath(projectId, domain, `/${value}`, id);
+        }
+      } else {
+        checkPromise = store.checkPath(projectId, domain, `/${value}`);
+      }
+      this.handleCheckResponse(checkPromise, callback);
+    } else {
+      callback(intl.formatMessage({ id: 'domain.path.check.failed' }));
+    }
+  };
+
+  /**
+   * 处理校验返回结果
+   * @param promise
+   * @param callback
+   */
+  handleCheckResponse = (promise, callback) => {
+    const { intl } = this.props;
+    if (promise) {
+      promise.then((data) => {
+        if (data) {
+          callback();
+        } else {
+          callback(intl.formatMessage({ id: 'domain.path.check.exist' }));
+        }
+      }).catch((error) => {
+        callback();
+      });
+    }
   };
 
   /**
@@ -453,18 +512,34 @@ class CreateDomain extends Component {
 
   render() {
     const { store, form, intl, type, visible, envId } = this.props;
-    const { getFieldDecorator, getFieldValue } = form;
+    const { getFieldDecorator, getFieldValue, getFieldsError } = form;
     const { name } = AppState.currentMenuType;
-    const { pathArr, SingleData, env, portInNetwork, protocol, initServiceLen, submitting } = this.state;
+    const {
+      pathArr,
+      SingleData,
+      env,
+      portInNetwork,
+      protocol,
+      initServiceLen,
+      submitting,
+    } = this.state;
     const network = store.getNetwork;
-    let addStatus = true;
-    // 判断path是否有值
-    if (pathArr.length) {
-      const hasValue = getFieldValue(`path-${pathArr[pathArr.length - 1].pathIndex}`) || (SingleData && SingleData.pathList);
-      if (hasValue) {
-        addStatus = false;
-      }
-    }
+    // 是否还存在校验未通过的path值
+    // const pathsError = getFieldsError(_.map(pathArr, item => `path-${item.pathIndex}`));
+    // let hasPathError = false;
+    // let addStatus = true;
+    // _.forEach(pathsError, (pv, pk) => {
+    //   if (pv) {
+    //     hasPathError = true;
+    //   }
+    // });
+    // // 判断path是否有值
+    // if (pathArr.length) {
+    //   const hasValue = getFieldValue(`path-${pathArr[pathArr.length - 1].pathIndex}`) || (SingleData && SingleData.pathList);
+    //   if (hasValue && !hasPathError) {
+    //     addStatus = false;
+    //   }
+    // }
     const portWithNetwork = {};
     _.forEach(network, (item) => {
       const { config: { ports }, id } = item;
@@ -473,268 +548,121 @@ class CreateDomain extends Component {
       portWithNetwork[id] = port;
     });
     const initEnvId = envId ? Number(envId) : undefined;
-    const contentDom = visible ? (<Content
-      code={`domain.${type === 'create' ? 'create' : 'update'}`}
-      values={{ name }}
-      className="sidebar-content c7n-domainCreate-wrapper"
-    >
-      <Form layout="vertical" onSubmit={this.handleSubmit}>
+    getFieldDecorator('paths', { initialValue: [0] });
+    const paths = getFieldValue('paths');
+    const pathItem = _.map(paths, (k, index) => {
+      const hasServerInit = SingleData && initServiceLen > index;
+      const initPort = hasServerInit ? SingleData.pathList[index].servicePort : undefined;
+      const initNetwork = hasServerInit ? SingleData.pathList[index].serviceId : undefined;
+      const initPath = hasServerInit ? SingleData.pathList[index].path.slice(1) : '';
+      // 生成端口选项
+      const portOption = (type === 'edit' && portInNetwork.length === 0 && hasServerInit)
+        ? portWithNetwork[SingleData.pathList[index].serviceId] : portInNetwork;
+      return (<div className="domain-network-wrap" key={`paths-${k}`}>
         <FormItem
-          className="c7n-domain-formItem c7n-select_512"
+          className="domain-network-item c7n-select_160"
           {...formItemLayout}
         >
-          {getFieldDecorator('envId', {
+          {getFieldDecorator(`path[${k}]`, {
             rules: [{
-              required: true,
-              message: intl.formatMessage({ id: 'required' }),
+              validator: this.checkPath,
             }],
-            initialValue: SingleData ? SingleData.envId : initEnvId,
-          })(
-            <Select
-              dropdownClassName="c7n-domain-env"
-              onFocus={this.loadEnv}
-              loading={env.loading}
-              filter
-              getPopupContainer={triggerNode => triggerNode.parentNode}
-              onSelect={this.handleSelectEnv}
-              showSearch
-              label={intl.formatMessage({ id: 'domain.column.env' })}
-              optionFilterProp="children"
-              filterOption={(input, option) => option.props.children[2]
-                .toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            >
-              {env.dataSource.map(v => (
-                <Option value={v.id} key={`${v.id}-env`} disabled={!v.connect}>
-                  {!v.connect && <span className="env-status-error" />}
-                  {v.connect && <span className="env-status-success" />}
-                  {v.name}
-                </Option>
-              ))}
-            </Select>,
-          )}
-        </FormItem>
-        <FormItem
-          className="c7n-domain-formItem c7n-select_512"
-          {...formItemLayout}
-        >
-          {getFieldDecorator('name', {
-            rules: [{
-              required: true,
-              whitespace: true,
-              message: intl.formatMessage({ id: 'required' }),
-            }, {
-              validator: this.checkName,
-            }],
-            initialValue: SingleData ? SingleData.name : '',
+            initialValue: initPath,
           })(
             <Input
-              disabled={!((getFieldValue('envId')) && !(SingleData && SingleData.name))}
-              maxLength={40}
-              label={intl.formatMessage({ id: 'domain.column.name' })}
+              prefix="/"
+              onChange={this.checkAllPath.bind(this, true)}
+              disabled={!(form.getFieldValue('domain'))}
+              maxLength={10}
+              label={intl.formatMessage({ id: 'domain.column.path' })}
               size="default"
             />,
           )}
         </FormItem>
-        <div className="c7n-creation-title">
-          <Icon type="language" />
-          <FormattedMessage id="domain.protocol" />
-        </div>
-        <div className="c7n-creation-radio">
-          <div className="creation-radio-label">
-            <FormattedMessage id="chooseType" />
-          </div>
-          <FormItem
-            className="c7n-select_512 creation-radio-form"
-            label={<FormattedMessage id="ctf.target.type" />}
-            {...formItemLayout}
-          >
-            {getFieldDecorator('type', {
-              initialValue: protocol,
-            })(<RadioGroup
-              disabled={!getFieldValue('envId')}
-              name="type"
-              onChange={this.handleTypeChange}
-            >
-              <Radio value="normal"><FormattedMessage id="domain.protocol.normal" /></Radio>
-              <Radio value="secret"><FormattedMessage id="domain.protocol.secret" /></Radio>
-            </RadioGroup>)}
-          </FormItem>
-        </div>
-        <div className="c7n-creation-panel">
-          <FormItem
-            className="c7n-select_480 creation-form-item"
-            {...formItemLayout}
-          >
-            {getFieldDecorator('domain', {
-              rules: [{
-                required: true,
-                whitespace: true,
-                message: intl.formatMessage({ id: 'required' }),
-              }, {
-                validator: this.checkDomain,
-              }],
-              initialValue: SingleData ? SingleData.domain : '',
-            })(
-              <Input
-                disabled={!(form.getFieldValue('envId'))}
-                maxLength={50}
-                type="text"
-                label={intl.formatMessage({ id: 'domain.form.domain' })}
-                size="default"
-                onBlur={this.loadCertByDomain}
-              />,
-            )}
-          </FormItem>
-          {protocol === 'secret' ? (<FormItem
-            className="c7n-select_480 creation-form-item"
-            {...formItemLayout}
-          >
-            {getFieldDecorator('certId', {
-              rules: [{
-                required: true,
-                message: intl.formatMessage({ id: 'required' }),
-              }],
-            })(<Select
-              className="c7n-select_512"
-              optionFilterProp="children"
-              label={<FormattedMessage id="domain.form.cert" />}
-              notFoundContent={<FormattedMessage id="domain.cert.none" />}
+        <FormItem
+          className="domain-network-item c7n-select_160"
+          {...formItemLayout}
+        >
+          {getFieldDecorator(`network[${k}]`, {
+            rules: [{
+              required: true,
+              message: intl.formatMessage({ id: 'required' }),
+            }, {
+              validator: this.checkService,
+            }],
+            initialValue: initNetwork,
+          })(
+            <Select
               getPopupContainer={triggerNode => triggerNode.parentNode}
-              filterOption={(input, option) => option.props.children
-                .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              disabled={!(getFieldValue('envId'))}
               filter
+              label={intl.formatMessage({ id: 'domain.column.network' })}
               showSearch
+              dropdownMatchSelectWidth
+              onSelect={this.handleSelectNetwork.bind(this, network)}
+              size="default"
+              optionFilterProp="children"
+              optionLabelProp="children"
+              filterOption={
+                (input, option) => option.props.children[1]
+                  .toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
             >
-              {_.map(store.getCertificates, item => (<Option value={item.id} key={item.id}>
-                {item.certName}
-              </Option>))}
-            </Select>)}
-          </FormItem>) : null}
-        </div>
-        {pathArr.length >= 1 && pathArr.map((data, index) => {
-          const hasServerInit = SingleData && initServiceLen > index;
-          const initPort = hasServerInit
-            ? SingleData.pathList[index].servicePort : undefined;
-          const initNetwork = hasServerInit
-            ? SingleData.pathList[index].serviceId : undefined;
-          // 生成端口选项
-          const portOption = (type === 'edit' && portInNetwork.length === 0 && hasServerInit)
-            ? portWithNetwork[SingleData.pathList[index].serviceId] : portInNetwork;
-
-          return (<div className="domain-network-wrap" key={data.pathIndex}>
-            <FormItem
-              className="domain-network-item c7n-select_160"
-              {...formItemLayout}
-              key={data.pathIndex}
-            >
-              {getFieldDecorator(`path-${data.pathIndex}`, {
-                rules: [{
-                  validator: this.checkPath,
-                }],
-                initialValue: SingleData && initServiceLen > index
-                  ? SingleData.pathList[index].path.slice(1) : '',
-              })(
-                <Input
-                  prefix="/"
-                  onChange={this.checkAllPath.bind(this, true)}
-                  disabled={!(form.getFieldValue('domain'))}
-                  maxLength={10}
-                  label={intl.formatMessage({ id: 'domain.column.path' })}
-                  size="default"
-                />,
-              )}
-            </FormItem>
-            <FormItem
-              className="domain-network-item c7n-select_160"
-              {...formItemLayout}
-            >
-              {getFieldDecorator(`network-${data.networkIndex}`, {
-                rules: [{
-                  required: true,
-                  message: intl.formatMessage({ id: 'required' }),
-                }, {
-                  validator: this.checkService,
-                }],
-                initialValue: initNetwork,
-              })(
-                <Select
-                  getPopupContainer={triggerNode => triggerNode.parentNode}
-                  disabled={!(getFieldValue('envId'))}
-                  filter
-                  label={intl.formatMessage({ id: 'domain.column.network' })}
-                  showSearch
-                  dropdownMatchSelectWidth
-                  onSelect={this.handleSelectNetwork.bind(this, network)}
-                  size="default"
-                  optionFilterProp="children"
-                  optionLabelProp="children"
-                  filterOption={
-                    (input, option) => option.props.children[1]
-                      .toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  {this.state[data.pathIndex].deletedService.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
-                    {<React.Fragment>
-                      {datas.status && datas.status === 'deleted' ? <div className={datas.status && datas.status === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
-                        {datas.status && datas.status === 'deleted' && <div>{intl.formatMessage({ id: 'deleted' })}</div>}
-                      </div> : <React.Fragment>
-                        {datas.status && datas.status === 'failed' ? <div className={datas.status && datas.status === 'failed' && 'c7n-domain-create-status c7n-domain-create-status_failed'}>
-                          {datas.status && datas.status === 'failed' && <div>{intl.formatMessage({ id: 'failed' })}</div> }
-                        </div> : <div className={datas.status && datas.status === 'operating' && 'c7n-domain-create-status c7n-domain-create-status_operating'}>
-                          {datas.status && datas.status === 'operating' && <div>{intl.formatMessage({ id: 'operating' })}</div>}
-                        </div> }
-                      </React.Fragment> }
-                    </React.Fragment>}
-                    {datas.name}</Option>))}
-                  {network.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
-                    <div className="c7n-domain-create-status c7n-domain-create-status_running">
-                      <div>{intl.formatMessage({ id: 'running' })}</div>
-                    </div>
-                    {datas.name}</Option>))}
-                </Select>,
-              )}
-            </FormItem>
-            <FormItem
-              className="domain-network-item c7n-select_160"
-              {...formItemLayout}
-            >
-              {getFieldDecorator(`port-${data.portIndex}`, {
-                trigger: ['onChange', 'onSubmit'],
-                rules: [{
-                  required: true,
-                  message: intl.formatMessage({ id: 'required' }),
-                }, {
-                  validator: this.checkPorts.bind(this, portOption),
-                }],
-                initialValue: initPort,
-              })(<Select
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-                disabled={!(getFieldValue(`network-${data.networkIndex}`))}
-                filter
-                label={intl.formatMessage({ id: 'domain.column.port' })}
-                showSearch
-                dropdownMatchSelectWidth
-                size="default"
-                optionFilterProp="children"
-                optionLabelProp="children"
-                filterOption={(input, option) => option.props.children.toString()
-                  .toLowerCase().indexOf(input.toString().toLowerCase()) >= 0}
-              >
-                {_.map(portOption, item => (<Option key={item} value={item}>{item}</Option>))}
-              </Select>)}
-            </FormItem>
-            { pathArr.length > 1 ? <Button shape="circle" className="c7n-domain-icon-delete" onClick={this.removePath.bind(this, index)}>
-              <i className="icon icon-delete" />
-            </Button> : <i className="icon icon-delete c7n-app-icon-disabled" />}
-          </div>);
-        })}
-        <div className="c7n-domain-btn-wrapper">
-          <Tooltip title={addStatus ? intl.formatMessage({ id: 'domain.path.isnull' }) : ''}>
-            <Button className="c7n-domain-btn" onClick={this.addPath} type="primary" disabled={addStatus} icon="add">{intl.formatMessage({ id: 'domain.path.add' })}</Button>
-          </Tooltip>
-        </div>
-      </Form>
-    </Content>) : null;
+              {/* {this.state[index].deletedService.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
+              {<React.Fragment>
+                {datas.status && datas.status === 'deleted' ? <div className={datas.status && datas.status === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
+                  {datas.status && datas.status === 'deleted' && <div>{intl.formatMessage({ id: 'deleted' })}</div>}
+                </div> : <React.Fragment>
+                  {datas.status && datas.status === 'failed' ? <div className={datas.status && datas.status === 'failed' && 'c7n-domain-create-status c7n-domain-create-status_failed'}>
+                    {datas.status && datas.status === 'failed' && <div>{intl.formatMessage({ id: 'failed' })}</div> }
+                  </div> : <div className={datas.status && datas.status === 'operating' && 'c7n-domain-create-status c7n-domain-create-status_operating'}>
+                    {datas.status && datas.status === 'operating' && <div>{intl.formatMessage({ id: 'operating' })}</div>}
+                  </div> }
+                </React.Fragment> }
+              </React.Fragment>}
+              {datas.name}</Option>))} */}
+              {network.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
+                <div className="c7n-domain-create-status c7n-domain-create-status_running">
+                  <div>{intl.formatMessage({ id: 'running' })}</div>
+                </div>
+                {datas.name}</Option>))}
+            </Select>,
+          )}
+        </FormItem>
+        <FormItem
+          className="domain-network-item c7n-select_160"
+          {...formItemLayout}
+        >
+          {getFieldDecorator(`port[${k}]`, {
+            trigger: ['onChange', 'onSubmit'],
+            rules: [{
+              required: true,
+              message: intl.formatMessage({ id: 'required' }),
+            }, {
+              validator: this.checkPorts.bind(this, portOption),
+            }],
+            initialValue: initPort,
+          })(<Select
+            getPopupContainer={triggerNode => triggerNode.parentNode}
+            disabled={!(getFieldValue(`network[${k}]`))}
+            filter
+            label={intl.formatMessage({ id: 'domain.column.port' })}
+            showSearch
+            dropdownMatchSelectWidth
+            size="default"
+            optionFilterProp="children"
+            optionLabelProp="children"
+            filterOption={(input, option) => option.props.children.toString()
+              .toLowerCase().indexOf(input.toString().toLowerCase()) >= 0}
+          >
+            {/* {_.map(portOption, item => (<Option key={item} value={item}>{item}</Option>))} */}
+          </Select>)}
+        </FormItem>
+        { paths.length > 1 ? <Button shape="circle" className="c7n-domain-icon-delete" onClick={this.removePath.bind(this, k)}>
+          <i className="icon icon-delete" />
+        </Button> : <i className="icon icon-delete c7n-app-icon-disabled" />}
+      </div>);
+    });
     return (<div className="c7n-region">
       <Sidebar
         destroyOnClose
@@ -746,7 +674,169 @@ class CreateDomain extends Component {
         onOk={this.handleSubmit}
         confirmLoading={submitting}
       >
-        {contentDom}
+        <Content
+          code={`domain.${type === 'create' ? 'create' : 'update'}`}
+          values={{ name }}
+          className="sidebar-content c7n-domainCreate-wrapper"
+        >
+          <Form layout="vertical" onSubmit={this.handleSubmit}>
+            <FormItem
+              className="c7n-domain-formItem c7n-select_512"
+              {...formItemLayout}
+            >
+              {getFieldDecorator('envId', {
+                rules: [{
+                  required: true,
+                  message: intl.formatMessage({ id: 'required' }),
+                }],
+                initialValue: SingleData ? SingleData.envId : initEnvId,
+              })(
+                <Select
+                  dropdownClassName="c7n-domain-env"
+                  onFocus={this.loadEnv}
+                  loading={env.loading}
+                  filter
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                  onSelect={this.handleSelectEnv}
+                  showSearch
+                  label={intl.formatMessage({ id: 'domain.column.env' })}
+                  optionFilterProp="children"
+                  filterOption={(input, option) => option.props.children[2]
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                >
+                  {env.dataSource.map(v => (
+                    <Option value={v.id} key={`${v.id}-env`} disabled={!v.connect}>
+                      {!v.connect && <span className="env-status-error" />}
+                      {v.connect && <span className="env-status-success" />}
+                      {v.name}
+                    </Option>
+                  ))}
+                </Select>,
+              )}
+            </FormItem>
+            <FormItem
+              className="c7n-domain-formItem c7n-select_512"
+              {...formItemLayout}
+            >
+              {getFieldDecorator('name', {
+                rules: [{
+                  required: true,
+                  whitespace: true,
+                  message: intl.formatMessage({ id: 'required' }),
+                }, {
+                  validator: this.checkName,
+                }],
+                initialValue: SingleData ? SingleData.name : '',
+              })(
+                <Input
+                  disabled={!((getFieldValue('envId')) && !(SingleData && SingleData.name))}
+                  maxLength={40}
+                  label={intl.formatMessage({ id: 'domain.column.name' })}
+                  size="default"
+                />,
+              )}
+            </FormItem>
+            <div className="c7n-creation-title">
+              <Icon type="language" />
+              <FormattedMessage id="domain.protocol" />
+            </div>
+            <div className="c7n-creation-radio">
+              <div className="creation-radio-label">
+                <FormattedMessage id="chooseType" />
+              </div>
+              <FormItem
+                className="c7n-select_512 creation-radio-form"
+                label={<FormattedMessage id="ctf.target.type" />}
+                {...formItemLayout}
+              >
+                {getFieldDecorator('type', {
+                  initialValue: protocol,
+                })(<RadioGroup
+                  disabled={!getFieldValue('envId')}
+                  name="type"
+                  onChange={this.handleTypeChange}
+                >
+                  <Radio value="normal"><FormattedMessage id="domain.protocol.normal" /></Radio>
+                  <Radio value="secret"><FormattedMessage id="domain.protocol.secret" /></Radio>
+                </RadioGroup>)}
+              </FormItem>
+            </div>
+            <div className="c7n-creation-panel">
+              <FormItem
+                className="c7n-select_480 creation-form-item"
+                {...formItemLayout}
+              >
+                {getFieldDecorator('domain', {
+                  rules: [{
+                    required: true,
+                    whitespace: true,
+                    message: intl.formatMessage({ id: 'required' }),
+                  }, {
+                    validator: this.checkDomain,
+                  }],
+                  initialValue: SingleData ? SingleData.domain : '',
+                })(
+                  <Input
+                    disabled={!(form.getFieldValue('envId'))}
+                    maxLength={50}
+                    type="text"
+                    label={intl.formatMessage({ id: 'domain.form.domain' })}
+                    size="default"
+                    onBlur={this.loadCertByDomain}
+                  />,
+                )}
+              </FormItem>
+              {protocol === 'secret' ? (<FormItem
+                className="c7n-select_480 creation-form-item"
+                {...formItemLayout}
+              >
+                {getFieldDecorator('certId', {
+                  rules: [{
+                    required: true,
+                    message: intl.formatMessage({ id: 'required' }),
+                  }],
+                })(<Select
+                  className="c7n-select_512"
+                  optionFilterProp="children"
+                  label={<FormattedMessage id="domain.form.cert" />}
+                  notFoundContent={<FormattedMessage id="domain.cert.none" />}
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                  filterOption={(input, option) => option.props.children
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  filter
+                  showSearch
+                >
+                  {_.map(store.getCertificates, item => (<Option value={item.id} key={item.id}>
+                    {item.certName}
+                  </Option>))}
+                </Select>)}
+              </FormItem>) : null}
+            </div>
+            {pathItem}
+            <div className="c7n-domain-btn-wrapper">
+              <Button
+                className="c7n-domain-btn"
+                onClick={this.addPath}
+                type="primary"
+                // disabled={addStatus}
+                icon="add"
+              >
+                {intl.formatMessage({ id: 'domain.path.add' })}
+              </Button>
+              {/* <Tooltip title={addStatus ? intl.formatMessage({ id: 'domain.path.isnull' }) : ''}>
+                <Button
+                  className="c7n-domain-btn"
+                  onClick={this.addPath}
+                  type="primary"
+                  // disabled={addStatus}
+                  icon="add"
+                >
+                  {intl.formatMessage({ id: 'domain.path.add' })}
+                </Button>
+              </Tooltip> */}
+            </div>
+          </Form>
+        </Content>
       </Sidebar>
     </div>);
   }
