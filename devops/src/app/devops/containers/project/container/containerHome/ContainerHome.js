@@ -56,8 +56,9 @@ class ContainerHome extends Component {
     this.setState({
       containerName: value.split('+')[1],
       logId: value.split('+')[0],
+    }, () => {
+      this.loadLog();
     });
-    this.loadLog();
   };
 
   /**
