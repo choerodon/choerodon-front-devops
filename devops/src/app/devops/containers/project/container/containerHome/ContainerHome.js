@@ -285,7 +285,10 @@ class ContainerHome extends Component {
       ws.close();
     }
     const editor = this.editorLog.getCodeMirror();
-    this.setState({ showSide: false }, () => {
+    this.setState({
+      showSide: false,
+      containerArr: [],
+    }, () => {
       editor.setValue('');
     });
     this.loadAllData(page);
@@ -293,7 +296,7 @@ class ContainerHome extends Component {
 
   render() {
     const { ContainerStore } = this.props;
-    const { podName, containerArr, showSide } = this.state;
+    const { podName, containerArr, showSide, containerName } = this.state;
     const serviceData = ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
@@ -349,10 +352,9 @@ class ContainerHome extends Component {
             <section className="c7n-podLog-section">
               <div className="c7n-podShell-title">
                 日志&nbsp;
-                <Select defaultValue={containerArr.length && `${containerArr[0].logId}+${containerArr[0].containerName}`} onChange={this.containerChange}>
+                <Select value={containerName} onChange={this.containerChange}>
                   {containerDom}
                 </Select>
-                &nbsp;In&nbsp;{podName}
               </div>
               <CodeMirror
                 ref={(editor) => { this.editorLog = editor; }}
