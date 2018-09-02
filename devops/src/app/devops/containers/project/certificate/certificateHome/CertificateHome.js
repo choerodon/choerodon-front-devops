@@ -86,14 +86,18 @@ class CertificateHome extends Component {
     const { current, pageSize } = pagination;
     const page = current - 1;
     const sort = _.isEmpty(sorter) ? {
-      filed: 'id',
+      field: 'id',
       columnKey: 'id',
       order: 'descend',
     } : sorter;
-    let searchParam = {};
+    const searchParam = {};
     let param = '';
-    if (Object.keys(filters).length) {
-      searchParam = filters;
+    if (!_.isEmpty(filters)) {
+      _.forEach(filters, (value, key) => {
+        if (!_.isEmpty(value)) {
+          searchParam[key] = String(value);
+        }
+      });
     }
     if (paras.length) {
       param = paras[0].toString();
@@ -102,7 +106,7 @@ class CertificateHome extends Component {
       searchParam,
       param,
     };
-    this.setState({ page, pageSize, filters, postData, sorter: sort });
+    this.setState({ page, pageSize, filters, postData, sorter: sort, param: paras });
     this.loadCertData(page, pageSize, sort, postData);
   };
 
