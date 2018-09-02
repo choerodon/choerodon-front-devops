@@ -611,6 +611,7 @@ const zhCN = {
   'domain.name.check.exist': '名称已存在',
   'domain.name.check.failed': '由小写字母，数字，\'-\'组成，以字母、数字开始和结束',
   'domain.domain.check.failed': '由小写字母，数字，\'-\'或\'.\'组成，以字母、数字开始和结束',
+  'domain.domain.check.exist': '域名地址与某些路径的组合已经存在，请检查路径',
   'domain.path.check.exist': '域名地址与路径的组合已经存在',
   'domain.path.check.failed': '由大小写字母，数字和\'/\'组成，且不能以\'/\'结束',
   'domain.path.add': '添加路径',

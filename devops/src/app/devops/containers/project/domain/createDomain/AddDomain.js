@@ -63,7 +63,6 @@ class CreateDomain extends Component {
     const menu = AppState.currentMenuType;
     super(props);
     this.state = {
-      pathArr: [{ pathIndex: 0, networkIndex: 0, portIndex: 0 }],
       projectId: menu.id,
       show: false,
       0: { deletedService: [] },
@@ -120,19 +119,6 @@ class CreateDomain extends Component {
       .then((data) => {
         this.setState({ env: { loading: false, dataSource: data } });
       });
-  }
-
-  componentDidUpdate() {
-    if (this.state.pathChange) {
-      const { pathArr } = this.state;
-      const fields = [];
-      pathArr.map((path) => {
-        fields.push(`path-${path.pathIndex}`);
-        return fields;
-      });
-      this.props.form.validateFields(fields, { force: true });
-      this.checkAllPath(false);
-    }
   }
 
   /**
@@ -232,7 +218,7 @@ class CreateDomain extends Component {
   };
 
   addPath = () => {
-    const { getFieldValue, setFieldsValue } = this.props.form;
+    const { getFieldValue, setFieldsValue, validateFields } = this.props.form;
     const keys = getFieldValue('paths');
     const uuid = this.pathKeys;
     const nextKeys = _.concat(keys, uuid);
@@ -240,34 +226,11 @@ class CreateDomain extends Component {
     setFieldsValue({
       paths: nextKeys,
     });
+    validateFields(['domain'], { force: true });
   };
-  /**
-   * 添加路径
-   */
-  // addPath =() => {
-  //   const { pathArr } = this.state;
-  //   let index = 0;
-  //   if (pathArr.length) {
-  //     index = pathArr[pathArr.length - 1].pathIndex + 1;
-  //     pathArr.push({
-  //       pathIndex: index,
-  //       networkIndex: index,
-  //       portIndex: index,
-  //     });
-  //     this.checkAllPath(true);
-  //   } else {
-  //     index = 0;
-  //     pathArr.push({
-  //       pathIndex: 0,
-  //       networkIndex: 0,
-  //       portIndex: 0,
-  //     });
-  //   }
-  //   this.setState({ pathArr, [index]: { deletedService: this.state[index - 1].deletedService } });
-  // };
 
   removePath = (k) => {
-    const { getFieldValue, setFieldsValue } = this.props.form;
+    const { getFieldValue, setFieldsValue, validateFields } = this.props.form;
     const keys = getFieldValue('paths');
     if (keys.length === 1) {
       return;
@@ -275,16 +238,8 @@ class CreateDomain extends Component {
     setFieldsValue({
       paths: _.filter(keys, key => key !== k),
     });
+    validateFields(['domain'], { force: true });
   };
-  /**
-   * 删除路径
-   * @param index 路径数组的索引
-   */
-  // removePath =(index) => {
-  //   const { pathArr, initServiceLen } = this.state;
-  //   pathArr.splice(index, 1);
-  //   this.setState({ pathArr, initServiceLen: initServiceLen - 1 });
-  // };
 
   /**
    * 选择环境
@@ -315,24 +270,18 @@ class CreateDomain extends Component {
     onClose();
   };
 
-  /**
-   * 级联验证path
-   * @param flag
-   */
-  checkAllPath = (flag) => {
-    this.setState({ pathChange: flag });
-  };
-
   checkPath = (rule, value, callback) => {
     const { form, intl, store, type } = this.props;
     const { initServiceLen, projectId } = this.state;
-    const { getFieldValue, getFieldError } = form;
+    const { getFieldValue, getFieldError, validateFields } = form;
     const p = /^\/([a-zA-Z0-9]+(\/[a-zA-Z0-9]+)*)*$/;
-    const count = _.countBy(getFieldValue('paths'));
+    const count = _.countBy(getFieldValue('path'));
     const domain = getFieldValue('domain');
-    const domainError = getFieldError('domain');
+    // const domainError = getFieldError('domain');
     if (p.test(`/${value}`)) {
-      if (count[`/${value}`] < 2 && !domainError) {
+      // if (count[value] < 2 && !domainError) {
+      if (count[value] < 2) {
+        validateFields(['domain'], { force: true });
         let checkPromise = null;
         if (type === 'edit') {
           // && initServiceLen > index
@@ -361,73 +310,6 @@ class CreateDomain extends Component {
   };
 
   /**
-   * 检查域名是否符合规则
-   * @type {Function}
-   */
-  checkDomain = (rule, value, callback) => {
-    const { intl, form: { getFieldValue, getFieldError }, store } = this.props;
-    const { projectId } = this.state;
-    const patt = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)+)$/;
-    if (patt.test(value)) {
-      let checkPromise = null;
-      const paths = getFieldValue('paths');
-      if (paths.length === 1) {
-        const path = getFieldValue();
-        checkPromise = store.checkPath(projectId, value, );
-      }
-      const checkComb = [];
-      // _.forEach(paths, )
-      callback();
-    } else {
-      callback(intl.formatMessage({ id: 'domain.domain.check.failed' }));
-    }
-  };
-
-  /**
-   * 检查域名和路径组合的唯一性
-   * @type {Function}
-   */
-  oldCheckPath = (rule, value, callback) => {
-    const { form: { getFieldValue, getFieldError }, intl, store, type } = this.props;
-    const { pathArr, initServiceLen, projectId } = this.state;
-    const patt = /^\/([a-zA-Z0-9]+(\/[a-zA-Z0-9]+)*)*$/;
-    const domain = getFieldValue('domain');
-    const domainError = getFieldError('domain');
-    const index = parseInt(rule.field.split('-')[1], 10);
-    // 获取所有path
-    const paths = [];
-    for (let i = 0; i < pathArr.length; i += 1) {
-      const p = `/${getFieldValue(`path-${pathArr[i].pathIndex}`)}`;
-      paths.push(p);
-    }
-    const pathCount = _.countBy(paths);
-    if (pathCount[`/${value}`] > 1) {
-      callback(intl.formatMessage({ id: 'domain.path.check.exist' }));
-    } else if (patt.test(`/${value}`) && !domainError) {
-      let checkPromise = null;
-      if (type === 'edit' && initServiceLen > index) {
-        const {
-          SingleData: {
-            id,
-            pathList,
-            domain: dataDomain,
-          },
-        } = this.state;
-        if (pathList[index].path.slice(1) === value && domain === dataDomain) {
-          callback();
-        } else {
-          checkPromise = store.checkPath(projectId, domain, `/${value}`, id);
-        }
-      } else {
-        checkPromise = store.checkPath(projectId, domain, `/${value}`);
-      }
-      this.handleCheckResponse(checkPromise, callback);
-    } else {
-      callback(intl.formatMessage({ id: 'domain.path.check.failed' }));
-    }
-  };
-
-  /**
    * 处理校验返回结果
    * @param promise
    * @param callback
@@ -441,7 +323,65 @@ class CreateDomain extends Component {
         } else {
           callback(intl.formatMessage({ id: 'domain.path.check.exist' }));
         }
-      }).catch((error) => {
+      }).catch((err) => {
+        Choerodon.handleResponseError(err);
+        callback();
+      });
+    }
+  };
+
+  /**
+   * 检查域名是否符合规则
+   * @type {Function}
+   */
+  checkDomain = (rule, value, callback) => {
+    const { intl, form: { getFieldValue }, store } = this.props;
+    const { projectId } = this.state;
+    const patt = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)+)$/;
+    if (patt.test(value)) {
+      let checkPromise = null;
+      const paths = getFieldValue('paths');
+      const pathArr = getFieldValue('path');
+      if (paths.length === 1 && pathArr[0]) {
+        checkPromise = store.checkPath(projectId, value, pathArr[0]);
+      } else {
+        const checkComb = [];
+        _.forEach(paths, (item) => {
+          if (pathArr[item]) {
+            checkComb.push(store.checkPath(projectId, value, pathArr[item]));
+          }
+        });
+        checkPromise = Promise.all(checkComb);
+      }
+      this.handleDomainCheck(checkPromise, callback);
+    } else {
+      callback(intl.formatMessage({ id: 'domain.domain.check.failed' }));
+    }
+  };
+
+  /**
+   * 修改域名地址，发起域名+路径检查
+   * @param promise
+   * @param callback
+   */
+  handleDomainCheck = (promise, callback) => {
+    const { intl } = this.props;
+    if (promise) {
+      promise.then((data) => {
+        if (_.isArray(data)) {
+          const exist = _.filter(data, item => !item);
+          if (exist.length) {
+            callback(intl.formatMessage({ id: 'domain.domain.check.exist' }));
+          } else {
+            callback();
+          }
+        } else if (data) {
+          callback();
+        } else {
+          callback(intl.formatMessage({ id: 'domain.domain.check.exist' }));
+        }
+      }).catch((err) => {
+        Choerodon.handleResponseError(err);
         callback();
       });
     }
@@ -554,7 +494,7 @@ class CreateDomain extends Component {
       const hasServerInit = SingleData && initServiceLen > index;
       const initPort = hasServerInit ? SingleData.pathList[index].servicePort : undefined;
       const initNetwork = hasServerInit ? SingleData.pathList[index].serviceId : undefined;
-      const initPath = hasServerInit ? SingleData.pathList[index].path.slice(1) : '';
+      const initPath = hasServerInit ? SingleData.pathList[index].path.slice(1) : '/';
       // 生成端口选项
       const portOption = (type === 'edit' && portInNetwork.length === 0 && hasServerInit)
         ? portWithNetwork[SingleData.pathList[index].serviceId] : portInNetwork;
@@ -570,8 +510,7 @@ class CreateDomain extends Component {
             initialValue: initPath,
           })(
             <Input
-              prefix="/"
-              onChange={this.checkAllPath.bind(this, true)}
+              suffix={<Icon type="help" />}
               disabled={!(form.getFieldValue('domain'))}
               maxLength={10}
               label={intl.formatMessage({ id: 'domain.column.path' })}
@@ -705,7 +644,8 @@ class CreateDomain extends Component {
                     .toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                   {env.dataSource.map(v => (
-                    <Option value={v.id} key={`${v.id}-env`} disabled={!v.connect}>
+                    <Option value={v.id} key={`${v.id}-env`}>
+                      {/* disabled={!v.connect} */}
                       {!v.connect && <span className="env-status-error" />}
                       {v.connect && <span className="env-status-success" />}
                       {v.name}
