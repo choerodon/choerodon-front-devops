@@ -66,8 +66,9 @@ class ContainerHome extends Component {
     this.setState({
       containerName: value.split('+')[1],
       logId: value.split('+')[0],
+    }, () => {
+      this.loadLog();
     });
-    this.loadLog();
   };
 
   /**
@@ -81,8 +82,9 @@ class ContainerHome extends Component {
     this.setState({
       containerName: value.split('+')[1],
       logId: value.split('+')[0],
+    }, () => {
+      this.onTerminalReady();
     });
-    this.onTerminalReady();
   };
 
   /**
@@ -430,7 +432,10 @@ class ContainerHome extends Component {
       ws.close();
     }
     const editor = this.editorLog.getCodeMirror();
-    this.setState({ showSide: false }, () => {
+    this.setState({
+      showSide: false,
+      containerArr: [],
+    }, () => {
       editor.setValue('');
     });
     this.loadAllData(page);
@@ -460,7 +465,7 @@ class ContainerHome extends Component {
 
   render() {
     const { ContainerStore } = this.props;
-    const { showSide, podName, containerArr, showDebug } = this.state;
+    const { showSide, containerName, podName, containerArr, showDebug } = this.state;
     const serviceData = ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
@@ -517,10 +522,9 @@ class ContainerHome extends Component {
               <div className="c7n-podLog-hei-wrap">
                 <div className="c7n-podShell-title">
                   <FormattedMessage id="container.term.log" />&nbsp;
-                  <Select defaultValue={containerArr.length && `${containerArr[0].logId}+${containerArr[0].containerName}`} onChange={this.containerChange}>
+                  <Select value={containerName} onChange={this.containerChange}>
                     {containerDom}
                   </Select>
-                  &nbsp;In&nbsp;{podName}
                 </div>
                 <CodeMirror
                   ref={(editor) => { this.editorLog = editor; }}
@@ -549,10 +553,9 @@ class ContainerHome extends Component {
                   <div className="c7n-content-card-content-title c7n-md-title c7n-padding">
                     <div className="c7n-shell-title">
                       <FormattedMessage id="container.term.ex" />&nbsp;
-                      <Select defaultValue={containerArr.length && `${containerArr[0].logId}+${containerArr[0].containerName}`} onChange={this.termChange}>
+                      <Select value={containerName} onChange={this.termChange}>
                         {containerDom}
                       </Select>
-                      &nbsp;In&nbsp;{podName}
                     </div>
                   </div>
                   <div className="c7n-content-card-transclude-content">
