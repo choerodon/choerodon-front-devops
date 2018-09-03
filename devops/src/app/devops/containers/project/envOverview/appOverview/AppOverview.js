@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Form, Collapse, Icon, Input, Tooltip, Modal, Progress } from 'choerodon-ui';
+import { Button, Form, Collapse, Icon, Input, Tooltip, Modal, Progress, Select } from 'choerodon-ui';
 import { Permission, Content, Action, stores } from 'choerodon-front-boot';
 import CodeMirror from 'react-codemirror';
 import _ from 'lodash';
@@ -23,9 +23,12 @@ import CreateDomain from '../../domain/createDomain';
 import CreateNetwork from '../../networkConfig/createNetwork';
 import NetworkConfigStore from '../../../../stores/project/networkConfig';
 import LoadingBar from '../../../../components/loadingBar';
+import '../../container/containerHome/ContainerHome.scss';
+import '../../container/containerHome/Term.scss';
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
+const Option = Select.Option;
 const Panel = Collapse.Panel;
 
 @observer
@@ -51,6 +54,8 @@ class AppOverview extends Component {
   @observable showSide = false;
 
   @observable containerName = '';
+
+  @observable containerArr = [];
 
   @observable podName = '';
 
@@ -311,12 +316,27 @@ class AppOverview extends Component {
     ContainerStore.loadPodParam(projectId, record.id)
       .then((data) => {
         this.namespace = record.namespace;
-        this.podName = data.podName;
-        this.containerName = data.containerName;
-        this.logId = data.logId;
+        this.podName = data[0].podName;
+        this.containerName = data[0].containerName;
+        this.logId = data[0].logId;
         this.showSide = true;
+        this.containerArr = data;
         this.loadLog();
       });
+  };
+
+  /**
+   * 切换container日志
+   * @param value
+   */
+  @action
+  containerChange = (value) => {
+    if (this.state.ws) {
+      this.state.ws.close();
+    }
+    this.containerName = value.split('+')[1];
+    this.logId = value.split('+')[0];
+    this.loadLog();
   };
 
   /**
@@ -485,7 +505,7 @@ class AppOverview extends Component {
                 <div>
                   <div>
                     <div className="c7n-envow-contaners-title c7n-envow-width_50">
-                      CONTAINERS
+                      PODS
                     </div>
                     <div className="c7n-envow-contaners-wrap">
                       <div className="c7n-envow-width_50">
@@ -766,6 +786,8 @@ class AppOverview extends Component {
     const prefix = <Icon type="search" onClick={this.onSearch} />;
     const suffix = val ? <Icon type="close" onClick={this.emitEmpty} /> : null;
 
+    const containerDom = this.containerArr.length && (_.map(this.containerArr, c => <Option key={c.logId} value={`${c.logId}+${c.containerName}`}>{c.containerName}</Option>));
+
     const options = {
       readOnly: true,
       lineNumbers: true,
@@ -813,15 +835,23 @@ class AppOverview extends Component {
           okCancel={false}
           destroyOnClose
         >
-          <Content className="sidebar-content" code="container.log" values={{ name: this.containerName }}>
+          <Content className="sidebar-content" code="container.log" values={{ name: this.podName }}>
             <section className="c7n-podLog-section">
-              <CodeMirror
-                ref={(editor) => { this.editorLog = editor; }}
-                value="Loading..."
-                className="c7n-podLog-editor"
-                onChange={code => this.props.ChangeCode(code)}
-                options={options}
-              />
+              <div className="c7n-podLog-hei-wrap">
+                <div className="c7n-podShell-title">
+                  <FormattedMessage id="container.term.log" />&nbsp;
+                  <Select value={this.containerName} onChange={this.containerChange}>
+                    {containerDom}
+                  </Select>
+                </div>
+                <CodeMirror
+                  ref={(editor) => { this.editorLog = editor; }}
+                  value="Loading..."
+                  className="c7n-podLog-editor"
+                  onChange={code => this.props.ChangeCode(code)}
+                  options={options}
+                />
+              </div>
             </section>
           </Content>
         </Sidebar>}
