@@ -32,15 +32,14 @@ class CreateDomain extends Component {
    * 检查名称的唯一性
    * @type {Function}
    */
-  checkName =_.debounce((rule, value, callback) => {
-    const { intl, form } = this.props;
+  checkName = _.debounce((rule, value, callback) => {
+    const { intl, form: { getFieldValue }, store } = this.props;
     const p = /^([a-z0-9]([-a-z0-9]?[a-z0-9])*)$/;
-    const { SingleData } = this.state;
-    if (SingleData && SingleData.name === value) {
+    const { singleData: { name } } = this.state;
+    if (name && name === value) {
       callback();
     } else if (p.test(value)) {
-      const { store } = this.props;
-      const envId = form.getFieldValue('envId');
+      const envId = getFieldValue('envId');
       if (envId) {
         store.checkName(this.state.projectId, value, envId)
           .then((data) => {
@@ -64,52 +63,48 @@ class CreateDomain extends Component {
     super(props);
     this.state = {
       projectId: menu.id,
-      show: false,
-      0: { deletedService: [] },
+      deletedService: {},
       env: { loading: false, dataSource: [] },
-      initServiceLen: 0,
       portInNetwork: [],
       protocol: 'normal',
       selectEnv: null,
+      pathCountChange: false,
+      singleData: {},
     };
     this.pathKeys = 1;
   }
 
   componentDidMount() {
-    const { store, id, visible, envId, form } = this.props;
+    const { store, id, type, envId, form: { setFieldsValue } } = this.props;
     const { projectId } = this.state;
-    if (id && visible) {
-      store.loadDataById(projectId, id)
-        .then((data) => {
-          const { pathList, envId: domainEnv, certId, domain } = data;
-          const len = pathList.length;
-          for (let i = 0; i < len; i += 1) {
-            const list = pathList[i];
-            if (list.serviceStatus !== 'running') {
-              this.setState({
-                [i]: {
-                  deletedService: [{
-                    name: list.serviceName,
-                    id: list.serviceId,
-                    status: list.serviceStatus,
-                  }] } });
-            } else {
-              this.setState({ [i]: { deletedService: [] } });
-            }
+    if (id && type === 'edit') {
+      store.loadDataById(projectId, id).then((data) => {
+        const { pathList, envId: domainEnv, certId, domain } = data;
+        const deletedService = [];
+        _.forEach(pathList, (item, index) => {
+          const { serviceStatus, serviceName, serviceId } = item;
+          if (serviceStatus !== 'running') {
+            deletedService[index] = {
+              name: serviceName,
+              id: serviceId,
+              status: serviceStatus,
+            };
+          } else {
+            deletedService[index] = {};
           }
-          this.setState({
-            initServiceLen: len,
-            SingleData: data,
-            protocol: certId ? 'secret' : 'normal',
-            selectEnv: domainEnv,
-          });
-          this.initPathArr(pathList.length);
-          if (certId && domain && domainEnv) {
-            store.loadCertByEnv(projectId, domainEnv, domain);
-            form.setFieldsValue({ certId });
-          }
-          store.loadNetwork(projectId, domainEnv);
         });
+        this.setState({
+          deletedService,
+          singleData: data || {},
+          protocol: certId ? 'secret' : 'normal',
+          selectEnv: domainEnv,
+        });
+        if (certId && domain && domainEnv) {
+          store.loadCertByEnv(projectId, domainEnv, domain);
+          setFieldsValue({ certId });
+        }
+        store.loadNetwork(projectId, domainEnv);
+      });
     }
     // 环境总览传入envId
     if (envId) {
@@ -122,20 +117,14 @@ class CreateDomain extends Component {
   }
 
   /**
-   * 初始化数组
-   * @param length
+   * 添加或删除包含路径的表单项触发路径的校验
+   * 确保 新添加 的一组路径已经渲染在页面上
    */
-  initPathArr = (length) => {
-    const pathArr = [];
-    for (let i = 0; i < length; i += 1) {
-      pathArr.push({
-        pathIndex: i,
-        networkIndex: i,
-        portIndex: i,
-      });
+  componentDidUpdate() {
+    if (this.state.pathCountChange) {
+      this.triggerPathCheck();
     }
-    this.setState({ pathArr });
-  };
+  }
 
   /**
    * 加载环境
@@ -149,48 +138,31 @@ class CreateDomain extends Component {
       });
   };
 
-  /**
-   * 提交数据
-   * @param e
-   */
   handleSubmit =(e) => {
     e.preventDefault();
-    const { store, id, type, form } = this.props;
-    const { projectId, initServiceLen, SingleData } = this.state;
+    const { store, id, type, form: { validateFieldsAndScroll } } = this.props;
+    const { projectId } = this.state;
     const service = store.getNetwork;
-    form.validateFieldsAndScroll((err, data) => {
+    validateFieldsAndScroll((err, data) => {
       if (!err) {
-        const { domain, name, envId, certId } = data;
-        const keys = Object.keys(data);
+        this.setState({ submitting: true });
+        const { domain, name, envId, certId, paths, path, network, port } = data;
         const postData = { domain, name, envId };
         if (certId) {
           postData.certId = certId;
         }
-        const pathList = [];
         let promise = null;
-        this.setState({ submitting: true });
+        const pathList = [];
+        _.forEach(paths, (item) => {
+          const pt = path[item];
+          const serviceId = network[item];
+          const servicePort = port[item];
+          pathList.push({ path: pt, serviceId, servicePort });
+        });
+        postData.pathList = pathList;
         if (type === 'create') {
-          keys.forEach((k) => {
-            if (k.includes('path')) {
-              const index = parseInt(k.split('-')[1], 10);
-              const value = data[`network-${index}`];
-              const port = data[`port-${index}`];
-              pathList.push({ path: `/${data[k]}`, serviceId: value, servicePort: port });
-            }
-          });
-          postData.pathList = pathList;
           promise = store.addData(projectId, postData);
         } else {
-          keys.forEach((k) => {
-            if (k.includes('path')) {
-              const index = parseInt(k.split('-')[1], 10);
-              const value = data[`network-${index}`];
-              const port = data[`port-${index}`];
-              const path = data[k].split('/')[data[k].split('/').length - 1];
-              pathList.push({ path: `/${path}`, serviceId: value, servicePort: port });
-            }
-          });
-          postData.pathList = pathList;
           postData.domainId = id;
           promise = store.updateData(projectId, id, postData);
         }
@@ -218,7 +190,7 @@ class CreateDomain extends Component {
   };
 
   addPath = () => {
-    const { getFieldValue, setFieldsValue, validateFields } = this.props.form;
+    const { getFieldValue, setFieldsValue } = this.props.form;
     const keys = getFieldValue('paths');
     const uuid = this.pathKeys;
     const nextKeys = _.concat(keys, uuid);
@@ -226,11 +198,11 @@ class CreateDomain extends Component {
     setFieldsValue({
       paths: nextKeys,
     });
-    validateFields(['domain'], { force: true });
+    this.setState({ pathCountChange: true });
   };
 
   removePath = (k) => {
-    const { getFieldValue, setFieldsValue, validateFields } = this.props.form;
+    const { getFieldValue, setFieldsValue } = this.props.form;
     const keys = getFieldValue('paths');
     if (keys.length === 1) {
       return;
@@ -238,7 +210,7 @@ class CreateDomain extends Component {
     setFieldsValue({
       paths: _.filter(keys, key => key !== k),
     });
-    validateFields(['domain'], { force: true });
+    this.setState({ pathCountChange: true });
   };
 
   /**
@@ -251,10 +223,8 @@ class CreateDomain extends Component {
     store.setCertificates([]);
     form.resetFields();
     this.setState({
-      pathArr: [{ pathIndex: 0, networkIndex: 0, portIndex: 0 }],
-      0: { deletedService: [] },
-      initServiceLen: 0,
-      SingleData: null,
+      deletedService: {},
+      singleData: {},
       selectEnv: value,
     });
   };
@@ -264,53 +234,54 @@ class CreateDomain extends Component {
    */
   handleClose =() => {
     const { store, onClose } = this.props;
-    this.setState({ show: false });
     store.setEnv([]);
     store.setNetwork([]);
     onClose();
   };
 
+  /**
+   * 检查路径
+   * 和域名组合检查
+   * @param rule
+   * @param value
+   * @param callback
+   */
   checkPath = (rule, value, callback) => {
-    const { form, intl, store, type } = this.props;
-    const { initServiceLen, projectId } = this.state;
-    const { getFieldValue, getFieldError, validateFields } = form;
-    const p = /^\/([a-zA-Z0-9]+(\/[a-zA-Z0-9]+)*)*$/;
-    const count = _.countBy(getFieldValue('path'));
-    const domain = getFieldValue('domain');
-    // const domainError = getFieldError('domain');
-    if (p.test(`/${value}`)) {
-      // if (count[value] < 2 && !domainError) {
-      if (count[value] < 2) {
-        validateFields(['domain'], { force: true });
-        let checkPromise = null;
-        if (type === 'edit') {
-          // && initServiceLen > index
-          // const {
-          //   SingleData: {
-          //     id,
-          //     pathList,
-          //     domain: dataDomain,
-          //   },
-          // } = this.state;
-          // if (pathList[index].path.slice(1) === value && domain === dataDomain) {
-          //   callback();
-          // } else {
-          //   checkPromise = store.checkPath(projectId, domain, `/${value}`, id);
-          // }
+    const { form: { getFieldValue, getFieldError }, intl, store, type, id } = this.props;
+    const { projectId } = this.state;
+    if (value) {
+      const p = /^\/([a-zA-Z0-9]+(\/[a-zA-Z0-9]+)*)*$/;
+      const count = _.countBy(getFieldValue('path'));
+      const domain = getFieldValue('domain');
+      const domainError = getFieldError('domain');
+      if (p.test(value)) {
+        // 重复检查
+        if (count[value] < 2) {
+          // 如果域名校验不通过，则不发起域名路径组合校验
+          if (!domainError) {
+            let checkPromise = null;
+            if (type === 'edit') {
+              checkPromise = store.checkPath(projectId, domain, value, id);
+            } else {
+              checkPromise = store.checkPath(projectId, domain, value);
+            }
+            this.handleCheckResponse(checkPromise, callback);
+          } else {
+            callback();
+          }
         } else {
-          checkPromise = store.checkPath(projectId, domain, `/${value}`);
+          callback(intl.formatMessage({ id: 'domain.path.check.exist' }));
         }
-        this.handleCheckResponse(checkPromise, callback);
       } else {
-        callback(intl.formatMessage({ id: 'domain.path.check.exist' }));
+        callback(intl.formatMessage({ id: 'domain.path.check.failed' }));
       }
     } else {
-      callback(intl.formatMessage({ id: 'domain.path.check.failed' }));
+      callback(intl.formatMessage({ id: 'domain.path.check.notSet' }));
     }
   };
 
   /**
-   * 处理校验返回结果
+   * 处理路径校验返回结果
    * @param promise
    * @param callback
    */
@@ -336,56 +307,29 @@ class CreateDomain extends Component {
    */
   checkDomain = (rule, value, callback) => {
     const { intl, form: { getFieldValue }, store } = this.props;
-    const { projectId } = this.state;
-    const patt = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)+)$/;
-    if (patt.test(value)) {
-      let checkPromise = null;
+    const pattern = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)+)$/;
+    if (pattern.test(value)) {
       const paths = getFieldValue('paths');
-      const pathArr = getFieldValue('path');
-      if (paths.length === 1 && pathArr[0]) {
-        checkPromise = store.checkPath(projectId, value, pathArr[0]);
-      } else {
-        const checkComb = [];
-        _.forEach(paths, (item) => {
-          if (pathArr[item]) {
-            checkComb.push(store.checkPath(projectId, value, pathArr[item]));
-          }
-        });
-        checkPromise = Promise.all(checkComb);
-      }
-      this.handleDomainCheck(checkPromise, callback);
+      const fields = [];
+      _.forEach(paths, item => fields.push(`path[${item}]`));
+      this.triggerPathCheck();
+      callback();
     } else {
       callback(intl.formatMessage({ id: 'domain.domain.check.failed' }));
     }
   };
 
   /**
-   * 修改域名地址，发起域名+路径检查
-   * @param promise
-   * @param callback
+   * 触发路径检查
    */
-  handleDomainCheck = (promise, callback) => {
-    const { intl } = this.props;
-    if (promise) {
-      promise.then((data) => {
-        if (_.isArray(data)) {
-          const exist = _.filter(data, item => !item);
-          if (exist.length) {
-            callback(intl.formatMessage({ id: 'domain.domain.check.exist' }));
-          } else {
-            callback();
-          }
-        } else if (data) {
-          callback();
-        } else {
-          callback(intl.formatMessage({ id: 'domain.domain.check.exist' }));
-        }
-      }).catch((err) => {
-        Choerodon.handleResponseError(err);
-        callback();
-      });
-    }
-  };
+  triggerPathCheck = () => {
+    const { getFieldValue, validateFields } = this.props.form;
+    const paths = getFieldValue('paths');
+    const fields = [];
+    _.forEach(paths, item => fields.push(`path[${item}]`));
+    validateFields(fields, { force: true });
+    this.setState({ pathCountChange: false });
+  }
 
   /**
    * 校验网络是否可用
@@ -394,13 +338,16 @@ class CreateDomain extends Component {
    * @param callback
    */
   checkService = (rule, value, callback) => {
-    if (this.props.type === 'create') {
+    const { type, intl } = this.props;
+    const { deletedService } = this.state;
+    if (type === 'create') {
       callback();
     } else {
-      const index = parseInt(rule.field.split('-')[1], 10);
-      const deletedIns = _.map(this.state[index].deletedService, 'id');
-      if (deletedIns.includes(value)) {
-        callback(this.props.intl.formatMessage({ id: 'domain.network.check.failed' }));
+      // network[xxx]
+      const index = parseInt(rule.field.slice(8, -1), 10);
+      const { id } = deletedService[index];
+      if (id === value) {
+        callback(intl.formatMessage({ id: 'domain.network.check.failed' }));
       } else {
         callback();
       }
@@ -408,7 +355,7 @@ class CreateDomain extends Component {
   };
 
   checkPorts = (ports, rule, value, callback) => {
-    if (!ports.includes(value)) {
+    if (ports && !ports.includes(value)) {
       callback(this.props.intl.formatMessage({ id: 'domain.network.check.failed' }));
     } else {
       callback();
@@ -451,35 +398,20 @@ class CreateDomain extends Component {
   };
 
   render() {
-    const { store, form, intl, type, visible, envId } = this.props;
+    const { store, form, intl: { formatMessage }, type, visible, envId: propsEnv } = this.props;
     const { getFieldDecorator, getFieldValue, getFieldsError } = form;
-    const { name } = AppState.currentMenuType;
+    const { name: menuName } = AppState.currentMenuType;
     const {
-      pathArr,
-      SingleData,
+      singleData,
       env,
       portInNetwork,
       protocol,
-      initServiceLen,
+      deletedService,
       submitting,
     } = this.state;
     const network = store.getNetwork;
-    // 是否还存在校验未通过的path值
-    // const pathsError = getFieldsError(_.map(pathArr, item => `path-${item.pathIndex}`));
-    // let hasPathError = false;
-    // let addStatus = true;
-    // _.forEach(pathsError, (pv, pk) => {
-    //   if (pv) {
-    //     hasPathError = true;
-    //   }
-    // });
-    // // 判断path是否有值
-    // if (pathArr.length) {
-    //   const hasValue = getFieldValue(`path-${pathArr[pathArr.length - 1].pathIndex}`) || (SingleData && SingleData.pathList);
-    //   if (hasValue && !hasPathError) {
-    //     addStatus = false;
-    //   }
-    // }
+    const { pathList, envId, name, domain } = singleData;
+    // 网络拥有的端口
     const portWithNetwork = {};
     _.forEach(network, (item) => {
       const { config: { ports }, id } = item;
@@ -487,17 +419,43 @@ class CreateDomain extends Component {
       _.forEach(ports, p => port.push(p.port));
       portWithNetwork[id] = port;
     });
-    const initEnvId = envId ? Number(envId) : undefined;
-    getFieldDecorator('paths', { initialValue: [0] });
+    const initEnvId = propsEnv ? Number(propsEnv) : undefined;
+    let initPaths = [];
+    if (pathList && pathList.length) {
+      initPaths = _.map(pathList, (item, index) => index);
+      this.pathKeys = pathList.length;
+    } else {
+      initPaths = [0];
+      this.pathKeys = 1;
+    }
+    getFieldDecorator('paths', { initialValue: initPaths });
     const paths = getFieldValue('paths');
+    // 是否还存在校验未通过的path值
+    const pathsError = getFieldsError(_.map(paths, item => `path[${item}]`));
+    let hasPathError = true;
+    _.forEach(pathsError, (pv, pk) => {
+      if (pv[0]) {
+        hasPathError = true;
+      } else {
+        hasPathError = false;
+      }
+    });
     const pathItem = _.map(paths, (k, index) => {
-      const hasServerInit = SingleData && initServiceLen > index;
-      const initPort = hasServerInit ? SingleData.pathList[index].servicePort : undefined;
-      const initNetwork = hasServerInit ? SingleData.pathList[index].serviceId : undefined;
-      const initPath = hasServerInit ? SingleData.pathList[index].path.slice(1) : '/';
+      let delNetOption = null;
+      if (deletedService[k] && !_.isEmpty(deletedService[k])) {
+        const { id, status, name: delNetName } = deletedService[k];
+        delNetOption = (<Option value={id} key={`${id}-network-error`}>
+          <div className={`c7n-domain-create-status c7n-domain-create-status_${status}`}>
+            <div>{formatMessage({ id: status })}</div></div>
+          {delNetName}</Option>);
+      }
+      const hasServerInit = pathList && pathList.length && pathList[index];
+      const initPort = hasServerInit ? pathList[index].servicePort : undefined;
+      const initNetwork = hasServerInit ? pathList[index].serviceId : undefined;
+      const initPath = hasServerInit ? pathList[index].path : '/';
       // 生成端口选项
       const portOption = (type === 'edit' && portInNetwork.length === 0 && hasServerInit)
-        ? portWithNetwork[SingleData.pathList[index].serviceId] : portInNetwork;
+        ? portWithNetwork[pathList[index].serviceId] : portInNetwork;
       return (<div className="domain-network-wrap" key={`paths-${k}`}>
         <FormItem
           className="domain-network-item c7n-select_160"
@@ -510,10 +468,10 @@ class CreateDomain extends Component {
             initialValue: initPath,
           })(
             <Input
-              suffix={<Icon type="help" />}
-              disabled={!(form.getFieldValue('domain'))}
+              onChange={() => this.setState({ pathCountChange: true })}
+              disabled={!getFieldValue('domain')}
               maxLength={10}
-              label={intl.formatMessage({ id: 'domain.column.path' })}
+              label={formatMessage({ id: 'domain.column.path' })}
               size="default"
             />,
           )}
@@ -525,7 +483,7 @@ class CreateDomain extends Component {
           {getFieldDecorator(`network[${k}]`, {
             rules: [{
               required: true,
-              message: intl.formatMessage({ id: 'required' }),
+              message: formatMessage({ id: 'required' }),
             }, {
               validator: this.checkService,
             }],
@@ -535,7 +493,7 @@ class CreateDomain extends Component {
               getPopupContainer={triggerNode => triggerNode.parentNode}
               disabled={!(getFieldValue('envId'))}
               filter
-              label={intl.formatMessage({ id: 'domain.column.network' })}
+              label={formatMessage({ id: 'domain.column.network' })}
               showSearch
               dropdownMatchSelectWidth
               onSelect={this.handleSelectNetwork.bind(this, network)}
@@ -547,24 +505,12 @@ class CreateDomain extends Component {
                   .toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
             >
-              {/* {this.state[index].deletedService.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
-              {<React.Fragment>
-                {datas.status && datas.status === 'deleted' ? <div className={datas.status && datas.status === 'deleted' && 'c7n-domain-create-status c7n-domain-create-status_deleted'}>
-                  {datas.status && datas.status === 'deleted' && <div>{intl.formatMessage({ id: 'deleted' })}</div>}
-                </div> : <React.Fragment>
-                  {datas.status && datas.status === 'failed' ? <div className={datas.status && datas.status === 'failed' && 'c7n-domain-create-status c7n-domain-create-status_failed'}>
-                    {datas.status && datas.status === 'failed' && <div>{intl.formatMessage({ id: 'failed' })}</div> }
-                  </div> : <div className={datas.status && datas.status === 'operating' && 'c7n-domain-create-status c7n-domain-create-status_operating'}>
-                    {datas.status && datas.status === 'operating' && <div>{intl.formatMessage({ id: 'operating' })}</div>}
-                  </div> }
-                </React.Fragment> }
-              </React.Fragment>}
-              {datas.name}</Option>))} */}
-              {network.map(datas => (<Option value={datas.id} key={`${datas.id}-network`}>
+              {delNetOption}
+              {network.map(item => (<Option value={item.id} key={`${item.id}-network`}>
                 <div className="c7n-domain-create-status c7n-domain-create-status_running">
-                  <div>{intl.formatMessage({ id: 'running' })}</div>
+                  <div>{formatMessage({ id: 'running' })}</div>
                 </div>
-                {datas.name}</Option>))}
+                {item.name}</Option>))}
             </Select>,
           )}
         </FormItem>
@@ -576,16 +522,16 @@ class CreateDomain extends Component {
             trigger: ['onChange', 'onSubmit'],
             rules: [{
               required: true,
-              message: intl.formatMessage({ id: 'required' }),
+              message: formatMessage({ id: 'required' }),
             }, {
               validator: this.checkPorts.bind(this, portOption),
             }],
             initialValue: initPort,
           })(<Select
             getPopupContainer={triggerNode => triggerNode.parentNode}
-            disabled={!(getFieldValue(`network[${k}]`))}
+            disabled={!getFieldValue(`network[${k}]`)}
             filter
-            label={intl.formatMessage({ id: 'domain.column.port' })}
+            label={formatMessage({ id: 'domain.column.port' })}
             showSearch
             dropdownMatchSelectWidth
             size="default"
@@ -594,10 +540,10 @@ class CreateDomain extends Component {
             filterOption={(input, option) => option.props.children.toString()
               .toLowerCase().indexOf(input.toString().toLowerCase()) >= 0}
           >
-            {/* {_.map(portOption, item => (<Option key={item} value={item}>{item}</Option>))} */}
+            {_.map(portOption, item => (<Option key={item} value={item}>{item}</Option>))}
           </Select>)}
         </FormItem>
-        { paths.length > 1 ? <Button shape="circle" className="c7n-domain-icon-delete" onClick={this.removePath.bind(this, k)}>
+        {paths.length > 1 ? <Button shape="circle" className="c7n-domain-icon-delete" onClick={this.removePath.bind(this, k)}>
           <i className="icon icon-delete" />
         </Button> : <i className="icon icon-delete c7n-app-icon-disabled" />}
       </div>);
@@ -605,17 +551,17 @@ class CreateDomain extends Component {
     return (<div className="c7n-region">
       <Sidebar
         destroyOnClose
-        okText={type === 'create' ? intl.formatMessage({ id: 'create' }) : intl.formatMessage({ id: 'save' })}
-        cancelText={intl.formatMessage({ id: 'cancel' })}
+        okText={type === 'create' ? formatMessage({ id: 'create' }) : formatMessage({ id: 'save' })}
+        cancelText={formatMessage({ id: 'cancel' })}
         visible={visible}
-        title={intl.formatMessage({ id: `domain.${type === 'create' ? 'create' : 'update'}.head` })}
+        title={formatMessage({ id: `domain.${type === 'create' ? 'create' : 'update'}.head` })}
         onCancel={this.handleClose}
         onOk={this.handleSubmit}
         confirmLoading={submitting}
       >
         <Content
           code={`domain.${type === 'create' ? 'create' : 'update'}`}
-          values={{ name }}
+          values={{ name: menuName }}
           className="sidebar-content c7n-domainCreate-wrapper"
         >
           <Form layout="vertical" onSubmit={this.handleSubmit}>
@@ -626,9 +572,9 @@ class CreateDomain extends Component {
               {getFieldDecorator('envId', {
                 rules: [{
                   required: true,
-                  message: intl.formatMessage({ id: 'required' }),
+                  message: formatMessage({ id: 'required' }),
                 }],
-                initialValue: SingleData ? SingleData.envId : initEnvId,
+                initialValue: envId || initEnvId,
               })(
                 <Select
                   dropdownClassName="c7n-domain-env"
@@ -638,14 +584,13 @@ class CreateDomain extends Component {
                   getPopupContainer={triggerNode => triggerNode.parentNode}
                   onSelect={this.handleSelectEnv}
                   showSearch
-                  label={intl.formatMessage({ id: 'domain.column.env' })}
+                  label={formatMessage({ id: 'domain.column.env' })}
                   optionFilterProp="children"
                   filterOption={(input, option) => option.props.children[2]
                     .toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                   {env.dataSource.map(v => (
-                    <Option value={v.id} key={`${v.id}-env`}>
-                      {/* disabled={!v.connect} */}
+                    <Option value={v.id} key={`${v.id}-env`} disabled={!v.connect}>
                       {!v.connect && <span className="env-status-error" />}
                       {v.connect && <span className="env-status-success" />}
                       {v.name}
@@ -662,16 +607,16 @@ class CreateDomain extends Component {
                 rules: [{
                   required: true,
                   whitespace: true,
-                  message: intl.formatMessage({ id: 'required' }),
+                  message: formatMessage({ id: 'required' }),
                 }, {
                   validator: this.checkName,
                 }],
-                initialValue: SingleData ? SingleData.name : '',
+                initialValue: name || '',
               })(
                 <Input
-                  disabled={!((getFieldValue('envId')) && !(SingleData && SingleData.name))}
+                  disabled={!getFieldValue('envId') || name}
                   maxLength={40}
-                  label={intl.formatMessage({ id: 'domain.column.name' })}
+                  label={formatMessage({ id: 'domain.column.name' })}
                   size="default"
                 />,
               )}
@@ -710,17 +655,17 @@ class CreateDomain extends Component {
                   rules: [{
                     required: true,
                     whitespace: true,
-                    message: intl.formatMessage({ id: 'required' }),
+                    message: formatMessage({ id: 'required' }),
                   }, {
                     validator: this.checkDomain,
                   }],
-                  initialValue: SingleData ? SingleData.domain : '',
+                  initialValue: domain || '',
                 })(
                   <Input
-                    disabled={!(form.getFieldValue('envId'))}
+                    disabled={!(getFieldValue('envId'))}
                     maxLength={50}
                     type="text"
-                    label={intl.formatMessage({ id: 'domain.form.domain' })}
+                    label={formatMessage({ id: 'domain.form.domain' })}
                     size="default"
                     onBlur={this.loadCertByDomain}
                   />,
@@ -733,7 +678,7 @@ class CreateDomain extends Component {
                 {getFieldDecorator('certId', {
                   rules: [{
                     required: true,
-                    message: intl.formatMessage({ id: 'required' }),
+                    message: formatMessage({ id: 'required' }),
                   }],
                 })(<Select
                   className="c7n-select_512"
@@ -754,26 +699,17 @@ class CreateDomain extends Component {
             </div>
             {pathItem}
             <div className="c7n-domain-btn-wrapper">
-              <Button
-                className="c7n-domain-btn"
-                onClick={this.addPath}
-                type="primary"
-                // disabled={addStatus}
-                icon="add"
-              >
-                {intl.formatMessage({ id: 'domain.path.add' })}
-              </Button>
-              {/* <Tooltip title={addStatus ? intl.formatMessage({ id: 'domain.path.isnull' }) : ''}>
+              <Tooltip title={hasPathError || !getFieldValue('domain') ? formatMessage({ id: 'domain.path.isnull' }) : ''}>
                 <Button
                   className="c7n-domain-btn"
                   onClick={this.addPath}
                   type="primary"
-                  // disabled={addStatus}
+                  disabled={hasPathError || !getFieldValue('domain')}
                   icon="add"
                 >
-                  {intl.formatMessage({ id: 'domain.path.add' })}
+                  {formatMessage({ id: 'domain.path.add' })}
                 </Button>
-              </Tooltip> */}
+              </Tooltip>
             </div>
           </Form>
         </Content>
