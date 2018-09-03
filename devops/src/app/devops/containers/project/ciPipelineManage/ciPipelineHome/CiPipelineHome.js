@@ -15,32 +15,32 @@ const ICONS = {
   success: {
     icon: 'icon-check_circle',
     code: 'success',
-    display: 'passed',
+    display: 'Passed',
   },
   pending: {
     icon: 'icon-pause_circle_outline',
     code: 'pending',
-    display: 'pending',
+    display: 'Pending',
   },
   running: {
     icon: 'icon-timelapse',
     code: 'running',
-    display: 'running',
+    display: 'Running',
   },
   failed: {
     icon: 'icon-cancel',
     code: 'failed',
-    display: 'failed',
+    display: 'Failed',
   },
   canceled: {
     icon: 'icon-not_interested',
     code: 'canceled',
-    display: 'cancel',
+    display: 'Cancel',
   },
   skipped: {
     icon: 'icon-skipped_b',
     code: 'skipped',
-    display: 'skipped',
+    display: 'Skipped',
   },
 };
 const ICONS_ACTION = {
@@ -216,7 +216,7 @@ class CiPipelineHome extends Component {
         target="_blank"
         rel="nofollow me noopener noreferrer"
       >
-        <i className={`icon ${ICONS[status].icon} c7n-icon-${status} c7n-icon-sm`} />
+        <i className={`icon ${ICONS[status].icon} c7n-icon-${status} c7n-icon-lg`} />
         <span className="c7n-text-status black">{ICONS[status].display}</span>
       </a>
     </div>
