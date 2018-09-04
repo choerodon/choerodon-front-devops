@@ -91,14 +91,6 @@ class AppTagStore {
     return this.branchData;
   }
 
-  /**
-   * 根据应用ID查询该应用下所有的标签
-   * @param projectId
-   * @param appId
-   * @param page
-   * @param sizes
-   * @returns {Promise<T>}
-   */
   queryTagData = (projectId, page = 0, sizes = 10, postData = { searchParam: {}, param: '' }) => {
     if (this.selectedApp) {
       this.setLoading(true);
@@ -112,7 +104,7 @@ class AppTagStore {
             this.setPageInfo({ current: number + 1, pageSize: size, total: totalElements });
           }
         }).catch((err) => {
-          Choerodon.prompt(err);
+          Choerodon.handleResponseError(err)
           this.setLoading(false);
         });
     }
@@ -139,7 +131,7 @@ class AppTagStore {
             this.queryTagData(projectId, 0, 10);
           }
         }
-      }).catch(err => Choerodon.prompt(err));
+      }).catch(err => Choerodon.handleResponseError(err));
   };
 
   /**
@@ -154,7 +146,7 @@ class AppTagStore {
       if (result) {
         this.setBranchData(result);
       }
-    }).catch(err => Choerodon.prompt(err));
+    }).catch(err => Choerodon.handleResponseError(err));
   };
 
   /**

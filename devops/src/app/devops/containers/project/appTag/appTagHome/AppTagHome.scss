@@ -1,56 +1,91 @@
-h4.c7n-tag-table {
-  margin-top: 20px;
-}
+.c7n-tag-wrapper {
+  .c7n-tag-table {
+    padding-bottom: 8px;
+    max-width: 100%;
+    margin-top: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, .12);
+  }
 
-.apptag-formitem {
-  position: relative;
-  padding-left: 26px;
-  .c7n-apptag-icon {
-    position: absolute;
-    left: 0;
-    top: 20px;
-    font-size: 16px;
-    color: rgba(0, 0, 0, .54);
+  .c7n-tag-panel {
+    display: inline-flex;
+    width: calc(100% - 35px);
+    padding-left: 18px;
+    flex-wrap: nowrap;
+    .c7n-tag-panel-info {
+      flex: 1;
+      .c7n-tag-panel-name {
+        margin-bottom: 6px;
+        span {
+          margin-left: 8px;
+          vertical-align: middle;
+        }
+      }
+      .c7n-tag-panel-detail {
+        line-height: 1;
+        margin-bottom: 0;
+        .c7n-tag-icon-point {
+          margin-right: 8px;
+          font-size: 18px;
+          color: rgba(0, 0, 0, .54);
+        }
+        a {
+          vertical-align: middle;
+        }
+        span {
+          vertical-align: middle;
+        }
+        .c7n-tag-msg {
+          word-break: break-all;
+        }
+        .c7n-tag-panel-person {
+          vertical-align: top;
+          .c7n-tag-commit {
+            display: inline-block;
+            vertical-align: middle;
+            &.c7n-tag-commit-avatar {
+              margin-right: 8px;
+              width: 18px;
+              height: 18px;
+              line-height: 18px;
+              border-radius: 50%;
+              font-size: 14px;
+              text-align: center;
+              background-color: rgba(63, 81, 181, .44);
+              color: rgba(63, 81, 181, 1);
+            }
+          }
+          .c7n-tag-commit-img {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+        .c7n-tag-time {
+          display: inline-block;
+          vertical-align: middle;
+        }
+      }
+    }
+    .c7n-tag-panel-opera {
+      flex: 0 0 72px;
+      align-self: center;
+      padding: 12px;
+      width: 72px;
+      line-height: 1;
+      .icon {
+        font-size: 18px;
+        &:first-child {
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+  .c7n-tag-release {
+    padding-left: 64px;
+  }
+  .c7n-tag-pagin {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
   }
 }
-
-.apptag-commit {
-  display: inline-block;
-  vertical-align: middle;
-  &.apptag-commit-avatar {
-    margin-right: 8px;
-    width: 18px;
-    height: 18px;
-    line-height: 18px;
-    border-radius: 50%;
-    font-size: 14px;
-    text-align: center;
-    background-color: rgba(63, 81, 181, .44);
-    color: rgba(63, 81, 181, 1);
-  }
-}
-
-.apptag-commit-img {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  margin-right: 8px;
-}
-
-.apptag-branch-icon {
-  margin-right: 6px;
-}
-
-.c7n-option-popover {
-  width: 205px;
-  display: inline-flex;
-}
-
-.c7n-dom-more {
-  margin: -8px -20px;
-  height: 28px;
-  line-height: 28px;
-  color: #3f51b5;
-  padding-left: 20px;
-}
-
