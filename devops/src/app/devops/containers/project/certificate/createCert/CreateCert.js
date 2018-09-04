@@ -137,7 +137,7 @@ class CreateCert extends Component {
         callback(intl.formatMessage({ id: 'ctf.domain.check.repeat' }));
       }
     } else {
-      callback(intl.formatMessage({ id: 'domain.name.check.failed' }));
+      callback(intl.formatMessage({ id: 'ctf.domain.check.failed' }));
     }
   };
 

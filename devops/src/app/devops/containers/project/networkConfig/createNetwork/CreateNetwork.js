@@ -385,8 +385,8 @@ class CreateNetwork extends Component {
    * @param type
    */
   checkPort = (rule, value, callback, type) => {
-    const { intl } = this.props;
-    const { getFieldValue } = this.props.form;
+    const { intl, form } = this.props;
+    const { getFieldValue } = form;
     const p = /^[1-9]\d*$/;
     const count = _.countBy(getFieldValue(type));
     let typeMsg = '';

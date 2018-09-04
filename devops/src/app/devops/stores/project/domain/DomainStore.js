@@ -155,35 +155,20 @@ class DomainStore {
       return res;
     });
 
-
-  checkName = (projectId, envId, value) => axios.get(`/devops/v1/projects/${projectId}/ingress/check_name?name=${envId}&envId=${value}`).then((datas) => {
-    const res = handleProptError(datas);
-    return res;
-  });
+  checkName = (projectId, envId, value) => axios.get(`/devops/v1/projects/${projectId}/ingress/check_name?name=${envId}&envId=${value}`)
+    .then(data => handleProptError(data));
 
   checkPath =(projectId, domain, value, id = '') => axios.get(`/devops/v1/projects/${projectId}/ingress/check_domain?domain=${domain}&path=${value}&id=${id}`)
-    .then((datas) => {
-      const res = handleProptError(datas);
-      return res;
-    });
+    .then(data => handleProptError(data));
 
   updateData = (projectId, id, data) => axios.put(`/devops/v1/projects/${projectId}/ingress/${id}`, JSON.stringify(data))
-    .then((datas) => {
-      const res = handleProptError(datas);
-      return res;
-    });
+    .then(res => handleProptError(res));
 
   addData = (projectId, data) => axios.post(`/devops/v1/projects/${projectId}/ingress`, JSON.stringify(data))
-    .then((datas) => {
-      const res = handleProptError(datas);
-      return res;
-    });
+    .then(res => handleProptError(res));
 
   deleteData = (projectId, id) => axios.delete(`/devops/v1/projects/${projectId}/ingress/${id}`)
-    .then((datas) => {
-      const res = handleProptError(datas);
-      return res;
-    });
+    .then(data => handleProptError(data));
 
   loadNetwork = (projectId, envId) => axios.get(`/devops/v1/projects/${projectId}/service?envId=${envId}`)
     .then((data) => {
