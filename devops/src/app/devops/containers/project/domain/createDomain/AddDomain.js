@@ -54,7 +54,7 @@ class CreateDomain extends Component {
         callback(intl.formatMessage({ id: 'network.form.app.disable' }));
       }
     } else {
-      callback(intl.formatMessage({ id: 'domain.names.check.failed' }));
+      callback(intl.formatMessage({ id: 'domain.name.check.failed' }));
     }
   }, 1000);
 
@@ -65,7 +65,7 @@ class CreateDomain extends Component {
       projectId: menu.id,
       deletedService: {},
       env: { loading: false, dataSource: [] },
-      portInNetwork: [],
+      portInNetwork: {},
       protocol: 'normal',
       selectEnv: null,
       pathCountChange: false,
@@ -178,10 +178,10 @@ class CreateDomain extends Component {
   handleResponse = (promise) => {
     if (promise) {
       promise.then((data) => {
+        this.setState({ submitting: false });
         if (data) {
           this.handleClose();
         }
-        this.setState({ submitting: false });
       }).catch((err) => {
         this.setState({ submitting: false });
         Choerodon.handleResponseError(err);
@@ -345,8 +345,8 @@ class CreateDomain extends Component {
     } else {
       // network[xxx]
       const index = parseInt(rule.field.slice(8, -1), 10);
-      const { id } = deletedService[index];
-      if (id === value) {
+      const del = deletedService[index];
+      if (del && del.id && del.id === value) {
         callback(intl.formatMessage({ id: 'domain.network.check.failed' }));
       } else {
         callback();
@@ -365,16 +365,21 @@ class CreateDomain extends Component {
   /**
    * 根据网络加载端口
    * @param data
+   * @param index 标识第几组的网络
    * @param id
    */
-  handleSelectNetwork = (data, id) => {
-    const portInNetwork = [];
+  handleSelectNetwork = (data, index, id) => {
+    console.log(data, index, id);
+    const portArr = [];
     _.forEach(data, (item) => {
       if (id === item.id) {
         const { config: { ports } } = item;
-        _.forEach(ports, p => portInNetwork.push(p.port));
+        _.forEach(ports, p => portArr.push(p.port));
       }
     });
+    const portInNetwork = {
+      [index]: portArr,
+    };
     this.setState({ portInNetwork });
   };
 
@@ -411,22 +416,14 @@ class CreateDomain extends Component {
     } = this.state;
     const network = store.getNetwork;
     const { pathList, envId, name, domain } = singleData;
-    // 网络拥有的端口
-    const portWithNetwork = {};
-    _.forEach(network, (item) => {
-      const { config: { ports }, id } = item;
-      const port = [];
-      _.forEach(ports, p => port.push(p.port));
-      portWithNetwork[id] = port;
-    });
     const initEnvId = propsEnv ? Number(propsEnv) : undefined;
-    let initPaths = [];
+    let initPaths = [0];
     if (pathList && pathList.length) {
+      initPaths.pop();
       initPaths = _.map(pathList, (item, index) => index);
-      this.pathKeys = pathList.length;
-    } else {
-      initPaths = [0];
-      this.pathKeys = 1;
+      if (initPaths.length !== 1 && this.pathKeys === 1) {
+        this.pathKeys = pathList.length;
+      }
     }
     getFieldDecorator('paths', { initialValue: initPaths });
     const paths = getFieldValue('paths');
@@ -440,6 +437,7 @@ class CreateDomain extends Component {
         hasPathError = false;
       }
     });
+    // 生成路径-网络-端口的表单组
     const pathItem = _.map(paths, (k, index) => {
       let delNetOption = null;
       if (deletedService[k] && !_.isEmpty(deletedService[k])) {
@@ -449,13 +447,21 @@ class CreateDomain extends Component {
             <div>{formatMessage({ id: status })}</div></div>
           {delNetName}</Option>);
       }
-      const hasServerInit = pathList && pathList.length && pathList[index];
-      const initPort = hasServerInit ? pathList[index].servicePort : undefined;
-      const initNetwork = hasServerInit ? pathList[index].serviceId : undefined;
-      const initPath = hasServerInit ? pathList[index].path : '/';
+      const hasServerInit = pathList && pathList.length && pathList[k];
+      const initPort = hasServerInit ? pathList[k].servicePort : undefined;
+      const initNetwork = hasServerInit ? pathList[k].serviceId : undefined;
+      const initPath = hasServerInit ? pathList[k].path : '/';
+      // 网络拥有的端口
+      const portWithNetwork = {};
+      _.forEach(network, (item) => {
+        const { config: { ports }, id } = item;
+        const port = [];
+        _.forEach(ports, p => port.push(p.port));
+        portWithNetwork[id] = port;
+      });
       // 生成端口选项
-      const portOption = (type === 'edit' && portInNetwork.length === 0 && hasServerInit)
-        ? portWithNetwork[pathList[index].serviceId] : portInNetwork;
+      const portOption = (type === 'edit' && !portInNetwork[k] && hasServerInit)
+        ? portWithNetwork[pathList[k].serviceId] : portInNetwork[k];
       return (<div className="domain-network-wrap" key={`paths-${k}`}>
         <FormItem
           className="domain-network-item c7n-select_160"
@@ -469,7 +475,7 @@ class CreateDomain extends Component {
           })(
             <Input
               onChange={() => this.setState({ pathCountChange: true })}
-              disabled={!getFieldValue('domain')}
+              disabled={!(getFieldValue('domain'))}
               maxLength={10}
               label={formatMessage({ id: 'domain.column.path' })}
               size="default"
@@ -496,7 +502,7 @@ class CreateDomain extends Component {
               label={formatMessage({ id: 'domain.column.network' })}
               showSearch
               dropdownMatchSelectWidth
-              onSelect={this.handleSelectNetwork.bind(this, network)}
+              onSelect={this.handleSelectNetwork.bind(this, network, k)}
               size="default"
               optionFilterProp="children"
               optionLabelProp="children"
@@ -614,7 +620,7 @@ class CreateDomain extends Component {
                 initialValue: name || '',
               })(
                 <Input
-                  disabled={!getFieldValue('envId') || name}
+                  disabled={!(getFieldValue('envId') && !name)}
                   maxLength={40}
                   label={formatMessage({ id: 'domain.column.name' })}
                   size="default"
