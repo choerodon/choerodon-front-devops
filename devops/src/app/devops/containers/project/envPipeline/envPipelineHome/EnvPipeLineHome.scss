@@ -2,7 +2,7 @@
   margin-right: 25px;
   width: 240px;
   cursor: move;
-  height: 230px;
+  height: 150px;
   color: rgba(0, 0, 0, 0.87);
   background-color: white;
   font-family: Roboto, sans-serif;
@@ -75,7 +75,7 @@
   margin-right: 25px;
   width: 240px;
   cursor: move;
-  height: 230px;
+  height: 150px;
   font-family: Roboto, sans-serif;
   border-radius: 2px;
   opacity: 0;
@@ -88,19 +88,19 @@
   display: flex;
   //overflow-x: auto;
   white-space: nowrap;
-  height: 310px;
+  height: 194px;
   padding-left: 5px;
   //border-right: 22px solid #f3f3f3;
   //border-left: 22px solid #f3f3f3;
   //background-color: #f3f3f3;
-  padding-top: 40px;
+  padding-top: 20px;
 }
 
 .c7n-env-board-ban {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  height: 310px;
+  height: 194px;
   //overflow-x: auto;
   white-space: nowrap;
   padding: 5px;
@@ -112,11 +112,11 @@
   display: inline-block;
   margin-right: 70px;
   width: 240px;
-  height: 230px;
+  height: 150px;
 
   .c7n-env-arrow {
     font-size: 30px;
-    line-height: 230px;
+    line-height: 150px;
     color: rgba(0, 0, 0, 0.54);
   }
 
@@ -161,12 +161,19 @@
   background-color: rgba(140, 158, 255, 0.16);
 }
 
+.c7n-env-card-content {
+  display: flex;
+}
+
 .c7n-env-des {
   font-size: 13px;
   line-height: 20px;
-  padding: 18px 16px;
+  padding: 16px;
   white-space: normal;
   word-break: break-all;
+  overflow: hidden;
+  height: 100px;
+  width: 140px;
 
   .c7n-env-des-head {
     color: rgba(0, 0, 0, 0.54);
@@ -174,7 +181,7 @@
 }
 
 .c7n-env-state {
-  margin: 16px 86px 0 86px;
+  margin: 16px;
   line-height: 60px;
   text-align: center;
   font-size: 14px;
@@ -186,7 +193,7 @@
 }
 
 .c7n-env-state-pending {
-  margin: 16px 86px 0 86px;
+  margin: 16px;
   line-height: 60px;
   text-align: center;
   font-size: 14px;
@@ -221,10 +228,19 @@
   text-align: center;
 }
 
+.t-height {
+  height: 235px !important;
+}
+
+.t-padding {
+  padding-top: 16px;
+}
+
 .c7n-outer-container {
   overflow: hidden;
   position: relative;
-  height: 310px;
+  margin-bottom: 24px;
+  height: 194px;
 
   .c7n-push-left,
   .c7n-push-right,
@@ -248,7 +264,7 @@
       line-height: 100px;
       text-align: center;
       font-size: 38px;
-      top: 105px;
+      top: 47px;
       z-index: 999;
     }
 
@@ -263,7 +279,7 @@
       line-height: 100px;
       text-align: center;
       font-size: 38px;
-      top: 105px;
+      top: 47px;
       z-index: 999;
     }
 
@@ -277,7 +293,7 @@
       line-height: 100px;
       text-align: center;
       font-size: 38px;
-      top: 70px;
+      top: 25px;
       z-index: 999;
     }
 
@@ -292,7 +308,7 @@
       line-height: 100px;
       text-align: center;
       font-size: 38px;
-      top: 70px;
+      top: 25px;
       z-index: 999;
     }
   }
@@ -330,4 +346,37 @@
 /* for Chrome */
 .inner-container::-webkit-scrollbar {
   display: none;
+}
+
+.c7n-env-group-wrap {
+  display: flex;
+  background-color: #f3f3f3;
+  font-size: 18px;
+  padding-top: 20px;
+  padding-left: 27px;
+
+  .c7n-env-card-group {
+    font-size: 18px;
+    margin-right: 40px;
+  }
+
+  button {
+    display: none;
+  }
+
+  &:hover {
+    button {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      font-size: 16px;
+      line-height: 24px;
+    }
+  }
+}
+
+.c7n-env-group-modal {
+  .ant-form-item {
+    margin-bottom: 0;
+  }
 }
