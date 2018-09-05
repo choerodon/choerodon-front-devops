@@ -4,13 +4,13 @@ import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { Button, Select, Modal, Form, Icon, Collapse, Avatar, Pagination, Tooltip } from 'choerodon-ui';
-import MDReactComponent from 'markdown-react-js';
+import ReactMarkdown from 'react-markdown';
 import _ from 'lodash';
 import LoadingBar from '../../../../components/loadingBar';
 import TimePopover from '../../../../components/timePopover/index';
+import CreateTag from '../createTag/CreateTag';
 import '../../../main.scss';
 import './AppTagHome.scss';
-import CreateTag from "../createTag/CreateTag";
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -183,15 +183,14 @@ class AppTagHome extends Component {
           >
             <Tooltip
               placement="bottom"
-              title={<FormattedMessage id="edid" />}
+              title={<FormattedMessage id="edit" />}
             >
               <Button
                 shape="circle"
                 size="small"
+                icon="mode_edit"
                 // onClick={this.edit.bind(this, tagName)}
-              >
-                <Icon type="mode_edit" />
-              </Button>
+              />
             </Tooltip>
           </Permission>
           <Permission
@@ -209,10 +208,9 @@ class AppTagHome extends Component {
               <Button
                 shape="circle"
                 size="small"
+                icon="delete_forever"
                 onClick={this.openRemove.bind(this, tagName)}
-              >
-                <Icon type="delete_forever" />
-              </Button>
+              />
             </Tooltip>
           </Permission>
         </div>
@@ -221,12 +219,31 @@ class AppTagHome extends Component {
         header={header}
         key={tagName}
       >
-        <div className="c7n-tag-release">{release ? <MDReactComponent text={release.description} /> : null}</div>
+        <div className="c7n-tag-release">{release ? <div className="c7n-md-parse">
+          <ReactMarkdown
+            source={release.description}
+            skipHtml={false}
+            escapeHtml={false}
+          />
+        </div> : null}</div>
       </Panel>);
     });
+    const noTag = (<div className="c7n-tag-empty">
+      <div>
+        <Icon type="info" className="c7n-tag-empty-icon" />
+        <span className="c7n-tag-empty-text">{formatMessage({ id: 'apptag.empty' })}</span>
+      </div>
+      <Button
+        type="primary"
+        funcType="raised"
+        onClick={() => this.displayCreateModal(true)}
+      >
+        <FormattedMessage id="apptag.create" />
+      </Button>
+    </div>);
     return (
       <Page
-        className="c7n-region c7n-tag-wrapper"
+        className="c7n-tag-wrapper"
         service={[
           'devops-service.application.listByActive',
           'devops-service.devops-git.getTagByPage',
@@ -246,16 +263,22 @@ class AppTagHome extends Component {
               projectId={projectId}
               organizationId={orgId}
             >
-              <Button onClick={() => this.displayCreateModal(true)}>
-                <i className="icon-playlist_add icon" />
+              <Button
+                type="primary"
+                funcType="flat"
+                icon="playlist_add"
+                onClick={() => this.displayCreateModal(true)}
+              >
                 <FormattedMessage id="apptag.create" />
               </Button>
             </Permission>
           ) : null}
           <Button
+            type="primary"
+            funcType="flat"
+            icon="refresh"
             onClick={this.handleRefresh}
           >
-            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
@@ -273,17 +296,19 @@ class AppTagHome extends Component {
             }
           </Select>
           <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
-          {loading ? <LoadingBar display /> : <Fragment>
-            <Collapse bordered={false}>{tagList}</Collapse>
-            <div className="c7n-tag-pagin">
-              <Pagination
-                total={total}
-                current={current}
-                pageSize={pageSize}
-                onChange={this.handlePaginChange}
-                onShowSizeChange={this.handlePaginChange}
-              />
-            </div>
+          {loading && !_.isNull(loading) ? <LoadingBar display /> : <Fragment>
+            {tagList.length ? <Fragment>
+              <Collapse bordered={false}>{tagList}</Collapse>
+              <div className="c7n-tag-pagin">
+                <Pagination
+                  total={total}
+                  current={current}
+                  pageSize={pageSize}
+                  onChange={this.handlePaginChange}
+                  onShowSizeChange={this.handlePaginChange}
+                />
+              </div>
+            </Fragment> : noTag}
           </Fragment>}
         </Content>
         <Modal
@@ -301,6 +326,7 @@ class AppTagHome extends Component {
         {creationDisplay ? <CreateTag
           app={currentAppName}
           appId={appId}
+          store={AppTagStore}
           show={creationDisplay}
           close={this.displayCreateModal}
         /> : null}

@@ -25,7 +25,8 @@ class AppTagStore {
 
   @observable defaultAppName = null;
 
-  @observable loading = false;
+  // 防止初次为false时对页面的判断
+  @observable loading = null;
 
   @observable pageInfo = {
     current: 0,
@@ -104,7 +105,7 @@ class AppTagStore {
             this.setPageInfo({ current: number + 1, pageSize: size, total: totalElements });
           }
         }).catch((err) => {
-          Choerodon.handleResponseError(err)
+          Choerodon.handleResponseError(err);
           this.setLoading(false);
         });
     }
@@ -159,12 +160,11 @@ class AppTagStore {
   /**
    * 创建tag
    * @param projectId
-   * @param appId
    * @param tag
-   * @param ref
-   * @returns {JQueryXHR | * | void}
+   * @param ref 基于分支名称
+   * @param release 发布日志信息
    */
-  createTag = (projectId, tag, ref) => axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags?tag=${tag}&ref=${ref}`);
+  createTag = (projectId, tag, ref, release) => axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags?tag=${tag}&ref=${ref}&release_notes=${encodeURIComponent(release)}`);
 
   /**
    * 删除标记

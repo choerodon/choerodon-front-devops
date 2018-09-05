@@ -151,6 +151,12 @@ const pageDetail = {
   'apptag.link': `${docServer}/user-guide/development-pipeline/tag/`,
   'apptag.createTag': '在应用"{name}"中创建标记',
   'apptag.createDescription': '您在此填写标记名称，选择标记来源，即可基于某一分支创建标记。',
+  'apptag.create.title': '在应用"{name}"中创建标记',
+  'apptag.create.description': '您在此填写标记名称，选择标记来源，即可基于某一分支创建标记。',
+  'apptag.create.link': `${docServer}/user-guide/development-pipeline/tag/`,
+  'apptag.update.title': '在应用"{name}"中创建标记',
+  'apptag.update.description': '您在此填写标记名称，选择标记来源，即可基于某一分支创建标记。',
+  'apptag.update.link': `${docServer}/user-guide/development-pipeline/tag/`,
 
   // repository
   'repository.description': '代码仓库是部分实现特定功能的程序代码集合。您可在此查看该项目下的代码仓库、仓库地址及其关联的应用名称，还可以一键复制仓库地址以便克隆代码。',
@@ -227,6 +233,9 @@ const zhCN = {
   language: 'zh_CN',
   chooseType: '选择类型',
   chooseApp: '选择应用',
+  notes: '填写内容',
+  write: '编辑',
+  preview: '预览',
 
   'file.uploaded.failed': '上传失败！',
   'file.uploaded.success': '上传成功！',
@@ -734,6 +743,8 @@ const zhCN = {
   'apptag.delete.tooltip': '确定要删除该标记吗？',
   'apptag.checkNameReg': '由数字和 . 组成，必须以数字开头且不能以 . 结尾，例如：0.0.1',
   'apptag.noRefBranch': '该应用还没有分支，请先创建分支',
+  'apptag.empty': '暂无任何标记，您可在此页面基于某一分支创建标记。',
+  'apptag.release.title': '发布日记',
 
   // repository
   'repository.head': '代码仓库',

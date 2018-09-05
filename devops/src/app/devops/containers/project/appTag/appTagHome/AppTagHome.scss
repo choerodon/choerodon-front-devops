@@ -8,9 +8,10 @@
 
   .c7n-tag-panel {
     display: inline-flex;
-    width: calc(100% - 35px);
+    width: calc(100% - 24px);
     padding-left: 18px;
     flex-wrap: nowrap;
+    justify-content: space-between;
     .c7n-tag-panel-info {
       flex: 1;
       .c7n-tag-panel-name {
@@ -67,25 +68,42 @@
       }
     }
     .c7n-tag-panel-opera {
-      flex: 0 0 72px;
-      align-self: center;
+      display: flex;
+      justify-content: flex-end;
+      flex: 0 0 84px;
       padding: 12px;
-      width: 72px;
+      width: 84px;
       line-height: 1;
-      .icon {
+      button {
         font-size: 18px;
-        &:first-child {
-          margin-right: 10px;
+        &:last-child {
+          margin-left: 10px;
         }
       }
     }
   }
   .c7n-tag-release {
-    padding-left: 64px;
+    padding-left: 40px;
   }
   .c7n-tag-pagin {
     display: flex;
     justify-content: flex-end;
     margin-top: 8px;
+  }
+  .c7n-tag-empty {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), inset 4px 0 0 0 #d3d3d3;
+    .c7n-tag-empty-text {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .c7n-tag-empty-icon {
+      margin-right: 12px;
+      line-height: 32px;
+      color: #a9a9a9;
+      font-size: 20px;
+    }
   }
 }
