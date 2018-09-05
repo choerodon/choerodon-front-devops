@@ -3,13 +3,14 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Input, Form, Tooltip, Modal, Popover } from 'choerodon-ui';
+import { Button, Input, Form, Tooltip, Modal, Popover, Select } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import classNames from 'classnames';
 import CopyToBoard from 'react-copy-to-clipboard';
 import Board from './Board';
 import LoadingBar from '../../../../components/loadingBar';
+import EnvGroup from './EnvGroup';
 import '../../../main.scss';
 import './EnvPipeLineHome.scss';
 
@@ -21,6 +22,7 @@ let scrollLeft = 0;
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Sidebar } = Modal;
+const { Option } = Select;
 const { AppState } = stores;
 
 const formItemLayout = {
@@ -43,7 +45,7 @@ class EnvPipelineHome extends Component {
    * @param callback 回调提示
    */
   checkCode = _.debounce((rule, value, callback) => {
-    const { EnvPipelineStore } = this.props;
+    const { EnvPipelineStore, intl } = this.props;
     const projectId = AppState.currentMenuType.id;
     // eslint-disable-next-line no-useless-escape
     const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
@@ -51,13 +53,13 @@ class EnvPipelineHome extends Component {
       EnvPipelineStore.loadCode(projectId, value)
         .then((error) => {
           if (error && error.failed) {
-            callback(this.props.intl.formatMessage({ id: 'envPl.code.check.exist' }));
+            callback(intl.formatMessage({ id: 'envPl.code.check.exist' }));
           } else {
             callback();
           }
         });
     } else if (value && !pa.test(value)) {
-      callback(this.props.intl.formatMessage({ id: 'envPl.code.check.failed' }));
+      callback(intl.formatMessage({ id: 'envPl.code.check.failed' }));
     } else {
       callback();
     }
@@ -70,14 +72,15 @@ class EnvPipelineHome extends Component {
    * @param callback 回调提示
    */
   checkName = _.debounce((rule, value, callback) => {
-    const { EnvPipelineStore } = this.props;
+    const { EnvPipelineStore, intl } = this.props;
     const projectId = AppState.currentMenuType.id;
     const envData = EnvPipelineStore.getEnvData;
-    if (envData ? value !== envData.name : value) {
+    const flag = envData ? value !== envData.name : value;
+    if (flag) {
       EnvPipelineStore.loadName(projectId, value)
         .then((error) => {
           if (error && error.failed) {
-            callback(this.props.intl.formatMessage({ id: 'envPl.name.check.exist' }));
+            callback(intl.formatMessage({ id: 'envPl.name.check.exist' }));
           } else {
             callback();
           }
@@ -101,6 +104,7 @@ class EnvPipelineHome extends Component {
 
   componentDidMount() {
     this.loadEnvs();
+    this.loadEnvGroups();
   }
 
   /**
@@ -108,6 +112,7 @@ class EnvPipelineHome extends Component {
    */
   reload = () => {
     this.loadEnvs();
+    this.loadEnvGroups();
   };
 
   /**
@@ -121,6 +126,15 @@ class EnvPipelineHome extends Component {
   };
 
   /**
+   * 加载环境组
+   */
+  loadEnvGroups = () => {
+    const { EnvPipelineStore } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    EnvPipelineStore.loadGroup(projectId);
+  };
+
+  /**
    * 弹出侧边栏
    * @param type 侧边栏内容标识
    */
@@ -130,6 +144,12 @@ class EnvPipelineHome extends Component {
     EnvPipelineStore.setEnvData(null);
     EnvPipelineStore.setSideType(type);
     EnvPipelineStore.setShow(true);
+  };
+
+  showGroup = (type) => {
+    const { EnvPipelineStore } = this.props;
+    EnvPipelineStore.setSideType(type);
+    EnvPipelineStore.setShowGroup(true);
   };
 
   /**
@@ -172,21 +192,34 @@ class EnvPipelineHome extends Component {
   };
 
   /**
-   * 环境禁用
+   * 环境禁用/删除组
    */
   banEnv = () => {
     const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
-    const envId = EnvPipelineStore.getEnvData.id;
-    EnvPipelineStore.banEnvById(projectId, envId, false)
-      .then((data) => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else if (data) {
-          this.loadEnvs();
-        }
-      });
-
+    const sideType = EnvPipelineStore.getSideType;
+    const groupOne = EnvPipelineStore.getGroupOne;
+    if (sideType === 'delGroup') {
+      EnvPipelineStore.delGroupById(projectId, groupOne.id)
+        .then((data) => {
+          if (data && data.failed) {
+            Choerodon.prompt(data.message);
+          } else if (data) {
+            EnvPipelineStore.setGroupOne([]);
+            this.reload();
+          }
+        });
+    } else {
+      const envId = EnvPipelineStore.getEnvData.id;
+      EnvPipelineStore.banEnvById(projectId, envId, false)
+        .then((data) => {
+          if (data && data.failed) {
+            Choerodon.prompt(data.message);
+          } else if (data) {
+            this.loadEnvs();
+          }
+        });
+    }
     EnvPipelineStore.setBan(false);
   };
 
@@ -198,7 +231,8 @@ class EnvPipelineHome extends Component {
   };
 
   mouseEnter = () => {
-    this.setState({ copyMsg: this.props.intl.formatMessage({ id: 'envPl.code.copy.tooltip' }) });
+    const { intl } = this.props;
+    this.setState({ copyMsg: intl.formatMessage({ id: 'envPl.code.copy.tooltip' }) });
   };
 
   /**
@@ -216,7 +250,6 @@ class EnvPipelineHome extends Component {
     if (sideType === 'create') {
       this.props.form.validateFieldsAndScroll((err, data) => {
         if (!err) {
-          this.setState({ submitting: false });
           const envName = data.name;
           EnvPipelineStore.createEnv(projectId, data).then((res) => {
             if (res) {
@@ -232,34 +265,39 @@ class EnvPipelineHome extends Component {
               }
             }
           });
+          this.setState({ submitting: false });
         }
       });
     } else {
       this.props.form.validateFieldsAndScroll((err, data, modify) => {
-        if (!err) {
-          if (!modify) {
+        if (modify) {
+          if (!err) {
             EnvPipelineStore.setShow(false);
-            return;
+            const id = EnvPipelineStore.getEnvData.id;
+            EnvPipelineStore.setSideType('');
+            EnvPipelineStore.updateEnv(projectId, { ...data, id })
+              .then((res) => {
+                if (res && res.failed) {
+                  this.setState({
+                    submitting: false,
+                  });
+                  Choerodon.prompt(res.message);
+                } else if (res) {
+                  this.loadEnvs();
+                  EnvPipelineStore.setShow(false);
+                  this.props.form.resetFields();
+                  this.setState({ submitting: false });
+                }
+              });
           }
+        } else {
+          this.setState({
+            submitting: false,
+          });
           EnvPipelineStore.setShow(false);
-          const id = EnvPipelineStore.getEnvData.id;
-          EnvPipelineStore.setSideType('');
-          this.setState({ submitting: false });
-          EnvPipelineStore.updateEnv(projectId, { ...data, id })
-            .then((res) => {
-              if (res && res.failed) {
-                this.setState({
-                  submitting: false,
-                });
-                Choerodon.prompt(res.message);
-              } else if (res) {
-                this.loadEnvs();
-                EnvPipelineStore.setShow(false);
-                this.props.form.resetFields();
-                this.setState({ submitting: false });
-              }
-            });
         }
+        this.props.form.resetFields();
+        this.setState({ submitting: false });
       });
     }
   };
@@ -270,12 +308,33 @@ class EnvPipelineHome extends Component {
    * @returns {*}
    */
   showTitle = (type) => {
+    const { intl } = this.props;
     if (type === 'create') {
-      return this.props.intl.formatMessage({ id: 'envPl.create' });
+      return intl.formatMessage({ id: 'envPl.create' });
     } else if (type === 'edit') {
-      return this.props.intl.formatMessage({ id: 'envPl.edit' });
+      return intl.formatMessage({ id: 'envPl.edit' });
+    } else if (type === 'createGroup') {
+      return intl.formatMessage({ id: 'envPl.group.create' });
+    } else if (type === 'editGroup') {
+      return intl.formatMessage({ id: 'envPl.group.edit' });
     } else {
-      return this.props.intl.formatMessage({ id: 'envPl.token.copy.tooltip' });
+      return intl.formatMessage({ id: 'envPl.token.copy.tooltip' });
+    }
+  };
+
+  /**
+   * 根据type显示footer text
+   * @param type
+   * @returns {*}
+   */
+  okText = (type) => {
+    const { intl } = this.props;
+    if (type === 'create' || type === 'createGroup') {
+      return intl.formatMessage({ id: 'create' });
+    } else if (type === 'edit' || type === 'editGroup') {
+      return intl.formatMessage({ id: 'save' });
+    } else {
+      return intl.formatMessage({ id: 'envPl.close' });
     }
   };
 
@@ -318,24 +377,34 @@ class EnvPipelineHome extends Component {
   };
 
   render() {
-    const { EnvPipelineStore } = this.props;
+    const { EnvPipelineStore, intl } = this.props;
     const { getFieldDecorator } = this.props.form;
+    const { copyMsg, token, envName, moveBan, submitting } = this.state;
+    const { id: projectId, organizationId, type, name: projectName } = AppState.currentMenuType;
+
     const envcardPosition = EnvPipelineStore.getEnvcardPosition;
     const disEnvcardPosition = EnvPipelineStore.getDisEnvcardPosition;
     const envData = EnvPipelineStore.getEnvData;
     const ist = EnvPipelineStore.getIst;
     const shell = EnvPipelineStore.shell;
     const show = EnvPipelineStore.getShow;
+    const showGroup = EnvPipelineStore.getShowGroup;
     const sideType = EnvPipelineStore.getSideType;
-    const showBtns = (sideType === 'create' || sideType === 'edit');
     const ban = EnvPipelineStore.getBan;
-    const projectId = AppState.currentMenuType.id;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
-    const projectName = AppState.currentMenuType.name;
-    let DisEnvDom = (<span className="c7n-none-des">{this.props.intl.formatMessage({ id: 'envPl.status.stop' })}</span>);
+    const groupData = EnvPipelineStore.getGroup;
+
+    const showBtns = (sideType === 'create' || sideType === 'edit');
+
+    let DisEnvDom = (<span className="c7n-none-des">{intl.formatMessage({ id: 'envPl.status.stop' })}</span>);
+
     if (disEnvcardPosition.length) {
-      DisEnvDom = _.map(disEnvcardPosition, env => (<div className="c7n-env-card c7n-env-card-ban" key={env.id}>
+      const disData = [];
+      _.map(disEnvcardPosition, (d) => {
+        if (d.devopsEnviromentRepDTOs.length) {
+          disData.push(d.devopsEnviromentRepDTOs);
+        }
+      });
+      DisEnvDom = _.map(disData[0], env => (<div className="c7n-env-card c7n-env-card-ban" key={env.id}>
         <div className="c7n-env-card-header">
           {env.name}
           <div className="c7n-env-card-action">
@@ -356,19 +425,21 @@ class EnvPipelineHome extends Component {
             </Permission>
           </div>
         </div>
-        <div className="c7n-env-state c7n-env-state-ban">
-          <FormattedMessage id="envPl.status.stopped" />
-        </div>
-        <div className="c7n-env-des">
-          <span className="c7n-env-des-head">{this.props.intl.formatMessage({ id: 'envPl.description' })}</span>
-          {env.description}
+        <div className="c7n-env-card-content">
+          <div className="c7n-env-state c7n-env-state-ban">
+            <FormattedMessage id="envPl.status.stopped" />
+          </div>
+          <div className="c7n-env-des" title={env.description}>
+            <span className="c7n-env-des-head">{intl.formatMessage({ id: 'envPl.description' })}</span>
+            {env.description}
+          </div>
         </div>
       </div>));
     }
 
-    const suffix = (<Popover placement="right" trigger="hover" content={this.state.copyMsg}>
+    const suffix = (<Popover placement="right" trigger="hover" content={copyMsg}>
       <div onMouseEnter={this.mouseEnter}>
-        <CopyToBoard text={shell || this.state.token} onCopy={this.handleCopy}>
+        <CopyToBoard text={shell || token} onCopy={this.handleCopy}>
           <i className="icon icon-library_books" />
         </CopyToBoard>
       </div>
@@ -381,7 +452,7 @@ class EnvPipelineHome extends Component {
               <h2 className="c7n-space-first"><FormattedMessage id="env.create.title" values={{ name: projectName }} /></h2>
               <p>
                 <FormattedMessage id="env.create.description" />
-                <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <FormattedMessage id="learnmore" />
                   <i className="icon-open_in_new icon" />
                 </a>
@@ -393,7 +464,7 @@ class EnvPipelineHome extends Component {
                   {getFieldDecorator('code', {
                     rules: [{
                       required: true,
-                      message: this.props.intl.formatMessage({ id: 'required' }),
+                      message: intl.formatMessage({ id: 'required' }),
                     }, {
                       validator: this.checkCode,
                     }],
@@ -411,7 +482,7 @@ class EnvPipelineHome extends Component {
                   {getFieldDecorator('name', {
                     rules: [{
                       required: true,
-                      message: this.props.intl.formatMessage({ id: 'required' }),
+                      message: intl.formatMessage({ id: 'required' }),
                     }, {
                       validator: this.checkName,
                     }],
@@ -437,14 +508,26 @@ class EnvPipelineHome extends Component {
                     />,
                   )}
                 </FormItem>
+                <FormItem
+                  {...formItemLayout}
+                >
+                  {getFieldDecorator('devopsEnvGroupId')(
+                    <Select
+                      allowClear
+                      label={<FormattedMessage id="envPl.form.group" />}
+                    >
+                      {groupData.length ? _.map(groupData, g => <Option key={g.id} value={g.id}>{g.name}</Option>) : null}
+                    </Select>,
+                  )}
+                </FormItem>
               </Form>
             </div>);
           } else if (sideType === 'token') {
             return (<div className="c7n-env-token c7n-sidebar-form">
-              <h2 className="c7n-space-first"><FormattedMessage id="env.token.title" values={{ name: this.state.envName }} /></h2>
+              <h2 className="c7n-space-first"><FormattedMessage id="env.token.title" values={{ name: envName }} /></h2>
               <p>
                 <FormattedMessage id="env.token.description" />
-                <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <FormattedMessage id="learnmore" />
                   <i className="icon icon-open_in_new" />
                 </a>
@@ -454,7 +537,7 @@ class EnvPipelineHome extends Component {
                   label={<FormattedMessage id="envPl.token" />}
                   className="c7n-input-readOnly"
                   autosize
-                  copy
+                  copy="true"
                   readOnly
                   value={this.state.token || ''}
                 />
@@ -468,7 +551,7 @@ class EnvPipelineHome extends Component {
               <h2 className="c7n-space-first"><FormattedMessage id="env.token.title" values={{ name: envData ? envData.name : '' }} /></h2>
               <p>
                 <FormattedMessage id="env.token.description" />
-                <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <FormattedMessage id="learnmore" />
                   <i className="icon icon-open_in_new" />
                 </a>
@@ -478,7 +561,7 @@ class EnvPipelineHome extends Component {
                   label={<FormattedMessage id="envPl.token" />}
                   className="c7n-input-readOnly"
                   autosize
-                  copy
+                  copy="true"
                   readOnly
                   value={shell || ''}
                 />
@@ -487,12 +570,12 @@ class EnvPipelineHome extends Component {
                 </span>
               </div>
             </div>);
-          } else {
+          } else if (sideType === 'edit') {
             return (<div className="c7n-sidebar-form">
               <h2 className="c7n-space-first"><FormattedMessage id="env.update.title" values={{ name: envData ? envData.code : '' }} /></h2>
               <p>
                 <FormattedMessage id="env.update.description" />
-                <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <FormattedMessage id="learnmore" />
                   <i className="icon icon-open_in_new" />
                 </a>
@@ -504,7 +587,7 @@ class EnvPipelineHome extends Component {
                   {getFieldDecorator('name', {
                     rules: [{
                       required: true,
-                      message: this.props.intl.formatMessage({ id: 'required' }),
+                      message: intl.formatMessage({ id: 'required' }),
                     }, {
                       validator: this.checkName,
                     }],
@@ -529,15 +612,31 @@ class EnvPipelineHome extends Component {
                     />,
                   )}
                 </FormItem>
+                <FormItem
+                  {...formItemLayout}
+                >
+                  {getFieldDecorator('devopsEnvGroupId', {
+                    initialValue: envData ? envData.devopsEnvGroupId : undefined,
+                  })(
+                    <Select
+                      allowClear
+                      label={<FormattedMessage id="envPl.form.group" />}
+                    >
+                      {groupData.length ? _.map(groupData, g => <Option key={g.id} value={g.id}>{g.name}</Option>) : null}
+                    </Select>,
+                  )}
+                </FormItem>
               </Form>
             </div>);
+          } else {
+            return null;
           }
         })()
       }
     </div>);
 
     const BoardDom = EnvPipelineStore.getIsLoading ? <LoadingBar display />
-      : (<Board projectId={Number(projectId)} envcardPosition={envcardPosition} />);
+      : (_.map(envcardPosition, e => <Board projectId={Number(projectId)} key={e.devopsEnvGroupId} groupId={e.devopsEnvGroupId} Title={e.devopsEnvGroupName} envcardPositionChild={e.devopsEnviromentRepDTOs} />));
 
     const leftDom = scrollLeft !== 0
       ? <div role="none" className="c7n-push-left-ban icon icon-navigate_before" onClick={this.pushScrollRight} />
@@ -548,7 +647,7 @@ class EnvPipelineHome extends Component {
       'c7n-push-none': disEnvcardPosition.length <= 4,
     });
 
-    const rightDom = this.state.moveBan ? null : <div role="none" className={rightStyle} onClick={this.pushScrollLeft} />;
+    const rightDom = moveBan ? null : <div role="none" className={rightStyle} onClick={this.pushScrollLeft} />;
 
     return (
       <Page
@@ -581,6 +680,20 @@ class EnvPipelineHome extends Component {
               <FormattedMessage id="envPl.create" />
             </Button>
           </Permission>
+          <Permission
+            service={['devops-service.devops-environment.create']}
+            organizationId={organizationId}
+            projectId={projectId}
+            type={type}
+          >
+            <Button
+              funcType="flat"
+              onClick={this.showGroup.bind(this, 'createGroup')}
+            >
+              <i className="icon-playlist_add icon" />
+              <FormattedMessage id="envPl.group.create" />
+            </Button>
+          </Permission>
           <Button
             funcType="flat"
             onClick={this.reload}
@@ -595,10 +708,10 @@ class EnvPipelineHome extends Component {
             visible={show}
             onOk={(sideType === 'token' || sideType === 'key') ? this.handleCancelFun : this.handleSubmit}
             onCancel={this.handleCancelFun}
-            loading={this.state.submitting}
+            confirmLoading={submitting}
             okCancel={showBtns}
             cancelText={<FormattedMessage id="cancel" />}
-            okText={(sideType === 'token' || sideType === 'key') ? <FormattedMessage id="envPl.close" /> : <FormattedMessage id="save" />}
+            okText={this.okText(sideType)}
           >
             {formContent}
           </Sidebar>
@@ -610,10 +723,16 @@ class EnvPipelineHome extends Component {
             closable={false}
             wrapClassName="vertical-center-modal remove"
           >
-            <h2>{this.props.intl.formatMessage({ id: 'envPl.confirm.disable' })}</h2>
-            <span>{ist.length > 0 ? this.props.intl.formatMessage({ id: 'envPl.confirm.content.hasInstance' })
-              : this.props.intl.formatMessage({ id: 'envPl.confirm.content.noInstance' })}</span>
+            {sideType === 'delGroup' ? <div>
+              <h2>{intl.formatMessage({ id: 'envPl.group.del' })}</h2>
+              {intl.formatMessage({ id: 'envPl.confirm.group.del' })}
+            </div> : (<div>
+              <h2>{intl.formatMessage({ id: 'envPl.confirm.disable' })}</h2>
+              <span>{ist.length > 0 ? intl.formatMessage({ id: 'envPl.confirm.content.hasInstance' })
+                : intl.formatMessage({ id: 'envPl.confirm.content.noInstance' })}</span>
+            </div>)}
           </Modal>
+          {showGroup ? <EnvGroup store={EnvPipelineStore} okText={this.okText} showTitle={this.showTitle} /> : null}
           <h2 className="c7n-space-first">
             <FormattedMessage
               id="env.title"
@@ -626,7 +745,7 @@ class EnvPipelineHome extends Component {
             <FormattedMessage
               id="env.description"
             />
-            <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+            <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
               <span className="c7n-external-link-content">
                 <FormattedMessage id="learnmore" />
               </span>
@@ -647,7 +766,7 @@ class EnvPipelineHome extends Component {
               <FormattedMessage
                 id="env.stop.description"
               />
-              <a href={this.props.intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+              <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                 <span className="c7n-external-link-content">
                   <FormattedMessage id="learnmore" />
                 </span>
