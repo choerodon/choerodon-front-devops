@@ -36,9 +36,13 @@ class NetworkHome extends Component {
   /**
    * 关闭侧边栏
    */
-  handleCancelFun = () => {
+  handleCancelFun = (isload) => {
+    const { NetworkConfigStore } = this.props;
     this.setState({ show: false, showEdit: false });
-    this.loadAllData();
+    if (isload) {
+      NetworkConfigStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
+      this.loadAllData();
+    }
   };
 
   /**
@@ -249,6 +253,7 @@ class NetworkHome extends Component {
   render() {
     const { NetworkConfigStore, intl } = this.props;
     const { show, showEdit, id, openRemove, submitting } = this.state;
+    const { filters, sort: { columnKey, order } } = NetworkConfigStore.getInfo;
     const {
       type,
       id: projectId,
@@ -264,14 +269,18 @@ class NetworkHome extends Component {
       title: <FormattedMessage id="network.column.name" />,
       key: 'name',
       sorter: true,
+      sortOrder: columnKey === 'name' && order,
       filters: [],
+      filteredValue: filters.name || [],
       render: record => (<MouserOverWrapper text={record.name || ''} width={0.12} className="network-list-name">
         {record.name}</MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="network.column.env" />,
       key: 'envName',
       sorter: true,
+      sortOrder: columnKey === 'envName' && order,
       filters: [],
+      filteredValue: filters.envName || [],
       render: record => (
         <div className="env-status-wrap">
           { record.envStatus ? <Tooltip title={<FormattedMessage id="connect" />}> <span className="env-status-success" /></Tooltip> : <Tooltip title={<FormattedMessage id="disconnect" />}>
@@ -285,12 +294,14 @@ class NetworkHome extends Component {
       title: <FormattedMessage id="network.target" />,
       key: 'target',
       filters: [],
+      filteredValue: filters.target || [],
       render: record => this.targetColumn(record),
     }, {
       width: 108,
       title: <FormattedMessage id="network.config.column" />,
-      key: 'config',
+      key: 'type',
       filters: [],
+      filteredValue: filters.type || [],
       render: record => this.configColumn(record),
     }, {
       width: 82,

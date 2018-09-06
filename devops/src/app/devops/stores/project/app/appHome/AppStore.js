@@ -23,6 +23,10 @@ class AppStore {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
 
+  @observable Info = {
+    filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+  };
+
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
     this.pageInfo.total = page.totalElements;
@@ -72,6 +76,14 @@ class AppStore {
 
   @computed get getSingleData() {
     return this.singleData;
+  }
+
+  @action setInfo(Info) {
+    this.Info = Info;
+  }
+
+  @computed get getInfo() {
+    return this.Info;
   }
 
   loadData = (isRefresh = false, projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: '', order: 'desc' }, postData = { searchParam: {},

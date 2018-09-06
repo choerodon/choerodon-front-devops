@@ -286,12 +286,12 @@ class CreateDomain extends Component {
   /**
    * 关闭弹框
    */
-  handleClose =() => {
+  handleClose =(isload = true) => {
     const { store, onClose } = this.props;
     this.setState({ show: false });
     store.setEnv([]);
     store.setNetwork([]);
-    onClose();
+    onClose(isload);
   };
 
   /**
@@ -742,7 +742,7 @@ class CreateDomain extends Component {
         cancelText={intl.formatMessage({ id: 'cancel' })}
         visible={visible}
         title={intl.formatMessage({ id: `domain.${type === 'create' ? 'create' : 'update'}.head` })}
-        onCancel={this.handleClose}
+        onCancel={this.handleClose.bind(this, false)}
         onOk={this.handleSubmit}
         confirmLoading={submitting}
       >

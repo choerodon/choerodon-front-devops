@@ -33,10 +33,14 @@ class DomainHome extends Component {
   /**
    * 关闭侧边栏
    */
-  handleCancelFun = () => {
+  handleCancelFun = (isload) => {
+    const { DomainStore } = this.props;
     this.props.form.resetFields();
     this.setState({ show: false, id: null });
-    this.loadAllData();
+    if (isload) {
+      DomainStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
+      this.loadAllData();
+    }
   };
 
   /**
@@ -58,6 +62,7 @@ class DomainHome extends Component {
   render() {
     const { DomainStore, intl } = this.props;
     const data = DomainStore.getAllData;
+    const { filters, sort: { columnKey, order } } = DomainStore.getInfo;
     const menu = AppState.currentMenuType;
     const projectName = menu.name;
     const { type, id: projectId, organizationId: orgId } = menu;
@@ -89,17 +94,22 @@ class DomainHome extends Component {
       key: 'name',
       dataIndex: 'name',
       sorter: true,
+      sortOrder: columnKey === 'name' && order,
       filters: [],
+      filteredValue: filters.name || [],
     }, {
       title: intl.formatMessage({ id: 'domain.column.domain' }),
       key: 'domain',
       filters: [],
+      filteredValue: filters.domain || [],
       dataIndex: 'domain',
     }, {
       title: intl.formatMessage({ id: 'domain.column.env' }),
       key: 'envName',
       sorter: true,
+      sortOrder: columnKey === 'envName' && order,
       filters: [],
+      filteredValue: filters.envName || [],
       render: record => (
         <React.Fragment>
           { record.envStatus ? <Tooltip title={<FormattedMessage id="connect" />}>
@@ -115,7 +125,9 @@ class DomainHome extends Component {
       className: 'c7n-network-col',
       key: 'path',
       sorter: true,
+      sortOrder: columnKey === 'path' && order,
       filters: [],
+      filteredValue: filters.path || [],
       render: record => (
         <div>
           {_.map(record.pathList, router => (<div className="c7n-network-col_border" key={`${record.id}-${router.path}`}>
@@ -128,6 +140,7 @@ class DomainHome extends Component {
       className: 'c7n-network-col',
       key: 'serviceName',
       filters: [],
+      filteredValue: filters.serviceName || [],
       render: record => (
         <div>
           {_.map(record.pathList, instance => (<div className="c7n-network-col_border" key={`${record.id}-${instance.path}-${instance.serviceId}`}>
@@ -235,7 +248,7 @@ class DomainHome extends Component {
             >
               <Button
                 funcType="flat"
-                onClick={this.loadAllData}
+                onClick={this.handleRefresh}
               >
                 <i className="icon-refresh icon" />
                 <FormattedMessage id="refresh" />

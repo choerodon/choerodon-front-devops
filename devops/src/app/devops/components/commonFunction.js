@@ -30,6 +30,7 @@ export const commonComponent =(storeName) => {
      */
     handleDelete = () => {
       const store = this.props[storeName];
+      store.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
       const { id } = this.state;
       const { id: projectId } = AppState.currentMenuType;
       const lastDatas = store.getPageInfo.total % 10;
@@ -62,7 +63,12 @@ export const commonComponent =(storeName) => {
     /***
      * 处理刷新函数
      */
-    handleRefresh = () =>  this.loadAllData(true);
+    handleRefresh = () => {
+      const store = this.props[storeName];
+      const { filters, sort, paras } = store.getInfo;
+      const pagination = store.getPageInfo;
+      this.tableChange(pagination, filters, sort, paras);
+    };
 
     /***
      * 处理页面跳转
@@ -83,7 +89,8 @@ export const commonComponent =(storeName) => {
     tableChange =(pagination, filters, sorter, paras) => {
       const store = this.props[storeName];
       const { id } = AppState.currentMenuType;
-      let sort = {field: '', order: 'desc' };
+      store.setInfo({ filters, sort: sorter, paras });
+      let sort = { field: '', order: 'desc' };
       if (sorter.column) {
         sort.field = sorter.field || sorter.columnKey;
         if(sorter.order === 'ascend') {

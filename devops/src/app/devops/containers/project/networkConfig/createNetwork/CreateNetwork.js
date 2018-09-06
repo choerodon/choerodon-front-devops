@@ -175,10 +175,10 @@ class CreateNetwork extends Component {
     });
   };
 
-  handleClose = () => {
+  handleClose = (isload = true) => {
     const { onClose, form } = this.props;
     form.resetFields();
-    onClose();
+    onClose(isload);
   };
 
   /**
@@ -659,7 +659,7 @@ class CreateNetwork extends Component {
           title={<FormattedMessage id="network.header.create" />}
           visible={visible}
           onOk={this.handleSubmit}
-          onCancel={this.handleClose}
+          onCancel={this.handleClose.bind(this, false)}
           confirmLoading={submitting}
         >
           <Content code="network.create" values={{ name: menuName }} className="c7n-network-create sidebar-content">

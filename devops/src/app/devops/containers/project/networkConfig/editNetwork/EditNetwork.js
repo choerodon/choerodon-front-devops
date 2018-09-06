@@ -150,11 +150,11 @@ class EditNetwork extends Component {
     });
   };
 
-  handleClose = () => {
+  handleClose = (isload = true) => {
     const { onClose, form, store } = this.props;
     store.setSingleData([]);
     form.resetFields();
-    onClose();
+    onClose(isload);
   };
 
   loadNetworkById = () => {
@@ -735,7 +735,7 @@ class EditNetwork extends Component {
           title={<FormattedMessage id="network.header.update" />}
           visible={visible}
           onOk={this.handleSubmit}
-          onCancel={this.handleClose}
+          onCancel={this.handleClose.bind(this, false)}
           confirmLoading={submitting}
         >
           <Content code="network.update" values={{ name: menuName }} className="c7n-network-create sidebar-content">
