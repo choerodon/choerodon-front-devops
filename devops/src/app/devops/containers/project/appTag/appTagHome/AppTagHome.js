@@ -250,7 +250,7 @@ class AppTagHome extends Component {
       >
         <div className="c7n-tag-release">{release ? <div className="c7n-md-parse">
           <ReactMarkdown
-            source={release.description}
+            source={release.description !== 'empty' ? release.description : formatMessage({ id: 'apptag.release.empty' })}
             skipHtml={false}
             escapeHtml={false}
           />

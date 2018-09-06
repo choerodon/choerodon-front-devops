@@ -3,7 +3,6 @@ import { observer, inject } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, stores } from 'choerodon-front-boot';
 import { Modal } from 'choerodon-ui';
-
 import MdEditor from '../../../../components/MdEditor';
 import '../../../main.scss';
 
@@ -17,7 +16,7 @@ class EditTag extends Component {
     const { release } = this.props;
     this.state = {
       submitting: false,
-      notes: release ? release.description : '',
+      notes: (release && release.description !== 'empty') ? release.description : '',
     };
   }
 
@@ -31,7 +30,7 @@ class EditTag extends Component {
     const { id: projectId } = AppState.currentMenuType;
     const { notes } = this.state;
     this.setState({ submitting: true });
-    store.editTag(projectId, tag, notes).then((req) => {
+    store.editTag(projectId, tag, notes || 'empty').then((req) => {
       this.setState({ submitting: false });
       if (req && req.failed) {
         Choerodon.prompt(req.message);

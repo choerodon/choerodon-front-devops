@@ -240,6 +240,8 @@ const zhCN = {
   expand: '展开',
   shrink: '收缩',
 
+  'md.placeholder': '在下面编辑您的发布日志，支持MarkDown格式',
+
   'file.uploaded.failed': '上传失败！',
   'file.uploaded.success': '上传成功！',
   'file.type.error': '文件格式类型错误！',

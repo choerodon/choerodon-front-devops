@@ -66,6 +66,7 @@ class MdEditor extends Component {
           onChange={this.handleTabChange}
         >
           <TabPane tab={formatMessage({ id: 'write' })} key="write">
+            <div className="c7n-md-placeholder">{formatMessage({ id: 'md.placeholder' })}</div>
             <CodeMirror
               options={this.options}
               value={value}

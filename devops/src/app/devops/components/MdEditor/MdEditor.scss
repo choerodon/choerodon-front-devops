@@ -7,6 +7,19 @@
   ul {
     padding-left: 20px;
   }
+  .c7n-md-placeholder {
+    margin-bottom: 2px;
+    padding-bottom: 4px;
+    color: #a9a9a9;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.12);
+  }
+  .CodeMirror {
+    height: unset;
+    min-height: 300px;
+    .CodeMirror-code {
+      background: rgba(0, 0, 0, .045);
+    }
+  }
 }
 
 .c7n-md-preview {
