@@ -153,18 +153,27 @@ class AppTagStore {
   /**
    * 检查标记名称的唯一性
    * @param projectId
-   * @param value
+   * @param name
    */
   checkTagName = (projectId, name) => axios.get(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags_check?tag_name=${name}`);
 
   /**
    * 创建tag
    * @param projectId
-   * @param tag
-   * @param ref 基于分支名称
-   * @param release 发布日志信息
+   * @param tag tag名称
+   * @param ref 来源分支
+   * @param release 发布日志
    */
-  createTag = (projectId, tag, ref, release) => axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags?tag=${tag}&ref=${ref}&release_notes=${encodeURIComponent(release)}`);
+  createTag = (projectId, tag, ref, release) => axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags?tag=${tag}&ref=${ref}`, release);
+
+  /**
+   * 编辑发布日志
+   * @param projectId
+   * @param tag
+   * @param release
+   * @returns {IDBRequest | Promise<void>}
+   */
+  editTag = (projectId, tag, release) => axios.put(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags?tag=${tag}`, release);
 
   /**
    * 删除标记

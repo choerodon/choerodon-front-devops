@@ -25,12 +25,12 @@ const formItemLayout = {
 };
 
 @observer
-class AppTagHome extends Component {
+class CreateTag extends Component {
   /**
    * 标记名称的校验规则：\d+(\.\d+){2}
    */
   checkTagName = _.debounce((rule, value, callback) => {
-    const { store, intl: { formatMessage }, appId } = this.props;
+    const { store, intl: { formatMessage } } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     const pa = /^\d+(\.\d+){2}$/;
     if (value && pa.test(value)) {
@@ -78,20 +78,13 @@ class AppTagHome extends Component {
         store.createTag(projectId, tag, ref, release).then((req) => {
           if (req && req.failed) {
             Choerodon.prompt(data.message);
-            this.setState({ submitting: false });
           } else {
-            this.loadTagData(projectId);
-            this.setState({
-              submitting: false,
-              size: 3,
-            });
+            this.handleCancel();
           }
+          this.setState({ submitting: false });
         }).catch((error) => {
           Choerodon.handleResponseError(error);
-          this.setState({
-            submitting: false,
-            size: 3,
-          });
+          this.setState({ submitting: false });
         });
       } else {
         this.setState({ submitting: false });
@@ -147,6 +140,7 @@ class AppTagHome extends Component {
     const { name } = AppState.currentMenuType;
     const { content, totalElements, numberOfElements } = store.getBranchData;
     return (<Sidebar
+      destroyOnClose
       title={<FormattedMessage id="apptag.create" />}
       visible={show}
       onOk={this.handleOk}
@@ -232,4 +226,4 @@ class AppTagHome extends Component {
   }
 }
 
-export default Form.create({})(injectIntl(AppTagHome));
+export default Form.create({})(injectIntl(CreateTag));

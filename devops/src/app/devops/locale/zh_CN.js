@@ -154,8 +154,8 @@ const pageDetail = {
   'apptag.create.title': '在应用"{name}"中创建标记',
   'apptag.create.description': '您在此填写标记名称，选择标记来源，即可基于某一分支创建标记。',
   'apptag.create.link': `${docServer}/user-guide/development-pipeline/tag/`,
-  'apptag.update.title': '在应用"{name}"中创建标记',
-  'apptag.update.description': '您在此填写标记名称，选择标记来源，即可基于某一分支创建标记。',
+  'apptag.update.title': '修改"{name}"的发布日志',
+  'apptag.update.description': '您在此修改标记的发布日志。',
   'apptag.update.link': `${docServer}/user-guide/development-pipeline/tag/`,
 
   // repository
@@ -237,6 +237,8 @@ const zhCN = {
   notes: '填写内容',
   write: '编辑',
   preview: '预览',
+  expand: '展开',
+  shrink: '收缩',
 
   'file.uploaded.failed': '上传失败！',
   'file.uploaded.success': '上传成功！',
@@ -731,6 +733,7 @@ const zhCN = {
   // app-tag
   'apptag.head': '标记',
   'apptag.create': '创建标记',
+  'apptag.update': '修改发布日志',
   'apptag.table': '标记列表',
   'apptag.code': '提交编码',
   'apptag.des': '提交描述',
@@ -746,7 +749,8 @@ const zhCN = {
   'apptag.checkNameReg': '由数字和 . 组成，必须以数字开头且不能以 . 结尾，例如：0.0.1',
   'apptag.noRefBranch': '该应用还没有分支，请先创建分支',
   'apptag.empty': '暂无任何标记，您可在此页面基于某一分支创建标记。',
-  'apptag.release.title': '发布日记',
+  'apptag.release.title': '发布日志',
+  'apptag.release.empty': '暂无发布日志',
 
   // repository
   'repository.head': '代码仓库',
