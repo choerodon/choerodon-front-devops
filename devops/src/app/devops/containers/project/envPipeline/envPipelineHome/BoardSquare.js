@@ -13,12 +13,17 @@ const squareTarget = {
   drop(props, monitor) {
     // Obtain the dragged item
     const item = monitor.getItem();
-    const pos = EnvPipelineStore.getEnvcardPosition;
-    if (props.children.props.cardData.sequence !== item.cardData.sequence) {
+    let pos = {};
+    if (item.cardData.devopsEnvGroupId) {
+      pos = _.filter(EnvPipelineStore.getEnvcardPosition, { devopsEnvGroupId: item.cardData.devopsEnvGroupId })[0].devopsEnviromentRepDTOs;
+    } else {
+      pos = EnvPipelineStore.getEnvcardPosition[0].devopsEnviromentRepDTOs;
+    }
+    if ((props.children.props.cardData.sequence !== item.cardData.sequence) && (props.children.props.cardData.devopsEnvGroupId === item.cardData.devopsEnvGroupId)) {
       EnvPipelineStore.switchData(props.children.props.cardData.sequence,
-        item.cardData.sequence);
+        item.cardData.sequence, props.children.props.cardData.devopsEnvGroupId);
       const envIds = _.map(pos, 'id');
-      EnvPipelineStore.updateSort(props.children.props.projectId, envIds);
+      EnvPipelineStore.updateSort(props.children.props.projectId, envIds, item.cardData.devopsEnvGroupId);
     }
   },
 };

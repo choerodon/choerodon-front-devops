@@ -4,7 +4,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { DragSource } from 'react-dnd';
-import { Button, Tooltip } from 'choerodon-ui';
+import { Button, Tooltip, Icon } from 'choerodon-ui';
 import { Permission } from 'choerodon-front-boot';
 import './EnvPipeLineHome.scss';
 import EnvPipelineStore from '../../../../stores/project/envPipeline';
@@ -50,6 +50,7 @@ class EnvCard extends Component {
 
   banEnv = (id) => {
     const { projectId } = this.props;
+    EnvPipelineStore.setSideType(null);
     EnvPipelineStore.setBan(true);
     EnvPipelineStore.loadEnvById(projectId, id);
     EnvPipelineStore.loadInstance(projectId, 0, 10, null, id);
@@ -57,9 +58,7 @@ class EnvCard extends Component {
 
   render() {
     const { AppState, connectDragSource, isDragging, cardData } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
+    const { id: projectId, organizationId, type } = AppState.currentMenuType;
     const envCardStyle = classNames({
       'c7n-env-card': !isDragging,
       'c7n-env-card-dragging': isDragging,
@@ -88,7 +87,7 @@ class EnvCard extends Component {
                         shape="circle"
                         onClick={this.copyKey.bind(this, cardData.id, cardData.update)}
                       >
-                        <i className="icon icon-vpn_key" />
+                        <Icon type="vpn_key" />
                       </Button>
                     </Tooltip>
                   </Permission>}
@@ -104,7 +103,7 @@ class EnvCard extends Component {
                         shape="circle"
                         onClick={this.editEnv.bind(this, cardData.id)}
                       >
-                        <i className="icon icon-mode_edit" />
+                        <Icon type="mode_edit" />
                       </Button>
                     </Tooltip>
                   </Permission>
@@ -120,7 +119,7 @@ class EnvCard extends Component {
                         shape="circle"
                         onClick={this.banEnv.bind(this, cardData.id)}
                       >
-                        <i className="icon icon-remove_circle_outline" />
+                        <Icon type="remove_circle_outline" />
                       </Button>
                     </Tooltip>
                   </Permission>
@@ -128,11 +127,11 @@ class EnvCard extends Component {
               </React.Fragment>)
               : this.props.intl.formatMessage({ id: 'envPl.add' })}
           </div>
-          {cardData ? <div>
+          {cardData ? <div className="c7n-env-card-content">
             <div className={envStatusStyle}>
               {cardData.connect ? this.props.intl.formatMessage({ id: 'running' }) : this.props.intl.formatMessage({ id: 'disconnect' })}
             </div>
-            <div className="c7n-env-des">
+            <div className="c7n-env-des" title={cardData.description}>
               <span className="c7n-env-des-head">{this.props.intl.formatMessage({ id: 'envPl.description' })}</span>
               {cardData.description}
             </div>
@@ -145,9 +144,6 @@ EnvCard.propTypes = {
   connectDragSource: PropTypes.func.isRequired,
   isDragging: PropTypes.bool.isRequired,
   projectId: PropTypes.number.isRequired,
-  cardData: PropTypes.arrayOf(
-    PropTypes.object.isRequired,
-  ).isRequired,
 };
 
 export default DragSource(ItemTypes.ENVCARD, envCardSource, collect)(injectIntl(EnvCard));

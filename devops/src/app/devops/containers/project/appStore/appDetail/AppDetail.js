@@ -4,11 +4,12 @@ import { withRouter } from 'react-router-dom';
 import { Button, Input, Icon, Card, Select } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import MDReactComponent from 'markdown-react-js';
+import ReactMarkdown from 'react-markdown';
 import _ from 'lodash';
 import LoadingBar from '../../../../components/loadingBar';
 import './AppDetail.scss';
 import '../../../main.scss';
+import '../../../../components/MdEditor/default.css';
 
 const Option = Select.Option;
 
@@ -192,8 +193,12 @@ class AppDetail extends Component {
               <div className="c7n-store-detail-right">
                 <div className="c7n-store-detail-overview">
                   <h1>README</h1>
-                  <div>
-                    <MDReactComponent text={readme} />
+                  <div className="c7n-md-parse">
+                    <ReactMarkdown
+                      source={readme}
+                      skipHtml={false}
+                      escapeHtml={false}
+                    />
                   </div>
                 </div>
               </div>

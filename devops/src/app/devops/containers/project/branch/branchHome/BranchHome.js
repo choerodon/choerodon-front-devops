@@ -509,7 +509,6 @@ class BranchHome extends Component {
             service={['devops-service.devops-git.createBranch']}
           >
             <Button
-              ghost
               onClick={this.showSidebar}
             >
               <i className="icon icon-playlist_add" />

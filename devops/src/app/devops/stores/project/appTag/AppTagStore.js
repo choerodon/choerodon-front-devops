@@ -25,7 +25,8 @@ class AppTagStore {
 
   @observable defaultAppName = null;
 
-  @observable loading = false;
+  // 防止初次为false时对页面的判断
+  @observable loading = null;
 
   @observable pageInfo = {
     current: 0,
@@ -91,14 +92,6 @@ class AppTagStore {
     return this.branchData;
   }
 
-  /**
-   * 根据应用ID查询该应用下所有的标签
-   * @param projectId
-   * @param appId
-   * @param page
-   * @param sizes
-   * @returns {Promise<T>}
-   */
   queryTagData = (projectId, page = 0, sizes = 10, postData = { searchParam: {}, param: '' }) => {
     if (this.selectedApp) {
       this.setLoading(true);
@@ -112,7 +105,7 @@ class AppTagStore {
             this.setPageInfo({ current: number + 1, pageSize: size, total: totalElements });
           }
         }).catch((err) => {
-          Choerodon.prompt(err);
+          Choerodon.handleResponseError(err);
           this.setLoading(false);
         });
     }
@@ -139,7 +132,7 @@ class AppTagStore {
             this.queryTagData(projectId, 0, 10);
           }
         }
-      }).catch(err => Choerodon.prompt(err));
+      }).catch(err => Choerodon.handleResponseError(err));
   };
 
   /**
@@ -154,7 +147,7 @@ class AppTagStore {
       if (result) {
         this.setBranchData(result);
       }
-    }).catch(err => Choerodon.prompt(err));
+    }).catch(err => Choerodon.handleResponseError(err));
   };
 
   /**
@@ -167,12 +160,11 @@ class AppTagStore {
   /**
    * 创建tag
    * @param projectId
-   * @param appId
    * @param tag
-   * @param ref
-   * @returns {JQueryXHR | * | void}
+   * @param ref 基于分支名称
+   * @param release 发布日志信息
    */
-  createTag = (projectId, tag, ref) => axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags?tag=${tag}&ref=${ref}`);
+  createTag = (projectId, tag, ref, release) => axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags?tag=${tag}&ref=${ref}&release_notes=${encodeURIComponent(release)}`);
 
   /**
    * 删除标记

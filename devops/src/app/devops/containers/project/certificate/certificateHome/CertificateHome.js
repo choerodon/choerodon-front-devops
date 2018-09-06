@@ -95,7 +95,7 @@ class CertificateHome extends Component {
     if (!_.isEmpty(filters)) {
       _.forEach(filters, (value, key) => {
         if (!_.isEmpty(value)) {
-          searchParam[key] = String(value);
+          searchParam[key] = [String(value)];
         }
       });
     }
@@ -210,12 +210,12 @@ class CertificateHome extends Component {
         {text}</MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="ctf.column.ingress" />,
-      key: 'commonName',
-      dataIndex: 'commonName',
+      key: 'domains',
+      dataIndex: 'domains',
       filters: [],
-      filteredValue: filters.commonName || [],
-      render: (text, record) => (<MouserOverWrapper text={text || ''} width={0.25}>
-        {text}</MouserOverWrapper>),
+      filteredValue: filters.domains || [],
+      render: (text, record) => (<MouserOverWrapper text={text[0] || ''} width={0.25}>
+        {text[0]}</MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="ctf.column.env" />,
       key: 'envName',
@@ -224,14 +224,20 @@ class CertificateHome extends Component {
       filters: [],
       sortOrder: columnKey === 'envName' && order,
       filteredValue: filters.envName || [],
+      render: (text, record) => (<React.Fragment>
+        { record.envConnected ? <Tooltip title={<FormattedMessage id="connect" />}>
+          <span className="env-status-success" />
+        </Tooltip> : <Tooltip title={<FormattedMessage id="disconnect" />}>
+          <span className="env-status-error" />
+        </Tooltip> }
+        {text}
+      </React.Fragment>),
     }, {
       title: <FormattedMessage id="ctf.column.status" />,
       key: 'status',
       dataIndex: 'status',
       sorter: true,
-      filters: [],
       sortOrder: columnKey === 'status' && order,
-      filteredValue: filters.status || [],
       render: (text, record) => (<div className={`c7n-ctf-status c7n-ctf-${record.status}`}><FormattedMessage id={`ctf.column.${record.status}`} /></div>),
     }, {
       align: 'right',
