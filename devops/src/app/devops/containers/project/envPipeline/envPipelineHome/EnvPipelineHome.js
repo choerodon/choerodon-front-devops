@@ -514,6 +514,8 @@ class EnvPipelineHome extends Component {
                   {getFieldDecorator('devopsEnvGroupId')(
                     <Select
                       allowClear
+                      filter
+                      filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                       label={<FormattedMessage id="envPl.form.group" />}
                     >
                       {groupData.length ? _.map(groupData, g => <Option key={g.id} value={g.id}>{g.name}</Option>) : null}
@@ -620,6 +622,8 @@ class EnvPipelineHome extends Component {
                   })(
                     <Select
                       allowClear
+                      filter
+                      filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                       label={<FormattedMessage id="envPl.form.group" />}
                     >
                       {groupData.length ? _.map(groupData, g => <Option key={g.id} value={g.id}>{g.name}</Option>) : null}
@@ -636,7 +640,7 @@ class EnvPipelineHome extends Component {
     </div>);
 
     const BoardDom = EnvPipelineStore.getIsLoading ? <LoadingBar display />
-      : (_.map(envcardPosition, e => <Board projectId={Number(projectId)} key={e.devopsEnvGroupId} groupId={e.devopsEnvGroupId} Title={e.devopsEnvGroupName} envcardPositionChild={e.devopsEnviromentRepDTOs} />));
+      : (_.map(envcardPosition, e => <Board projectId={Number(projectId)} key={e.devopsEnvGroupId} groupId={e.devopsEnvGroupId} Title={e.devopsEnvGroupName} envcardPositionChild={e.devopsEnviromentRepDTOs || []} />));
 
     const leftDom = scrollLeft !== 0
       ? <div role="none" className="c7n-push-left-ban icon icon-navigate_before" onClick={this.pushScrollRight} />
