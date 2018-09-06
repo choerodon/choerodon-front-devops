@@ -27,6 +27,10 @@ class DomainStore {
 
   @observable certificates = [];
 
+  @observable Info = {
+    filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+  };
+
   @action setCertificates(data) {
     this.certificates = data;
   }
@@ -111,6 +115,14 @@ class DomainStore {
   @action
   setEnv(data) {
     this.env = data;
+  }
+
+  @action setInfo(Info) {
+    this.Info = Info;
+  }
+
+  @computed get getInfo() {
+    return this.Info;
   }
 
   loadData = (isRefresh = true, proId, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {

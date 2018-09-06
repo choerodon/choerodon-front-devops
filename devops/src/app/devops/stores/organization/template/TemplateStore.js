@@ -22,6 +22,10 @@ class TemplateStore {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
 
+  @observable Info = {
+    filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+  };
+
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
     this.pageInfo.total = page.totalElements;
@@ -70,6 +74,14 @@ class TemplateStore {
 
   @action setSelectData(data) {
     this.selectData = data;
+  }
+
+  @action setInfo(Info) {
+    this.Info = Info;
+  }
+
+  @computed get getInfo() {
+    return this.Info;
   }
 
   loadData = (isRefresh = false, orgId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {

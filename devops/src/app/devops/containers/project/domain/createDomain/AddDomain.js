@@ -232,11 +232,11 @@ class CreateDomain extends Component {
   /**
    * 关闭弹框
    */
-  handleClose =() => {
+  handleClose =(isload = true) => {
     const { store, onClose } = this.props;
     store.setEnv([]);
     store.setNetwork([]);
-    onClose();
+    onClose(isload);
   };
 
   /**
@@ -369,7 +369,6 @@ class CreateDomain extends Component {
    * @param id
    */
   handleSelectNetwork = (data, index, id) => {
-    console.log(data, index, id);
     const portArr = [];
     _.forEach(data, (item) => {
       if (id === item.id) {
@@ -561,7 +560,7 @@ class CreateDomain extends Component {
         cancelText={formatMessage({ id: 'cancel' })}
         visible={visible}
         title={formatMessage({ id: `domain.${type === 'create' ? 'create' : 'update'}.head` })}
-        onCancel={this.handleClose}
+        onCancel={this.handleClose.bind(this, false)}
         onOk={this.handleSubmit}
         confirmLoading={submitting}
       >

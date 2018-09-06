@@ -26,6 +26,10 @@ class NetworkConfigStore {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
 
+  @observable Info = {
+    filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+  };
+
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
     this.pageInfo.total = page.totalElements;
@@ -45,6 +49,14 @@ class NetworkConfigStore {
 
   @computed get getIsRefresh() {
     return this.isRefresh;
+  }
+
+  @action setInfo(Info) {
+    this.Info = Info;
+  }
+
+  @computed get getInfo() {
+    return this.Info;
   }
 
   /**

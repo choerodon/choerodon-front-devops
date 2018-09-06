@@ -131,14 +131,17 @@ class TemplateHome extends Component {
    * @returns {[null,null,null,null,null,null]}
    */
   getColumn = () => {
-    const { intl } = this.props;
+    const { TemplateStore, intl } = this.props;
     const menu = AppState.currentMenuType;
     const { type, id: orgId } = menu;
+    const { filters, sort: { columnKey, order } } = TemplateStore.getInfo;
     return [{
       title: <FormattedMessage id="template.name" />,
       key: 'name',
       sorter: true,
+      sortOrder: columnKey === 'name' && order,
       filters: [],
+      filteredValue: filters.name || [],
       dataIndex: 'name',
       render: (test, record) => (<MouserOverWrapper text={record.name} width={0.15}>
         {record.name}
@@ -148,7 +151,9 @@ class TemplateHome extends Component {
       dataIndex: 'code',
       key: 'code',
       sorter: true,
+      sortOrder: columnKey === 'code' && order,
       filters: [],
+      filteredValue: filters.code || [],
       render: (test, record) => (<MouserOverWrapper text={record.code} width={0.15}>
         {record.code}
       </MouserOverWrapper>),
@@ -157,7 +162,9 @@ class TemplateHome extends Component {
       dataIndex: 'description',
       key: 'description',
       sorter: true,
+      sortOrder: columnKey === 'description' && order,
       filters: [],
+      filteredValue: filters.description || [],
       render: (test, record) => (<MouserOverWrapper text={record.description} width={0.2}>
         {record.description}
       </MouserOverWrapper>),
@@ -177,6 +184,7 @@ class TemplateHome extends Component {
       dataIndex: 'type',
       key: 'type',
       sorter: true,
+      sortOrder: columnKey === 'type' && order,
       filters: [{
         text: intl.formatMessage({ id: 'template.preDefine' }),
         value: 1,
@@ -184,6 +192,7 @@ class TemplateHome extends Component {
         text: intl.formatMessage({ id: 'template.perDefine' }),
         value: 0,
       }],
+      filteredValue: filters.type || [],
       render: (text, record) => (
         record.type ? <React.Fragment><Icon type="brightness_high" /> <span className="c7n-template-column-text"><FormattedMessage id="template.preDefine" /></span> </React.Fragment>
           : <React.Fragment><Icon type="av_timer" /><span className="c7n-template-column-text"><FormattedMessage id="template.perDefine" /></span> </React.Fragment>
@@ -221,6 +230,7 @@ class TemplateHome extends Component {
     e.preventDefault();
     const { TemplateStore } = this.props;
     const { organizationId, id, type, page, copyFrom } = this.state;
+    TemplateStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
     if (type === 'create') {
       this.props.form.validateFieldsAndScroll((err, data) => {
         if (!err) {
@@ -282,7 +292,6 @@ class TemplateHome extends Component {
    */
   hideSidebar = () => {
     this.setState({ show: false });
-    this.loadAllData();
     this.props.form.resetFields();
   };
 
@@ -312,6 +321,7 @@ class TemplateHome extends Component {
     const { singleData, selectData } = TemplateStore;
     const menu = AppState.currentMenuType;
     const { type, id: orgId } = menu;
+    const { paras } = TemplateStore.getInfo;
     const formContent = (<div className="c7n-region">
       {this.state.type === 'create' ? <div>
         <h2 className="c7n-space-first">
@@ -463,6 +473,7 @@ class TemplateHome extends Component {
         dataSource={serviceData}
         rowKey={record => record.id}
         onChange={this.tableChange}
+        filters={paras}
       />);
     return (
       <Page

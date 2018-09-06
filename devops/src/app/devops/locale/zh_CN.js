@@ -189,6 +189,7 @@ const zhCN = {
   active: '启用',
   edit: '修改',
   cancel: '取消',
+  close: '关闭',
   delete: '删除',
   close: '关闭',
   'confirm.delete': '确认删除吗？',
@@ -600,6 +601,7 @@ const zhCN = {
   'container.term.ex': '命令行',
   'container.term.log': '日志',
   'container.log.header.title': '查看容器日志',
+  'container.chooseEnv': '选择环境',
 
   // version feature
   'version.feature': '特性',

@@ -1,5 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
+import { handleProptError } from '../../../utils';
 
 const height = window.screen.height;
 @store('ContainerStore')
@@ -19,6 +20,20 @@ class ContainerStore {
   @observable pageInfo = {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
+
+  @observable appdata = [];
+
+  @observable envcard = [];
+
+  @observable filterValue = '';
+
+  @observable Info = {
+    filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+  };
+
+  @observable envId = null;
+
+  @observable appId = null;
 
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
@@ -66,8 +81,78 @@ class ContainerStore {
     return this.logs;
   }
 
+  @action setEnvcard(envcard) {
+    this.envcard = envcard;
+  }
 
-  loadData = (isRefresh = false, proId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
+  @computed get getEnvcard() {
+    return this.envcard;
+  }
+
+  @action setAppDate(data) {
+    this.appdata = data;
+  }
+
+  @computed get getAppData() {
+    return this.appdata;
+  }
+
+  @action setFilterValue(filterValue) {
+    this.filterValue = filterValue;
+  }
+
+  @computed get getFilterValue() {
+    return this.filterValue;
+  }
+
+  @action setInfo(Info) {
+    this.Info = Info;
+  }
+
+  @computed get getInfo() {
+    return this.Info;
+  }
+
+  @action setenvId(id) {
+    this.envId = id;
+  }
+
+  @computed get getenvId() {
+    return this.envId;
+  }
+
+  @action setappId(id) {
+    this.appId = id;
+  }
+
+  @computed get getappId() {
+    return this.appId;
+  }
+
+
+  loadActiveEnv = projectId => axios.get(`devops/v1/projects/${projectId}/envs?active=true`).then((data) => {
+    const res = this.handleProptError(data);
+    if (res) {
+      this.setEnvcard(data);
+    }
+  });
+
+  loadAppData = projectId => axios.get(`devops/v1/projects/${projectId}/apps/list_all`).then((data) => {
+    const res = handleProptError(data);
+    if (res) {
+      this.setAppDate(data);
+    }
+  });
+
+  loadAppDataByEnv = (projectId, envId) => axios.get(`devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=running`).then((data) => {
+    const res = handleProptError(data);
+    if (res) {
+      this.setAppDate(data);
+    }
+    return res;
+  });
+
+  loadData = (isRefresh = false, proId, envId = this.envId, appId = this.appId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
     searchParam: {},
     param: '',
   }) => {
@@ -75,7 +160,17 @@ class ContainerStore {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return axios.post(`/devops/v1/projects/${proId}/app_pod/list_by_options?page=${page}&size=${size}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
+    let api = '';
+    if (envId) {
+      if (appId) {
+        api = `&envId=${envId}&appId=${appId}`;
+      } else {
+        api = `&envId=${envId}`;
+      }
+    } else if (appId) {
+      api = `&appId=${appId}`;
+    }
+    return axios.post(`/devops/v1/projects/${proId}/app_pod/list_by_options?page=${page}&size=${size}&sort=${sort.field || 'id'},${sort.order}${api}`, JSON.stringify(datas))
       .then((data) => {
         const res = this.handleProptError(datas);
         if (res) {

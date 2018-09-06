@@ -58,7 +58,7 @@
   }
 
   .ant-modal-body {
-    height: 80% !important;
+    height: 82% !important;
   }
 
   .sidebar-content {
@@ -186,4 +186,50 @@
 
 .c7n-container-i {
   vertical-align: sub !important;
+}
+
+.c7n-app-select_247 {
+  width: 247px;
+  margin-bottom: 32px;
+  margin-right: 20px;
+}
+
+.c7n-container-option-popover {
+  width: 232px;
+  display: inline-flex;
+}
+
+.c7n-dom-more {
+  margin: -8px -20px;
+  height: 28px;
+  line-height: 28px;
+  color: #3f51b5;
+  padding-left: 20px;
+}
+
+.c7n-podShell-title {
+  padding: 5px;
+  box-sizing: border-box;
+  height: 36px;
+  line-height: 28px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+
+  button {
+    float: right;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    font-size: 18px;
+    font-weight: bolder;
+  }
+}
+
+
+.CodeMirror-fullscreen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  height: auto;
+  z-index: 9;
 }

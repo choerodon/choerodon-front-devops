@@ -105,15 +105,18 @@ class AppHome extends Component {
   };
 
   getColumn = () => {
-    const { intl } = this.props;
+    const { AppStore, intl } = this.props;
     const menu = AppState.currentMenuType;
     const { type, id: projectId, organizationId: orgId } = menu;
+    const { filters, sort: { columnKey, order } } = AppStore.getInfo;
     return [{
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
       key: 'name',
       sorter: true,
+      sortOrder: columnKey === 'name' && order,
       filters: [],
+      filteredValue: filters.name || [],
       render: (test, record) => (<MouserOverWrapper text={record.name} width={0.2}>
         {record.name}
       </MouserOverWrapper>),
@@ -122,7 +125,9 @@ class AppHome extends Component {
       dataIndex: 'code',
       key: 'code',
       sorter: true,
+      sortOrder: columnKey === 'code' && order,
       filters: [],
+      filteredValue: filters.code || [],
       render: (test, record) => (<MouserOverWrapper text={record.code} width={0.25}>
         {record.code}
       </MouserOverWrapper>),
@@ -147,6 +152,7 @@ class AppHome extends Component {
         text: intl.formatMessage({ id: 'app.creating' }),
         value: -1,
       }],
+      filteredValue: filters.active || [],
       render: (test, record) => (
         <React.Fragment>
           {record.synchro && <span>{record.active ? intl.formatMessage({ id: 'app.run' }) : intl.formatMessage({ id: 'app.stop' })}</span>}
@@ -238,6 +244,7 @@ class AppHome extends Component {
     e.preventDefault();
     const { AppStore } = this.props;
     const { projectId, id, type, page, copyFrom } = this.state;
+    AppStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
     if (type === 'create') {
       this.props.form.validateFieldsAndScroll((err, data) => {
         if (!err) {
@@ -298,7 +305,6 @@ class AppHome extends Component {
    */
   hideSidebar = () => {
     this.setState({ show: false });
-    this.loadAllData();
     this.props.form.resetFields();
   };
 
@@ -332,6 +338,7 @@ class AppHome extends Component {
     const { getFieldDecorator } = this.props.form;
     const serviceData = AppStore.getAllData;
     const { singleData, selectData } = AppStore;
+    const { paras } = AppStore.getInfo;
     const menu = AppState.currentMenuType;
     const { type, id: projectId, organizationId: orgId } = menu;
     const formContent = (<div className="c7n-region">
@@ -471,6 +478,7 @@ class AppHome extends Component {
         dataSource={serviceData}
         rowKey={record => record.id}
         onChange={this.tableChange}
+        filters={paras}
       />);
 
     return (
