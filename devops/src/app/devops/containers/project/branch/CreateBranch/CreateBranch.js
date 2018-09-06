@@ -81,7 +81,7 @@ class CreateBranch extends Component {
       </Tooltip>
       <span className="branch-issue-content">
         <span style={{ color: 'rgb(0,0,0,0.65)' }}>{s.issueNum}</span>
-        <MouserOverWrapper style={{ display: 'inline-block', lineHeight: '12px' }} width={0.3} text={`    ${s.summary}`}>{`    ${s.summary}`}</MouserOverWrapper>
+        <MouserOverWrapper style={{ display: 'inline-block', verticalAlign: 'sub' }} width={0.3} text={s.summary}>{s.summary}</MouserOverWrapper>
       </span>
     </span>);
   };
