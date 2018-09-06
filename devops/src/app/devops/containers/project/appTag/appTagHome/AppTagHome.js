@@ -9,6 +9,7 @@ import _ from 'lodash';
 import LoadingBar from '../../../../components/loadingBar';
 import TimePopover from '../../../../components/timePopover/index';
 import CreateTag from '../createTag/CreateTag';
+import EditTag from '../editTag/EditTag';
 import '../../../main.scss';
 import './AppTagHome.scss';
 
@@ -26,10 +27,11 @@ class AppTagHome extends Component {
       visible: false,
       deleteLoading: false,
       tag: null,
+      editTag: null,
+      editRelease: null,
       creationDisplay: false,
       editDisplay: false,
       appName: null,
-      appId: null,
     };
   }
 
@@ -64,7 +66,7 @@ class AppTagHome extends Component {
     const { AppTagStore } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     AppTagStore.queryAppData(projectId);
-    this.setState({ appName: null, appId: null });
+    this.setState({ appName: null });
   };
 
   /**
@@ -92,7 +94,10 @@ class AppTagHome extends Component {
    * 打开删除确认框
    * @param tag
    */
-  openRemove = tag => this.setState({ visible: true, tag });
+  openRemove = (e, tag) => {
+    e.stopPropagation();
+    this.setState({ visible: true, tag });
+  }
 
   /**
    * 关闭删除确认框
@@ -110,11 +115,10 @@ class AppTagHome extends Component {
     AppTagStore.deleteTag(projectId, tag).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
-        this.setState({ deleteLoading: false });
       } else {
         this.loadTagData(projectId);
-        this.setState({ deleteLoading: false, visible: false });
       }
+      this.setState({ deleteLoading: false, visible: false });
     }).catch((error) => {
       this.setState({ deleteLoading: false });
       Choerodon.handleResponseError(error);
@@ -125,12 +129,37 @@ class AppTagHome extends Component {
    * 控制创建窗口显隐
    * @param flag
    */
-  displayCreateModal = flag => this.setState({ creationDisplay: flag });
+  displayCreateModal = (flag) => {
+    this.setState({ creationDisplay: flag });
+    if (!flag) {
+      this.loadTagData();
+    }
+  };
+
+  /**
+   * 控制编辑窗口
+   * @param flag 显隐
+   * @param tag tag名称
+   * @param res release内容
+   * @param e
+   */
+  displayEditModal = (flag, tag, res, e) => {
+    let editTag = null;
+    let editRelease = null;
+    if (tag) {
+      e.stopPropagation();
+      editTag = tag;
+      editRelease = res;
+    } else {
+      this.loadTagData();
+    }
+    this.setState({ editDisplay: flag, editTag, editRelease });
+  };
 
   render() {
     const { intl: { formatMessage }, AppTagStore, form } = this.props;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
-    const { visible, deleteLoading, creationDisplay, appName, appId } = this.state;
+    const { visible, deleteLoading, creationDisplay, appName, editDisplay, editTag, editRelease } = this.state;
     const appData = AppTagStore.getAppData;
     const tagData = AppTagStore.getTagData;
     const loading = AppTagStore.getLoading;
@@ -175,7 +204,7 @@ class AppTagHome extends Component {
         <div className="c7n-tag-panel-opera">
           <Permission
             service={[
-              'devops-service.devops-git.editTag',
+              'devops-service.devops-git.updateTagRelease',
             ]}
             type={type}
             projectId={projectId}
@@ -189,7 +218,7 @@ class AppTagHome extends Component {
                 shape="circle"
                 size="small"
                 icon="mode_edit"
-                // onClick={this.edit.bind(this, tagName)}
+                onClick={e => this.displayEditModal(true, tagName, release, e)}
               />
             </Tooltip>
           </Permission>
@@ -209,7 +238,7 @@ class AppTagHome extends Component {
                 shape="circle"
                 size="small"
                 icon="delete_forever"
-                onClick={this.openRemove.bind(this, tagName)}
+                onClick={e => this.openRemove(e, tagName)}
               />
             </Tooltip>
           </Permission>
@@ -221,11 +250,11 @@ class AppTagHome extends Component {
       >
         <div className="c7n-tag-release">{release ? <div className="c7n-md-parse">
           <ReactMarkdown
-            source={release.description}
+            source={release.description !== 'empty' ? release.description : formatMessage({ id: 'apptag.release.empty' })}
             skipHtml={false}
             escapeHtml={false}
           />
-        </div> : null}</div>
+        </div> : formatMessage({ id: 'apptag.release.empty' })}</div>
       </Panel>);
     });
     const noTag = (<div className="c7n-tag-empty">
@@ -325,10 +354,17 @@ class AppTagHome extends Component {
         ><p>{formatMessage({ id: 'apptag.delete.tooltip' })}</p></Modal>
         {creationDisplay ? <CreateTag
           app={currentAppName}
-          appId={appId}
           store={AppTagStore}
           show={creationDisplay}
           close={this.displayCreateModal}
+        /> : null}
+        {editDisplay ? <EditTag
+          app={currentAppName}
+          store={AppTagStore}
+          tag={editTag}
+          release={editRelease}
+          show={editDisplay}
+          close={this.displayEditModal}
         /> : null}
       </Page>
     );

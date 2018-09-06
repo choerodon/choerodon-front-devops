@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
-import { Select, Button, Radio, Steps } from 'choerodon-ui';
+import { Select, Button, Radio, Steps, Icon } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores, axios } from 'choerodon-front-boot';
 import _ from 'lodash';
 import YAML from 'yamljs';
@@ -549,28 +549,28 @@ class DeploymentAppHome extends Component {
       <section className="deployApp-review">
         <section>
           <div>
-            <div className="deployApp-title"><i className="icon icon-widgets" />{formatMessage({ id: 'deploy.step.four.app' })}：</div>
+            <div className="deployApp-title"><Icon type="widgets" /><span className="deployApp-title-text">{formatMessage({ id: 'deploy.step.four.app' })}：</span></div>
             <div className="deployApp-text">{this.state.app && this.state.app.name}
               <span className="deployApp-value">({this.state.app && this.state.app.code})</span>
             </div>
           </div>
           <div>
-            <div className="deployApp-title"><i className="icon icon-version" />{formatMessage({ id: 'deploy.step.four.version' })}：</div>
+            <div className="deployApp-title"><Icon type="version" /><span className="deployApp-title-text">{formatMessage({ id: 'deploy.step.four.version' })}：</span></div>
             <div className="deployApp-text">{this.state.versionDto && this.state.versionDto.version}</div>
           </div>
           <div>
-            <div className="deployApp-title"><i className="icon icon-donut_large" />{formatMessage({ id: 'deploy.step.two.env.title' })}：</div>
+            <div className="deployApp-title"><Icon type="donut_large" /><span className="deployApp-title-text">{formatMessage({ id: 'deploy.step.two.env.title' })}：</span></div>
             <div className="deployApp-text">{this.state.envDto && this.state.envDto.name}
               <span className="deployApp-value">({this.state.envDto && this.state.envDto.code})</span>
             </div>
           </div>
           <div>
-            <div className="deployApp-title"><i className="icon icon-jsfiddle" />{formatMessage({ id: 'deploy.step.three.mode' })}：</div>
+            <div className="deployApp-title"><Icon type="jsfiddle" /><span className="deployApp-title-text">{formatMessage({ id: 'deploy.step.three.mode' })}：</span></div>
             <div className="deployApp-text">{this.state.mode === 'new' ? formatMessage({ id: 'deploy.step.three.mode.new' }) : formatMessage({ id: 'deploy.step.three.mode.replace' })} {this.state.mode === 'replace'
             && <span className="deployApp-value">({ this.state.instanceId ? this.state.instanceDto.code : (instances && instances.length === 1 && instances[0].code)})</span>}</div>
           </div>
           <div>
-            <div className="deployApp-title"><i className="icon icon-description" />{formatMessage({ id: 'deploy.step.two.config' })}：</div>
+            <div className="deployApp-title"><Icon type="description" /><span className="deployApp-title-text">{formatMessage({ id: 'deploy.step.two.config' })}：</span></div>
           </div>
           {data && <div>
             {<AceForYaml
