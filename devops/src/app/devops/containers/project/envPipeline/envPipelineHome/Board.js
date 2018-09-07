@@ -141,7 +141,7 @@ class Board extends Component {
             {Title}
           </div>
           <Permission
-            service={['devops-service.devops-environment.update']}
+            service={['devops-service.devops-env-group.update']}
             organizationId={organizationId}
             projectId={projectId}
             type={type}
@@ -157,7 +157,7 @@ class Board extends Component {
             </Tooltip>
           </Permission>
           <Permission
-            service={['devops-service.devops-environment.queryByEnvIdAndActive']}
+            service={['devops-service.devops-env-group.delete']}
             organizationId={organizationId}
             projectId={projectId}
             type={type}

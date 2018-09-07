@@ -667,6 +667,11 @@ class EnvPipelineHome extends Component {
           'devops-service.devops-environment.queryShell',
           'devops-service.devops-environment.query',
           'devops-service.application-instance.pageByOptions',
+          'devops-service.devops-env-group.listByProject',
+          'devops-service.devops-env-group.create',
+          'devops-service.devops-env-group.update',
+          'devops-service.devops-env-group.checkName',
+          'devops-service.devops-env-group.delete',
         ]}
       >
         <Header title={<FormattedMessage id="envPl.title" />}>
@@ -685,7 +690,7 @@ class EnvPipelineHome extends Component {
             </Button>
           </Permission>
           <Permission
-            service={['devops-service.devops-environment.create']}
+            service={['devops-service.devops-env-group.create']}
             organizationId={organizationId}
             projectId={projectId}
             type={type}

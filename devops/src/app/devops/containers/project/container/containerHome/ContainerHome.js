@@ -33,9 +33,10 @@ class ContainerHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      page: 0,
       showSide: false,
       showDebug: false,
+      following: true,
+      fullscreen: false,
       containerArr: [],
       selectPubPage: 0,
       selectProPage: 0,
@@ -114,15 +115,18 @@ class ContainerHome extends Component {
   * @param value
   */
   containerChange = (value) => {
-    if (this.state.ws) {
-      this.state.ws.close();
+    const { ws, logId } = this.state;
+    if (logId !== value.split('+')[0]) {
+      if (ws) {
+        ws.close();
+      }
+      this.setState({
+        containerName: value.split('+')[1],
+        logId: value.split('+')[0],
+      }, () => {
+        this.loadLog();
+      });
     }
-    this.setState({
-      containerName: value.split('+')[1],
-      logId: value.split('+')[0],
-    }, () => {
-      this.loadLog();
-    });
   };
 
   /**
@@ -130,15 +134,18 @@ class ContainerHome extends Component {
    * @param value
    */
   termChange = (value) => {
-    if (this.conn) {
-      this.onConnectionClose();
+    const { logId } = this.state;
+    if (logId !== value.split('+')[0]) {
+      if (this.conn) {
+        this.onConnectionClose();
+      }
+      this.setState({
+        containerName: value.split('+')[1],
+        logId: value.split('+')[0],
+      }, () => {
+        this.onTerminalReady();
+      });
     }
-    this.setState({
-      containerName: value.split('+')[1],
-      logId: value.split('+')[0],
-    }, () => {
-      this.onTerminalReady();
-    });
   };
 
   /**
@@ -183,17 +190,15 @@ class ContainerHome extends Component {
 
   /**
    * Attached to SockJS.onclose
-   * @param evt
    */
-  onConnectionClose(evt) {
-    if (evt && evt.reason !== '' && evt.code < 1000) {
-      this.io.showOverlay(evt.reason, null);
-    } else {
-      this.io.showOverlay('Connection closed', null);
-    }
+  @action
+  onConnectionClose() {
     this.conn.close();
     this.term.uninstallKeyboard();
     this.term.io.flush();
+    this.term.reset();
+    hterm.defaultStorage = null;
+    hterm.Frame.prototype.close();
   }
 
   /**
@@ -222,19 +227,19 @@ class ContainerHome extends Component {
     if (!this.term) {
       this.term = new hterm.Terminal();
       this.term.decorate(target);
+      this.term.onTerminalReady = this.onTerminalReady.bind(this);
+    } else {
+      this.onTerminalReady();
     }
     target.firstChild.style.position = null;
     this.term.installKeyboard();
-    this.term.setCursorVisible(true);
-    this.term.onTerminalReady = this.onTerminalReady.bind(this);
-    this.onTerminalResponseReceived();
   }
 
   /**
    * 关闭Term
    */
   closeTerm = () => {
-    this.term.clear();
+    this.term.reset();
     this.setState({
       showDebug: false,
     });
@@ -416,15 +421,18 @@ class ContainerHome extends Component {
   /**
    * 加载日志
    */
-  loadLog = () => {
+  @action
+  loadLog = (followingOK) => {
     const authToken = document.cookie.split('=')[1];
     const logs = [];
     let oldLogs = [];
     const { namespace, envId, logId, podName, containerName } = this.state;
     const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${namespace}.envId:${envId}.log:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
     const editor = this.editorLog.getCodeMirror();
-    this.setState({ ws });
-    editor.setValue('Loading...');
+    this.setState({ ws, following: true });
+    if (!followingOK) {
+      editor.setValue('Loading...');
+    }
     ws.onmessage = (e) => {
       if (e.data.size) {
         const reader = new FileReader();
@@ -449,18 +457,25 @@ class ContainerHome extends Component {
           // 如果没有返回数据，则不进行重新赋值给编辑器
           oldLogs = _.cloneDeep(logs);
         }
-      } else {
+      } else if (!followingOK) {
         editor.setValue('Loading...');
       }
     }, 1000);
   };
 
+  /**
+   * 日志go top
+   */
+  goTop = () => {
+    const editor = this.editorLog.getCodeMirror();
+    editor.execCommand('goDocStart');
+  };
 
   /**
    * 显示日志
    * @param record 容器record
    */
-  showLog =(record) => {
+  showLog = (record) => {
     const { ContainerStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     ContainerStore.loadPodParam(projectId, record.id)
@@ -486,7 +501,7 @@ class ContainerHome extends Component {
   closeSidebar = () => {
     clearInterval(this.timer);
     this.timer = null;
-    const { ws, page } = this.state;
+    const { ws } = this.state;
     if (ws) {
       ws.close();
     }
@@ -496,6 +511,19 @@ class ContainerHome extends Component {
       containerArr: [],
     }, () => {
       editor.setValue('');
+    });
+  };
+
+  /**
+   * top log following
+   */
+  stopFollowing = () => {
+    const { ws } = this.state;
+    if (ws) {
+      ws.close();
+    }
+    this.setState({
+      following: false,
     });
   };
 
@@ -696,6 +724,7 @@ class ContainerHome extends Component {
     wrap.style.width = '';
     wrap.style.height = 'auto';
     wrap.className += ' CodeMirror-fullscreen';
+    this.setState({ fullscreen: true });
     document.documentElement.style.overflow = 'hidden';
     cm.refresh();
     window.addEventListener('keypress', (e) => {
@@ -705,12 +734,12 @@ class ContainerHome extends Component {
 
   /**
    * 任意键退出全屏查看
-   * @param e
    */
   setNormal = () => {
     const cm = this.editorLog.getCodeMirror();
     const wrap = cm.getWrapperElement();
     wrap.className = wrap.className.replace(/\s*CodeMirror-fullscreen\b/, '');
+    this.setState({ fullscreen: false });
     document.documentElement.style.overflow = '';
     const info = cm.state.fullScreenRestore;
     wrap.style.width = info.width; wrap.style.height = info.height;
@@ -723,7 +752,7 @@ class ContainerHome extends Component {
 
   render() {
     const { ContainerStore, intl } = this.props;
-    const { showSide, containerName, podName, containerArr, showDebug, selectProPage, selectPubPage, appProDom, appPubDom, appProLength, appPubLength } = this.state;
+    const { showSide, following, fullscreen, containerName, podName, containerArr, showDebug, selectProPage, selectPubPage, appProDom, appPubDom, appProLength, appPubLength } = this.state;
     const envNames = ContainerStore.getEnvcard;
     const appId = ContainerStore.getappId;
     const { paras } = ContainerStore.getInfo;
@@ -802,6 +831,7 @@ class ContainerHome extends Component {
     const options = {
       readOnly: true,
       lineNumbers: true,
+      lineWrapping: true,
       autofocus: true,
       theme: 'base16-dark',
     };
@@ -834,6 +864,8 @@ class ContainerHome extends Component {
                   </Select>
                   <Button type="primary" funcType="flat" shape="circle" icon="fullscreen" onClick={this.setFullscreen} />
                 </div>
+                {following ? <div className={`c7n-podLog-action log-following ${fullscreen ? 'f-top' : ''}`} onClick={this.stopFollowing}>Stop Following</div>
+                  : <div className={`c7n-podLog-action log-following ${fullscreen ? 'f-top' : ''}`} onClick={this.loadLog.bind(this, true)}>Start Following</div>}
                 <CodeMirror
                   ref={(editor) => { this.editorLog = editor; }}
                   value="Loading..."
@@ -841,6 +873,7 @@ class ContainerHome extends Component {
                   onChange={code => this.props.ChangeCode(code)}
                   options={options}
                 />
+                <div className={`c7n-podLog-action log-goTop ${fullscreen ? 'g-top' : ''}`} onClick={this.goTop}>Go Top</div>
               </div>
             </section>
           </Content>
