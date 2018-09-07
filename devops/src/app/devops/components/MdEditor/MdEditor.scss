@@ -17,7 +17,10 @@
     height: unset;
     min-height: 300px;
     .CodeMirror-code {
-      background: rgba(0, 0, 0, .045);
+      min-height: 300px;
+      .CodeMirror-code {
+        background: rgba(0, 0, 0, .045);
+      }
     }
   }
 }

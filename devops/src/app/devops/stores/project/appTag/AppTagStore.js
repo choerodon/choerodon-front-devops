@@ -1,19 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-
-/**
- * 处理错误请求
- * @param data
- * @returns {*}
- */
-function handleProptError(data) {
-  if (data && data.failed) {
-    Choerodon.prompt(data.message);
-    return false;
-  } else {
-    return data;
-  }
-}
+import { handleProptError } from '../../../utils';
 
 @store('AppTagStore')
 class AppTagStore {
