@@ -329,7 +329,7 @@ class AppTagHome extends Component {
             }
           </Select>
           <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
-          {loading || !_.isNull(loading) ? <LoadingBar display /> : <Fragment>
+          {loading || _.isNull(loading) ? <LoadingBar display /> : <Fragment>
             {tagList.length ? <Fragment>
               <Collapse bordered={false}>{tagList}</Collapse>
               <div className="c7n-tag-pagin">
