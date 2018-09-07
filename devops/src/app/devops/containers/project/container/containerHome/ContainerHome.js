@@ -197,8 +197,6 @@ class ContainerHome extends Component {
     this.term.uninstallKeyboard();
     this.term.io.flush();
     this.term.reset();
-    hterm.defaultStorage = null;
-    hterm.Frame.prototype.close();
   }
 
   /**
@@ -231,7 +229,6 @@ class ContainerHome extends Component {
     } else {
       this.onTerminalReady();
     }
-    target.firstChild.style.position = null;
     this.term.installKeyboard();
   }
 
