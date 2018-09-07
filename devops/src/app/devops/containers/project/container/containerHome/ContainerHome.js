@@ -164,7 +164,7 @@ class ContainerHome extends Component {
   onTerminalResponseReceived() {
     const { namespace, envId, logId, podName, containerName } = this.state;
     const authToken = document.cookie.split('=')[1];
-    this.conn = new WebSocket(`ws://10.211.96.176:8061/ws/exec?key=env:${namespace}.envId:${envId}.exec:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
+    this.conn = new WebSocket(`POD_WEBSOCKET_URL/ws/exec?key=env:${namespace}.envId:${envId}.exec:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
     this.conn.onopen = this.onConnectionOpen.bind(this);
     this.conn.onmessage = this.onConnectionMessage.bind(this);
     this.conn.onclose = this.onConnectionClose.bind(this);
@@ -427,8 +427,7 @@ class ContainerHome extends Component {
     const logs = [];
     let oldLogs = [];
     const { namespace, envId, logId, podName, containerName } = this.state;
-    // const ws = new WebSocket('wss://devops.service.choerodon.com.cn/ws/log?key=env:c7nf-staging.envId:137.log:049c212f-37a1-4572-903e-69ebd8571065&podName=api-gateway-2baee-564d5455cf-8rbvp&containerName=api-gateway-2baee&logId=049c212f-37a1-4572-903e-69ebd8571065&token=47032da9-23fa-4ae7-9a02-3d86503cad96;%20token_type');
-    const ws = new WebSocket(`ws://10.211.96.176:8061/ws/log?key=env:${namespace}.envId:${envId}.log:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
+    const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${namespace}.envId:${envId}.log:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
     const editor = this.editorLog.getCodeMirror();
     this.setState({ ws, following: true });
     if (!followingOK) {
