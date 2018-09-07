@@ -882,7 +882,6 @@ class ContainerHome extends Component {
           className="c7n-podLog-content c7n-region"
           okText={<FormattedMessage id="close" />}
           okCancel={false}
-          destroyOnClose
         >
           <Content className="sidebar-content" code="container.term" values={{ name: podName }}>
             <div className="c7n-content-card-wrap c7n-shell-content-card">
