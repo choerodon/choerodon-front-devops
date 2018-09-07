@@ -164,6 +164,11 @@
           - 'devops-service.devops-environment.activeEnvironment'
           - 'devops-service.devops-environment.queryShell'
           - 'devops-service.application-instance.pageByOptions'
+          - 'devops-service.devops-env-group.listByProject'
+          - 'devops-service.devops-env-group.create'
+          - 'devops-service.devops-env-group.update'
+          - 'devops-service.devops-env-group.checkName'
+          - 'devops-service.devops-env-group.delete'
     - "application-deployment":
         icon: jsfiddle
         Routes: /devops/deployment-app
