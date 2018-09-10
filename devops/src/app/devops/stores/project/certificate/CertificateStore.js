@@ -76,10 +76,14 @@ class CertificateStore {
    * @param sizes
    * @param sort
    * @param filter
+   * @param envId 根据环境查询时填写的环境id，否则传null
    */
-  loadCertData = (projectId, page, sizes, sort, filter) => {
+  loadCertData = (projectId, page, sizes, sort, filter, envId) => {
     this.setCertLoading(true);
-    axios.post(`/devops/v1/projects/${projectId}/certifications/list_by_options?page=${page}&size=${sizes}&sort=${sort.field},${ORDER[sort.order]}`, JSON.stringify(filter))
+    const url = envId
+      ? `/devops/v1/projects/${projectId}/certifications/list_by_options?page=${page}&size=${sizes}&sort=${sort.field},${ORDER[sort.order]}&env_id=${envId}`
+      : `/devops/v1/projects/${projectId}/certifications/list_by_options?page=${page}&size=${sizes}&sort=${sort.field},${ORDER[sort.order]}`;
+    axios.post(url, JSON.stringify(filter))
       .then((data) => {
         this.setCertLoading(false);
         const res = handleProptError(data);
