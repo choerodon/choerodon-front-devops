@@ -191,7 +191,6 @@ const zhCN = {
   cancel: '取消',
   close: '关闭',
   delete: '删除',
-  close: '关闭',
   'confirm.delete': '确认删除吗？',
   'confirm.delete.tip': '当你点击删除后，该条数据将被永久删除，不可恢复!',
   MicroApp: '微应用',
@@ -206,8 +205,7 @@ const zhCN = {
   deleting: '删除中',
   pending: '部署中',
   stopped: '已停止',
-  failedd: '已失败',
-  failed: '创建失败',
+  failed: '已失败',
   deleted: '已删除',
   install_failed: '创建失败',
   upgrade_failed: '更新失败',
@@ -239,6 +237,9 @@ const zhCN = {
   preview: '预览',
   expand: '展开',
   shrink: '收缩',
+  validDate: '有效期',
+
+  'create.failed': '创建失败',
 
   'md.placeholder': '在下面编辑您的发布日志，支持MarkDown格式',
 

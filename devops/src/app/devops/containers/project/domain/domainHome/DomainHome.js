@@ -74,7 +74,7 @@ class DomainHome extends Component {
         switch (record.status) {
           case 'failed':
             statusDom = (<div className="c7n-domain-status c7n-domain-status-failed">
-              <div>{intl.formatMessage({ id: 'failed' })}</div>
+              <div>{intl.formatMessage({ id: 'create.failed' })}</div>
             </div>);
             break;
           case 'operating':
