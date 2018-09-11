@@ -20,6 +20,8 @@
   },
   "dependencies": {
     "choerodon-front-boot": "^0.7.3",
+    "echarts": "^4.1.0",
+    "echarts-for-react": "^2.0.12",
     "file-loader": "^2.0.0",
     "hterm-umdjs": "^1.4.1",
     "quill-delta-to-html": "^0.8.4",
