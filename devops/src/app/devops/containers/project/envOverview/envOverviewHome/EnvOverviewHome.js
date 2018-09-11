@@ -13,10 +13,13 @@ import AppOverview from '../appOverview';
 import LogOverview from '../logOverview';
 import DomainOverview from '../domainOverview';
 import NetworkOverview from '../networkOverview';
+import CertTable from '../../certificate/certTable';
 import CreateDomain from '../../domain/createDomain';
 import CreateNetwork from '../../networkConfig/createNetwork';
+import CreateCert from '../../certificate/createCert';
 import DomainStore from '../../../../stores/project/domain';
 import NetworkConfigStore from '../../../../stores/project/networkConfig';
+import CertificateStore from '../../../../stores/project/certificate';
 
 const { AppState } = stores;
 const { TabPane } = Tabs;
@@ -43,6 +46,7 @@ class EnvOverviewHome extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
+      createDisplay: false,
     };
   }
 
@@ -108,17 +112,25 @@ class EnvOverviewHome extends Component {
     this.tabKey = key;
     const { EnvOverviewStore } = this.props;
     const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
-    if (key === 'app' && this.env.length) {
-      this.loadIstOverview(tpEnvId || this.env[0].id);
-    } else if (key === 'domain' && this.env.length) {
-      this.loadDomain(tpEnvId || this.env[0].id);
-    } else if (key === 'network' && this.env.length) {
-      this.loadNetwork(tpEnvId || this.env[0].id);
-    } else if (key === 'log' && this.env.length) {
-      this.loadLog(tpEnvId || this.env[0].id);
-    }
     if (this.env.length) {
       this.loadSync(tpEnvId || this.env[0].id);
+      switch (key) {
+        case 'domain':
+          this.loadDomain(tpEnvId || this.env[0].id);
+          break;
+        case 'network':
+          this.loadNetwork(tpEnvId || this.env[0].id);
+          break;
+        case 'log':
+          this.loadLog(tpEnvId || this.env[0].id);
+          break;
+        case 'cert':
+          this.loadCertData(tpEnvId || this.env[0].id);
+          break;
+        default:
+          this.loadIstOverview(tpEnvId || this.env[0].id);
+          break;
+      }
     }
     EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
   };
@@ -137,6 +149,7 @@ class EnvOverviewHome extends Component {
     this.loadNetwork(value);
     this.loadLog(value);
     this.loadSync(value);
+    this.loadCertData(value);
   };
 
   /**
@@ -158,6 +171,7 @@ class EnvOverviewHome extends Component {
           this.loadNetwork(flag ? tpEnvId : envSort[0].id);
           this.loadLog(flag ? tpEnvId : envSort[0].id);
           this.loadSync(flag ? tpEnvId : envSort[0].id);
+          this.loadCertData(flag ? tpEnvId : envSort[0].id);
         }
       });
   };
@@ -213,6 +227,15 @@ class EnvOverviewHome extends Component {
   };
 
   /**
+   * 加载证书
+   * @param envId
+   */
+  loadCertData = (envId) => {
+    const { id: projectId } = AppState.currentMenuType;
+    CertificateStore.loadCertData(projectId, 0, 10, { field: 'id', order: 'descend' }, { searchParam: {}, param: '' }, envId);
+  };
+
+  /**
    *打开域名创建弹框
    */
   @action
@@ -265,6 +288,22 @@ class EnvOverviewHome extends Component {
       this.loadIstOverview(this.envId || this.env[0].id);
       EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
     }
+  };
+
+  /**
+   * 创建证书侧边栏
+   */
+  openCreateModal = () => {
+    CertificateStore.setEnvData([]);
+    this.setState({ createDisplay: true });
+  };
+
+  /**
+   * 关闭证书侧边栏
+   */
+  closeCreateModal = () => {
+    this.setState({ createDisplay: false });
+    this.loadCertData(this.envId || this.env[0].id);
   };
 
   /**
@@ -325,6 +364,7 @@ class EnvOverviewHome extends Component {
 
   render() {
     const { intl, EnvOverviewStore } = this.props;
+    const { createDisplay } = this.state;
     const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
     const sync = EnvOverviewStore.getSync;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
@@ -335,6 +375,52 @@ class EnvOverviewHome extends Component {
 
     const envState = this.env.length
       ? this.env.filter(d => d.id === Number(tpEnvId || this.env[0].id))[0] : true;
+
+    const tabEnvId = this.envId || (this.env.length ? this.env[0].id : null);
+    // tab页选项
+    const tabOption = [{
+      key: 'app',
+      component: <AppOverview
+        store={EnvOverviewStore}
+        tabkey={this.tabKey}
+        envState={envState.connect}
+        envId={tabEnvId}
+      />,
+      msg: 'network.column.app',
+    }, {
+      key: 'network',
+      component: <NetworkOverview
+        store={EnvOverviewStore}
+        tabkey={this.tabKey}
+        envId={tabEnvId}
+      />,
+      msg: 'network.header.title',
+    }, {
+      key: 'domain',
+      component: <DomainOverview
+        store={EnvOverviewStore}
+        tabkey={this.tabKey}
+        envId={tabEnvId}
+      />,
+      msg: 'domain.header.title',
+    }, {
+      key: 'log',
+      component: <LogOverview
+        store={EnvOverviewStore}
+        tabkey={this.tabKey}
+        envId={tabEnvId}
+      />,
+      msg: 'envoverview.logs',
+    }, {
+      key: 'cert',
+      component: <CertTable
+        store={CertificateStore}
+        envId={tabEnvId}
+      />,
+      msg: 'ctf.head',
+    }];
+
+    const istStatusType = ['running', 'operating', 'stopped', 'failed'];
 
     return (
       <Page
@@ -368,6 +454,9 @@ class EnvOverviewHome extends Component {
           'devops-service.devops-ingress.queryDomainId',
           'devops-service.devops-ingress.delete',
           'devops-service.devops-ingress.listByEnv',
+          'devops-service.certification.listByOptions',
+          'devops-service.certification.create',
+          'devops-service.certification.delete',
         ]}
       >
         <Header title={<FormattedMessage id="envoverview.head" />}>
@@ -392,8 +481,8 @@ class EnvOverviewHome extends Component {
               <Button
                 disabled={!envState.connect}
                 onClick={this.deployApp.bind(this, this.envId)}
+                icon="jsfiddle"
               >
-                <i className="icon-jsfiddle icon" />
                 <FormattedMessage id="deploy.header.title" />
               </Button>
             </Tooltip>
@@ -409,9 +498,9 @@ class EnvOverviewHome extends Component {
                 funcType="flat"
                 disabled={!envState.connect}
                 onClick={this.createNetwork}
+                icon="playlist_add"
               >
-                <i className="icon-playlist_add icon" />
-                <span><FormattedMessage id="network.header.create" /></span>
+                <FormattedMessage id="network.header.create" />
               </Button>
             </Tooltip>
           </Permission>
@@ -426,9 +515,26 @@ class EnvOverviewHome extends Component {
                 funcType="flat"
                 disabled={!envState.connect}
                 onClick={this.createDomain.bind(this, 'create', '')}
+                icon="playlist_add"
               >
-                <i className="icon icon-playlist_add icon" />
                 <FormattedMessage id="domain.header.create" />
+              </Button>
+            </Tooltip>
+          </Permission>
+          <Permission
+            type={type}
+            projectId={projectId}
+            organizationId={orgId}
+            service={['devops-service.certification.create']}
+          >
+            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
+              <Button
+                funcType="flat"
+                disabled={!envState.connect}
+                onClick={this.openCreateModal}
+                icon="playlist_add"
+              >
+                <FormattedMessage id="ctf.create" />
               </Button>
             </Tooltip>
           </Permission>
@@ -443,16 +549,16 @@ class EnvOverviewHome extends Component {
             >
               <Button
                 funcType="flat"
+                icon="account_balance"
               >
-                <Icon type="account_balance" />
                 <FormattedMessage id="envoverview.gitlab" />
               </Button>
             </a>
           </Tooltip>
           <Button
             onClick={this.handleRefresh}
+            icon="refresh"
           >
-            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
@@ -490,39 +596,21 @@ class EnvOverviewHome extends Component {
               <div>
                 <div className="c7n-envow-status-text"><FormattedMessage id="envoverview.istov" /></div>
                 <div className="c7n-envow-status-wrap">
-                  <div className="c7n-envow-status-num c7n-envow-status-running">
-                    <div>{this.getIstCount('running')}</div>
-                    <div><FormattedMessage id="running" /></div>
-                  </div>
-                  <div className="c7n-envow-status-num c7n-envow-status-operating">
-                    <div>{this.getIstCount('operating')}</div>
-                    <div><FormattedMessage id="operating" /></div>
-                  </div>
-                  <div className="c7n-envow-status-num c7n-envow-status-stopped">
-                    <div>{this.getIstCount('stopped')}</div>
-                    <div><FormattedMessage id="stopped" /></div>
-                  </div>
-                  <div className="c7n-envow-status-num c7n-envow-status-fail">
-                    <div>{this.getIstCount('failed')}</div>
-                    <div><FormattedMessage id="failedd" /></div>
-                  </div>
+                  {_.map(istStatusType, item => (<div className={`c7n-envow-status-num c7n-envow-status-${item}`}>
+                    <div>{this.getIstCount(item)}</div>
+                    <div><FormattedMessage id={item} /></div>
+                  </div>))}
                 </div>
               </div>
             </div>
           </div>
           <Tabs className="c7n-envoverview-tabs" activeKey={this.tabKey} animated={false} onChange={this.tabChange}>
-            <TabPane tab={`${intl.formatMessage({ id: 'network.column.app' })}`} key="app">
-              {this.tabKey === 'app' ? <AppOverview store={EnvOverviewStore} tabkey={this.tabKey} envState={envState.connect} envId={this.envId || (this.env.length ? this.env[0].id : null)} /> : null}
-            </TabPane>
-            <TabPane tab={`${intl.formatMessage({ id: 'network.header.title' })}`} key="network">
-              {this.tabKey === 'network' ? <NetworkOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId || (this.env.length ? this.env[0].id : null)} /> : null}
-            </TabPane>
-            <TabPane tab={`${intl.formatMessage({ id: 'domain.header.title' })}`} key="domain">
-              {this.tabKey === 'domain' ? <DomainOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId || (this.env.length ? this.env[0].id : null)} /> : null}
-            </TabPane>
-            <TabPane tab={`${intl.formatMessage({ id: 'envoverview.logs' })}`} key="log">
-              {this.tabKey === 'log' ? <LogOverview store={EnvOverviewStore} tabkey={this.tabKey} envId={this.envId || (this.env.length ? this.env[0].id : null)} /> : null}
-            </TabPane>
+            {_.map(tabOption, (item) => {
+              const { key, component, msg } = item;
+              return (<TabPane tab={intl.formatMessage({ id: msg })} key={key}>
+                {this.tabKey === key ? component : null}
+              </TabPane>);
+            })}
           </Tabs>
         </Content>
         {this.showNetwork && <CreateNetwork
@@ -540,6 +628,12 @@ class EnvOverviewHome extends Component {
           store={DomainStore}
           onClose={this.closeDomain}
         />}
+        {createDisplay ? <CreateCert
+          visible={createDisplay}
+          envId={this.envId || this.env[0].id}
+          store={CertificateStore}
+          onClose={this.closeCreateModal}
+        /> : null}
       </Page>
     );
   }

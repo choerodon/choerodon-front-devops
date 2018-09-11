@@ -1,13 +1,12 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-import { Table, Icon, Select, Button, Popover, Tooltip, Modal } from 'choerodon-ui';
-import _ from 'lodash';
+import { Select, Button, Modal } from 'choerodon-ui';
 import '../../../main.scss';
 import './CertificateHome.scss';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import CertTable from '../certTable';
 import CreateCert from '../createCert';
 
 const { AppState } = stores;
@@ -18,19 +17,14 @@ class CertificateHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      deleteCert: null,
       page: 0,
       pageSize: 10,
-      param: [],
-      filters: {},
       postData: { searchParam: {}, param: '' },
       sorter: {
         field: 'id',
         columnKey: 'id',
         order: 'descend',
       },
-      deleteStatus: false,
-      removeDisplay: false,
       createDisplay: false,
     };
   }
@@ -46,7 +40,7 @@ class CertificateHome extends Component {
     const { CertificateStore } = this.props;
     CertificateStore.setEnvData([]);
     this.setState({ createDisplay: true });
-  }
+  };
 
   /**
    * 关闭创建侧边栏
@@ -54,59 +48,6 @@ class CertificateHome extends Component {
   closeCreateModal = () => {
     this.setState({ createDisplay: false });
     const { page, pageSize, sort, postData } = this.state;
-    this.loadCertData(page, pageSize, sort, postData);
-  };
-
-  /**
-   * 删除证书
-   */
-  handleDelete = () => {
-    const { CertificateStore } = this.props;
-    const { id: projectId } = AppState.currentMenuType;
-    const { deleteCert } = this.state;
-    this.setState({ deleteStatus: true });
-    CertificateStore.deleteCertById(projectId, deleteCert).then(() => {
-      const { page, pageSize, sort, postData } = this.state;
-      this.loadCertData(page, pageSize, sort, postData);
-      this.setState({ deleteStatus: false, removeDisplay: false });
-    }).catch((err) => {
-      this.setState({ deleteStatus: false });
-      Choerodon.handleResponseError(err);
-    });
-  };
-
-  /**
-   * 表格筛选排序等
-   * @param pagination
-   * @param filters
-   * @param sorter
-   * @param paras
-   */
-  tableChange = (pagination, filters, sorter, paras) => {
-    const { current, pageSize } = pagination;
-    const page = current - 1;
-    const sort = _.isEmpty(sorter) ? {
-      field: 'id',
-      columnKey: 'id',
-      order: 'descend',
-    } : sorter;
-    const searchParam = {};
-    let param = '';
-    if (!_.isEmpty(filters)) {
-      _.forEach(filters, (value, key) => {
-        if (!_.isEmpty(value)) {
-          searchParam[key] = [String(value)];
-        }
-      });
-    }
-    if (paras.length) {
-      param = paras[0].toString();
-    }
-    const postData = {
-      searchParam,
-      param,
-    };
-    this.setState({ page, pageSize, filters, postData, sorter: sort, param: paras });
     this.loadCertData(page, pageSize, sort, postData);
   };
 
@@ -131,120 +72,11 @@ class CertificateHome extends Component {
     CertificateStore.loadCertData(projectId, page, sizes, sort, filter);
   };
 
-  /**
-   * 显示删除确认框
-   * @param id
-   */
-  openRemoveModal = id => this.setState({
-    removeDisplay: true,
-    deleteCert: id,
-  });
-
-  closeRemoveModal = () => this.setState({ removeDisplay: false });
-
-  /**
-   * 操作列
-   * @param record
-   * @param type
-   * @param projectId
-   * @param orgId
-   */
-  opColumn = (record, type, projectId, orgId) => {
-    const { id, domains } = record;
-    const { intl } = this.props;
-    return (<Fragment>
-      <Popover
-        overlayClassName="c7n-ctf-overlay"
-        arrowPointAtCenter
-        title={intl.formatMessage({ id: 'ctf.cert.detail' })}
-        content={<div className="c7n-overlay-content">
-          <div className="c7n-overlay-item">
-            <p className="c7n-ctf-detail">CommonName</p>
-            {domains && domains.length > 1 ? <p className="c7n-ctf-detail">DNSNames</p> : null}
-          </div>
-          <div className="c7n-overlay-item">{_.map(domains, item => <p key={item} className="c7n-ctf-detail">{item}</p>)}</div>
-        </div>}
-        getPopupContainer={triggerNode => triggerNode.parentNode}
-        trigger="hover"
-        placement="bottomRight"
-      >
-        <Icon type="find_in_page" className="c7n-ctf-detail-icon" />
-      </Popover>
-      <Permission
-        service={['devops-service.certification.delete']}
-        type={type}
-        projectId={projectId}
-        organizationId={orgId}
-      >
-        <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="delete" />}>
-          <Button
-            icon="delete_forever"
-            shape="circle"
-            size="small"
-            funcType="flat"
-            onClick={this.openRemoveModal.bind(this, id)}
-          />
-        </Tooltip>
-      </Permission>
-    </Fragment>);
-  };
-
   render() {
     const { intl, CertificateStore } = this.props;
-    const {
-      param,
-      filters,
-      sorter: { columnKey, order },
-      removeDisplay,
-      deleteStatus,
-      createDisplay,
-    } = this.state;
+    const { createDisplay } = this.state;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
-    const columns = [{
-      title: <FormattedMessage id="ctf.column.name" />,
-      key: 'certName',
-      dataIndex: 'certName',
-      filters: [],
-      filteredValue: filters.certName || [],
-      render: (text, record) => (<MouserOverWrapper text={text || ''} width={0.25}>
-        {text}</MouserOverWrapper>),
-    }, {
-      title: <FormattedMessage id="ctf.column.ingress" />,
-      key: 'domains',
-      dataIndex: 'domains',
-      filters: [],
-      filteredValue: filters.domains || [],
-      render: (text, record) => (<MouserOverWrapper text={text[0] || ''} width={0.25}>
-        {text[0]}</MouserOverWrapper>),
-    }, {
-      title: <FormattedMessage id="ctf.column.env" />,
-      key: 'envName',
-      dataIndex: 'envName',
-      sorter: true,
-      filters: [],
-      sortOrder: columnKey === 'envName' && order,
-      filteredValue: filters.envName || [],
-      render: (text, record) => (<React.Fragment>
-        { record.envConnected ? <Tooltip title={<FormattedMessage id="connect" />}>
-          <span className="env-status-success" />
-        </Tooltip> : <Tooltip title={<FormattedMessage id="disconnect" />}>
-          <span className="env-status-error" />
-        </Tooltip> }
-        {text}
-      </React.Fragment>),
-    }, {
-      title: <FormattedMessage id="ctf.column.status" />,
-      key: 'status',
-      dataIndex: 'status',
-      sorter: true,
-      sortOrder: columnKey === 'status' && order,
-      render: (text, record) => (<div className={`c7n-ctf-status c7n-ctf-${record.status}`}><FormattedMessage id={`ctf.column.${record.status}`} /></div>),
-    }, {
-      align: 'right',
-      width: 100,
-      key: 'action',
-      render: record => this.opColumn(record, type, projectId, orgId),
-    }];
+
     return (
       <Page
         className="c7n-region c7n-ctf-wrapper"
@@ -283,36 +115,13 @@ class CertificateHome extends Component {
           code="ctf"
           value={{ name }}
         >
-          <Table
-            filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
-            onChange={this.tableChange}
-            loading={CertificateStore.getCertLoading}
-            pagination={CertificateStore.getPageInfo}
-            filters={param || []}
-            columns={columns}
-            dataSource={CertificateStore.getCertData}
-            rowKey={record => record.id}
-          />
+          <CertTable store={CertificateStore} />
         </Content>
         {createDisplay && <CreateCert
           visible={createDisplay}
           store={CertificateStore}
-          handleClose={this.closeCreateModal}
+          onClose={this.closeCreateModal}
         />}
-        <Modal
-          confirmLoading={deleteStatus}
-          visible={removeDisplay}
-          title={<FormattedMessage id="ctf.delete" />}
-          closable={false}
-          footer={[
-            <Button key="back" onClick={this.closeRemoveModal}><FormattedMessage id="cancel" /></Button>,
-            <Button key="submit" loading={deleteStatus} type="danger" onClick={this.handleDelete}>
-              <FormattedMessage id="delete" />
-            </Button>,
-          ]}
-        >
-          <p><FormattedMessage id="ctf.delete.tooltip" /></p>
-        </Modal>
       </Page>
     );
   }

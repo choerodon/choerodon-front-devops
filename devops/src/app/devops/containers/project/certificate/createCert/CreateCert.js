@@ -67,7 +67,7 @@ class CreateCert extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { form, store, handleClose } = this.props;
+    const { form, store, onClose } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ submitting: true });
     form.validateFieldsAndScroll((err, data) => {
@@ -105,13 +105,13 @@ class CreateCert extends Component {
    * @param promise
    */
   handleResponse = (promise) => {
-    const { handleClose } = this.props;
+    const { onClose } = this.props;
     promise.then((res) => {
       this.setState({ submitting: false });
       if (res && res.failed) {
         Choerodon.prompt(res.message);
       } else {
-        handleClose();
+        onClose();
       }
     }).catch((error) => {
       this.setState({ submitting: false });
@@ -234,7 +234,7 @@ class CreateCert extends Component {
   };
 
   render() {
-    const { visible, form, intl, store, handleClose } = this.props;
+    const { visible, form, intl, store, onClose, envId } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
     const { submitting, type, keyLoad, certLoad } = this.state;
     const { name: menuName, id: projectId } = AppState.currentMenuType;
@@ -286,7 +286,7 @@ class CreateCert extends Component {
         title={<FormattedMessage id="ctf.sidebar.create" />}
         visible={visible}
         onOk={this.handleSubmit}
-        onCancel={handleClose}
+        onCancel={onClose}
         confirmLoading={submitting}
       >
         <Content code="ctf.create" values={{ name: menuName }} className="c7n-ctf-create sidebar-content">
@@ -296,6 +296,7 @@ class CreateCert extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('envId', {
+                initialValue: envId,
                 rules: [{
                   required: true,
                   message: intl.formatMessage({ id: 'required' }),

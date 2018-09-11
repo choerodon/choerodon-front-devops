@@ -178,6 +178,11 @@ const pageDetail = {
   'ctf.create.title': '项目"{name}"中创建证书',
   'ctf.create.description': '您可以在此处选择环境，并在该环境下面配置相应的参数创建证书。',
   'ctf.create.link': `${docServer}/user-guide/deployment-pipeline/certificate`,
+
+  // 报表
+  'report.description': '选择报表查看详情',
+  'report.title': '所有报表',
+  'report.link': `${docServer}/user-guide/application-management/report`,
 };
 
 const zhCN = {
@@ -191,8 +196,6 @@ const zhCN = {
   cancel: '取消',
   close: '关闭',
   delete: '删除',
-  'confirm.delete': '确认删除吗？',
-  'confirm.delete.tip': '当你点击删除后，该条数据将被永久删除，不可恢复!',
   MicroApp: '微应用',
   MicroAppUI: 'Web前端',
   Mobile: '移动',
@@ -205,8 +208,7 @@ const zhCN = {
   deleting: '删除中',
   pending: '部署中',
   stopped: '已停止',
-  failedd: '已失败',
-  failed: '创建失败',
+  failed: '已失败',
   deleted: '已删除',
   install_failed: '创建失败',
   upgrade_failed: '更新失败',
@@ -238,9 +240,12 @@ const zhCN = {
   preview: '预览',
   expand: '展开',
   shrink: '收缩',
+  validDate: '有效期',
 
+  'confirm.delete': '确认删除吗？',
+  'confirm.delete.tip': '当你点击删除后，该条数据将被永久删除，不可恢复!',
+  'create.failed': '创建失败',
   'md.placeholder': '在下面编辑您的发布日志，支持MarkDown格式',
-
   'file.uploaded.failed': '上传失败！',
   'file.uploaded.success': '上传成功！',
   'file.type.error': '文件格式类型错误！',
@@ -815,6 +820,11 @@ const zhCN = {
   'ctf.certFile': '上传 Cert 文件',
   'ctf.key.required': '请上传Key格式的文件',
   'ctf.cert.required': '请上传Cert格式的文件',
+
+  // 报表
+  'report.head': '报告',
+  'report.submission.title': '代码提交情况',
+  'report.submission.des': '代码提交情况图能从项目、应用的维度帮助我们查看某个项目或是该项目下某个应用的代码提交情况。',
 
   ...pageDetail,
 };

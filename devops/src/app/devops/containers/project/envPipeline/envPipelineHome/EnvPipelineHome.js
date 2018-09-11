@@ -639,8 +639,7 @@ class EnvPipelineHome extends Component {
       }
     </div>);
 
-    const BoardDom = EnvPipelineStore.getIsLoading ? <LoadingBar display />
-      : (_.map(envcardPosition, e => <Board projectId={Number(projectId)} key={e.devopsEnvGroupId} groupId={e.devopsEnvGroupId} Title={e.devopsEnvGroupName} envcardPositionChild={e.devopsEnviromentRepDTOs || []} />));
+    const BoardDom = _.map(envcardPosition, e => <Board projectId={Number(projectId)} key={e.devopsEnvGroupId} groupId={e.devopsEnvGroupId} Title={e.devopsEnvGroupName} envcardPositionChild={e.devopsEnviromentRepDTOs || []} />);
 
     const leftDom = scrollLeft !== 0
       ? <div role="none" className="c7n-push-left-ban icon icon-navigate_before" onClick={this.pushScrollRight} />
@@ -761,37 +760,40 @@ class EnvPipelineHome extends Component {
               <i className="icon icon-open_in_new" />
             </a>
           </p>
-          {BoardDom}
-          <div className="c7n-env-discontent">
-            <h2 className="c7n-space-first">
-              <FormattedMessage
-                id="env.stop.title"
-                values={{
-                  name: `${projectName}`,
-                }}
-              />
-            </h2>
-            <p>
-              <FormattedMessage
-                id="env.stop.description"
-              />
-              <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                <span className="c7n-external-link-content">
-                  <FormattedMessage id="learnmore" />
-                </span>
-                <i className="icon icon-open_in_new" />
-              </a>
-            </p>
-            <div className="c7n-outer-container">
-              {leftDom}
-              <div className="c7n-inner-container-ban">
-                <div className="c7n-env-board-ban">
-                  {DisEnvDom}
+          {EnvPipelineStore.getIsLoading ? <LoadingBar display />
+            : <React.Fragment>
+              {BoardDom.length ? BoardDom : <Board projectId={Number(projectId)} key="none" envcardPositionChild={[]} />}
+              <div className="c7n-env-discontent">
+                <h2 className="c7n-space-first">
+                  <FormattedMessage
+                    id="env.stop.title"
+                    values={{
+                      name: `${projectName}`,
+                    }}
+                  />
+                </h2>
+                <p>
+                  <FormattedMessage
+                    id="env.stop.description"
+                  />
+                  <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                    <span className="c7n-external-link-content">
+                      <FormattedMessage id="learnmore" />
+                    </span>
+                    <i className="icon icon-open_in_new" />
+                  </a>
+                </p>
+                <div className="c7n-outer-container">
+                  {leftDom}
+                  <div className="c7n-inner-container-ban">
+                    <div className="c7n-env-board-ban">
+                      {DisEnvDom}
+                    </div>
+                  </div>
+                  {rightDom}
                 </div>
               </div>
-              {rightDom}
-            </div>
-          </div>
+            </React.Fragment>}
         </Content>
       </Page>
     );
