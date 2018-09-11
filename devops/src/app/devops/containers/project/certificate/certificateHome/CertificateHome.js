@@ -17,14 +17,6 @@ class CertificateHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      page: 0,
-      pageSize: 10,
-      postData: { searchParam: {}, param: '' },
-      sorter: {
-        field: 'id',
-        columnKey: 'id',
-        order: 'descend',
-      },
       createDisplay: false,
     };
   }
@@ -45,17 +37,14 @@ class CertificateHome extends Component {
   /**
    * 关闭创建侧边栏
    */
-  closeCreateModal = () => {
-    this.setState({ createDisplay: false });
-    const { page, pageSize, sort, postData } = this.state;
-    this.loadCertData(page, pageSize, sort, postData);
-  };
+  closeCreateModal = () => this.setState({ createDisplay: false });
 
   /**
    * 刷新
    */
   reload = () => {
-    const { page, pageSize, sorter, postData } = this.state;
+    const { CertificateStore } = this.props;
+    const { page, pageSize, sorter, postData } = CertificateStore.getTableFilter;
     this.loadCertData(page, pageSize, sorter, postData);
   };
 
@@ -73,7 +62,7 @@ class CertificateHome extends Component {
   };
 
   render() {
-    const { intl, CertificateStore } = this.props;
+    const { CertificateStore } = this.props;
     const { createDisplay } = this.state;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
 

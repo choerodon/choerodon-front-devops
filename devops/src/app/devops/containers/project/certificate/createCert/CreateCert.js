@@ -67,7 +67,7 @@ class CreateCert extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { form, store, onClose } = this.props;
+    const { form, store } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ submitting: true });
     form.validateFieldsAndScroll((err, data) => {
@@ -105,12 +105,27 @@ class CreateCert extends Component {
    * @param promise
    */
   handleResponse = (promise) => {
-    const { onClose } = this.props;
+    const { onClose, store } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
     promise.then((res) => {
       this.setState({ submitting: false });
       if (res && res.failed) {
         Choerodon.prompt(res.message);
       } else {
+        const filter = {
+          page: 0,
+          pageSize: 10,
+          postData: { searchParam: {}, param: '' },
+          sorter: {
+            field: 'id',
+            columnKey: 'id',
+            order: 'descend',
+          },
+          param: [],
+          createDisplay: false,
+        };
+        store.setTableFilter(filter);
+        store.loadCertData(projectId, 0, 10, { field: 'id', order: 'descend' }, { searchParam: {}, param: '' });
         onClose();
       }
     }).catch((error) => {

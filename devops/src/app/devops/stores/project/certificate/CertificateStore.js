@@ -23,12 +23,33 @@ class CertificateStore {
     pageSize: 10,
   };
 
+  @observable tableFilter = {
+    page: 0,
+    pageSize: 10,
+    param: [],
+    filters: {},
+    postData: { searchParam: {}, param: '' },
+    sorter: {
+      field: 'id',
+      columnKey: 'id',
+      order: 'descend',
+    },
+  };
+
+  @action setTableFilter(data) {
+    this.tableFilter = { ...this.tableFilter, ...data };
+  }
+
+  @computed get getTableFilter() {
+    return this.tableFilter;
+  }
+
   @action setEnvData(data) {
     this.envData = data;
   }
 
   @computed get getEnvData() {
-    return this.envData;
+    return this.envData.slice();
   }
 
   @action setCertData(data) {
@@ -36,7 +57,7 @@ class CertificateStore {
   }
 
   @computed get getCertData() {
-    return this.certData;
+    return this.certData.slice();
   }
 
   @action setCertLoading(flag) {
