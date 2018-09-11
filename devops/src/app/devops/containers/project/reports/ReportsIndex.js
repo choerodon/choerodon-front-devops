@@ -12,7 +12,7 @@ const ReportsIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={REPORTSHOME} />
     <Route exact path={`${match.url}/submission`} component={SUBMISSION} />
-    <Route path={'*'} component={nomatch} />
+    <Route path="*" component={nomatch} />
   </Switch>
 );
 

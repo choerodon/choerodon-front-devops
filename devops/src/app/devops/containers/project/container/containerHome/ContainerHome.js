@@ -155,6 +155,7 @@ class ContainerHome extends Component {
   onTerminalReady() {
     this.io = this.term.io.push();
     this.onTerminalResponseReceived();
+    this.io.showOverlay(`${this.term.screenSize.width}x${this.term.screenSize.height}`);
   }
 
   /**
@@ -164,7 +165,7 @@ class ContainerHome extends Component {
   onTerminalResponseReceived() {
     const { namespace, envId, logId, podName, containerName } = this.state;
     const authToken = document.cookie.split('=')[1];
-    this.conn = new WebSocket(`POD_WEBSOCKET_URL/ws/exec?key=env:${namespace}.envId:${envId}.exec:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
+    this.conn = new WebSocket(`ws://devops-service-front.staging.saas.hand-china.com/ws/exec?key=env:${namespace}.envId:${envId}.exec:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
     this.conn.onopen = this.onConnectionOpen.bind(this);
     this.conn.onmessage = this.onConnectionMessage.bind(this);
     this.conn.onclose = this.onConnectionClose.bind(this);
@@ -192,7 +193,12 @@ class ContainerHome extends Component {
    * Attached to SockJS.onclose
    */
   @action
-  onConnectionClose() {
+  onConnectionClose(evt) {
+    if (evt && evt.reason !== '' && evt.code < 1000) {
+      this.io.showOverlay(evt.reason, null);
+    } else {
+      this.io.showOverlay('Connection closed', null);
+    }
     this.conn.close();
     this.term.uninstallKeyboard();
     this.term.io.flush();
