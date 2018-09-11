@@ -6,6 +6,7 @@ const orderMapping = {
   ascend: 'asc',
   descend: 'desc',
 };
+const height = window.screen.height;
 
 @store('RepositoryStore')
 class RepositoryStore {
@@ -15,7 +16,7 @@ class RepositoryStore {
 
   @observable pageInfo = {
     current: 1,
-    pageSize: 10,
+    pageSize: height <= 900 ? 10 : 15,
     total: 0,
   };
 
@@ -51,7 +52,7 @@ class RepositoryStore {
    * @param sorter
    * @param search
    */
-  queryRepoData = (projectId, page, pageSize, sorter, search) => {
+  queryRepoData = (projectId, page, pageSize = this.pageInfo.pageSize, sorter, search) => {
     this.setLoading(true);
     const order = sorter.order ? orderMapping[sorter.order] : 'desc';
     axios.post(`/devops/v1/projects/${projectId}/apps/list_code_repository?page=${page}&size=${pageSize}&sort=${sorter.field || 'id'},${order}`, JSON.stringify(search))

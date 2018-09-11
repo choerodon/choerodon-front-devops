@@ -24,7 +24,12 @@ class BranchHome extends Component {
     const menu = AppState.currentMenuType;
     this.state = {
       projectId: menu.id,
+      paras: [],
       filters: {},
+      sort: {
+        columnKey: 'creationDate',
+        order: 'ascend',
+      },
     };
   }
 
@@ -134,6 +139,7 @@ class BranchHome extends Component {
    */
   get tableBranch() {
     const { BranchStore, intl } = this.props;
+    const { paras, filters, sort: { columnKey, order } } = this.state;
     const menu = AppState.currentMenuType;
     const { type, organizationId: orgId } = menu;
     const branchColumns = [
@@ -141,8 +147,9 @@ class BranchHome extends Component {
         title: <FormattedMessage id="branch.name" />,
         dataIndex: 'branchName',
         filters: [],
-        filteredValue: this.state.filters.branchName,
+        filteredValue: filters.branchName,
         sorter: true,
+        sortOrder: columnKey === 'branchName' && order,
         render: (text, record) => (<div>
           {this.getIcon(record.branchName)}
           <MouserOverWrapper text={record.branchName} width={0.2} className="c7n-branch-text">
@@ -330,7 +337,7 @@ class BranchHome extends Component {
       <div>
         {title}
         <Table
-          filters={this.state.paras}
+          filters={paras}
           filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
           loading={BranchStore.loading}
           className="c7n-branch-table"
@@ -372,7 +379,9 @@ class BranchHome extends Component {
    */
   handleRefresh =() => {
     const { BranchStore } = this.props;
-    this.loadData(BranchStore.app);
+    const pagination = BranchStore.getPageInfo;
+    const { filters, paras, sort } = this.state;
+    this.tableChange(pagination, filters, sort, paras);
   };
 
   /**
@@ -400,10 +409,13 @@ class BranchHome extends Component {
   /**
    * 关闭sidebar
    */
-  hideSidebar = () => {
+  hideSidebar = (isload = true) => {
     const { BranchStore } = this.props;
     BranchStore.setCreateBranchShow(false);
-    // this.loadData(BranchStore.app);
+    if (isload) {
+      this.loadData(BranchStore.app);
+      this.setState({ paras: [], filters: {}, sort: { columnKey: 'creationDate', order: 'ascend' } });
+    }
   };
 
   /**
@@ -438,6 +450,7 @@ class BranchHome extends Component {
       this.setState({ submitting: false });
       Choerodon.handleResponseError(error);
     });
+    this.setState({ paras: [], filters: {}, sort: { columnKey: 'creationDate', order: 'ascend' } });
   };
 
   /**
@@ -451,7 +464,7 @@ class BranchHome extends Component {
     const { BranchStore } = this.props;
     const menu = AppState.currentMenuType;
     const organizationId = menu.id;
-    this.setState({ filters, paras });
+    this.setState({ filters, paras, sort: sorter });
     const sort = { field: 'creationDate', order: 'asc' };
     if (sorter.column) {
       sort.field = sorter.field || sorter.columnKey;

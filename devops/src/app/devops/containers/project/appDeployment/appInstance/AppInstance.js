@@ -173,7 +173,7 @@ class AppInstance extends Component {
     this.setState({ page: pagination.current - 1 });
     store.loadInstanceAll(projectId, pagination.current - 1, pagination.pageSize, sort,
       null, null, null, postData);
-    store.setIstTableFilter(param);
+    store.setIstTableFilter({ filters, param });
   };
 
   /**
@@ -188,6 +188,7 @@ class AppInstance extends Component {
     });
     if (res) {
       store.loadInstanceAll(projectId, this.state.page);
+      store.setIstTableFilter(null);
     }
   };
 
@@ -203,6 +204,7 @@ class AppInstance extends Component {
     });
     if (res) {
       store.loadInstanceAll(projectId, this.state.page);
+      store.setIstTableFilter(null);
     }
   };
 
@@ -227,6 +229,7 @@ class AppInstance extends Component {
           store.loadInstanceAll(projectId, this.state.page);
         }
       });
+    store.setIstTableFilter(null);
   };
 
   /**
@@ -345,11 +348,12 @@ class AppInstance extends Component {
     const ist = store.getIstAll;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const pageInfo = store.getPageInfo;
-    const param = store.getIstParams;
+    const { filters, param } = store.getIstParams;
     const columns = [{
       title: <FormattedMessage id="deploy.status" />,
       key: 'podCount',
       filters: [],
+      filteredValue: filters.podCount || [],
       render: record => (
         <div className="c7n-deploy-status">
           <svg className={record.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
@@ -375,6 +379,7 @@ class AppInstance extends Component {
       title: <FormattedMessage id="deploy.instance" />,
       key: 'code',
       filters: [],
+      filteredValue: filters.code || [],
       render: record => (record.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{record.code}</span> : <div>
         {record.commandStatus === 'doing' ? (<div>
           <span className="c7n-deploy-istCode">{record.code}</span>
@@ -393,6 +398,7 @@ class AppInstance extends Component {
       title: <FormattedMessage id="deploy.app" />,
       key: 'appName',
       filters: [],
+      filteredValue: filters.appName || [],
       render: record => (
         <div>
           <div className="c7n-deploy-col-inside">
@@ -408,6 +414,7 @@ class AppInstance extends Component {
       title: <FormattedMessage id="deploy.env" />,
       key: 'envCode',
       filters: [],
+      filteredValue: filters.envCode || [],
       render: record => (
         <div>
           <div className="c7n-deploy-col-inside">

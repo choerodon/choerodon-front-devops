@@ -167,6 +167,7 @@ class CiPipelineHome extends Component {
           rowKey={record => record.id}
           filters={param}
           onChange={this.handleTableChange}
+          filterBar={false}
         />
       </div>
     );

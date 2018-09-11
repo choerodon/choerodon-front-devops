@@ -481,6 +481,7 @@ class MergeRequestHome extends Component {
                 filters={param || []}
                 dataSource={od}
                 rowKey={record => record.id}
+                filterBar={false}
               />
             </TabPane>
             <TabPane tab={`${intl.formatMessage({ id: 'merge.tab2' })}(${mergeCount || 0})`} key="merged">
@@ -493,6 +494,7 @@ class MergeRequestHome extends Component {
                 filters={param || []}
                 dataSource={md}
                 rowKey={record => record.id}
+                filterBar={false}
               />
             </TabPane>
             <TabPane tab={`${intl.formatMessage({ id: 'merge.tab3' })}(${closeCount || 0})`} key="closed">
@@ -505,6 +507,7 @@ class MergeRequestHome extends Component {
                 filters={param || []}
                 dataSource={cd}
                 rowKey={record => record.id}
+                filterBar={false}
               />
             </TabPane>
             <TabPane tab={`${intl.formatMessage({ id: 'merge.tab4' })}(${totalCount || 0})`} key="all">
@@ -517,6 +520,7 @@ class MergeRequestHome extends Component {
                 filters={param || []}
                 dataSource={ad}
                 rowKey={record => record.id}
+                filterBar={false}
               />
             </TabPane>
             {assigneeCount !== 0 ? <TabPane tab={`${intl.formatMessage({ id: 'merge.tab5' })}(${assigneeCount || 0})`} key="assignee">
@@ -529,6 +533,7 @@ class MergeRequestHome extends Component {
                 filters={param || []}
                 dataSource={assignee}
                 rowKey={record => record.id}
+                filterBar={false}
               />
             </TabPane> : null}
           </Tabs>

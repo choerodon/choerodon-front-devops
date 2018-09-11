@@ -14,6 +14,7 @@ import '../../../main.scss';
 const Option = Select.Option;
 
 const { AppState } = stores;
+const height = window.screen.height;
 
 @observer
 class SingleEnvironment extends Component {
@@ -25,7 +26,7 @@ class SingleEnvironment extends Component {
       envId: null,
       visibleUp: false,
       active: -1,
-      pageSize: 10,
+      pageSize: height <= 900 ? 10 : 15,
       page: 0,
     };
   }
@@ -80,6 +81,7 @@ class SingleEnvironment extends Component {
       });
       this.loadInstance(envID, verId);
     }
+    store.setIstTableFilter(null);
   };
 
   /**
@@ -123,6 +125,7 @@ class SingleEnvironment extends Component {
     store.setEnvId(envID);
     store.loadInstanceAll(projectId, 0, pageSize, null, envID, null, appId);
     store.loadAppNameByEnv(projectId, envID, store.appPage - 1, store.appPageSize);
+    store.setIstTableFilter(null);
   };
 
   /**
@@ -167,7 +170,7 @@ class SingleEnvironment extends Component {
     this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
     store.loadInstanceAll(projectId, pagination.current - 1,
       pagination.pageSize, sort, envID, verId, appId, postData);
-    store.setIstTableFilter(param);
+    store.setIstTableFilter({ filters, param });
   };
 
   /**
@@ -243,7 +246,7 @@ class SingleEnvironment extends Component {
    */
   handleCancel =(res) => {
     const { store } = this.props;
-    const { envId, appId, page } = this.state;
+    const { envId, appId, page, pageSize } = this.state;
     const menu = JSON.parse(sessionStorage.selectData);
     const projectId = menu.id;
     const envNames = store.getEnvcard;
@@ -252,7 +255,8 @@ class SingleEnvironment extends Component {
       visible: false,
     });
     if (res) {
-      store.loadInstanceAll(projectId, page, 10, null, envID, null, appId);
+      store.loadInstanceAll(projectId, page, pageSize, null, envID, null, appId);
+      store.setIstTableFilter(null);
     }
   };
 
@@ -268,6 +272,7 @@ class SingleEnvironment extends Component {
     });
     if (res) {
       store.loadInstanceAll(projectId, this.state.page);
+      store.setIstTableFilter(null);
     }
   };
 
@@ -299,6 +304,7 @@ class SingleEnvironment extends Component {
           store.loadInstanceAll(projectId, page, 10, null, envID, null, appId);
         }
       });
+    store.setIstTableFilter(null);
   };
 
 
@@ -310,7 +316,7 @@ class SingleEnvironment extends Component {
   activeIst = (id, status) => {
     const { store } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const { envId, appId, page } = this.state;
+    const { envId, appId, page, pageSize } = this.state;
     const envNames = store.getEnvcard;
     const envID = envId || (envNames.length ? envNames[0].id : null);
     store.changeIstActive(projectId, id, status)
@@ -318,7 +324,7 @@ class SingleEnvironment extends Component {
         if (error && error.failed) {
           Choerodon.prompt(error.message);
         } else {
-          store.loadInstanceAll(projectId, page, 10, null, envID, null, appId);
+          store.loadInstanceAll(projectId, page, pageSize, null, envID, null, appId);
         }
       });
   };
@@ -444,7 +450,7 @@ class SingleEnvironment extends Component {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    const param = store.getIstParams;
+    const { filters, param } = store.getIstParams;
 
     let envName = envNames.length ? (<React.Fragment>
       {envNames[0].connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
@@ -478,6 +484,7 @@ class SingleEnvironment extends Component {
       title: <FormattedMessage id="deploy.status" />,
       key: 'podCount',
       filters: [],
+      filteredValue: filters.podCount || [],
       render: record => (
         <div className="c7n-deploy-status">
           <svg className={record.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
@@ -503,6 +510,7 @@ class SingleEnvironment extends Component {
       title: <FormattedMessage id="deploy.instance" />,
       key: 'code',
       filters: [],
+      filteredValue: filters.code || [],
       render: record => (record.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{record.code}</span> : <div>
         {record.commandStatus === 'doing' ? (<div>
           <span className="c7n-deploy-istCode">{record.code}</span>
@@ -521,6 +529,7 @@ class SingleEnvironment extends Component {
       title: <FormattedMessage id="deploy.ver" />,
       key: 'appVersion',
       filters: [],
+      filteredValue: filters.appVersion || [],
       render: record => (
         <div>
           <span>{record.appVersion}</span>

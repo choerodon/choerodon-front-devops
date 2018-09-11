@@ -65,8 +65,42 @@ class EnvOverviewHome extends Component {
   handleRefresh = () => {
     const { EnvOverviewStore } = this.props;
     EnvOverviewStore.setVal('');
-    this.tabChange(this.tabKey);
-    this.loadEnvCards();
+    const projectId = AppState.currentMenuType.id;
+    const key = this.tabKey;
+    const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
+    const { filters, sort, paras } = EnvOverviewStore.getInfo;
+    const pagination = EnvOverviewStore.getPageInfo;
+    const sorter = { field: '', order: 'desc' };
+    if (sort.column) {
+      sorter.field = sort.field || sort.columnKey;
+      if (sort.order === 'ascend') {
+        sorter.order = 'asc';
+      } else if (sort.order === 'descend') {
+        sorter.order = 'desc';
+      }
+    }
+    let searchParam = {};
+    const page = pagination.current - 1;
+    if (Object.keys(filters).length) {
+      searchParam = filters;
+    }
+    const postData = {
+      searchParam,
+      param: paras.toString(),
+    };
+    if (key === 'app' && this.env.length) {
+      this.loadIstOverview(tpEnvId || this.env[0].id);
+    } else if (key === 'domain' && this.env.length) {
+      EnvOverviewStore.loadDomain(projectId, tpEnvId || this.env[0].id, page, pagination.pageSize, sorter, postData);
+    } else if (key === 'network' && this.env.length) {
+      EnvOverviewStore.loadNetwork(projectId, tpEnvId || this.env[0].id, page, pagination.pageSize, sorter, postData);
+    } else if (key === 'log' && this.env.length) {
+      this.loadLog(tpEnvId || this.env[0].id);
+    }
+    if (this.env.length) {
+      this.loadSync(tpEnvId || this.env[0].id);
+    }
+    // this.loadEnvCards();
   };
 
   /**
@@ -98,6 +132,7 @@ class EnvOverviewHome extends Component {
           break;
       }
     }
+    EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
   };
 
   /**
@@ -230,23 +265,29 @@ class EnvOverviewHome extends Component {
    * 关闭域名侧边栏
    */
   @action
-  closeDomain = () => {
+  closeDomain = (isload) => {
     this.props.form.resetFields();
     this.showDomain = false;
     this.domainId = null;
-    this.loadDomain(this.envId || this.env[0].id);
-    this.loadIstOverview(this.envId || this.env[0].id);
+    if (isload) {
+      this.loadDomain(this.envId || this.env[0].id);
+      this.loadIstOverview(this.envId || this.env[0].id);
+      EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
+    }
   };
 
   /**
    * 关闭网络侧边栏
    */
   @action
-  closeNetwork = () => {
+  closeNetwork = (isload) => {
     this.props.form.resetFields();
     this.showNetwork = false;
-    this.loadNetwork(this.envId || this.env[0].id);
-    this.loadIstOverview(this.envId || this.env[0].id);
+    if (isload) {
+      this.loadNetwork(this.envId || this.env[0].id);
+      this.loadIstOverview(this.envId || this.env[0].id);
+      EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
+    }
   };
 
   /**

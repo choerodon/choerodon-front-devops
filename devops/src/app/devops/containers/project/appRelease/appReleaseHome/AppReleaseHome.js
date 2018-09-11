@@ -10,6 +10,7 @@ import editReleaseStore from '../../../../stores/project/appRelease/editRelease'
 
 const TabPane = Tabs.TabPane;
 const { AppState } = stores;
+const height = window.screen.height;
 @observer
 class AppReleaseHome extends Component {
   constructor(props) {
@@ -18,7 +19,13 @@ class AppReleaseHome extends Component {
     this.state = {
       projectId: menu.id,
       key: props.match.params.key === '2' ? '2' : '1',
-      filters: [],
+      paras: [],
+      filters: {},
+      sorter: {
+        columnKey: 'id',
+        order: 'descend',
+      },
+      pageSize: height <= 900 ? 10 : 15,
     };
   }
 
@@ -29,22 +36,28 @@ class AppReleaseHome extends Component {
 
   getColumn = () => {
     const { type, id: orgId } = AppState.currentMenuType;
+    const { filters, sorter: { columnKey, order } } = this.state;
     return [{
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
       key: 'name',
       sorter: true,
+      sortOrder: columnKey === 'name' && order,
       filters: [],
+      filteredValue: filters.name || [],
     }, {
       title: <FormattedMessage id="app.code" />,
       dataIndex: 'code',
       key: 'code',
       sorter: true,
+      sortOrder: columnKey === 'code' && order,
       filters: [],
+      filteredValue: filters.code || [],
     }, {
       title: <FormattedMessage id="release.column.level" />,
       key: 'publishLevel',
       sorter: true,
+      sortOrder: columnKey === 'publishLevel' && order,
       filters: [{
         text: this.props.intl.formatMessage({ id: 'public' }),
         value: 2,
@@ -52,6 +65,7 @@ class AppReleaseHome extends Component {
         text: this.props.intl.formatMessage({ id: 'organization' }),
         value: 1,
       }],
+      filteredValue: filters.publishLevel || [],
       render: record => (
         <span>{record.publishLevel && <FormattedMessage id={`${record.publishLevel}`} />}</span>
       ),
@@ -114,20 +128,24 @@ class AppReleaseHome extends Component {
   showProjectTable = () => {
     const { AppReleaseStore } = this.props;
     const data = AppReleaseStore.getUnReleaseData;
-    const { filters } = this.state;
+    const { paras, filters, sorter: { columnKey, order } } = this.state;
 
     const column = [{
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
       key: 'name',
       sorter: true,
+      sortOrder: columnKey === 'name' && order,
       filters: [],
+      filteredValue: filters.name || [],
     }, {
       title: <FormattedMessage id="app.code" />,
       dataIndex: 'code',
       key: 'code',
       sorter: true,
+      sortOrder: columnKey === 'code' && order,
       filters: [],
+      filteredValue: filters.code || [],
     }, {
       width: 64,
       key: 'action',
@@ -147,7 +165,7 @@ class AppReleaseHome extends Component {
         pagination={AppReleaseStore.getUnPageInfo}
         columns={column}
         dataSource={data}
-        filters={filters}
+        filters={paras}
         rowKey={record => record.id}
         onChange={this.tableChange}
       />
@@ -160,10 +178,12 @@ class AppReleaseHome extends Component {
    */
   handleChangeTabs = (value) => {
     const { AppReleaseStore } = this.props;
-    AppReleaseStore.loadData({ page: 0, key: value, projectId: this.state.projectId, size: 10 });
+    AppReleaseStore.loadData({ page: 0, key: value, projectId: this.state.projectId, size: this.state.pageSize });
     this.setState({
       key: value,
-      filters: [],
+      paras: [],
+      filters: {},
+      sorter: { columnKey: 'id', order: 'descend' },
     });
   }
 
@@ -178,9 +198,7 @@ class AppReleaseHome extends Component {
     const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     const sort = { field: 'id', order: 'desc' };
-    this.setState({
-      filters: paras,
-    });
+    this.setState({ paras, filters, sorter });
     if (sorter.column) {
       sort.field = sorter.field || sorter.columnKey;
       if (sorter.order === 'ascend') {
@@ -211,18 +229,15 @@ class AppReleaseHome extends Component {
 
   handleRefresh =() => {
     const { AppReleaseStore } = this.props;
-    this.setState({ filters: [] });
-    AppReleaseStore.loadData({
-      projectId: this.state.projectId,
-      isRefresh: true,
-      key: this.state.key,
-    });
+    const pagination = AppReleaseStore.getPageInfo;
+    const { paras, filters, sorter } = this.state;
+    this.tableChange(pagination, filters, sorter, paras);
   };
 
   render() {
     const { AppReleaseStore } = this.props;
     const data = AppReleaseStore.getReleaseData;
-    const { filters } = this.state;
+    const { paras } = this.state;
     return (
       <Page
         service={[
@@ -253,7 +268,7 @@ class AppReleaseHome extends Component {
                 pagination={AppReleaseStore.getPageInfo}
                 columns={this.getColumn()}
                 dataSource={data}
-                filters={filters}
+                filters={paras}
                 rowKey={record => record.id}
                 onChange={this.tableChange}
               />

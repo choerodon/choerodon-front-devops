@@ -64,6 +64,7 @@ class DomainOverview extends Component {
       this.submitting = false;
       Choerodon.prompt(error);
     });
+    store.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
   };
 
   /**
@@ -98,11 +99,15 @@ class DomainOverview extends Component {
    * 关闭域名侧边栏
    */
   @action
-  closeDomain = () => {
+  closeDomain = (isload) => {
     this.props.form.resetFields();
     this.showDomain = false;
     this.domainId = null;
-    this.loadDomain(this.props.envId);
+    if (isload) {
+      this.loadDomain(this.props.envId);
+      const { store } = this.props;
+      store.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
+    }
   };
 
   /**
@@ -141,12 +146,14 @@ class DomainOverview extends Component {
       searchParam,
       param: paras.toString(),
     };
+    store.setInfo({ filters, sort: sorter, paras });
     store.loadDomain(id, envId, page, pagination.pageSize, sort, postData);
   };
 
   render() {
     const { intl, store } = this.props;
     const data = store.getDomain;
+    const { filters, sort: { columnKey, order }, paras } = store.getInfo;
     const menu = AppState.currentMenuType;
     const projectName = menu.name;
     const { type, id: projectId, organizationId: orgId } = menu;
@@ -177,7 +184,9 @@ class DomainOverview extends Component {
       title: intl.formatMessage({ id: 'domain.column.name' }),
       key: 'name',
       sorter: true,
+      sortOrder: columnKey === 'name' && order,
       filters: [],
+      filteredValue: filters.name || [],
       render: (record) => {
         let statusDom = null;
         switch (record.commandStatus) {
@@ -203,13 +212,16 @@ class DomainOverview extends Component {
       title: intl.formatMessage({ id: 'domain.column.domain' }),
       key: 'domain',
       filters: [],
+      filteredValue: filters.domain || [],
       dataIndex: 'domain',
     }, {
       title: intl.formatMessage({ id: 'domain.column.path' }),
       className: 'c7n-network-col',
       key: 'path',
       sorter: true,
+      sortOrder: columnKey === 'path' && order,
       filters: [],
+      filteredValue: filters.path || [],
       render: record => (
         <div>
           {_.map(record.pathList, router => (<div className="c7n-network-col_border" key={router.path}>
@@ -222,6 +234,7 @@ class DomainOverview extends Component {
       className: 'c7n-network-col',
       key: 'serviceName',
       filters: [],
+      filteredValue: filters.serviceName || [],
       render: record => (
         <div>
           {_.map(record.pathList, instance => (<div className="c7n-network-col_border" key={`${instance.path}-${instance.serviceId}`}>
@@ -298,6 +311,7 @@ class DomainOverview extends Component {
         columns={columns}
         dataSource={data}
         rowKey={record => record.id}
+        filters={paras}
       />
       {this.showDomain && <CreateDomain
         id={this.domainId}

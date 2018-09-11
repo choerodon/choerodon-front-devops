@@ -1,6 +1,7 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 
+const height = window.screen.height;
 @store('AppDeploymentStore')
 class AppDeploymentStore {
   @observable isLoading = true;
@@ -29,7 +30,9 @@ class AppDeploymentStore {
 
   @observable value = null;
 
-  @observable pageInfo = {};
+  @observable pageInfo = {
+    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
+  };
 
   @observable appPageInfo = {};
 
@@ -47,7 +50,7 @@ class AppDeploymentStore {
 
   @observable appId = false;
 
-  @observable istParams = [];
+  @observable istParams = { filters: {}, param: [] };
 
   @observable verValue = undefined;
 
@@ -55,12 +58,12 @@ class AppDeploymentStore {
     if (param) {
       this.istParams = param;
     } else {
-      this.istParams = [];
+      this.istParams = { filters: {}, param: [] };
     }
   }
 
   @computed get getIstParams() {
-    return this.istParams.slice();
+    return this.istParams;
   }
 
   @action setPageInfo(page) {
@@ -227,7 +230,7 @@ class AppDeploymentStore {
     this.alertType = data;
   }
 
-  loadInstanceAll = (projectId, page, size = 10, sorter = { id: 'asc' }, envId, versionId, appId, datas = {
+  loadInstanceAll = (projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sorter = { id: 'asc' }, envId, versionId, appId, datas = {
     searchParam: {},
     param: '',
   }) => {

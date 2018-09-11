@@ -174,7 +174,7 @@ class CreateBranch extends Component {
    */
   handleClose = () => {
     this.props.form.resetFields();
-    this.props.onClose();
+    this.props.onClose(false);
   };
 
   /**

@@ -667,7 +667,7 @@ const zhCN = {
   'appstore.importDesTip': '上传文件格式为zip，且文件大小不超过1M',
   'appstore.importSucc': '导入成功',
   'appstore.export': '应用导出',
-  'appstore.search': '搜索应用名称或类型',
+  'appstore.search': '搜索应用名称、编码、类型或描述',
   'appstore.exportSucc': '导出成功',
   'appstore.exportApp': '导出应用',
   'appstore.importApp': '导入应用',

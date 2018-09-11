@@ -18,6 +18,7 @@ let scrollLeft = 0;
 const { Option, OptGroup } = Select;
 
 const { AppState } = stores;
+const height = window.screen.height;
 @observer
 class SingleApp extends Component {
   constructor(props, context) {
@@ -28,6 +29,7 @@ class SingleApp extends Component {
       envId: null,
       visibleUp: false,
       page: 0,
+      pageSize: height <= 900 ? 10 : 15,
       openRemove: false,
       loading: false,
       selectPubPage: 0,
@@ -73,6 +75,7 @@ class SingleApp extends Component {
     } else {
       store.setAppVer([]);
     }
+    store.setIstTableFilter(null);
   };
 
   /**
@@ -92,6 +95,7 @@ class SingleApp extends Component {
     if (envID) {
       this.loadInstance(envID, id, appID);
     }
+    store.setIstTableFilter(null);
   };
 
   /**
@@ -110,6 +114,7 @@ class SingleApp extends Component {
     const envID = envId || envNames[0].id;
     const appID = appId || appNames[0].id;
     this.loadInstance(envID, verId, appID);
+    store.setIstTableFilter(null);
   };
 
   /**
@@ -120,8 +125,9 @@ class SingleApp extends Component {
    */
   loadInstance = (envId, verId, appId) => {
     const { store } = this.props;
+    const { pageSize } = this.state;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    store.loadInstanceAll(projectId, 0, 10, null, envId, verId, appId);
+    store.loadInstanceAll(projectId, 0, pageSize, null, envId, verId, appId);
   };
 
   /**
@@ -189,7 +195,7 @@ class SingleApp extends Component {
     this.setState({ page: pagination.current - 1 });
     store.loadInstanceAll(projectId, pagination.current - 1,
       pagination.pageSize, sort, envID, verId, appID, postData);
-    store.setIstTableFilter(param);
+    store.setIstTableFilter({ filters, param });
   };
 
   /**
@@ -266,7 +272,7 @@ class SingleApp extends Component {
   handleCancel =(res) => {
     const { store } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const { envId, appId, verId, page } = this.state;
+    const { envId, appId, verId, page, pageSize } = this.state;
     const appNames = store.getAppNames;
     const envCard = store.getEnvcard;
     const envID = envId || (envCard.length ? envCard[0].id : null);
@@ -275,7 +281,8 @@ class SingleApp extends Component {
       visible: false,
     });
     if (res) {
-      store.loadInstanceAll(projectId, page, 10, null, envID, verId, appID);
+      store.loadInstanceAll(projectId, page, pageSize, null, envID, verId, appID);
+      store.setIstTableFilter(null);
     }
   };
 
@@ -291,6 +298,7 @@ class SingleApp extends Component {
     });
     if (res) {
       store.loadInstanceAll(projectId, this.state.page);
+      store.setIstTableFilter(null);
     }
   };
 
@@ -300,7 +308,7 @@ class SingleApp extends Component {
   handleDelete = (id) => {
     const { store } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const { envId, appId, verId, page } = this.state;
+    const { envId, appId, verId, page, pageSize } = this.state;
     const appNames = store.getAppNames;
     const envCard = store.getEnvcard;
     const envID = envId || (envCard.length ? envCard[0].id : null);
@@ -321,9 +329,10 @@ class SingleApp extends Component {
             openRemove: false,
             loading: false,
           });
-          store.loadInstanceAll(projectId, page, 10, null, envID, verId, appID);
+          store.loadInstanceAll(projectId, page, pageSize, null, envID, verId, appID);
         }
       });
+    store.setIstTableFilter(null);
   };
 
 
@@ -335,7 +344,7 @@ class SingleApp extends Component {
   activeIst = (id, status) => {
     const { store } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const { envId, appId, verId, page } = this.state;
+    const { envId, appId, verId, page, pageSize } = this.state;
     const appNames = store.getAppNames;
     const envCard = store.getEnvcard;
     const envID = envId || (envCard.length ? envCard[0].id : null);
@@ -345,7 +354,7 @@ class SingleApp extends Component {
         if (error && error.failed) {
           Choerodon.prompt(error.message);
         } else {
-          store.loadInstanceAll(projectId, page, 10, null, envID, verId, appID);
+          store.loadInstanceAll(projectId, page, pageSize, null, envID, verId, appID);
         }
       });
   };
@@ -649,12 +658,13 @@ class SingleApp extends Component {
           <FormattedMessage id="ist.noAddEnv" />
         </div>
       </div>);
-    const param = store.getIstParams;
+    const { filters, param } = store.getIstParams;
 
     const columnApp = [{
       title: <FormattedMessage id="deploy.status" />,
       key: 'podCount',
       filters: [],
+      filteredValue: filters.podCount || [],
       render: record => (
         <div className="c7n-deploy-status">
           <svg className={record.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
@@ -680,6 +690,7 @@ class SingleApp extends Component {
       title: <FormattedMessage id="deploy.instance" />,
       key: 'code',
       filters: [],
+      filteredValue: filters.code || [],
       render: record => (record.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{record.code}</span> : <div>
         {record.commandStatus === 'doing' ? (<div>
           <span className="c7n-deploy-istCode">{record.code}</span>
@@ -698,6 +709,7 @@ class SingleApp extends Component {
       title: <FormattedMessage id="deploy.ver" />,
       key: 'appVersion',
       filters: [],
+      filteredValue: filters.appVersion || [],
       render: record => (
         <div>
           <span>{record.appVersion}</span>
@@ -714,6 +726,7 @@ class SingleApp extends Component {
       title: <FormattedMessage id="deploy.status" />,
       key: 'podCount',
       filters: [],
+      filteredValue: filters.podCount || [],
       render: record => (
         <div className="c7n-deploy-status">
           <svg className={record.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
@@ -739,6 +752,7 @@ class SingleApp extends Component {
       title: <FormattedMessage id="deploy.instance" />,
       key: 'code',
       filters: [],
+      filteredValue: filters.code || [],
       render: record => (record.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{record.code}</span> : <div>
         {record.commandStatus === 'doing' ? (<div>
           <span className="c7n-deploy-istCode">{record.code}</span>
