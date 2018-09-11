@@ -138,6 +138,10 @@ class DeploymentAppStore {
     return this.showArr.lastIndexOf(true) + 1;
   }
 
+  @computed get getValue() {
+    return this.value;
+  }
+
   handleProptError =(error) => {
     if (error && error.failed) {
       Choerodon.prompt(error.message);

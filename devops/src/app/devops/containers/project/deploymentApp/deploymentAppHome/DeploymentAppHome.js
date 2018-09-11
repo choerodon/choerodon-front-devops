@@ -80,17 +80,13 @@ class DeploymentAppHome extends Component {
     const { DeploymentAppStore } = this.props;
     const { appId, versionId, envId, mode } = this.state;
     this.setState({ current: index });
+    this.loadReview();
     if (index === 2 && appId && versionId && envId) {
-      this.setState({
-        changeYaml: false,
-        mode: 'new',
-      });
       DeploymentAppStore.setValue(null);
       DeploymentAppStore.loadValue(appId, versionId, envId)
         .then((data) => {
           this.setState({ errorLine: data.errorLines });
         });
-      this.handleSelectEnv(envId);
     }
   };
 
@@ -155,7 +151,7 @@ class DeploymentAppHome extends Component {
     const { DeploymentAppStore } = this.props;
     const envs = DeploymentAppStore.envs;
     const envDto = _.filter(envs, v => v.id === value)[0];
-    this.setState({ envId: value, envDto, value: null, yaml: null });
+    this.setState({ envId: value, envDto, value: null, yaml: null, changeYaml: false, mode: 'new' });
     const { appId, versionId } = this.state;
     DeploymentAppStore.setValue(null);
     this.setState({ value: null, markers: [] });
@@ -172,12 +168,13 @@ class DeploymentAppHome extends Component {
    */
   handleSelectVersion = (value) => {
     const { DeploymentAppStore } = this.props;
-    this.setState({ versionId: value });
     const versions = DeploymentAppStore.versions;
     const versionDto = _.filter(versions, v => v.id === value)[0];
-    this.setState({ versionDto });
     DeploymentAppStore.setValue(null);
-    this.setState({ value: null, markers: [] });
+    this.setState({ versionId: value, versionDto, value: null, markers: [] });
+    if (this.state.envId) {
+      this.handleSelectEnv(this.state.envId);
+    }
   };
 
   /**
@@ -194,7 +191,6 @@ class DeploymentAppHome extends Component {
   /**
    * 获取values
    * @param value
-   * @param markers
    */
   handleChangeValue = (value) => {
     const { DeploymentAppStore } = this.props;
@@ -242,6 +238,7 @@ class DeploymentAppHome extends Component {
       envId: undefined,
       envDto: null,
       value: null,
+      yaml: null,
       markers: [],
       mode: 'new',
       instanceId: undefined,
@@ -265,6 +262,7 @@ class DeploymentAppHome extends Component {
       envId: undefined,
       envDto: null,
       value: null,
+      yaml: null,
       markers: [],
       mode: 'new',
       instanceId: undefined,
@@ -320,7 +318,6 @@ class DeploymentAppHome extends Component {
         .then(data => data);
       this.setState({ yaml });
     }
-    this.changeStep(3);
   };
 
   /**
@@ -440,7 +437,7 @@ class DeploymentAppHome extends Component {
             errorLines={this.state.errorLine}
             errMessage={data.errorMsg}
             modifyMarkers={this.state.markers}
-            value={data.yaml}
+            value={this.state.value || data.yaml}
             highlightMarkers={data.highlightMarkers}
             onChange={this.handleChangeValue}
             change
@@ -450,7 +447,7 @@ class DeploymentAppHome extends Component {
           <Button
             type="primary"
             funcType="raised"
-            onClick={this.loadReview}
+            onClick={this.changeStep.bind(this, 3)}
             disabled={!(this.state.envId && (this.state.value || (data && data.yaml)) 
               && (this.state.errorLine
                 ? this.state.errorLine.length === 0 : (data && data.errorLines === null)))}
