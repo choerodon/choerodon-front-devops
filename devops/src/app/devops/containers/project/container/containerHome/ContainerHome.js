@@ -155,6 +155,7 @@ class ContainerHome extends Component {
   onTerminalReady() {
     this.io = this.term.io.push();
     this.onTerminalResponseReceived();
+    this.io.showOverlay(`${this.term.screenSize.width}x${this.term.screenSize.height}`);
   }
 
   /**
@@ -192,7 +193,12 @@ class ContainerHome extends Component {
    * Attached to SockJS.onclose
    */
   @action
-  onConnectionClose() {
+  onConnectionClose(evt) {
+    if (evt && evt.reason !== '' && evt.code < 1000) {
+      this.io.showOverlay(evt.reason, null);
+    } else {
+      this.io.showOverlay('Connection closed', null);
+    }
     this.conn.close();
     this.term.uninstallKeyboard();
     this.term.io.flush();
