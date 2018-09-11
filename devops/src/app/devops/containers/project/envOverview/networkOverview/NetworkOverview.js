@@ -70,6 +70,7 @@ class NetworkOverview extends Component {
       this.submitting = false;
       Choerodon.prompt(error);
     });
+    store.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
   };
 
   /**
@@ -94,9 +95,13 @@ class NetworkOverview extends Component {
    * 关闭侧边栏
    */
   @action
-  handleCancelFun = () => {
+  handleCancelFun = (isload) => {
     this.showEdit = false;
-    this.loadNetwork(this.props.envId);
+    if (isload) {
+      this.loadNetwork(this.props.envId);
+      const { store } = this.props;
+      store.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
+    }
   };
 
   /**
@@ -291,12 +296,14 @@ class NetworkOverview extends Component {
       searchParam,
       param: paras.toString(),
     };
+    store.setInfo({ filters, sort: sorter, paras });
     store.loadNetwork(id, envId, page, pagination.pageSize, sort, postData);
   };
 
   render() {
     const { store, intl } = this.props;
     const data = store.getNetwork;
+    const { filters, sort: { columnKey, order }, paras } = store.getInfo;
     const { type, id: projectId, organizationId: orgId } = AppState.currentMenuType;
     const columns = [{
       title: <FormattedMessage id="network.column.status" />,
@@ -307,18 +314,22 @@ class NetworkOverview extends Component {
       title: <FormattedMessage id="network.column.name" />,
       key: 'name',
       sorter: true,
+      sortOrder: columnKey === 'name' && order,
       filters: [],
+      filteredValue: filters.name || [],
       render: record => (<MouserOverWrapper text={record.name || ''} width={0.1} className="network-list-name">
         {record.name}</MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="network.target" />,
       key: 'target',
       filters: [],
+      filteredValue: filters.target || [],
       render: record => this.targetColumn(record),
     }, {
       title: <FormattedMessage id="network.config.column" />,
-      key: 'config',
+      key: 'type',
       filters: [],
+      filteredValue: filters.type || [],
       render: record => this.configColumn(record),
     }, {
       width: '82px',
@@ -334,6 +345,7 @@ class NetworkOverview extends Component {
         onChange={this.tableChange}
         dataSource={data}
         rowKey={record => record.id}
+        filters={paras}
       />
       {this.showEdit && <EditNetwork
         netId={this.id}

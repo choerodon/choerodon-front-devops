@@ -11,6 +11,7 @@ import '../../../main.scss';
 
 const { AppState } = stores;
 const { Option } = Select;
+const height = window.screen.height;
 
 @observer
 class ApplicationVersion extends Component {
@@ -19,7 +20,7 @@ class ApplicationVersion extends Component {
     const menu = AppState.currentMenuType;
     this.state = {
       page: 0,
-      pageSize: 10,
+      pageSize: height <= 900 ? 10 : 15,
       param: [],
       filters: {},
       postData: { searchParam: {}, param: '' },
@@ -43,7 +44,15 @@ class ApplicationVersion extends Component {
    * 选择应用
    * @param e
    */
-  handleAppSelect = e => this.setState({ appId: e }, () => this.loadAllData());
+  handleAppSelect = e => this.setState({
+    appId: e,
+    param: [],
+    filters: {},
+    sorter: {
+      filed: 'id',
+      columnKey: 'id',
+      order: 'descend',
+    } }, () => this.loadAllData());
 
   tableChange = (pagination, filters, sorter, paras) => {
     const { current, pageSize } = pagination;
@@ -65,7 +74,7 @@ class ApplicationVersion extends Component {
       searchParam,
       param,
     };
-    this.setState({ page, pageSize, filters, postData, sorter: sort });
+    this.setState({ page, pageSize, filters, postData, sorter: sort, param: paras });
     this.loadAllData(page, pageSize, sort, postData);
   };
 
@@ -77,7 +86,7 @@ class ApplicationVersion extends Component {
     this.loadAllData(page, pageSize, sorter, postData);
   };
 
-  loadAllData = (page = 0, sizes = 10, sort = { field: 'id', order: 'descend' }, filter = { searchParam: {}, param: '' }) => {
+  loadAllData = (page = 0, sizes = this.state.pageSize, sort = { field: 'id', order: 'descend' }, filter = { searchParam: {}, param: '' }) => {
     const { AppVersionStore } = this.props;
     const { appId } = this.state;
     const { id: projectId } = AppState.currentMenuType;
@@ -124,6 +133,7 @@ class ApplicationVersion extends Component {
       dataIndex: 'creationDate',
       key: 'creationDate',
       sorter: true,
+      sortOrder: columnKey === 'creationDate' && order,
       render: (text, record) => <TimePopover content={record.creationDate} />,
     }];
 

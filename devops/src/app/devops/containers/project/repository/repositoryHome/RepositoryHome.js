@@ -31,7 +31,7 @@ class RepositoryHome extends Component {
       filters: {},
       sort: {
         columnKey: 'id',
-        order: 'desc',
+        order: 'descend',
       },
     };
   }
@@ -72,7 +72,7 @@ class RepositoryHome extends Component {
    * @param sorter
    * @param search
    */
-  loadRepoData = (page = 0, pageSize = 10, sorter = {}, search = { searchParam: {}, param: '' }) => {
+  loadRepoData = (page = 0, pageSize, sorter = {}, search = { searchParam: {}, param: '' }) => {
     const { RepositoryStore } = this.props;
     const { projectId } = this.state;
     RepositoryStore.queryRepoData(projectId, page, pageSize, sorter, search);
@@ -82,15 +82,18 @@ class RepositoryHome extends Component {
    * 页面刷新
    */
   handleRefresh = () => {
-    this.setState({
-      param: [],
-      sort: {
-        columnKey: 'id',
-        order: 'desc',
-      },
-      filters: {},
-    });
-    this.loadRepoData();
+    // this.setState({
+    //   param: [],
+    //   sort: {
+    //     columnKey: 'id',
+    //     order: 'desc',
+    //   },
+    //   filters: {},
+    // });
+    const { RepositoryStore } = this.props;
+    const { param, sort, filters } = this.state;
+    const pageInfos = RepositoryStore.getPageInfo;
+    this.tableChange(pageInfos, filters, sort, param);
   };
 
   /**

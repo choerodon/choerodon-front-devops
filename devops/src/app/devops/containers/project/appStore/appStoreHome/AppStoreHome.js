@@ -205,6 +205,10 @@ class AppStoreHome extends Component {
       dataIndex: 'name',
       key: 'name',
     }, {
+      title: <FormattedMessage id="app.code" />,
+      dataIndex: 'code',
+      key: 'code',
+    }, {
       title: <FormattedMessage id="appstore.category" />,
       dataIndex: 'category',
       key: 'category',

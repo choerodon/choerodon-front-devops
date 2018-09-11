@@ -26,6 +26,10 @@ class EnvOverviewStore {
     current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
   };
 
+  @observable Info = {
+    filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+  };
+
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
     this.pageInfo.total = page.totalElements;
@@ -72,6 +76,10 @@ class EnvOverviewStore {
     this.tpEnvId = tpEnvId;
   }
 
+  @action setInfo(Info) {
+    this.Info = Info;
+  }
+
   @computed get getTpEnvId() {
     return this.tpEnvId;
   }
@@ -98,6 +106,10 @@ class EnvOverviewStore {
 
   @computed get getNetwork() {
     return this.network;
+  }
+
+  @computed get getInfo() {
+    return this.Info;
   }
 
   @action
@@ -146,9 +158,9 @@ class EnvOverviewStore {
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
-          this.setDomin(data.content);
           const { number, size, totalElements } = data;
           this.setPageInfo({ number, size, totalElements });
+          this.setDomin(data.content);
         }
         this.changeLoading(false);
       });
@@ -163,9 +175,9 @@ class EnvOverviewStore {
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
-          this.setNetwork(data.content);
           const { number, size, totalElements } = data;
           this.setPageInfo({ number, size, totalElements });
+          this.setNetwork(data.content);
         }
         this.changeLoading(false);
       });
@@ -177,9 +189,9 @@ class EnvOverviewStore {
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {
-          this.setLog(data.content);
           const { number, size, totalElements } = data;
           this.setPageInfo({ number, size, totalElements });
+          this.setLog(data.content);
         }
         this.changeLoading(false);
       });

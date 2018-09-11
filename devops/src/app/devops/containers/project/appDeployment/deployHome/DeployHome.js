@@ -15,12 +15,14 @@ import AppStoreStore from '../../../../stores/project/appStore';
 
 const ButtonGroup = Button.Group;
 const { AppState } = stores;
+const height = window.screen.height;
 
 @observer
 class DeployHome extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
+      pageSize: height <= 900 ? 10 : 15,
     };
   }
 
@@ -42,9 +44,49 @@ class DeployHome extends Component {
    */
   reload = () => {
     const { AppDeploymentStore } = this.props;
-    const tabActive = AppDeploymentStore.getTabActive;
-    this.changeTabs(tabActive);
-    AppDeploymentStore.setIstTableFilter(null);
+    const projectId = AppState.currentMenuType.id;
+    const tabName = AppDeploymentStore.getTabActive;
+    const { pageSize } = this.state;
+    const { filters, param } = AppDeploymentStore.getIstParams;
+    const pageInfo = AppDeploymentStore.getPageInfo;
+    let searchParam = {};
+    if (Object.keys(filters).length) {
+      searchParam = filters;
+    }
+    const postData = {
+      searchParam,
+      param: param.toString(),
+    };
+    if (tabName === 'singleApp') {
+      this.loadEnvCards();
+      this.loadAppName();
+      const appNames = AppDeploymentStore.getAppNames;
+      if (appNames.length) {
+        const appId = AppDeploymentStore.appId || appNames[0].id;
+        const envNames = AppDeploymentStore.getEnvcard;
+        const envID = envNames.length ? envNames[0].id : null;
+        const verID = AppDeploymentStore.getVerId;
+        if (envID) {
+          AppDeploymentStore.loadInstanceAll(projectId, pageInfo.current - 1, pageInfo.pageSize, null, envID, verID, appId, postData);
+        }
+        AppDeploymentStore.loadAppVersion(projectId, appId);
+      }
+    } else if (tabName === 'multiApp') {
+      this.loadEnvCards();
+      this.loadMuti();
+    } else if (tabName === 'instance') {
+      AppDeploymentStore.loadInstanceAll(projectId, pageInfo.current - 1, pageInfo.pageSize, null, null, null, null, postData);
+    } else if (tabName === 'singleEnv') {
+      const envNames = AppDeploymentStore.getEnvcard;
+      AppDeploymentStore.setAppId(false);
+      if (envNames.length) {
+        const envId = AppDeploymentStore.envId || envNames[0].id;
+        const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
+        AppDeploymentStore.setAppPageSize(appPageSize);
+        AppDeploymentStore.loadInstanceAll(projectId, 0, pageSize, null, envId, null, null, postData);
+        AppDeploymentStore.loadAppNameByEnv(projectId, envId, 0, appPageSize);
+      }
+    }
   };
 
   /**
@@ -89,11 +131,12 @@ class DeployHome extends Component {
    */
   loadSingleEnv = (envId) => {
     const { AppDeploymentStore } = this.props;
+    const { pageSize } = this.state;
     const menu = JSON.parse(sessionStorage.selectData);
     const projectId = menu.id;
     const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
     AppDeploymentStore.setAppPageSize(appPageSize);
-    AppDeploymentStore.loadInstanceAll(projectId, 0, 10, null, envId);
+    AppDeploymentStore.loadInstanceAll(projectId, 0, pageSize, null, envId);
     AppDeploymentStore.loadAppNameByEnv(projectId, envId, 0, appPageSize);
   };
 
@@ -120,8 +163,9 @@ class DeployHome extends Component {
    */
   loadInstance = (envId, verId, appId) => {
     const { AppDeploymentStore } = this.props;
+    const { pageSize } = this.state;
     const projectId = AppState.currentMenuType.id;
-    AppDeploymentStore.loadInstanceAll(projectId, 0, 10, null, envId, verId, appId);
+    AppDeploymentStore.loadInstanceAll(projectId, 0, pageSize, null, envId, verId, appId);
   };
 
   /**

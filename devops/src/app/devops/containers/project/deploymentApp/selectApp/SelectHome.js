@@ -263,18 +263,18 @@ class DeployAppHome extends Component {
     if (activeTab === '1') {
       SelectAppStore.loadData({
         projectId: organizationId,
-        sorter: sort,
+        sort,
         postData,
         page,
-        pageSize: pagination.pageSize,
+        size: pagination.pageSize,
       });
     } else {
       SelectAppStore.loadApps({
         projectId: organizationId,
-        sorter: sort,
+        sort,
         postData,
         page,
-        pageSize: pagination.pageSize,
+        size: pagination.pageSize,
       });
     }
   };

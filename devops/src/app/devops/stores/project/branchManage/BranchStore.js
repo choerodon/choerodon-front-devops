@@ -3,6 +3,7 @@ import { axios, store, stores } from 'choerodon-front-boot';
 import { handleProptError } from '../../../utils';
 
 const { AppState } = stores;
+const height = window.screen.height;
 
 @store('BranchStore')
 class BranchStore {
@@ -41,7 +42,7 @@ class BranchStore {
   @observable pageInfo = {
     current: 1,
     total: 0,
-    pageSize: 10,
+    pageSize: height <= 900 ? 10 : 15,
   };
 
   @action setPageInfo(page) {
@@ -216,7 +217,7 @@ class BranchStore {
    * @param sort
    * @param postData
    */
-  loadBranchList = ({ projectId, page = this.pageInfo.current - 1, size = 10, sort = { field: 'creationDate', order: 'asc' }, postData = { searchParam: {},
+  loadBranchList = ({ projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'creationDate', order: 'asc' }, postData = { searchParam: {},
     param: '' } }) => {
     if (this.app) {
       this.changeLoading(true);
