@@ -165,7 +165,7 @@ class ContainerHome extends Component {
   onTerminalResponseReceived() {
     const { namespace, envId, logId, podName, containerName } = this.state;
     const authToken = document.cookie.split('=')[1];
-    this.conn = new WebSocket(`ws://devops-service-front.staging.saas.hand-china.com/ws/exec?key=env:${namespace}.envId:${envId}.exec:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
+    this.conn = new WebSocket(`POD_WEBSOCKET_URL/ws/exec?key=env:${namespace}.envId:${envId}.exec:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
     this.conn.onopen = this.onConnectionOpen.bind(this);
     this.conn.onmessage = this.onConnectionMessage.bind(this);
     this.conn.onclose = this.onConnectionClose.bind(this);
