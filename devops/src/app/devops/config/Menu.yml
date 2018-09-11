@@ -46,12 +46,6 @@
           - 'devops-service.application-market.importApps'
           - 'devops-service.application-market.deleteZip'
           - 'devops-service.application-market.queryAppVersionReadme'
-    - "reports":
-        icon: application_model
-        Routes: /devops/reports
-        sort: 6
-        permission:
-          - 'devops-service.application.pageByOptions'
 "development-pipeline":
   icon: wrench
   sort: 2
