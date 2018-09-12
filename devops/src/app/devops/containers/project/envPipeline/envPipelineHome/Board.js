@@ -45,7 +45,7 @@ class Board extends Component {
     EnvPipelineStore.setGroupOne({ id, name });
   };
 
-  pushScrollRight = () => {
+  pushScrollRight = (Title) => {
     const { moveRight } = this.state;
     scrollLeft -= 300;
     if (scrollLeft < 0) {
@@ -55,11 +55,11 @@ class Board extends Component {
       move: false,
       moveRight: moveRight - 300,
     });
-    document.getElementsByClassName('c7n-inner-container')[0].scroll({ left: scrollLeft, behavior: 'smooth' });
+    document.getElementById(Title || 'none').scroll({ left: scrollLeft, behavior: 'smooth' });
   };
 
-  pushScrollLeft = () => {
-    const domPosition = document.getElementsByClassName('c7n-inner-container')[0].scrollLeft;
+  pushScrollLeft = (Title) => {
+    const domPosition = document.getElementById(Title || 'none').scrollLeft;
     this.setState({
       moveRight: domPosition,
     });
@@ -73,7 +73,7 @@ class Board extends Component {
         move: false,
       });
     }
-    document.getElementsByClassName('c7n-inner-container')[0].scroll({ left: scrollLeft + 300, behavior: 'smooth' });
+    document.getElementById(Title || 'none').scroll({ left: scrollLeft + 300, behavior: 'smooth' });
     scrollLeft += 300;
   };
 
@@ -132,7 +132,7 @@ class Board extends Component {
     return (
       <div className={outerContainer}>
         {scrollLeft !== 0
-          ? <div role="none" className="c7n-push-left icon icon-navigate_before" style={Title && { top: 90 }} onClick={this.pushScrollRight} />
+          ? <div role="none" className="c7n-push-left icon icon-navigate_before" style={Title && { top: 90 }} onClick={this.pushScrollRight.bind(this, Title)} />
           : ''}
         {Title ? (<div className="c7n-env-group-wrap">
           <div
@@ -173,7 +173,7 @@ class Board extends Component {
             </Tooltip>
           </Permission>
         </div>) : null}
-        <div className={innerContainer}>
+        <div className={innerContainer} id={Title || 'none'}>
           <div className={envBoard}>
             {squares.length ? squares : (<div className="c7n-env-card c7n-env-card-ban">
               <div className="c7n-env-card-header">
@@ -193,7 +193,7 @@ class Board extends Component {
             </div>)}
           </div>
         </div>
-        {this.state.move ? '' : <div role="none" className={rightStyle} style={Title && { top: 90 }} onClick={this.pushScrollLeft} />}
+        {this.state.move ? '' : <div role="none" className={rightStyle} style={Title && { top: 90 }} onClick={this.pushScrollLeft.bind(this, Title)} />}
       </div>
     );
   }
