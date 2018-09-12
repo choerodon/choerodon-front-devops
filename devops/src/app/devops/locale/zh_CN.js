@@ -257,6 +257,7 @@ const zhCN = {
   // ist
   ist_stop: '停止中',
   ist_sync: '同步中',
+  ist_operating: '处理中',
   ist_update: '更新中',
   ist_delete: '删除中',
   ist_create: '创建中',

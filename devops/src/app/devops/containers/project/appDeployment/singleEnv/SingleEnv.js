@@ -497,30 +497,20 @@ class SingleEnvironment extends Component {
         </div>
       ),
     }, {
-      title: <FormattedMessage id="deploy.istStatus" />,
-      key: 'status',
-      render: record => (
-        <div>
-          <div className={`c7n-ist-status c7n-ist-status_${record.status}`}>
-            <div>{intl.formatMessage({ id: record.status || 'null' })}</div>
-          </div>
-        </div>
-      ),
-    }, {
       title: <FormattedMessage id="deploy.instance" />,
       key: 'code',
       filters: [],
       filteredValue: filters.code || [],
-      render: record => (record.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{record.code}</span> : <div>
-        {record.commandStatus === 'doing' ? (<div>
+      render: record => ((record.status === 'running' || record.status === 'stopped') ? <span className="c7n-deploy-istCode">{record.code}</span> : <div>
+        {record.status === 'operating' ? (<div>
           <span className="c7n-deploy-istCode">{record.code}</span>
-          <Tooltip title={intl.formatMessage({ id: `ist_${record.commandType}` })}>
-            <Progress type="loading" width="15px" />
+          <Tooltip title={intl.formatMessage({ id: `ist_${record.status}` })}>
+            <Progress type="loading" width={15} />
           </Tooltip>
         </div>)
           : (<div>
             <span className="c7n-deploy-istCode">{record.code}</span>
-            <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
+            <Tooltip title={`${record.status}: ${record.error}`}>
               <i className="icon icon-error c7n-deploy-ist-operate" />
             </Tooltip>
           </div>)}

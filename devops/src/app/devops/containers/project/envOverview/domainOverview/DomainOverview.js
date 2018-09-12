@@ -158,29 +158,6 @@ class DomainOverview extends Component {
     const projectName = menu.name;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
-      key: 'status',
-      title: intl.formatMessage({ id: 'domain.column.status' }),
-      render: (record) => {
-        let statusDom = null;
-        switch (record.status) {
-          case 'failed':
-            statusDom = (<div className="c7n-domain-status c7n-domain-status-failed">
-              <div>{intl.formatMessage({ id: 'create.failed' })}</div>
-            </div>);
-            break;
-          case 'operating':
-            statusDom = (<div className="c7n-domain-status c7n-domain-status-operating">
-              <div>{intl.formatMessage({ id: 'operating' })}</div>
-            </div>);
-            break;
-          default:
-            statusDom = (<div className="c7n-domain-status c7n-domain-status-running">
-              <div>{intl.formatMessage({ id: 'running' })}</div>
-            </div>);
-        }
-        return (statusDom);
-      },
-    }, {
       title: intl.formatMessage({ id: 'domain.column.name' }),
       key: 'name',
       sorter: true,
@@ -189,15 +166,15 @@ class DomainOverview extends Component {
       filteredValue: filters.name || [],
       render: (record) => {
         let statusDom = null;
-        switch (record.commandStatus) {
+        switch (record.status) {
           case 'failed':
-            statusDom = (<Tooltip title={record.error}>
+            statusDom = (<Tooltip title={`${record.status}: ${record.error}`}>
               <i className="icon icon-error c7n-status-failed" />
             </Tooltip>);
             break;
-          case 'doing':
-            statusDom = (<Tooltip title={intl.formatMessage({ id: `ist_${record.commandType}` })}>
-              <Progress type="loading" width={15} style={{ marginRight: 5 }} />
+          case 'operating':
+            statusDom = (<Tooltip title={intl.formatMessage({ id: `ist_${record.status}` })}>
+              <Progress type="loading" width={15} style={{ marginLeft: 5 }} />
             </Tooltip>);
             break;
           default:

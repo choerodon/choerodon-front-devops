@@ -458,26 +458,23 @@ class AppOverview extends Component {
           >
             {_.map(i.applicationInstanceDTOS, c => (
               <Panel
-                disabled={c.status !== 'running' || c.commandStatus === 'doing'}
+                disabled={c.status !== 'running'}
                 forceRender
                 showArrow={false}
                 header={(<div className="c7n-envow-ist-header-wrap">
                   <Icon type="navigate_next" />
                   <div className="c7n-envow-ist-name">
-                    <div className={`c7n-ist-status c7n-ist-status_${c.status}`}>
-                      <div>{intl.formatMessage({ id: c.status || 'null' })}</div>
-                    </div>
-                    {c.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{c.code}</span> : <div className="c7n-envow-ist-fail">
-                      {c.commandStatus === 'doing' ? (<div>
+                    {(c.status === 'running' || c.status === 'stopped') ? <span className="c7n-deploy-istCode">{c.code}</span> : <div className="c7n-envow-ist-fail">
+                      {c.status === 'operating' ? (<div>
                         <span className="c7n-deploy-istCode">{c.code}</span>
-                        <Tooltip title={intl.formatMessage({ id: `ist_${c.commandType}` })}>
+                        <Tooltip title={intl.formatMessage({ id: `ist_${c.status}` })}>
                           <Progress type="loading" width={15} />
                         </Tooltip>
 
                       </div>)
                         : (<div>
                           <span className="c7n-deploy-istCode">{c.code}</span>
-                          <Tooltip title={`${c.commandType} ${c.commandStatus}: ${c.error}`}>
+                          <Tooltip title={`${c.status}: ${c.error}`}>
                             <i className="icon icon-error c7n-deploy-ist-operate" />
                           </Tooltip>
                         </div>)}
