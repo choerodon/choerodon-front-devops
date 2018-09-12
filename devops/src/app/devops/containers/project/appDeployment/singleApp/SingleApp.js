@@ -125,9 +125,8 @@ class SingleApp extends Component {
    */
   loadInstance = (envId, verId, appId) => {
     const { store } = this.props;
-    const { pageSize } = this.state;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    store.loadInstanceAll(projectId, 0, pageSize, null, envId, verId, appId);
+    store.loadInstanceAll(projectId, { envId, versionId: verId, appId });
   };
 
   /**
@@ -193,8 +192,7 @@ class SingleApp extends Component {
       param: param.toString(),
     };
     this.setState({ page: pagination.current - 1 });
-    store.loadInstanceAll(projectId, pagination.current - 1,
-      pagination.pageSize, sort, envID, verId, appID, postData);
+    store.loadInstanceAll(projectId, { page: pagination.current - 1, size: pagination.pageSize, envId: envID, versionId: verId, appId: appID, datas: postData });
     store.setIstTableFilter({ filters, param });
   };
 
@@ -281,7 +279,7 @@ class SingleApp extends Component {
       visible: false,
     });
     if (res) {
-      store.loadInstanceAll(projectId, page, pageSize, null, envID, verId, appID);
+      store.loadInstanceAll(projectId, { envId: envID, versionId: verId, appId: appID });
       store.setIstTableFilter(null);
     }
   };
@@ -297,7 +295,7 @@ class SingleApp extends Component {
       visibleUp: false,
     });
     if (res) {
-      store.loadInstanceAll(projectId, this.state.page);
+      store.loadInstanceAll(projectId);
       store.setIstTableFilter(null);
     }
   };
@@ -329,7 +327,7 @@ class SingleApp extends Component {
             openRemove: false,
             loading: false,
           });
-          store.loadInstanceAll(projectId, page, pageSize, null, envID, verId, appID);
+          store.loadInstanceAll(projectId, { envId: envID, versionId: verId, appId: appID });
         }
       });
     store.setIstTableFilter(null);
@@ -354,7 +352,7 @@ class SingleApp extends Component {
         if (error && error.failed) {
           Choerodon.prompt(error.message);
         } else {
-          store.loadInstanceAll(projectId, page, pageSize, null, envID, verId, appID);
+          store.loadInstanceAll(projectId, { page, pageSize, envId: envID, versionId: verId, appId: appID });
         }
       });
   };

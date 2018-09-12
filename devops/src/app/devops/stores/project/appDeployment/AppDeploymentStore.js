@@ -1,5 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
+import _ from 'lodash';
 
 const height = window.screen.height;
 @store('AppDeploymentStore')
@@ -230,48 +231,26 @@ class AppDeploymentStore {
     this.alertType = data;
   }
 
-  loadInstanceAll = (projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sorter = { id: 'asc' }, envId, versionId, appId, datas = {
-    searchParam: {},
-    param: '',
-  }) => {
+  loadInstanceAll = (projectId, Info = {}) => {
     this.changeLoading(true);
-    if (versionId && appId && envId) {
-      return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?versionId=${versionId}&envId=${envId}&appId=${appId}&page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else {
-          this.handleData(data);
-          this.changeLoading(false);
-        }
-      });
-    } else if (appId && envId) {
-      return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?envId=${envId}&appId=${appId}&page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else {
-          this.handleData(data);
-          this.changeLoading(false);
-        }
-      });
-    } else if (envId) {
-      return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?envId=${envId}&page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else {
-          this.handleData(data);
-          this.changeLoading(false);
-        }
-      });
-    } else {
-      return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page}&size=${size}`, JSON.stringify(datas)).then((data) => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else {
-          this.handleData(data);
-          this.changeLoading(false);
-        }
-      });
-    }
+    Info.page = Info.page ? Info.page : 0;
+    Info.size = Info.size ? Info.size : this.pageInfo.pageSize;
+    Info.datas = Info.datas ? Info.datas : { searchParam: {}, param: '' };
+    let url = '';
+    _.forEach(Info, (value, key) => {
+      if (key !== 'datas' && value) {
+        url = `${url}&${key}=${value}`;
+      }
+    });
+    url = _.replace(url, '&', '?');
+    return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options${url}`, JSON.stringify(Info.datas)).then((data) => {
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.handleData(data);
+        this.changeLoading(false);
+      }
+    });
   };
 
   handleData =(data) => {

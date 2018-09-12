@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { Button } from 'choerodon-ui';
 import { Content, Header, Page, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import _ from 'lodash';
 import SingleApp from '../singleApp';
 import SingleEnv from '../singleEnv';
 import AppInstance from '../appInstance';
@@ -44,11 +45,8 @@ class DeployHome extends Component {
    */
   reload = () => {
     const { AppDeploymentStore } = this.props;
-    const projectId = AppState.currentMenuType.id;
     const tabName = AppDeploymentStore.getTabActive;
-    const { pageSize } = this.state;
     const { filters, param } = AppDeploymentStore.getIstParams;
-    const pageInfo = AppDeploymentStore.getPageInfo;
     let searchParam = {};
     if (Object.keys(filters).length) {
       searchParam = filters;
@@ -57,36 +55,8 @@ class DeployHome extends Component {
       searchParam,
       param: param.toString(),
     };
-    if (tabName === 'singleApp') {
-      this.loadEnvCards();
-      this.loadAppName();
-      const appNames = AppDeploymentStore.getAppNames;
-      if (appNames.length) {
-        const appId = AppDeploymentStore.appId || appNames[0].id;
-        const envNames = AppDeploymentStore.getEnvcard;
-        const envID = envNames.length ? envNames[0].id : null;
-        const verID = AppDeploymentStore.getVerId;
-        if (envID) {
-          AppDeploymentStore.loadInstanceAll(projectId, pageInfo.current - 1, pageInfo.pageSize, null, envID, verID, appId, postData);
-        }
-        AppDeploymentStore.loadAppVersion(projectId, appId);
-      }
-    } else if (tabName === 'multiApp') {
-      this.loadEnvCards();
-      this.loadMuti();
-    } else if (tabName === 'instance') {
-      AppDeploymentStore.loadInstanceAll(projectId, pageInfo.current - 1, pageInfo.pageSize, null, null, null, null, postData);
-    } else if (tabName === 'singleEnv') {
-      const envNames = AppDeploymentStore.getEnvcard;
-      AppDeploymentStore.setAppId(false);
-      if (envNames.length) {
-        const envId = AppDeploymentStore.envId || envNames[0].id;
-        const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
-        AppDeploymentStore.setAppPageSize(appPageSize);
-        AppDeploymentStore.loadInstanceAll(projectId, 0, pageSize, null, envId, null, null, postData);
-        AppDeploymentStore.loadAppNameByEnv(projectId, envId, 0, appPageSize);
-      }
-    }
+    const pageInfo = AppDeploymentStore.getPageInfo;
+    this.changeTabs(tabName, { page: pageInfo.current - 1, size: pageInfo.pageSize, datas: postData });
   };
 
   /**
@@ -101,10 +71,10 @@ class DeployHome extends Component {
   /**
    * 加载部署实例
    */
-  loadIstAlls = (pages = 0) => {
+  loadIstAlls = (pages = 0, Info = {}) => {
     const { AppDeploymentStore } = this.props;
     const projectId = AppState.currentMenuType.id;
-    AppDeploymentStore.loadInstanceAll(projectId, pages);
+    AppDeploymentStore.loadInstanceAll(projectId, Info);
   };
 
   /**
@@ -129,28 +99,29 @@ class DeployHome extends Component {
    * 查询应用标签及实例列表
    * @param envId
    */
-  loadSingleEnv = (envId) => {
+  loadSingleEnv = (envId, Info = {}) => {
     const { AppDeploymentStore } = this.props;
     const { pageSize } = this.state;
     const menu = JSON.parse(sessionStorage.selectData);
     const projectId = menu.id;
     const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
+    Info.envId = envId;
     AppDeploymentStore.setAppPageSize(appPageSize);
-    AppDeploymentStore.loadInstanceAll(projectId, 0, pageSize, null, envId);
+    AppDeploymentStore.loadInstanceAll(projectId, Info);
     AppDeploymentStore.loadAppNameByEnv(projectId, envId, 0, appPageSize);
   };
 
   /**
    * 获取应用版本
    */
-  loadAppVer = (id) => {
+  loadAppVer = (id, Info = {}) => {
     const { AppDeploymentStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     const envNames = AppDeploymentStore.getEnvcard;
     const envID = envNames.length ? envNames[0].id : null;
     const verID = AppDeploymentStore.getVerId;
     if (envID) {
-      this.loadInstance(envID, verID, id);
+      this.loadInstance(envID, verID, id, Info);
     }
     AppDeploymentStore.loadAppVersion(projectId, id);
   };
@@ -161,39 +132,44 @@ class DeployHome extends Component {
    * @param verId 版本id
    * @param appId 应用id
    */
-  loadInstance = (envId, verId, appId) => {
+  loadInstance = (envId, verId, appId, Info) => {
     const { AppDeploymentStore } = this.props;
     const { pageSize } = this.state;
     const projectId = AppState.currentMenuType.id;
-    AppDeploymentStore.loadInstanceAll(projectId, 0, pageSize, null, envId, verId, appId);
+    Info.envId = envId;
+    Info.verId = verId;
+    Info.appId = appId;
+    AppDeploymentStore.loadInstanceAll(projectId, Info);
   };
 
   /**
    * 切换子页面
    * @param tabName 子页面标识
    */
-  changeTabs = (tabName) => {
+  changeTabs = (tabName, Info) => {
     const { AppDeploymentStore } = this.props;
     AppDeploymentStore.setTabActive(tabName);
     // 设定只要切换tab页就清空筛选条件
-    AppDeploymentStore.setIstTableFilter(null);
+    if (_.isEmpty(Info)) {
+      AppDeploymentStore.setIstTableFilter(null);
+    }
     if (tabName === 'singleApp') {
       this.loadEnvCards();
       this.loadAppName();
       const appNames = AppDeploymentStore.getAppNames;
       if (appNames.length) {
-        this.loadAppVer(AppDeploymentStore.appId || appNames[0].id);
+        this.loadAppVer(AppDeploymentStore.appId || appNames[0].id, Info);
       }
     } else if (tabName === 'multiApp') {
       this.loadEnvCards();
       this.loadMuti();
     } else if (tabName === 'instance') {
-      this.loadIstAlls();
+      this.loadIstAlls(0, Info);
     } else if (tabName === 'singleEnv') {
       const envNames = AppDeploymentStore.getEnvcard;
       AppDeploymentStore.setAppId(false);
       if (envNames.length) {
-        this.loadSingleEnv(AppDeploymentStore.envId || envNames[0].id);
+        this.loadSingleEnv(AppDeploymentStore.envId || envNames[0].id, Info);
       }
     }
   };
@@ -263,28 +239,28 @@ class DeployHome extends Component {
               <Button
                 funcType="flat"
                 className={tabActive === 'instance' ? 'c7n-tab-active' : ''}
-                onClick={this.changeTabs.bind(this, 'instance')}
+                onClick={this.changeTabs.bind(this, 'instance', {})}
               >
                 <FormattedMessage id="ist.instance" />
               </Button>
               <Button
                 funcType="flat"
                 className={tabActive === 'singleEnv' ? 'c7n-tab-active' : ''}
-                onClick={this.changeTabs.bind(this, 'singleEnv')}
+                onClick={this.changeTabs.bind(this, 'singleEnv', {})}
               >
                 <FormattedMessage id="ist.singleEnv" />
               </Button>
               <Button
                 funcType="flat"
                 className={tabActive === 'singleApp' ? 'c7n-tab-active' : ''}
-                onClick={this.changeTabs.bind(this, 'singleApp')}
+                onClick={this.changeTabs.bind(this, 'singleApp', {})}
               >
                 <FormattedMessage id="ist.singleApp" />
               </Button>
               <Button
                 funcType="flat"
                 className={tabActive === 'multiApp' ? 'c7n-tab-active' : ''}
-                onClick={this.changeTabs.bind(this, 'multiApp')}
+                onClick={this.changeTabs.bind(this, 'multiApp', {})}
               >
                 <FormattedMessage id="ist.multiApp" />
               </Button>

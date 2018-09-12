@@ -23,7 +23,6 @@ class AppInstance extends Component {
       visibleUp: false,
       openRemove: false,
       loading: false,
-      page: 0,
       name: '',
     };
   }
@@ -142,7 +141,7 @@ class AppInstance extends Component {
         if (error && error.failed) {
           Choerodon.prompt(error.message);
         } else {
-          store.loadInstanceAll(projectId, this.state.page);
+          store.loadInstanceAll(projectId);
         }
       });
   };
@@ -170,9 +169,7 @@ class AppInstance extends Component {
       searchParam,
       param: param.toString(),
     };
-    this.setState({ page: pagination.current - 1 });
-    store.loadInstanceAll(projectId, pagination.current - 1, pagination.pageSize, sort,
-      null, null, null, postData);
+    store.loadInstanceAll(projectId, { page: pagination.current - 1, size: pagination.pageSize, datas: postData });
     store.setIstTableFilter({ filters, param });
   };
 
@@ -187,7 +184,7 @@ class AppInstance extends Component {
       visible: false,
     });
     if (res) {
-      store.loadInstanceAll(projectId, this.state.page);
+      store.loadInstanceAll(projectId);
       store.setIstTableFilter(null);
     }
   };
@@ -203,7 +200,7 @@ class AppInstance extends Component {
       visibleUp: false,
     });
     if (res) {
-      store.loadInstanceAll(projectId, this.state.page);
+      store.loadInstanceAll(projectId);
       store.setIstTableFilter(null);
     }
   };
@@ -226,7 +223,7 @@ class AppInstance extends Component {
             openRemove: false,
             loading: false,
           });
-          store.loadInstanceAll(projectId, this.state.page);
+          store.loadInstanceAll(projectId);
         }
       });
     store.setIstTableFilter(null);

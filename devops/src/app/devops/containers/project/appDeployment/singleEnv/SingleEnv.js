@@ -123,7 +123,7 @@ class SingleEnvironment extends Component {
       envId: envID,
     });
     store.setEnvId(envID);
-    store.loadInstanceAll(projectId, 0, pageSize, null, envID, null, appId);
+    store.loadInstanceAll(projectId, { envId: envID, appId });
     store.loadAppNameByEnv(projectId, envID, store.appPage - 1, store.appPageSize);
     store.setIstTableFilter(null);
   };
@@ -138,7 +138,7 @@ class SingleEnvironment extends Component {
     const { store } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const { pageSize } = this.state;
-    store.loadInstanceAll(projectId, 0, pageSize, null, envId, verId, appId);
+    store.loadInstanceAll(projectId, { envId, versionId: verId, appId });
   };
 
   /**
@@ -168,8 +168,7 @@ class SingleEnvironment extends Component {
       param: param.toString(),
     };
     this.setState({ page: pagination.current - 1, pageSize: pagination.pageSize });
-    store.loadInstanceAll(projectId, pagination.current - 1,
-      pagination.pageSize, sort, envID, verId, appId, postData);
+    store.loadInstanceAll(projectId, { page: pagination.current - 1, size: pagination.pageSize, envId: envID, versionId: verId, appId, datas: postData });
     store.setIstTableFilter({ filters, param });
   };
 
@@ -255,7 +254,7 @@ class SingleEnvironment extends Component {
       visible: false,
     });
     if (res) {
-      store.loadInstanceAll(projectId, page, pageSize, null, envID, null, appId);
+      store.loadInstanceAll(projectId, { envId: envID, appId });
       store.setIstTableFilter(null);
     }
   };
@@ -271,7 +270,7 @@ class SingleEnvironment extends Component {
       visibleUp: false,
     });
     if (res) {
-      store.loadInstanceAll(projectId, this.state.page);
+      store.loadInstanceAll(projectId);
       store.setIstTableFilter(null);
     }
   };
@@ -301,7 +300,7 @@ class SingleEnvironment extends Component {
             openRemove: false,
             loading: false,
           });
-          store.loadInstanceAll(projectId, page, 10, null, envID, null, appId);
+          store.loadInstanceAll(projectId, { envId: envID, appId });
         }
       });
     store.setIstTableFilter(null);
@@ -324,7 +323,7 @@ class SingleEnvironment extends Component {
         if (error && error.failed) {
           Choerodon.prompt(error.message);
         } else {
-          store.loadInstanceAll(projectId, page, pageSize, null, envID, null, appId);
+          store.loadInstanceAll(projectId, { envId: envID, appId });
         }
       });
   };

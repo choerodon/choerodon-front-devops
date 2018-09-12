@@ -523,15 +523,15 @@ class BranchHome extends Component {
           >
             <Button
               onClick={this.showSidebar}
+              icon="playlist_add"
             >
-              <i className="icon icon-playlist_add" />
               <FormattedMessage id="branch.create" />
             </Button>
           </Permission> : null}
           <Button
             onClick={this.handleRefresh}
+            icon="refresh"
           >
-            <i className="icon icon-refresh" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
