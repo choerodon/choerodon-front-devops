@@ -183,6 +183,9 @@ const pageDetail = {
   'report.description': '选择报表查看详情',
   'report.title': '所有报表',
   'report.link': `${docServer}/user-guide/application-management/report`,
+  'report.submission.description': '代码提交情况图能从项目、应用的维度帮助我们查看某个项目或是该项目下某个应用的代码提交情况。',
+  'report.submission.title': '项目"{name}"的代码提交情况图',
+  'report.submission.link': `${docServer}/user-guide/application-management/report`,
 };
 
 const zhCN = {
@@ -242,6 +245,7 @@ const zhCN = {
   shrink: '收缩',
   validDate: '有效期',
 
+  'chart.change': '切换报表',
   'confirm.delete': '确认删除吗？',
   'confirm.delete.tip': '当你点击删除后，该条数据将被永久删除，不可恢复!',
   'create.failed': '创建失败',
@@ -823,7 +827,7 @@ const zhCN = {
 
   // 报表
   'report.head': '报告',
-  'report.submission.title': '代码提交情况',
+  'report.submission.head': '代码提交情况',
   'report.submission.des': '代码提交情况图能从项目、应用的维度帮助我们查看某个项目或是该项目下某个应用的代码提交情况。',
 
   ...pageDetail,

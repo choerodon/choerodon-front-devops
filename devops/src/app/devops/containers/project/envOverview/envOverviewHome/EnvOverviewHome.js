@@ -69,7 +69,6 @@ class EnvOverviewHome extends Component {
     const key = this.tabKey;
     const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
     const { filters, sort, paras } = EnvOverviewStore.getInfo;
-    const pagination = EnvOverviewStore.getPageInfo;
     const sorter = { field: '', order: 'desc' };
     if (sort.column) {
       sorter.field = sort.field || sort.columnKey;
@@ -80,7 +79,6 @@ class EnvOverviewHome extends Component {
       }
     }
     let searchParam = {};
-    const page = pagination.current - 1;
     if (Object.keys(filters).length) {
       searchParam = filters;
     }
@@ -88,19 +86,9 @@ class EnvOverviewHome extends Component {
       searchParam,
       param: paras.toString(),
     };
-    if (key === 'app' && this.env.length) {
-      this.loadIstOverview(tpEnvId || this.env[0].id);
-    } else if (key === 'domain' && this.env.length) {
-      EnvOverviewStore.loadDomain(projectId, tpEnvId || this.env[0].id, page, pagination.pageSize, sorter, postData);
-    } else if (key === 'network' && this.env.length) {
-      EnvOverviewStore.loadNetwork(projectId, tpEnvId || this.env[0].id, page, pagination.pageSize, sorter, postData);
-    } else if (key === 'log' && this.env.length) {
-      this.loadLog(tpEnvId || this.env[0].id);
-    }
     if (this.env.length) {
-      this.loadSync(tpEnvId || this.env[0].id);
+      this.loadModuleDate(key, tpEnvId || this.env[0].id, sorter, postData);
     }
-    // this.loadEnvCards();
   };
 
   /**
@@ -112,27 +100,36 @@ class EnvOverviewHome extends Component {
     this.tabKey = key;
     const { EnvOverviewStore } = this.props;
     const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
+    const sort = { field: 'id', order: 'desc' };
+    const post = {
+      searchParam: {},
+      param: '',
+    };
     if (this.env.length) {
-      this.loadSync(tpEnvId || this.env[0].id);
-      switch (key) {
-        case 'domain':
-          this.loadDomain(tpEnvId || this.env[0].id);
-          break;
-        case 'network':
-          this.loadNetwork(tpEnvId || this.env[0].id);
-          break;
-        case 'log':
-          this.loadLog(tpEnvId || this.env[0].id);
-          break;
-        case 'cert':
-          this.loadCertData(tpEnvId || this.env[0].id);
-          break;
-        default:
-          this.loadIstOverview(tpEnvId || this.env[0].id);
-          break;
-      }
+      this.loadModuleDate(key, tpEnvId || this.env[0].id, sort, post);
     }
     EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
+  };
+
+  loadModuleDate = (key, env, sort, post) => {
+    this.loadSync(env);
+    switch (key) {
+      case 'domain':
+        this.loadDomainOrNet('domain', env, sort, post);
+        break;
+      case 'network':
+        this.loadDomainOrNet('net', env, sort, post);
+        break;
+      case 'log':
+        this.loadLog(env);
+        break;
+      case 'cert':
+        this.loadCertData(env);
+        break;
+      default:
+        this.loadIstOverview(env);
+        break;
+    }
   };
 
   /**
@@ -145,8 +142,8 @@ class EnvOverviewHome extends Component {
     EnvOverviewStore.setTpEnvId(value);
     this.envId = value || this.env[0].id;
     this.loadIstOverview(value);
-    this.loadDomain(value);
-    this.loadNetwork(value);
+    this.loadDomainOrNet('domain', value);
+    this.loadDomainOrNet('net', value);
     this.loadLog(value);
     this.loadSync(value);
     this.loadCertData(value);
@@ -166,12 +163,13 @@ class EnvOverviewHome extends Component {
           const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
           this.env = envSort;
           const flag = _.filter(env, { id: tpEnvId }).length;
-          this.loadIstOverview(flag ? tpEnvId : envSort[0].id);
-          this.loadDomain(flag ? tpEnvId : envSort[0].id);
-          this.loadNetwork(flag ? tpEnvId : envSort[0].id);
-          this.loadLog(flag ? tpEnvId : envSort[0].id);
-          this.loadSync(flag ? tpEnvId : envSort[0].id);
-          this.loadCertData(flag ? tpEnvId : envSort[0].id);
+          const envId = flag ? tpEnvId : envSort[0].id;
+          this.loadIstOverview(envId);
+          this.loadDomainOrNet('domain', envId);
+          this.loadDomainOrNet('net', envId);
+          this.loadLog(envId);
+          this.loadSync(envId);
+          this.loadCertData(envId);
         }
       });
   };
@@ -188,22 +186,19 @@ class EnvOverviewHome extends Component {
 
   /**
    * 按环境加载域名
-   * @param envId
    */
-  loadDomain = (envId) => {
+  loadDomainOrNet = (type, envId, sort = { field: 'id', order: 'desc' }, datas = {
+    searchParam: {},
+    param: '',
+  }) => {
     const { EnvOverviewStore } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    EnvOverviewStore.loadDomain(projectId, envId);
-  };
-
-  /**
-   * 按环境加载网络
-   * @param envId
-   */
-  loadNetwork = (envId) => {
-    const { EnvOverviewStore } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    EnvOverviewStore.loadNetwork(projectId, envId);
+    const { id: projectId } = AppState.currentMenuType;
+    const pagination = EnvOverviewStore.getPageInfo;
+    if (type === 'domain') {
+      EnvOverviewStore.loadDomain(projectId, envId, pagination.current - 1, pagination.pageSize, sort, datas);
+    } else if (type === 'net') {
+      EnvOverviewStore.loadNetwork(projectId, envId, pagination.current - 1, pagination.pageSize, sort, datas);
+    }
   };
 
   /**
@@ -231,8 +226,9 @@ class EnvOverviewHome extends Component {
    * @param envId
    */
   loadCertData = (envId) => {
+    const { page, pageSize, sorter, postData } = CertificateStore.getTableFilter;
     const { id: projectId } = AppState.currentMenuType;
-    CertificateStore.loadCertData(projectId, 0, 10, { field: 'id', order: 'descend' }, { searchParam: {}, param: '' }, envId);
+    CertificateStore.loadCertData(projectId, page, pageSize, { field: 'id', order: 'descend' }, { searchParam: {}, param: '' }, envId);
   };
 
   /**
@@ -266,12 +262,14 @@ class EnvOverviewHome extends Component {
    */
   @action
   closeDomain = (isload) => {
+    const { EnvOverviewStore } = this.props;
     this.props.form.resetFields();
     this.showDomain = false;
     this.domainId = null;
     if (isload) {
-      this.loadDomain(this.envId || this.env[0].id);
-      this.loadIstOverview(this.envId || this.env[0].id);
+      const envId = this.envId || this.env[0].id;
+      this.loadDomainOrNet('domain', envId);
+      this.loadIstOverview(envId);
       EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
     }
   };
@@ -281,11 +279,13 @@ class EnvOverviewHome extends Component {
    */
   @action
   closeNetwork = (isload) => {
+    const { EnvOverviewStore } = this.props;
     this.props.form.resetFields();
     this.showNetwork = false;
     if (isload) {
-      this.loadNetwork(this.envId || this.env[0].id);
-      this.loadIstOverview(this.envId || this.env[0].id);
+      const envId = this.envId || this.env[0].id;
+      this.loadDomainOrNet('net', envId);
+      this.loadIstOverview(envId);
       EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
     }
   };
@@ -301,10 +301,7 @@ class EnvOverviewHome extends Component {
   /**
    * 关闭证书侧边栏
    */
-  closeCreateModal = () => {
-    this.setState({ createDisplay: false });
-    this.loadCertData(this.envId || this.env[0].id);
-  };
+  closeCreateModal = () => this.setState({ createDisplay: false });
 
   /**
    * 处理页面跳转
@@ -596,7 +593,7 @@ class EnvOverviewHome extends Component {
               <div>
                 <div className="c7n-envow-status-text"><FormattedMessage id="envoverview.istov" /></div>
                 <div className="c7n-envow-status-wrap">
-                  {_.map(istStatusType, item => (<div className={`c7n-envow-status-num c7n-envow-status-${item}`}>
+                  {_.map(istStatusType, item => (<div key={item} className={`c7n-envow-status-num c7n-envow-status-${item}`}>
                     <div>{this.getIstCount(item)}</div>
                     <div><FormattedMessage id={item} /></div>
                   </div>))}

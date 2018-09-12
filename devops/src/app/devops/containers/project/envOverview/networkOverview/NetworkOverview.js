@@ -345,7 +345,7 @@ class NetworkOverview extends Component {
         onChange={this.tableChange}
         dataSource={data}
         rowKey={record => record.id}
-        filters={paras}
+        filters={paras.slice()}
       />
       {this.showEdit && <EditNetwork
         netId={this.id}

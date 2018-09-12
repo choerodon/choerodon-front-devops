@@ -311,7 +311,7 @@ class DomainOverview extends Component {
         columns={columns}
         dataSource={data}
         rowKey={record => record.id}
-        filters={paras}
+        filters={paras.slice()}
       />
       {this.showDomain && <CreateDomain
         id={this.domainId}

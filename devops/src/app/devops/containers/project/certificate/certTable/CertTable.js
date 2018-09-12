@@ -17,17 +17,12 @@ class CertTable extends Component {
       deleteCert: null,
       deleteStatus: false,
       removeDisplay: false,
-      page: 0,
-      pageSize: 10,
-      param: [],
-      filters: {},
-      postData: { searchParam: {}, param: '' },
-      sorter: {
-        field: 'id',
-        columnKey: 'id',
-        order: 'descend',
-      },
     };
+  }
+
+  componentWillUnmount() {
+    const { store } = this.props;
+    store.setCertData([]);
   }
 
   /**
@@ -38,10 +33,14 @@ class CertTable extends Component {
     const { id: projectId } = AppState.currentMenuType;
     const { deleteCert } = this.state;
     this.setState({ deleteStatus: true });
-    store.deleteCertById(projectId, deleteCert).then(() => {
-      const { page, pageSize, sort, postData } = this.state;
-      store.loadCertData(projectId, page, pageSize, sort, postData, envId);
+    store.deleteCertById(projectId, deleteCert).then((data) => {
+      const { page, pageSize, sorter, postData } = store.getTableFilter;
       this.setState({ deleteStatus: false, removeDisplay: false });
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        store.loadCertData(projectId, page, pageSize, sorter, postData, envId);
+      }
     }).catch((err) => {
       this.setState({ deleteStatus: false });
       Choerodon.handleResponseError(err);
@@ -81,7 +80,7 @@ class CertTable extends Component {
       searchParam,
       param,
     };
-    this.setState({ page, pageSize, filters, postData, sorter: sort, param: paras });
+    store.setTableFilter({ page, pageSize, filters, postData, sorter: sort, param: paras });
     store.loadCertData(projectId, page, pageSize, sort, postData, envId);
   };
 
@@ -165,16 +164,15 @@ class CertTable extends Component {
 
   render() {
     const { intl: { formatMessage }, store } = this.props;
+    const { removeDisplay, deleteStatus } = this.state;
     const {
-      removeDisplay,
-      deleteStatus,
       filters,
       sorter: {
         columnKey,
         order,
       },
       param,
-    } = this.state;
+    } = store.getTableFilter;
     const {
       type,
       id: projectId,
@@ -235,7 +233,7 @@ class CertTable extends Component {
         loading={store.getCertLoading}
         pagination={store.getPageInfo}
         dataSource={store.getCertData}
-        filters={param}
+        filters={param.slice()}
         columns={columns}
         rowKey={record => record.id}
       />
