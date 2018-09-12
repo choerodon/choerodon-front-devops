@@ -42,23 +42,13 @@ class CertificateHome extends Component {
   /**
    * 刷新
    */
-  reload = () => {
+  reload = () => this.loadCertData();
+
+  loadCertData = () => {
     const { CertificateStore } = this.props;
     const { page, pageSize, sorter, postData } = CertificateStore.getTableFilter;
-    this.loadCertData(page, pageSize, sorter, postData);
-  };
-
-  /**
-   * 加载数据
-   * @param page
-   * @param sizes
-   * @param sort
-   * @param filter
-   */
-  loadCertData = (page = 0, sizes = 10, sort = { field: 'id', order: 'descend' }, filter = { searchParam: {}, param: '' }) => {
-    const { CertificateStore } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    CertificateStore.loadCertData(projectId, page, sizes, sort, filter);
+    CertificateStore.loadCertData(projectId, page, pageSize, sorter, postData);
   };
 
   render() {

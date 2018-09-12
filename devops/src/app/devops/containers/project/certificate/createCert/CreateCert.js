@@ -129,8 +129,8 @@ class CreateCert extends Component {
         onClose();
       }
     }).catch((error) => {
-      this.setState({ submitting: false });
       Choerodon.handleResponseError(error);
+      this.setState({ submitting: false });
     });
   };
 
@@ -351,6 +351,7 @@ class CreateCert extends Component {
                 }],
               })(
                 <Input
+                  disabled={!getFieldValue('envId')}
                   maxLength={40}
                   type="text"
                   label={<FormattedMessage id="ctf.name" />}

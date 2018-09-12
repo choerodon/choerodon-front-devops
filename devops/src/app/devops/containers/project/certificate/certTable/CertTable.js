@@ -20,6 +20,11 @@ class CertTable extends Component {
     };
   }
 
+  componentWillUnmount() {
+    const { store } = this.props;
+    store.setCertData([]);
+  }
+
   /**
    * 删除证书
    */
@@ -228,7 +233,7 @@ class CertTable extends Component {
         loading={store.getCertLoading}
         pagination={store.getPageInfo}
         dataSource={store.getCertData}
-        filters={param}
+        filters={param.slice()}
         columns={columns}
         rowKey={record => record.id}
       />
