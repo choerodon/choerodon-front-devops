@@ -53,15 +53,16 @@ class SingleApp extends Component {
     if (ids && ids !== 'more') {
       const idArr = ids.split(',');
       const projectId = AppState.currentMenuType.id;
-      const { verId, envId } = this.state;
+      const { envId } = this.state;
       const envNames = store.getEnvcard;
       const envID = envId || (envNames.length ? envNames[0].id : null);
       this.setState({
         appId: idArr[0],
+        verId: false,
       });
       store.setAppId(idArr[0]);
       if (envID) {
-        this.loadInstance(envID, verId, idArr[0]);
+        this.loadInstance(envID, null, idArr[0]);
       }
       if (idArr[0]) {
         if (idArr[1] === projectId) {
@@ -73,6 +74,9 @@ class SingleApp extends Component {
         store.setAppVer([]);
       }
     } else {
+      this.setState({
+        verId: false,
+      });
       store.setAppVer([]);
     }
     store.setIstTableFilter(null);
@@ -842,6 +846,7 @@ class SingleApp extends Component {
         <Select
           notFoundContent={intl.formatMessage({ id: 'network.form.version.disable' })}
           label={intl.formatMessage({ id: 'app.version' })}
+          value={verId}
           className="c7n-app-select_312"
           onChange={this.loadVerId}
           optionFilterProp="children"
