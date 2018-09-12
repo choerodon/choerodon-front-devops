@@ -5,9 +5,11 @@ import { Table, Icon, Button, Popover, Tooltip, Modal } from 'choerodon-ui';
 import { Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import StatusIcon from '../../../../components/StatusIcon';
 import './CertTable.scss';
 
 const { AppState } = stores;
+const HEIGHT = window.screen.height;
 
 @observer
 class CertTable extends Component {
@@ -23,6 +25,23 @@ class CertTable extends Component {
   componentWillUnmount() {
     const { store } = this.props;
     store.setCertData([]);
+    store.setPageInfo({
+      current: 0,
+      total: 0,
+      pageSize: HEIGHT < 900 ? 10 : 15,
+    });
+    store.setTableFilter({
+      page: 0,
+      pageSize: HEIGHT < 900 ? 10 : 15,
+      param: [],
+      filters: {},
+      postData: { searchParam: {}, param: '' },
+      sorter: {
+        field: 'id',
+        columnKey: 'id',
+        order: 'descend',
+      },
+    });
   }
 
   /**
@@ -185,8 +204,11 @@ class CertTable extends Component {
       dataIndex: 'certName',
       filters: [],
       filteredValue: filters.certName || [],
-      render: (text, record) => (<MouserOverWrapper text={text || ''} width={0.25}>
-        {text}</MouserOverWrapper>),
+      render: (text, record) => <StatusIcon
+        name={text}
+        status={record.status}
+        error={record.error || ''}
+      />,
     }, {
       title: <FormattedMessage id="ctf.column.ingress" />,
       key: 'domains',
@@ -211,15 +233,6 @@ class CertTable extends Component {
         </Tooltip>}
         {text}
       </React.Fragment>),
-    }, {
-      title: <FormattedMessage id="ctf.column.status" />,
-      key: 'status',
-      dataIndex: 'status',
-      sorter: true,
-      sortOrder: columnKey === 'status' && order,
-      render: (text, record) => (<div className={`c7n-ctf-status c7n-ctf-${record.status}`}><FormattedMessage
-        id={`ctf.column.${record.status}`}
-      /></div>),
     }, {
       align: 'right',
       width: 100,

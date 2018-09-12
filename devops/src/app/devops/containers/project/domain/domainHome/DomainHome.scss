@@ -88,37 +88,4 @@
     text-align: center;
     display: inline-block;
   }
-
-  .c7n-domain-status {
-    display: inline-block;
-    height: 16px;
-    font-size: 13px;
-    border-radius: 2px;
-    color: white;
-    text-align: center;
-    line-height: 16px;
-    vertical-align: middle;
-    white-space: nowrap;
-
-    div {
-      transform: scale(0.8);
-    }
-  }
-
-  .c7n-domain-status-running {
-    background: #1bc123;
-  }
-
-  .c7n-domain-status-failed {
-    background: #f44336;
-  }
-
-  .c7n-status-failed {
-    color: #f44336;
-    vertical-align: middle;
-  }
-
-  .c7n-domain-status-operating {
-    background: #4d90fe;
-  }
 }

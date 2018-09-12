@@ -10,6 +10,7 @@ import LoadingBar from '../../../../components/loadingBar';
 import './DomainHome.scss';
 import '../../../main.scss';
 import { commonComponent } from '../../../../components/commonFunction';
+import StatusIcon from '../../../../components/StatusIcon';
 
 const { AppState } = stores;
 
@@ -67,29 +68,6 @@ class DomainHome extends Component {
     const projectName = menu.name;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
-      key: 'status',
-      title: intl.formatMessage({ id: 'domain.column.status' }),
-      render: (record) => {
-        let statusDom = null;
-        switch (record.status) {
-          case 'failed':
-            statusDom = (<div className="c7n-domain-status c7n-domain-status-failed">
-              <div>{intl.formatMessage({ id: 'create.failed' })}</div>
-            </div>);
-            break;
-          case 'operating':
-            statusDom = (<div className="c7n-domain-status c7n-domain-status-operating">
-              <div>{intl.formatMessage({ id: 'operating' })}</div>
-            </div>);
-            break;
-          default:
-            statusDom = (<div className="c7n-domain-status c7n-domain-status-running">
-              <div>{intl.formatMessage({ id: 'running' })}</div>
-            </div>);
-        }
-        return (statusDom);
-      },
-    }, {
       title: intl.formatMessage({ id: 'domain.column.name' }),
       key: 'name',
       dataIndex: 'name',
@@ -97,6 +75,11 @@ class DomainHome extends Component {
       sortOrder: columnKey === 'name' && order,
       filters: [],
       filteredValue: filters.name || [],
+      render: (text, record) => <StatusIcon
+        name={text}
+        status={record.status}
+        error={record.error || ''}
+      />,
     }, {
       title: intl.formatMessage({ id: 'domain.column.domain' }),
       key: 'domain',
