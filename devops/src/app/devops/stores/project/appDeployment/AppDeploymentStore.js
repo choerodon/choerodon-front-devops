@@ -313,7 +313,7 @@ class AppDeploymentStore {
     }
   });
 
-  loadAppNameByEnv = (projectId, envId, page, appPageSize) => axios.get(`devops/v1/projects/${projectId}/apps/pages?envId=${envId}&page=${page}&size=${appPageSize}`).then((data) => {
+  loadAppNameByEnv = (projectId, envId, page, appPageSize) => axios.get(`devops/v1/projects/${projectId}/apps/pages?env_id=${envId}&page=${page}&size=${appPageSize}`).then((data) => {
     this.changeLoading(true);
     if (data && data.failed) {
       Choerodon.prompt(data.message);

@@ -115,32 +115,6 @@ class NetworkOverview extends Component {
   };
 
   /**
-   * 状态 列
-   * @param record
-   * @returns {*}
-   */
-  statusColumn = (record) => {
-    let msg = null;
-    let styles = '';
-    switch (record.status) {
-      case 'failed':
-        msg = 'network.failed';
-        styles = 'c7n-network-status-failed';
-        break;
-      case 'operating':
-        msg = 'operating';
-        styles = 'c7n-network-status-operating';
-        break;
-      default:
-        msg = 'running';
-        styles = 'c7n-network-status-running';
-    }
-    return (<div className={`c7n-network-status ${styles}`}>
-      <FormattedMessage id={msg} />
-    </div>);
-  };
-
-  /**
    * 配置类型 列
    * @param record
    * @returns {Array}
@@ -305,37 +279,49 @@ class NetworkOverview extends Component {
     const data = store.getNetwork;
     const { filters, sort: { columnKey, order }, paras } = store.getInfo;
     const { type, id: projectId, organizationId: orgId } = AppState.currentMenuType;
+
     const columns = [{
-      title: <FormattedMessage id="network.column.status" />,
-      key: 'status',
-      width: 72,
-      render: record => this.statusColumn(record),
-    }, {
       title: <FormattedMessage id="network.column.name" />,
       key: 'name',
       sorter: true,
       sortOrder: columnKey === 'name' && order,
       filters: [],
       filteredValue: filters.name || [],
-      render: record => (<MouserOverWrapper text={record.name || ''} width={0.1} className="network-list-name">
-        {record.name}</MouserOverWrapper>),
+      render: (record) => {
+        let statusDom = null;
+        switch (record.status) {
+          case 'failed':
+            statusDom = (<Tooltip title={`${record.status}: ${record.error}`}>
+              <i className="icon icon-error c7n-status-failed" />
+            </Tooltip>);
+            break;
+          case 'operating':
+            statusDom = (<Tooltip title={intl.formatMessage({ id: `ist_${record.status}` })}>
+              <Progress type="loading" width={15} style={{ marginLeft: 5 }} />
+            </Tooltip>);
+            break;
+          default:
+            statusDom = null;
+        }
+        return (<React.Fragment>
+          {record.name}
+          {statusDom}
+        </React.Fragment>);
+      },
     }, {
       title: <FormattedMessage id="network.target" />,
       key: 'target',
-      filters: [],
-      filteredValue: filters.target || [],
       render: record => this.targetColumn(record),
     }, {
       title: <FormattedMessage id="network.config.column" />,
       key: 'type',
-      filters: [],
-      filteredValue: filters.type || [],
       render: record => this.configColumn(record),
     }, {
       width: '82px',
       key: 'action',
       render: record => this.opColumn(record, type, projectId, orgId),
     }];
+
     return (<div className="c7n-network-wrapper">
       <Table
         filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}

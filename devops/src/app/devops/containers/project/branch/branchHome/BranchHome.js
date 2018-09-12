@@ -529,8 +529,6 @@ class BranchHome extends Component {
             </Button>
           </Permission> : null}
           <Button
-            funcType="flat"
-            ghost="true"
             onClick={this.handleRefresh}
           >
             <i className="icon icon-refresh" />
