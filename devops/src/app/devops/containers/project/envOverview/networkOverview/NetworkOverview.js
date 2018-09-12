@@ -13,6 +13,7 @@ import '../../networkConfig/networkHome/NetworkHome.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import NetworkConfigStore from '../../../../stores/project/networkConfig';
 import EditNetwork from '../../networkConfig/editNetwork';
+import StatusIcon from '../../../../components/StatusIcon';
 
 const { AppState } = stores;
 
@@ -287,27 +288,11 @@ class NetworkOverview extends Component {
       sortOrder: columnKey === 'name' && order,
       filters: [],
       filteredValue: filters.name || [],
-      render: (record) => {
-        let statusDom = null;
-        switch (record.status) {
-          case 'failed':
-            statusDom = (<Tooltip title={`${record.status}: ${record.error}`}>
-              <i className="icon icon-error c7n-status-failed" />
-            </Tooltip>);
-            break;
-          case 'operating':
-            statusDom = (<Tooltip title={intl.formatMessage({ id: `ist_${record.status}` })}>
-              <Progress type="loading" width={15} style={{ marginLeft: 5 }} />
-            </Tooltip>);
-            break;
-          default:
-            statusDom = null;
-        }
-        return (<React.Fragment>
-          {record.name}
-          {statusDom}
-        </React.Fragment>);
-      },
+      render: record => <StatusIcon
+        name={record.name}
+        status={record.status}
+        error={record.error || ''}
+      />,
     }, {
       title: <FormattedMessage id="network.target" />,
       key: 'target',

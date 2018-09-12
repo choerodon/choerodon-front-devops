@@ -79,7 +79,7 @@ class NetworkConfigStore {
   }
 
   @computed get getAllData() {
-    return this.allData;
+    return this.allData.slice();
   }
 
   /**
@@ -90,7 +90,7 @@ class NetworkConfigStore {
   }
 
   @computed get getEnv() {
-    return this.env;
+    return this.env.slice();
   }
 
   /**
@@ -101,7 +101,7 @@ class NetworkConfigStore {
   }
 
   @computed get getApp() {
-    return this.app;
+    return this.app.slice();
   }
 
   /**
@@ -112,7 +112,7 @@ class NetworkConfigStore {
   }
 
   @computed get getIst() {
-    return this.ist;
+    return this.ist.slice();
   }
 
   /**

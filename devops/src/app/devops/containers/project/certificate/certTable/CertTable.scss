@@ -2,30 +2,6 @@
   &-select {
     margin-bottom: 16px;
   }
-
-  &-status {
-    color: #fff;
-    border-radius: 2px;
-    padding: 0 6px;
-    width: 58px;
-    height: 20px;
-    text-align: center;
-  }
-
-  &-operating {
-    background: #4d90fe;
-  }
-
-  &-active {
-    background: #00bfa5;
-  }
-
-  &-overdue {
-    background: rgba(0, 0, 0, .26);
-  }
-  &-failed {
-    background: #d50000;
-  }
 }
 
 .c7n-ctf-detail-icon {

@@ -159,63 +159,8 @@
     text-align: center;
     display: inline-block;
   }
-
-  .c7n-network-status {
-    display: inline-block;
-    height: 16px;
-    font-size: 13px;
-    border-radius: 2px;
-    color: white;
-    text-align: center;
-    line-height: 16px;
-    vertical-align: middle;
-    white-space: nowrap;
-
-    span {
-      display: inline-block;
-      transform: scale(0.8);
-    }
-  }
-
-  .c7n-network-status-running {
-    background: #1bc123;
-  }
-
   .c7n-network-status-failed {
     color: #fff;
     background: #f44336 !important;
-  }
-
-  .c7n-status-failed {
-    color: #f44336;
-    vertical-align: middle;
-  }
-
-  .c7n-network-status-operating {
-    background: #4d90fe;
-  }
-
-  .c7n-network-icon {
-    vertical-align: middle;
-    font-size: 13px;
-    padding-left: 5px;
-  }
-
-  .c7n-network-column-version {
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-    display: inline-block;
-    vertical-align: middle;
-  }
-
-  .c7n-network-status-error {
-    color: white !important;
-    background-color: #d50000 !important;
-  }
-
-  .env-status-success,
-  .env-status-error {
-    vertical-align: sub;
   }
 }

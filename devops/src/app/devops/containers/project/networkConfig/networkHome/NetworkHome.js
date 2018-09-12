@@ -12,6 +12,7 @@ import CreateNetwork from '../createNetwork';
 import EditNetwork from '../editNetwork';
 import { commonComponent } from '../../../../components/commonFunction';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import StatusIcon from '../../../../components/StatusIcon';
 
 const { AppState } = stores;
 
@@ -70,32 +71,6 @@ class NetworkHome extends Component {
     NetworkConfigStore.setApp([]);
     NetworkConfigStore.setEnv([]);
     NetworkConfigStore.setIst([]);
-  };
-
-  /**
-   * 状态 列
-   * @param record
-   * @returns {*}
-   */
-  statusColumn = (record) => {
-    let msg = null;
-    let styles = '';
-    switch (record.status) {
-      case 'failed':
-        msg = 'network.failed';
-        styles = 'c7n-network-status-failed';
-        break;
-      case 'operating':
-        msg = 'operating';
-        styles = 'c7n-network-status-operating';
-        break;
-      default:
-        msg = 'running';
-        styles = 'c7n-network-status-running';
-    }
-    return (<div className={`c7n-network-status ${styles}`}>
-      <FormattedMessage id={msg} />
-    </div>);
   };
 
   /**
@@ -261,19 +236,17 @@ class NetworkHome extends Component {
       name: projectName } = AppState.currentMenuType;
     const data = NetworkConfigStore.getAllData;
     const columns = [{
-      title: <FormattedMessage id="network.column.status" />,
-      key: 'status',
-      width: '82px',
-      render: record => this.statusColumn(record),
-    }, {
       title: <FormattedMessage id="network.column.name" />,
       key: 'name',
       sorter: true,
       sortOrder: columnKey === 'name' && order,
       filters: [],
       filteredValue: filters.name || [],
-      render: record => (<MouserOverWrapper text={record.name || ''} width={0.12} className="network-list-name">
-        {record.name}</MouserOverWrapper>),
+      render: record => <StatusIcon
+        name={record.name}
+        status={record.status}
+        error={record.error || ''}
+      />,
     }, {
       title: <FormattedMessage id="network.column.env" />,
       key: 'envName',

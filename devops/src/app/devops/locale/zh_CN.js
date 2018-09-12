@@ -244,6 +244,7 @@ const zhCN = {
   expand: '展开',
   shrink: '收缩',
   validDate: '有效期',
+  noContent: '没有内容',
 
   'chart.change': '切换报表',
   'confirm.delete': '确认删除吗？',

@@ -35,6 +35,7 @@ class EditTag extends Component {
       if (req && req.failed) {
         Choerodon.prompt(req.message);
       } else {
+        store.queryTagData(projectId, 0, 10);
         this.handleCancel();
       }
     }).catch((error) => {

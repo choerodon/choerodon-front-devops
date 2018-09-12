@@ -133,12 +133,7 @@ class AppTagHome extends Component {
    * 控制创建窗口显隐
    * @param flag
    */
-  displayCreateModal = (flag) => {
-    this.setState({ creationDisplay: flag });
-    if (!flag) {
-      this.loadTagData();
-    }
-  };
+  displayCreateModal = flag => this.setState({ creationDisplay: flag });
 
   /**
    * 控制编辑窗口
@@ -154,8 +149,6 @@ class AppTagHome extends Component {
       e.stopPropagation();
       editTag = tag;
       editRelease = res;
-    } else {
-      this.loadTagData();
     }
     this.setState({ editDisplay: flag, editTag, editRelease });
   };

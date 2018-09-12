@@ -79,6 +79,7 @@ class CreateTag extends Component {
           if (req && req.failed) {
             Choerodon.prompt(data.message);
           } else {
+            store.queryTagData(projectId, 0, 10);
             this.handleCancel();
           }
           this.setState({ submitting: false });
