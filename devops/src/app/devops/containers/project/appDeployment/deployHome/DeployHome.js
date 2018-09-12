@@ -144,7 +144,8 @@ class DeployHome extends Component {
 
   /**
    * 切换子页面
-   * @param tabName 子页面标识
+   * @param tabName
+   * @param Info
    */
   changeTabs = (tabName, Info) => {
     const { AppDeploymentStore } = this.props;
@@ -157,6 +158,7 @@ class DeployHome extends Component {
       this.loadEnvCards();
       this.loadAppName();
       const appNames = AppDeploymentStore.getAppNames;
+      AppDeploymentStore.setAppId(false);
       if (appNames.length) {
         this.loadAppVer(AppDeploymentStore.appId || appNames[0].id, Info);
       }
