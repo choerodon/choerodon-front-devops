@@ -6,7 +6,7 @@ const orderMapping = {
   ascend: 'asc',
   descend: 'desc',
 };
-const height = window.screen.height;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 @store('RepositoryStore')
 class RepositoryStore {
@@ -16,7 +16,7 @@ class RepositoryStore {
 
   @observable pageInfo = {
     current: 1,
-    pageSize: height <= 900 ? 10 : 15,
+    pageSize: HEIGHT <= 900 ? 10 : 15,
     total: 0,
   };
 

@@ -13,7 +13,6 @@ import './Deploydetail.scss';
 import '../../container/containerHome/ContainerHome.scss';
 import LoadingBar from '../../../../components/loadingBar';
 import Ace from '../../../../components/yamlAce';
-// import Log from '../../appDeployment/component/log';
 
 const Step = Steps.Step;
 const TabPane = Tabs.TabPane;
@@ -137,6 +136,7 @@ class DeploymentDetail extends Component {
   };
 
   render() {
+    const { name: projectName, organizationId, id: projectId, type } = AppState.currentMenuType;
     const { DeployDetailStore, intl } = this.props;
     const { expand, log, overview } = this.state;
     const valueStyle = classnames({
@@ -144,10 +144,6 @@ class DeploymentDetail extends Component {
       'c7n-deployDetail-hidden': !expand,
     });
     const resource = DeployDetailStore.getResource;
-    const projectName = AppState.currentMenuType.name;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const projectId = AppState.currentMenuType.id;
-    const type = AppState.currentMenuType.type;
     let serviceDTO = [];
     let podDTO = [];
     let depDTO = [];
@@ -212,31 +208,14 @@ class DeploymentDetail extends Component {
       >
         <Header title={<FormattedMessage id="ist.detail" />} backPath={overview ? `/devops/env-overview?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}` : `/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <Button
+            icon="refresh"
             onClick={this.loadAllData}
             funcType="flat"
           >
-            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        { DeployDetailStore.isLoading ? <LoadingBar display /> : <Content className="page-content">
-          <h2 className="c7n-space-first">
-            <FormattedMessage
-              id="ist.isthead"
-              values={{
-                name: `${projectName}`,
-              }}
-            />
-          </h2>
-          <p>
-            <FormattedMessage id="ist.istDes" />
-            <a href={intl.formatMessage({ id: 'ist.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                <FormattedMessage id="learnmore" />
-              </span>
-              <i className="icon icon-open_in_new" />
-            </a>
-          </p>
+        { DeployDetailStore.isLoading ? <LoadingBar display /> : <Content code="ist.detail" value={{ projectName }} className="page-content">
           <Tabs
             className="c7n-deployDetail-tab"
             defaultActiveKey={this.state.status === 'running' ? '1' : '2'}

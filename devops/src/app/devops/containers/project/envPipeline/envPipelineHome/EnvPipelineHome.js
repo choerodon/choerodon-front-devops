@@ -377,21 +377,21 @@ class EnvPipelineHome extends Component {
   };
 
   render() {
-    const { EnvPipelineStore, intl } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const { EnvPipelineStore, intl, form: { getFieldDecorator } } = this.props;
     const { copyMsg, token, envName, moveBan, submitting } = this.state;
     const { id: projectId, organizationId, type, name: projectName } = AppState.currentMenuType;
-
-    const envcardPosition = EnvPipelineStore.getEnvcardPosition;
-    const disEnvcardPosition = EnvPipelineStore.getDisEnvcardPosition;
-    const envData = EnvPipelineStore.getEnvData;
-    const ist = EnvPipelineStore.getIst;
-    const shell = EnvPipelineStore.shell;
-    const show = EnvPipelineStore.getShow;
-    const showGroup = EnvPipelineStore.getShowGroup;
-    const sideType = EnvPipelineStore.getSideType;
-    const ban = EnvPipelineStore.getBan;
-    const groupData = EnvPipelineStore.getGroup;
+    const {
+      getEnvcardPosition: envcardPosition,
+      getDisEnvcardPosition: disEnvcardPosition,
+      getEnvData: envData,
+      getIst: ist,
+      shell,
+      getShow: show,
+      getShowGroup: showGroup,
+      getSideType: sideType,
+      getBan: ban,
+      getGroup: groupData,
+    } = EnvPipelineStore;
 
     const showBtns = (sideType === 'create' || sideType === 'edit');
 
@@ -445,200 +445,6 @@ class EnvPipelineHome extends Component {
       </div>
     </Popover>);
 
-    const formContent = (<div className="c7n-region">{
-        (() => {
-          if (sideType === 'create') {
-            return (<div>
-              <h2 className="c7n-space-first"><FormattedMessage id="env.create.title" values={{ name: projectName }} /></h2>
-              <p>
-                <FormattedMessage id="env.create.description" />
-                <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <FormattedMessage id="learnmore" />
-                  <i className="icon-open_in_new icon" />
-                </a>
-              </p>
-              <Form className="c7n-sidebar-form" layout="vertical">
-                <FormItem
-                  {...formItemLayout}
-                >
-                  {getFieldDecorator('code', {
-                    rules: [{
-                      required: true,
-                      message: intl.formatMessage({ id: 'required' }),
-                    }, {
-                      validator: this.checkCode,
-                    }],
-                    initialValue: envData ? envData.code : '',
-                  })(
-                    <Input
-                      maxLength={30}
-                      label={<FormattedMessage id="envPl.form.code" />}
-                    />,
-                  )}
-                </FormItem>
-                <FormItem
-                  {...formItemLayout}
-                >
-                  {getFieldDecorator('name', {
-                    rules: [{
-                      required: true,
-                      message: intl.formatMessage({ id: 'required' }),
-                    }, {
-                      validator: this.checkName,
-                    }],
-                    initialValue: envData ? envData.name : '',
-                  })(
-                    <Input
-                      maxLength={10}
-                      label={<FormattedMessage id="envPl.form.name" />}
-                    />,
-                  )}
-                </FormItem>
-                <FormItem
-                  {...formItemLayout}
-                  label={<FormattedMessage id="envPl.form.description" />}
-                >
-                  {getFieldDecorator('description', {
-                    initialValue: envData ? envData.description : '',
-                  })(
-                    <TextArea
-                      autosize={{ minRows: 2 }}
-                      maxLength={60}
-                      label={<FormattedMessage id="envPl.form.description" />}
-                    />,
-                  )}
-                </FormItem>
-                <FormItem
-                  {...formItemLayout}
-                >
-                  {getFieldDecorator('devopsEnvGroupId')(
-                    <Select
-                      allowClear
-                      filter
-                      filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                      label={<FormattedMessage id="envPl.form.group" />}
-                    >
-                      {groupData.length ? _.map(groupData, g => <Option key={g.id} value={g.id}>{g.name}</Option>) : null}
-                    </Select>,
-                  )}
-                </FormItem>
-              </Form>
-            </div>);
-          } else if (sideType === 'token') {
-            return (<div className="c7n-env-token c7n-sidebar-form">
-              <h2 className="c7n-space-first"><FormattedMessage id="env.token.title" values={{ name: envName }} /></h2>
-              <p>
-                <FormattedMessage id="env.token.description" />
-                <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <FormattedMessage id="learnmore" />
-                  <i className="icon icon-open_in_new" />
-                </a>
-              </p>
-              <div className="c7n-env-shell-wrap">
-                <TextArea
-                  label={<FormattedMessage id="envPl.token" />}
-                  className="c7n-input-readOnly"
-                  autosize
-                  copy="true"
-                  readOnly
-                  value={this.state.token || ''}
-                />
-                <span className="c7n-env-copy">
-                  {suffix}
-                </span>
-              </div>
-            </div>);
-          } else if (sideType === 'key') {
-            return (<div className="c7n-env-token c7n-sidebar-form">
-              <h2 className="c7n-space-first"><FormattedMessage id="env.token.title" values={{ name: envData ? envData.name : '' }} /></h2>
-              <p>
-                <FormattedMessage id="env.token.description" />
-                <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <FormattedMessage id="learnmore" />
-                  <i className="icon icon-open_in_new" />
-                </a>
-              </p>
-              <div className="c7n-env-shell-wrap">
-                <TextArea
-                  label={<FormattedMessage id="envPl.token" />}
-                  className="c7n-input-readOnly"
-                  autosize
-                  copy="true"
-                  readOnly
-                  value={shell || ''}
-                />
-                <span className="c7n-env-copy">
-                  {suffix}
-                </span>
-              </div>
-            </div>);
-          } else if (sideType === 'edit') {
-            return (<div className="c7n-sidebar-form">
-              <h2 className="c7n-space-first"><FormattedMessage id="env.update.title" values={{ name: envData ? envData.code : '' }} /></h2>
-              <p>
-                <FormattedMessage id="env.update.description" />
-                <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <FormattedMessage id="learnmore" />
-                  <i className="icon icon-open_in_new" />
-                </a>
-              </p>
-              <Form>
-                <FormItem
-                  {...formItemLayout}
-                >
-                  {getFieldDecorator('name', {
-                    rules: [{
-                      required: true,
-                      message: intl.formatMessage({ id: 'required' }),
-                    }, {
-                      validator: this.checkName,
-                    }],
-                    initialValue: envData ? envData.name : '',
-                  })(
-                    <Input
-                      maxLength={10}
-                      label={<FormattedMessage id="envPl.form.name" />}
-                    />,
-                  )}
-                </FormItem>
-                <FormItem
-                  {...formItemLayout}
-                >
-                  {getFieldDecorator('description', {
-                    initialValue: envData ? envData.description : '',
-                  })(
-                    <TextArea
-                      autosize={{ minRows: 2 }}
-                      maxLength={60}
-                      label={<FormattedMessage id="envPl.form.description" />}
-                    />,
-                  )}
-                </FormItem>
-                <FormItem
-                  {...formItemLayout}
-                >
-                  {getFieldDecorator('devopsEnvGroupId', {
-                    initialValue: envData ? envData.devopsEnvGroupId : undefined,
-                  })(
-                    <Select
-                      allowClear
-                      filter
-                      filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                      label={<FormattedMessage id="envPl.form.group" />}
-                    >
-                      {groupData.length ? _.map(groupData, g => <Option key={g.id} value={g.id}>{g.name}</Option>) : null}
-                    </Select>,
-                  )}
-                </FormItem>
-              </Form>
-            </div>);
-          } else {
-            return null;
-          }
-        })()
-      }
-    </div>);
-
     const BoardDom = _.map(envcardPosition, e => <Board projectId={Number(projectId)} key={e.devopsEnvGroupId} groupId={e.devopsEnvGroupId} Title={e.devopsEnvGroupName} envcardPositionChild={e.devopsEnviromentRepDTOs || []} />);
 
     const leftDom = scrollLeft !== 0
@@ -651,6 +457,163 @@ class EnvPipelineHome extends Component {
     });
 
     const rightDom = moveBan ? null : <div role="none" className={rightStyle} onClick={this.pushScrollLeft} />;
+
+    let formContent = null;
+    switch (sideType) {
+      case 'create':
+        formContent = (<Form className="c7n-sidebar-form" layout="vertical">
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('code', {
+              rules: [{
+                required: true,
+                message: intl.formatMessage({ id: 'required' }),
+              }, {
+                validator: this.checkCode,
+              }],
+              initialValue: envData ? envData.code : '',
+            })(
+              <Input
+                maxLength={30}
+                label={<FormattedMessage id="envPl.form.code" />}
+              />,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('name', {
+              rules: [{
+                required: true,
+                message: intl.formatMessage({ id: 'required' }),
+              }, {
+                validator: this.checkName,
+              }],
+              initialValue: envData ? envData.name : '',
+            })(
+              <Input
+                maxLength={10}
+                label={<FormattedMessage id="envPl.form.name" />}
+              />,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            label={<FormattedMessage id="envPl.form.description" />}
+          >
+            {getFieldDecorator('description', {
+              initialValue: envData ? envData.description : '',
+            })(
+              <TextArea
+                autosize={{ minRows: 2 }}
+                maxLength={60}
+                label={<FormattedMessage id="envPl.form.description" />}
+              />,
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('devopsEnvGroupId')(
+              <Select
+                allowClear
+                filter
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                label={<FormattedMessage id="envPl.form.group" />}
+              >
+                {groupData.length ? _.map(groupData, g => <Option key={g.id} value={g.id}>{g.name}</Option>) : null}
+              </Select>,
+            )}
+          </FormItem>
+        </Form>);
+        break;
+      case 'token':
+        formContent = (<div className="c7n-env-token c7n-sidebar-form">
+          <div className="c7n-env-shell-wrap">
+            <TextArea
+              label={<FormattedMessage id="envPl.token" />}
+              className="c7n-input-readOnly"
+              autosize
+              copy="true"
+              readOnly
+              value={this.state.token || ''}
+            />
+            <span className="c7n-env-copy">{suffix}</span>
+          </div>
+        </div>);
+        break;
+      case 'key':
+        formContent = (<div className="c7n-env-token c7n-sidebar-form">
+          <div className="c7n-env-shell-wrap">
+            <TextArea
+              label={<FormattedMessage id="envPl.token" />}
+              className="c7n-input-readOnly"
+              autosize
+              copy="true"
+              readOnly
+              value={shell || ''}
+            />
+            <span className="c7n-env-copy">{suffix}</span>
+          </div>
+        </div>);
+        break;
+      case 'edit':
+        formContent = (<div className="c7n-sidebar-form">
+          <Form>
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('name', {
+                rules: [{
+                  required: true,
+                  message: intl.formatMessage({ id: 'required' }),
+                }, {
+                  validator: this.checkName,
+                }],
+                initialValue: envData ? envData.name : '',
+              })(
+                <Input
+                  maxLength={10}
+                  label={<FormattedMessage id="envPl.form.name" />}
+                />,
+              )}
+            </FormItem>
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('description', {
+                initialValue: envData ? envData.description : '',
+              })(
+                <TextArea
+                  autosize={{ minRows: 2 }}
+                  maxLength={60}
+                  label={<FormattedMessage id="envPl.form.description" />}
+                />,
+              )}
+            </FormItem>
+            <FormItem
+              {...formItemLayout}
+            >
+              {getFieldDecorator('devopsEnvGroupId', {
+                initialValue: envData ? envData.devopsEnvGroupId : undefined,
+              })(
+                <Select
+                  allowClear
+                  filter
+                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  label={<FormattedMessage id="envPl.form.group" />}
+                >
+                  {groupData.length ? _.map(groupData, g => <Option key={g.id} value={g.id}>{g.name}</Option>) : null}
+                </Select>,
+              )}
+            </FormItem>
+          </Form>
+        </div>);
+        break;
+      default:
+        formContent = null;
+    }
 
     return (
       <Page
@@ -673,7 +636,7 @@ class EnvPipelineHome extends Component {
           'devops-service.devops-env-group.delete',
         ]}
       >
-        <Header title={<FormattedMessage id="envPl.title" />}>
+        <Header title={<FormattedMessage id="envPl.head" />}>
           <Permission
             service={['devops-service.devops-environment.create']}
             organizationId={organizationId}
@@ -710,7 +673,7 @@ class EnvPipelineHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content>
+        <Content code="env" value={{ projectName }}>
           <Sidebar
             title={this.showTitle(sideType)}
             visible={show}
@@ -721,7 +684,9 @@ class EnvPipelineHome extends Component {
             cancelText={<FormattedMessage id="cancel" />}
             okText={this.okText(sideType)}
           >
-            {formContent}
+            <Content code={`env.${sideType}`} value={{ projectName }} className="sidebar-content">
+              {formContent}
+            </Content>
           </Sidebar>
           <Modal
             visible={ban}
@@ -741,48 +706,10 @@ class EnvPipelineHome extends Component {
             </div>)}
           </Modal>
           {showGroup ? <EnvGroup store={EnvPipelineStore} okText={this.okText} showTitle={this.showTitle} /> : null}
-          <h2 className="c7n-space-first">
-            <FormattedMessage
-              id="env.title"
-              values={{
-                name: `${projectName}`,
-              }}
-            />
-          </h2>
-          <p>
-            <FormattedMessage
-              id="env.description"
-            />
-            <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                <FormattedMessage id="learnmore" />
-              </span>
-              <i className="icon icon-open_in_new" />
-            </a>
-          </p>
           {EnvPipelineStore.getIsLoading ? <LoadingBar display />
             : <React.Fragment>
               {BoardDom.length ? BoardDom : <Board projectId={Number(projectId)} key="none" envcardPositionChild={[]} />}
-              <div className="c7n-env-discontent">
-                <h2 className="c7n-space-first">
-                  <FormattedMessage
-                    id="env.stop.title"
-                    values={{
-                      name: `${projectName}`,
-                    }}
-                  />
-                </h2>
-                <p>
-                  <FormattedMessage
-                    id="env.stop.description"
-                  />
-                  <a href={intl.formatMessage({ id: 'env.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                    <span className="c7n-external-link-content">
-                      <FormattedMessage id="learnmore" />
-                    </span>
-                    <i className="icon icon-open_in_new" />
-                  </a>
-                </p>
+              <Content code="env.stop" value={{ projectName }}>
                 <div className="c7n-outer-container">
                   {leftDom}
                   <div className="c7n-inner-container-ban">
@@ -792,7 +719,7 @@ class EnvPipelineHome extends Component {
                   </div>
                   {rightDom}
                 </div>
-              </div>
+              </Content>
             </React.Fragment>}
         </Content>
       </Page>

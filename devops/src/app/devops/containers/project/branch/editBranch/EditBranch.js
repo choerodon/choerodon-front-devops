@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { Modal, Form, Radio, Input, Select, Tooltip } from 'choerodon-ui';
-import { stores, axios } from 'choerodon-front-boot';
+import { stores, axios, Content } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import '../../../main.scss';
@@ -143,8 +143,8 @@ class EditBranch extends Component {
 
 
   render() {
-    const { getFieldDecorator } = this.props.form;
-    const { visible, intl, store } = this.props;
+    const { name } = AppState.currentMenuType;
+    const { visible, intl, store, form: { getFieldDecorator } } = this.props;
     const issueInitValue = store.issueInitValue;
     const issue = store.issue.slice();
     const branch = store.branch;
@@ -165,24 +165,7 @@ class EditBranch extends Component {
         cancelText={<FormattedMessage id="cancel" />}
         confirmLoading={this.state.submitting}
       >
-        <div className="c7n-region c7n-createBranch">
-          <h2 className="c7n-space-first">
-            <FormattedMessage
-              id="branch.editHead"
-              values={{
-                name: `${this.props.store.branch && this.props.store.branch.branchName}`,
-              }}
-            />
-          </h2>
-          <p>
-            <FormattedMessage id="branch.editDes" />
-            <a href={intl.formatMessage({ id: 'branch.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                <FormattedMessage id="learnmore" />
-              </span>
-              <i className="icon icon-open_in_new" />
-            </a>
-          </p>
+        <Content code="branch.edit" values={{ name }} className="sidebar-content c7n-createBranch">
           <Form layout="vertical" onSubmit={this.handleOk} className="c7n-sidebar-form">
             <FormItem
               className="branch-formItem"
@@ -217,7 +200,7 @@ class EditBranch extends Component {
               )}
             </FormItem>
           </Form>
-        </div>
+        </Content>
       </Sidebar>
     );
   }

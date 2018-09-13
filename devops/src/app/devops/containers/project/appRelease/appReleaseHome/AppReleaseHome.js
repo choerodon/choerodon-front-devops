@@ -10,7 +10,7 @@ import editReleaseStore from '../../../../stores/project/appRelease/editRelease'
 
 const TabPane = Tabs.TabPane;
 const { AppState } = stores;
-const height = window.screen.height;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 @observer
 class AppReleaseHome extends Component {
   constructor(props) {
@@ -25,7 +25,7 @@ class AppReleaseHome extends Component {
         columnKey: 'id',
         order: 'descend',
       },
-      pageSize: height <= 900 ? 10 : 15,
+      pageSize: HEIGHT <= 900 ? 10 : 15,
     };
   }
 
@@ -35,7 +35,7 @@ class AppReleaseHome extends Component {
   }
 
   getColumn = () => {
-    const { type, id: orgId } = AppState.currentMenuType;
+    const { type, organizationId } = AppState.currentMenuType;
     const { filters, sorter: { columnKey, order } } = this.state;
     return [{
       title: <FormattedMessage id="app.name" />,
@@ -74,14 +74,14 @@ class AppReleaseHome extends Component {
       key: 'action',
       render: record => (
         <div>
-          <Permission service={['devops-service.application-market.update']}>
+          <Permission type={type} organizationId={organizationId} service={['devops-service.application-market.update']}>
             <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'edit' })}</div>}>
               <Button shape="circle" size="small" onClick={this.handleEdit.bind(this, record.id)}>
                 <Icon type="mode_edit" />
               </Button>
             </Tooltip>
           </Permission>
-          <Permission service={['devops-service.application-market.updateVersions']}>
+          <Permission type={type} organizationId={organizationId} service={['devops-service.application-market.updateVersions']}>
             <Tooltip trigger="hover" placement="bottom" title={<div>{this.props.intl.formatMessage({ id: 'release.action.version' })}</div>}>
               <Button shape="circle" size="small" onClick={this.handleEditVersion.bind(this, record)}>
                 <Icon type="versionline" />
@@ -236,6 +236,7 @@ class AppReleaseHome extends Component {
 
   render() {
     const { AppReleaseStore } = this.props;
+    const { name } = AppState.currentMenuType;
     const data = AppReleaseStore.getReleaseData;
     const { paras } = this.state;
     return (
@@ -256,7 +257,7 @@ class AppReleaseHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="release" values={{ name: AppState.currentMenuType.name }}>
+        <Content code="release" values={{ name }}>
           <Tabs defaultActiveKey={this.state.key} onChange={this.handleChangeTabs} animated={false}>
             <TabPane tab={<FormattedMessage id="release.home.app.unpublish" />} key="1">
               {this.showProjectTable()}
@@ -268,7 +269,7 @@ class AppReleaseHome extends Component {
                 pagination={AppReleaseStore.getPageInfo}
                 columns={this.getColumn()}
                 dataSource={data}
-                filters={paras}
+                filters={paras.slice()}
                 rowKey={record => record.id}
                 onChange={this.tableChange}
               />

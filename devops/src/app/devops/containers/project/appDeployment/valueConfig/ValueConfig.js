@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Modal, Button } from 'choerodon-ui';
-import { stores } from 'choerodon-front-boot';
+import { Content, stores } from 'choerodon-front-boot';
 import YAML from 'yamljs';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import Ace from '../../../../components/yamlAce';
@@ -138,39 +138,24 @@ class ValueConfig extends Component {
       error = errorLine;
     }
     const sideDom = (<div className="c7n-region">
-      <h2 className="c7n-space-first">
-        <FormattedMessage
-          id="ist.editHead"
-          values={{
-            name: `${name}`,
-          }}
-        />
-      </h2>
-      <p>
-        <FormattedMessage id="ist.editDes" />
-        <a href={intl.formatMessage({ id: 'ist.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-          <span className="c7n-external-link-content">
-            <FormattedMessage id="learnmore" />
-          </span>
-          <i className="icon icon-open_in_new" />
-        </a>
-      </p>
-      <div className="c7n-ace-section">
-        <div className="c7n-body-section c7n-border-done">
-          <div>
-            {data && <Ace
-              newLines={data.newLines}
-              isFileError={!!data.errorLines}
-              errorLines={error}
-              totalLine={data.totalLine}
-              value={data.yaml}
-              highlightMarkers={data.highlightMarkers}
-              onChange={this.onChange}
-              change
-            /> }
+      <Content code="ist.edit" value={{ name }} className="sidebar-content">
+        <div className="c7n-ace-section">
+          <div className="c7n-body-section c7n-border-done">
+            <div>
+              {data && <Ace
+                newLines={data.newLines}
+                isFileError={!!data.errorLines}
+                errorLines={error}
+                totalLine={data.totalLine}
+                value={data.yaml}
+                highlightMarkers={data.highlightMarkers}
+                onChange={this.onChange}
+                change
+              /> }
+            </div>
           </div>
         </div>
-      </div>
+      </Content>
     </div>);
     return (<React.Fragment>
       <Sidebar

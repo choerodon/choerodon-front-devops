@@ -38,8 +38,7 @@ class TemplateHome extends Component {
    * @param callback
    */
   checkCode = Debounce((rule, value, callback) => {
-    const { TemplateStore, intl } = this.props;
-    // eslint-disable-next-line no-useless-escape
+    const { TemplateStore, intl: { formatMessage } } = this.props;
     const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     if (value && pa.test(value)) {
       TemplateStore.checkCode(this.state.organizationId, value)
@@ -47,13 +46,13 @@ class TemplateHome extends Component {
           if (data) {
             callback();
           } else {
-            callback(intl.formatMessage({ id: 'template.checkCode' }));
+            callback(formatMessage({ id: 'template.checkCode' }));
           }
         }).catch((error) => {
           Choerodon.prompt(error.response.data.message);
         });
     } else {
-      callback(intl.formatMessage({ id: 'template.checkCodeReg' }));
+      callback(formatMessage({ id: 'template.checkCodeReg' }));
     }
   }, 1000);
 
@@ -64,26 +63,15 @@ class TemplateHome extends Component {
    * @param callback
    */
   checkName = Debounce((rule, value, callback) => {
-    const { TemplateStore, intl } = this.props;
-    const singleData = TemplateStore.singleData;
-    if (singleData && value !== singleData.name) {
-      TemplateStore.checkName(this.state.organizationId, value)
+    const { TemplateStore: { checkName, singleData }, intl: { formatMessage } } = this.props;
+    const { organizationId } = this.state;
+    if ((singleData && value !== singleData.name) || !singleData) {
+      checkName(organizationId, value)
         .then((data) => {
           if (data) {
             callback();
           } else {
-            callback(intl.formatMessage({ id: 'template.checkName' }));
-          }
-        }).catch((error) => {
-          Choerodon.prompt(error.response.data.message);
-        });
-    } else if (!singleData) {
-      TemplateStore.checkName(this.state.organizationId, value)
-        .then((data) => {
-          if (data) {
-            callback();
-          } else {
-            callback(intl.formatMessage({ id: 'template.checkName' }));
+            callback(formatMessage({ id: 'template.checkName' }));
           }
         }).catch((error) => {
           Choerodon.prompt(error.response.data.message);
@@ -91,14 +79,14 @@ class TemplateHome extends Component {
     } else {
       callback();
     }
-  }, 1000);
+  }, 600);
 
   constructor(props) {
     super(props);
-    const menu = AppState.currentMenuType;
+    const { organizationId } = AppState.currentMenuType;
     this.state = {
       id: '',
-      organizationId: menu.id,
+      organizationId,
       openRemove: false,
       show: false,
       submitting: false,
@@ -109,31 +97,12 @@ class TemplateHome extends Component {
     this.loadAllData();
   }
 
-  // shouldComponentUpdate = (nextProps, nextState) => {
-  //   if (this.props.form.isFieldsTouched()) {
-  //     return true;
-  //   }
-  //   const thisProps = fromJS(this.props || {});
-  //   const thisState = fromJS(this.state || {});
-  //   const nextStates = fromJS(nextState || {});
-  //   if (thisProps.size !== nextProps.size ||
-  //     thisState.size !== nextState.size) {
-  //     return true;
-  //   }
-  //   if (is(thisState, nextStates)) {
-  //     return false;
-  //   }
-  //   return true;
-  // };
-
   /**
    * 获取行
-   * @returns {[null,null,null,null,null,null]}
    */
   getColumn = () => {
     const { TemplateStore, intl } = this.props;
-    const menu = AppState.currentMenuType;
-    const { type, id: orgId } = menu;
+    const { type, organizationId } = AppState.currentMenuType;
     const { filters, sort: { columnKey, order } } = TemplateStore.getInfo;
     return [{
       title: <FormattedMessage id="template.name" />,
@@ -143,8 +112,8 @@ class TemplateHome extends Component {
       filters: [],
       filteredValue: filters.name || [],
       dataIndex: 'name',
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={0.15}>
-        {record.name}
+      render: text => (<MouserOverWrapper text={text} width={0.15}>
+        {text}
       </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="template.code" />,
@@ -154,8 +123,8 @@ class TemplateHome extends Component {
       sortOrder: columnKey === 'code' && order,
       filters: [],
       filteredValue: filters.code || [],
-      render: (test, record) => (<MouserOverWrapper text={record.code} width={0.15}>
-        {record.code}
+      render: text => (<MouserOverWrapper text={text} width={0.15}>
+        {text}
       </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="template.des" />,
@@ -165,17 +134,17 @@ class TemplateHome extends Component {
       sortOrder: columnKey === 'description' && order,
       filters: [],
       filteredValue: filters.description || [],
-      render: (test, record) => (<MouserOverWrapper text={record.description} width={0.2}>
-        {record.description}
+      render: text => (<MouserOverWrapper text={text} width={0.2}>
+        {text}
       </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="template.url" />,
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (test, record) => (
-        <MouserOverWrapper text={record.repoUrl} width={0.1}>
+      render: text => (
+        <MouserOverWrapper text={text} width={0.1}>
           <div className="c7n-template-table">
-            <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">../{record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}</a>
+            <a href={text} rel="nofollow me noopener noreferrer" target="_blank">../{text.split('/')[text.split('/').length - 1]}</a>
           </div>
         </MouserOverWrapper>
       ),
@@ -193,28 +162,33 @@ class TemplateHome extends Component {
         value: 0,
       }],
       filteredValue: filters.type || [],
-      render: (text, record) => (
-        record.type ? <React.Fragment><Icon type="brightness_high" /> <span className="c7n-template-column-text"><FormattedMessage id="template.preDefine" /></span> </React.Fragment>
-          : <React.Fragment><Icon type="av_timer" /><span className="c7n-template-column-text"><FormattedMessage id="template.perDefine" /></span> </React.Fragment>
-      ),
+      render: text => (text ? <React.Fragment><Icon type="brightness_high" /> <span className="c7n-template-column-text"><FormattedMessage id="template.preDefine" /></span> </React.Fragment>
+        : <React.Fragment><Icon type="av_timer" /><span className="c7n-template-column-text"><FormattedMessage id="template.perDefine" /></span> </React.Fragment>),
     }, {
       width: 80,
       key: 'action',
-      render: (test, record) => (
+      render: record => (
         !record.type
         && <div>
-          <Permission type={type} organizationId={orgId} service={['devops-service.application-template.update']}>
+          <Permission type={type} organizationId={organizationId} service={['devops-service.application-template.update']}>
             <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="edit" />}>
-              <Button shape="circle" size="small" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
-                <i className="icon icon-mode_edit" />
-              </Button>
+              <Button
+                icon="mode_edit"
+                shape="circle"
+                size="small"
+                onClick={this.showSideBar.bind(this, 'edit', record.id)}
+              />
             </Tooltip>
           </Permission>
-          <Permission type={type} organizationId={orgId} service={['devops-service.application-template.delete']}>
+          <Permission type={type} organizationId={organizationId} service={['devops-service.application-template.delete']}>
             <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="delete" />}>
-              <Button shape="circle" size="small" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
-                <i className="icon icon-delete_forever" />
-              </Button>
+              <Button
+                icon="delete_forever"
+                shape="circle"
+                size="small"
+                funcType="flat"
+                onClick={this.openRemove.bind(this, record.id)}
+              />
             </Tooltip>
           </Permission>
         </div>
@@ -291,8 +265,8 @@ class TemplateHome extends Component {
    * 关闭滑块
    */
   hideSidebar = () => {
-    this.setState({ show: false });
     this.props.form.resetFields();
+    this.setState({ show: false });
   };
 
   /**
@@ -304,9 +278,9 @@ class TemplateHome extends Component {
     this.props.form.resetFields();
     const { TemplateStore } = this.props;
     const { organizationId } = this.state;
+    TemplateStore.setSingleData(null);
     if (type === 'create') {
       TemplateStore.loadSelectData(organizationId);
-      TemplateStore.setSingleData(null);
       this.setState({ show: true, type });
     } else {
       TemplateStore.loadDataById(organizationId, id);
@@ -315,166 +289,124 @@ class TemplateHome extends Component {
   };
 
   render() {
-    const { TemplateStore, intl } = this.props;
-    const { getFieldDecorator } = this.props.form;
-    const serviceData = TemplateStore.getAllData;
-    const { singleData, selectData } = TemplateStore;
-    const menu = AppState.currentMenuType;
-    const { type, id: orgId } = menu;
-    const { paras } = TemplateStore.getInfo;
-    const formContent = (<div className="c7n-region">
-      {this.state.type === 'create' ? <div>
-        <h2 className="c7n-space-first">
-          <FormattedMessage
-            id="template.createHead"
-            values={{
-              name: `${menu.name}`,
-            }}
-          />
-        </h2>
-        <p>
-          <FormattedMessage id="template.createDescription" />
-          <a href={intl.formatMessage({ id: 'template.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-            <span className="c7n-external-link-content">
-              <FormattedMessage id="learnmore" />
-            </span>
-            <i className="icon icon-open_in_new" />
-          </a>
-        </p>
-      </div> : <div>
-        <h2 className="c7n-space-first">
-          <FormattedMessage
-            id="template.edit"
-            values={{
-              name: `${singleData ? singleData.code : ''}`,
-            }}
-          />
-        </h2>
-        <p>
-          <FormattedMessage id="template.editDescription" />
-          <a href={intl.formatMessage({ id: 'template.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-            <span className="c7n-external-link-content">
-              <FormattedMessage id="learnmore" />
-            </span>
-            <i className="icon icon-open_in_new" />
-          </a>
-        </p>
-      </div>}
-      <Form layout="vertical" className="c7n-sidebar-form">
-        {this.state.type === 'create' && <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('code', {
-            rules: [{
-              required: this.state.type === 'create',
-              whitespace: true,
-              message: intl.formatMessage({ id: 'required' }),
-            }, {
-              validator: this.checkCode,
-            }],
-          })(
-            <Input
-              autoFocus
-              maxLength={20}
-              label={<FormattedMessage id="template.code" />}
-              size="default"
-            />,
-          )}
-        </FormItem> }
-        <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('name', {
-            rules: [{
-              required: true,
-              whitespace: true,
-              message: intl.formatMessage({ id: 'required' }),
-            }, {
-              validator: this.checkName,
-            }],
-            initialValue: singleData ? singleData.name : '',
-          })(
-            <Input
-              maxLength={20}
-              label={<FormattedMessage id="template.name" />}
-              size="default"
-            />,
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('description', {
-            rules: [{
-              required: true,
-              whitespace: true,
-              message: intl.formatMessage({ id: 'required' }),
-            }],
-            initialValue: singleData ? singleData.description : '',
-          })(
-            <TextArea
-              maxLength={50}
-              label={<FormattedMessage id="template.des" />}
-              autosize={{ minRows: 2, maxRows: 6 }}
-            />,
-          )}
-        </FormItem>
-        {this.state.type === 'create' && <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('copyFrom', {
-            rules: [{
-              transform: (value) => {
-                if (value) {
-                  return value.toString();
-                }
-                return value;
-              },
-            }],
-          })(
-            <Select
-              label={<FormattedMessage id="template.copy" />}
-              allowClear
-              key="service"
-              filter
-              dropdownMatchSelectWidth
-              size="default"
-              optionFilterProp="children"
-              filterOption={
-                (input, option) => option.props.children.props.children.props.children
-                  .toLowerCase().indexOf(input.toLowerCase()) >= 0
+    const { type, organizationId, name } = AppState.currentMenuType;
+    const {
+      TemplateStore: {
+        singleData,
+        selectData,
+        getAllData: serviceData,
+        getInfo: { paras },
+        isRefresh,
+        loading,
+        getPageInfo,
+      },
+      intl: { formatMessage },
+      form: { getFieldDecorator },
+    } = this.props;
+    const { type: modeType, show, submitting, openRemove } = this.state;
+    const formContent = (<Form layout="vertical" className="c7n-sidebar-form">
+      {modeType === 'create' && <FormItem
+        {...formItemLayout}
+      >
+        {getFieldDecorator('code', {
+          rules: [{
+            required: modeType === 'create',
+            whitespace: true,
+            message: formatMessage({ id: 'required' }),
+          }, {
+            validator: this.checkCode,
+          }],
+        })(
+          <Input
+            autoFocus
+            maxLength={20}
+            label={<FormattedMessage id="template.code" />}
+            size="default"
+          />,
+        )}
+      </FormItem> }
+      <FormItem
+        {...formItemLayout}
+      >
+        {getFieldDecorator('name', {
+          rules: [{
+            required: true,
+            whitespace: true,
+            message: formatMessage({ id: 'required' }),
+          }, {
+            validator: this.checkName,
+          }],
+          initialValue: singleData ? singleData.name : '',
+        })(
+          <Input
+            maxLength={20}
+            label={<FormattedMessage id="template.name" />}
+            size="default"
+          />,
+        )}
+      </FormItem>
+      <FormItem
+        {...formItemLayout}
+      >
+        {getFieldDecorator('description', {
+          rules: [{
+            required: true,
+            whitespace: true,
+            message: formatMessage({ id: 'required' }),
+          }],
+          initialValue: singleData ? singleData.description : '',
+        })(
+          <TextArea
+            maxLength={50}
+            label={<FormattedMessage id="template.des" />}
+            autosize={{ minRows: 2, maxRows: 6 }}
+          />,
+        )}
+      </FormItem>
+      {modeType === 'create' && <FormItem
+        {...formItemLayout}
+      >
+        {getFieldDecorator('copyFrom', {
+          rules: [{
+            transform: (value) => {
+              if (value) {
+                return value.toString();
               }
-            >
-              {selectData && selectData.length > 0 && selectData.map(s => (
-                <Option
-                  value={s.id}
-                  key={s.id.toString()}
+              return value;
+            },
+          }],
+        })(
+          <Select
+            label={<FormattedMessage id="template.copy" />}
+            allowClear
+            key="service"
+            filter
+            dropdownMatchSelectWidth
+            size="default"
+            optionFilterProp="children"
+            filterOption={
+              (input, option) => option.props.children.props.children.props.children
+                .toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {selectData && selectData.length > 0 && selectData.map(s => (
+              <Option
+                value={s.id}
+                key={s.id.toString()}
+              >
+                <Tooltip
+                  placement="right"
+                  trigger="hover"
+                  title={<p>{s.description}</p>}
                 >
-                  <Tooltip
-                    placement="right"
-                    trigger="hover"
-                    title={<p>{s.description}</p>}
-                  >
-                    <span style={{ display: 'inline-block', width: '100%' }}>{s.name}</span>
-                  </Tooltip>
-                </Option>
-              ))}
-            </Select>,
-          )}
-        </FormItem>}
-      </Form>
-    </div>);
-    const contentDom = (
-      <Table
-        filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
-        loading={TemplateStore.loading}
-        pagination={TemplateStore.getPageInfo}
-        columns={this.getColumn()}
-        dataSource={serviceData}
-        rowKey={record => record.id}
-        onChange={this.tableChange}
-        filters={paras}
-      />);
+                  <span style={{ display: 'inline-block', width: '100%' }}>{s.name}</span>
+                </Tooltip>
+              </Option>
+            ))}
+          </Select>,
+        )}
+      </FormItem>}
+    </Form>);
     return (
       <Page
         service={[
@@ -489,74 +421,68 @@ class TemplateHome extends Component {
         ]}
         className="c7n-region c7n-template-wrapper"
       >
-        {TemplateStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <Header title={<FormattedMessage id="template.title" />}>
+        {isRefresh ? <LoadingBar display /> : <React.Fragment>
+          <Header title={<FormattedMessage id="template.head" />}>
             <Permission
               service={['devops-service.application-template.create']}
               type={type}
-              organizationId={orgId}
+              organizationId={organizationId}
             >
               <Button
+                icon="playlist_add"
                 funcType="flat"
                 onClick={this.showSideBar.bind(this, 'create')}
               >
-                <i className="icon-playlist_add icon" />
                 <FormattedMessage id="template.create" />
               </Button>
             </Permission>
             <Permission
               service={['devops-service.application-template.listByOptions']}
               type={type}
-              organizationId={orgId}
+              organizationId={organizationId}
             >
               <Button
+                icon="refresh"
                 funcType="flat"
                 onClick={this.handleRefresh}
               >
-                <i className="icon-refresh icon" />
                 <FormattedMessage id="refresh" />
               </Button>
             </Permission>
           </Header>
-          <Content>
-            <h2 className="c7n-space-first">
-              <FormattedMessage
-                id="template.head"
-                values={{
-                  name: `${menu.name}`,
-                }}
-              />
-            </h2>
-            <p>
-              <FormattedMessage id="template.description" />
-              <a href={intl.formatMessage({ id: 'template.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                <span className="c7n-external-link-content">
-                  <FormattedMessage id="learnmore" />
-                </span>
-                <i className="icon icon-open_in_new" />
-              </a>
-            </p>
-            {this.state.show && <Sidebar
-              okText={<FormattedMessage id={this.state.type === 'create' ? 'create' : 'save'} />}
+          <Content code="template" value={{ name }}>
+            {show && <Sidebar
+              okText={<FormattedMessage id={modeType === 'create' ? 'create' : 'save'} />}
               cancelText={<FormattedMessage id="cancel" />}
-              title={<FormattedMessage id={this.state.type === 'create' ? 'template.create' : 'template.editTitle'} />}
-              visible={this.state.show}
+              title={<FormattedMessage id={modeType === 'create' ? 'template.create' : 'template.editTitle'} />}
+              visible={show}
               onOk={this.handleSubmit}
               onCancel={this.hideSidebar}
-              confirmLoading={this.state.submitting}
+              confirmLoading={submitting}
             >
-              {formContent}
+              <Content code={`template.${modeType}`} values={{ name }} className="sidebar-content">
+                {formContent}
+              </Content>
             </Sidebar> }
-            {contentDom}
+            <Table
+              filterBarPlaceholder={formatMessage({ id: 'filter' })}
+              loading={loading}
+              pagination={getPageInfo}
+              columns={this.getColumn()}
+              dataSource={serviceData}
+              rowKey={record => record.id}
+              onChange={this.tableChange}
+              filters={paras.slice()}
+            />
           </Content>
         </React.Fragment>}
         <Modal
-          visible={this.state.openRemove}
+          visible={openRemove}
           title={<FormattedMessage id="template.del" />}
           closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}><FormattedMessage id="cancel" /></Button>,
-            <Button key="submit" type="danger" onClick={this.handleDelete} loading={this.state.submitting}>
+            <Button key="submit" type="danger" onClick={this.handleDelete} loading={submitting}>
               <FormattedMessage id="delete" />
             </Button>,
           ]}

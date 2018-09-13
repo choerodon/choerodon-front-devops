@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
-import { Table, Tootip, Button, Input, Form, Modal, Tooltip, Select } from 'choerodon-ui';
+import React, { Component, Fragment } from 'react';
+import { Table, Tootip, Button, Input, Form, Modal, Tooltip, Select, Icon } from 'choerodon-ui';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import { fromJS, is } from 'immutable';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { commonComponent } from '../../../../components/commonFunction';
 import LoadingBar from '../../../../components/loadingBar';
@@ -13,8 +12,8 @@ import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const { AppState } = stores;
-const Sidebar = Modal.Sidebar;
-const Option = Select.Option;
+const { Sidebar } = Modal;
+const { Option } = Select;
 const FormItem = Form.Item;
 const formItemLayout = {
   labelCol: {
@@ -30,10 +29,6 @@ const formItemLayout = {
 @commonComponent('AppStore')
 @observer
 class AppHome extends Component {
-  /**
-   *
-   * @type 隔断时间提交验证数据
-   */
   postName =_.debounce((projectId, value, callback) => {
     const { AppStore, intl } = this.props;
     AppStore.checkName(projectId, value)
@@ -44,7 +39,7 @@ class AppHome extends Component {
           callback(intl.formatMessage({ id: 'template.checkName' }));
         }
       });
-  }, 1000);
+  }, 600);
 
   /**
    * 校验应用编码规则
@@ -53,8 +48,7 @@ class AppHome extends Component {
    * @param callback
    */
   checkCode =_.debounce((rule, value, callback) => {
-    const { AppStore, intl } = this.props;
-    // eslint-disable-next-line no-useless-escape
+    const { AppStore, intl: { formatMessage } } = this.props;
     const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     if (value && pa.test(value)) {
       AppStore.checkCode(this.state.projectId, value)
@@ -62,13 +56,13 @@ class AppHome extends Component {
           if (data) {
             callback();
           } else {
-            callback(intl.formatMessage({ id: 'template.checkCode' }));
+            callback(formatMessage({ id: 'template.checkCode' }));
           }
         });
     } else {
-      callback(intl.formatMessage({ id: 'template.checkCodeReg' }));
+      callback(formatMessage({ id: 'template.checkCodeReg' }));
     }
-  }, 1000);
+  }, 600);
 
   constructor(props) {
     const menu = AppState.currentMenuType;
@@ -87,27 +81,9 @@ class AppHome extends Component {
     this.loadAllData(this.state.page);
   }
 
-  shouldComponentUpdate = (nextProps, nextState) => {
-    if (this.props.form.isFieldsTouched()) {
-      return true;
-    }
-    const thisProps = fromJS(this.props || {});
-    const thisState = fromJS(this.state || {});
-    const nextStates = fromJS(nextState || {});
-    if (thisProps.size !== nextProps.size
-      || thisState.size !== nextState.size) {
-      return true;
-    }
-    if (is(thisState, nextStates)) {
-      return false;
-    }
-    return true;
-  };
-
   getColumn = () => {
-    const { AppStore, intl } = this.props;
-    const menu = AppState.currentMenuType;
-    const { type, id: projectId, organizationId: orgId } = menu;
+    const { AppStore, intl: { formatMessage } } = this.props;
+    const { type, id: projectId, organizationId: orgId } = AppState.currentMenuType;
     const { filters, sort: { columnKey, order } } = AppStore.getInfo;
     return [{
       title: <FormattedMessage id="app.name" />,
@@ -117,8 +93,8 @@ class AppHome extends Component {
       sortOrder: columnKey === 'name' && order,
       filters: [],
       filteredValue: filters.name || [],
-      render: (test, record) => (<MouserOverWrapper text={record.name} width={0.2}>
-        {record.name}
+      render: text => (<MouserOverWrapper text={text} width={0.2}>
+        {text}
       </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="app.code" />,
@@ -128,67 +104,78 @@ class AppHome extends Component {
       sortOrder: columnKey === 'code' && order,
       filters: [],
       filteredValue: filters.code || [],
-      render: (test, record) => (<MouserOverWrapper text={record.code} width={0.25}>
-        {record.code}
+      render: text => (<MouserOverWrapper text={text} width={0.25}>
+        {text}
       </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="app.url" />,
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (test, record) => (<MouserOverWrapper text={record.repoUrl} width={0.25}>
-        <a href={record.repoUrl} rel="nofollow me noopener noreferrer" target="_blank">{record.repoUrl ? `../${record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}` : ''}</a>
+      render: text => (<MouserOverWrapper text={text} width={0.25}>
+        <a href={text} rel="nofollow me noopener noreferrer" target="_blank">{text ? `../${text.split('/')[text.split('/').length - 1]}` : ''}</a>
       </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="app.active" />,
       dataIndex: 'active',
       key: 'active',
       filters: [{
-        text: intl.formatMessage({ id: 'app.stop' }),
+        text: formatMessage({ id: 'app.stop' }),
         value: 0,
       }, {
-        text: intl.formatMessage({ id: 'app.run' }),
+        text: formatMessage({ id: 'app.run' }),
         value: 1,
       }, {
-        text: intl.formatMessage({ id: 'app.creating' }),
+        text: formatMessage({ id: 'app.creating' }),
         value: -1,
       }],
       filteredValue: filters.active || [],
-      render: (test, record) => (
-        <React.Fragment>
-          {record.synchro && <span>{record.active ? intl.formatMessage({ id: 'app.run' }) : intl.formatMessage({ id: 'app.stop' })}</span>}
-          {(!record.synchro) && <FormattedMessage id="app.creating" />}
-        </React.Fragment>
-      ),
+      render: (text, record) => (record.synchro
+        ? <span>{text ? formatMessage({ id: 'app.run' }) : formatMessage({ id: 'app.stop' })}</span>
+        : <FormattedMessage id="app.creating" />),
     }, {
       align: 'right',
       width: 104,
       key: 'action',
-      render: (test, record) => (
-        <div>
+      render: record => (
+        <Fragment>
           {record.sonarUrl ? <Tooltip title={<FormattedMessage id="app.quality" />} placement="bottom">
             <a href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
-              <Button shape="circle" size="small">
-                <i className="icon icon-quality" />
-              </Button>
+              <Button icon="qualit" shape="circle" size="small" />
             </a>
           </Tooltip> : null }
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']}>
-            <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="edit" /> : <FormattedMessage id="app.start" />}</React.Fragment>}</div>}>
-              {record.active && record.synchro ? <Button shape="circle" size="small" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
-                <i className="icon icon-mode_edit" />
-              </Button> : <i className="icon icon-mode_edit c7n-app-icon-disabled" /> }
+            <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <Fragment>{record.active ? <FormattedMessage id="edit" /> : <FormattedMessage id="app.start" />}</Fragment>}</div>}>
+              {record.active && record.synchro
+                ? <Button
+                  icon="mode_edit"
+                  shape="circle"
+                  size="small"
+                  onClick={this.showSideBar.bind(this, 'edit', record.id)}
+                />
+                : <Icon type="mode_edit" className="c7n-app-icon-disabled" /> }
             </Tooltip>
           </Permission>
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']}>
-            <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <React.Fragment>{record.active ? <FormattedMessage id="app.stop" /> : <FormattedMessage id="app.run" />}</React.Fragment>}</div>}>
-              {record.synchro ? <Button shape="circle" size="small" onClick={this.changeAppStatus.bind(this, record.id, record.active)}>
-                {record.active ? <i className="icon icon-remove_circle_outline" /> : <i className="icon icon-finished" />}
-              </Button> : <React.Fragment>
-                {record.active ? <i className="icon icon-remove_circle_outline c7n-app-icon-disabled" /> : <i className="icon icon-finished c7n-app-icon-disabled" />}
-              </React.Fragment> }
+            <Tooltip
+              placement="bottom"
+              title={!record.synchro
+                ? <FormattedMessage id="app.synch" />
+                : <Fragment>{record.active ? <FormattedMessage id="app.stop" /> : <FormattedMessage id="app.run" />}</Fragment>}
+            >
+              {record.synchro
+                ? <Button shape="circle" size="small" onClick={this.changeAppStatus.bind(this, record.id, record.active)}>
+                  {record.active
+                    ? <Icon type="remove_circle_outline" />
+                    : <Icon type="finished" />}
+                </Button>
+                : <Fragment>
+                  {record.active
+                    ? <Icon type="remove_circle_outline" className="c7n-app-icon-disabled" />
+                    : <Icon type="finished" className="c7n-app-icon-disabled" />}
+                </Fragment> }
             </Tooltip>
           </Permission>
-        </div>
+        </Fragment>
       ),
     }];
   } ;
@@ -196,10 +183,11 @@ class AppHome extends Component {
   /**
    * 打开分支
    * @param id 应用id
+   * @param name
    */
   linkToBranch =(id, name) => {
-    const menu = AppState.currentMenuType;
-    this.linkToChange(`/devops/app/${name}/${id}/branch?type=project&id=${menu.id}&name=${menu.name}&organizationId=${menu.organizationId}`);
+    const { id: projectId, name: menuName, organizationId } = AppState.currentMenuType;
+    this.linkToChange(`/devops/app/${name}/${id}/branch?type=project&id=${projectId}&name=${menuName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -227,9 +215,7 @@ class AppHome extends Component {
   checkName = (rule, value, callback) => {
     const { AppStore } = this.props;
     const singleData = AppStore.singleData;
-    if (singleData && value !== singleData.name) {
-      this.postName(this.state.projectId, value, callback);
-    } else if (!singleData) {
+    if ((singleData && value !== singleData.name) || !singleData) {
       this.postName(this.state.projectId, value, callback);
     } else {
       callback();
@@ -317,8 +303,7 @@ class AppHome extends Component {
     this.props.form.resetFields();
     const { AppStore } = this.props;
     const { projectId } = this.state;
-    const menu = AppState.currentMenuType;
-    const organizationId = menu.id;
+    const { organizationId } = AppState.currentMenuType;
     if (type === 'create') {
       AppStore.setSingleData(null);
       AppStore.loadSelectData(organizationId);
@@ -334,152 +319,109 @@ class AppHome extends Component {
   };
 
   render() {
-    const { AppStore, intl } = this.props;
-    const { getFieldDecorator } = this.props.form;
-    const serviceData = AppStore.getAllData;
-    const { singleData, selectData } = AppStore;
-    const { paras } = AppStore.getInfo;
-    const menu = AppState.currentMenuType;
-    const { type, id: projectId, organizationId: orgId } = menu;
-    const formContent = (<div className="c7n-region">
-      {this.state.type === 'create' ? <div>
-        <h2 className="c7n-space-first">
-          <FormattedMessage
-            id="app.createApp"
-            values={{
-              name: `${menu.name}`,
-            }}
-          />
-        </h2>
-        <p>
-          <FormattedMessage id="app.createDescription" />
-          <a href={intl.formatMessage({ id: 'app.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-            <span className="c7n-external-link-content">
-              <FormattedMessage id="learnmore" />
-            </span>
-            <i className="icon icon-open_in_new" />
-          </a>
-        </p>
-      </div> : <div>
-        <h2 className="c7n-space-first">
-          <FormattedMessage
-            id="app.editApp"
-            values={{
-              name: `${singleData ? singleData.code : ''}`,
-            }}
-          />
-        </h2>
-        <p>
-          <FormattedMessage id="app.editDescription" />
-          <a href={intl.formatMessage({ id: 'app.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-            <span className="c7n-external-link-content">
-              <FormattedMessage id="learnmore" />
-            </span>
-            <i className="icon icon-open_in_new" />
-          </a>
-        </p>
-      </div>}
-      <Form layout="vertical" className="c7n-sidebar-form">
-        {this.state.type === 'create' && <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('code', {
-            rules: [{
-              required: true,
-              whitespace: true,
-              max: 47,
-              message: intl.formatMessage({ id: 'required' }),
-            }, {
-              validator: this.checkCode,
-            }],
-          })(
-            <Input
-              autoFocus
-              maxLength={30}
-              label={<FormattedMessage id="app.code" />}
-              size="default"
-            />,
-          )}
-        </FormItem> }
-        <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('name', {
-            rules: [{
-              required: true,
-              whitespace: true,
-              message: intl.formatMessage({ id: 'required' }),
-            }, {
-              validator: this.checkName,
-            }],
-            initialValue: singleData ? singleData.name : '',
-          })(
-            <Input
-              maxLength={20}
-              label={<FormattedMessage id="app.name" />}
-              size="default"
-            />,
-          )}
-        </FormItem>
-        {this.state.type === 'create' && <FormItem
-          {...formItemLayout}
-        >
-          {getFieldDecorator('applictionTemplateId', {
-            rules: [{
-              // required: true,
-              message: intl.formatMessage({ id: 'required' }),
-              transform: (value) => {
-                if (value) {
-                  return value.toString();
-                }
-                return value;
-              },
-            }],
-          })(
-            <Select
-              key="service"
-              allowClear
-              label={<FormattedMessage id="app.chooseTem" />}
-              filter
-              dropdownMatchSelectWidth
-              onSelect={this.selectTemplate}
-              size="default"
-              optionFilterProp="children"
-              filterOption={
-                (input, option) => option.props.children.props.children.props.children
-                  .toLowerCase().indexOf(input.toLowerCase()) >= 0
+    const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
+    const {
+      AppStore: {
+        singleData,
+        selectData,
+        getAllData: serviceData,
+        getInfo: { paras },
+        isRefresh,
+        loading,
+        getPageInfo,
+      },
+      intl: { formatMessage },
+      form: { getFieldDecorator },
+    } = this.props;
+    const { type: modeType, show, submitting, openRemove } = this.state;
+    const formContent = (<Form layout="vertical" className="c7n-sidebar-form">
+      {modeType === 'create' && <FormItem
+        {...formItemLayout}
+      >
+        {getFieldDecorator('code', {
+          rules: [{
+            required: true,
+            whitespace: true,
+            max: 47,
+            message: formatMessage({ id: 'required' }),
+          }, {
+            validator: this.checkCode,
+          }],
+        })(
+          <Input
+            autoFocus
+            maxLength={30}
+            label={<FormattedMessage id="app.code" />}
+            size="default"
+          />,
+        )}
+      </FormItem> }
+      <FormItem
+        {...formItemLayout}
+      >
+        {getFieldDecorator('name', {
+          rules: [{
+            required: true,
+            whitespace: true,
+            message: formatMessage({ id: 'required' }),
+          }, {
+            validator: this.checkName,
+          }],
+          initialValue: singleData ? singleData.name : '',
+        })(
+          <Input
+            maxLength={20}
+            label={<FormattedMessage id="app.name" />}
+            size="default"
+          />,
+        )}
+      </FormItem>
+      {modeType === 'create' && <FormItem
+        {...formItemLayout}
+      >
+        {getFieldDecorator('applictionTemplateId', {
+          rules: [{
+            message: formatMessage({ id: 'required' }),
+            transform: (value) => {
+              if (value) {
+                return value.toString();
               }
-            >
-              {selectData && selectData.length > 0 && selectData.map(s => (
-                <Option
-                  value={s.id}
-                  key={s.id}
+              return value;
+            },
+          }],
+        })(
+          <Select
+            key="service"
+            allowClear
+            label={<FormattedMessage id="app.chooseTem" />}
+            filter
+            dropdownMatchSelectWidth
+            onSelect={this.selectTemplate}
+            size="default"
+            optionFilterProp="children"
+            filterOption={
+              (input, option) => option.props.children.props.children.props.children
+                .toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {selectData && selectData.length > 0 && selectData.map(s => (
+              <Option
+                value={s.id}
+                key={s.id}
+              >
+                <Tooltip
+                  placement="right"
+                  trigger="hover"
+                  title={<p>{s.description}</p>}
                 >
-                  <Tooltip
-                    placement="right"
-                    trigger="hover"
-                    title={<p>{s.description}</p>}
-                  >
-                    <span style={{ display: 'inline-block', width: '100%' }}>{s.name}</span>
-                  </Tooltip>
-                </Option>
-              ))}
-            </Select>,
-          )}
-        </FormItem>}
-      </Form>
-    </div>);
-    const contentDom = (
-      <Table
-        filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
-        pagination={AppStore.getPageInfo}
-        loading={AppStore.loading}
-        columns={this.getColumn()}
-        dataSource={serviceData}
-        rowKey={record => record.id}
-        onChange={this.tableChange}
-        filters={paras}
-      />);
+                  <span style={{ display: 'inline-block', width: '100%' }}>{s.name}</span>
+                </Tooltip>
+              </Option>
+            ))}
+          </Select>,
+        )}
+      </FormItem>}
+    </Form>);
 
     return (
       <Page
@@ -495,8 +437,8 @@ class AppHome extends Component {
           'devops-service.application.queryByAppId',
         ]}
       >
-        { AppStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <Header title={<FormattedMessage id="app.title" />}>
+        { isRefresh ? <LoadingBar display /> : <Fragment>
+          <Header title={<FormattedMessage id="app.head" />}>
             <Permission
               service={['devops-service.application.create']}
               type={type}
@@ -504,53 +446,45 @@ class AppHome extends Component {
               organizationId={orgId}
             >
               <Button
+                icon="playlist_add"
                 onClick={this.showSideBar.bind(this, 'create')}
               >
-                <i className="icon-playlist_add icon" />
                 <FormattedMessage id="app.create" />
               </Button>
             </Permission>
             <Button
+              icon="refresh"
               onClick={this.handleRefresh}
             >
-              <i className="icon-refresh icon" />
               <FormattedMessage id="refresh" />
             </Button>
           </Header>
-          <Content>
-            <h2 className="c7n-space-first">
-              <FormattedMessage
-                id="app.head"
-                values={{
-                  name: `${menu.name}`,
-                }}
-              />
-            </h2>
-            <p>
-              <FormattedMessage id="app.description" />
-              <a className="c7n-external-link" href={intl.formatMessage({ id: 'app.link' })} rel="nofollow me noopener noreferrer" target="_blank">
-                <span className="c7n-external-link-content">
-                  <FormattedMessage id="learnmore" />
-                </span>
-                <i className="icon icon-open_in_new" />
-              </a>
-            </p>
-            {this.state.show && <Sidebar
-              title={<FormattedMessage id={this.state.type === 'create' ? 'app.create' : 'app.edit'} />}
-              visible={this.state.show}
+          <Content code="app" value={{ name }}>
+            {show && <Sidebar
+              title={<FormattedMessage id={modeType === 'create' ? 'app.create' : 'app.edit'} />}
+              visible={show}
               onOk={this.handleSubmit}
-              okText={<FormattedMessage id={this.state.type === 'create' ? 'create' : 'save'} />}
+              okText={<FormattedMessage id={modeType === 'create' ? 'create' : 'save'} />}
               cancelText={<FormattedMessage id="cancel" />}
-              confirmLoading={this.state.submitting}
+              confirmLoading={submitting}
               onCancel={this.hideSidebar}
             >
-              {formContent}
+              <Content code={`app.${modeType}`} values={{ name }} className="sidebar-content">
+                {formContent}
+              </Content>
             </Sidebar>}
-            {contentDom}
+            <Table
+              filterBarPlaceholder={formatMessage({ id: 'filter' })}
+              pagination={getPageInfo}
+              loading={loading}
+              columns={this.getColumn()}
+              dataSource={serviceData}
+              rowKey={record => record.id}
+              onChange={this.tableChange}
+              filters={paras.slice()}
+            />
           </Content>
-        </React.Fragment>}
-
-
+        </Fragment>}
       </Page>
     );
   }
