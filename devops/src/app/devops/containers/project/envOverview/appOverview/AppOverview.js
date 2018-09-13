@@ -80,6 +80,9 @@ class AppOverview extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
+      ws: false,
+      following: true,
+      fullscreen: false,
     };
   }
 
@@ -331,25 +334,30 @@ class AppOverview extends Component {
    */
   @action
   containerChange = (value) => {
-    if (this.state.ws) {
-      this.state.ws.close();
+    const { ws } = this.state;
+    if (this.logId !== value.split('+')[0]) {
+      if (ws) {
+        ws.close();
+      }
+      this.containerName = value.split('+')[1];
+      this.logId = value.split('+')[0];
+      this.loadLog();
     }
-    this.containerName = value.split('+')[1];
-    this.logId = value.split('+')[0];
-    this.loadLog();
   };
 
   /**
    * 加载容器日志
    */
-  loadLog = () => {
+  loadLog = (followingOK) => {
     const authToken = document.cookie.split('=')[1];
     const logs = [];
     let oldLogs = [];
-    const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${this.namespace}.envId:${this.props.envId}.log:${this.logId}&podName=${this.podName}&containerName=${this.containerName}&logId=${this.logId}&token=${authToken}`);
+    const ws = new WebSocket(`ws://devops-service-front.staging.saas.hand-china.com/ws/log?key=env:${this.namespace}.envId:${this.props.envId}.log:${this.logId}&podName=${this.podName}&containerName=${this.containerName}&logId=${this.logId}&token=${authToken}`);
     const editor = this.editorLog.getCodeMirror();
-    this.setState({ ws });
-    editor.setValue('Loading...');
+    this.setState({ ws, following: true });
+    if (!followingOK) {
+      editor.setValue('Loading...');
+    }
     ws.onmessage = (e) => {
       if (e.data.size) {
         const reader = new FileReader();
@@ -776,8 +784,71 @@ class AppOverview extends Component {
     }
   };
 
+  /**
+   * 日志go top
+   */
+  goTop = () => {
+    const editor = this.editorLog.getCodeMirror();
+    editor.execCommand('goDocStart');
+  };
+
+  /**
+   * top log following
+   */
+  stopFollowing = () => {
+    const { ws } = this.state;
+    if (ws) {
+      ws.close();
+    }
+    this.setState({
+      following: false,
+    });
+  };
+
+  /**
+   *  全屏查看日志
+   */
+  setFullscreen = () => {
+    const cm = this.editorLog.getCodeMirror();
+    const wrap = cm.getWrapperElement();
+    cm.state.fullScreenRestore = {
+      scrollTop: window.pageYOffset,
+      scrollLeft: window.pageXOffset,
+      width: wrap.style.width,
+      height: wrap.style.height,
+    };
+    wrap.style.width = '';
+    wrap.style.height = 'auto';
+    wrap.className += ' CodeMirror-fullscreen';
+    this.setState({ fullscreen: true });
+    document.documentElement.style.overflow = 'hidden';
+    cm.refresh();
+    window.addEventListener('keypress', (e) => {
+      this.setNormal(e.which);
+    });
+  };
+
+  /**
+   * 任意键退出全屏查看
+   */
+  setNormal = () => {
+    const cm = this.editorLog.getCodeMirror();
+    const wrap = cm.getWrapperElement();
+    wrap.className = wrap.className.replace(/\s*CodeMirror-fullscreen\b/, '');
+    this.setState({ fullscreen: false });
+    document.documentElement.style.overflow = '';
+    const info = cm.state.fullScreenRestore;
+    wrap.style.width = info.width; wrap.style.height = info.height;
+    window.scrollTo(info.scrollLeft, info.scrollTop);
+    cm.refresh();
+    window.removeEventListener('keypress', (e) => {
+      this.setNormal(e.which);
+    });
+  };
+
   render() {
     const { intl, store } = this.props;
+    const { fullscreen, following } = this.state;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const val = store.getVal;
     const prefix = <Icon type="search" onClick={this.onSearch} />;
@@ -789,6 +860,7 @@ class AppOverview extends Component {
       readOnly: true,
       lineNumbers: true,
       autofocus: true,
+      lineWrapping: true,
       theme: 'base16-dark',
     };
 
@@ -828,11 +900,11 @@ class AppOverview extends Component {
           title={<FormattedMessage id="container.log.header.title" />}
           onOk={this.closeSidebar}
           className="c7n-podLog-content c7n-region"
-          okText={<FormattedMessage id="cancel" />}
+          okText={<FormattedMessage id="close" />}
           okCancel={false}
           destroyOnClose
         >
-          <Content className="sidebar-content" code="container.log" values={{ name: this.podName }}>
+          <Content className="sidebar-content" code={'container.log'} values={{ name: this.podName }}>
             <section className="c7n-podLog-section">
               <div className="c7n-podLog-hei-wrap">
                 <div className="c7n-podShell-title">
@@ -840,7 +912,10 @@ class AppOverview extends Component {
                   <Select value={this.containerName} onChange={this.containerChange}>
                     {containerDom}
                   </Select>
+                  <Button type="primary" funcType="flat" shape="circle" icon="fullscreen" onClick={this.setFullscreen} />
                 </div>
+                {following ? <div className={`c7n-podLog-action log-following ${fullscreen ? 'f-top' : ''}`} onClick={this.stopFollowing}>Stop Following</div>
+                  : <div className={`c7n-podLog-action log-following ${fullscreen ? 'f-top' : ''}`} onClick={this.loadLog.bind(this, true)}>Start Following</div>}
                 <CodeMirror
                   ref={(editor) => { this.editorLog = editor; }}
                   value="Loading..."
@@ -848,6 +923,7 @@ class AppOverview extends Component {
                   onChange={code => this.props.ChangeCode(code)}
                   options={options}
                 />
+                <div className={`c7n-podLog-action log-goTop ${fullscreen ? 'g-top' : ''}`} onClick={this.goTop}>Go Top</div>
               </div>
             </section>
           </Content>

@@ -51,6 +51,8 @@ class AppDeploymentStore {
 
   @observable appId = false;
 
+  @observable pId = false;
+
   @observable istParams = { filters: {}, param: [] };
 
   @observable verValue = undefined;
@@ -185,6 +187,14 @@ class AppDeploymentStore {
 
   @action setAppId(appId) {
     this.appId = appId;
+  }
+
+  @action setPId(pId) {
+    this.pId = pId;
+  }
+
+  @computed get getPId() {
+    return this.pId;
   }
 
   @computed get getVerId() {

@@ -16,14 +16,12 @@ import AppStoreStore from '../../../../stores/project/appStore';
 
 const ButtonGroup = Button.Group;
 const { AppState } = stores;
-const height = window.screen.height;
 
 @observer
 class DeployHome extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      pageSize: height <= 900 ? 10 : 15,
     };
   }
 
@@ -98,10 +96,10 @@ class DeployHome extends Component {
   /**
    * 查询应用标签及实例列表
    * @param envId
+   * @param Info
    */
   loadSingleEnv = (envId, Info = {}) => {
     const { AppDeploymentStore } = this.props;
-    const { pageSize } = this.state;
     const menu = JSON.parse(sessionStorage.selectData);
     const projectId = menu.id;
     const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
@@ -118,10 +116,11 @@ class DeployHome extends Component {
     const { AppDeploymentStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     const envNames = AppDeploymentStore.getEnvcard;
-    const envID = envNames.length ? envNames[0].id : null;
-    const verID = AppDeploymentStore.getVerId;
+    const envId = AppDeploymentStore.getEnvId;
+    const envID = envId || (envNames.length ? envNames[0].id : null);
+    const verId = AppDeploymentStore.getVerId;
     if (envID) {
-      this.loadInstance(envID, verID, id, Info);
+      this.loadInstance(envID, verId, id, Info);
     }
     AppDeploymentStore.loadAppVersion(projectId, id);
   };
@@ -131,13 +130,13 @@ class DeployHome extends Component {
    * @param envId 环境id
    * @param verId 版本id
    * @param appId 应用id
+   * @param Info
    */
   loadInstance = (envId, verId, appId, Info) => {
     const { AppDeploymentStore } = this.props;
-    const { pageSize } = this.state;
     const projectId = AppState.currentMenuType.id;
     Info.envId = envId;
-    Info.verId = verId;
+    Info.versionId = verId;
     Info.appId = appId;
     AppDeploymentStore.loadInstanceAll(projectId, Info);
   };
@@ -159,8 +158,9 @@ class DeployHome extends Component {
       this.loadAppName();
       const appNames = AppDeploymentStore.getAppNames;
       AppDeploymentStore.setAppId(false);
+      AppDeploymentStore.setPId(false);
       if (appNames.length) {
-        this.loadAppVer(AppDeploymentStore.appId || appNames[0].id, Info);
+        this.loadAppVer(appNames[0].id, Info);
       }
     } else if (tabName === 'multiApp') {
       this.loadEnvCards();
@@ -170,6 +170,7 @@ class DeployHome extends Component {
     } else if (tabName === 'singleEnv') {
       const envNames = AppDeploymentStore.getEnvcard;
       AppDeploymentStore.setAppId(false);
+      AppDeploymentStore.setVerId(false);
       if (envNames.length) {
         this.loadSingleEnv(AppDeploymentStore.envId || envNames[0].id, Info);
       }

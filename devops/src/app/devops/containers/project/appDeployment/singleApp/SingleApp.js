@@ -6,7 +6,6 @@ import { stores, Action } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import classNames from 'classnames';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import ValueConfig from '../valueConfig';
 import UpgradeIst from '../upgrateIst';
 import '../AppDeploy.scss';
@@ -24,9 +23,6 @@ class SingleApp extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      appId: null,
-      verId: null,
-      envId: null,
       visibleUp: false,
       page: 0,
       pageSize: height <= 900 ? 10 : 15,
@@ -51,16 +47,13 @@ class SingleApp extends Component {
   loadAppVer = (ids) => {
     const { store } = this.props;
     if (ids && ids !== 'more') {
-      const idArr = ids.split(',');
+      const idArr = ids.split('-');
       const projectId = AppState.currentMenuType.id;
-      const { envId } = this.state;
+      const envId = store.getEnvId;
       const envNames = store.getEnvcard;
       const envID = envId || (envNames.length ? envNames[0].id : null);
-      this.setState({
-        appId: idArr[0],
-        verId: false,
-      });
       store.setAppId(idArr[0]);
+      store.setVerId(false);
       if (envID) {
         this.loadInstance(envID, null, idArr[0]);
       }
@@ -74,9 +67,7 @@ class SingleApp extends Component {
         store.setAppVer([]);
       }
     } else {
-      this.setState({
-        verId: false,
-      });
+      store.setVerId(false);
       store.setAppVer([]);
     }
     store.setIstTableFilter(null);
@@ -86,15 +77,13 @@ class SingleApp extends Component {
    * 设置版本Id
    */
   loadVerId = (id) => {
-    const { envId, appId } = this.state;
     const { store } = this.props;
     const envNames = store.getEnvcard;
     const appNames = store.getAppNames;
-    const envID = envId || envNames[0].id;
-    const appID = appId || appNames[0].id;
-    this.setState({
-      verId: id,
-    });
+    const envId = store.getEnvId;
+    const appId = store.getAppId;
+    const envID = envId || (envNames.length ? envNames[0].id : null);
+    const appID = appId || (appNames.length ? appNames[0].id : null);
     store.setVerId(id);
     if (envID) {
       this.loadInstance(envID, id, appID);
@@ -107,16 +96,14 @@ class SingleApp extends Component {
    * @param envId
    */
   loadDetail = (envId) => {
-    this.setState({
-      envId,
-    });
     const { store } = this.props;
-    const { appId, verId } = this.state;
     const envNames = store.getEnvcard;
     const appNames = store.getAppNames;
     store.setEnvId(envId);
-    const envID = envId || envNames[0].id;
-    const appID = appId || appNames[0].id;
+    const appId = store.getAppId;
+    const verId = store.getVerId;
+    const envID = envId || (envNames.length ? envNames[0].id : null);
+    const appID = appId || (appNames.length ? appNames[0].id : null);
     this.loadInstance(envID, verId, appID);
     store.setIstTableFilter(null);
   };
@@ -177,11 +164,13 @@ class SingleApp extends Component {
   tableChange =(pagination, filters, sorter, param) => {
     const { store } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const { envId, appId, verId } = this.state;
     const envNames = store.getEnvcard;
     const appNames = store.getAppNames;
-    const envID = envId || envNames[0].id;
-    const appID = appId || appNames[0].id;
+    const envId = store.getEnvId;
+    const appId = store.getAppId;
+    const verId = store.getVerId;
+    const envID = envId || (envNames.length ? envNames[0].id : null);
+    const appID = appId || (appNames.length ? appNames[0].id : null);
     const sort = {};
     if (sorter.column) {
       const { field, order } = sorter;
@@ -271,13 +260,15 @@ class SingleApp extends Component {
    * 关闭滑块
    * @param res 是否重新部署需要重载数据
    */
-  handleCancel =(res) => {
+  handleCancel = (res) => {
     const { store } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const { envId, appId, verId, page, pageSize } = this.state;
     const appNames = store.getAppNames;
-    const envCard = store.getEnvcard;
-    const envID = envId || (envCard.length ? envCard[0].id : null);
+    const envNames = store.getEnvcard;
+    const envId = store.getEnvId;
+    const appId = store.getAppId;
+    const verId = store.getVerId;
+    const envID = envId || (envNames.length ? envNames[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
     this.setState({
       visible: false,
@@ -310,10 +301,12 @@ class SingleApp extends Component {
   handleDelete = (id) => {
     const { store } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const { envId, appId, verId, page, pageSize } = this.state;
     const appNames = store.getAppNames;
-    const envCard = store.getEnvcard;
-    const envID = envId || (envCard.length ? envCard[0].id : null);
+    const envNames = store.getEnvcard;
+    const envId = store.getEnvId;
+    const appId = store.getAppId;
+    const verId = store.getVerId;
+    const envID = envId || (envNames.length ? envNames[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
     this.setState({
       loading: true,
@@ -346,10 +339,13 @@ class SingleApp extends Component {
   activeIst = (id, status) => {
     const { store } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const { envId, appId, verId, page, pageSize } = this.state;
+    const { page, pageSize } = this.state;
     const appNames = store.getAppNames;
-    const envCard = store.getEnvcard;
-    const envID = envId || (envCard.length ? envCard[0].id : null);
+    const envNames = store.getEnvcard;
+    const envId = store.getEnvId;
+    const appId = store.getAppId;
+    const verId = store.getVerId;
+    const envID = envId || (envNames.length ? envNames[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
     store.changeIstActive(projectId, id, status)
       .then((error) => {
@@ -543,7 +539,7 @@ class SingleApp extends Component {
           proLength += 1;
         }
         if (d.projectId !== projectId && appPubDom.length < pubPageSize) {
-          appPubDom.push(<Option key={[d.id, d.projectId]}>
+          appPubDom.push(<Option key={`${d.id}-${d.projectId}`} value={`${d.id}-${d.projectId}`}>
             <Popover
               placement="right"
               content={<div>
@@ -568,7 +564,7 @@ class SingleApp extends Component {
             </Popover>
           </Option>);
         } else if (appProDom.length < proPageSize) {
-          appProDom.push(<Option key={[d.id, d.projectId]}>
+          appProDom.push(<Option key={`${d.id}-${d.projectId}`} value={`${d.id}-${d.projectId}`}>
             <Popover
               placement="right"
               content={<div>
@@ -619,17 +615,20 @@ class SingleApp extends Component {
 
   render() {
     const { store, intl } = this.props;
-    const { envId, verId, appId } = this.state;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const appNames = store.getAppNames;
     const appVer = store.getAppVer;
     const envCard = store.getEnvcard;
     const ist = store.getIstAll;
+    const envId = store.getEnvId;
+    const appId = store.getAppId;
+    const verId = store.getVerId;
+    const pId = store.getPId;
     const envID = envId || (envCard.length ? envCard[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
-    const appName = (appNames.length ? (<React.Fragment>
-      {appNames[0].projectId === projectId ? <i className="icon icon-project c7n-icon-publish" /> : <i className="icon icon-apps c7n-icon-publish" />}
-      {appNames[0].name}</React.Fragment>) : undefined);
+
+    const appName = appID ? `${appID}-${pId || projectId}` : null;
+
     const appVersion = appVer.length
       ? _.map(appVer, d => d.version && <Option key={d.id}>{d.version}</Option>) : undefined;
 
@@ -644,7 +643,7 @@ class SingleApp extends Component {
 
     const rightDom = this.state.moveBan ? null : <div role="none" className={rightStyle} onClick={this.pushScrollLeft} />;
     const envCardDom = envCard.length ? _.map(envCard, d => (<div className="c7n-app-square" key={d.id}>
-      <div role="none" className={envID === d.id ? 'c7n-app-card c7n-app-card-active' : 'c7n-app-card'} key={d.id} onClick={this.loadDetail.bind(this, d.id)}>
+      <div role="none" className={Number(envID) === d.id ? 'c7n-app-card c7n-app-card-active' : 'c7n-app-card'} key={d.id} onClick={this.loadDetail.bind(this, d.id)}>
         <div className={d.connect ? 'c7n-app-state' : 'c7n-app-state-pending'}>
           {d.connect ? <FormattedMessage id="running" /> : <FormattedMessage id="disconnect" />}
         </div>
@@ -660,6 +659,7 @@ class SingleApp extends Component {
           <FormattedMessage id="ist.noAddEnv" />
         </div>
       </div>);
+
     const { filters, param } = store.getIstParams;
 
     const columnApp = [{
@@ -712,80 +712,10 @@ class SingleApp extends Component {
       render: record => this.columnAction(record),
     }];
 
-    const columnVersion = [{
-      title: <FormattedMessage id="deploy.status" />,
-      key: 'podCount',
-      filters: [],
-      filteredValue: filters.podCount || [],
-      render: record => (
-        <div className="c7n-deploy-status">
-          <svg className={record.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
-            <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" />
-          </svg>
-          <svg className={record.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle-process'}>
-            <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" strokeDashoffset={`${251 * ((record.podCount - record.podRunningCount) / record.podCount)}%`} />
-          </svg>
-          <span className="c7n-deploy-status-num">{record.podCount}</span>
-        </div>
-      ),
-    }, {
-      title: <FormattedMessage id="deploy.istStatus" />,
-      key: 'status',
-      render: record => (
-        <div>
-          <div className={`c7n-ist-status c7n-ist-status_${record.status}`}>
-            <div>{intl.formatMessage({ id: record.status || 'null' })}</div>
-          </div>
-        </div>
-      ),
-    }, {
-      title: <FormattedMessage id="deploy.instance" />,
-      key: 'code',
-      filters: [],
-      filteredValue: filters.code || [],
-      render: record => (record.commandStatus === 'success' ? <span className="c7n-deploy-istCode">{record.code}</span> : <div>
-        {record.commandStatus === 'doing' ? (<div>
-          <span className="c7n-deploy-istCode">{record.code}</span>
-          <Tooltip title={intl.formatMessage({ id: `ist_${record.commandType}` })}>
-            <Progress type="loading" width="15px" />
-          </Tooltip>
-        </div>)
-          : (<div>
-            <span className="c7n-deploy-istCode">{record.code}</span>
-            <Tooltip title={`${record.commandType} ${record.commandStatus}: ${record.error}`}>
-              <i className="icon icon-error c7n-deploy-ist-operate" />
-            </Tooltip>
-          </div>)}
-      </div>),
-    }, {
-      width: 56,
-      className: 'c7n-operate-icon',
-      key: 'action',
-      render: record => this.columnAction(record),
-    }];
-
     const detailDom = (
       <div>
         {(() => {
-          if (appID && envID && verId) {
-            return (<div className="c7n-deploy-wrap_gray">
-              <div className="c7n-deploy-single-wrap">
-                <h2 className="c7n-space-first">
-                  <FormattedMessage id="ist.title" />
-                </h2>
-                <Table
-                  filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
-                  onChange={this.tableChange}
-                  loading={store.getIsLoading}
-                  pagination={store.pageInfo}
-                  columns={columnVersion}
-                  filters={param || []}
-                  dataSource={ist}
-                  rowKey={record => record.id}
-                />
-              </div>
-            </div>);
-          } else if (appID && envID && !verId) {
+          if (appID && envID) {
             return (<div className="c7n-deploy-wrap_gray">
               <div className="c7n-deploy-single-wrap">
                 <h2 className="c7n-space-first">
@@ -816,7 +746,7 @@ class SingleApp extends Component {
     return (
       <div className="c7n-region">
         <Select
-          defaultValue={appName}
+          value={appName}
           label={intl.formatMessage({ id: 'deploy.appName' })}
           className="c7n-app-select_220"
           onChange={this.loadAppVer}
@@ -824,7 +754,6 @@ class SingleApp extends Component {
           filterOption={false}
           onFilterChange={this.handleFilter}
           filter
-          allowClear
         >
           <OptGroup label={intl.formatMessage({ id: 'project' })} key="proGroup">
             {this.state.appProDom}
