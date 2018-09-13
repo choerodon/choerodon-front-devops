@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Table, Button, Modal, Tooltip } from 'choerodon-ui';
+import { Table, Button, Modal, Tooltip, Select } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import CodeMirror from 'react-codemirror';
 import _ from 'lodash';
@@ -16,6 +16,7 @@ import '../../../main.scss';
 import './ContainerHome.scss';
 
 const Sidebar = Modal.Sidebar;
+const Option = Select.Option;
 const { AppState } = stores;
 
 @commonComponent('ContainerStore')
@@ -25,10 +26,10 @@ class ContainerHome extends Component {
     super(props);
     this.state = {
       page: 0,
-      id: '',
-      show: false,
-      name: '',
+      containerArr: [],
       showSide: false,
+      fullscreen: false,
+      following: true,
     };
     this.timer = null;
   }
@@ -42,6 +43,25 @@ class ContainerHome extends Component {
       this.closeSidebar();
     }
   }
+
+  /**
+   * 切换container日志
+   * @param value
+   */
+  containerChange = (value) => {
+    const { ws, logId } = this.state;
+    if (logId !== value.split('+')[0]) {
+      if (ws) {
+        ws.close();
+      }
+      this.setState({
+        containerName: value.split('+')[1],
+        logId: value.split('+')[0],
+      }, () => {
+        this.loadLog();
+      });
+    }
+  };
 
   /**
    * 获取行
@@ -194,15 +214,20 @@ class ContainerHome extends Component {
     }];
   };
 
-  loadLog = () => {
+  /**
+   * 加载日志
+   */
+  loadLog = (followingOK) => {
     const authToken = document.cookie.split('=')[1];
     const logs = [];
     let oldLogs = [];
     const { namespace, envId, logId, podName, containerName } = this.state;
     const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${namespace}.envId:${envId}.log:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
     const editor = this.editorLog.getCodeMirror();
-    this.setState({ ws });
-    editor.setValue('Loading...');
+    this.setState({ ws, following: true });
+    if (!followingOK) {
+      editor.setValue('Loading...');
+    }
     ws.onmessage = (e) => {
       if (e.data.size) {
         const reader = new FileReader();
@@ -234,6 +259,14 @@ class ContainerHome extends Component {
   };
 
   /**
+   * 日志go top
+   */
+  goTop = () => {
+    const editor = this.editorLog.getCodeMirror();
+    editor.execCommand('goDocStart');
+  };
+
+  /**
    * 显示日志
    * @param record 容器record
    */
@@ -242,14 +275,17 @@ class ContainerHome extends Component {
     const projectId = AppState.currentMenuType.id;
     ContainerStore.loadPodParam(projectId, record.id)
       .then((data) => {
-        this.setState({
-          envId: record.envId,
-          namespace: record.namespace,
-          podName: data.podName,
-          containerName: data.containerName,
-          logId: data.logId,
-          showSide: true,
-        });
+        if(data.length) {
+          this.setState({
+            envId: record.envId,
+            namespace: record.namespace,
+            containerArr: data,
+            podName: data[0].podName,
+            containerName: data[0].containerName,
+            logId: data[0].logId,
+            showSide: true,
+          });
+        }
         this.loadLog();
       });
   };
@@ -260,7 +296,6 @@ class ContainerHome extends Component {
   closeSidebar = () => {
     clearInterval(this.timer);
     this.timer = null;
-    const { ContainerStore } = this.props;
     const { ws, page } = this.state;
     if (ws) {
       ws.close();
@@ -272,13 +307,67 @@ class ContainerHome extends Component {
     this.loadAllData(page);
   };
 
+  /**
+   * top log following
+   */
+  stopFollowing = () => {
+    const { ws } = this.state;
+    if (ws) {
+      ws.close();
+    }
+    this.setState({
+      following: false,
+    });
+  };
+
+  /**
+   *  全屏查看日志
+   */
+  setFullscreen = () => {
+    const cm = this.editorLog.getCodeMirror();
+    const wrap = cm.getWrapperElement();
+    cm.state.fullScreenRestore = {
+      scrollTop: window.pageYOffset,
+      scrollLeft: window.pageXOffset,
+      width: wrap.style.width,
+      height: wrap.style.height,
+    };
+    wrap.style.width = '';
+    wrap.style.height = 'auto';
+    wrap.className += ' CodeMirror-fullscreen';
+    this.setState({ fullscreen: true });
+    document.documentElement.style.overflow = 'hidden';
+    cm.refresh();
+    window.addEventListener('keypress', (e) => {
+      this.setNormal(e.which);
+    });
+  };
+
+  /**
+   * 任意键退出全屏查看
+   */
+  setNormal = () => {
+    const cm = this.editorLog.getCodeMirror();
+    const wrap = cm.getWrapperElement();
+    wrap.className = wrap.className.replace(/\s*CodeMirror-fullscreen\b/, '');
+    this.setState({ fullscreen: false });
+    document.documentElement.style.overflow = '';
+    const info = cm.state.fullScreenRestore;
+    wrap.style.width = info.width; wrap.style.height = info.height;
+    window.scrollTo(info.scrollLeft, info.scrollTop);
+    cm.refresh();
+    window.removeEventListener('keypress', (e) => {
+      this.setNormal(e.which);
+    });
+  };
+
   render() {
     const { ContainerStore } = this.props;
-    const { showSide, podName } = this.state;
+    const { podName, containerArr, showSide, fullscreen, following, containerName } = this.state;
     const serviceData = ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
-      <Header title={<FormattedMessage id={'container.header.title'} />} >
+      <Header title={<FormattedMessage id={'container.header.title'} />}>
         <Button
           onClick={this.handleRefresh}
         >
@@ -298,6 +387,8 @@ class ContainerHome extends Component {
         />
       </Content>
     </React.Fragment>);
+
+    const containerDom = containerArr.length && (_.map(containerArr, c => <Option key={c.logId} value={`${c.logId}+${c.containerName}`}>{c.containerName}</Option>));
 
     const options = {
       readOnly: true,
@@ -326,13 +417,25 @@ class ContainerHome extends Component {
         >
           <Content className="sidebar-content" code={'container.log'} values={{ name: podName }}>
             <section className="c7n-podLog-section">
-              <CodeMirror
-                ref={(editor) => { this.editorLog = editor; }}
-                value="Loading..."
-                className="c7n-podLog-editor"
-                onChange={code => this.props.ChangeCode(code)}
-                options={options}
-              />
+              <div className="c7n-podLog-hei-wrap">
+                <div className="c7n-podShell-title">
+                  <FormattedMessage id="container.term.log" />&nbsp;
+                  <Select value={containerName} onChange={this.containerChange}>
+                    {containerDom}
+                  </Select>
+                  <Button type="primary" funcType="flat" shape="circle" icon="fullscreen" onClick={this.setFullscreen} />
+                </div>
+                {following ? <div className={`c7n-podLog-action log-following ${fullscreen ? 'f-top' : ''}`} onClick={this.stopFollowing}>Stop Following</div>
+                  : <div className={`c7n-podLog-action log-following ${fullscreen ? 'f-top' : ''}`} onClick={this.loadLog.bind(this, true)}>Start Following</div>}
+                <CodeMirror
+                  ref={(editor) => { this.editorLog = editor; }}
+                  value="Loading..."
+                  className="c7n-podLog-editor"
+                  onChange={code => this.props.ChangeCode(code)}
+                  options={options}
+                />
+                <div className={`c7n-podLog-action log-goTop ${fullscreen ? 'g-top' : ''}`} onClick={this.goTop}>Go Top</div>
+              </div>
             </section>
           </Content>
         </Sidebar>
