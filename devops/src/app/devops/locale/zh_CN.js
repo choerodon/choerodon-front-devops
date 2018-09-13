@@ -375,7 +375,7 @@ const zhCN = {
   'envPl.code.copy.tooltip': '复制下文代码至Kubernetes运行，与平台建立链接',
   'envPl.code.check.failed': '编码只能由小写字母、数字、"-"组成，且以小写字母开头，不能以"-"结尾',
   'envPl.code.check.exist': '编码已存在',
-  'envPl.name.check.exist': '编码已存在',
+  'envPl.name.check.exist': '名称已存在',
   'envPl.token.copy.tooltip': '复制指令',
   'envPl.status.stop': '暂无停用环境',
   'envPl.status.restart': '重启环境',

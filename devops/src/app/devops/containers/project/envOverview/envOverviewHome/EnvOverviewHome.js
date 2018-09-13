@@ -1,7 +1,7 @@
 /* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { observable, action } from 'mobx';
+import { observable, action, configure } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Tabs, Form, Select, Icon, Tooltip } from 'choerodon-ui';
@@ -21,6 +21,8 @@ import NetworkConfigStore from '../../../../stores/project/networkConfig';
 const { AppState } = stores;
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
+
+configure({ enforceActions: false });
 
 @observer
 class EnvOverviewHome extends Component {

@@ -1,7 +1,7 @@
 /* eslint-disable react/sort-comp */
 import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
-import { observable, action, configure } from 'mobx';
+import { observable, action } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Table, Button, Form, Tooltip, Modal, Progress, Popover, Icon } from 'choerodon-ui';
@@ -15,8 +15,6 @@ import NetworkConfigStore from '../../../../stores/project/networkConfig';
 import EditNetwork from '../../networkConfig/editNetwork';
 
 const { AppState } = stores;
-
-configure({ enforceActions: false });
 
 @observer
 class NetworkOverview extends Component {

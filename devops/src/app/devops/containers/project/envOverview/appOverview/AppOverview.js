@@ -346,6 +346,23 @@ class AppOverview extends Component {
   };
 
   /**
+   * 切换container日志
+   * @param value
+   */
+  @action
+  containerChange = (value) => {
+    const { ws } = this.state;
+    if (this.logId !== value.split('+')[0]) {
+      if (ws) {
+        ws.close();
+      }
+      this.containerName = value.split('+')[1];
+      this.logId = value.split('+')[0];
+      this.loadLog();
+    }
+  };
+
+  /**
    * 关闭日志
    */
   @action
@@ -470,7 +487,7 @@ class AppOverview extends Component {
                 <div>
                   <div>
                     <div className="c7n-envow-contaners-title c7n-envow-width_50">
-                      CONTAINERS
+                      PODS
                     </div>
                     <div className="c7n-envow-contaners-wrap">
                       <div className="c7n-envow-width_50">
