@@ -34,7 +34,7 @@ class BranchHome extends Component {
   }
 
   componentDidMount() {
-    const { BranchStore, intl } = this.props;
+    const { BranchStore } = this.props;
     BranchStore.loadApps();
   }
 
@@ -478,7 +478,6 @@ class BranchHome extends Component {
     const page = pagination.current - 1;
     if (Object.keys(filters).length) {
       searchParam = filters;
-      // page = 0;
     }
     if (paras.length) {
       searchParam = { branchName: [paras.toString()] };
@@ -498,8 +497,9 @@ class BranchHome extends Component {
   };
 
   render() {
-    const { BranchStore, intl } = this.props;
-    const menu = AppState.currentMenuType;
+    const { name } = AppState.currentMenuType;
+    const { BranchStore, intl: { formatMessage } } = this.props;
+    const { name: branchName, submitting, visible } = this.state;
     const apps = BranchStore.apps.slice();
     return (
       <Page
@@ -517,7 +517,7 @@ class BranchHome extends Component {
           'agile-service.work-log.queryWorkLogListByIssueId',
         ]}
       >
-        <Header title={<FormattedMessage id="branch.title" />}>
+        <Header title={<FormattedMessage id="branch.head" />}>
           {BranchStore.getBranchList.length && BranchStore.app ? <Permission
             service={['devops-service.devops-git.createBranch']}
           >
@@ -535,29 +535,12 @@ class BranchHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content className="page-content">
-          <h2 className="c7n-space-first">
-            <FormattedMessage
-              id="branch.head"
-              values={{
-                name: `${menu.name}`,
-              }}
-            />
-          </h2>
-          <p>
-            <FormattedMessage id="branch.description" />
-            <a href={intl.formatMessage({ id: 'branch.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                <FormattedMessage id="learnmore" />
-              </span>
-              <i className="icon icon-open_in_new" />
-            </a>
-          </p>
+        <Content code="branch" value={{ name }} className="page-content">
           <Select
             onChange={this.loadData}
             value={BranchStore.app ? BranchStore.app : undefined}
             className="branch-select_512"
-            label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
+            label={formatMessage({ id: 'deploy.step.one.app' })}
             filterOption={(input, option) => option.props.children.props.children.props.children
               .toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
@@ -590,24 +573,24 @@ class BranchHome extends Component {
           onClose={this.hideSidebar}
         /> }
         {BranchStore.createBranchShow === 'detail' && <IssueDetail
-          name={this.state.name}
+          name={branchName}
           store={BranchStore}
           visible={BranchStore.createBranchShow === 'detail'}
           onClose={this.hideSidebar}
         /> }
         <Modal
-          confirmLoading={this.state.submitting}
-          visible={this.state.visible}
+          confirmLoading={submitting}
+          visible={visible}
           title={<FormattedMessage id="branch.action.delete" />}
           closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,
-            <Button key="submit" type="danger" onClick={this.handleDelete} loading={this.state.submitting}>
-              {this.props.intl.formatMessage({ id: 'delete' })}
+            <Button key="submit" type="danger" onClick={this.handleDelete} loading={submitting}>
+              {formatMessage({ id: 'delete' })}
             </Button>,
           ]}
         >
-          <p>{this.props.intl.formatMessage({ id: 'branch.delete.tooltip' })}</p>
+          <p>{formatMessage({ id: 'branch.delete.tooltip' })}</p>
         </Modal>
       </Page>
     );

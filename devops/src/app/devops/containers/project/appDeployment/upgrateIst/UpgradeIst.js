@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Modal, Select, Icon } from 'choerodon-ui';
-import { stores } from 'choerodon-front-boot';
+import { stores, Content } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import Ace from '../../../../components/yamlAce';
@@ -127,52 +127,37 @@ class UpgradeIst extends Component {
   }
 
   render() {
-    const { intl, store } = this.props;
+    const { intl, store, name } = this.props;
     const { oldData } = this.state;
     const data = oldData || store.getValue;
     const verValue = this.props.store.getVerValue;
     const sideDom = (<div className="c7n-region">
-      <h2 className="c7n-space-first">
-        <FormattedMessage
-          id="ist.editHead"
-          values={{
-            name: `${this.props.name}`,
-          }}
-        />
-      </h2>
-      <p>
-        <FormattedMessage id="ist.upgradeDes" />
-        <a href={intl.formatMessage({ id: 'ist.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-          <span className="c7n-external-link-content">
-            <FormattedMessage id="learnmore" />
-          </span>
-          <i className="icon icon-open_in_new" />
-        </a>
-      </p>
-      {verValue && (<div>
-        <Select
-          className="c7n-app-select_512"
-          notFoundContent={this.props.intl.formatMessage({ id: 'ist.noUpVer' })}
-          value={this.state.id || (verValue.length ? verValue[0].id : undefined)}
-          label={this.props.intl.formatMessage({ id: 'deploy.step.one.version.title' })}
-          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-          filter
-          onChange={this.handleChange.bind(this)}
-        >
-          {
-            _.map(verValue, app => <Option key={app.id} value={app.id}>{app.version}</Option>)
-          }
-        </Select>
-        {verValue.length === 0 ? <div>
-          <Icon type="error" className="c7n-noVer-waring" />
-          {intl.formatMessage({ id: 'ist.noUpVer' })}
-        </div> : null}
-      </div>)}
-      <div className="c7n-ace-section">
-        <div className="c7n-body-section c7n-border-done">
-          {this.aceDom(data)}
+      <Content code="ist.upgrade" value={{ name }} className="sidebar-content">
+        {verValue && (<div>
+          <Select
+            className="c7n-app-select_512"
+            notFoundContent={intl.formatMessage({ id: 'ist.noUpVer' })}
+            value={this.state.id || (verValue.length ? verValue[0].id : undefined)}
+            label={intl.formatMessage({ id: 'deploy.step.one.version.title' })}
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filter
+            onChange={this.handleChange.bind(this)}
+          >
+            {
+              _.map(verValue, app => <Option key={app.id} value={app.id}>{app.version}</Option>)
+            }
+          </Select>
+          {verValue.length === 0 ? <div>
+            <Icon type="error" className="c7n-noVer-waring" />
+            {intl.formatMessage({ id: 'ist.noUpVer' })}
+          </div> : null}
+        </div>)}
+        <div className="c7n-ace-section">
+          <div className="c7n-body-section c7n-border-done">
+            {this.aceDom(data)}
+          </div>
         </div>
-      </div>
+      </Content>
     </div>);
     return (<Sidebar
       title={intl.formatMessage({ id: 'ist.upgrade' })}

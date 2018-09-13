@@ -420,6 +420,7 @@ class CiPipelineHome extends Component {
   };
 
   render() {
+    const { name } = AppState.currentMenuType;
     return (
       <Page
         className="c7n-region c7n-ciPipeline"
@@ -431,7 +432,7 @@ class CiPipelineHome extends Component {
           'devops-service.project-pipeline.retry',
         ]}
       >
-        <Header title={<FormattedMessage id="ciPipeline.title" />}>
+        <Header title={<FormattedMessage id="ciPipeline.head" />}>
           <Button
             funcType="flat"
             onClick={this.handleRefresh}
@@ -440,24 +441,7 @@ class CiPipelineHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content>
-          <h2 className="c7n-space-first">
-            <FormattedMessage
-              id="ciPipeline.head"
-              values={{
-                name: `${AppState.currentMenuType.name}`,
-              }}
-            />
-          </h2>
-          <p>
-            <FormattedMessage id="ciPipeline.description" />
-            <a href={this.props.intl.formatMessage({ id: 'ciPipeline.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                <FormattedMessage id="learnmore" />
-              </span>
-              <i className="icon icon-open_in_new" />
-            </a>
-          </p>
+        <Content code="ciPipeline" value={{ name }}>
           {this.filterBar}
           {this.tableCiPipeline}
         </Content>

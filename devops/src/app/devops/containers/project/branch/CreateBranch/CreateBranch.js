@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { Modal, Form, Radio, Input, Select, Tooltip } from 'choerodon-ui';
-import { stores } from 'choerodon-front-boot';
+import { Content, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import '../../../main.scss';
@@ -155,7 +155,6 @@ class CreateBranch extends Component {
    * @param callback
    */
   checkName =(rule, value, callback) => {
-    // eslint-disable-next-line no-useless-escape
     const endWith = /(\/|\.|\.lock)$/;
     const contain = /(\s|~|\^|:|\?|\*|\[|\\|\.\.|@\{|\/{2,}){1}/;
     const single = /^@+$/;
@@ -271,8 +270,8 @@ class CreateBranch extends Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
-    const { visible, intl, store } = this.props;
+    const { name } = AppState.currentMenuType;
+    const { visible, intl, store, form: { getFieldDecorator } } = this.props;
     const issue = store.issue.slice();
     const branches = store.branchData;
     const tags = store.tagData;
@@ -286,24 +285,7 @@ class CreateBranch extends Component {
         cancelText={<FormattedMessage id="cancel" />}
         confirmLoading={this.state.submitting}
       >
-        <div className="c7n-region c7n-createBranch">
-          <h2 className="c7n-space-first">
-            <FormattedMessage
-              id="branch.createHead"
-              values={{
-                name: `${this.props.name}`,
-              }}
-            />
-          </h2>
-          <p>
-            <FormattedMessage id="branch.createDes" />
-            <a href={intl.formatMessage({ id: 'branch.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                <FormattedMessage id="learnmore" />
-              </span>
-              <i className="icon icon-open_in_new" />
-            </a>
-          </p>
+        <Content code="branch.create" values={{ name }} className="sidebar-content c7n-createBranch">
           <Form layout="vertical" onSubmit={this.handleOk} className="c7n-sidebar-form">
             <FormItem
               className="branch-formItem"
@@ -429,7 +411,7 @@ class CreateBranch extends Component {
               )}
             </FormItem>
           </Form>
-        </div>
+        </Content>
       </Sidebar>
     );
   }

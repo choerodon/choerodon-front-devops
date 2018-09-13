@@ -1,7 +1,7 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 
-const { height } = window.screen;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 @store('SelectAppStore')
 class SelectAppStore {
@@ -18,7 +18,7 @@ class SelectAppStore {
   @observable selectData = [];
 
   @observable localPageInfo = {
-    current: 1, total: 0, pageSize: height < 900 ? 10 : 15,
+    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
   @observable storePageInfo = {

@@ -3,7 +3,7 @@ import { axios, store } from 'choerodon-front-boot';
 // import { Observable } from 'rxjs';
 // import { formJS } from 'immutable';
 
-const height = window.screen.height;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 @store('EditReleaseStore')
 class EditReleaseStore {
   @observable isRefresh= false;
@@ -23,11 +23,11 @@ class EditReleaseStore {
   @observable show = false;
 
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
+    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
   @observable versionPage = {
-    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
+    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
   @observable versionData = [];

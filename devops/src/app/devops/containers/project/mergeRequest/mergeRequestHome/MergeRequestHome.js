@@ -123,18 +123,19 @@ class MergeRequestHome extends Component {
   }
 
   render() {
+    const { type, organizationId, name, id: projectId } = AppState.currentMenuType;
     const { MergeRequestStore, intl } = this.props;
     const { param, tabKey } = this.state;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const { opened: op, merged: mp, closed: cp, all: ap } = MergeRequestStore.getPageInfo;
-    const menu = AppState.currentMenuType;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
-    const appData = MergeRequestStore.getApps;
-    const { opened: od, merged: md, closed: cd, all: ad } = MergeRequestStore.getMerge;
-    const assignee = MergeRequestStore.getAssignee;
-    const { closeCount, mergeCount, openCount, totalCount } = MergeRequestStore.getCount;
-    const assigneeCount = MergeRequestStore.getAssigneeCount;
+    const {
+      getPageInfo: { opened: op, merged: mp, closed: cp, all: ap },
+      getMerge: { opened: od, merged: md, closed: cd, all: ad },
+      getCount: { closeCount, mergeCount, openCount, totalCount },
+      getIsLoading,
+      getApps,
+      getAssignee,
+      getAssigneeCount,
+      currentApp: { id },
+    } = MergeRequestStore;
 
     const columnsAll = [{
       title: <FormattedMessage id="app.code" />,
@@ -440,34 +441,17 @@ class MergeRequestHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content>
-          <h2 className="c7n-space-first">
-            <FormattedMessage
-              id="merge.title"
-              values={{
-                name: `${menu.name}`,
-              }}
-            />
-          </h2>
-          <p>
-            <FormattedMessage id="merge.description" />
-            <a href={intl.formatMessage({ id: 'merge.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                <FormattedMessage id="learnmore" />
-              </span>
-              <i className="icon icon-open_in_new" />
-            </a>
-          </p>
+        <Content code="merge" value={{ name }}>
           <Select
             className="c7n-app-select_512"
-            value={MergeRequestStore.currentApp.id}
+            value={id}
             label={intl.formatMessage({ id: 'deploy.step.one.app' })}
             filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
             onChange={this.handleChange.bind(this)}
           >
             {
-              _.map(appData, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
+              _.map(getApps, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
             }
           </Select>
           <Tabs activeKey={tabKey} onChange={this.tabChange} animated={false}>
@@ -475,11 +459,11 @@ class MergeRequestHome extends Component {
               <Table
                 filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                 onChange={this.tableChange}
-                loading={MergeRequestStore.getIsLoading}
+                loading={getIsLoading}
                 columns={columnsOpen}
                 pagination={false}
                 filters={param || []}
-                dataSource={od}
+                dataSource={od.slice()}
                 rowKey={record => record.id}
                 filterBar={false}
               />
@@ -488,11 +472,11 @@ class MergeRequestHome extends Component {
               <Table
                 filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                 onChange={this.tableChange}
-                loading={MergeRequestStore.getIsLoading}
+                loading={getIsLoading}
                 columns={columns}
                 pagination={mp}
                 filters={param || []}
-                dataSource={md}
+                dataSource={md.slice()}
                 rowKey={record => record.id}
                 filterBar={false}
               />
@@ -501,11 +485,11 @@ class MergeRequestHome extends Component {
               <Table
                 filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                 onChange={this.tableChange}
-                loading={MergeRequestStore.getIsLoading}
+                loading={getIsLoading}
                 columns={columns}
                 pagination={cp}
                 filters={param || []}
-                dataSource={cd}
+                dataSource={cd.slice()}
                 rowKey={record => record.id}
                 filterBar={false}
               />
@@ -514,24 +498,24 @@ class MergeRequestHome extends Component {
               <Table
                 filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                 onChange={this.tableChange}
-                loading={MergeRequestStore.getIsLoading}
+                loading={getIsLoading}
                 columns={columnsAll}
                 pagination={ap}
                 filters={param || []}
-                dataSource={ad}
+                dataSource={ad.slice()}
                 rowKey={record => record.id}
                 filterBar={false}
               />
             </TabPane>
-            {assigneeCount !== 0 ? <TabPane tab={`${intl.formatMessage({ id: 'merge.tab5' })}(${assigneeCount || 0})`} key="assignee">
+            {getAssigneeCount !== 0 ? <TabPane tab={`${intl.formatMessage({ id: 'merge.tab5' })}(${assigneeCount || 0})`} key="assignee">
               <Table
                 filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                 onChange={this.tableChange}
-                loading={MergeRequestStore.getIsLoading}
+                loading={getIsLoading}
                 columns={columnsOpen}
                 pagination={false}
                 filters={param || []}
-                dataSource={assignee}
+                dataSource={getAssignee.slice()}
                 rowKey={record => record.id}
                 filterBar={false}
               />

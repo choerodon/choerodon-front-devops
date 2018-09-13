@@ -168,13 +168,21 @@ class AppStoreHome extends Component {
 
 
   render() {
-    const { AppStoreStore, intl } = this.props;
-    const pageInfo = AppStoreStore.getPageInfo;
-    const appCards = AppStoreStore.getAppCards.slice();
-    const listActive = AppStoreStore.getListActive;
-    const projectId = AppState.currentMenuType.id;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
+    const { type, organizationId, name, id: projectId } = AppState.currentMenuType;
+    const {
+      AppStoreStore: {
+        getPageInfo: {
+          total,
+          current,
+          pageSize,
+        },
+        getAppCards,
+        getListActive,
+        isLoading,
+      },
+      intl: { formatMessage },
+    } = this.props;
+    const appCards = getAppCards.slice();
 
     const prefix = <Icon type="search" onClick={this.onSearch} />;
     const suffix = this.state.val ? <Icon type="close" onClick={this.emitEmpty} /> : null;
@@ -198,7 +206,7 @@ class AppStoreHome extends Component {
         <div title={card.description} className="c7n-store-card-des">
           {card.description}
         </div>
-      </div>)) : (<span className="c7n-none-des">{intl.formatMessage({ id: 'appstore.noReleaseApp' })}</span>);
+      </div>)) : (<span className="c7n-none-des">{formatMessage({ id: 'appstore.noReleaseApp' })}</span>);
 
     const columns = [{
       title: <FormattedMessage id="app.name" />,
@@ -213,31 +221,29 @@ class AppStoreHome extends Component {
       dataIndex: 'category',
       key: 'category',
     }, {
-      title: <FormattedMessage id="appstore.description" />,
+      title: <FormattedMessage id="appstore.desc" />,
       dataIndex: 'description',
       key: 'description',
     }, {
       width: 56,
       key: 'action',
-      render: (test, record) => (
-        <div>
-          <Permission
-            service={['devops-service.application-market.queryApp']}
-            organizationId={organizationId}
-            projectId={projectId}
-            type={type}
-          >
-            <Popover placement="bottom" content={<FormattedMessage id="app.appDetail" />}>
-              <Button
-                size="small"
-                shape="circle"
-                onClick={this.appDetail.bind(this, record.id)}
-              >
-                <i className="icon icon-insert_drive_file" />
-              </Button>
-            </Popover>
-          </Permission>
-        </div>
+      render: record => (
+        <Permission
+          service={['devops-service.application-market.queryApp']}
+          organizationId={organizationId}
+          projectId={projectId}
+          type={type}
+        >
+          <Popover placement="bottom" content={<FormattedMessage id="app.appDetail" />}>
+            <Button
+              size="small"
+              shape="circle"
+              onClick={this.appDetail.bind(this, record.id)}
+            >
+              <i className="icon icon-insert_drive_file" />
+            </Button>
+          </Popover>
+        </Permission>
       ),
     }];
     const appListDom = (<Table
@@ -245,7 +251,7 @@ class AppStoreHome extends Component {
       dataSource={appCards}
       filterBar={false}
       pagination={false}
-      loading={AppStoreStore.isLoading}
+      loading={isLoading}
       rowKey={record => record.id}
     />);
 
@@ -260,51 +266,43 @@ class AppStoreHome extends Component {
       >
         <Header title={<FormattedMessage id="appstore.title" />}>
           <Permission
+            type={type}
+            organizationId={organizationId}
             service={['devops-service.application-market.importApps']}
           >
             <Button
+              icon="get_app"
               funcType="flat"
               onClick={this.importChart}
             >
-              <i className="icon icon-get_app" />
               <FormattedMessage id="appstore.import" />
             </Button>
           </Permission>
           <Permission
+            type={type}
+            organizationId={organizationId}
             service={['devops-service.application-market.exportFile']}
           >
             <Button
+              icon="file_upload"
               funcType="flat"
               onClick={this.exportChart}
             >
-              <i className="icon-file_upload icon" />
               <FormattedMessage id="appstore.export" />
             </Button>
           </Permission>
           <Button
+            icon="refresh"
             funcType="flat"
             onClick={this.reload}
           >
-            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <div className="c7n-store-content">
-          <h2 className="c7n-space-first">
-            <FormattedMessage id="appstore.title" />
-          </h2>
-          <p>
-            <FormattedMessage id="appstore.headDes" />
-            <a href={intl.formatMessage({ id: 'appstore.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                <FormattedMessage id="learnmore" />
-              </span>
-              <i className="icon icon-open_in_new" />
-            </a>
-          </p>
+        <Content code="appstore" value={{ name }}>
           <div className="c7n-store-search">
             <Input
-              placeholder={intl.formatMessage({ id: 'appstore.search' })}
+              placeholder={formatMessage({ id: 'appstore.search' })}
               value={this.state.val}
               prefix={prefix}
               suffix={suffix}
@@ -315,26 +313,24 @@ class AppStoreHome extends Component {
             />
           </div>
           <ButtonGroup>
-            <div>
-              <Button onClick={this.listViewChange.bind(this, 'list')} className={listActive === 'list' ? 'c7n-tab-active' : ''}><Icon type="format_list_bulleted" /></Button>
-              <Button onClick={this.listViewChange.bind(this, 'card')} className={listActive === 'card' ? 'c7n-tab-active' : ''}><Icon type="dashboard" /></Button>
-            </div>
+            <Button icon="format_list_bulleted" onClick={this.listViewChange.bind(this, 'list')} className={getListActive === 'list' ? 'c7n-tab-active' : ''} />
+            <Button icon="dashboard" onClick={this.listViewChange.bind(this, 'card')} className={getListActive === 'card' ? 'c7n-tab-active' : ''} />
           </ButtonGroup>
-          {AppStoreStore.isLoading ? <LoadingBar display />
+          {isLoading ? <LoadingBar display />
             : (<div className="c7n-store-list-wrap">
-              {listActive === 'card' ? appCardsDom : appListDom}
+              {getListActive === 'card' ? appCardsDom : appListDom}
             </div>)}
           <div className="c7n-store-pagination">
             <Pagination
-              total={pageInfo.total}
-              current={pageInfo.current}
-              pageSize={pageInfo.pageSize}
+              total={total}
+              current={current}
+              pageSize={pageSize}
               showSizeChanger
               onChange={this.onPageChange}
               onShowSizeChange={this.onPageSizeChange}
             />
           </div>
-        </div>
+        </Content>
       </Page>
     );
   }

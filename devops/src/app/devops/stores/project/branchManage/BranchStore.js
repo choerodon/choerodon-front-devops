@@ -3,7 +3,7 @@ import { axios, store, stores } from 'choerodon-front-boot';
 import { handleProptError } from '../../../utils';
 
 const { AppState } = stores;
-const height = window.screen.height;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 @store('BranchStore')
 class BranchStore {
@@ -42,7 +42,7 @@ class BranchStore {
   @observable pageInfo = {
     current: 1,
     total: 0,
-    pageSize: height <= 900 ? 10 : 15,
+    pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
   @action setPageInfo(page) {

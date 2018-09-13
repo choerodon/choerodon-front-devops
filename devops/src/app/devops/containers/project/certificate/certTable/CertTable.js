@@ -9,7 +9,7 @@ import StatusIcon from '../../../../components/StatusIcon';
 import './CertTable.scss';
 
 const { AppState } = stores;
-const HEIGHT = window.screen.height;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 @observer
 class CertTable extends Component {
@@ -28,11 +28,11 @@ class CertTable extends Component {
     store.setPageInfo({
       current: 0,
       total: 0,
-      pageSize: HEIGHT < 900 ? 10 : 15,
+      pageSize: HEIGHT <= 900 ? 10 : 15,
     });
     store.setTableFilter({
       page: 0,
-      pageSize: HEIGHT < 900 ? 10 : 15,
+      pageSize: HEIGHT <= 900 ? 10 : 15,
       param: [],
       filters: {},
       postData: { searchParam: {}, param: '' },

@@ -332,7 +332,7 @@ class ImportChart extends Component {
    * 渲染总览
    */
   renderStepThree = () => {
-    const { AppStoreStore, intl } = this.props;
+    const { AppStoreStore, intl: { formatMessage } } = this.props;
     const { upDown } = this.state;
     const data = AppStoreStore.getImpApp;
     const columns = [{
@@ -344,7 +344,7 @@ class ImportChart extends Component {
       dataIndex: 'code',
       key: 'code',
     }, {
-      title: intl.formatMessage({ id: 'app.version' }),
+      title: formatMessage({ id: 'app.version' }),
       key: 'version',
       render: record => (<div>
         <div role="none" className={`c7n-step-table-column col-${record.id}`} onClick={this.handleChangeStatus.bind(this, record.id, record.appVersions.length)}>
@@ -366,12 +366,12 @@ class ImportChart extends Component {
         </p>
         <div className="c7n-step-section">
           <p>
-            <span>{intl.formatMessage({ id: 'appstore.ynRelease' })}：</span>
+            <span>{formatMessage({ id: 'appstore.ynRelease' })}：</span>
             <span>{this.state.publish}</span>
           </p>
           {this.state.visible && (<p>
-            <span>{intl.formatMessage({ id: 'release.column.level' })}：</span>
-            <span>{this.state.level === 'false' ? intl.formatMessage({ id: 'organization' }) : intl.formatMessage({ id: 'public' })}</span>
+            <span>{formatMessage({ id: 'release.column.level' })}：</span>
+            <span>{this.state.level === 'false' ? formatMessage({ id: 'organization' }) : formatMessage({ id: 'public' })}</span>
           </p>)}
           <Table
             filterBar={false}
@@ -389,17 +389,17 @@ class ImportChart extends Component {
             disabled={!(this.state.fileList.status === 'done')}
             onClick={this.importChart.bind(this, data.fileCode)}
           >
-            {intl.formatMessage({ id: 'appstore.importApp' })}
+            {formatMessage({ id: 'appstore.importApp' })}
           </Button>
           <Button
             funcType="raised"
             className="c7n-step-button"
             onClick={this.changeStep.bind(this, 2)}
           >
-            {intl.formatMessage({ id: 'previous' })}
+            {formatMessage({ id: 'previous' })}
           </Button>
           <Button funcType="raised" className="c7n-step-clear" onClick={this.handleBack}>
-            {intl.formatMessage({ id: 'cancel' })}
+            {formatMessage({ id: 'cancel' })}
           </Button>
         </div>
       </div>
@@ -407,12 +407,9 @@ class ImportChart extends Component {
   };
 
   render() {
-    const { intl } = this.props;
+    const { type, organizationId, name, id: projectId } = AppState.currentMenuType;
+    const { intl: { formatMessage } } = this.props;
     const { current } = this.state;
-    const projectName = AppState.currentMenuType.name;
-    const projectId = AppState.currentMenuType.id;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
 
     return (
       <Page
@@ -423,51 +420,35 @@ class ImportChart extends Component {
           'devops-service.application-market.importApps',
         ]}
       >
-        <Header title={<FormattedMessage id="appstore.import" />} backPath={`/devops/app-market?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
-        <div className="c7n-store-content-wrap">
-          <h2 className="c7n-space-first">
-            <FormattedMessage id="appstore.import" />
-          </h2>
-          <p>
-            <FormattedMessage id="appstore.importDes" />
-            <a href={intl.formatMessage({ id: 'appstore.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                <FormattedMessage id="learnmore" />
-              </span>
-              <i className="icon icon-open_in_new" />
-            </a>
-          </p>
-          <div className="c7n-store-card-wrap" style={{ minHeight: window.innerHeight - 277 }}>
-            <Steps current={current}>
-              <Step
-                title={<span className={current === 1 ? 'c7n-step-active' : ''}>
-                  {intl.formatMessage({ id: 'appstore.ChooseFile' })}
-                </span>}
-                onClick={this.changeStep.bind(this, 1)}
-                status={this.getStatus(1)}
-              />
-              <Step
-                className={!this.state.defaultFileList.length ? 'c7n-step-disabled' : ''}
-                title={<span className={current === 2 ? 'c7n-step-active' : ''}>
-                  {intl.formatMessage({ id: 'appstore.ynRelease' })}
-                </span>}
-                onClick={this.changeStep.bind(this, 2)}
-                status={this.getStatus(2)}
-              />
-              <Step
-                className={!this.state.defaultFileList.length ? 'c7n-step-disabled' : ''}
-                title={<span className={current === 3 ? 'c7n-step-active' : ''}>
-                  {intl.formatMessage({ id: 'appstore.confirm' })}
-                </span>}
-                onClick={this.changeStep.bind(this, 3)}
-                status={this.getStatus(3)}
-              />
-            </Steps>
-            {current === 1 && this.renderStepOne()}
-            {current === 2 && this.renderStepTwo()}
-            {current === 3 && this.renderStepThree()}
+        <Header title={<FormattedMessage id="appstore.import.title" />} backPath={`/devops/app-market?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}`} />
+        <Content code="appstore.import" value={{ name }}>
+          <div className="c7n-store-content-wrap">
+            <div className="c7n-store-card-wrap" style={{ minHeight: window.innerHeight - 277 }}>
+              <Steps current={current}>
+                <Step
+                  title={<span className={current === 1 ? 'c7n-step-active' : ''}>{formatMessage({ id: 'appstore.ChooseFile' })}</span>}
+                  onClick={this.changeStep.bind(this, 1)}
+                  status={this.getStatus(1)}
+                />
+                <Step
+                  className={!this.state.defaultFileList.length ? 'c7n-step-disabled' : ''}
+                  title={<span className={current === 2 ? 'c7n-step-active' : ''}>{formatMessage({ id: 'appstore.ynRelease' })}</span>}
+                  onClick={this.changeStep.bind(this, 2)}
+                  status={this.getStatus(2)}
+                />
+                <Step
+                  className={!this.state.defaultFileList.length ? 'c7n-step-disabled' : ''}
+                  title={<span className={current === 3 ? 'c7n-step-active' : ''}>{formatMessage({ id: 'appstore.confirm' })}</span>}
+                  onClick={this.changeStep.bind(this, 3)}
+                  status={this.getStatus(3)}
+                />
+              </Steps>
+              {current === 1 && this.renderStepOne()}
+              {current === 2 && this.renderStepTwo()}
+              {current === 3 && this.renderStepThree()}
+            </div>
           </div>
-        </div>
+        </Content>
       </Page>
     );
   }

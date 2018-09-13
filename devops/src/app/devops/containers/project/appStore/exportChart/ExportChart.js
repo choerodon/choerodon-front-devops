@@ -233,8 +233,7 @@ class ExportChart extends Component {
    */
   handleLoadAllVersion = () => {
     const { ExportChartStore } = this.props;
-    const selectedRowKeys = this.state.selectedRowKeys;
-    const { selectedRows } = this.state;
+    const { selectedRows, selectedRowKeys } = this.state;
     for (let i = 0; i < selectedRowKeys.length; i += 1) {
       ExportChartStore.loadVersionsByAppId(selectedRowKeys[i], this.state.projectId)
         .then((datas) => {
@@ -272,7 +271,7 @@ class ExportChart extends Component {
       dataIndex: 'category',
       key: 'category',
     }, {
-      title: <FormattedMessage id="appstore.description" />,
+      title: <FormattedMessage id="appstore.desc" />,
       filters: [],
       dataIndex: 'description',
       key: 'description',
@@ -308,7 +307,7 @@ class ExportChart extends Component {
     return (
       <div className="c7n-step-section-wrap">
         <p>
-          <FormattedMessage id="appstore.exportDes" />
+          <FormattedMessage id="appstore.exportStep1" />
         </p>
         <div className="c7n-step-section">
           <Table
@@ -343,8 +342,8 @@ class ExportChart extends Component {
    * 渲染第二步
    */
   renderStepTwo = () => {
-    const selectedRows = this.state.selectedRows;
-    const { ExportChartStore, intl } = this.props;
+    const { selectedRows } = this.state;
+    const { ExportChartStore, intl: { formatMessage } } = this.props;
     return (
       <div className="c7n-step-section-wrap">
         <p>
@@ -365,14 +364,14 @@ class ExportChart extends Component {
                 loading={this.state.isLoading}
                 onFocus={this.loadVersion.bind(this, app.id, index)}
                 filter
-                label={intl.formatMessage({ id: 'network.column.version' })}
+                label={formatMessage({ id: 'network.column.version' })}
                 showSearch
                 mode="multiple"
                 dropdownMatchSelectWidth
                 size="default"
                 optionFilterProp="children"
                 optionLabelProp="children"
-                notFoundContent={intl.formatMessage({ id: 'appstore.noVer' })}
+                notFoundContent={formatMessage({ id: 'appstore.noVer' })}
                 filterOption={
                   (input, option) => option.props.children
                     .toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -397,13 +396,13 @@ class ExportChart extends Component {
             disabled={this.checkDisable()}
             onClick={this.changeStep.bind(this, 3)}
           >
-            {intl.formatMessage({ id: 'next' })}
+            {formatMessage({ id: 'next' })}
           </Button>
           <Button funcType="raised" className="c7n-step-clear c7n-step-button" onClick={this.changeStep.bind(this, 1)}>
-            {intl.formatMessage({ id: 'previous' })}
+            {formatMessage({ id: 'previous' })}
           </Button>
           <Button funcType="raised" className="c7n-step-clear" onClick={this.handleBack}>
-            {intl.formatMessage({ id: 'cancel' })}
+            {formatMessage({ id: 'cancel' })}
           </Button>
         </div>
       </div>
@@ -415,7 +414,7 @@ class ExportChart extends Component {
    * @returns {*}
    */
   renderStepThree = () => {
-    const { intl } = this.props;
+    const { intl: { formatMessage } } = this.props;
     const { upDown } = this.state;
     const column = [{
       title: <FormattedMessage id="app.name" />,
@@ -427,7 +426,7 @@ class ExportChart extends Component {
       dataIndex: 'code',
       key: 'code',
     }, {
-      title: intl.formatMessage({ id: 'network.column.version' }),
+      title: formatMessage({ id: 'network.column.version' }),
       key: 'version',
       render: record => (<div>
         <div role="none" className={`c7n-step-table-column col-${record.id}`} onClick={this.handleChangeStatus.bind(this, record.id, record.versions.length)}>
@@ -463,17 +462,16 @@ class ExportChart extends Component {
               type="primary"
               funcType="raised"
               className="c7n-step-button"
-              // disabled={selectedRows.length === 0}
               onClick={this.handleOk}
             >
               <FormattedMessage id="appstore.exportApp" />
             </Button>
           </Permission>
           <Button funcType="raised" className="c7n-step-clear c7n-step-button" onClick={this.changeStep.bind(this, 2)}>
-            {intl.formatMessage({ id: 'previous' })}
+            {formatMessage({ id: 'previous' })}
           </Button>
           <Button funcType="raised" className="c7n-step-clear" onClick={this.handleBack}>
-            {intl.formatMessage({ id: 'cancel' })}
+            {formatMessage({ id: 'cancel' })}
           </Button>
         </div>
       </div>
@@ -482,12 +480,9 @@ class ExportChart extends Component {
   
 
   render() {
-    const { intl } = this.props;
-    const { current } = this.state;
-    const projectName = AppState.currentMenuType.name;
-    const projectId = AppState.currentMenuType.id;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
+    const { type, organizationId, name, id: projectId } = AppState.currentMenuType;
+    const { intl: { formatMessage } } = this.props;
+    const { current, selectedRows } = this.state;
     return (
       <Page
         service={[
@@ -497,33 +492,21 @@ class ExportChart extends Component {
         ]}
         className="c7n-region"
       >
-        <Header title={intl.formatMessage({ id: 'appstore.export' })} backPath={`/devops/app-market?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`} />
-        <Content>
-          <h2 className="c7n-space-first">
-            <FormattedMessage id="appstore.export" />
-          </h2>
-          <p>
-            <FormattedMessage id="appstore.exportDes" />
-            <a href={intl.formatMessage({ id: 'appstore.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                <FormattedMessage id="learnmore" />
-              </span>
-              <i className="icon icon-open_in_new" />
-            </a>
-          </p>
+        <Header title={formatMessage({ id: 'appstore.export' })} backPath={`/devops/app-market?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}`} />
+        <Content code="appstore.export" value={{ name }}>
           <div className="c7n-store-card-wrap" style={{ minHeight: window.innerHeight - 277 }}>
             <Steps current={current}>
               <Step
                 title={<span className={current === 1 ? 'c7n-step-active' : ''}>
-                  {intl.formatMessage({ id: 'deploy.step.one.app' })}
+                  {formatMessage({ id: 'deploy.step.one.app' })}
                 </span>}
                 onClick={this.changeStep.bind(this, 1)}
                 status={this.getStatus(1)}
               />
               <Step
-                className={`${this.state.selectedRows.length ? '' : 'c7n-step-disabled'}`}
+                className={`${selectedRows.length ? '' : 'c7n-step-disabled'}`}
                 title={<span className={current === 2 ? 'c7n-step-active' : ''}>
-                  {intl.formatMessage({ id: 'deploy.step.one.version.title' })}
+                  {formatMessage({ id: 'deploy.step.one.version.title' })}
                 </span>}
                 onClick={this.changeStep.bind(this, 2)}
                 status={this.getStatus(2)}
@@ -531,7 +514,7 @@ class ExportChart extends Component {
               <Step
                 className={`${this.checkDisable() ? 'c7n-step-disabled' : ''}`}
                 title={<span className={current === 3 ? 'c7n-step-active' : ''}>
-                  {intl.formatMessage({ id: 'appstore.confirm' })}
+                  {formatMessage({ id: 'appstore.confirm' })}
                 </span>}
                 onClick={this.changeStep.bind(this, 3)}
                 status={this.getStatus(3)}

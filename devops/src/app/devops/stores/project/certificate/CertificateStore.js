@@ -7,7 +7,7 @@ const ORDER = {
   ascend: 'asc',
   descend: 'desc',
 };
-const HEIGHT = window.screen.height;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 const { AppState } = stores;
 
@@ -22,12 +22,12 @@ class CertificateStore {
   @observable pageInfo = {
     current: 0,
     total: 0,
-    pageSize: HEIGHT < 900 ? 10 : 15,
+    pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
   @observable tableFilter = {
     page: 0,
-    pageSize: HEIGHT < 900 ? 10 : 15,
+    pageSize: HEIGHT <= 900 ? 10 : 15,
     param: [],
     filters: {},
     postData: { searchParam: {}, param: '' },

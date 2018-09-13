@@ -11,7 +11,7 @@ import '../../../main.scss';
 
 const { AppState } = stores;
 const { Option } = Select;
-const height = window.screen.height;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 @observer
 class ApplicationVersion extends Component {
@@ -20,7 +20,7 @@ class ApplicationVersion extends Component {
     const menu = AppState.currentMenuType;
     this.state = {
       page: 0,
-      pageSize: height <= 900 ? 10 : 15,
+      pageSize: HEIGHT <= 900 ? 10 : 15,
       param: [],
       filters: {},
       postData: { searchParam: {}, param: '' },

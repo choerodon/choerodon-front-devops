@@ -578,7 +578,7 @@ class EnvOverviewHome extends Component {
                   <span className="c7n-external-link-content">
                     <FormattedMessage id="learnmore" />
                   </span>
-                  <i className="icon icon-open_in_new" />
+                  <i className="icon icon-open_in_new c7ncd-link-icon" />
                 </a>
               </p>
             </div>

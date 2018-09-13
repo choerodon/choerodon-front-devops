@@ -8,10 +8,7 @@
 .ant-btn-group {
   margin-bottom: 10px;
   display: flex;
-
-  div {
-    margin-left: auto !important;
-  }
+  justify-content: flex-end;
 
   button {
     margin-right: 1px;

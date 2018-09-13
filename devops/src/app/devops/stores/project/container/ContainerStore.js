@@ -2,7 +2,7 @@ import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import { handleProptError } from '../../../utils';
 
-const height = window.screen.height;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 @store('ContainerStore')
 class ContainerStore {
   @observable allData = [];
@@ -18,7 +18,7 @@ class ContainerStore {
   @observable logs = '';
 
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: height <= 900 ? 10 : 15,
+    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
   @observable appdata = [];

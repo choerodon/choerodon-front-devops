@@ -3,7 +3,7 @@ import { axios, store, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 
 const { AppState } = stores;
-const height = window.screen.height;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 @store('CiPipelineStore')
 class CiPipelineStore {
@@ -16,7 +16,7 @@ class CiPipelineStore {
   @observable commits = [];
 
   @observable pagination = {
-    current: 1, pageSize: height <= 900 ? 10 : 15, total: 0,
+    current: 1, pageSize: HEIGHT <= 900 ? 10 : 15, total: 0,
   };
 
   @observable loading = true;
