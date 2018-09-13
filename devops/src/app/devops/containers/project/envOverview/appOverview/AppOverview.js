@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Form, Collapse, Icon, Input, Tooltip, Modal, Progress } from 'choerodon-ui';
+import { Button, Form, Collapse, Icon, Input, Tooltip, Modal, Progress, Select } from 'choerodon-ui';
 import { Permission, Content, Action, stores } from 'choerodon-front-boot';
 import CodeMirror from 'react-codemirror';
 import _ from 'lodash';
@@ -23,9 +23,11 @@ import CreateDomain from '../../domain/createDomain';
 import CreateNetwork from '../../networkConfig/createNetwork';
 import NetworkConfigStore from '../../../../stores/project/networkConfig';
 import LoadingBar from '../../../../components/loadingBar';
+import '../../container/containerHome/ContainerHome.scss';
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
+const Option = Select.Option;
 const Panel = Collapse.Panel;
 
 @observer
@@ -41,6 +43,7 @@ class AppOverview extends Component {
   @observable name = '';
   @observable showSide = false;
   @observable containerName = '';
+  @observable containerArr = [];
   @observable podName = '';
   @observable activeKey = [];
   @observable showDomain = false;
@@ -290,10 +293,11 @@ class AppOverview extends Component {
     ContainerStore.loadPodParam(projectId, record.id)
       .then((data) => {
         this.namespace = record.namespace;
-        this.podName = data.podName;
-        this.containerName = data.containerName;
-        this.logId = data.logId;
+        this.podName = data[0].podName;
+        this.containerName = data[0].containerName;
+        this.logId = data[0].logId;
         this.showSide = true;
+        this.containerArr = data;
         this.loadLog();
       });
   };
@@ -301,14 +305,16 @@ class AppOverview extends Component {
   /**
    * 加载容器日志
    */
-  loadLog = () => {
+  loadLog = (followingOK) => {
     const authToken = document.cookie.split('=')[1];
     const logs = [];
     let oldLogs = [];
     const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${this.namespace}.envId:${this.props.envId}.log:${this.logId}&podName=${this.podName}&containerName=${this.containerName}&logId=${this.logId}&token=${authToken}`);
     const editor = this.editorLog.getCodeMirror();
-    this.setState({ ws });
-    editor.setValue('Loading...');
+    this.setState({ ws, following: true });
+    if (!followingOK) {
+      editor.setValue('Loading...');
+    }
     ws.onmessage = (e) => {
       if (e.data.size) {
         const reader = new FileReader();
@@ -738,16 +744,82 @@ class AppOverview extends Component {
     }
   };
 
+  /**
+   * 日志go top
+   */
+  goTop = () => {
+    const editor = this.editorLog.getCodeMirror();
+    editor.execCommand('goDocStart');
+  };
+
+  /**
+   * top log following
+   */
+  stopFollowing = () => {
+    const { ws } = this.state;
+    if (ws) {
+      ws.close();
+    }
+    this.setState({
+      following: false,
+    });
+  };
+
+  /**
+   *  全屏查看日志
+   */
+  setFullscreen = () => {
+    const cm = this.editorLog.getCodeMirror();
+    const wrap = cm.getWrapperElement();
+    cm.state.fullScreenRestore = {
+      scrollTop: window.pageYOffset,
+      scrollLeft: window.pageXOffset,
+      width: wrap.style.width,
+      height: wrap.style.height,
+    };
+    wrap.style.width = '';
+    wrap.style.height = 'auto';
+    wrap.className += ' CodeMirror-fullscreen';
+    this.setState({ fullscreen: true });
+    document.documentElement.style.overflow = 'hidden';
+    cm.refresh();
+    window.addEventListener('keypress', (e) => {
+      this.setNormal(e.which);
+    });
+  };
+
+  /**
+   * 任意键退出全屏查看
+   */
+  setNormal = () => {
+    const cm = this.editorLog.getCodeMirror();
+    const wrap = cm.getWrapperElement();
+    wrap.className = wrap.className.replace(/\s*CodeMirror-fullscreen\b/, '');
+    this.setState({ fullscreen: false });
+    document.documentElement.style.overflow = '';
+    const info = cm.state.fullScreenRestore;
+    wrap.style.width = info.width; wrap.style.height = info.height;
+    window.scrollTo(info.scrollLeft, info.scrollTop);
+    cm.refresh();
+    window.removeEventListener('keypress', (e) => {
+      this.setNormal(e.which);
+    });
+  };
+
   render() {
     const { intl, store } = this.props;
+    const { fullscreen, following } = this.state;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const val = store.getVal;
     const prefix = <Icon type="search" onClick={this.onSearch} />;
     const suffix = val ? <Icon type="close" onClick={this.emitEmpty} /> : null;
 
+    const containerDom = this.containerArr.length && (_.map(this.containerArr, c => <Option key={c.logId} value={`${c.logId}+${c.containerName}`}>{c.containerName}</Option>));
+
     const options = {
       readOnly: true,
       lineNumbers: true,
+      lineWrapping: true,
       autofocus: true,
       theme: 'base16-dark',
     };
@@ -792,15 +864,27 @@ class AppOverview extends Component {
           okCancel={false}
           destroyOnClose
         >
-          <Content className="sidebar-content" code={'container.log'} values={{ name: this.containerName }}>
+          <Content className="sidebar-content" code={'container.log'} values={{ name: this.podName }}>
             <section className="c7n-podLog-section">
-              <CodeMirror
-                ref={(editor) => { this.editorLog = editor; }}
-                value="Loading..."
-                className="c7n-podLog-editor"
-                onChange={code => this.props.ChangeCode(code)}
-                options={options}
-              />
+              <div className="c7n-podLog-hei-wrap">
+                <div className="c7n-podShell-title">
+                  <FormattedMessage id="container.term.log" />&nbsp;
+                  <Select value={this.containerName} onChange={this.containerChange}>
+                    {containerDom}
+                  </Select>
+                  <Button type="primary" funcType="flat" shape="circle" icon="fullscreen" onClick={this.setFullscreen} />
+                </div>
+                {following ? <div className={`c7n-podLog-action log-following ${fullscreen ? 'f-top' : ''}`} onClick={this.stopFollowing}>Stop Following</div>
+                  : <div className={`c7n-podLog-action log-following ${fullscreen ? 'f-top' : ''}`} onClick={this.loadLog.bind(this, true)}>Start Following</div>}
+                <CodeMirror
+                  ref={(editor) => { this.editorLog = editor; }}
+                  value="Loading..."
+                  className="c7n-podLog-editor"
+                  onChange={code => this.props.ChangeCode(code)}
+                  options={options}
+                />
+                <div className={`c7n-podLog-action log-goTop ${fullscreen ? 'g-top' : ''}`} onClick={this.goTop}>Go Top</div>
+              </div>
             </section>
           </Content>
         </Sidebar>}

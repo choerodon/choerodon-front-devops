@@ -275,7 +275,7 @@ class ContainerHome extends Component {
     const projectId = AppState.currentMenuType.id;
     ContainerStore.loadPodParam(projectId, record.id)
       .then((data) => {
-        if(data.length) {
+        if (data.length) {
           this.setState({
             envId: record.envId,
             namespace: record.namespace,
@@ -393,6 +393,7 @@ class ContainerHome extends Component {
     const options = {
       readOnly: true,
       lineNumbers: true,
+      lineWrapping: true,
       autofocus: true,
       theme: 'base16-dark',
     };
