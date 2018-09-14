@@ -244,7 +244,7 @@ class NetworkHome extends Component {
       filteredValue: filters.name || [],
       render: record => <StatusIcon
         name={record.name}
-        status={record.status}
+        status={record.commandStatus || ''}
         error={record.error || ''}
       />,
     }, {

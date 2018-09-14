@@ -403,6 +403,13 @@ class EnvOverviewHome extends Component {
       />,
       msg: 'domain.header.title',
     }, {
+      key: 'cert',
+      component: <CertTable
+        store={CertificateStore}
+        envId={tabEnvId}
+      />,
+      msg: 'ctf.head',
+    }, {
       key: 'log',
       component: <LogOverview
         store={EnvOverviewStore}
@@ -410,13 +417,6 @@ class EnvOverviewHome extends Component {
         envId={tabEnvId}
       />,
       msg: 'envoverview.logs',
-    }, {
-      key: 'cert',
-      component: <CertTable
-        store={CertificateStore}
-        envId={tabEnvId}
-      />,
-      msg: 'ctf.head',
     }];
 
     const istStatusType = ['running', 'operating', 'stopped', 'failed'];

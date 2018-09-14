@@ -45,8 +45,8 @@ export const commonComponent =(storeName) => {
           } else {
             this.loadAllData(false, store.getPageInfo.current - 1);
           }
-          this.closeRemove();
         }
+        this.closeRemove();
       }).catch((error) => {
         this.setState({ submitting: false });
         Choerodon.handleResponseError(error);

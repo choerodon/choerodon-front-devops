@@ -868,6 +868,7 @@ class CreateNetwork extends Component {
                   }],
                 })(
                   <Input
+                    disabled={!getFieldValue('envId')}
                     maxLength={30}
                     type="text"
                     label={<FormattedMessage id="network.form.name" />}
