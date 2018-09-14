@@ -11,8 +11,9 @@ import EnvCard from './EnvCard';
 import BoardSquare from './BoardSquare';
 import './EnvPipeLineHome.scss';
 import EnvPipelineStore from '../../../../stores/project/envPipeline';
+import { scrollTo } from '../../../../utils';
 
-let scrollLeft = 0;
+const scrollLeft = {};
 
 @inject('AppState')
 @observer
@@ -33,6 +34,11 @@ class Board extends Component {
     };
   }
 
+  componentWillMount() {
+    const { Title } = this.props;
+    scrollLeft[Title || 'none'] = 0;
+  }
+
   editGroup = (id, name) => {
     EnvPipelineStore.setShowGroup(true);
     EnvPipelineStore.setGroupOne({ id, name });
@@ -47,34 +53,35 @@ class Board extends Component {
 
   pushScrollRight = (Title) => {
     const { moveRight } = this.state;
-    scrollLeft -= 300;
-    if (scrollLeft < 0) {
-      scrollLeft = 0;
+    scrollLeft[Title || 'none'] -= 300;
+    if (scrollLeft[Title || 'none'] < 0) {
+      scrollLeft[Title || 'none'] = 0;
     }
     this.setState({
       move: false,
       moveRight: moveRight - 300,
     });
-    document.getElementById(Title || 'none').scroll({ left: scrollLeft, behavior: 'smooth' });
+    scrollTo(document.getElementById(Title || 'none'), -300);
   };
 
   pushScrollLeft = (Title) => {
     const domPosition = document.getElementById(Title || 'none').scrollLeft;
+    const { envcardPositionChild } = this.props;
     this.setState({
       moveRight: domPosition,
     });
-    if (this.state.moveRight === domPosition) {
+    if (envcardPositionChild.length * 310 - window.innerWidth + 297 <= domPosition + 300) {
       this.setState({
         move: true,
       });
-      scrollLeft = domPosition;
+      scrollLeft[Title || 'none'] = domPosition;
     } else {
       this.setState({
         move: false,
       });
     }
-    document.getElementById(Title || 'none').scroll({ left: scrollLeft + 300, behavior: 'smooth' });
-    scrollLeft += 300;
+    scrollLeft[Title || 'none'] += 300;
+    scrollTo(document.getElementById(Title || 'none'), 300);
   };
 
   renderSquare(i) {
@@ -131,7 +138,7 @@ class Board extends Component {
 
     return (
       <div className={outerContainer}>
-        {scrollLeft !== 0
+        {scrollLeft[Title || 'none'] !== 0
           ? <div role="none" className="c7n-push-left icon icon-navigate_before" style={Title && { top: 90 }} onClick={this.pushScrollRight.bind(this, Title)} />
           : ''}
         {Title ? (<div className="c7n-env-group-wrap">
