@@ -53,19 +53,19 @@ class Board extends Component {
 
   pushScrollRight = (Title) => {
     const { moveRight } = this.state;
-    scrollLeft[Title || 'none'] -= 300;
-    if (scrollLeft[Title || 'none'] < 0) {
-      scrollLeft[Title || 'none'] = 0;
+    scrollLeft[Title] -= 300;
+    if (scrollLeft[Title] < 0) {
+      scrollLeft[Title] = 0;
     }
     this.setState({
       move: false,
       moveRight: moveRight - 300,
     });
-    scrollTo(document.getElementById(Title || 'none'), -300);
+    scrollTo(document.getElementById(Title), -300);
   };
 
   pushScrollLeft = (Title) => {
-    const domPosition = document.getElementById(Title || 'none').scrollLeft;
+    const domPosition = document.getElementById(Title).scrollLeft;
     const { envcardPositionChild } = this.props;
     this.setState({
       moveRight: domPosition,
@@ -74,14 +74,14 @@ class Board extends Component {
       this.setState({
         move: true,
       });
-      scrollLeft[Title || 'none'] = domPosition;
+      scrollLeft[Title] = domPosition;
     } else {
       this.setState({
         move: false,
       });
     }
-    scrollLeft[Title || 'none'] += 300;
-    scrollTo(document.getElementById(Title || 'none'), 300);
+    scrollLeft[Title] += 300;
+    scrollTo(document.getElementById(Title), 300);
   };
 
   renderSquare(i) {
@@ -139,7 +139,7 @@ class Board extends Component {
     return (
       <div className={outerContainer}>
         {scrollLeft[Title || 'none'] !== 0
-          ? <div role="none" className="c7n-push-left icon icon-navigate_before" style={Title && { top: 90 }} onClick={this.pushScrollRight.bind(this, Title)} />
+          ? <div role="none" className="c7n-push-left icon icon-navigate_before" style={Title && { top: 90 }} onClick={this.pushScrollRight.bind(this, Title || 'none')} />
           : ''}
         {Title ? (<div className="c7n-env-group-wrap">
           <div
@@ -200,7 +200,7 @@ class Board extends Component {
             </div>)}
           </div>
         </div>
-        {this.state.move ? '' : <div role="none" className={rightStyle} style={Title && { top: 90 }} onClick={this.pushScrollLeft.bind(this, Title)} />}
+        {this.state.move ? '' : <div role="none" className={rightStyle} style={Title && { top: 90 }} onClick={this.pushScrollLeft.bind(this, Title || 'none')} />}
       </div>
     );
   }
