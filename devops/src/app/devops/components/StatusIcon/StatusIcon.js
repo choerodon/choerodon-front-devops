@@ -15,7 +15,7 @@ function StatusIcon(props) {
       break;
     case 'operating':
       statusDom = (<Tooltip title={formatMessage({ id: `ist_${status}` })}>
-        <Progress type="loading" width={15} style={{ marginLeft: 5 }} />
+        <Progress type="loading" width={15} className="c7n-status-progress" />
       </Tooltip>);
       break;
     default:
