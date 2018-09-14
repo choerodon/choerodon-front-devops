@@ -4,6 +4,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Table, Icon, Button, Popover, Tooltip, Modal } from 'choerodon-ui';
 import { Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
+import { getTimeLeft } from '../../../../utils';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import StatusIcon from '../../../../components/StatusIcon';
 import './CertTable.scss';
@@ -115,6 +116,41 @@ class CertTable extends Component {
   closeRemoveModal = () => this.setState({ removeDisplay: false });
 
   /**
+   * 有效期
+   * @param record
+   * @returns {null}
+   */
+  validColumn = (record) => {
+    const { validFrom, validUntil, commandStatus } = record;
+    const { intl: { formatMessage } } = this.props;
+    let msg = null;
+    let content = null;
+    if (validFrom && validUntil && commandStatus === 'success') {
+      content = <div>
+        <div><FormattedMessage id="timeFrom" />：{validFrom}</div>
+        <div><FormattedMessage id="timeUntil" />：{validUntil}</div>
+      </div>;
+      const start = new Date(validFrom.replace(/-/g, '/')).getTime();
+      const end = new Date(validUntil.replace(/-/g, '/')).getTime();
+      const now = Date.now();
+      if (now < start) {
+        msg = <FormattedMessage id="notActive" />;
+      } else if (now > end) {
+        msg = <FormattedMessage id="expired" />;
+      } else {
+        msg = getTimeLeft(now, end);
+      }
+      return <Popover
+        content={content}
+        getPopupContainer={triggerNode => triggerNode.parentNode}
+        trigger="hover"
+        placement="top"
+      ><span>{msg}</span></Popover>;
+    }
+    return null;
+  };
+
+  /**
    * 操作列
    * @param record
    * @param type
@@ -122,7 +158,7 @@ class CertTable extends Component {
    * @param orgId
    */
   opColumn = (record, type, projectId, orgId) => {
-    const { id, domains, validFrom, validUntil } = record;
+    const { id, domains } = record;
     const { intl: { formatMessage } } = this.props;
     const detail = {
       CommonName: [domains[0]],
@@ -140,15 +176,6 @@ class CertTable extends Component {
         }
         return null;
       })}
-      {validFrom && validUntil ? (<div className="c7n-overlay-content">
-        <div className="c7n-overlay-item">
-          <p className="c7n-overlay-title">{formatMessage({ id: 'validDate' })}</p>
-        </div>
-        <div className="c7n-overlay-item">
-          <p className="c7n-overlay-detail">{validFrom}</p>
-          <p className="c7n-overlay-detail">{validUntil}</p>
-        </div>
-      </div>) : null}
     </Fragment>);
     return (<Fragment>
       <Popover
@@ -195,8 +222,8 @@ class CertTable extends Component {
     const {
       type,
       id: projectId,
-      organizationId:
-        orgId, name,
+      organizationId: orgId,
+      name,
     } = AppState.currentMenuType;
     const columns = [{
       title: <FormattedMessage id="ctf.column.name" />,
@@ -206,7 +233,7 @@ class CertTable extends Component {
       filteredValue: filters.certName || [],
       render: (text, record) => <StatusIcon
         name={text}
-        status={record.status}
+        status={record.commandStatus || ''}
         error={record.error || ''}
       />,
     }, {
@@ -233,6 +260,10 @@ class CertTable extends Component {
         </Tooltip>}
         {text}
       </React.Fragment>),
+    }, {
+      title: <FormattedMessage id="validDate" />,
+      key: 'valid',
+      render: this.validColumn,
     }, {
       align: 'right',
       width: 100,

@@ -60,3 +60,18 @@ export function scrollTo(element, change, duration = 0.5) {
   }
   animateScroll();
 }
+
+/**
+ * 计算剩余时间
+ * @param nowTime 当前时间 时间戳
+ * @param endTime 结束时间 时间戳
+ * @returns {string}
+ */
+export function getTimeLeft(nowTime, endTime) {
+  const resTime = endTime - nowTime;
+  const days = Math.floor(resTime / (24 * 3600 * 1000));
+  // const lefts = resTime % (24 * 3600 * 1000);
+  // const hours = Math.floor(lefts / (3600 * 1000));
+  // return `剩余 ${days} 天 ${hours} 小时`;
+  return `剩余 ${days} 天`;
+}

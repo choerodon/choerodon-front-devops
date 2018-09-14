@@ -77,7 +77,7 @@ class DomainHome extends Component {
       filteredValue: filters.name || [],
       render: (text, record) => <StatusIcon
         name={text}
-        status={record.status}
+        status={record.commandStatus || ''}
         error={record.error || ''}
       />,
     }, {

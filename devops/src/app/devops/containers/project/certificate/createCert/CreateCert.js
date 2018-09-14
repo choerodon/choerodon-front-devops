@@ -7,6 +7,8 @@ import { Button, Form, Select, Input, Modal, Icon, Radio, Upload } from 'choerod
 import '../../../main.scss';
 import './CreateCert.scss';
 
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
 const { AppState } = stores;
 const { Sidebar } = Modal;
 const { Item: FormItem } = Form;
@@ -105,16 +107,17 @@ class CreateCert extends Component {
    * @param promise
    */
   handleResponse = (promise) => {
-    const { onClose, store } = this.props;
+    const { onClose, store, envId } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     promise.then((res) => {
       this.setState({ submitting: false });
       if (res && res.failed) {
         Choerodon.prompt(res.message);
       } else {
+        const initSize = HEIGHT <= 900 ? 10 : 15;
         const filter = {
           page: 0,
-          pageSize: 10,
+          pageSize: initSize,
           postData: { searchParam: {}, param: '' },
           sorter: {
             field: 'id',
@@ -125,7 +128,7 @@ class CreateCert extends Component {
           createDisplay: false,
         };
         store.setTableFilter(filter);
-        store.loadCertData(projectId, 0, 10, { field: 'id', order: 'descend' }, { searchParam: {}, param: '' });
+        store.loadCertData(projectId, 0, initSize, { field: 'id', order: 'descend' }, { searchParam: {}, param: '' }, envId);
         onClose();
       }
     }).catch((error) => {

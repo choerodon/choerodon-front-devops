@@ -259,6 +259,10 @@ const zhCN = {
   shrink: '收缩',
   validDate: '有效期',
   noContent: '没有内容',
+  notActive: '未生效',
+  expired: '已过期',
+  timeFrom: '自',
+  timeUntil: '至',
 
   'chart.change': '切换报表',
   'confirm.delete': '确认删除吗？',

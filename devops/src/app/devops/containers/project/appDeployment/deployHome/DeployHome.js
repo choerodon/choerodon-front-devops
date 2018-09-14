@@ -187,8 +187,8 @@ class DeployHome extends Component {
   };
 
   render() {
-    const { AppDeploymentStore, intl } = this.props;
-    const menu = AppState.currentMenuType;
+    const { AppDeploymentStore } = this.props;
+    const { name } = AppState.currentMenuType;
     const tabActive = AppDeploymentStore.getTabActive;
 
     return (
@@ -209,7 +209,7 @@ class DeployHome extends Component {
           'devops-service.application-instance.delete',
         ]}
       >
-        <Header title={<FormattedMessage id="ist.title" />}>
+        <Header title={<FormattedMessage id="ist.head" />}>
           <Button
             funcType="flat"
             onClick={this.reload}
@@ -218,24 +218,7 @@ class DeployHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content className="page-content">
-          <h2 className="c7n-space-first">
-            <FormattedMessage
-              id="ist.head"
-              values={{
-                name: `${menu.name}`,
-              }}
-            />
-          </h2>
-          <p>
-            <FormattedMessage id="ist.description" />
-            <a href={intl.formatMessage({ id: 'ist.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-              <span className="c7n-external-link-content">
-                <FormattedMessage id="learnmore" />
-              </span>
-              <i className="icon icon-open_in_new" />
-            </a>
-          </p>
+        <Content code="ist" value={{ name }} className="page-content">
           <div className="c7n-deploy-tab">
             <FormattedMessage id="ist.view" />
             <ButtonGroup>

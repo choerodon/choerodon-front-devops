@@ -221,7 +221,7 @@
         sort: 7
         permission:
           - 'devops-service.devops-env-pod-container.queryLogByPod'
-          - 'devops-service.devops-env-pod-container.handleShellByPod',
+          - 'devops-service.devops-env-pod-container.handleShellByPod'
           - 'devops-service.devops-env-pod.pageByOptions'
     - "certificate":
         icon: class
