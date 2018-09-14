@@ -401,7 +401,7 @@ class ContainerHome extends Component {
             </Tooltip>
           </Permission>
           <Permission
-            service={['devops-service.devops-env-pod-container.queryLogByPod']}
+            service={['devops-service.devops-env-pod-container.handleShellByPod']}
             organizationId={organizationId}
             projectId={projectId}
             type={type}
@@ -537,7 +537,7 @@ class ContainerHome extends Component {
   showTerm = (record) => {
     const { ContainerStore } = this.props;
     const projectId = AppState.currentMenuType.id;
-    ContainerStore.loadPodParam(projectId, record.id)
+    ContainerStore.loadPodParam(projectId, record.id, 'shell')
       .then((data) => {
         this.setState({
           envId: record.envId,
@@ -845,6 +845,7 @@ class ContainerHome extends Component {
         service={[
           'devops-service.devops-env-pod.pageByOptions',
           'devops-service.devops-env-pod-container.queryLogByPod',
+          'devops-service.devops-env-pod-container.handleShellByPod',
         ]}
       >
         {contentDom}
@@ -855,7 +856,6 @@ class ContainerHome extends Component {
           className="c7n-podLog-content c7n-region"
           okText={<FormattedMessage id="close" />}
           okCancel={false}
-          destroyOnClose
         >
           <Content className="sidebar-content" code="container.log" values={{ name: podName }}>
             <section className="c7n-podLog-section">

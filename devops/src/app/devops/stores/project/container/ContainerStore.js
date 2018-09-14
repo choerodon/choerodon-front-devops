@@ -188,9 +188,14 @@ class ContainerStore {
     this.setPageInfo(page);
   };
 
-  loadPodParam(projectId, id) {
-    return axios.get(`devops/v1/projects/${projectId}/app_pod/${id}/containers/logs`)
-      .then(datas => this.handleProptError(datas));
+  loadPodParam(projectId, id, type) {
+    if (type) {
+      return axios.get(`devops/v1/projects/${projectId}/app_pod/${id}/containers/logs/${type}`)
+        .then(datas => this.handleProptError(datas));
+    } else {
+      return axios.get(`devops/v1/projects/${projectId}/app_pod/${id}/containers/logs`)
+        .then(datas => this.handleProptError(datas));
+    }
   }
 
   handleProptError =(error) => {
