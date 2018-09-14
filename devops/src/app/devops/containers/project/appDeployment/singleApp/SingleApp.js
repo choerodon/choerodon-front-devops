@@ -12,6 +12,7 @@ import '../AppDeploy.scss';
 import './SingleApp.scss';
 import '../../../main.scss';
 import DelIst from '../component/delIst/DelIst';
+import { scrollTo } from '../../../../utils';
 
 let scrollLeft = 0;
 const { Option, OptGroup } = Select;
@@ -39,6 +40,7 @@ class SingleApp extends Component {
 
   componentDidMount() {
     this.loadSelectData([this.state.selectProPage, this.state.selectPubPage], '');
+    scrollLeft = 0;
   }
 
   /**
@@ -377,18 +379,18 @@ class SingleApp extends Component {
       moveBan: false,
       moveRight: moveRight - 250,
     });
-    document.getElementsByClassName('c7n-single-env-inner')[0].scroll({ left: scrollLeft, behavior: 'smooth' });
+    scrollTo(document.getElementsByClassName('c7n-single-env-inner')[0], -250);
   };
 
   /**
    * 点击左滑动
    */
-  pushScrollLeft = () => {
+  pushScrollLeft = (length) => {
     const domPosition = document.getElementsByClassName('c7n-single-env-inner')[0].scrollLeft;
     this.setState({
       moveRight: domPosition,
     });
-    if (this.state.moveRight === domPosition) {
+    if (length * 274 - window.innerWidth + 208 <= domPosition + 250) {
       this.setState({
         moveBan: true,
       });
@@ -398,8 +400,8 @@ class SingleApp extends Component {
         moveBan: false,
       });
     }
-    document.getElementsByClassName('c7n-single-env-inner')[0].scroll({ left: scrollLeft + 250, behavior: 'smooth' });
     scrollLeft += 250;
+    scrollTo(document.getElementsByClassName('c7n-single-env-inner')[0], 250);
   };
 
   /**
@@ -641,7 +643,7 @@ class SingleApp extends Component {
       'c7n-push-none': envCard.length <= 4,
     });
 
-    const rightDom = this.state.moveBan ? null : <div role="none" className={rightStyle} onClick={this.pushScrollLeft} />;
+    const rightDom = this.state.moveBan ? null : <div role="none" className={rightStyle} onClick={this.pushScrollLeft.bind(this, envCard.length)} />;
     const envCardDom = envCard.length ? _.map(envCard, d => (<div className="c7n-app-square" key={d.id}>
       <div role="none" className={Number(envID) === d.id ? 'c7n-app-card c7n-app-card-active' : 'c7n-app-card'} key={d.id} onClick={this.loadDetail.bind(this, d.id)}>
         <div className={d.connect ? 'c7n-app-state' : 'c7n-app-state-pending'}>

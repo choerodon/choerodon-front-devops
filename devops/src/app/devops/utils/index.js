@@ -38,3 +38,25 @@ export function formatDate(timestamp) {
 
   return `${[year, month, day].map(padZero).join('-')} ${[hour, minutes, seconds].map(padZero).join(':')}`;
 }
+
+/**
+ * 点击平滑滚动
+ * @param change
+ * @param element
+ * @param duration
+ */
+export function scrollTo(element, change, duration = 0.5) {
+  const domPosition = element.scrollLeft;
+  const startTime = performance.now();
+  function easeInOutQuad(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+  function animateScroll() {
+    const now = performance.now();
+    const elapsed = (now - startTime) / 1000;
+    const t = (elapsed / duration);
+    element.scrollLeft = domPosition + change * easeInOutQuad(t);
+    if (t < 1) {
+      window.requestAnimationFrame(animateScroll);
+    }
+  }
+  animateScroll();
+}
