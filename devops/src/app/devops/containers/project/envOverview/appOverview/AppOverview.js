@@ -466,7 +466,6 @@ class AppOverview extends Component {
           >
             {_.map(i.applicationInstanceDTOS, c => (
               <Panel
-                disabled={c.status !== 'running'}
                 forceRender
                 showArrow={false}
                 header={(<div className="c7n-envow-ist-header-wrap">
