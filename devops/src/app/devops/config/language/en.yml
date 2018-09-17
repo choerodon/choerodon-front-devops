@@ -5,6 +5,7 @@
 "application-management.application-version": "Application Version"
 "application-management.application-release": "Application Release"
 "application-management.application-market": "Application Market"
+"application-management.reports": "Reports"
 
 # 开发流水线
 "development-pipeline": "Development Pipeline"
