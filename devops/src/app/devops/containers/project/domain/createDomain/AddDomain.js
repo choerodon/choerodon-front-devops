@@ -74,11 +74,11 @@ class CreateDomain extends Component {
   }
 
   componentDidMount() {
-    const { store, id, type, envId, form: { setFieldsValue } } = this.props;
+    const { intl: { formatMessage }, store, id, type, envId, form: { setFieldsValue, setFields } } = this.props;
     const { projectId } = this.state;
     if (id && type === 'edit') {
       store.loadDataById(projectId, id).then((data) => {
-        const { pathList, envId: domainEnv, certId, domain } = data;
+        const { pathList, envId: domainEnv, certId, certName, domain } = data;
         const deletedService = [];
         _.forEach(pathList, (item, index) => {
           const { serviceStatus, serviceName, serviceId } = item;
@@ -100,7 +100,16 @@ class CreateDomain extends Component {
         });
         if (certId && domain && domainEnv) {
           store.loadCertByEnv(projectId, domainEnv, domain);
-          setFieldsValue({ certId });
+          if (certName) {
+            setFieldsValue({ certId });
+          } else {
+            setFields({
+              certId: {
+                value: null,
+                errors: [new Error(formatMessage({ id: 'domain.cert.delete' }))],
+              },
+            });
+          }
         }
         store.loadNetwork(projectId, domainEnv);
       });

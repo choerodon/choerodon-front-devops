@@ -673,6 +673,7 @@ const zhCN = {
   'domain.protocol.normal': '普通协议',
   'domain.protocol.secret': '加密协议',
   'domain.cert.none': '未检索到证书',
+  'domain.cert.delete': '证书已被删除',
 
   // appstore
   'appstore.title': '应用市场',
