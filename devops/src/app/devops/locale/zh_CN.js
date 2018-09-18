@@ -198,7 +198,7 @@ const pageDetail = {
   'report.title': '所有报表',
   'report.link': `${docServer}/user-guide/application-management/report`,
   'report.submission.description': '代码提交情况图能从项目、应用的维度帮助我们查看某个项目或是该项目下某个应用的代码提交情况。',
-  'report.submission.title': '项目"{name}"的代码提交情况图',
+  'report.submission.title': '项目"{name}"的代码提交情况',
   'report.submission.link': `${docServer}/user-guide/application-management/report`,
 };
 
@@ -850,6 +850,9 @@ const zhCN = {
   'report.head': '报告',
   'report.submission.head': '代码提交情况',
   'report.submission.des': '代码提交情况图能从项目、应用的维度帮助我们查看某个项目或是该项目下某个应用的代码提交情况。',
+  'report.data.today': '今天',
+  'report.data.seven': '近7天',
+  'report.data.thirty': '近30天',
 
   ...pageDetail,
 };
