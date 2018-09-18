@@ -303,10 +303,9 @@ class AppHome extends Component {
     this.props.form.resetFields();
     const { AppStore } = this.props;
     const { projectId } = this.state;
-    const { organizationId } = AppState.currentMenuType;
     if (type === 'create') {
       AppStore.setSingleData(null);
-      AppStore.loadSelectData(organizationId);
+      AppStore.loadSelectData(projectId);
       this.setState({ show: true, type });
     } else {
       AppStore.loadDataById(projectId, id);
