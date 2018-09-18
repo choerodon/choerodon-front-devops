@@ -1,6 +1,18 @@
 /* stylelint-disable no-descending-specificity */
 $WIDTH512: 512px;
 
+.clearfix {
+  &::after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+  zoom: 1;
+}
+
 .c7n-page-height {
   height: calc(100%);
 }

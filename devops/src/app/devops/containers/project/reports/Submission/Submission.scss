@@ -1,21 +1,94 @@
-.c7n-report-submission {
-  display: flex;
-  .c7n-report-chart {
-    flex: 1;
-    padding: 15px;
-    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .20), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
-    border-radius: 2px;
-    .c7n-report-viewport-mode {
-      display: inline-block;
-      margin-right: 60px;
-    }
-    .c7n-report-viewport-select {
-      display: inline-block;
+.c7n-report-control {
+  padding: 8px 0;
+  margin-bottom: 16px;
+  .c7n-report-control-select {
+    margin-right: 60px;
+    margin-bottom: 8px;
+    width: 400px;
+  }
+  .c7n-report-control-recently {
+    display: inline-block;
+    .c7n-report-control-datepick {
+      background: rgba(0, 0, 0, .04);
+      .ant-calendar-underline {
+        border: none;
+      }
+      .ant-calendar-picker-icon {
+        left: 0;
+        right: unset;
+      }
     }
   }
-  .c7n-report-history {
-    flex: 0 0 330px;
+}
+
+.c7n-report-submission {
+  width: 100%;
+  .c7n-report-submission-overview {
+    overflow: hidden;
+    float: left;
+    width: 67%;
     padding: 15px;
-    width: 330px;
+    height: 330px;
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .20), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
+    border-radius: 2px;
+  }
+  .c7n-report-submission-history {
+    float: left;
+    padding: 0 15px 15px;
+    width: 33%;
+    height: 330px;
+  }
+}
+
+.c7n-report-commits-title {
+  color: #3f51b5;
+  font-size: 16px;
+  line-height: 24px;
+  .c7n-report-commits-avatar {
+    margin-right: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+  }
+  .c7n-report-commits-text {
+    margin-left: 32px;
+    color: #000;
+    font-size: 12px;
+  }
+}
+
+.c7n-report-submission-wrap {
+  width: 100%;
+  padding: 20px 0;
+  .c7n-report-submission-item {
+    overflow: hidden;
+    margin-bottom: 20px;
+    padding: 15px;
+    width: calc(50% - 10px);
+    height: 230px;
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .20), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
+    &:nth-child(odd) {
+      float: left;
+    }
+    &:nth-child(even) {
+      float: right;
+    }
+  }
+}
+
+.c7n-region .c7n-report-history-title,
+.c7n-report-history-title {
+  margin: 0 0 24px;
+  font-size: 16px;
+  color: #000;
+}
+
+.c7n-report-history-list {
+  width: 100%;
+  .c7n-report-history-info {
+    display: inline-block;
+    margin-left: 10px;
+    width: calc(100% - 64px);
+    height: 34px;
   }
 }
