@@ -113,7 +113,7 @@ class AppStore {
     this.setPageInfo(page);
   };
 
-  loadSelectData =orgId => axios.get(`/devops/v1/projects/${orgId}/apps/template`)
+  loadSelectData = projectId => axios.get(`/devops/v1/projects/${projectId}/apps/template`)
     .then((data) => {
       const res = this.handleProptError(data);
       if (res) {
