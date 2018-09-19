@@ -24,6 +24,7 @@
     "echarts-for-react": "^2.0.12",
     "file-loader": "^2.0.0",
     "hterm-umdjs": "^1.4.1",
+    "moment": "^2.22.2",
     "quill-delta-to-html": "^0.8.4",
     "react-codemirror": "^1.0.0",
     "react-copy-to-clipboard": "^5.0.1",

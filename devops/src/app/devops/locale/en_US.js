@@ -25,6 +25,7 @@ const enUS = {
   failed: 'Create Failed',
   deleted: 'Deleted',
   null: 'null',
+  language: 'en_US',
 
   // ist
   ist_create: 'Creating',

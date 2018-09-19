@@ -130,12 +130,15 @@ class ContainerStore {
   }
 
 
-  loadActiveEnv = projectId => axios.get(`devops/v1/projects/${projectId}/envs?active=true`).then((data) => {
-    const res = this.handleProptError(data);
-    if (res) {
-      this.setEnvcard(data);
-    }
-  });
+  loadActiveEnv = projectId => axios.get(`devops/v1/projects/${projectId}/envs?active=true`)
+    .then((data) => {
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else {
+        this.setEnvcard(data);
+      }
+      return data;
+    });
 
   loadAppData = projectId => axios.get(`devops/v1/projects/${projectId}/apps/list_all`).then((data) => {
     const res = handleProptError(data);
