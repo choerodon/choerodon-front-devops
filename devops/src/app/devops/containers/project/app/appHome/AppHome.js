@@ -129,9 +129,7 @@ class AppHome extends Component {
         value: -1,
       }],
       filteredValue: filters.active || [],
-      render: (text, record) => (record.synchro
-        ? <span>{text ? formatMessage({ id: 'app.run' }) : formatMessage({ id: 'app.stop' })}</span>
-        : <FormattedMessage id="app.creating" />),
+      render: this.getAppStatus,
     }, {
       align: 'right',
       width: 104,
@@ -178,7 +176,31 @@ class AppHome extends Component {
         </Fragment>
       ),
     }];
-  } ;
+  };
+
+  /**
+   * 获取状态
+   * @param text
+   * @param record 表格中一个项目的记录
+   * @returns {*}
+   */
+  getAppStatus = (text, record) => {
+    const style = {
+      fontSize: 18,
+      marginRight: 6,
+    };
+    let el = null;
+    if (record.synchro && text) {
+      if (text) {
+        el = <span><Icon style={{ color: '#1ab16f', ...style }} type="check_circle" /><FormattedMessage id="app.run" /></span>;
+      } else {
+        el = <span><Icon style={{ color: '#f44336', ...style }} type="not_interested" /><FormattedMessage id="app.stop" /></span>;
+      }
+    } else {
+      el = <span><Icon style={{ color: '#4d90fe', ...style }} type="timelapse" /><FormattedMessage id="app.creating" /></span>;
+    }
+    return el;
+  };
 
   /**
    * 打开分支

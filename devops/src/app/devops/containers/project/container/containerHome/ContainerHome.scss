@@ -26,11 +26,6 @@
     margin-right: 8px;
   }
 
-  .c7n-container-title {
-    padding-left: 8px;
-    vertical-align: sub;
-  }
-
   .c7n-container-table {
     padding-left: 15%;
 
@@ -147,32 +142,6 @@
   color: rgba(0, 0, 0, 0.36);
 }
 
-//icon
-.c7n-icon-success,
-.c7n-icon-running {
-  font-size: 18px;
-  color: #00bfa5;
-  vertical-align: middle;
-}
-
-.c7n-icon-failed {
-  font-size: 18px;
-  color: #f44336;
-  vertical-align: middle;
-}
-
-.c7n-icon-help {
-  font-size: 18px;
-  color: rgba(0, 0, 0, 0.36);
-  vertical-align: middle;
-}
-
-.c7n-icon-pending {
-  font-size: 18px;
-  color: #ffb100;
-  vertical-align: middle;
-}
-
 .c7n-podLog-editor {
   height: 100%;
   display: flex;
@@ -228,7 +197,10 @@
 
 .CodeMirror-fullscreen {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   height: auto;
   z-index: 9;
 }
@@ -245,7 +217,7 @@
   border: 1px solid #565656;
 
   &:hover {
-    background: #000000;
+    background: #000;
   }
 }
 
