@@ -33,7 +33,7 @@ const ICONS = {
     display: 'Failed',
   },
   canceled: {
-    icon: 'icon-not_interested',
+    icon: 'icon-cancle_b',
     code: 'canceled',
     display: 'Cancel',
   },

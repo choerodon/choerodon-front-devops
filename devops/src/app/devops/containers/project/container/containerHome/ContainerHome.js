@@ -14,6 +14,7 @@ import { hterm, lib } from 'hterm-umdjs';
 import TimePopover from '../../../../components/timePopover';
 import LoadingBar from '../../../../components/loadingBar';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import StatusTags from '../../../../components/StatusTags';
 import '../../../main.scss';
 import './ContainerHome.scss';
 import './Term.scss';
@@ -266,45 +267,7 @@ class ContainerHome extends Component {
       key: 'status',
       width: 110,
       sorter: true,
-      render: (text, record) => {
-        let dom = null;
-        switch (record.status) {
-          case 'Completed':
-            dom = (<div>
-              <MouserOverWrapper text={record.status} width={0.073}>
-                <i className="icon icon-check_circle c7n-icon-success c7n-container-i" />
-                <span className="c7n-container-title">{record.status}</span>
-              </MouserOverWrapper>
-            </div>);
-            break;
-          case 'Running':
-            dom = (<div>
-              <i className="icon icon-check_circle c7n-icon-running c7n-container-i" />
-              <span className="c7n-container-title">{record.status}</span>
-            </div>);
-            break;
-          case 'Error':
-            dom = (<div>
-              <i className="icon icon-cancel c7n-icon-failed c7n-container-i" />
-              <span className="c7n-container-title">{record.status}</span>
-            </div>);
-            break;
-          case 'Pending':
-            dom = (<div>
-              <i className="icon icon-timelapse c7n-icon-pending c7n-container-i" />
-              <span className="c7n-container-title">{record.status}</span>
-            </div>);
-            break;
-          default:
-            dom = (<div>
-              <MouserOverWrapper text={record.status} width={0.073}>
-                <i className="icon icon-help c7n-icon-help c7n-container-i" />
-                <span className="c7n-container-title">{record.status}</span>
-              </MouserOverWrapper>
-            </div>);
-        }
-        return dom;
-      },
+      render: this.getActive,
     }, {
       title: <FormattedMessage id="container.name" />,
       key: 'name',
@@ -419,6 +382,57 @@ class ContainerHome extends Component {
         </div>
       ),
     }];
+  };
+
+  /**
+   * 获取状态
+   * @param text
+   * @param record
+   * @returns {*}
+   */
+  getActive = (text, record) => {
+    const { status } = record;
+    let dom = null;
+    let el = null;
+    switch (status) {
+      case 'Completed':
+        dom = {
+          wrap: true,
+          color: '#1ec024',
+        };
+        break;
+      case 'Running':
+        dom = {
+          wrap: false,
+          color: '#1ec024',
+        };
+        break;
+      case 'Error':
+        dom = {
+          wrap: false,
+          color: '#f44336',
+        };
+        break;
+      case 'Pending':
+        dom = {
+          wrap: false,
+          color: '#ff9915',
+        };
+        break;
+      default:
+        dom = {
+          wrap: true,
+          color: 'rgba(0, 0, 0, 0.36)',
+        };
+    }
+    if (dom && dom.wrap) {
+      el = (<MouserOverWrapper text={status} width={0.073}>
+        <StatusTags color={dom.color} name={status} />
+      </MouserOverWrapper>);
+    } else {
+      el = (<StatusTags color={dom.color} name={status} />);
+    }
+    return el;
   };
 
   /**
