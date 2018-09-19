@@ -199,6 +199,10 @@ const pageDetail = {
   'report.link': `${docServer}/user-guide/application-management/report`,
   'report.submission.description': '代码提交情况图能从项目、应用的维度帮助我们查看某个项目或是该项目下某个应用的代码提交情况。',
   'report.submission.title': '项目"{name}"的代码提交情况',
+  'report.deploy-duration.description': '部署时长报告能从项目、应用的维度帮助我们查看某个项目或是该项目下某个应用的部署情况。',
+  'report.deploy-times.description': '部署次数报告能从项目、应用的维度帮助我们查看某个项目或是该项目下某个应用的部署情况。',
+  'report.deploy-duration.title': '项目"{name}"的部署时长报告',
+  'report.deploy-times.title': '项目"{name}"的部署次数报告',
   'report.submission.link': `${docServer}/user-guide/application-management/report`,
 };
 
@@ -263,6 +267,10 @@ const zhCN = {
   expired: '已过期',
   timeFrom: '自',
   timeUntil: '至',
+  success: '成功',
+  minutes: '分',
+  seconds: '秒',
+  minTime: '时长（分）',
 
   'chart.change': '切换报表',
   'confirm.delete': '确认删除吗？',
@@ -853,6 +861,13 @@ const zhCN = {
   'report.data.today': '今天',
   'report.data.seven': '近7天',
   'report.data.thirty': '近30天',
+  'report.deploy-duration.head': '部署时长报告',
+  'report.deploy-times.head': '部署次数报告',
+  'report.deploy-duration.time': '部署时间',
+  'report.deploy-duration.long': '部署时长',
+  'report.deploy-duration.user': '执行人',
+  'report.deploy-duration.des': '部署时长报告描述。',
+  'report.deploy-times.des': '部署次数报告描述。',
 
   ...pageDetail,
 };

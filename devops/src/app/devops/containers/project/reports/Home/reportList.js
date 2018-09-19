@@ -4,12 +4,12 @@ export default [
     link: '/devops/reports/submission',
     pic: 'burndownchart',
   }, {
-    key: 'post1',
-    link: '/devops/reports/post1',
-    pic: 'post',
+    key: 'deploy-duration',
+    link: '/devops/reports/deploy-duration',
+    pic: 'scatter-simple.png',
   }, {
-    key: 'post2',
-    link: '/devops/reports/post2',
+    key: 'deploy-times',
+    link: '/devops/reports/deploy-times',
     pic: 'post',
   }, {
     key: 'post3',
