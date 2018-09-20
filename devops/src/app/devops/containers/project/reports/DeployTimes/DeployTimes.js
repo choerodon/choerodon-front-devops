@@ -1,220 +1,333 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { observable, action, configure } from 'mobx';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Page, Header, Content, stores, Permission } from 'choerodon-front-boot';
 import { Select, Button, Table, Spin } from 'choerodon-ui';
 import ReactEcharts from 'echarts-for-react';
+import _ from 'lodash';
+import moment from 'moment';
 import ChartSwitch from '../Component/ChartSwitch';
 import StatusTags from '../../../../components/StatusTags';
+import TimePicker from '../Component/TimePicker';
+import NoChart from '../Component/NoChart';
+import ContainerStore from '../../../../stores/project/container';
 import '../DeployDuration/DeployDuration.scss';
+
+configure({ enforceActions: false });
 
 const { AppState } = stores;
 const { Option } = Select;
 
-const children = [];
-for (let i = 10; i < 36; i++) {
-  children.push(<Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
-}
-
 @observer
 class DeployTimes extends Component {
-  handleRefresh = () => {};
+  @observable env = [];
+
+  @observable app = [];
+
+  @observable envIds = [];
+
+  @observable appId = 'all';
+
+  @observable appArr = [];
+
+  @observable dateArr = [];
+
+  @observable successArr = [];
+
+  @observable failArr = [];
+
+  @observable allArr = [];
+
+  handleRefresh = () => { this.loadCharts(); };
 
   /**
-   * 视图切换
-   * @param e
+   * 选择环境
+   * @param ids 环境ID
    */
-  handleChange = (e) => {
-    console.log(e.target.value);
+  @action
+  handleEnvSelect = (ids) => {
+    this.envIds = ids;
+    this.loadCharts();
   };
 
   /**
-   * 用户、应用选择
-   * @param e
+   * 选择应用
+   * @param id 应用ID
    */
-  handleSelect = (e) => {
-    console.log(e.target.value);
+  @action
+  handleAppSelect = (id) => {
+    this.appId = id;
+    this.loadCharts();
   };
 
-  getOption = () => ({
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow',
-      },
-      backgroundColor: '#fff',
-      textStyle: {
-        color: '#000',
-        fontSize: 13,
-        lineHeight: 20,
-      },
-      padding: [10, 15, 10, 15],
-      extraCssText:
-        'box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2); border: 1px solid #ddd; border-radius: 0;',
-      formatter(params, ticket) {
-        if (params[1] && params[0]) {
-          const total = params[0].value + params[1].value;
-          return `<div>
-              <div>日期：${params[1].name}</div>
-              <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params[1].color};"></span>部署${params[1].seriesName}：${params[1].value}</div>
-              <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params[0].color};"></span>部署${params[0].seriesName}：${params[0].value}</div>
-              <div>部署总次数：${total}</div>
-              <div>部署成功率：${(params[0].value / total).toFixed(2)}%</div>
-            <div>`;
-        } else {
-          return `<div>
-              <div>日期：${params[0].name}</div>
-              <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params[0].color};"></span>部署${params[0].seriesName}：${params[0].value}</div>
-            <div>`;
+  componentDidMount() {
+    this.loadEnvCards();
+    this.loadApps();
+  }
+
+  componentWillUnmount() {
+    const { ReportsStore } = this.props;
+    ReportsStore.setAllData([]);
+    ReportsStore.setStartTime(moment().subtract(6, 'days'));
+    ReportsStore.setEndTime(moment());
+  }
+
+  /**
+   * 获取可用环境
+   */
+  @action
+  loadEnvCards = () => {
+    const projectId = AppState.currentMenuType.id;
+    ContainerStore.loadActiveEnv(projectId)
+      .then((env) => {
+        if (env.length) {
+          this.env = env;
+          this.envIds.push(env[0].id);
         }
-      },
-    },
-    legend: {
-      data: ['失败次数', '成功次数', '总次数'],
-      left: 'right',
-      itemWidth: 14,
-      itemGap: 20,
-      // formatter(name) {
-      //   const val = [{ name: '失败次数', value: 20 }, { name: '成功次数', value: 40 }, { name: '总次数', value: 60 }];
-      //   let count = 0;
-      //   val.map((data) => {
-      //     if (data.name === name) {
-      //       count = data.value;
-      //     }
-      //   });
-      //   return `${name}：${count}`;
-      // },
-    },
-    grid: {
-      top: 38,
-      left: 0,
-      right: 0,
-      bottom: 40,
-      containLabel: true,
-    },
-    xAxis: {
-      type: 'category',
-      axisTick: { show: false },
-      axisLine: {
-        lineStyle: {
-          color: '#eee',
-          type: 'solid',
-          width: 2,
-        },
-      },
-      axisLabel: {
-        margin: 13,
-        textStyle: {
-          color: 'rgba(0, 0, 0, 0.65)',
-          fontSize: 12,
-        },
-      },
-      splitLine: {
-        lineStyle: {
-          color: ['#eee'],
-          width: 1,
-          type: 'solid',
-        },
-      },
-      data: ['08/01', '08/02', '08/03', '08/04', '08/05', '08/06', '08/07', '08/08', '08/09'],
-    },
-    yAxis: {
-      name: '次数',
-      type: 'value',
+        this.loadCharts();
+      });
+  };
 
-      nameTextStyle: {
-        fontSize: 13,
-        color: '#000',
-        padding: [0, 20, 10, 0],
-      },
-      axisTick: { show: false },
-      axisLine: {
-        lineStyle: {
-          color: '#eee',
-          type: 'solid',
-          width: 2,
-        },
-      },
+  /**
+   * 加载应用
+   */
+  @action
+  loadApps = () => {
+    const { ReportsStore } = this.props;
+    const { id } = AppState.currentMenuType;
+    ReportsStore.loadApps(id)
+      .then((app) => {
+        if (app.length) {
+          this.app = app;
+          this.appId = 'all';
+        }
+      });
+  };
 
-      axisLabel: {
-        margin: 19.3,
-        textStyle: {
-          color: 'rgba(0, 0, 0, 0.65)',
-          fontSize: 12,
-        },
-      },
-      splitLine: {
-        lineStyle: {
-          color: '#eee',
-          type: 'solid',
-          width: 1,
-        },
-      },
-    },
-    series: [
-      {
-        name: '成功次数',
-        type: 'bar',
-        color: '#00BFA5',
-        barWidth: '40%',
-        stack: '总次数',
-        data: [22, 18, 19, 23, 29, 33, 31, 11, 5],
-      },
-      {
-        name: '失败次数',
-        type: 'bar',
-        color: '#FFB100',
-        barWidth: '40%',
-        stack: '总次数',
-        data: [12, 13, 10, 13, 9, 23, 21, 22, 10],
-      },
-      {
-        name: '总次数',
-        type: 'bar',
-        color: '#FFF',
-        stack: '总次数',
-      },
-    ],
-  });
+  /**
+   * 加载图表数据
+   */
+  @action
+  loadCharts = () => {
+    const { ReportsStore } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
+    const appID = (this.appId === 'all') ? [] : this.appId;
+    ReportsStore.loadDeployTimesChart(projectId, appID, startTime, endTime, this.envIds.slice())
+      .then((res) => {
+        if (res) {
+          this.dateArr = res.creationDates;
+          this.successArr = res.deploySuccessFrequency;
+          this.failArr = res.deployFailFrequency;
+          this.allArr = res.deployFrequencys;
+        }
+      });
+    this.loadTables();
+  };
 
-  renderTable() {
+  /**
+   * 加载table数据
+   */
+  @action
+  loadTables = () => {
+    const { ReportsStore } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
+    const appID = (this.appId === 'all') ? [] : this.appId;
+    ReportsStore.loadDeployTimesTable(projectId, appID, startTime, endTime, this.envIds.slice());
+  };
+
+  /**
+   * 渲染图表
+   * @returns {*}
+   */
+  getOption() {
     const { intl: { formatMessage } } = this.props;
-    const data = [{
-      status: 'success',
-      time: '2018-08-02 10:57:15',
-      code: 'hgo-app-ce70a',
-      appName: '部署应用',
-      ver: '2018.9.10-171543-feature-c7ncd-783',
-      long: '17分',
-      user: '12938李洪',
-    }];
+    const val = [{ name: `${formatMessage({ id: 'report.build-number.fail' })}` }, { name: `${formatMessage({ id: 'report.build-number.success' })}` }, { name: `${formatMessage({ id: 'report.build-number.total' })}` }];
+    val[0].value = _.reduce(this.failArr, (sum, n) => sum + n);
+    val[1].value = _.reduce(this.successArr, (sum, n) => sum + n);
+    val[2].value = _.reduce(this.allArr, (sum, n) => sum + n);
+    return {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow',
+        },
+        backgroundColor: '#fff',
+        textStyle: {
+          color: '#000',
+          fontSize: 13,
+          lineHeight: 20,
+        },
+        padding: [10, 15, 10, 15],
+        extraCssText:
+          'box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2); border: 1px solid #ddd; border-radius: 0;',
+        formatter(params, ticket) {
+          if (params[1] && params[0]) {
+            const total = params[0].value + params[1].value;
+            return `<div>
+                <div>${formatMessage({ id: 'branch.issue.date' })}：${params[1].name}</div>
+                <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params[1].color};"></span>${formatMessage({ id: 'appstore.deploy' })}${params[1].seriesName}：${params[1].value}</div>
+                <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params[0].color};"></span>${formatMessage({ id: 'appstore.deploy' })}${params[0].seriesName}：${params[0].value}</div>
+                <div>${formatMessage({ id: 'appstore.deploy' })}${formatMessage({ id: 'report.build-number.total' })}：${total}</div>
+                <div>${formatMessage({ id: 'appstore.deploy' })}${formatMessage({ id: 'report.build-number.success.rate' })}：${((params[0].value / total) * 100).toFixed(2)}%</div>
+              <div>`;
+          } else {
+            return `<div>
+                <div>${formatMessage({ id: 'branch.issue.date' })}：${params[0].name}</div>
+                <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params[0].color};"></span>${formatMessage({ id: 'appstore.deploy' })}${params[0].seriesName}：${params[0].value}</div>
+              <div>`;
+          }
+        },
+      },
+      legend: {
+        left: 'right',
+        itemWidth: 14,
+        itemGap: 20,
+        formatter(name) {
+          let count = 0;
+          _.map(val, (data) => {
+            if (data.name === name) {
+              count = data.value;
+            }
+          });
+          return `${name}：${count}`;
+        },
+      },
+      grid: {
+        left: '2%',
+        right: '3%',
+        bottom: '3%',
+        containLabel: true,
+      },
+      xAxis: {
+        type: 'category',
+        axisTick: { show: false },
+        axisLine: {
+          lineStyle: {
+            color: '#eee',
+            type: 'solid',
+            width: 2,
+          },
+        },
+        splitLine: {
+          lineStyle: {
+            color: ['#eee'],
+            width: 1,
+            type: 'solid',
+          },
+        },
+        data: this.dateArr,
+        axisLabel: {
+          margin: 13,
+          textStyle: {
+            color: 'rgba(0, 0, 0, 0.65)',
+            fontSize: 12,
+          },
+          formatter(value) {
+            return value.slice(5, 10).replace('-', '/');
+          },
+        },
+      },
+      yAxis: {
+        name: `${formatMessage({ id: 'report.build-number.yAxis' })}`,
+        type: 'value',
+        nameTextStyle: {
+          fontSize: 13,
+          color: '#000',
+        },
+        axisTick: { show: false },
+        axisLine: {
+          lineStyle: {
+            color: '#eee',
+            type: 'solid',
+            width: 2,
+          },
+        },
+        axisLabel: {
+          margin: 18,
+          textStyle: {
+            color: 'rgba(0, 0, 0, 0.65)',
+            fontSize: 12,
+          },
+        },
+        splitLine: {
+          lineStyle: {
+            color: '#eee',
+            type: 'solid',
+            width: 1,
+          },
+        },
+      },
+      series: [
+        {
+          name: `${formatMessage({ id: 'report.build-number.success' })}`,
+          type: 'bar',
+          color: '#00BFA5',
+          barWidth: '40%',
+          stack: 'total',
+          data: this.successArr,
+        },
+        {
+          name: `${formatMessage({ id: 'report.build-number.fail' })}`,
+          type: 'bar',
+          color: '#FFB100',
+          barWidth: '40%',
+          stack: 'total',
+          data: this.failArr,
+        },
+        {
+          name: `${formatMessage({ id: 'report.build-number.total' })}`,
+          type: 'bar',
+          color: 'transparent',
+          stack: 'total',
+        },
+      ],
+    };
+  }
+
+  /**
+   * 表格函数
+   * @returns {*}
+   */
+  renderTable() {
+    const { intl: { formatMessage }, ReportsStore } = this.props;
+    const data = ReportsStore.getAllData;
+
     const column = [
       {
         title: formatMessage({ id: 'app.active' }),
+        key: 'status',
         render: record => (<StatusTags name={formatMessage({ id: record.status })} colorCode={record.status} />),
       }, {
         title: formatMessage({ id: 'report.deploy-duration.time' }),
-        dataIndex: 'time',
+        key: 'creationDate',
+        dataIndex: 'creationDate',
       }, {
         title: formatMessage({ id: 'deploy.instance' }),
-        dataIndex: 'code',
+        key: 'appInstanceCode',
+        dataIndex: 'appInstanceCode',
       }, {
         title: formatMessage({ id: 'deploy.appName' }),
+        key: 'appName',
         dataIndex: 'appName',
       }, {
         title: formatMessage({ id: 'deploy.ver' }),
-        dataIndex: 'ver',
-      }, {
-        title: formatMessage({ id: 'report.deploy-duration.long' }),
-        dataIndex: 'long',
+        key: 'appVersion',
+        dataIndex: 'appVersion',
       }, {
         title: formatMessage({ id: 'report.deploy-duration.user' }),
-        dataIndex: 'user',
+        key: 'lastUpdatedName',
+        dataIndex: 'lastUpdatedName',
       },
     ];
+
     return (
       <Table
-        rowKey={record => record.id}
+        rowKey={record => record.creationDate}
         dataSource={data}
         filterBar={false}
         columns={column}
@@ -227,6 +340,11 @@ class DeployTimes extends Component {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const echartsLoading = ReportsStore.getEchartsLoading;
+
+    const envDom = this.env.length ? _.map(this.env, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
+
+    const appDom = this.app.length ? _.map(this.app, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
+
     return (<Page className="c7n-region">
       <Header
         title={formatMessage({ id: 'report.deploy-times.head' })}
@@ -244,42 +362,51 @@ class DeployTimes extends Component {
         </Button>
       </Header>
       <Content code="report.deploy-times" value={{ name }}>
-        <div className="c7n-report-screen">
-          <Select
-            label={formatMessage({ id: 'deploy.envName' })}
-            className="c7n-select_200"
-            placeholder="Please select"
-            onChange={this.handleSelect}
-          >
-            {children}
-          </Select>
-          <Select
-            label={formatMessage({ id: 'deploy.appName' })}
-            className="c7n-select_400"
-            mode="multiple"
-            placeholder="Please select"
-            defaultValue={['a10', 'c12']}
-            onChange={this.handleSelect}
-          >
-            {children}
-          </Select>
-          <div className="c7n-report-history">right</div>
-        </div>
-        <div className="c7n-report-content">
-          <Spin spinning={echartsLoading}>
-            <ReactEcharts
-              option={this.getOption()}
-              notMerge
-              lazyUpdate
-              style={{ height: '350px', width: '100%' }}
-              theme="theme_name"
-              onChartReady={this.onChartReadyCallback}
-            />
-          </Spin>
-        </div>
-        <div className="c7n-report-table">
-          {this.renderTable()}
-        </div>
+        {appDom ? <React.Fragment>
+          <div className="c7n-report-screen">
+            <Select
+              notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}
+              value={this.envIds}
+              label={formatMessage({ id: 'deploy.envName' })}
+              className="c7n-select_400"
+              mode="multiple"
+              maxTagCount={2}
+              onChange={this.handleEnvSelect}
+              optionFilterProp="children"
+              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              filter
+            >
+              {envDom}
+            </Select>
+            <Select
+              notFoundContent={formatMessage({ id: 'envoverview.unlist' })}
+              value={appDom ? this.appId : null}
+              className="c7n-select_200"
+              label={formatMessage({ id: 'deploy.appName' })}
+              onChange={this.handleAppSelect}
+              optionFilterProp="children"
+              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              filter
+            >
+              {appDom}
+              {appDom ? <Option key="all" value="all">全部应用</Option> : null}
+            </Select>
+            <TimePicker startTime={ReportsStore.getStartTime} endTime={ReportsStore.getEndTime} func={this.loadCharts} store={ReportsStore} />
+          </div>
+          <div className="c7n-report-content">
+            <Spin spinning={echartsLoading}>
+              <ReactEcharts
+                option={this.getOption()}
+                notMerge
+                lazyUpdate
+                style={{ height: '350px', width: '100%' }}
+              />
+            </Spin>
+          </div>
+          <div className="c7n-report-table">
+            {this.renderTable()}
+          </div>
+        </React.Fragment> : <NoChart title={formatMessage({ id: 'report.no-app' })} des={formatMessage({ id: 'report.no-app-des' })} />}
       </Content>
     </Page>);
   }

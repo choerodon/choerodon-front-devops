@@ -891,6 +891,11 @@ const zhCN = {
   'report.build-duration.time': '时间',
   'report.build-duration.duration': '构建时长',
   'report.build-duration.yAxis': '时长（分）',
+  'report.deploy-duration.apps': '每次最多可同时选择5个应用！',
+  'report.no-app': '当前项目下无应用',
+  'report.no-env': '当前项目下无可用环境',
+  'report.no-app-des': '请使用项目所有者角色登录去创建一个应用',
+  'report.no-env-des': '请使用项目所有者角色登录去创建一个可用环境',
 
   ...pageDetail,
 };
