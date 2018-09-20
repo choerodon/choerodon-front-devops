@@ -166,10 +166,14 @@ class ContainerHome extends Component {
   onTerminalResponseReceived() {
     const { namespace, envId, logId, podName, containerName } = this.state;
     const authToken = document.cookie.split('=')[1];
-    this.conn = new WebSocket(`POD_WEBSOCKET_URL/ws/exec?key=env:${namespace}.envId:${envId}.exec:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
-    this.conn.onopen = this.onConnectionOpen.bind(this);
-    this.conn.onmessage = this.onConnectionMessage.bind(this);
-    this.conn.onclose = this.onConnectionClose.bind(this);
+    try {
+      this.conn = new WebSocket(`POD_WEBSOCKET_URL/ws/exec?key=env:${namespace}.envId:${envId}.exec:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
+      this.conn.onopen = this.onConnectionOpen.bind(this);
+      this.conn.onmessage = this.onConnectionMessage.bind(this);
+      this.conn.onclose = this.onConnectionClose.bind(this);
+    } catch (e) {
+      // e
+    }
   }
 
   /**
@@ -440,44 +444,75 @@ class ContainerHome extends Component {
    */
   @action
   loadLog = (followingOK) => {
+    const { namespace, envId, logId, podName, containerName, following } = this.state;
     const authToken = document.cookie.split('=')[1];
     const logs = [];
     let oldLogs = [];
-    const { namespace, envId, logId, podName, containerName } = this.state;
-    const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${namespace}.envId:${envId}.log:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
-    const editor = this.editorLog.getCodeMirror();
-    this.setState({ ws, following: true });
-    if (!followingOK) {
-      editor.setValue('Loading...');
-    }
-    ws.onmessage = (e) => {
-      if (e.data.size) {
-        const reader = new FileReader();
-        reader.readAsText(e.data, 'utf-8');
-        reader.onload = () => {
-          if (reader.result !== '') {
-            logs.push(reader.result);
+    let editor = null;
+    if (this.editorLog) {
+      editor = this.editorLog.getCodeMirror();
+      try {
+        const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${namespace}.envId:${envId}.log:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
+        this.setState({ ws, following: true });
+        if (!followingOK) {
+          editor.setValue('Loading...');
+        }
+        ws.onopen = () => {
+          editor.setValue('Loading...');
+        };
+        ws.onerror = (e) => {
+          if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+          }
+          logs.push('连接出错，请重新打开');
+          editor.setValue(_.join(logs, ''));
+          editor.execCommand('goDocEnd');
+        };
+        ws.onclose = (e) => {
+          if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+          }
+          if (following) {
+            logs.push('连接已断开');
+            editor.setValue(_.join(logs, ''));
+          }
+          editor.execCommand('goDocEnd');
+        };
+        ws.onmessage = (e) => {
+          if (e.data.size) {
+            const reader = new FileReader();
+            reader.readAsText(e.data, 'utf-8');
+            reader.onload = () => {
+              if (reader.result !== '') {
+                logs.push(reader.result);
+              }
+            };
+          }
+          if (!logs.length) {
+            const logString = _.join(logs, '');
+            editor.setValue(logString);
           }
         };
+
+        this.timer = setInterval(() => {
+          if (logs.length > 0) {
+            if (!_.isEqual(logs, oldLogs)) {
+              const logString = _.join(logs, '');
+              editor.setValue(logString);
+              editor.execCommand('goDocEnd');
+              // 如果没有返回数据，则不进行重新赋值给编辑器
+              oldLogs = _.cloneDeep(logs);
+            }
+          } else if (!followingOK) {
+            editor.setValue('Loading...');
+          }
+        });
+      } catch (e) {
+        editor.setValue('连接失败');
       }
-    };
-    if (logs.length > 0) {
-      const logString = _.join(logs, '');
-      editor.setValue(logString);
     }
-    this.timer = setInterval(() => {
-      if (logs.length > 0) {
-        if (!_.isEqual(logs, oldLogs)) {
-          const logString = _.join(logs, '');
-          editor.setValue(logString);
-          editor.execCommand('goDocEnd');
-          // 如果没有返回数据，则不进行重新赋值给编辑器
-          oldLogs = _.cloneDeep(logs);
-        }
-      } else if (!followingOK) {
-        editor.setValue('Loading...');
-      }
-    }, 1000);
   };
 
   /**
@@ -497,7 +532,7 @@ class ContainerHome extends Component {
     const projectId = AppState.currentMenuType.id;
     ContainerStore.loadPodParam(projectId, record.id)
       .then((data) => {
-        if (data.length) {
+        if (data && data.length) {
           this.setState({
             envId: record.envId,
             namespace: record.namespace,
@@ -516,13 +551,13 @@ class ContainerHome extends Component {
    * 关闭日志
    */
   closeSidebar = () => {
+    const editor = this.editorLog.getCodeMirror();
+    const { ws } = this.state;
     clearInterval(this.timer);
     this.timer = null;
-    const { ws } = this.state;
     if (ws) {
       ws.close();
     }
-    const editor = this.editorLog.getCodeMirror();
     this.setState({
       showSide: false,
       containerArr: [],
@@ -535,9 +570,14 @@ class ContainerHome extends Component {
    * top log following
    */
   stopFollowing = () => {
+    const editor = this.editorLog.getCodeMirror();
     const { ws } = this.state;
     if (ws) {
       ws.close();
+    }
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
     }
     this.setState({
       following: false,
@@ -838,7 +878,7 @@ class ContainerHome extends Component {
           dataSource={serviceData}
           rowKey={record => record.id}
           onChange={this.tableChange}
-          filters={paras}
+          filters={paras.slice()}
         />
       </Content>
     </React.Fragment>);
