@@ -5,7 +5,6 @@
 "application-management.application-version": "应用版本"
 "application-management.application-release": "应用发布"
 "application-management.application-market": "应用市场"
-"application-management.reports": "报告"
 
 # 开发流水线
 "development-pipeline": "开发流水线"
@@ -28,6 +27,10 @@
 "deployment-pipeline.container": "容器"
 "deployment-pipeline.certificate": "证书"
 
+# 报表
+"platform_reports": "报表"
+"platform_reports.reports": "DevOps报表"
+
 # 0.8版本废弃项
 "application-market": "应用市场"
 "application-market.application-market": "应用市场"
@@ -45,3 +48,4 @@
 "devops.container": "容器"
 "devops.app-release": "应用发布"
 "devops.appstore": "应用市场"
+"application-management.reports": "报告"

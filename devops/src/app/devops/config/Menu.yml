@@ -50,6 +50,7 @@
         icon: application_model
         Routes: /devops/reports
         sort: 6
+        delete: true
         permission:
         - 'devops-service.application.pageByOptions'
 "development-pipeline":
@@ -238,7 +239,18 @@
           - 'devops-service.certification.listByOptions'
           - 'devops-service.certification.create'
           - 'devops-service.certification.delete'
+"platform_reports":
+  icon: bar_chart
+  sort: 99
+  project:
+    - "reports":
+        icon: devops_chart
+        Routes: /devops/reports
+        sort: 2
+        permission:
+        - 'devops-service.application.pageByOptions'
 
+# 要删除的菜单
 "application-market":
   icon: apps
   sort: 30
