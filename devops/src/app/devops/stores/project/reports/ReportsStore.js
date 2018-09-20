@@ -25,6 +25,14 @@ class ReportsStore {
 
   @observable allData = [];
 
+  @observable apps = [];
+
+  @observable appId = null;
+
+  @observable BuildNumber = {};
+
+  @observable echartsLoading = true;
+
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
     this.pageInfo.total = page.totalElements;
@@ -99,14 +107,82 @@ class ReportsStore {
     return this.loading;
   }
 
-  loadDeployDurationChart = (projectId, envId, startTime, endTime, appIds) => axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/time?envId=${envId}&endTime=${endTime}&startTime=${startTime}`, JSON.stringify(appIds))
-    .then((data) => {
-      const res = handleProptError(data);
-      if (res) {
-        this.setDdChart(data);
+  @computed get getApps() {
+    return this.apps;
+  }
+
+  @computed get getAppId() {
+    return this.appId;
+  }
+
+  @computed get getBuildNumber() {
+    return this.BuildNumber;
+  }
+
+  @computed get getEchartsLoading() {
+    return this.echartsLoading;
+  }
+
+  @action setApps(data) {
+    this.apps = data;
+  }
+
+  @action setAppId(id) {
+    this.appId = id;
+  }
+
+  @action setBuildNumber(data) {
+    this.BuildNumber = data;
+  }
+
+  @action setEchartsLoading(data) {
+    this.echartsLoading = data;
+  }
+
+  /**
+   * 加载项目下的应用
+   * @param proId
+   */
+  loadApps = proId => axios.get(`/devops/v1/projects/${proId}/apps`).then((data) => {
+    const res = handleProptError(data);
+    if (res) {
+      this.setApps(data);
+      if (data.length) {
+        this.setAppId(data[0].id);
       }
-      return res;
-    });
+    }
+    return res;
+  });
+
+  /**
+   * 加载构建次数
+   * @param proId
+   */
+  loadBuildNumber = (projectId, appId, startTime, endTime) => {
+    this.setEchartsLoading(true);
+    return axios.post(`/devops/v1/projects/${projectId}/app_instances/env_commands/frequency?appId=${appId}&startTime=${startTime}&endTime=${endTime}`, JSON.stringify([]))
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setBuildNumber(data);
+        }
+        this.setEchartsLoading(false);
+        return res;
+      });
+  };
+
+  loadDeployDurationChart = (projectId, envId, startTime, endTime, appIds) => {
+    this.setEchartsLoading(true);
+    return axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/time?envId=${envId}&endTime=${endTime}&startTime=${startTime}`, JSON.stringify(appIds))
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setDdChart(data);
+        }
+        this.setEchartsLoading(false);
+        return res;
+      });
+  }
 
   loadDeployDurationTable = (projectId, envId, startTime, endTime, appIds, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize) => axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/timeDetail?envId=${envId}&endTime=${endTime}&startTime=${startTime}&page=${page}&size=${size}`, JSON.stringify(appIds))
     .then((data) => {

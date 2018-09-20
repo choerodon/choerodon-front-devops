@@ -28,8 +28,20 @@
         height: 100%;
         background-size: 100% 100%;
         background-repeat: no-repeat;
-        &.burndownchart {
-          background-image: url('./pic/burndownchart.svg');
+        &.submission {
+          background-image: url('./pic/submission.svg');
+        }
+        &.deploy-duration {
+          background-image: url('./pic/deploy-duration.svg');
+        }
+        &.number {
+          background-image: url('./pic/number.svg');
+        }
+        &.build-duration {
+          background-image: url('./pic/build-duration.svg');
+        }
+        &.core-quality {
+          background-image: url('./pic/core-quality.svg');
         }
       }
     }

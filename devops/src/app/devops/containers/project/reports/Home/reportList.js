@@ -2,22 +2,26 @@ export default [
   {
     key: 'submission',
     link: '/devops/reports/submission',
-    pic: 'burndownchart',
+    pic: 'submission',
   }, {
-    key: 'deploy-duration',
-    link: '/devops/reports/deploy-duration',
-    pic: 'scatter-simple.png',
+    key: 'core-quality',
+    link: '/devops/reports/core-quality',
+    pic: 'core-quality',
+  }, {
+    key: 'build-number',
+    link: '/devops/reports/build-number',
+    pic: 'number',
+  }, {
+    key: 'build-duration',
+    link: '/devops/reports/build-duration',
+    pic: 'build-duration',
   }, {
     key: 'deploy-times',
     link: '/devops/reports/deploy-times',
-    pic: 'post',
+    pic: 'number',
   }, {
-    key: 'post3',
-    link: '/devops/reports/post3',
-    pic: 'post',
-  }, {
-    key: 'post4',
-    link: '/devops/reports/post4',
-    pic: 'post',
+    key: 'deploy-duration',
+    link: '/devops/reports/deploy-duration',
+    pic: 'deploy-duration',
   },
 ];
