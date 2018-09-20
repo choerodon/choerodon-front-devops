@@ -194,13 +194,13 @@ const pageDetail = {
   'ctf.create.link': `${docServer}/user-guide/deployment-pipeline/certificate`,
 
   // 报表
-  'report.description': '选择报表查看详情',
-  'report.title': '所有报表',
+  'report.title': '项目"{name}"的DevOps报表',
   'report.submission.title': '项目"{name}"的代码提交情况',
   'report.deploy-duration.title': '项目"{name}"的部署时长',
   'report.deploy-times.title': '项目"{name}"的部署次数',
   'report.build-number.title': '项目"{name}"的构建次数',
   'report.build-duration.title': '项目"{name}"的构建时长',
+  'report.description': 'DevOps报表将从多个维度直观清晰地展示您当前项目中的代码提交、代码质量、应用构建和应用部署等情况。点击相应报表便能查看对应的内容。',
   'report.submission.description': '代码提交情况图能从项目、应用的维度帮助我们查看某个项目或是该项目下某个应用的代码提交情况。',
   'report.deploy-duration.description': '部署时长图能展示该项目下某一环境中各个应用部署时长等部署相关的信息，这有助于您了解项目中各个应用的部署情况。',
   'report.deploy-times.description': '部署次数图能展示出该项目下各个环境中各个应用的部署频率，这将帮助您了解团队的部署频次与整体的效率。',
