@@ -15,13 +15,15 @@ class ReportsStore {
     filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
   };
 
-  @observable startTime = moment().day(-5);
+  @observable startTime = moment().subtract(6, 'days');
 
   @observable endTime = moment();
 
   @observable envId = null;
 
   @observable ddChart = [];
+
+  @observable dtChart = [];
 
   @observable allData = [];
 
@@ -81,6 +83,14 @@ class ReportsStore {
 
   @computed get getDdChart() {
     return this.ddChart;
+  }
+
+  @action setDtChart(data) {
+    this.dtChart = data;
+  }
+
+  @computed get getDtChart() {
+    return this.dtChart;
   }
 
   @computed get getAllData() {
@@ -182,9 +192,32 @@ class ReportsStore {
         this.setEchartsLoading(false);
         return res;
       });
-  }
+  };
+
+  loadDeployTimesChart = (projectId, appId, startTime, endTime, envIds) => {
+    this.setEchartsLoading(true);
+    return axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/frequency?appId=${appId}&endTime=${endTime}&startTime=${startTime}`, JSON.stringify(envIds))
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setDtChart(data);
+        }
+        this.setEchartsLoading(false);
+        return res;
+      });
+  };
 
   loadDeployDurationTable = (projectId, envId, startTime, endTime, appIds, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize) => axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/timeDetail?envId=${envId}&endTime=${endTime}&startTime=${startTime}&page=${page}&size=${size}`, JSON.stringify(appIds))
+    .then((data) => {
+      const res = handleProptError(data);
+      if (res) {
+        this.handleData(data);
+      }
+      this.changeLoading(false);
+      this.changeIsRefresh(false);
+    });
+
+  loadDeployTimesTable = (projectId, appId, startTime, endTime, envIds, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize) => axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/frequencyDetail?appId=${appId}&endTime=${endTime}&startTime=${startTime}&page=${page}&size=${size}`, JSON.stringify(envIds))
     .then((data) => {
       const res = handleProptError(data);
       if (res) {

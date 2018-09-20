@@ -6,9 +6,11 @@ import { Page, Header, Content, stores, Permission } from 'choerodon-front-boot'
 import { Select, Button, Table, Spin } from 'choerodon-ui';
 import ReactEcharts from 'echarts-for-react';
 import _ from 'lodash';
+import moment from 'moment';
 import ChartSwitch from '../Component/ChartSwitch';
 import TimePicker from '../Component/TimePicker';
 import StatusTags from '../../../../components/StatusTags';
+import NoChart from '../Component/NoChart';
 import ContainerStore from '../../../../stores/project/container';
 import './DeployDuration.scss';
 
@@ -35,7 +37,7 @@ class DeployDuration extends Component {
 
   @observable seriesArr = [];
 
-  handleRefresh = () => {};
+  handleRefresh = () => { this.loadCharts(); };
 
   /**
    * 选择环境
@@ -54,14 +56,24 @@ class DeployDuration extends Component {
    */
   @action
   handleAppSelect = (ids) => {
+    const { intl: { formatMessage } } = this.props;
     this.appIds = ids;
     if (ids.length < 6) {
       this.loadCharts();
+    } else {
+      Choerodon.prompt(formatMessage({ id: 'report.deploy-duration.apps' }));
     }
   };
 
   componentDidMount() {
     this.loadEnvCards();
+  }
+
+  componentWillUnmount() {
+    const { ReportsStore } = this.props;
+    ReportsStore.setAllData([]);
+    ReportsStore.setStartTime(moment().subtract(6, 'days'));
+    ReportsStore.setEndTime(moment());
   }
 
   /**
@@ -77,6 +89,8 @@ class DeployDuration extends Component {
           this.env = env;
           this.envId = ReportsStore.getEnvId || env[0].id;
           this.loadAppByEnv(env[0].id);
+        } else {
+          ReportsStore.setEchartsLoading(false);
         }
       });
   };
@@ -167,14 +181,6 @@ class DeployDuration extends Component {
       },
       tooltip: {
         trigger: 'axis',
-        axisPointer: {
-          show: true,
-          type: 'cross',
-          lineStyle: {
-            type: 'dashed',
-            width: 1,
-          },
-        },
         backgroundColor: '#fff',
         textStyle: {
           color: '#000',
@@ -186,12 +192,12 @@ class DeployDuration extends Component {
           'box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2); border: 1px solid #ddd; border-radius: 0;',
         formatter(params, ticket) {
           let time = params[0].value[1];
-          if (time.split('.')[1] === '0') {
+          if (time.split('.')[1] === '00') {
             time = `${time.toString().split('.')[0]}${formatMessage({ id: 'minutes' })}`;
           } else if (time.split('.')[0] === '0') {
             time = `${Number(time.toString().split('.')[1]) * 6}${formatMessage({ id: 'seconds' })}`;
           } else if (time.split('.').length === 2) {
-            time = `${time.toString().split('.')[0]}${formatMessage({ id: 'minutes' })}${Number(time.toString().split('.')[1]) * 6}${formatMessage({ id: 'seconds' })}`;
+            time = `${time.toString().split('.')[0]}${formatMessage({ id: 'minutes' })}${(Number(time.toString().split('.')[1]) * 0.6).toFixed()}${formatMessage({ id: 'seconds' })}`;
           } else {
             time = null;
           }
@@ -211,13 +217,45 @@ class DeployDuration extends Component {
         scale: true,
         boundaryGap: false,
         data: this.dateArr,
+        axisLine: {
+          lineStyle: {
+            color: '#eee',
+            type: 'solid',
+            width: 2,
+          },
+        },
+        axisTick: { show: false },
         axisLabel: {
+          margin: 13,
+          textStyle: {
+            color: 'rgba(0, 0, 0, 0.65)',
+            fontSize: 12,
+          },
           formatter(value) {
             return value.slice(5, 10).replace('-', '/');
           },
         },
       },
       yAxis: {
+        nameTextStyle: {
+          fontSize: 13,
+          color: '#000',
+        },
+        axisTick: { show: false },
+        axisLine: {
+          lineStyle: {
+            color: '#eee',
+            type: 'solid',
+            width: 2,
+          },
+        },
+        axisLabel: {
+          margin: 18,
+          textStyle: {
+            color: 'rgba(0, 0, 0, 0.65)',
+            fontSize: 12,
+          },
+        },
         splitLine: {
           lineStyle: {
             show: true,
@@ -305,42 +343,50 @@ class DeployDuration extends Component {
         </Button>
       </Header>
       <Content code="report.deploy-duration" value={{ name }}>
-        <div className="c7n-report-screen">
-          <Select
-            value={this.envId}
-            label={formatMessage({ id: 'deploy.envName' })}
-            className="c7n-select_200"
-            onChange={this.handleEnvSelect}
-          >
-            {envDom}
-          </Select>
-          <Select
-            value={this.appIds}
-            label={formatMessage({ id: 'deploy.appName' })}
-            className="c7n-select_400"
-            mode="multiple"
-            maxTagCount={5}
-            onChange={this.handleAppSelect}
-          >
-            {appDom}
-          </Select>
-          <TimePicker startTime={ReportsStore.getStartTime} endTime={ReportsStore.getEndTime} func={this.loadCharts} store={ReportsStore} />
-        </div>
-        <div className="c7n-report-content">
-          <Spin spinning={echartsLoading}>
-            <ReactEcharts
-              option={this.getOption()}
-              notMerge
-              lazyUpdate
-              style={{ height: '350px', width: '100%' }}
-              theme="theme_name"
-              onChartReady={this.onChartReadyCallback}
-            />
-          </Spin>
-        </div>
-        <div className="c7n-report-table">
-          {this.renderTable()}
-        </div>
+        {envDom ? <React.Fragment>
+          <div className="c7n-report-screen">
+            <Select
+              notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}
+              value={this.envId}
+              label={formatMessage({ id: 'deploy.envName' })}
+              className="c7n-select_200"
+              onChange={this.handleEnvSelect}
+              optionFilterProp="children"
+              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              filter
+            >
+              {envDom}
+            </Select>
+            <Select
+              notFoundContent={formatMessage({ id: 'envoverview.unlist' })}
+              value={this.appIds}
+              label={formatMessage({ id: 'deploy.appName' })}
+              className="c7n-select_400"
+              mode="multiple"
+              maxTagCount={2}
+              onChange={this.handleAppSelect}
+              optionFilterProp="children"
+              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              filter
+            >
+              {appDom}
+            </Select>
+            <TimePicker startTime={ReportsStore.getStartTime} endTime={ReportsStore.getEndTime} func={this.loadCharts} store={ReportsStore} />
+          </div>
+          <div className="c7n-report-content">
+            <Spin spinning={echartsLoading}>
+              <ReactEcharts
+                option={this.getOption()}
+                notMerge
+                lazyUpdate
+                style={{ height: '350px', width: '100%' }}
+              />
+            </Spin>
+          </div>
+          <div className="c7n-report-table">
+            {this.renderTable()}
+          </div>
+        </React.Fragment> : <NoChart title={formatMessage({ id: 'report.no-env' })} des={formatMessage({ id: 'report.no-env-des' })} />}
       </Content>
     </Page>);
   }
