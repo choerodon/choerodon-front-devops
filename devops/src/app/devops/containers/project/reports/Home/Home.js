@@ -32,7 +32,7 @@ class Home extends Component {
                   <div className={`c7n-devops-report-picBox ${item.pic}`} />
                 </div>
                 <div className="c7n-devops-report-descr">
-                  <h4 className="c7n-devops-report-title"><FormattedMessage id={`report.${item.key}.head`} /></h4>
+                  <div className="c7n-devops-report-title"><FormattedMessage id={`report.${item.key}.head`} /></div>
                   <p className="c7n-devops-report-text"><FormattedMessage id={`report.${item.key}.des`} /></p>
                 </div>
               </div>
