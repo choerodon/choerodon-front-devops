@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
 import { Button, DatePicker } from 'choerodon-ui';
 import moment from 'moment';
+import './TimePicker.scss';
 
 const { RangePicker } = DatePicker;
 const ButtonGroup = Button.Group;

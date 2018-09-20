@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Page, Header, Content, stores, Permission } from 'choerodon-front-boot';
-import { Select, Button, Table } from 'choerodon-ui';
+import { Select, Button, Table, Spin } from 'choerodon-ui';
 import ReactEcharts from 'echarts-for-react';
 import ChartSwitch from '../Component/ChartSwitch';
 import StatusTags from '../../../../components/StatusTags';
@@ -224,8 +224,9 @@ class DeployTimes extends Component {
   }
 
   render() {
-    const { intl: { formatMessage }, history } = this.props;
+    const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
+    const echartsLoading = ReportsStore.getEchartsLoading;
     return (<Page className="c7n-region">
       <Header
         title={formatMessage({ id: 'report.deploy-times.head' })}
@@ -265,14 +266,16 @@ class DeployTimes extends Component {
           <div className="c7n-report-history">right</div>
         </div>
         <div className="c7n-report-content">
-          <ReactEcharts
-            option={this.getOption()}
-            notMerge
-            lazyUpdate
-            style={{ height: '350px', width: '100%' }}
-            theme="theme_name"
-            onChartReady={this.onChartReadyCallback}
-          />
+          <Spin spinning={echartsLoading}>
+            <ReactEcharts
+              option={this.getOption()}
+              notMerge
+              lazyUpdate
+              style={{ height: '350px', width: '100%' }}
+              theme="theme_name"
+              onChartReady={this.onChartReadyCallback}
+            />
+          </Spin>
         </div>
         <div className="c7n-report-table">
           {this.renderTable()}
