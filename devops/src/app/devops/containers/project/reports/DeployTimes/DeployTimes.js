@@ -83,7 +83,7 @@ class DeployTimes extends Component {
       .then((env) => {
         if (env.length) {
           this.env = env;
-          this.envIds.push(env[0].id);
+          this.envIds = [env[0].id];
         }
         this.loadCharts();
       });
