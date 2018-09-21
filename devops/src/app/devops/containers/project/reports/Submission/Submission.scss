@@ -6,19 +6,6 @@
     margin-bottom: 8px;
     width: 400px;
   }
-  .c7n-report-control-recently {
-    display: inline-block;
-    .c7n-report-control-datepick {
-      background: rgba(0, 0, 0, .04);
-      .ant-calendar-underline {
-        border: none;
-      }
-      .ant-calendar-picker-icon {
-        left: 0;
-        right: unset;
-      }
-    }
-  }
 }
 
 .c7n-report-submission {
@@ -29,7 +16,8 @@
     width: 67%;
     padding: 15px;
     height: 330px;
-    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .20), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
+    background: #fff;
+    box-shadow: 0 1px 3px 0 rgba(14, 15, 16, .24);
     border-radius: 2px;
   }
   .c7n-report-submission-history {
@@ -37,6 +25,48 @@
     padding: 0 15px 15px;
     width: 33%;
     height: 330px;
+    // 提交历史
+    .c7n-region .c7n-report-history-title,
+    .c7n-report-history-title {
+      margin: 0 0 22px;
+      font-size: 16px;
+      color: #000;
+    }
+
+    .c7n-report-history-list {
+      width: 100%;
+      height: 250px;
+      .c7n-report-history-item {
+        margin-bottom: 16px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+        .c7n-report-history-info {
+          display: inline-block;
+          margin-left: 10px;
+          width: calc(100% - 64px);
+          height: 34px;
+          vertical-align: middle;
+          .c7n-report-history-content {
+            .c7n-report-history-link {
+              line-height: 20px;
+              font-size: 14px;
+              color: #000;
+            }
+          }
+          .c7n-report-history-date {
+            font-size: 12px;
+            color: rgba(0, 0, 0, .54);
+            .c7n-report-history-name {
+              margin-right: 10px;
+            }
+          }
+        }
+      }
+    }
+    .c7n-report-history-page {
+      text-align: right;
+    }
   }
 }
 
@@ -66,29 +96,14 @@
     padding: 15px;
     width: calc(50% - 10px);
     height: 230px;
-    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .20), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
+    background: #fff;
+    box-shadow: 0 1px 3px 0 rgba(14, 15, 16, .24);
+    border-radius: 2px;
     &:nth-child(odd) {
       float: left;
     }
     &:nth-child(even) {
       float: right;
     }
-  }
-}
-
-.c7n-region .c7n-report-history-title,
-.c7n-report-history-title {
-  margin: 0 0 24px;
-  font-size: 16px;
-  color: #000;
-}
-
-.c7n-report-history-list {
-  width: 100%;
-  .c7n-report-history-info {
-    display: inline-block;
-    margin-left: 10px;
-    width: calc(100% - 64px);
-    height: 34px;
   }
 }

@@ -1,17 +1,19 @@
 import React, { PureComponent } from 'react';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
+import { injectIntl } from 'react-intl';
 import echarts from 'echarts/lib/echarts';
 
 import 'echarts/lib/chart/line';
 import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/title';
-// import 'echarts/lib/component/legend';
 import 'echarts/lib/component/grid';
 import './Submission.scss';
 
 class LineChart extends PureComponent {
   getOption = () => {
-    const { color, data: { keys, value } } = this.props;
+    const { color, data: { items }, intl: { formatMessage } } = this.props;
+    const keys = Object.keys(items);
+    const value = keys.map(item => items[item]);
     return {
       title: {
         show: false,
@@ -22,13 +24,15 @@ class LineChart extends PureComponent {
         textStyle: {
           color: '#000',
         },
-        formatter: '日期：{b}<br/>提交次数：{c}',
+        formatter(obj) {
+          return `${formatMessage({ id: 'report.commit.date' })}${obj.name}<br/>${formatMessage({ id: 'report.commit.count' })}${obj.value}`;
+        },
       },
       grid: {
         top: 42,
-        left: 0,
-        right: 15,
-        bottom: '0',
+        left: 24,
+        right: 20,
+        bottom: 0,
         // 防止标签溢出
         containLabel: true,
       },
@@ -39,26 +43,41 @@ class LineChart extends PureComponent {
           show: false,
         },
         axisLine: {
-          show: false,
+          show: true,
+          lineStyle: {
+            // color: '#bac3ca',
+            color: '#eee',
+          },
+          onZero: true,
         },
         splitLine: {
           show: true,
           lineStyle: {
+            // color: ['#bac3ca'],
             color: ['#eee'],
           },
         },
-        // axisLabel: {
-        //   formatter(value, idx) {
-        //     const date = new Date(value);
-        //     return idx === 0 ? value : [date.getMonth() + 1, date.getDate()].join('/');
-        //   },
-        // },
+        axisLabel: {
+          color: 'rgba(0,0,0,0.65)',
+          formatter(item, idx) {
+            return item.split('-').slice(1).join('/');
+          },
+        },
         data: keys,
       },
       yAxis: {
-        name: '次数        ',
+        name: formatMessage({ id: 'report.commit.num' }),
+        min: value.length > 3 ? null : 0,
+        max: value.length > 3 ? null : 3,
+        minInterval: 1,
+        nameTextStyle: {
+          color: '#000',
+        },
         axisLine: {
-          show: false,
+          show: true,
+          lineStyle: {
+            color: '#eee',
+          },
         },
         axisTick: {
           show: false,
@@ -68,6 +87,9 @@ class LineChart extends PureComponent {
           lineStyle: {
             color: ['#eee'],
           },
+        },
+        axisLabel: {
+          color: 'rgba(0,0,0,0.65)',
         },
         type: 'value',
       },
@@ -94,13 +116,13 @@ class LineChart extends PureComponent {
   };
 
   render() {
-    const { style, data: { avatar, commits }, name } = this.props;
+    const { style, data: { avatar, count }, name } = this.props;
     return (
       <div>
         <div className="c7n-report-commits-title">
           {avatar ? <img className="c7n-report-commits-avatar" src={avatar} alt="avatar" /> : null}
           {name}
-          {commits ? <span className="c7n-report-commits-text">{commits} commits</span> : null}
+          {count ? <span className="c7n-report-commits-text">{count} commits</span> : null}
         </div>
         <ReactEchartsCore
           echarts={echarts}
@@ -114,4 +136,4 @@ class LineChart extends PureComponent {
   }
 }
 
-export default LineChart;
+export default injectIntl(LineChart);

@@ -118,7 +118,7 @@ class ReportsStore {
   }
 
   @computed get getApps() {
-    return this.apps;
+    return this.apps.slice();
   }
 
   @computed get getAppId() {

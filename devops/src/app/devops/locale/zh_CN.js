@@ -896,6 +896,12 @@ const zhCN = {
   'report.no-env': '当前项目下无可用环境',
   'report.no-app-des': '请使用项目所有者角色登录去创建一个应用',
   'report.no-env-des': '请使用项目所有者角色登录去创建一个可用环境',
+  'report.commit.history': '提交历史',
+  'report.commit.by': '提交于 ',
+  'report.commit.date': '日期：',
+  'report.commit.count': '提交次数：',
+  'report.commit.num': '次数      ',
+  'report.app.noselect': '请选择应用',
 
   ...pageDetail,
 };
