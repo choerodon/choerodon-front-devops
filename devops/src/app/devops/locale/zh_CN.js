@@ -881,6 +881,7 @@ const zhCN = {
   'report.deploy-duration.long': '部署时长',
   'report.deploy-duration.user': '执行人',
   'report.date': '日期',
+  'report.all-app': '全部应用',
   'report.build-number.build': '构建',
   'report.build-number.success': '成功次数',
   'report.build-number.fail': '失败次数',
