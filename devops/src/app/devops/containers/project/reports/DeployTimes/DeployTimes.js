@@ -362,11 +362,11 @@ class DeployTimes extends Component {
         </Button>
       </Header>
       <Content code="report.deploy-times" value={{ name }}>
-        {appDom ? <React.Fragment>
+        {this.app.length ? <React.Fragment>
           <div className="c7n-report-screen">
             <Select
               notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}
-              value={this.envIds}
+              value={this.envIds && this.envIds.slice()}
               label={formatMessage({ id: 'deploy.envName' })}
               className="c7n-select_400"
               mode="multiple"

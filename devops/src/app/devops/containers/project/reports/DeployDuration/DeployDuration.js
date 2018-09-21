@@ -343,7 +343,7 @@ class DeployDuration extends Component {
         </Button>
       </Header>
       <Content code="report.deploy-duration" value={{ name }}>
-        {envDom ? <React.Fragment>
+        {this.env.length ? <React.Fragment>
           <div className="c7n-report-screen">
             <Select
               notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}
@@ -359,7 +359,7 @@ class DeployDuration extends Component {
             </Select>
             <Select
               notFoundContent={formatMessage({ id: 'envoverview.unlist' })}
-              value={this.appIds}
+              value={this.appIds && this.appIds.slice()}
               label={formatMessage({ id: 'deploy.appName' })}
               className="c7n-select_400"
               mode="multiple"

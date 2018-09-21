@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './StatusTags.scss';
 
 const Color = {
-  success: '#1bc123',
+  success: '#00bf96',
   error: '#f44336',
 };
 
