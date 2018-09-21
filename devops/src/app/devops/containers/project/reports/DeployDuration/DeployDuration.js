@@ -29,7 +29,7 @@ class DeployDuration extends Component {
 
   @observable envId = null;
 
-  @observable appIds = [];
+  @observable appIds = undefined;
 
   @observable appArr = [];
 
@@ -363,7 +363,7 @@ class DeployDuration extends Component {
               label={formatMessage({ id: 'deploy.appName' })}
               className="c7n-select_400"
               mode="multiple"
-              maxTagCount={2}
+              maxTagCount={3}
               onChange={this.handleAppSelect}
               optionFilterProp="children"
               filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
