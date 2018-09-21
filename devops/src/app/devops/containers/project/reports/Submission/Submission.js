@@ -173,7 +173,8 @@ class Submission extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // rec: null
+      appId: null,
+      page: 0,
     };
   }
 
@@ -181,27 +182,52 @@ class Submission extends Component {
     this.loadData();
   }
 
-  handleRefresh = () => {};
+  componentWillUnmount() {
+    const { ReportsStore } = this.props;
+    ReportsStore.setApps([]);
+  }
+
+  handleRefresh = () => this.loadData();
 
   /**
    * 应用选择
    * @param e
    */
   handleSelect = (e) => {
-    console.log(e.target.value);
+    const { ReportsStore } = this.props;
+    const { page } = this.state;
+    const { id: projectId } = AppState.currentMenuType;
+    this.setState({ appId: e });
+    ReportsStore.loadCommits(projectId, e);
+    ReportsStore.loadCommitsRecord(projectId, e, page);
+  };
+
+  handlePageChange = (page) => {
+    const { ReportsStore } = this.props;
+    const { appId } = this.state;
+    const { id: projectId } = AppState.currentMenuType;
+    this.setState({ page });
+    ReportsStore.loadCommitsRecord(projectId, appId, page);
   };
 
   loadData = () => {
     const { ReportsStore } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     ReportsStore.loadApps(projectId);
+    ReportsStore.loadCommits(projectId);
+    ReportsStore.loadCommitsRecord(projectId, '');
   };
 
   render() {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
+    const { appId } = this.state;
     const apps = ReportsStore.getApps;
-    const options = _.map(apps, item => (<Option key={item.id} value={item.id}>{item.name}</Option>));
+    const defaultApp = [];
+    const options = _.map(apps, (item) => {
+      defaultApp.push(item.id);
+      return (<Option key={item.id} value={item.id}>{item.name}</Option>);
+    });
     const { total, user } = formatData(dataSource);
     const commits = commitFormRecordDTOPage;
     const personChart = user.map(item => (<div key={item.name} className="c7n-report-submission-item">
@@ -235,6 +261,7 @@ class Submission extends Component {
             mode="multiple"
             placeholder={formatMessage({ id: 'report.app.noselect' })}
             maxTagCount={5}
+            value={appId || defaultApp}
             maxTagPlaceholder={formatMessage({ id: 'report.app.more' })}
             onChange={this.handleSelect}
             optionFilterProp="children"
@@ -253,7 +280,12 @@ class Submission extends Component {
               data={total}
             />
           </div>
-          <div className="c7n-report-submission-history"><CommitHistory dataSource={commits} /></div>
+          <div className="c7n-report-submission-history">
+            <CommitHistory
+              onPageChange={this.handlePageChange}
+              dataSource={commits}
+            />
+          </div>
         </div>
         <div className="c7n-report-submission-wrap">{personChart}</div>
       </Content>

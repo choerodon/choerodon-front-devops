@@ -35,6 +35,26 @@ class ReportsStore {
 
   @observable echartsLoading = true;
 
+  @observable commits = [];
+
+  @observable commitsRecord = [];
+
+  @action setCommits(data) {
+    this.commits = data;
+  }
+
+  @computed get getCommits() {
+    return this.commits.slice();
+  }
+
+  @action setCommitsRecord(data) {
+    this.commitsRecord = data;
+  }
+
+  @computed get getCommitsRecord() {
+    return this.commitsRecord.slice();
+  }
+
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
     this.pageInfo.total = page.totalElements;
@@ -225,6 +245,22 @@ class ReportsStore {
       }
       this.changeLoading(false);
       this.changeIsRefresh(false);
+    });
+
+  loadCommits = (projectId, apps = null) => axios.post(`devops/v1/projects/${projectId}/apps/commits?app_ids=${apps}`)
+    .then((data) => {
+      const res = handleProptError(data);
+      if (res) {
+        this.setCommits(res);
+      }
+    });
+
+  loadCommitsRecord = (projectId, apps = null, page = 0) => axios.post(`devops/v1/projects/${projectId}/apps/commits/record?app_ids=${apps}&page=${page}`)
+    .then((data) => {
+      const res = handleProptError(data);
+      if (res) {
+        this.setCommitsRecord(res);
+      }
     });
 
   handleData = (data) => {

@@ -44,10 +44,14 @@
         .c7n-report-history-info {
           display: inline-block;
           margin-left: 10px;
-          width: calc(100% - 64px);
+          width: calc(100% - 36px);
           height: 34px;
           vertical-align: middle;
           .c7n-report-history-content {
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             .c7n-report-history-link {
               line-height: 20px;
               font-size: 14px;

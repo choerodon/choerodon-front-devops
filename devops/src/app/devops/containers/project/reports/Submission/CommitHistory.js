@@ -5,7 +5,7 @@ import TimePopover from '../../../../components/timePopover';
 import './Submission.scss';
 
 export default function CommitHistory(props) {
-  const { dataSource: { content } } = props;
+  const { dataSource: { content }, onPageChange } = props;
   const list = content.map((item) => {
     const { id, userId, ref, commitContent, commitDate, commitUserUrl, commitSha } = item;
     return (
@@ -31,6 +31,12 @@ export default function CommitHistory(props) {
   return (<Fragment>
     <h3 className="c7n-report-history-title"><FormattedMessage id="report.commit.history" /></h3>
     <div className="c7n-report-history-list">{list}</div>
-    <div className="c7n-report-history-page"><Pagination total={50} showSizeChanger={false} /></div>
+    <div className="c7n-report-history-page">
+      <Pagination
+        total={50}
+        showSizeChanger={false}
+        onChange={onPageChange}
+      />
+    </div>
   </Fragment>);
 }
