@@ -37,7 +37,9 @@ class DeployDuration extends Component {
 
   @observable seriesArr = [];
 
-  handleRefresh = () => { this.loadCharts(); };
+  handleRefresh = () => {
+    this.loadEnvCards();
+  };
 
   /**
    * 选择环境
@@ -87,8 +89,8 @@ class DeployDuration extends Component {
       .then((env) => {
         if (env.length) {
           this.env = env;
-          this.envId = ReportsStore.getEnvId || env[0].id;
-          this.loadAppByEnv(env[0].id);
+          this.envId = this.envId || env[0].id;
+          this.loadAppByEnv(this.envId);
         } else {
           ReportsStore.setEchartsLoading(false);
         }
@@ -151,7 +153,7 @@ class DeployDuration extends Component {
       .then((app) => {
         this.app = app;
         if (app.length) {
-          this.appIds = [app[0].id];
+          this.appIds = this.appIds || [app[0].id];
         } else {
           this.appIds = [];
         }

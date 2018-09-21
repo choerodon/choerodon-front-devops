@@ -39,7 +39,10 @@ class DeployTimes extends Component {
 
   @observable allArr = [];
 
-  handleRefresh = () => { this.loadCharts(); };
+  handleRefresh = () => {
+    this.loadEnvCards();
+    this.loadApps();
+  };
 
   /**
    * 选择环境
@@ -83,7 +86,7 @@ class DeployTimes extends Component {
       .then((env) => {
         if (env.length) {
           this.env = env;
-          this.envIds = [env[0].id];
+          this.envIds = this.envIds || [env[0].id];
         }
         this.loadCharts();
       });
@@ -100,7 +103,7 @@ class DeployTimes extends Component {
       .then((app) => {
         if (app.length) {
           this.app = app;
-          this.appId = 'all';
+          this.appId = this.appId || 'all';
         }
       });
   };
