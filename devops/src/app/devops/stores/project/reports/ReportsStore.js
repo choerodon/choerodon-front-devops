@@ -94,7 +94,7 @@ class ReportsStore {
   }
 
   @computed get getAllData() {
-    return this.allData;
+    return this.allData.slice();
   }
 
   @action setAllData(data) {
