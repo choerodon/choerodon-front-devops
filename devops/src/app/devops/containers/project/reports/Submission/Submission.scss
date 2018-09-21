@@ -36,6 +36,7 @@
     .c7n-report-history-list {
       width: 100%;
       height: 250px;
+      overflow: hidden;
       .c7n-report-history-item {
         margin-bottom: 16px;
         &:last-child {
@@ -44,10 +45,14 @@
         .c7n-report-history-info {
           display: inline-block;
           margin-left: 10px;
-          width: calc(100% - 64px);
+          width: calc(100% - 36px);
           height: 34px;
           vertical-align: middle;
           .c7n-report-history-content {
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             .c7n-report-history-link {
               line-height: 20px;
               font-size: 14px;

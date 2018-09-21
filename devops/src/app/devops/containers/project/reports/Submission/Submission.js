@@ -20,18 +20,20 @@ function formatData(data) {
   const { totalCommitsDate, commitFormUserDTOList } = data;
   const total = {};
   const user = [];
-  total.items = _.countBy(totalCommitsDate, item => item.slice(0, 10));
-  total.count = totalCommitsDate.length;
-  _.forEach(commitFormUserDTOList, (item) => {
-    const { name, imgUrl, commitDates } = item;
-    const userTotal = {
-      name,
-      avatar: imgUrl,
-    };
-    userTotal.items = _.countBy(commitDates, cit => cit.slice(0, 10));
-    userTotal.count = commitDates.length;
-    user.push(userTotal);
-  });
+  if (totalCommitsDate && commitFormUserDTOList) {
+    total.items = _.countBy(totalCommitsDate, item => item.slice(0, 10));
+    total.count = totalCommitsDate.length;
+    _.forEach(commitFormUserDTOList, (item) => {
+      const { name, imgUrl, commitDates } = item;
+      const userTotal = {
+        name,
+        avatar: imgUrl,
+      };
+      userTotal.items = _.countBy(commitDates, cit => cit.slice(0, 10));
+      userTotal.count = commitDates.length;
+      user.push(userTotal);
+    });
+  }
 
   return {
     total,
@@ -41,72 +43,6 @@ function formatData(data) {
 
 const { AppState } = stores;
 const { Option } = Select;
-
-const dataSource = {
-  totalCommitsDate: [
-    '2018-09-09 12:56:04',
-    '2018-09-14 09:56:53',
-    '2018-09-15 09:57:18',
-    '2018-09-14 09:56:53',
-    '2018-09-15 09:57:18',
-    '2018-09-14 09:56:53',
-    '2018-09-15 09:57:18',
-    '2018-09-14 09:56:53',
-    '2018-09-15 09:57:18',
-    '2018-09-28 09:57:36',
-    '2018-09-10 17:35:18',
-    '2018-09-04 16:56:36',
-    '2018-09-15 09:57:18',
-    '2018-09-28 09:57:36',
-    '2018-09-10 17:35:18',
-    '2018-09-04 09:32:13',
-    '2018-09-15 09:57:18',
-    '2018-09-28 09:57:36',
-    '2018-09-10 17:35:18',
-    '2018-09-04 09:32:13',
-    '2018-09-04 16:56:36',
-    '2018-09-16 16:56:36',
-    '2018-09-26 09:57:06',
-    '2018-09-11 16:56:36',
-    '2018-09-26 09:57:06',
-    '2018-09-11 16:56:36',
-    '2018-09-26 09:57:06',
-  ],
-  commitFormUserDTOList: [
-    {
-      name: 'rua',
-      imgUrl: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-      commitDates: [
-        '2018-09-09 12:56:04',
-      ],
-    },
-    {
-      name: 'rua',
-      imgUrl: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-      commitDates: [
-        '2018-09-14 09:56:53',
-        '2018-09-15 09:57:18',
-        '2018-09-28 09:57:36',
-      ],
-    },
-    {
-      name: 'rua',
-      imgUrl: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-      commitDates: [
-        '2018-09-10 17:35:18',
-      ],
-    },
-    {
-      name: '邮件营销',
-      imgUrl: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-      commitDates: [
-        '2018-09-06 09:32:13',
-        '2018-09-11 16:56:36',
-        '2018-09-26 09:57:06',
-      ],
-    },
-  ],
-};
 
 const commitFormRecordDTOPage = {
   totalPages: 3,
@@ -173,7 +109,8 @@ class Submission extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // rec: null
+      appId: null,
+      page: 0,
     };
   }
 
@@ -181,30 +118,55 @@ class Submission extends Component {
     this.loadData();
   }
 
-  handleRefresh = () => {};
+  componentWillUnmount() {
+    const { ReportsStore } = this.props;
+    ReportsStore.setApps([]);
+  }
+
+  handleRefresh = () => this.loadData();
 
   /**
    * 应用选择
    * @param e
    */
   handleSelect = (e) => {
-    console.log(e.target.value);
+    const { ReportsStore } = this.props;
+    const { page } = this.state;
+    const { id: projectId } = AppState.currentMenuType;
+    this.setState({ appId: e });
+    ReportsStore.loadCommits(projectId, e);
+    ReportsStore.loadCommitsRecord(projectId, e, page);
+  };
+
+  handlePageChange = (page) => {
+    const { ReportsStore } = this.props;
+    const { appId } = this.state;
+    const { id: projectId } = AppState.currentMenuType;
+    this.setState({ page });
+    ReportsStore.loadCommitsRecord(projectId, appId, page);
   };
 
   loadData = () => {
     const { ReportsStore } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     ReportsStore.loadApps(projectId);
+    ReportsStore.loadCommits(projectId);
+    ReportsStore.loadCommitsRecord(projectId);
   };
 
   render() {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
+    const { appId } = this.state;
+    const commits = ReportsStore.getCommits;
+    const { total, user } = formatData(commits);
     const apps = ReportsStore.getApps;
-    const options = _.map(apps, item => (<Option key={item.id} value={item.id}>{item.name}</Option>));
-    const { total, user } = formatData(dataSource);
-    const commits = commitFormRecordDTOPage;
-    const personChart = user.map(item => (<div key={item.name} className="c7n-report-submission-item">
+    const defaultApp = [];
+    const options = _.map(apps, (item) => {
+      defaultApp.push(item.id);
+      return (<Option key={item.id} value={item.id}>{item.name}</Option>);
+    });
+    const personChart = user.map(item => (<div key={item.id} className="c7n-report-submission-item">
       <LineChart
         name={item.name}
         color="#ff9915"
@@ -234,7 +196,8 @@ class Submission extends Component {
             className=" c7n-report-control-select"
             mode="multiple"
             placeholder={formatMessage({ id: 'report.app.noselect' })}
-            maxTagCount={5}
+            maxTagCount={3}
+            value={appId || defaultApp}
             maxTagPlaceholder={formatMessage({ id: 'report.app.more' })}
             onChange={this.handleSelect}
             optionFilterProp="children"
@@ -253,7 +216,12 @@ class Submission extends Component {
               data={total}
             />
           </div>
-          <div className="c7n-report-submission-history"><CommitHistory dataSource={commits} /></div>
+          <div className="c7n-report-submission-history">
+            <CommitHistory
+              onPageChange={this.handlePageChange}
+              dataSource={ReportsStore.getCommitsRecord}
+            />
+          </div>
         </div>
         <div className="c7n-report-submission-wrap">{personChart}</div>
       </Content>

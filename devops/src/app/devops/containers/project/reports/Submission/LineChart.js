@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 import { injectIntl } from 'react-intl';
 import echarts from 'echarts/lib/echarts';
@@ -12,8 +12,8 @@ import './Submission.scss';
 class LineChart extends PureComponent {
   getOption = () => {
     const { color, data: { items }, intl: { formatMessage } } = this.props;
-    const keys = Object.keys(items);
-    const value = keys.map(item => items[item]);
+    const keys = items ? Object.keys(items) : [];
+    const value = items ? keys.map(item => items[item]) : [];
     return {
       title: {
         show: false,
@@ -30,7 +30,7 @@ class LineChart extends PureComponent {
       },
       grid: {
         top: 42,
-        left: 24,
+        left: 14,
         right: 20,
         bottom: 0,
         // 防止标签溢出
@@ -67,8 +67,8 @@ class LineChart extends PureComponent {
       },
       yAxis: {
         name: formatMessage({ id: 'report.commit.num' }),
-        min: value.length > 3 ? null : 0,
-        max: value.length > 3 ? null : 3,
+        min: Math.max(...value) > 3 ? null : 0,
+        max: Math.max(...value) > 3 ? null : 4,
         minInterval: 1,
         nameTextStyle: {
           color: '#000',
@@ -116,9 +116,9 @@ class LineChart extends PureComponent {
   };
 
   render() {
-    const { style, data: { avatar, count }, name } = this.props;
-    return (
-      <div>
+    const { style, data: { avatar, count, items }, name, intl: { formatMessage } } = this.props;
+    if (items) {
+      return (<Fragment>
         <div className="c7n-report-commits-title">
           {avatar ? <img className="c7n-report-commits-avatar" src={avatar} alt="avatar" /> : null}
           {name}
@@ -131,8 +131,9 @@ class LineChart extends PureComponent {
           notMerge
           lazyUpdate
         />
-      </div>
-    );
+      </Fragment>);
+    }
+    return (<div>{formatMessage({ id: 'nodata' })}</div>);
   }
 }
 
