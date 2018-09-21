@@ -277,6 +277,7 @@ const zhCN = {
   minutes: '分',
   seconds: '秒',
   minTime: '时长（分）',
+  nodata: '暂无数据',
 
   'chart.change': '切换报表',
   'confirm.delete': '确认删除吗？',
@@ -903,6 +904,7 @@ const zhCN = {
   'report.commit.count': '提交次数：',
   'report.commit.num': '次数      ',
   'report.app.noselect': '请选择应用',
+  'report.app.more': '更多',
 
   ...pageDetail,
 };

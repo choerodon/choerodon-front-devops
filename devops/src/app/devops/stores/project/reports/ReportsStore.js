@@ -35,7 +35,7 @@ class ReportsStore {
 
   @observable echartsLoading = true;
 
-  @observable commits = [];
+  @observable commits = {};
 
   @observable commitsRecord = [];
 
@@ -44,7 +44,7 @@ class ReportsStore {
   }
 
   @computed get getCommits() {
-    return this.commits.slice();
+    return this.commits;
   }
 
   @action setCommitsRecord(data) {
@@ -52,7 +52,7 @@ class ReportsStore {
   }
 
   @computed get getCommitsRecord() {
-    return this.commitsRecord.slice();
+    return this.commitsRecord;
   }
 
   @action setPageInfo(page) {
