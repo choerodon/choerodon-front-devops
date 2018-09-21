@@ -25,7 +25,7 @@ class DeployTimes extends Component {
 
   @observable app = [];
 
-  @observable envIds = [];
+  @observable envIds = undefined;
 
   @observable appId = 'all';
 
@@ -83,7 +83,7 @@ class DeployTimes extends Component {
       .then((env) => {
         if (env.length) {
           this.env = env;
-          this.envIds.push(env[0].id);
+          this.envIds = [env[0].id];
         }
         this.loadCharts();
       });
@@ -362,15 +362,15 @@ class DeployTimes extends Component {
         </Button>
       </Header>
       <Content code="report.deploy-times" value={{ name }}>
-        {appDom ? <React.Fragment>
+        {this.app.length ? <React.Fragment>
           <div className="c7n-report-screen">
             <Select
               notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}
-              value={this.envIds}
+              value={this.envIds && this.envIds.slice()}
               label={formatMessage({ id: 'deploy.envName' })}
               className="c7n-select_400"
               mode="multiple"
-              maxTagCount={2}
+              maxTagCount={3}
               onChange={this.handleEnvSelect}
               optionFilterProp="children"
               filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -389,7 +389,7 @@ class DeployTimes extends Component {
               filter
             >
               {appDom}
-              {appDom ? <Option key="all" value="all">全部应用</Option> : null}
+              {appDom ? <Option key="all" value="all">{formatMessage({ id: 'report.all-app' })}</Option> : null}
             </Select>
             <TimePicker startTime={ReportsStore.getStartTime} endTime={ReportsStore.getEndTime} func={this.loadCharts} store={ReportsStore} />
           </div>

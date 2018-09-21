@@ -29,6 +29,19 @@
   .c7n-select_400 {
     width: 400px;
     margin-right: 20px;
+
+    .ant-select-selection__choice {
+      padding: 0 4px;
+      margin: 0 3px 3px 0;
+
+      .ant-select-selection__choice__content {
+        max-width: 86px;
+      }
+
+      .ant-select-selection__choice__remove {
+        margin-left: 2px;
+      }
+    }
   }
 }
 
