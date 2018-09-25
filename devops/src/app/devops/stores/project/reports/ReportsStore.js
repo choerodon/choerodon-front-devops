@@ -159,10 +159,6 @@ class ReportsStore {
     return this.BuildDuration;
   }
 
-  @computed get getCommits() {
-    return this.commits;
-  }
-
   @computed get getEchartsLoading() {
     return this.echartsLoading;
   }
@@ -181,10 +177,6 @@ class ReportsStore {
 
   @action setBuildDuration(data) {
     this.BuildDuration = data;
-  }
-
-  @action setCommits(data) {
-    this.commits = data;
   }
 
   @action setEchartsLoading(data) {
