@@ -305,7 +305,7 @@ class ReportsStore {
       }
     });
 
-  loadCommitsRecord = (projectId, apps = null, page = 0) => axios.post(`devops/v1/projects/${projectId}/apps/commits/record?app_ids=${apps}&page=${page}`)
+  loadCommitsRecord = (projectId, apps = null, page = 0) => axios.post(`devops/v1/projects/${projectId}/apps/commits/record?app_ids=${apps}&page=${page}&size=5`)
     .then((data) => {
       const res = handleProptError(data);
       if (res) {

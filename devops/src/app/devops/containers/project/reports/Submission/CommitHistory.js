@@ -5,14 +5,14 @@ import TimePopover from '../../../../components/timePopover';
 import './Submission.scss';
 
 export default function CommitHistory(props) {
-  const { dataSource: { content, totalElements }, onPageChange } = props;
+  const { dataSource: { content, totalElements, number }, onPageChange } = props;
   let list = [];
   if (content) {
     list = content.map((item) => {
-      const { id, userName, ref, commitContent, commitDate, imgUrl, appId } = item;
+      const { userName, ref, commitContent, commitDate, imgUrl, appName, commitSHA } = item;
       return (
-        <div className="c7n-report-history-item" key={commitDate}>
-          <Avatar size="small" src={imgUrl} />
+        <div className="c7n-report-history-item" key={commitSHA}>
+          {imgUrl ? <Avatar size="small" src={imgUrl} /> : <Avatar size="small">{userName.toString().substr(0, 1).toUpperCase()}</Avatar>}
           <div className="c7n-report-history-info">
             <div className="c7n-report-history-content">
               <a
@@ -23,7 +23,7 @@ export default function CommitHistory(props) {
               >{commitContent}</a>
             </div>
             <div className="c7n-report-history-date">
-              <span className="c7n-report-history-name">{userName}</span><span>（{appId}）</span>
+              <span className="c7n-report-history-name">{userName}</span><span>（{appName}）</span>
               <FormattedMessage id="report.commit.by" /> <TimePopover style={{ display: 'inline-block' }} content={commitDate} />
             </div>
           </div>
@@ -37,7 +37,7 @@ export default function CommitHistory(props) {
     <div className="c7n-report-history-page">
       {totalElements ? (<Pagination
         total={totalElements || 0}
-        defaultCurrent={1}
+        current={number + 1 || 1}
         pageSize={5}
         tiny={false}
         showTotal={false}

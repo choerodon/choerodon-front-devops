@@ -44,66 +44,6 @@ function formatData(data) {
 const { AppState } = stores;
 const { Option } = Select;
 
-const commitFormRecordDTOPage = {
-  totalPages: 3,
-  totalElements: 12,
-  numberOfElements: 5,
-  size: 5,
-  number: 0,
-  content: [
-    {
-      id: 1,
-      appId: 1,
-      userId: '昨夜小楼又东风',
-      commitSha: null,
-      commitContent: 'i.7435yi.7435yi.7435yi.7435yi.7435yi.7435yi.7435yi.7435yi.7435yi.7435yi.7435yi.7435y',
-      commitUserUrl: 'http://minio.staging.saas.hand-china.com/iam-service/file_d0c99fab16c14c38ac023bca0110ac05_WX20180720-141353%402x.png',
-      ref: 'http://git.staging.saas.hand-china.com/operation-pro0815/app0815/commit/c4cfa9d84e29984c3af3467dc0d800e75d5df268?view=parallel',
-      commitDate: '2018-09-10 09:57:36',
-    },
-    {
-      id: 2,
-      appId: 1,
-      userId: 346,
-      commitSha: null,
-      commitContent: 'aw3t',
-      commitUserUrl: 'http://minio.staging.saas.hand-china.com/iam-service/file_d0c99fab16c14c38ac023bca0110ac05_WX20180720-141353%402x.png',
-      ref: 'http://git.staging.saas.hand-china.com/operation-pro0815/app0815/commit/c4cfa9d84e29984c3af3467dc0d800e75d5df268?view=parallel',
-      commitDate: '2018-09-15 09:57:18',
-    },
-    {
-      id: 3,
-      appId: 1,
-      userId: 346,
-      commitSha: null,
-      commitContent: 'i.7435y',
-      commitUserUrl: 'http://minio.staging.saas.hand-china.com/iam-service/file_d0c99fab16c14c38ac023bca0110ac05_WX20180720-141353%402x.png',
-      ref: 'http://git.staging.saas.hand-china.com/operation-pro0815/app0815/commit/c4cfa9d84e29984c3af3467dc0d800e75d5df268?view=parallel',
-      commitDate: '2018-09-28 09:57:36',
-    },
-    {
-      id: 4,
-      appId: 1,
-      userId: 346,
-      commitSha: null,
-      commitContent: 'aw3t',
-      commitUserUrl: 'http://minio.staging.saas.hand-china.com/iam-service/file_d0c99fab16c14c38ac023bca0110ac05_WX20180720-141353%402x.png',
-      ref: 'http://git.staging.saas.hand-china.com/operation-pro0815/app0815/commit/c4cfa9d84e29984c3af3467dc0d800e75d5df268?view=parallel',
-      commitDate: '2018-09-15 09:57:18',
-    },
-    {
-      id: 5,
-      appId: 1,
-      userId: 346,
-      commitSha: null,
-      commitContent: 'i.7435y',
-      commitUserUrl: 'http://minio.staging.saas.hand-china.com/iam-service/file_d0c99fab16c14c38ac023bca0110ac05_WX20180720-141353%402x.png',
-      ref: 'http://git.staging.saas.hand-china.com/operation-pro0815/app0815/commit/c4cfa9d84e29984c3af3467dc0d800e75d5df268?view=parallel',
-      commitDate: '2018-09-28 09:57:36',
-    },
-  ],
-};
-
 @observer
 class Submission extends Component {
   constructor(props) {
@@ -143,15 +83,18 @@ class Submission extends Component {
     const { appId } = this.state;
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ page });
-    ReportsStore.loadCommitsRecord(projectId, appId, page);
+    ReportsStore.loadCommitsRecord(projectId, appId, page - 1);
   };
 
   loadData = () => {
     const { ReportsStore } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    ReportsStore.loadApps(projectId);
-    ReportsStore.loadCommits(projectId);
-    ReportsStore.loadCommitsRecord(projectId);
+    ReportsStore.loadApps(projectId).then((data) => {
+      if (data && data.length) {
+        ReportsStore.loadCommits(projectId);
+        ReportsStore.loadCommitsRecord(projectId);
+      }
+    });
   };
 
   render() {
@@ -166,7 +109,7 @@ class Submission extends Component {
       defaultApp.push(item.id);
       return (<Option key={item.id} value={item.id}>{item.name}</Option>);
     });
-    const personChart = user.map(item => (<div key={item.id} className="c7n-report-submission-item">
+    const personChart = _.map(user, item => (<div key={item.id} className="c7n-report-submission-item">
       <LineChart
         name={item.name}
         color="#ff9915"
@@ -191,7 +134,7 @@ class Submission extends Component {
         </Button>
       </Header>
       <Content code="report.submission" value={{ name }}>
-        <div className="c7n-report-control">
+        {apps && apps.length ? [<div className="c7n-report-control">
           <Select
             className=" c7n-report-control-select"
             mode="multiple"
@@ -206,24 +149,24 @@ class Submission extends Component {
             {options}
           </Select>
           {/* <TimePicker /> */}
-        </div>
-        <div className="c7n-report-submission clearfix">
-          <div className="c7n-report-submission-overview">
-            <LineChart
-              name="提交情况"
-              color="#4677dd"
-              style={{ width: '100%', height: 276 }}
-              data={total}
-            />
-          </div>
-          <div className="c7n-report-submission-history">
-            <CommitHistory
-              onPageChange={this.handlePageChange}
-              dataSource={ReportsStore.getCommitsRecord}
-            />
-          </div>
-        </div>
-        <div className="c7n-report-submission-wrap">{personChart}</div>
+        </div>,
+          <div className="c7n-report-submission clearfix">
+            <div className="c7n-report-submission-overview">
+              <LineChart
+                name="提交情况"
+                color="#4677dd"
+                style={{ width: '100%', height: 276 }}
+                data={total}
+              />
+            </div>
+            <div className="c7n-report-submission-history">
+              <CommitHistory
+                onPageChange={this.handlePageChange}
+                dataSource={ReportsStore.getCommitsRecord}
+              />
+            </div>
+          </div>,
+          <div className="c7n-report-submission-wrap">{personChart}</div>] : null}
       </Content>
     </Page>);
   }
