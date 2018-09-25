@@ -9,6 +9,7 @@ import _ from 'lodash';
 import '../../../main.scss';
 import './CiPipelineHome.scss';
 import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 
 const Option = Select.Option;
 const ICONS = {
@@ -323,20 +324,27 @@ class CiPipelineHome extends Component {
             }
           </span>
         </Tooltip>
-        <a
-          className="c7n-link-decoration"
-          href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.sha}`}
-          target="_blank"
-          rel="nofollow me noopener noreferrer"
+        <MouserOverWrapper
+          text={_.find(CiPipelineStore.commits, { id: sha })
+            ? _.find(CiPipelineStore.commits, { id: sha }).title
+            : ''}
+          width={0.3}
         >
-          <span className="gray">
-            {
-              _.find(CiPipelineStore.commits, { id: sha }) 
-                ? _.find(CiPipelineStore.commits, { id: sha }).title
-                : ''
-            }
-          </span>
-        </a>
+          <a
+            className="c7n-link-decoration"
+            href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.sha}`}
+            target="_blank"
+            rel="nofollow me noopener noreferrer"
+          >
+            <span className="gray">
+              {
+                _.find(CiPipelineStore.commits, { id: sha })
+                  ? _.find(CiPipelineStore.commits, { id: sha }).title
+                  : ''
+              }
+            </span>
+          </a>
+        </MouserOverWrapper>
       </div>
     </div>
   );

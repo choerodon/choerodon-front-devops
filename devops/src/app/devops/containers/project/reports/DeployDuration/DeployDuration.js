@@ -18,6 +18,7 @@ configure({ enforceActions: false });
 
 const { AppState } = stores;
 const { Option } = Select;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 const COLOR = ['50,198,222', '87,170,248', '255,177,0', '116,59,231', '237,74,103'];
 
@@ -29,7 +30,7 @@ class DeployDuration extends Component {
 
   @observable envId = null;
 
-  @observable appIds = undefined;
+  @observable appIds = [];
 
   @observable appArr = [];
 
@@ -76,6 +77,7 @@ class DeployDuration extends Component {
     ReportsStore.setAllData([]);
     ReportsStore.setStartTime(moment().subtract(6, 'days'));
     ReportsStore.setEndTime(moment());
+    ReportsStore.setPageInfo({ number: 0, totalElements: 0, size: HEIGHT <= 900 ? 10 : 15 });
   }
 
   /**
@@ -105,7 +107,8 @@ class DeployDuration extends Component {
     const projectId = AppState.currentMenuType.id;
     const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
     const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
-    ReportsStore.loadDeployDurationTable(projectId, this.envId, startTime, endTime, this.appIds.slice());
+    const { pageInfo } = ReportsStore;
+    ReportsStore.loadDeployDurationTable(projectId, this.envId, startTime, endTime, this.appIds.slice(), pageInfo.current - 1, pageInfo.pageSize);
   };
 
   /**
@@ -153,7 +156,7 @@ class DeployDuration extends Component {
       .then((app) => {
         this.app = app;
         if (app.length) {
-          this.appIds = this.appIds || [app[0].id];
+          this.appIds = this.appIds.length || [app[0].id];
         } else {
           this.appIds = [];
         }
@@ -279,6 +282,7 @@ class DeployDuration extends Component {
   renderTable() {
     const { intl: { formatMessage }, ReportsStore } = this.props;
     const data = ReportsStore.getAllData;
+    const { loading, pageInfo } = ReportsStore;
 
     const column = [
       {
@@ -314,10 +318,20 @@ class DeployDuration extends Component {
         dataSource={data}
         filterBar={false}
         columns={column}
-        // loading={tableLoading}
+        loading={loading}
+        pagination={pageInfo}
+        onChange={this.tableChange}
       />
     );
   }
+
+  tableChange = (pagination) => {
+    const { ReportsStore } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
+    ReportsStore.loadDeployDurationTable(projectId, this.envId, startTime, endTime, this.appIds.slice(), pagination.current - 1, pagination.pageSize);
+  };
 
   render() {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
@@ -361,7 +375,7 @@ class DeployDuration extends Component {
             </Select>
             <Select
               notFoundContent={formatMessage({ id: 'envoverview.unlist' })}
-              value={this.appIds && this.appIds.slice()}
+              value={this.appIds.length && this.appIds.slice()}
               label={formatMessage({ id: 'deploy.appName' })}
               className="c7n-select_400"
               mode="multiple"
