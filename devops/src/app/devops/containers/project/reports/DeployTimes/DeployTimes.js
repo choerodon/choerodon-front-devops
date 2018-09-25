@@ -370,7 +370,7 @@ class DeployTimes extends Component {
       >
         <ChartSwitch
           history={history}
-          current="submission"
+          current="deploy-times"
         />
         <Button
           icon="refresh"

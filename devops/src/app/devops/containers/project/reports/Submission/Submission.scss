@@ -1,4 +1,5 @@
 .c7n-report-control {
+  display: flex;
   padding: 8px 0;
   margin-bottom: 16px;
   .c7n-report-control-select {
@@ -78,9 +79,6 @@
   line-height: 24px;
   .c7n-report-commits-avatar {
     margin-right: 8px;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
   }
   .c7n-report-commits-text {
     margin-left: 32px;

@@ -34,7 +34,7 @@ function TimePicker(props) {
   };
 
   return (
-    <React.Fragment>
+    <div className="c7n-report-date-wrap">
       <div className="c7n-report-time-btn">
         <ButtonGroup>
           <Button
@@ -68,7 +68,7 @@ function TimePicker(props) {
           }}
         />
       </div>
-    </React.Fragment>
+    </div>
   );
 }
 

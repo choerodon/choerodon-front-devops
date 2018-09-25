@@ -541,7 +541,7 @@ class BuildDuration extends Component {
       >
         <ChartSwitch
           history={history}
-          current="buildDuration"
+          current="build-duration"
         />
         <Button
           icon="refresh"

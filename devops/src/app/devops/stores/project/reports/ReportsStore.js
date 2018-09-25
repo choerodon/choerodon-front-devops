@@ -43,6 +43,16 @@ class ReportsStore {
 
   @observable commitsRecord = [];
 
+  @observable commitLoading = false;
+
+  @action setCommitLoading(flag) {
+    this.commitLoading = flag;
+  }
+
+  @computed get getCommitLoading() {
+    return this.commitLoading;
+  }
+
   @action setCommits(data) {
     this.commits = data;
   }
@@ -297,21 +307,30 @@ class ReportsStore {
       });
   }
 
-  loadCommits = (projectId, apps = null) => axios.post(`devops/v1/projects/${projectId}/apps/commits?app_ids=${apps}`)
-    .then((data) => {
-      const res = handleProptError(data);
-      if (res) {
-        this.setCommits(res);
-      }
-    });
+  loadCommits = (projectId, start = null, end = null, apps = null) => {
+    this.setCommitLoading(true);
+    axios.post(`devops/v1/projects/${projectId}/apps/commits?app_ids=${apps}&start_date=${start}&end_date=${end}`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setCommits(res);
+        }
+        this.setCommitLoading(false);
+      })
+      .catch((err) => {
+        this.setCommitLoading(false);
+        Choerodon.handleResponseError(err);
+      });
+  };
 
-  loadCommitsRecord = (projectId, apps = null, page = 0) => axios.post(`devops/v1/projects/${projectId}/apps/commits/record?app_ids=${apps}&page=${page}&size=5`)
+  loadCommitsRecord = (projectId, start = null, end = null, apps = null, page = 0) => axios.post(`devops/v1/projects/${projectId}/apps/commits/record?app_ids=${apps}&page=${page}&size=5&start_date=${start}&end_date=${end}`)
     .then((data) => {
       const res = handleProptError(data);
       if (res) {
         this.setCommitsRecord(res);
       }
-    });
+    })
+    .catch(err => Choerodon.handleResponseError(err));
 
   handleData = (data) => {
     this.setAllData(data.content);

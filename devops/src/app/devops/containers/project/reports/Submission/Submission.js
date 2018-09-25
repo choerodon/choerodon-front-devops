@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Page, Header, Content, stores, Permission } from 'choerodon-front-boot';
@@ -8,6 +8,7 @@ import ChartSwitch from '../Component/ChartSwitch';
 import LineChart from './LineChart';
 import CommitHistory from './CommitHistory';
 import TimePicker from '../Component/TimePicker';
+import NoChart from '../Component/NoChart';
 import './Submission.scss';
 import '../../../main.scss';
 
@@ -24,11 +25,12 @@ function formatData(data) {
     total.items = _.countBy(totalCommitsDate, item => item.slice(0, 10));
     total.count = totalCommitsDate.length;
     _.forEach(commitFormUserDTOList, (item) => {
-      const { name, imgUrl, commitDates } = item;
+      const { name, imgUrl, commitDates, id } = item;
       const userTotal = {
         name,
         avatar: imgUrl,
       };
+      userTotal.id = id;
       userTotal.items = _.countBy(commitDates, cit => cit.slice(0, 10));
       userTotal.count = commitDates.length;
       user.push(userTotal);
@@ -74,8 +76,12 @@ class Submission extends Component {
     const { page } = this.state;
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ appId: e });
-    ReportsStore.loadCommits(projectId, e);
-    ReportsStore.loadCommitsRecord(projectId, e, page);
+    let appIds = e;
+    if (!e.length) {
+      appIds = null;
+    }
+    ReportsStore.loadCommits(projectId, appIds);
+    ReportsStore.loadCommitsRecord(projectId, appIds, page);
   };
 
   handlePageChange = (page) => {
@@ -87,12 +93,12 @@ class Submission extends Component {
   };
 
   loadData = () => {
-    const { ReportsStore } = this.props;
+    const { ReportsStore: { loadApps, loadCommits, loadCommitsRecord, getStartTime, getEndTime } } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    ReportsStore.loadApps(projectId).then((data) => {
+    loadApps(projectId).then((data) => {
       if (data && data.length) {
-        ReportsStore.loadCommits(projectId);
-        ReportsStore.loadCommitsRecord(projectId);
+        loadCommits(projectId, getStartTime, getEndTime);
+        loadCommitsRecord(projectId, getStartTime, getEndTime);
       }
     });
   };
@@ -104,6 +110,7 @@ class Submission extends Component {
     const commits = ReportsStore.getCommits;
     const { total, user } = formatData(commits);
     const apps = ReportsStore.getApps;
+    const commitsRecord = ReportsStore.getCommitsRecord;
     const defaultApp = [];
     const options = _.map(apps, (item) => {
       defaultApp.push(item.id);
@@ -111,10 +118,12 @@ class Submission extends Component {
     });
     const personChart = _.map(user, item => (<div key={item.id} className="c7n-report-submission-item">
       <LineChart
+        loading={ReportsStore.getCommitLoading}
         name={item.name}
         color="#ff9915"
         style={{ width: '100%', height: 176 }}
         data={item}
+        hasAvatar
       />
     </div>));
     return (<Page className="c7n-region">
@@ -134,39 +143,51 @@ class Submission extends Component {
         </Button>
       </Header>
       <Content code="report.submission" value={{ name }}>
-        {apps && apps.length ? [<div className="c7n-report-control">
-          <Select
-            className=" c7n-report-control-select"
-            mode="multiple"
-            placeholder={formatMessage({ id: 'report.app.noselect' })}
-            maxTagCount={3}
-            value={appId || defaultApp}
-            maxTagPlaceholder={formatMessage({ id: 'report.app.more' })}
-            onChange={this.handleSelect}
-            optionFilterProp="children"
-            filter
-          >
-            {options}
-          </Select>
-          {/* <TimePicker /> */}
-        </div>,
-          <div className="c7n-report-submission clearfix">
-            <div className="c7n-report-submission-overview">
-              <LineChart
-                name="提交情况"
-                color="#4677dd"
-                style={{ width: '100%', height: 276 }}
-                data={total}
+        {apps && apps.length
+          ? (<Fragment>
+            <div className="c7n-report-control">
+              <Select
+                className=" c7n-report-control-select"
+                mode="multiple"
+                label={formatMessage({ id: 'chooseApp' })}
+                placeholder={formatMessage({ id: 'report.app.noselect' })}
+                maxTagCount={3}
+                value={appId || defaultApp}
+                maxTagPlaceholder={formatMessage({ id: 'report.app.more' })}
+                onChange={this.handleSelect}
+                optionFilterProp="children"
+                filter
+              >
+                {options}
+              </Select>
+              <TimePicker
+                startTime={ReportsStore.getStartTime}
+                endTime={ReportsStore.getEndTime}
+                func={this.loadData}
+                store={ReportsStore}
               />
             </div>
-            <div className="c7n-report-submission-history">
-              <CommitHistory
-                onPageChange={this.handlePageChange}
-                dataSource={ReportsStore.getCommitsRecord}
-              />
+            <div className="c7n-report-submission clearfix">
+              <div className="c7n-report-submission-overview">
+                <LineChart
+                  loading={ReportsStore.getCommitLoading}
+                  name="提交情况"
+                  color="#4677dd"
+                  style={{ width: '100%', height: 276 }}
+                  data={total}
+                  hasAvatar={false}
+                />
+              </div>
+              <div className="c7n-report-submission-history">
+                <CommitHistory
+                  onPageChange={this.handlePageChange}
+                  dataSource={commitsRecord}
+                />
+              </div>
             </div>
-          </div>,
-          <div className="c7n-report-submission-wrap">{personChart}</div>] : null}
+            <div className="c7n-report-submission-wrap clearfix">{personChart}</div>
+          </Fragment>)
+          : <NoChart title={formatMessage({ id: 'report.no-app' })} des={formatMessage({ id: 'report.no-app-des' })} />}
       </Content>
     </Page>);
   }
