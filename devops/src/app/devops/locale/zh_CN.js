@@ -892,6 +892,7 @@ const zhCN = {
   'report.build-duration.version': '版本',
   'report.build-duration.time': '时间',
   'report.build-duration.duration': '构建时长',
+  'report.build-duration.noversion': '未生成版本',
   'report.build-duration.yAxis': '时长（分）',
   'report.deploy-duration.apps': '每次最多可同时选择5个应用！',
   'report.no-app': '当前项目下无应用',

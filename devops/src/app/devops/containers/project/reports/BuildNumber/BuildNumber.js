@@ -6,15 +6,26 @@ import { Select, Button, Tooltip, Table, Popover, Spin } from 'choerodon-ui';
 import ReactEcharts from 'echarts-for-react';
 import _ from 'lodash';
 import TimeAgo from 'timeago-react';
+import moment from 'moment';
 import ChartSwitch from '../Component/ChartSwitch';
 import './BuildNumber.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
+import TimePicker from '../Component/TimePicker';
+import '../../ciPipelineManage/ciPipelineHome/CiPipelineHome.scss';
+import NoChart from '../Component/NoChart';
 
 
 const { AppState } = stores;
 const { Option } = Select;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
 const ICONS = {
+  passed: {
+    icon: 'icon-check_circle',
+    code: 'passed',
+    display: 'Passed',
+  },
   success: {
     icon: 'icon-check_circle',
     code: 'success',
@@ -62,6 +73,16 @@ const ICONS_ACTION = {
   skipped: {
     icon: 'icon-refresh',
   },
+  passed: {
+    icon: 'icon-check_circle',
+    code: 'passed',
+    display: 'Passed',
+  },
+  success: {
+    icon: 'icon-check_circle',
+    code: 'success',
+    display: 'Passed',
+  },
 };
 
 
@@ -74,19 +95,49 @@ class BuildNumber extends Component {
   }
 
   componentDidMount() {
+    this.loadDatas();
+  }
+
+  componentWillUnmount() {
+    const { ReportsStore } = this.props;
+    ReportsStore.setAllData([]);
+    ReportsStore.setBuildNumber({});
+    ReportsStore.setStartTime(moment().subtract(6, 'days'));
+    ReportsStore.setEndTime(moment());
+    ReportsStore.setAppId(null);
+    ReportsStore.setPageInfo({ number: 0, totalElements: 0, size: HEIGHT <= 900 ? 1 : 15 });
+  }
+
+  /**
+   * 加载数据
+   */
+  loadDatas = () => {
     const { ReportsStore } = this.props;
     const { id } = AppState.currentMenuType;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
     ReportsStore.loadApps(id).then((data) => {
       if (data && data.length) {
-        ReportsStore.loadBuildNumber(id, data[0].id, '2018/07/01 00:00:00', '2018/09/19 00:00:00');
+        ReportsStore.setAppId(data[0].id);
+        ReportsStore.loadBuildNumber(id, data[0].id, startTime, endTime);
+        ReportsStore.loadBuildTable(id, data[0].id, startTime, endTime);
       }
     });
-  }
+  };
 
   /**
    * 刷新
    */
-  handleRefresh = () => {};
+  handleRefresh = () => {
+    const { ReportsStore } = this.props;
+    const { id } = AppState.currentMenuType;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
+    const { appId, pageInfo } = ReportsStore;
+    ReportsStore.loadApps(id);
+    ReportsStore.loadBuildNumber(id, appId, startTime, endTime);
+    this.tableChange(pageInfo);
+  };
 
   /**
    * 选择应用
@@ -95,17 +146,20 @@ class BuildNumber extends Component {
   handleAppSelect = (value) => {
     const { ReportsStore } = this.props;
     const { id } = AppState.currentMenuType;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
     ReportsStore.setAppId(value);
-    ReportsStore.loadBuildNumber(id, value, '2018/07/01 00:00:00', '2018/09/19 00:00:00');
+    ReportsStore.loadBuildNumber(id, value, startTime, endTime);
+    ReportsStore.loadBuildTable(id, value, startTime, endTime);
   };
 
   getOption() {
     const { intl: { formatMessage }, ReportsStore } = this.props;
-    const { creationDates, deployFrequencys, deploySuccessFrequency, deployFailFrequency } = ReportsStore.getBuildNumber;
+    const { createDates, pipelineFrequencys, pipelineSuccessFrequency, pipelineFailFrequency } = ReportsStore.getBuildNumber;
     const val = [{ name: `${formatMessage({ id: 'report.build-number.fail' })}` }, { name: `${formatMessage({ id: 'report.build-number.success' })}` }, { name: `${formatMessage({ id: 'report.build-number.total' })}` }];
-    val[0].value = _.reduce(deployFailFrequency, (sum, n) => sum + n, 0);
-    val[1].value = _.reduce(deploySuccessFrequency, (sum, n) => sum + n, 0);
-    val[2].value = _.reduce(deployFrequencys, (sum, n) => sum + n, 0);
+    val[0].value = _.reduce(pipelineFailFrequency, (sum, n) => sum + n, 0);
+    val[1].value = _.reduce(pipelineSuccessFrequency, (sum, n) => sum + n, 0);
+    val[2].value = _.reduce(pipelineFrequencys, (sum, n) => sum + n, 0);
     return {
       tooltip: {
         trigger: 'axis',
@@ -125,7 +179,7 @@ class BuildNumber extends Component {
           if (params[1] && params[0]) {
             const total = params[0].value + params[1].value;
             return `<div>
-              <div>${formatMessage({ id: 'report.date' })}：${params[1].name}</div>
+              <div>${formatMessage({ id: 'branch.issue.date' })}：${params[1].name}</div>
               <div><span class="c7n-echarts-tooltip" style="background-color:${params[1].color};"></span>${formatMessage({ id: 'report.build-number.build' })}${params[1].seriesName}：${params[1].value}</div>
               <div><span class="c7n-echarts-tooltip" style="background-color:${params[0].color};"></span>${formatMessage({ id: 'report.build-number.build' })}${params[0].seriesName}：${params[0].value}</div>
               <div>${formatMessage({ id: 'report.build-number.build' })}${formatMessage({ id: 'report.build-number.total' })}：${total}</div>
@@ -133,14 +187,13 @@ class BuildNumber extends Component {
             <div>`;
           } else {
             return `<div>
-              <div>${formatMessage({ id: 'report.date' })}：${params[0].name}</div>
+              <div>${formatMessage({ id: 'branch.issue.date' })}：${params[0].name}</div>
               <div><span class="c7n-echarts-tooltip" style="background-color:${params[0].color};"></span>${formatMessage({ id: 'report.build-number.build' })}${params[0].seriesName}：${params[0].value}</div>
             <div>`;
           }
         },
       },
       legend: {
-        // data: ['失败次数', '成功次数', '总次数'],
         left: 'right',
         itemWidth: 14,
         itemGap: 20,
@@ -155,10 +208,9 @@ class BuildNumber extends Component {
         },
       },
       grid: {
-        top: 38,
-        left: 0,
-        right: 0,
-        bottom: 40,
+        left: '2%',
+        right: '3%',
+        bottom: '3%',
         containLabel: true,
       },
       xAxis: {
@@ -171,6 +223,7 @@ class BuildNumber extends Component {
             width: 2,
           },
         },
+
         axisLabel: {
           margin: 13,
           textStyle: {
@@ -188,7 +241,7 @@ class BuildNumber extends Component {
             type: 'solid',
           },
         },
-        data: creationDates,
+        data: createDates,
       },
       yAxis: {
         name: `${formatMessage({ id: 'report.build-number.yAxis' })}`,
@@ -197,7 +250,6 @@ class BuildNumber extends Component {
         nameTextStyle: {
           fontSize: 13,
           color: '#000',
-          padding: [0, 23, 10, 0],
         },
         axisTick: { show: false },
         axisLine: {
@@ -230,7 +282,7 @@ class BuildNumber extends Component {
           color: '#00BFA5',
           barWidth: '40%',
           stack: 'total',
-          data: deploySuccessFrequency,
+          data: pipelineSuccessFrequency,
         },
         {
           name: `${formatMessage({ id: 'report.build-number.fail' })}`,
@@ -238,9 +290,8 @@ class BuildNumber extends Component {
           color: '#FFB100',
           barWidth: '40%',
           stack: 'total',
-          data: deployFailFrequency,
+          data: pipelineFailFrequency,
         },
-
         {
           name: `${formatMessage({ id: 'report.build-number.total' })}`,
           type: 'bar',
@@ -251,7 +302,14 @@ class BuildNumber extends Component {
     };
   }
 
-  tableChange = (pagination) => {};
+  tableChange = (pagination) => {
+    const { ReportsStore } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    const appId = ReportsStore.getAppId;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
+    ReportsStore.loadBuildTable(projectId, appId, startTime, endTime, pagination.current - 1, pagination.pageSize);
+  };
 
   getColumns() {
     return [
@@ -261,42 +319,42 @@ class BuildNumber extends Component {
         render: (status, record) => this.renderStatus(status, record),
       },
       {
-        title: <FormattedMessage id="ciPipeline.sign" />,
-        dataIndex: 'id',
-        render: (id, record) => this.renderSign(id, record),
+        title: <FormattedMessage id="network.column.version" />,
+        dataIndex: 'version',
+        render: version => this.renderVersion(version),
       },
       {
         title: <FormattedMessage id="ciPipeline.commit" />,
-        dataIndex: 'sha',
-        render: (sha, record) => this.renderCommit(sha, record),
+        dataIndex: 'commit',
+        render: (commit, record) => this.renderCommit(commit, record),
       },
       {
         title: <FormattedMessage id="ciPipeline.jobs" />,
-        dataIndex: 'jobs',
-        render: (jobs, record) => this.renderJobs(jobs, record),
+        dataIndex: 'stages',
+        render: (stages, record) => this.renderstages(stages, record),
       },
       {
         title: <FormattedMessage id="ciPipeline.time" />,
-        dataIndex: 'time',
-        render: (time, record) => (
+        dataIndex: 'pipelineTime',
+        render: (pipelineTime, record) => (
           <span>
-            {this.renderTime(time, record)}
+            {this.renderTime(pipelineTime, record)}
           </span>
         ),
       },
       {
         title: <FormattedMessage id="ciPipeline.createdAt" />,
-        dataIndex: 'createdAt',
-        render: (createdAt, record) => (
+        dataIndex: 'creationDate',
+        render: (creationDate, record) => (
           <div>
             <Popover
               rowKey="creationDate"
               title={<FormattedMessage id="ciPipeline.createdAt" />}
-              content={createdAt}
+              content={creationDate}
               placement="left"
             >
               <TimeAgo
-                datetime={createdAt}
+                datetime={creationDate}
                 locale={this.props.intl.formatMessage({ id: 'language' })}
               />
             </Popover>
@@ -304,8 +362,8 @@ class BuildNumber extends Component {
       },
       {
         width: 56,
-        dataIndex: 'gitlabProjectId',
-        render: (gitlabProjectId, record) => this.renderAction(record),
+        key: 'action',
+        render: record => this.renderAction(record),
       },
     ];
   }
@@ -313,7 +371,7 @@ class BuildNumber extends Component {
   renderStatus = (status, record) => (
     <div className="c7n-status">
       <a
-        href={`${record.gitlabUrl.slice(0, -4)}/pipelines/${record.id}`}
+        href={`${record.gitlabUrl.slice(0, -4)}/pipelines/${record.pipelineId}`}
         target="_blank"
         rel="nofollow me noopener noreferrer"
       >
@@ -323,49 +381,14 @@ class BuildNumber extends Component {
     </div>
   );
 
-  renderSign = (id, record) => (
-    <div className="c7n-sign">
-      <div className="c7n-des-sign">
-        <span>
-          <a
-            className="c7n-link-decoration"
-            href={`${record.gitlabUrl.slice(0, -4)}/pipelines/${record.id}`}
-            target="_blank"
-            rel="nofollow me noopener noreferrer"
-          >
-            <span className="mr7 black">
-              #{id}
-            </span>
-          </a>
-            by
-        </span>
-        <Tooltip
-          placement="top"
-          title={record.createUser}
-          trigger="hover"
-        >
-          <span className="c7n-avatar m8 mt3">{record.createUser.substring(0, 1)}</span>
-        </Tooltip>
-      </div>
-      {
-        record.latest
-          ? (
-            <Tooltip
-              placement="top"
-              title="Latest pipeline for this branch"
-              trigger="hover"
-            >
-              <span title="" className="c7n-latest">
-                latest
-              </span>
-            </Tooltip>
-          )
-          : null
-      }
-    </div>
-  );
+  renderVersion = (version) => {
+    if (version) {
+      return <div>{version}</div>;
+    }
+    return <div>未生成版本</div>;
+  };
 
-  renderCommit = (sha, record) => (
+  renderCommit = (commit, record) => (
     <div className="c7n-commit">
       <div className="c7n-title-commit">
         <i className="icon icon-branch mr7" />
@@ -386,21 +409,17 @@ class BuildNumber extends Component {
         <i className="icon icon-point m8" />
         <Tooltip
           placement="top"
-          title={record.sha}
+          title={record.commit}
           trigger="hover"
         >
           <a
             className="c7n-link-decoration"
-            href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.sha}`}
+            href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.commit}`}
             target="_blank"
             rel="nofollow me noopener noreferrer"
           >
             <span>
-              {
-                _.find(CiPipelineStore.commits, { id: sha })
-                  ? _.find(CiPipelineStore.commits, { id: sha }).shortId
-                  : ''
-              }
+              { record.commit.slice(0, 8) }
             </span>
           </a>
         </Tooltip>
@@ -408,43 +427,35 @@ class BuildNumber extends Component {
       <div className="c7n-des-commit">
         <Tooltip
           placement="top"
-          title={
-            _.find(CiPipelineStore.commits, { id: sha })
-              ? _.find(CiPipelineStore.commits, { id: sha }).authorName
-              : ''
-          }
+          title={record.commitUserName ? record.commitUserName : ''}
           trigger="hover"
         >
-          <span className="c7n-avatar mr7">
-            {
-              _.find(CiPipelineStore.commits, { id: sha })
-                ? _.find(CiPipelineStore.commits, { id: sha }).authorName.substring(0, 1)
-                : ''
-            }
-          </span>
+          {
+            record.commitUserUrl
+              ? <img className="c7n-image-avatar" src={record.commitUserUrl} alt="avatar" />
+              : <span className="c7n-avatar mr7">{ record.commitUserName ? record.commitUserName.substring(0, 1) : '' }</span>
+          }
         </Tooltip>
-        <a
-          className="c7n-link-decoration"
-          href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.sha}`}
-          target="_blank"
-          rel="nofollow me noopener noreferrer"
-        >
-          <span className="gray">
-            {
-              _.find(CiPipelineStore.commits, { id: sha })
-                ? _.find(CiPipelineStore.commits, { id: sha }).title
-                : ''
-            }
-          </span>
-        </a>
+        <MouserOverWrapper text={record.commitContent} width={0.2}>
+          <a
+            className="c7n-link-decoration"
+            href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.commit}`}
+            target="_blank"
+            rel="nofollow me noopener noreferrer"
+          >
+            <span className="gray">
+              {record.commitContent}
+            </span>
+          </a>
+        </MouserOverWrapper>
       </div>
     </div>
   );
 
-  renderJobs = (jobs, record) => {
+  renderstages = (stages, record) => {
     const pipeStage = [];
-    if (jobs && jobs.length) {
-      for (let i = 0, l = jobs.length; i < l; i += 1) {
+    if (stages && stages.length) {
+      for (let i = 0, l = stages.length; i < l; i += 1) {
         pipeStage.push(<span className="c7n-jobs" key={i}>
           {
             i !== 0
@@ -452,20 +463,20 @@ class BuildNumber extends Component {
               : null
           }
           <Tooltip
-            title={(jobs[i].stage === 'sonarqube' && jobs[i].status === 'failed') ? `${jobs[i].stage} : ${jobs[i].description}` : `${jobs[i].stage} : ${jobs[i].status}`}
+            title={(stages[i].name === 'sonarqube' && stages[i].status === 'failed') ? `${stages[i].name} : ${stages[i].description}` : `${stages[i].name} : ${stages[i].status}`}
           >
-            {jobs[i].stage === 'sonarqube' ? <i
-              className={`icon ${ICONS[jobs[i].status || 'skipped'].icon || ''}
-                c7n-icon-${jobs[i].status} c7n-icon-lg`}
+            {stages[i].stage === 'sonarqube' ? <i
+              className={`icon ${ICONS[stages[i].status || 'skipped'].icon || ''}
+                c7n-icon-${stages[i].status} c7n-icon-lg`}
             /> : <a
               className=""
-              href={`${record.gitlabUrl.slice(0, -4)}/-/jobs/${jobs[i].id}`}
+              href={`${record.gitlabUrl.slice(0, -4)}/-/jobs/${stages[i].id}`}
               target="_blank"
               rel="nofollow me noopener noreferrer"
             >
               <i
-                className={`icon ${ICONS[jobs[i].status || 'skipped'].icon || ''}
-                c7n-icon-${jobs[i].status} c7n-icon-lg`}
+                className={`icon ${ICONS[stages[i].status || 'skipped'].icon || ''}
+                c7n-icon-${stages[i].status} c7n-icon-lg`}
               />
             </a>}
           </Tooltip>
@@ -479,13 +490,19 @@ class BuildNumber extends Component {
     );
   };
 
-  renderTime = (time, record) => {
-    if (time) {
-      const day = time[0] ? `${time[0]}${this.props.intl.formatMessage({ id: 'ist.day' })}` : '';
-      const hour = time[1] ? `${time[1]}${this.props.intl.formatMessage({ id: 'ist.hour' })}` : '';
-      const minute = time[2] ? `${time[2]}${this.props.intl.formatMessage({ id: 'ist.min' })}` : '';
-      const second = time[3] ? `${time[3]}${this.props.intl.formatMessage({ id: 'ist.sec' })}` : '';
-      return `${day}${hour}${minute}${second}`;
+  renderTime = (pipelineTime, record) => {
+    const { intl: { formatMessage } } = this.props;
+    if (pipelineTime) {
+      if (pipelineTime.split('.')[1] === '00') {
+        pipelineTime = `${pipelineTime.toString().split('.')[0]}${formatMessage({ id: 'minutes' })}`;
+      } else if (pipelineTime.split('.')[0] === '0') {
+        pipelineTime = `${Number(pipelineTime.toString().split('.')[1]) * 6}${formatMessage({ id: 'seconds' })}`;
+      } else if (pipelineTime.split('.').length === 2) {
+        pipelineTime = `${pipelineTime.toString().split('.')[0]}${formatMessage({ id: 'minutes' })}${(Number(pipelineTime.toString().split('.')[1]) * 0.6).toFixed()}${formatMessage({ id: 'seconds' })}`;
+      } else {
+        pipelineTime = null;
+      }
+      return pipelineTime;
     } else {
       return '--';
     }
@@ -495,7 +512,7 @@ class BuildNumber extends Component {
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    if (record.status && record.status !== 'success' && record.status !== 'skipped') {
+    if (record.status && record.status !== 'passed' && record.status !== 'skipped') {
       return (
         <Permission
           service={['devops-service.project-pipeline.retry', 'devops-service.project-pipeline.cancel']}
@@ -519,14 +536,33 @@ class BuildNumber extends Component {
     }
   };
 
+  handleAction(record) {
+    const { ReportsStore } = this.props;
+    if (record.status === 'running' || record.status === 'pending') {
+      CiPipelineStore.cancelPipeline(record.gitlabProjectId, record.pipelineId);
+    } else {
+      CiPipelineStore.retryPipeline(record.gitlabProjectId, record.pipelineId);
+    }
+    ReportsStore.setStartTime(moment().subtract(6, 'days'));
+    ReportsStore.setEndTime(moment());
+    this.loadDatas();
+  }
+
+  loadCharts = () => {
+    const { ReportsStore } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    const appId = ReportsStore.getAppId;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
+    ReportsStore.loadBuildNumber(projectId, appId, startTime, endTime);
+    ReportsStore.loadBuildTable(projectId, appId, startTime, endTime);
+  };
+
   render() {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
-    const apps = ReportsStore.getApps;
-    const appId = ReportsStore.getAppId;
-    const echartsLoading = ReportsStore.getEchartsLoading;
-    const data = [];
-    return (<Page className="c7n-region">
+    const { apps, appId, echartsLoading, loading, pageInfo, allData } = ReportsStore;
+    return (<Page className="c7n-region c7n-ciPipeline">
       <Header
         title={formatMessage({ id: 'report.build-number.head' })}
         backPath={`/devops/reports?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`}
@@ -543,39 +579,45 @@ class BuildNumber extends Component {
         </Button>
       </Header>
       <Content code="report.build-number" value={{ name }} className="c7n-buildNumber-content">
-        <Select
-          label={formatMessage({ id: 'chooseApp' })}
-          className="c7n-app-select_247"
-          defaultValue={appId}
-          value={appId}
-          optionFilterProp="children"
-          filterOption={(input, option) => option.props.children.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-          filter
-          onChange={this.handleAppSelect}
-        >
-          {
-            _.map(apps, (app, index) => (
-              <Option value={app.id} key={index}>
-                <Tooltip title={app.code}>
-                  <span className="c7n-app-select-tooltip">
-                    {app.name}
-                  </span>
-                </Tooltip>
-              </Option>))
-          }
-        </Select>
-        <Spin spinning={echartsLoading}>
-          <ReactEcharts className="c7n-buildNumber-echarts" option={this.getOption()} />
-        </Spin>
-        <Table
-          onChange={this.tableChange}
-          // loading={loading}
-          columns={this.getColumns()}
-          className="c7n-buildNumber-table"
-          dataSource={data}
-          // pagination={}
-          filterBar={false}
-        />
+        {appId ? <React.Fragment>
+          <div className="c7n-buildNumber-select">
+            <Select
+              label={formatMessage({ id: 'chooseApp' })}
+              className="c7n-app-select_247"
+              defaultValue={appId}
+              value={appId}
+              optionFilterProp="children"
+              filterOption={(input, option) => option.props.children.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              filter
+              onChange={this.handleAppSelect}
+            >
+              {
+                _.map(apps, (app, index) => (
+                  <Option value={app.id} key={index}>
+                    <Tooltip title={app.code}>
+                      <span className="c7n-app-select-tooltip">
+                        {app.name}
+                      </span>
+                    </Tooltip>
+                  </Option>))
+              }
+            </Select>
+            <TimePicker startTime={ReportsStore.getStartTime} endTime={ReportsStore.getEndTime} func={this.loadCharts} store={ReportsStore} />
+          </div>
+          <Spin spinning={echartsLoading}>
+            <ReactEcharts className="c7n-buildNumber-echarts" option={this.getOption()} />
+          </Spin>
+          <Table
+            onChange={this.tableChange}
+            loading={loading}
+            columns={this.getColumns()}
+            className="c7n-buildNumber-table"
+            dataSource={allData}
+            pagination={pageInfo}
+            filterBar={false}
+            rowKey={record => record.pipelineId}
+          />
+        </React.Fragment> : <NoChart title={formatMessage({ id: 'report.no-app' })} des={formatMessage({ id: 'report.no-app-des' })} />}
       </Content>
     </Page>);
   }

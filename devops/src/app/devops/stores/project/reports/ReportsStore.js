@@ -8,7 +8,7 @@ const HEIGHT = window.innerHeight || document.documentElement.clientHeight || do
 @store('ReportsStore')
 class ReportsStore {
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
+    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 1 : 15,
   };
 
   @observable Info = {
@@ -27,11 +27,17 @@ class ReportsStore {
 
   @observable allData = [];
 
+  @observable loading = true;
+
   @observable apps = [];
 
   @observable appId = null;
 
   @observable BuildNumber = {};
+
+  @observable BuildDuration = {};
+
+  @observable commits = [];
 
   @observable echartsLoading = true;
 
@@ -149,6 +155,14 @@ class ReportsStore {
     return this.BuildNumber;
   }
 
+  @computed get getBuildDuration() {
+    return this.BuildDuration;
+  }
+
+  @computed get getCommits() {
+    return this.commits;
+  }
+
   @computed get getEchartsLoading() {
     return this.echartsLoading;
   }
@@ -165,6 +179,14 @@ class ReportsStore {
     this.BuildNumber = data;
   }
 
+  @action setBuildDuration(data) {
+    this.BuildDuration = data;
+  }
+
+  @action setCommits(data) {
+    this.commits = data;
+  }
+
   @action setEchartsLoading(data) {
     this.echartsLoading = data;
   }
@@ -177,8 +199,9 @@ class ReportsStore {
     const res = handleProptError(data);
     if (res) {
       this.setApps(data);
-      if (data.length) {
-        this.setAppId(data[0].id);
+      if (!data.length) {
+        this.setEchartsLoading(false);
+        this.changeLoading(false);
       }
     }
     return res;
@@ -190,14 +213,45 @@ class ReportsStore {
    */
   loadBuildNumber = (projectId, appId, startTime, endTime) => {
     this.setEchartsLoading(true);
-    return axios.post(`/devops/v1/projects/${projectId}/app_instances/env_commands/frequency?appId=${appId}&startTime=${startTime}&endTime=${endTime}`, JSON.stringify([]))
+    return axios.get(`/devops/v1/projects/${projectId}/pipeline/frequency?appId=${appId}&startTime=${startTime}&endTime=${endTime}`)
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
           this.setBuildNumber(data);
         }
         this.setEchartsLoading(false);
-        return res;
+      });
+  };
+
+  /**
+   * 加载构建时长
+   *
+   */
+  loadBuildDuration = (projectId, appId, startTime, endTime) => {
+    this.setEchartsLoading(true);
+    return axios.get(`/devops/v1/projects/${projectId}/pipeline/time?appId=${appId}&startTime=${startTime}&endTime=${endTime}`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setBuildDuration(data);
+        }
+        this.setEchartsLoading(false);
+      });
+  };
+
+  /**
+   * 加载构建情况表格
+   *
+   */
+  loadBuildTable = (projectId, appId, startTime, endTime, page = 0, size = this.pageInfo.pageSize) => {
+    this.changeLoading(true);
+    return axios.get(`/devops/v1/projects/${projectId}/pipeline/page?appId=${appId}&startTime=${startTime}&endTime=${endTime}&page=${page}&size=${size}`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.handleData(data);
+        }
+        this.changeLoading(false);
       });
   };
 
@@ -227,25 +281,31 @@ class ReportsStore {
       });
   };
 
-  loadDeployDurationTable = (projectId, envId, startTime, endTime, appIds, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize) => axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/timeDetail?envId=${envId}&endTime=${endTime}&startTime=${startTime}&page=${page}&size=${size}`, JSON.stringify(appIds))
-    .then((data) => {
-      const res = handleProptError(data);
-      if (res) {
-        this.handleData(data);
-      }
-      this.changeLoading(false);
-      this.changeIsRefresh(false);
-    });
+  loadDeployDurationTable = (projectId, envId, startTime, endTime, appIds, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize) => {
+    this.changeLoading(true);
+    return axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/timeDetail?envId=${envId}&endTime=${endTime}&startTime=${startTime}&page=${page}&size=${size}`, JSON.stringify(appIds))
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.handleData(data);
+        }
+        this.changeLoading(false);
+        this.changeIsRefresh(false);
+      });
+  }
 
-  loadDeployTimesTable = (projectId, appId, startTime, endTime, envIds, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize) => axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/frequencyDetail?appId=${appId}&endTime=${endTime}&startTime=${startTime}&page=${page}&size=${size}`, JSON.stringify(envIds))
-    .then((data) => {
-      const res = handleProptError(data);
-      if (res) {
-        this.handleData(data);
-      }
-      this.changeLoading(false);
-      this.changeIsRefresh(false);
-    });
+  loadDeployTimesTable = (projectId, appId, startTime, endTime, envIds, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize) => {
+    this.changeLoading(true);
+    return axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/frequencyDetail?appId=${appId}&endTime=${endTime}&startTime=${startTime}&page=${page}&size=${size}`, JSON.stringify(envIds))
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.handleData(data);
+        }
+        this.changeLoading(false);
+        this.changeIsRefresh(false);
+      });
+  }
 
   loadCommits = (projectId, apps = null) => axios.post(`devops/v1/projects/${projectId}/apps/commits?app_ids=${apps}`)
     .then((data) => {

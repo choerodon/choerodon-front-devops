@@ -18,6 +18,7 @@ configure({ enforceActions: false });
 
 const { AppState } = stores;
 const { Option } = Select;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 @observer
 class DeployTimes extends Component {
@@ -25,7 +26,7 @@ class DeployTimes extends Component {
 
   @observable app = [];
 
-  @observable envIds = undefined;
+  @observable envIds = [];
 
   @observable appId = 'all';
 
@@ -74,6 +75,7 @@ class DeployTimes extends Component {
     ReportsStore.setAllData([]);
     ReportsStore.setStartTime(moment().subtract(6, 'days'));
     ReportsStore.setEndTime(moment());
+    ReportsStore.setPageInfo({ number: 0, totalElements: 0, size: HEIGHT <= 900 ? 1 : 15 });
   }
 
   /**
@@ -86,7 +88,7 @@ class DeployTimes extends Component {
       .then((env) => {
         if (env.length) {
           this.env = env;
-          this.envIds = this.envIds || [env[0].id];
+          this.envIds = this.envIds.length || [env[0].id];
         }
         this.loadCharts();
       });
@@ -140,7 +142,8 @@ class DeployTimes extends Component {
     const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
     const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
     const appID = (this.appId === 'all') ? [] : this.appId;
-    ReportsStore.loadDeployTimesTable(projectId, appID, startTime, endTime, this.envIds.slice());
+    const { pageInfo } = ReportsStore;
+    ReportsStore.loadDeployTimesTable(projectId, appID, startTime, endTime, this.envIds.slice(), pageInfo.current - 1, pageInfo.pageSize);
   };
 
   /**
@@ -150,9 +153,9 @@ class DeployTimes extends Component {
   getOption() {
     const { intl: { formatMessage } } = this.props;
     const val = [{ name: `${formatMessage({ id: 'report.build-number.fail' })}` }, { name: `${formatMessage({ id: 'report.build-number.success' })}` }, { name: `${formatMessage({ id: 'report.build-number.total' })}` }];
-    val[0].value = _.reduce(this.failArr, (sum, n) => sum + n);
-    val[1].value = _.reduce(this.successArr, (sum, n) => sum + n);
-    val[2].value = _.reduce(this.allArr, (sum, n) => sum + n);
+    val[0].value = _.reduce(this.failArr, (sum, n) => sum + n, 0);
+    val[1].value = _.reduce(this.successArr, (sum, n) => sum + n, 0);
+    val[2].value = _.reduce(this.allArr, (sum, n) => sum + n, 0);
     return {
       tooltip: {
         trigger: 'axis',
@@ -299,6 +302,7 @@ class DeployTimes extends Component {
   renderTable() {
     const { intl: { formatMessage }, ReportsStore } = this.props;
     const data = ReportsStore.getAllData;
+    const { loading, pageInfo } = ReportsStore;
 
     const column = [
       {
@@ -334,10 +338,21 @@ class DeployTimes extends Component {
         dataSource={data}
         filterBar={false}
         columns={column}
-        // loading={tableLoading}
+        loading={loading}
+        pagination={pageInfo}
+        onChange={this.tableChange}
       />
     );
   }
+
+  tableChange = (pagination) => {
+    const { ReportsStore } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
+    const appID = (this.appId === 'all') ? [] : this.appId;
+    ReportsStore.loadDeployTimesTable(projectId, appID, startTime, endTime, this.envIds.slice(), pagination.current - 1, pagination.pageSize);
+  };
 
   render() {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
@@ -369,7 +384,7 @@ class DeployTimes extends Component {
           <div className="c7n-report-screen">
             <Select
               notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}
-              value={this.envIds && this.envIds.slice()}
+              value={this.envIds.length && this.envIds.slice()}
               label={formatMessage({ id: 'deploy.envName' })}
               className="c7n-select_400"
               mode="multiple"

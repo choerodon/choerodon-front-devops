@@ -6,15 +6,26 @@ import { Select, Button, Tooltip, Table, Popover, Spin } from 'choerodon-ui';
 import ReactEcharts from 'echarts-for-react';
 import _ from 'lodash';
 import TimeAgo from 'timeago-react';
+import moment from 'moment';
 import ChartSwitch from '../Component/ChartSwitch';
 import './BuildDuration.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
+import TimePicker from '../Component/TimePicker';
+import '../../ciPipelineManage/ciPipelineHome/CiPipelineHome.scss';
+import NoChart from '../Component/NoChart';
 
 
 const { AppState } = stores;
 const { Option } = Select;
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
 const ICONS = {
+  passed: {
+    icon: 'icon-check_circle',
+    code: 'passed',
+    display: 'Passed',
+  },
   success: {
     icon: 'icon-check_circle',
     code: 'success',
@@ -62,6 +73,16 @@ const ICONS_ACTION = {
   skipped: {
     icon: 'icon-refresh',
   },
+  passed: {
+    icon: 'icon-check_circle',
+    code: 'passed',
+    display: 'Passed',
+  },
+  success: {
+    icon: 'icon-check_circle',
+    code: 'success',
+    display: 'Passed',
+  },
 };
 
 
@@ -74,15 +95,49 @@ class BuildDuration extends Component {
   }
 
   componentDidMount() {
+    this.loadDatas();
+  }
+
+  componentWillUnmount() {
+    const { ReportsStore } = this.props;
+    ReportsStore.setAllData([]);
+    ReportsStore.setBuildDuration({});
+    ReportsStore.setStartTime(moment().subtract(6, 'days'));
+    ReportsStore.setEndTime(moment());
+    ReportsStore.setAppId(null);
+    ReportsStore.setPageInfo({ number: 0, totalElements: 0, size: HEIGHT <= 900 ? 1 : 15 });
+  }
+
+  /**
+   * 加载数据
+   */
+  loadDatas = () => {
     const { ReportsStore } = this.props;
     const { id } = AppState.currentMenuType;
-    ReportsStore.loadApps(id);
-  }
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
+    ReportsStore.loadApps(id).then((data) => {
+      if (data && data.length) {
+        ReportsStore.setAppId(data[0].id);
+        ReportsStore.loadBuildDuration(id, data[0].id, startTime, endTime);
+        ReportsStore.loadBuildTable(id, data[0].id, startTime, endTime);
+      }
+    });
+  };
 
   /**
    * 刷新
    */
-  handleRefresh = () => {};
+  handleRefresh = () => {
+    const { ReportsStore } = this.props;
+    const { id } = AppState.currentMenuType;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
+    const { appId, pageInfo } = ReportsStore;
+    ReportsStore.loadApps(id);
+    ReportsStore.loadBuildDuration(id, appId, startTime, endTime);
+    this.tableChange(pageInfo);
+  };
 
   /**
    * 选择应用
@@ -91,16 +146,21 @@ class BuildDuration extends Component {
   handleAppSelect = (value) => {
     const { ReportsStore } = this.props;
     const { id } = AppState.currentMenuType;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
     ReportsStore.setAppId(value);
+    ReportsStore.loadBuildDuration(id, value, startTime, endTime);
+    ReportsStore.loadBuildTable(id, value, startTime, endTime);
   };
 
   getOption() {
-    const { intl: { formatMessage } } = this.props;
-    const datas = [12, 13, 10, 13, 50, 23, 21, 22, 10];
-    const date = ['09-01', '09-02', '09-03', '09-04', '09-05', '09-06', '09-07', '09-08', '09-09']
-    const arr = [];
-    _.map(datas, (value, index) => {
-      arr[index] = (_.reduce(datas.slice(0, index + 1), (sum, n) => sum + n)) / (index + 1);
+    const { intl: { formatMessage }, ReportsStore } = this.props;
+    const { pipelineTime, refs, versions, createDates } = ReportsStore.getBuildDuration;
+    const averageDuration = [];
+    let sum = 0;
+    _.map(pipelineTime, (value, index) => {
+      sum += parseFloat(value);
+      averageDuration[index] = sum / (index + 1);
     });
     return {
       tooltip: {
@@ -118,19 +178,28 @@ class BuildDuration extends Component {
         extraCssText:
           'box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2); border: 1px solid #ddd; border-radius: 0;',
         formatter(params, ticket) {
-          // const data = []
+          const version = versions[params[0].dataIndex] ? `${versions[params[0].dataIndex]}` : `${formatMessage({ id: 'report.build-duration.noversion' })}`;
+          let time = params[0].value;
+          if (time.split('.')[1] === '00') {
+            time = `${time.toString().split('.')[0]}${formatMessage({ id: 'minutes' })}`;
+          } else if (time.split('.')[0] === '0') {
+            time = `${Number(time.toString().split('.')[1]) * 6}${formatMessage({ id: 'seconds' })}`;
+          } else if (time.split('.').length === 2) {
+            time = `${time.toString().split('.')[0]}${formatMessage({ id: 'minutes' })}${(Number(time.toString().split('.')[1]) * 0.6).toFixed()}${formatMessage({ id: 'seconds' })}`;
+          } else {
+            time = null;
+          }
           return `<div>
-            <div>${formatMessage({ id: 'report.build-duration.time' })}：${date[params[0].dataIndex]}</div>
-            <div>${formatMessage({ id: 'report.build-duration.version' })}：</div>
-            <div>${formatMessage({ id: 'report.build-duration.duration' })}：${params[0].value}</div>
+            <div>${formatMessage({ id: 'ist.time' })}：${createDates[params[0].dataIndex]}</div>
+            <div>${formatMessage({ id: 'network.column.version' })}：${version}</div>
+            <div>${formatMessage({ id: 'report.build-duration.duration' })}：${time}</div>
           </div>`;
         },
       },
       grid: {
-        top: 38,
-        left: 0,
-        right: 0,
-        bottom: 40,
+        left: '2%',
+        right: '3%',
+        bottom: '3%',
         containLabel: true,
       },
       xAxis: {
@@ -150,6 +219,9 @@ class BuildDuration extends Component {
             fontSize: 12,
           },
           rotate: 40,
+          formatter(value) {
+            return `${value.substr(0, value.indexOf('-') + 5)}`;
+          },
         },
         splitLine: {
           lineStyle: {
@@ -158,16 +230,16 @@ class BuildDuration extends Component {
             type: 'solid',
           },
         },
-        data: ['c7n-1', 'c7n-2', 'c7n-3', 'c7n-4', 'c7n-5', 'c7n-6', 'c7n-7', 'c7n-8', 'c7n-9'],
+        data: refs,
       },
       yAxis: {
-        name: `${formatMessage({ id: 'report.build-duration.yAxis' })}`,
+        name: `${formatMessage({ id: 'minTime' })}`,
         type: 'value',
 
         nameTextStyle: {
           fontSize: 13,
           color: '#000',
-          padding: [0, 0, 10, 0],
+          // padding: [0, 0, 10, 0],
         },
         axisTick: { show: false },
         axisLine: {
@@ -201,7 +273,7 @@ class BuildDuration extends Component {
             color: 'rgba(77, 144, 254, 0.60)',
             borderColor: '#4D90FE',
           },
-          data: datas,
+          data: pipelineTime,
         },
         {
           type: 'line',
@@ -212,67 +284,74 @@ class BuildDuration extends Component {
             type: 'dashed',
             border: '1px solid #4D90FE',
           },
-          data: arr,
+          data: averageDuration,
         },
       ],
     };
   }
 
-  tableChange = () => {};
+  tableChange = (pagination) => {
+    const { ReportsStore } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    const appId = ReportsStore.getAppId;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
+    ReportsStore.loadBuildTable(projectId, appId, startTime, endTime, pagination.current - 1, pagination.pageSize);
+  };
 
   getColumns() {
     return [
       {
         title: <FormattedMessage id="ciPipeline.status" />,
         dataIndex: 'status',
-        // render: (status, record) => this.renderStatus(status, record),
+        render: (status, record) => this.renderStatus(status, record),
       },
       {
-        title: <FormattedMessage id="ciPipeline.sign" />,
-        dataIndex: 'id',
-        // render: (id, record) => this.renderSign(id, record),
+        title: <FormattedMessage id="network.column.version" />,
+        dataIndex: 'version',
+        render: version => this.renderVersion(version),
       },
       {
         title: <FormattedMessage id="ciPipeline.commit" />,
-        dataIndex: 'sha',
-        // render: (sha, record) => this.renderCommit(sha, record),
+        dataIndex: 'commit',
+        render: (commit, record) => this.renderCommit(commit, record),
       },
       {
         title: <FormattedMessage id="ciPipeline.jobs" />,
-        dataIndex: 'jobs',
-        // render: (jobs, record) => this.renderJobs(jobs, record),
+        dataIndex: 'stages',
+        render: (stages, record) => this.renderstages(stages, record),
       },
       {
         title: <FormattedMessage id="ciPipeline.time" />,
-        dataIndex: 'time',
-        // render: (time, record) => (
-        //   <span>
-        //     {this.renderTime(time, record)}
-        //   </span>
-        // ),
+        dataIndex: 'pipelineTime',
+        render: (pipelineTime, record) => (
+          <span>
+            {this.renderTime(pipelineTime, record)}
+          </span>
+        ),
       },
       {
         title: <FormattedMessage id="ciPipeline.createdAt" />,
-        dataIndex: 'createdAt',
-        // render: (createdAt, record) => (
-        //   <div>
-        //     <Popover
-        //       rowKey="creationDate"
-        //       title={<FormattedMessage id="ciPipeline.createdAt" />}
-        //       content={createdAt}
-        //       placement="left"
-        //     >
-        //       <TimeAgo
-        //         datetime={createdAt}
-        //         locale={this.props.intl.formatMessage({ id: 'language' })}
-        //       />
-        //     </Popover>
-        //   </div>),
+        dataIndex: 'creationDate',
+        render: (creationDate, record) => (
+          <div>
+            <Popover
+              rowKey="creationDate"
+              title={<FormattedMessage id="ciPipeline.createdAt" />}
+              content={creationDate}
+              placement="left"
+            >
+              <TimeAgo
+                datetime={creationDate}
+                locale={this.props.intl.formatMessage({ id: 'language' })}
+              />
+            </Popover>
+          </div>),
       },
       {
         width: 56,
-        dataIndex: 'gitlabProjectId',
-        // render: (gitlabProjectId, record) => this.renderAction(record),
+        key: 'action',
+        render: record => this.renderAction(record),
       },
     ];
   }
@@ -280,7 +359,7 @@ class BuildDuration extends Component {
   renderStatus = (status, record) => (
     <div className="c7n-status">
       <a
-        href={`${record.gitlabUrl.slice(0, -4)}/pipelines/${record.id}`}
+        href={`${record.gitlabUrl.slice(0, -4)}/pipelines/${record.pipelineId}`}
         target="_blank"
         rel="nofollow me noopener noreferrer"
       >
@@ -290,49 +369,14 @@ class BuildDuration extends Component {
     </div>
   );
 
-  renderSign = (id, record) => (
-    <div className="c7n-sign">
-      <div className="c7n-des-sign">
-        <span>
-          <a
-            className="c7n-link-decoration"
-            href={`${record.gitlabUrl.slice(0, -4)}/pipelines/${record.id}`}
-            target="_blank"
-            rel="nofollow me noopener noreferrer"
-          >
-            <span className="mr7 black">
-              #{id}
-            </span>
-          </a>
-            by
-        </span>
-        <Tooltip
-          placement="top"
-          title={record.createUser}
-          trigger="hover"
-        >
-          <span className="c7n-avatar m8 mt3">{record.createUser.substring(0, 1)}</span>
-        </Tooltip>
-      </div>
-      {
-        record.latest
-          ? (
-            <Tooltip
-              placement="top"
-              title="Latest pipeline for this branch"
-              trigger="hover"
-            >
-              <span title="" className="c7n-latest">
-                latest
-              </span>
-            </Tooltip>
-          )
-          : null
-      }
-    </div>
-  );
+  renderVersion = (version) => {
+    if (version) {
+      return <div>{version}</div>;
+    }
+    return <div>未生成版本</div>;
+  };
 
-  renderCommit = (sha, record) => (
+  renderCommit = (commit, record) => (
     <div className="c7n-commit">
       <div className="c7n-title-commit">
         <i className="icon icon-branch mr7" />
@@ -353,21 +397,17 @@ class BuildDuration extends Component {
         <i className="icon icon-point m8" />
         <Tooltip
           placement="top"
-          title={record.sha}
+          title={record.commit}
           trigger="hover"
         >
           <a
             className="c7n-link-decoration"
-            href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.sha}`}
+            href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.commit}`}
             target="_blank"
             rel="nofollow me noopener noreferrer"
           >
             <span>
-              {
-                _.find(CiPipelineStore.commits, { id: sha })
-                  ? _.find(CiPipelineStore.commits, { id: sha }).shortId
-                  : ''
-              }
+              { record.commit.slice(0, 8) }
             </span>
           </a>
         </Tooltip>
@@ -375,43 +415,35 @@ class BuildDuration extends Component {
       <div className="c7n-des-commit">
         <Tooltip
           placement="top"
-          title={
-            _.find(CiPipelineStore.commits, { id: sha })
-              ? _.find(CiPipelineStore.commits, { id: sha }).authorName
-              : ''
-          }
+          title={record.commitUserName ? record.commitUserName : ''}
           trigger="hover"
         >
-          <span className="c7n-avatar mr7">
-            {
-              _.find(CiPipelineStore.commits, { id: sha })
-                ? _.find(CiPipelineStore.commits, { id: sha }).authorName.substring(0, 1)
-                : ''
-            }
-          </span>
+          {
+            record.commitUserUrl
+              ? <img className="c7n-image-avatar" src={record.commitUserUrl} alt="avatar" />
+              : <span className="c7n-avatar mr7">{ record.commitUserName ? record.commitUserName.substring(0, 1) : '' }</span>
+          }
         </Tooltip>
-        <a
-          className="c7n-link-decoration"
-          href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.sha}`}
-          target="_blank"
-          rel="nofollow me noopener noreferrer"
-        >
-          <span className="gray">
-            {
-              _.find(CiPipelineStore.commits, { id: sha })
-                ? _.find(CiPipelineStore.commits, { id: sha }).title
-                : ''
-            }
-          </span>
-        </a>
+        <MouserOverWrapper text={record.commitContent} width={0.2}>
+          <a
+            className="c7n-link-decoration"
+            href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.commit}`}
+            target="_blank"
+            rel="nofollow me noopener noreferrer"
+          >
+            <span className="gray">
+              {record.commitContent}
+            </span>
+          </a>
+        </MouserOverWrapper>
       </div>
     </div>
   );
 
-  renderJobs = (jobs, record) => {
+  renderstages = (stages, record) => {
     const pipeStage = [];
-    if (jobs && jobs.length) {
-      for (let i = 0, l = jobs.length; i < l; i += 1) {
+    if (stages && stages.length) {
+      for (let i = 0, l = stages.length; i < l; i += 1) {
         pipeStage.push(<span className="c7n-jobs" key={i}>
           {
             i !== 0
@@ -419,20 +451,20 @@ class BuildDuration extends Component {
               : null
           }
           <Tooltip
-            title={(jobs[i].stage === 'sonarqube' && jobs[i].status === 'failed') ? `${jobs[i].stage} : ${jobs[i].description}` : `${jobs[i].stage} : ${jobs[i].status}`}
+            title={(stages[i].name === 'sonarqube' && stages[i].status === 'failed') ? `${stages[i].name} : ${stages[i].description}` : `${stages[i].name} : ${stages[i].status}`}
           >
-            {jobs[i].stage === 'sonarqube' ? <i
-              className={`icon ${ICONS[jobs[i].status || 'skipped'].icon || ''}
-                c7n-icon-${jobs[i].status} c7n-icon-lg`}
+            {stages[i].stage === 'sonarqube' ? <i
+              className={`icon ${ICONS[stages[i].status || 'skipped'].icon || ''}
+                c7n-icon-${stages[i].status} c7n-icon-lg`}
             /> : <a
               className=""
-              href={`${record.gitlabUrl.slice(0, -4)}/-/jobs/${jobs[i].id}`}
+              href={`${record.gitlabUrl.slice(0, -4)}/-/jobs/${stages[i].id}`}
               target="_blank"
               rel="nofollow me noopener noreferrer"
             >
               <i
-                className={`icon ${ICONS[jobs[i].status || 'skipped'].icon || ''}
-                c7n-icon-${jobs[i].status} c7n-icon-lg`}
+                className={`icon ${ICONS[stages[i].status || 'skipped'].icon || ''}
+                c7n-icon-${stages[i].status} c7n-icon-lg`}
               />
             </a>}
           </Tooltip>
@@ -446,13 +478,19 @@ class BuildDuration extends Component {
     );
   };
 
-  renderTime = (time, record) => {
-    if (time) {
-      const day = time[0] ? `${time[0]}${this.props.intl.formatMessage({ id: 'ist.day' })}` : '';
-      const hour = time[1] ? `${time[1]}${this.props.intl.formatMessage({ id: 'ist.hour' })}` : '';
-      const minute = time[2] ? `${time[2]}${this.props.intl.formatMessage({ id: 'ist.min' })}` : '';
-      const second = time[3] ? `${time[3]}${this.props.intl.formatMessage({ id: 'ist.sec' })}` : '';
-      return `${day}${hour}${minute}${second}`;
+  renderTime = (pipelineTime, record) => {
+    const { intl: { formatMessage } } = this.props;
+    if (pipelineTime) {
+      if (pipelineTime.split('.')[1] === '00') {
+        pipelineTime = `${pipelineTime.toString().split('.')[0]}${formatMessage({ id: 'minutes' })}`;
+      } else if (pipelineTime.split('.')[0] === '0') {
+        pipelineTime = `${Number(pipelineTime.toString().split('.')[1]) * 6}${formatMessage({ id: 'seconds' })}`;
+      } else if (pipelineTime.split('.').length === 2) {
+        pipelineTime = `${pipelineTime.toString().split('.')[0]}${formatMessage({ id: 'minutes' })}${(Number(pipelineTime.toString().split('.')[1]) * 0.6).toFixed()}${formatMessage({ id: 'seconds' })}`;
+      } else {
+        pipelineTime = null;
+      }
+      return pipelineTime;
     } else {
       return '--';
     }
@@ -462,7 +500,7 @@ class BuildDuration extends Component {
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    if (record.status && record.status !== 'success' && record.status !== 'skipped') {
+    if (record.status && record.status !== 'passed' && record.status !== 'skipped') {
       return (
         <Permission
           service={['devops-service.project-pipeline.retry', 'devops-service.project-pipeline.cancel']}
@@ -486,13 +524,30 @@ class BuildDuration extends Component {
     }
   };
 
+  handleAction(record) {
+    if (record.status === 'running' || record.status === 'pending') {
+      CiPipelineStore.cancelPipeline(record.gitlabProjectId, record.pipelineId);
+    } else {
+      CiPipelineStore.retryPipeline(record.gitlabProjectId, record.pipelineId);
+    }
+    this.loadDatas();
+  }
+
+  loadCharts = () => {
+    const { ReportsStore } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    const appId = ReportsStore.getAppId;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
+    ReportsStore.loadBuildDuration(projectId, appId, startTime, endTime);
+    ReportsStore.loadBuildTable(projectId, appId, startTime, endTime);
+  };
+
   render() {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
-    const apps = ReportsStore.getApps;
-    const appId = ReportsStore.getAppId;
-    const echartsLoading = ReportsStore.getEchartsLoading;
-    return (<Page className="c7n-region">
+    const { apps, appId, echartsLoading, loading, pageInfo, allData } = ReportsStore;
+    return (<Page className="c7n-region c7n-ciPipeline">
       <Header
         title={formatMessage({ id: 'report.build-duration.head' })}
         backPath={`/devops/reports?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`}
@@ -509,39 +564,45 @@ class BuildDuration extends Component {
         </Button>
       </Header>
       <Content code="report.build-duration" value={{ name }} className="c7n-buildDuration-content">
-        <Select
-          label={formatMessage({ id: 'chooseApp' })}
-          className="c7n-app-select_247"
-          defaultValue={appId}
-          value={appId}
-          optionFilterProp="children"
-          filterOption={(input, option) => option.props.children.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-          filter
-          onChange={this.handleAppSelect}
-        >
-          {
-            _.map(apps, (app, index) => (
-              <Option value={app.id} key={index}>
-                <Tooltip title={app.code}>
-                  <span className="c7n-app-select-tooltip">
-                    {app.name}
-                  </span>
-                </Tooltip>
-              </Option>))
-          }
-        </Select>
-        <Spin spinning={echartsLoading}>
-          <ReactEcharts className="c7n-buildDuration-echarts" option={this.getOption()} />
-        </Spin>
-        <Table
-          onChange={this.tableChange}
-          // loading={}
-          columns={this.getColumns()}
-          className="c7n-buildDuration-table"
-          // dataSource
-          // pagination={}
-          filterBar={false}
-        />
+        {appId ? <React.Fragment>
+          <div className="c7n-buildDuration-select">
+            <Select
+              label={formatMessage({ id: 'chooseApp' })}
+              className="c7n-app-select_247"
+              defaultValue={appId}
+              value={appId}
+              optionFilterProp="children"
+              filterOption={(input, option) => option.props.children.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              filter
+              onChange={this.handleAppSelect}
+            >
+              {
+                _.map(apps, (app, index) => (
+                  <Option value={app.id} key={index}>
+                    <Tooltip title={app.code}>
+                      <span className="c7n-app-select-tooltip">
+                        {app.name}
+                      </span>
+                    </Tooltip>
+                  </Option>))
+              }
+            </Select>
+            <TimePicker startTime={ReportsStore.getStartTime} endTime={ReportsStore.getEndTime} func={this.loadCharts} store={ReportsStore} />
+          </div>
+          <Spin spinning={echartsLoading}>
+            <ReactEcharts className="c7n-buildDuration-echarts" option={this.getOption()} />
+          </Spin>
+          <Table
+            onChange={this.tableChange}
+            loading={loading}
+            columns={this.getColumns()}
+            className="c7n-buildDuration-table"
+            dataSource={allData}
+            pagination={pageInfo}
+            filterBar={false}
+            rowKey={record => record.pipelineId}
+          />
+        </React.Fragment> : <NoChart title={formatMessage({ id: 'report.no-app' })} des={formatMessage({ id: 'report.no-app-des' })} />}
       </Content>
     </Page>);
   }

@@ -19,15 +19,15 @@ function TimePicker(props) {
         func();
         break;
       case 'seven':
-        store.setStartTime(moment().day(-5));
+        store.setStartTime(moment().subtract(6, 'days'));
         func();
         break;
       case 'thirty':
-        store.setStartTime(moment().day(-28));
+        store.setStartTime(moment().subtract(29, 'days'));
         func();
         break;
       default:
-        store.setStartTime(moment().day(-5));
+        store.setStartTime(moment().subtract(6, 'days'));
         func();
         break;
     }

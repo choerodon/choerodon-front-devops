@@ -81,6 +81,13 @@
     font-size: 12px;
   }
 
+  .c7n-image-avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+
   .c7n-paginationWrap {
     display: flex;
     justify-content: flex-end;
@@ -100,6 +107,10 @@
   }
 
   .c7n-icon-success {
+    color: #1ab16f;
+  }
+
+  .c7n-icon-passed {
     color: #1ab16f;
   }
 
