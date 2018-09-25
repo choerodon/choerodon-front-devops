@@ -8,7 +8,7 @@ const HEIGHT = window.innerHeight || document.documentElement.clientHeight || do
 @store('ReportsStore')
 class ReportsStore {
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 1 : 15,
+    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
   @observable Info = {
@@ -36,8 +36,6 @@ class ReportsStore {
   @observable BuildNumber = {};
 
   @observable BuildDuration = {};
-
-  @observable commits = [];
 
   @observable echartsLoading = true;
 

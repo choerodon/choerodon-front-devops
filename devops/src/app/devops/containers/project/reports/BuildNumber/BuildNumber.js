@@ -73,16 +73,6 @@ const ICONS_ACTION = {
   skipped: {
     icon: 'icon-refresh',
   },
-  passed: {
-    icon: 'icon-check_circle',
-    code: 'passed',
-    display: 'Passed',
-  },
-  success: {
-    icon: 'icon-check_circle',
-    code: 'success',
-    display: 'Passed',
-  },
 };
 
 
@@ -105,7 +95,7 @@ class BuildNumber extends Component {
     ReportsStore.setStartTime(moment().subtract(6, 'days'));
     ReportsStore.setEndTime(moment());
     ReportsStore.setAppId(null);
-    ReportsStore.setPageInfo({ number: 0, totalElements: 0, size: HEIGHT <= 900 ? 1 : 15 });
+    ReportsStore.setPageInfo({ number: 0, totalElements: 0, size: HEIGHT <= 900 ? 10 : 15 });
   }
 
   /**
@@ -114,13 +104,10 @@ class BuildNumber extends Component {
   loadDatas = () => {
     const { ReportsStore } = this.props;
     const { id } = AppState.currentMenuType;
-    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
-    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
     ReportsStore.loadApps(id).then((data) => {
       if (data && data.length) {
         ReportsStore.setAppId(data[0].id);
-        ReportsStore.loadBuildNumber(id, data[0].id, startTime, endTime);
-        ReportsStore.loadBuildTable(id, data[0].id, startTime, endTime);
+        this.loadCharts();
       }
     });
   };
@@ -145,14 +132,13 @@ class BuildNumber extends Component {
    */
   handleAppSelect = (value) => {
     const { ReportsStore } = this.props;
-    const { id } = AppState.currentMenuType;
-    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
-    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
     ReportsStore.setAppId(value);
-    ReportsStore.loadBuildNumber(id, value, startTime, endTime);
-    ReportsStore.loadBuildTable(id, value, startTime, endTime);
+    this.loadCharts();
   };
 
+  /**
+   * 图表函数
+   */
   getOption() {
     const { intl: { formatMessage }, ReportsStore } = this.props;
     const { createDates, pipelineFrequencys, pipelineSuccessFrequency, pipelineFailFrequency } = ReportsStore.getBuildNumber;
@@ -302,6 +288,10 @@ class BuildNumber extends Component {
     };
   }
 
+  /**
+   * 表格改变函数
+   * @param pagination 分页
+   */
   tableChange = (pagination) => {
     const { ReportsStore } = this.props;
     const projectId = AppState.currentMenuType.id;
