@@ -53,6 +53,7 @@ class Submission extends Component {
     this.state = {
       appId: null,
       page: 0,
+      dateType: null,
     };
   }
 
@@ -72,41 +73,49 @@ class Submission extends Component {
    * @param e
    */
   handleSelect = (e) => {
-    const { ReportsStore } = this.props;
-    const { page } = this.state;
+    const { ReportsStore: { loadCommits, loadCommitsRecord, getStartTime, getEndTime } } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ appId: e });
-    let appIds = e;
+    let appIds = e.join(',');
     if (!e.length) {
       appIds = null;
     }
-    ReportsStore.loadCommits(projectId, appIds);
-    ReportsStore.loadCommitsRecord(projectId, appIds, page);
+    loadCommits(projectId, getStartTime, getEndTime, appIds);
+    loadCommitsRecord(projectId, getStartTime, getEndTime, appIds, 0);
   };
 
   handlePageChange = (page) => {
-    const { ReportsStore } = this.props;
+    const { ReportsStore: { loadCommitsRecord, getStartTime, getEndTime } } = this.props;
     const { appId } = this.state;
     const { id: projectId } = AppState.currentMenuType;
-    this.setState({ page });
-    ReportsStore.loadCommitsRecord(projectId, appId, page - 1);
+    this.setState({ page: page - 1 });
+    const appIds = appId && appId.length ? appId.join(',') : null;
+    loadCommitsRecord(projectId, getStartTime, getEndTime, appId, page - 1);
   };
 
   loadData = () => {
     const { ReportsStore: { loadApps, loadCommits, loadCommitsRecord, getStartTime, getEndTime } } = this.props;
     const { id: projectId } = AppState.currentMenuType;
+    const { page, appId } = this.state;
+    const appIds = appId && appId.length ? appId.join(',') : null;
     loadApps(projectId).then((data) => {
       if (data && data.length) {
-        loadCommits(projectId, getStartTime, getEndTime);
-        loadCommitsRecord(projectId, getStartTime, getEndTime);
+        loadCommits(projectId, getStartTime, getEndTime, appIds);
+        loadCommitsRecord(projectId, getStartTime, getEndTime, appIds, page);
       }
     });
   };
 
+  /**
+   * 选择今天、近7天和近30天的选项，当使用DatePick的时候清空type
+   * @param type 时间范围类型
+   */
+  handleDateChoose = type => this.setState({ dateType: type });
+
   render() {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
-    const { appId } = this.state;
+    const { appId, dateType } = this.state;
     const commits = ReportsStore.getCommits;
     const { total, user } = formatData(commits);
     const apps = ReportsStore.getApps;
@@ -165,6 +174,8 @@ class Submission extends Component {
                 endTime={ReportsStore.getEndTime}
                 func={this.loadData}
                 store={ReportsStore}
+                type={dateType}
+                onChange={this.handleDateChoose}
               />
             </div>
             <div className="c7n-report-submission clearfix">
@@ -180,6 +191,7 @@ class Submission extends Component {
               </div>
               <div className="c7n-report-submission-history">
                 <CommitHistory
+                  loading={ReportsStore.getHistoryLoad}
                   onPageChange={this.handlePageChange}
                   dataSource={commitsRecord}
                 />

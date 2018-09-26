@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Avatar, Pagination } from 'choerodon-ui';
+import { Avatar, Pagination, Spin } from 'choerodon-ui';
 import TimePopover from '../../../../components/timePopover';
 import './Submission.scss';
 
 export default function CommitHistory(props) {
-  const { dataSource: { content, totalElements, number }, onPageChange } = props;
+  const { dataSource: { content, totalElements, number }, onPageChange, loading } = props;
   let list = [];
   if (content && content.length) {
     list = content.map((item) => {
@@ -37,14 +37,16 @@ export default function CommitHistory(props) {
   }
   return (<Fragment>
     <h3 className="c7n-report-history-title"><FormattedMessage id="report.commit.history" /></h3>
-    <div className="c7n-report-history-list">{list}</div>
+    <Spin spinning={loading}>
+      <div className="c7n-report-history-list">{list}</div>
+    </Spin>
     <div className="c7n-report-history-page">
       {totalElements ? (<Pagination
+        tiny
+        size="small"
         total={totalElements || 0}
         current={number + 1 || 1}
         pageSize={5}
-        tiny={false}
-        showTotal={() => {}}
         showSizeChanger={false}
         onChange={onPageChange}
       />) : null}

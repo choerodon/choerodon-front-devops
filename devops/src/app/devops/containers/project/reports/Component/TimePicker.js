@@ -9,21 +9,24 @@ const { RangePicker } = DatePicker;
 const ButtonGroup = Button.Group;
 
 function TimePicker(props) {
-  const { startTime, endTime, store, func } = props;
+  const { startTime, endTime, store, func, type, onChange } = props;
 
   const handleClick = (val) => {
     store.setEndTime(moment());
     switch (val) {
       case 'today':
         store.setStartTime(moment());
+        onChange('today');
         func();
         break;
       case 'seven':
         store.setStartTime(moment().subtract(6, 'days'));
+        onChange('seven');
         func();
         break;
       case 'thirty':
         store.setStartTime(moment().subtract(29, 'days'));
+        onChange('thirty');
         func();
         break;
       default:
@@ -38,18 +41,21 @@ function TimePicker(props) {
       <div className="c7n-report-time-btn">
         <ButtonGroup>
           <Button
+            style={{ backgroundColor: type === 'today' ? 'rgba(0,0,0,.18)' : '' }}
             funcType="flat"
             onClick={handleClick.bind(this, 'today')}
           >
             <FormattedMessage id="report.data.today" />
           </Button>
           <Button
+            style={{ backgroundColor: type === 'seven' ? 'rgba(0,0,0,.18)' : '' }}
             funcType="flat"
             onClick={handleClick.bind(this, 'seven')}
           >
             <FormattedMessage id="report.data.seven" />
           </Button>
           <Button
+            style={{ backgroundColor: type === 'thirty' ? 'rgba(0,0,0,.18)' : '' }}
             funcType="flat"
             onClick={handleClick.bind(this, 'thirty')}
           >
@@ -64,6 +70,7 @@ function TimePicker(props) {
           onChange={(date, dateString) => {
             store.setStartTime(moment(dateString[0]));
             store.setEndTime(moment(dateString[1]));
+            onChange(null);
             func();
           }}
         />

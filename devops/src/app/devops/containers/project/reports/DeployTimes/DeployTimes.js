@@ -399,7 +399,7 @@ class DeployTimes extends Component {
             <Select
               notFoundContent={formatMessage({ id: 'envoverview.unlist' })}
               value={appDom ? this.appId : null}
-              className="c7n-select_200"
+              className="c7n-select_200 margin-more"
               label={formatMessage({ id: 'deploy.appName' })}
               onChange={this.handleAppSelect}
               optionFilterProp="children"
