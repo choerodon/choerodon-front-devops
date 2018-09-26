@@ -156,7 +156,7 @@ class DeployDuration extends Component {
       .then((app) => {
         this.app = app;
         if (app.length) {
-          this.appIds = this.appIds.length || [app[0].id];
+          this.appIds = this.appIds.length ? this.appIds : [app[0].id];
         } else {
           this.appIds = [];
         }
@@ -200,7 +200,7 @@ class DeployDuration extends Component {
           if (time.split('.')[1] === '00') {
             time = `${time.toString().split('.')[0]}${formatMessage({ id: 'minutes' })}`;
           } else if (time.split('.')[0] === '0') {
-            time = `${Number(time.toString().split('.')[1]) * 6}${formatMessage({ id: 'seconds' })}`;
+            time = `${(Number(time.toString().split('.')[1]) * 0.6).toFixed()}${formatMessage({ id: 'seconds' })}`;
           } else if (time.split('.').length === 2) {
             time = `${time.toString().split('.')[0]}${formatMessage({ id: 'minutes' })}${(Number(time.toString().split('.')[1]) * 0.6).toFixed()}${formatMessage({ id: 'seconds' })}`;
           } else {

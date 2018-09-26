@@ -4,6 +4,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Page, Header, Content, stores, Permission } from 'choerodon-front-boot';
 import { Select, Button } from 'choerodon-ui';
 import _ from 'lodash';
+import moment from 'moment';
 import ChartSwitch from '../Component/ChartSwitch';
 import LineChart from './LineChart';
 import CommitHistory from './CommitHistory';
@@ -64,6 +65,8 @@ class Submission extends Component {
   componentWillUnmount() {
     const { ReportsStore } = this.props;
     ReportsStore.setApps([]);
+    ReportsStore.setStartTime(moment().subtract(6, 'days'));
+    ReportsStore.setEndTime(moment());
   }
 
   handleRefresh = () => this.loadData();

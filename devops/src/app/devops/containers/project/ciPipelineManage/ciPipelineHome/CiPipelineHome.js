@@ -41,7 +41,7 @@ const ICONS = {
   canceled: {
     icon: 'icon-cancle_b',
     code: 'canceled',
-    display: 'Cancel',
+    display: 'Canceled',
   },
   skipped: {
     icon: 'icon-skipped_b',
