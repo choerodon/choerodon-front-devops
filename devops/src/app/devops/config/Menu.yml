@@ -46,13 +46,6 @@
           - 'devops-service.application-market.importApps'
           - 'devops-service.application-market.deleteZip'
           - 'devops-service.application-market.queryAppVersionReadme'
-    - "reports":
-        icon: application_model
-        Routes: /devops/reports
-        sort: 6
-        delete: true
-        permission:
-        - 'devops-service.application.pageByOptions'
 "development-pipeline":
   icon: wrench
   sort: 2
@@ -254,8 +247,6 @@
         icon: devops_chart
         Routes: /devops/reports
         sort: 2
-        permission:
-        - 'devops-service.application.pageByOptions'
 
 # 要删除的菜单
 "application-market":

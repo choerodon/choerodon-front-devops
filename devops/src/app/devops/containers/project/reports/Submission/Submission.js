@@ -135,7 +135,14 @@ class Submission extends Component {
         hasAvatar
       />
     </div>));
-    return (<Page className="c7n-region">
+    return (<Page
+      className="c7n-region"
+      service={[
+        'devops-service.application.listByActive',
+        'devops-service.devops-gitlab-commit.getCommits',
+        'devops-service.devops-gitlab-commit.getRecordCommits',
+      ]}
+    >
       <Header
         title={formatMessage({ id: 'report.submission.head' })}
         backPath={`/devops/reports?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`}
