@@ -16,17 +16,17 @@ function TimePicker(props) {
     switch (val) {
       case 'today':
         store.setStartTime(moment());
-        onChange('today');
+        onChange && onChange('today');
         func();
         break;
       case 'seven':
         store.setStartTime(moment().subtract(6, 'days'));
-        onChange('seven');
+        onChange && onChange('seven');
         func();
         break;
       case 'thirty':
         store.setStartTime(moment().subtract(29, 'days'));
-        onChange('thirty');
+        onChange && onChange('thirty');
         func();
         break;
       default:
@@ -70,7 +70,7 @@ function TimePicker(props) {
           onChange={(date, dateString) => {
             store.setStartTime(moment(dateString[0]));
             store.setEndTime(moment(dateString[1]));
-            onChange(null);
+            onChange && onChange(null);
             func();
           }}
         />
