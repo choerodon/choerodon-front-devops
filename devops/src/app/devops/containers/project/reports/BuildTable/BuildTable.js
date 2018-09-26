@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
-import { Button, Table, Tooltip, Popover, Select } from 'choerodon-ui';
-import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import { withRouter } from 'react-router-dom';
+import { Button, Tooltip, Table, Popover } from 'choerodon-ui';
+import { Permission, stores } from 'choerodon-front-boot';
 import TimeAgo from 'timeago-react';
-import _ from 'lodash';
-import '../../../main.scss';
-import './CiPipelineHome.scss';
-import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
+import moment from 'moment';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
+import ReportsStore from '../../../../stores/project/reports';
+import '../../ciPipelineManage/ciPipelineHome/CiPipelineHome.scss';
+import './BuildTable.scss';
 
-const Option = Select.Option;
+const { AppState } = stores;
+
 const ICONS = {
   passed: {
     icon: 'icon-check_circle',
@@ -66,57 +68,26 @@ const ICONS_ACTION = {
     icon: 'icon-refresh',
   },
 };
-const { AppState } = stores;
 
 @observer
-class CiPipelineHome extends Component {
-  constructor(props) {
-    super(props);
+class BuildTable extends Component {
+  constructor(props, context) {
+    super(props, context);
     this.state = {
     };
   }
 
-  componentDidMount() {
-    CiPipelineStore.loadInitData();
-  }
-
-  componentWillUnmount() {
-    CiPipelineStore.setCurrentApp({});
-  }
-
-  get filterBar() {
-    return (
-      <div>
-        <Select
-          className="c7n-app-select_512"
-          value={CiPipelineStore.currentApp.id}
-          label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
-          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-          filter
-          onChange={this.handleChange.bind(this)}
-        >
-          {
-            _.map(CiPipelineStore.apps, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
-          }
-        </Select>
-      </div>
-    );
-  }
-
-  get tableCiPipeline() {
-    const { loading, pagination, ciPipelines } = CiPipelineStore;
-    const { intl: { formatMessage } } = this.props;
-
-    const ciPipelineColumns = [
+  getColumns() {
+    return [
       {
         title: <FormattedMessage id="ciPipeline.status" />,
         dataIndex: 'status',
         render: (status, record) => this.renderStatus(status, record),
       },
       {
-        title: <FormattedMessage id="ciPipeline.sign" />,
-        dataIndex: 'pipelineId',
-        render: (pipelineId, record) => this.renderSign(pipelineId, record),
+        title: <FormattedMessage id="network.column.version" />,
+        dataIndex: 'version',
+        render: version => this.renderVersion(version),
       },
       {
         title: <FormattedMessage id="ciPipeline.commit" />,
@@ -150,62 +121,17 @@ class CiPipelineHome extends Component {
             >
               <TimeAgo
                 datetime={creationDate}
-                locale={formatMessage({ id: 'language' })}
+                locale={this.props.intl.formatMessage({ id: 'language' })}
               />
             </Popover>
           </div>),
       },
       {
         width: 56,
-        dataIndex: 'gitlabProjectId',
-        render: (gitlabProjectId, record) => this.renderAction(record),
+        key: 'action',
+        render: record => this.renderAction(record),
       },
     ];
-    return (
-      <div>
-        <Table
-          loading={loading}
-          size="middle"
-          pagination={pagination}
-          columns={ciPipelineColumns}
-          dataSource={ciPipelines.slice()}
-          rowKey={record => record.pipelineId}
-          onChange={this.handleTableChange}
-          filterBar={false}
-        />
-      </div>
-    );
-  }
-
-  handleTableChange = (pagination) => {
-    CiPipelineStore.loadPipelines(
-      CiPipelineStore.currentApp.id,
-      pagination.current - 1,
-      pagination.pageSize,
-    );
-  };
-
-  handleRefresh =() => {
-    CiPipelineStore.loadPipelines(
-      CiPipelineStore.currentApp.id,
-      CiPipelineStore.pagination.current - 1,
-      CiPipelineStore.pagination.pageSize,
-    );
-  };
-
-  handleChange(appId) {
-    const currentApp = CiPipelineStore.apps.find(app => app.id === appId);
-    CiPipelineStore.setCurrentApp(currentApp);
-    CiPipelineStore.loadPipelines(appId);
-  }
-
-  handleAction(record) {
-    if (record.status === 'running' || record.status === 'pending') {
-      CiPipelineStore.cancelPipeline(record.gitlabProjectId, record.pipelineId);
-    } else {
-      CiPipelineStore.retryPipeline(record.gitlabProjectId, record.pipelineId);
-    }
-    this.handleRefresh();
   }
 
   renderStatus = (status, record) => (
@@ -222,51 +148,12 @@ class CiPipelineHome extends Component {
     </div>
   );
 
-  renderSign = (id, record) => (
-    <div className="c7n-sign">
-      <div className="c7n-des-sign">
-        <span>
-          <a
-            className="c7n-link-decoration"
-            href={`${record.gitlabUrl.slice(0, -4)}/pipelines/${record.pipelineId}`}
-            target="_blank"
-            rel="nofollow me noopener noreferrer"
-          >
-            <span className="mr7 black">
-              #{id}
-            </span>
-          </a>
-            by
-        </span>
-        <Tooltip
-          placement="top"
-          title={record.pipelineUserName ? record.pipelineUserName : ''}
-          trigger="hover"
-        >
-          {
-            record.pipelineUserUrl
-              ? <img className="c7n-image-avatar" src={record.pipelineUserUrl} alt="avatar" />
-              : <span className="c7n-avatar m8 mt3">{record.pipelineUserName ? record.pipelineUserName.substring(0, 1) : ''}</span>
-          }
-        </Tooltip>
-      </div>
-      {
-        record.latest 
-          ? (
-            <Tooltip
-              placement="top"
-              title="Latest pipeline for this branch"
-              trigger="hover"
-            >
-              <span title="" className="c7n-latest">
-                latest
-              </span>
-            </Tooltip>
-          )
-          : null
-      }
-    </div>
-  );
+  renderVersion = (version) => {
+    if (version) {
+      return <div>{version}</div>;
+    }
+    return <div><FormattedMessage id="report.build-duration.noversion" /></div>;
+  };
 
   renderCommit = (commit, record) => (
     <div className="c7n-commit">
@@ -416,35 +303,45 @@ class CiPipelineHome extends Component {
     }
   };
 
+  handleAction(record) {
+    const { loadDatas } = this.props;
+    if (record.status === 'running' || record.status === 'pending') {
+      CiPipelineStore.cancelPipeline(record.gitlabProjectId, record.pipelineId);
+    } else {
+      CiPipelineStore.retryPipeline(record.gitlabProjectId, record.pipelineId);
+    }
+    ReportsStore.setStartTime(moment().subtract(6, 'days'));
+    ReportsStore.setEndTime(moment());
+    loadDatas();
+  }
+
+  /**
+   * 表格改变函数
+   * @param pagination 分页
+   */
+  tableChange = (pagination) => {
+    const projectId = AppState.currentMenuType.id;
+    const appId = ReportsStore.getAppId;
+    const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
+    ReportsStore.loadBuildTable(projectId, appId, startTime, endTime, pagination.current - 1, pagination.pageSize);
+  };
+
   render() {
-    const { name } = AppState.currentMenuType;
+    const { loading, dataSource, pagination } = this.props;
     return (
-      <Page
-        className="c7n-region c7n-ciPipeline"
-        service={[
-          'devops-service.project-pipeline.list',
-          'devops-service.application.listByActive',
-          'devops-service.gitlab-commit.list',
-          'devops-service.project-pipeline.cancel',
-          'devops-service.project-pipeline.retry',
-        ]}
-      >
-        <Header title={<FormattedMessage id="ciPipeline.head" />}>
-          <Button
-            funcType="flat"
-            onClick={this.handleRefresh}
-          >
-            <i className="icon-refresh icon" />
-            <FormattedMessage id="refresh" />
-          </Button>
-        </Header>
-        <Content code="ciPipeline" value={{ name }}>
-          {this.filterBar}
-          {this.tableCiPipeline}
-        </Content>
-      </Page>
+      <Table
+        onChange={this.tableChange}
+        loading={loading}
+        columns={this.getColumns()}
+        className="c7n-buildTable-table"
+        dataSource={dataSource}
+        pagination={pagination}
+        filterBar={false}
+        rowKey={record => record.pipelineId}
+      />
     );
   }
 }
 
-export default withRouter(injectIntl(CiPipelineHome));
+export default withRouter(injectIntl(BuildTable));

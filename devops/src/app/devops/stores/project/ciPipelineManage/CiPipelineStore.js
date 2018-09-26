@@ -44,10 +44,10 @@ class CiPipelineStore {
       .then(datas => this.handleProptError(datas));
   }
 
-  loadPipelines(appId, page = 0, size = 10, projectId = AppState.currentMenuType.id) {
+  loadPipelines(appId, page = 0, size = this.pagination.pageSize, projectId = AppState.currentMenuType.id) {
     this.setCiPipelines([]);
     this.setLoading(true);
-    axios.get(`/devops/v1/projects/${projectId}/applications/${appId}/pipelines?page=${page}&size=${size}`)
+    axios.get(`/devops/v1/projects/${projectId}/pipeline/page?appId=${appId}&page=${page}&size=${size}`)
       .then((res) => {
         const response = this.handleProptError(res);
         if (response) {
@@ -56,16 +56,9 @@ class CiPipelineStore {
             pageSize: res.size,
             total: res.totalElements,
           });
-          if (res.content) {
-            this.loadCommits(res.content, _.map(res.content, 'sha'));
-          } else {
-            this.setLoading(false);
-          }
+          this.setCiPipelines(res.content);
         }
-      })
-      .catch((error) => {
         this.setLoading(false);
-        Choerodon.prompt(error.message);
       });
   }
 

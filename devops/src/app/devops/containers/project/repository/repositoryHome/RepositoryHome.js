@@ -124,9 +124,9 @@ class RepositoryHome extends Component {
       title: <FormattedMessage id="repository.url" />,
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (text, record) => (<a href={record.repoUrl ? `${record.repoUrl}.git` : null} rel="nofollow me noopener noreferrer" target="_blank">
-        <MouserOverWrapper text={`${record.repoUrl}.git`} width={0.25}>
-          {record.repoUrl ? `../${record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}.git` : ''}
+      render: (text, record) => (<a href="nofollow me noopener noreferrer" target="_blank">
+        <MouserOverWrapper text={record.repoUrl} width={0.25}>
+          {record.repoUrl ? `../${record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}` : ''}
         </MouserOverWrapper>
       </a>),
     }, {
@@ -152,7 +152,7 @@ class RepositoryHome extends Component {
           </Tooltip> : null }
           <Tooltip title={<FormattedMessage id="repository.copyUrl" />} placement="bottom">
             <CopyToClipboard
-              text={record.repoUrl ? `${record.repoUrl}.git` : noRepoUrl}
+              text={record.repoUrl || noRepoUrl}
               onCopy={this.handleCopy}
             >
               <Button className="repo-copy-btn" shape="circle" size="small">
