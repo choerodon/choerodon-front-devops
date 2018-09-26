@@ -247,6 +247,19 @@
         icon: devops_chart
         Routes: /devops/reports
         sort: 2
+        permission:
+          - 'devops-service.application.listByActive'
+          - 'devops-service.devops-gitlab-commit.getCommits'
+          - 'devops-service.devops-gitlab-commit.getRecordCommits'
+          - 'devops-service.application-instance.listDeployTime'
+          - 'devops-service.application-instance.pageDeployTimeDetail'
+          - 'devops-service.devops-environment.listByProjectIdAndActive'
+          - 'devops-service.devops-gitlab-pipeline.listPipelineTime'
+          - 'devops-service.devops-gitlab-pipeline.pagePipeline'
+          - 'devops-service.application-instance.listDeployFrequency'
+          - 'devops-service.application-instance.pageDeployFrequencyDetail'
+          - 'devops-service.devops-gitlab-pipeline.listPipelineFrequency'
+          - 'devops-service.devops-gitlab-pipeline.pagePipeline'
 
 # 要删除的菜单
 "application-market":
