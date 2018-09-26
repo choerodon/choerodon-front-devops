@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
-import { Select, Button, Radio, Steps, Icon } from 'choerodon-ui';
+import { Select, Button, Radio, Steps, Icon, Tooltip } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores, axios } from 'choerodon-front-boot';
 import _ from 'lodash';
 import YAML from 'yamljs';
@@ -21,10 +21,10 @@ class DeploymentAppHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      is_project: !props.match.params.appId,
-      appId: props.match.params.appId || undefined,
-      versionId: props.match.params.verId || undefined,
-      current: props.match.params.appId ? 2 : 1,
+      is_project: !props.match.params.appId && (props.location.search.indexOf('isProject') === -1),
+      appId: props.location.search.split('appId=')[1] ? Number(props.location.search.split('appId=')[1].split('&')[0]) : props.match.params.appId,
+      versionId: props.location.search.split('verId=')[1] ? Number(props.location.search.split('verId=')[1]) : props.match.params.verId,
+      current: props.match.params.appId || (props.location.search.indexOf('isProject') === -1) ? 2 : 1,
       envId: props.location.search.split('envId=')[1] ? Number(props.location.search.split('envId=')[1]) : undefined,
       mode: 'new',
       markers: null,
@@ -43,10 +43,23 @@ class DeploymentAppHome extends Component {
           this.setState({ app: data });
         });
       const versionId = parseInt(this.state.versionId, 10);
-      DeploymentAppStore.loadVersion(this.state.appId, this.state.projectId, true)
-        .then((data) => {
-          this.setState({ versionDto: _.filter(data, v => v.id === versionId)[0] });
-        });
+      if (this.state.is_project) {
+        DeploymentAppStore.loadVersion(this.state.appId, this.state.projectId, '')
+          .then((data) => {
+            this.setState({ versionDto: _.filter(data, v => v.id === versionId)[0] });
+          });
+      } else if (this.props.location.search.split('verId=')[1]) {
+        DeploymentAppStore.loadVersion(this.state.appId, this.state.projectId, true)
+          .then((data) => {
+            this.setState({ versionDto: _.filter(data, v => v.id === versionId)[0] });
+          });
+        this.setState({ versionId: undefined });
+      } else {
+        DeploymentAppStore.loadVersion(this.state.appId, this.state.projectId, true)
+          .then((data) => {
+            this.setState({ versionDto: _.filter(data, v => v.id === versionId)[0] });
+          });
+      }
     } else {
       DeploymentAppStore.setVersions([]);
     }
@@ -135,7 +148,6 @@ class DeploymentAppHome extends Component {
           is_project: false,
           versionId: undefined,
           versionDto: null,
-          // versionId: this.props.match.params.verId
         });
       }
     } else {
@@ -340,7 +352,7 @@ class DeploymentAppHome extends Component {
           </div>
           <div className="deploy-text">
             {this.state.app && <div className="section-text-margin">
-              <span className={`icon ${this.state.is_project ? 'icon-project' : 'icon-apps'} section-text-icon`} />
+              <Tooltip title={<FormattedMessage id={this.state.is_project ? 'project' : 'market'} />}><span className={`icon ${this.state.is_project ? 'icon-project' : 'icon-apps'} section-text-icon`} /></Tooltip>
               <span className="section-text">{this.state.app.name}({this.state.app.code})</span>
             </div>}
             <Permission service={['devops-service.application.pageByOptions', 'devops-service.application-market.listAllApp']}>

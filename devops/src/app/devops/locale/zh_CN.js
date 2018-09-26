@@ -117,7 +117,7 @@ const pageDetail = {
 
   // instance
   'ist.title': '项目"{name}"的实例',
-  'ist.description': '实例是一次应用部署生成的应用实体。您可在此用四种视图查看该项目的实例情况及相关应用、环境信息。',
+  'ist.description': '实例是一次应用部署生成的应用实体。您可在此用三种视图查看该项目的实例情况及相关应用、环境信息。',
   'ist.edit.title': '对"{name}"进行修改',
   'ist.edit.description': '对实例配置信息进行修改后重新部署。',
   'ist.upgrade.title': '对"{name}"进行修改',
@@ -127,6 +127,13 @@ const pageDetail = {
   'ist.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
   'ist.detail.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
   'ist.edit.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
+
+  // 部署总览
+  'dpOverview.title': '项目"{name}"的部署总览',
+  'dpOverview.description': '部署总览页面包含了每个环境分组下所有应用在各个环境中的部署情况。您可以通过该界面查看各个应用在各个环境中的部署情况，并能直接在此界面进行应用最新版本的快速部署。',
+  'dpOverview.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
+  'dpOverview.detail.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
+  'dpOverview.edit.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
 
   // appstore
   'appstore.description': '应用市场是应用的集市。您可在此查看已发布至您项目的应用及其详细信息，并选择需要的应用版本进行部署。',
@@ -906,6 +913,11 @@ const zhCN = {
   'report.commit.num': '次数      ',
   'report.app.noselect': '请选择应用',
   'report.app.more': '更多',
+
+  // 部署总览
+  'dpOverview.head': '部署总览',
+  'dpOverview.update': '可升级',
+  'dpOverview.deploy': '快速部署',
 
   ...pageDetail,
 };

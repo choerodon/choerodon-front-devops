@@ -535,7 +535,7 @@ class SingleEnvironment extends Component {
         />
       </div>
       <h2>
-        <FormattedMessage id="ist.title" />
+        <FormattedMessage id="ist.head" />
       </h2>
       <Table
         filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
