@@ -198,7 +198,7 @@ class BranchStore {
    * @param sort
    * @param postData
    */
-  loadBranchData = ({ projectId, page = this.pageInfo.current - 1, size = 10, sort = { field: 'creationDate', order: 'asc' }, postData = { searchParam: {},
+  loadBranchData = ({ projectId, page = 0, size = this.pageInfo.pageSize, sort = { field: 'creationDate', order: 'asc' }, postData = { searchParam: {},
     param: '' } }) => {
     axios.post(`/devops/v1/projects/${projectId}/apps/${this.app}/git/branches?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
       .then((data) => {
@@ -217,7 +217,7 @@ class BranchStore {
    * @param sort
    * @param postData
    */
-  loadBranchList = ({ projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'creationDate', order: 'asc' }, postData = { searchParam: {},
+  loadBranchList = ({ projectId, page = 0, size = this.pageInfo.pageSize, sort = { field: 'creationDate', order: 'asc' }, postData = { searchParam: {},
     param: '' } }) => {
     if (this.app) {
       this.changeLoading(true);

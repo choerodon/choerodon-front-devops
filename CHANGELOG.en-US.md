@@ -1,6 +1,32 @@
 # Changelog
 All notable changes to choerodon-front-devops will be documented in this file.
 
+## [0.10.0] - 2018-09-30
+### Added
+- Support for using shell commands to manipulate pods for debugging
+- Added certificates to determine the ownership and time limit of the registrant for the domain.
+- DevOps reports make it easy to demonstrate code submission, application build and application deployment visually and clearly in the current project.
+- The deployment overview module makes it easy to view the deployment of each application in various environments, and can deploy the latest version quickly on this interface.
+- Support for filling out the release notes when creating tags, and support for viewing, editing and modification.
+- Support for Viewing the log in full screen,and the log component supports the Stop Following and Go Top functions.
+- Added environment group and support for viewing environment pipelines by environment group.
+- Container interface can choose environment and application
+
+### Changed
+- Optimize the long link status of container logs
+- Unified status display
+- Optimize related status of network, domain, instance, application deployment.
+- Optimize the loading speed of the Environmental overview
+- Optimize paging, filtering, sorting, and refreshing of tables
+- Optimize front-end features
+
+### Removed
+- Multiple application views in the instance module
+
+### Fixed
+- Cannot operate after deployment timeout fails
+- The replacement instance in the deployment section has not been modified.
+
 ## [0.9.0] - 2018-08-17
 ### Added
 - New Environmental overview module to facilitate the management of the deployment of an environment-related entities

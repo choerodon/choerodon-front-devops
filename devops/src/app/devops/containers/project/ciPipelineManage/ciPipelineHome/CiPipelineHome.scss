@@ -3,6 +3,10 @@
     display: flex;
     align-items: center;
 
+    .c7n-status-link {
+      display: contents;
+    }
+
     .c7n-text-status {
       margin-left: 6px;
     }
