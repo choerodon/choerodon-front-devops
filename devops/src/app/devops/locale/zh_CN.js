@@ -904,6 +904,7 @@ const zhCN = {
   'report.commit.date': '日期：',
   'report.commit.count': '提交次数：',
   'report.commit.num': '次数      ',
+  'report.commit.none': '无提交记录',
   'report.app.noselect': '请选择应用',
   'report.app.more': '更多',
 

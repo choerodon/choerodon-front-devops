@@ -18,6 +18,9 @@
   .c7n-select_200 {
     width: 200px;
     margin-right: 20px;
+    &.margin-more {
+      margin-right: 60px;
+    }
 
     .ant-select-selection,
     .ant-select-selection--single {
@@ -29,6 +32,9 @@
   .c7n-select_400 {
     width: 400px;
     margin-right: 20px;
+    &.margin-more {
+      margin-right: 60px;
+    }
 
     .ant-select-selection__choice {
       padding: 0 4px;

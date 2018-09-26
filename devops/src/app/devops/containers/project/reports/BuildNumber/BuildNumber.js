@@ -559,7 +559,7 @@ class BuildNumber extends Component {
       >
         <ChartSwitch
           history={history}
-          current="buildNumber"
+          current="build-number"
         />
         <Button
           icon="refresh"
