@@ -8,7 +8,6 @@ import _ from 'lodash';
 import SingleApp from '../singleApp';
 import SingleEnv from '../singleEnv';
 import AppInstance from '../appInstance';
-import MutiDeployment from '../mutiDeployment';
 import './DeployHome.scss';
 import '../AppDeploy.scss';
 import '../../../main.scss';
@@ -162,9 +161,6 @@ class DeployHome extends Component {
       if (appNames.length) {
         this.loadAppVer(appNames[0].id, Info);
       }
-    } else if (tabName === 'multiApp') {
-      this.loadEnvCards();
-      this.loadMuti();
     } else if (tabName === 'instance') {
       this.loadIstAlls(0, Info);
     } else if (tabName === 'singleEnv') {
@@ -196,7 +192,6 @@ class DeployHome extends Component {
         className="c7n-region"
         service={[
           'devops-service.application-instance.pageByOptions',
-          'devops-service.application.listAll',
           'devops-service.application.pageByEnvIdAndStatus',
           'devops-service.devops-environment.listByProjectIdAndActive',
           'devops-service.application-version.queryByAppId',
@@ -243,16 +238,8 @@ class DeployHome extends Component {
               >
                 <FormattedMessage id="ist.singleApp" />
               </Button>
-              <Button
-                funcType="flat"
-                className={tabActive === 'multiApp' ? 'c7n-tab-active' : ''}
-                onClick={this.changeTabs.bind(this, 'multiApp', {})}
-              >
-                <FormattedMessage id="ist.multiApp" />
-              </Button>
             </ButtonGroup>
           </div>
-          {tabActive === 'multiApp' && <MutiDeployment key="multiApp" store={AppDeploymentStore} />}
           {tabActive === 'singleApp' && <SingleApp key="singleApp" store={AppDeploymentStore} />}
           {tabActive === 'singleEnv' && <SingleEnv key="singleEnv" store={AppDeploymentStore} />}
           {tabActive === 'instance' && <AppInstance key="instance" store={AppDeploymentStore} />}

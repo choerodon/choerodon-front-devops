@@ -421,6 +421,15 @@ table {
   margin-right: 5px;
 }
 
+.c7n-ist-status_update {
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  display: inline-block;
+  background: #ffb100;
+  flex-shrink: 0;
+}
+
 /* 修改UI组件默认样式 */
 .is-required {
   .ant-select-disabled {

@@ -19,6 +19,7 @@
 # 部署流水线
 "deployment-pipeline": "部署流水线"
 "deployment-pipeline.environment-pipeline": "环境流水线"
+"deployment-pipeline.deployment-overview": "部署总览"
 "deployment-pipeline.application-deployment": "应用部署"
 "deployment-pipeline.instance": "实例"
 "deployment-pipeline.environment-overview": "环境总览"

@@ -176,16 +176,23 @@
           - 'devops-service.devops-env-group.update'
           - 'devops-service.devops-env-group.checkName'
           - 'devops-service.devops-env-group.delete'
+    - "deployment-overview":
+        icon: Operation-monitoring
+        Routes: /devops/deploy-overview
+        sort: 3
+        permission:
+          - 'devops-service.application.listAll'
+          - 'devops-service.application-instance.deploy'
     - "application-deployment":
         icon: jsfiddle
         Routes: /devops/deployment-app
-        sort: 3
+        sort: 4
         permission:
           - 'devops-service.application-instance.deploy'
     - "instance":
         icon: instance_outline
         Routes: /devops/instance
-        sort: 4
+        sort: 5
         permission:
           - 'devops-service.application-instance.listByAppId'
           - 'devops-service.application-instance.listByAppInstanceId'
@@ -205,7 +212,7 @@
     - "service":
         icon: router
         Routes: /devops/service
-        sort: 5
+        sort: 6
         permission:
           - 'devops-service.devops-service.create'
           - 'devops-service.devops-service.checkName'
@@ -216,7 +223,7 @@
     - "ingress":
         icon: language
         Routes: /devops/ingress
-        sort: 6
+        sort: 7
         permission:
           - 'devops-service.devops-ingress.pageByOptions'
           - 'devops-service.devops-ingress.queryDomainId'
@@ -225,7 +232,7 @@
     - "container":
         icon: kubernetes
         Routes: /devops/container
-        sort: 7
+        sort: 8
         permission:
           - 'devops-service.devops-env-pod-container.queryLogByPod'
           - 'devops-service.devops-env-pod-container.handleShellByPod'
@@ -233,7 +240,7 @@
     - "certificate":
         icon: class
         Routes: /devops/certificate
-        sort: 8
+        sort: 9
         permission:
           - 'devops-service.devops-environment.listByProjectIdAndActive'
           - 'devops-service.certification.listByOptions'
