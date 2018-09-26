@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import { Button, Steps, Tabs, Tooltip, Icon } from 'choerodon-ui';
-import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { Content, Header, Page, stores } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import CodeMirror from 'react-codemirror';
-import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './Deploydetail.scss';
@@ -122,6 +121,8 @@ class DeploymentDetail extends Component {
   changeStage =(index) => {
     const { DeployDetailStore, intl } = this.props;
     const data = DeployDetailStore.getStage;
+    const editor = this.editorLog.getCodeMirror();
+    editor.setValue(data[index].log || intl.formatMessage({ id: 'ist.nolog' }));
     this.setState({ current: index + 1, log: data[index].log || intl.formatMessage({ id: 'ist.nolog' }) });
   };
 
@@ -138,7 +139,7 @@ class DeploymentDetail extends Component {
   render() {
     const { name: projectName, organizationId, id: projectId, type } = AppState.currentMenuType;
     const { DeployDetailStore, intl } = this.props;
-    const { expand, log, overview } = this.state;
+    const { expand, log, overview, current } = this.state;
     const valueStyle = classnames({
       'c7n-deployDetail-show': expand,
       'c7n-deployDetail-hidden': !expand,
@@ -165,7 +166,7 @@ class DeploymentDetail extends Component {
     if (stageData.length) {
       stageData.map((step, index) => {
         const title = (<div>
-          <div className={`${index}-stage-title stage-title-text`}>{step.stageName}</div>
+          <div className={`${index}-stage-title stage-title-text ${(index + 1) !== current ? 'stage-title-text-grey' : ''}`}>{step.stageName}</div>
           {step.stageTime && <span className="c7n-stage-time">{intl.formatMessage({ id: 'ist.time' })}:{this.getTime(step.stageTime)}</span>}
         </div>);
         dom.push(<Step
@@ -179,7 +180,6 @@ class DeploymentDetail extends Component {
         return dom;
       });
     }
-    const a = DeployDetailStore.getValue;
     const options = {
       theme: 'neat',
       mode: 'yaml',
@@ -192,11 +192,7 @@ class DeploymentDetail extends Component {
       readOnly: true,
       lineNumbers: true,
     };
-    const Logger = () => (<CodeMirror
-      className="c7n-deployDetail-pre1"
-      value={logValues}
-      options={logOptions}
-    />);
+
     return (
       <Page
         className="c7n-region c7n-deployDetail-wrapper"
@@ -215,8 +211,8 @@ class DeploymentDetail extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        { DeployDetailStore.isLoading ? <LoadingBar display /> : <Content code="ist.detail" value={{ projectName }} className="page-content">
-          <Tabs
+        <Content code="ist.detail" value={{ projectName }} className="page-content">
+          {DeployDetailStore.isLoading ? <LoadingBar display /> : <Tabs
             className="c7n-deployDetail-tab"
             defaultActiveKey={this.state.status === 'running' ? '1' : '2'}
           >
@@ -375,12 +371,17 @@ class DeploymentDetail extends Component {
                 <Steps current={this.state.current} className="c7n-deployDetail-steps">
                   {dom}
                 </Steps>
-                <Logger />
+                <CodeMirror
+                  className="c7n-deployDetail-pre1"
+                  value={logValues}
+                  options={logOptions}
+                  ref={(editor) => { this.editorLog = editor; }}
+                />
               </div>
               }
             </TabPane>
-          </Tabs>
-        </Content>}
+          </Tabs>}
+        </Content>
       </Page>);
   }
 }

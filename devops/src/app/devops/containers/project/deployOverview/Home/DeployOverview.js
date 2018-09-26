@@ -23,6 +23,11 @@ class DeployOverview extends Component {
     this.loadEnvCards();
   }
 
+  componentWillUnmount() {
+    const { AppDeploymentStore } = this.props;
+    AppDeploymentStore.setMutiData([]);
+  }
+
   /**
    * 刷新函数
    */

@@ -24,7 +24,7 @@ class DeploymentAppHome extends Component {
       is_project: !props.match.params.appId && (props.location.search.indexOf('isProject') === -1),
       appId: props.location.search.split('appId=')[1] ? Number(props.location.search.split('appId=')[1].split('&')[0]) : props.match.params.appId,
       versionId: props.location.search.split('verId=')[1] ? Number(props.location.search.split('verId=')[1]) : props.match.params.verId,
-      current: props.match.params.appId || (props.location.search.indexOf('isProject') === -1) ? 2 : 1,
+      current: props.match.params.appId || (props.location.search.indexOf('isProject') === -1 && props.location.search.split('appId=')[1]) ? 2 : 1,
       envId: props.location.search.split('envId=')[1] ? Number(props.location.search.split('envId=')[1]) : undefined,
       mode: 'new',
       markers: null,
