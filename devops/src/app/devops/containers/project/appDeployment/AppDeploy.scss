@@ -32,7 +32,12 @@
 .c7n-icon-publish {
   font-size: 16px;
   vertical-align: sub;
-  margin-right: 8px;
+  margin-right: 2px;
+
+  & + div {
+    display: inline-block;
+    vertical-align: middle;
+  }
 }
 
 .c7n-deploy-circle-only {
@@ -57,10 +62,10 @@
   text-align: left;
   display: flex;
   align-items: center;
-  width: 200px;
+  width: 206px;
   height: 28px;
   background: #fff;
-  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.12), 0 2px 2px -1px rgba(0, 0, 0, 0.12);
   border-radius: 2px;
   padding: 0 8px;
 
@@ -76,11 +81,64 @@
     width: 16px;
     height: 16px;
     align-items: center;
-    margin-right: 8px;
+    margin-right: 4px;
 
     div {
       transform: scale(0.8);
     }
+  }
+
+  button {
+    flex-shrink: 0;
+  }
+
+  button + div {
+    width: 100%;
+  }
+}
+
+.c7n-deploy-last {
+  align-items: center;
+  display: flex;
+
+  .ant-btn {
+    font-size: 18px;
+    line-height: 22px;
+    margin-left: 8px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.last_177 {
+  width: 177px;
+
+  div {
+    width: 100%;
+  }
+}
+
+.c7n-multi-table {
+  .ant-table-fixed-left {
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      padding: 5px 12px !important;
+    }
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    vertical-align: baseline;
+    padding: 5px 12px;
+  }
+
+  .ant-table-thead > tr > th:last-child,
+  .ant-table-tbody > tr > td:last-child {
+    padding: 0;
+  }
+
+  tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.03);
   }
 }
 
@@ -427,8 +485,12 @@
 }
 
 .c7n-deploy-muti-row {
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   display: flex;
+
+  &:last-child {
+    margin: 0;
+  }
 }
 
 .c7n-app-name {

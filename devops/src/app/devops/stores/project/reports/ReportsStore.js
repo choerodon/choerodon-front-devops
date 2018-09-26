@@ -43,6 +43,26 @@ class ReportsStore {
 
   @observable commitsRecord = [];
 
+  @observable commitLoading = false;
+
+  @observable historyLoad = false;
+
+  @action setHistoryLoad(flag) {
+    this.historyLoad = flag;
+  }
+
+  @computed get getHistoryLoad() {
+    return this.historyLoad;
+  }
+
+  @action setCommitLoading(flag) {
+    this.commitLoading = flag;
+  }
+
+  @computed get getCommitLoading() {
+    return this.commitLoading;
+  }
+
   @action setCommits(data) {
     this.commits = data;
   }
@@ -297,21 +317,52 @@ class ReportsStore {
       });
   }
 
-  loadCommits = (projectId, apps = null) => axios.post(`devops/v1/projects/${projectId}/apps/commits?app_ids=${apps}`)
-    .then((data) => {
-      const res = handleProptError(data);
-      if (res) {
-        this.setCommits(res);
-      }
-    });
+  /**
+   * 代码提交情况
+   * @param projectId
+   * @param start 开始时间
+   * @param end 结束时间
+   * @param apps 应用，字符串，逗号分隔
+   */
+  loadCommits = (projectId, start = null, end = null, apps = null) => {
+    this.setCommitLoading(true);
+    axios.post(`devops/v1/projects/${projectId}/apps/commits?app_ids=${apps}&start_date=${start}&end_date=${end}`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setCommits(res);
+        }
+        this.setCommitLoading(false);
+      })
+      .catch((err) => {
+        this.setCommitLoading(false);
+        Choerodon.handleResponseError(err);
+      });
+  };
 
-  loadCommitsRecord = (projectId, apps = null, page = 0) => axios.post(`devops/v1/projects/${projectId}/apps/commits/record?app_ids=${apps}&page=${page}`)
-    .then((data) => {
-      const res = handleProptError(data);
-      if (res) {
-        this.setCommitsRecord(res);
-      }
-    });
+  /**
+   * 提交历史纪录
+   * @param projectId
+   * @param start
+   * @param end
+   * @param apps
+   * @param page
+   */
+  loadCommitsRecord = (projectId, start = null, end = null, apps = null, page = 0) => {
+    this.setHistoryLoad(true);
+    axios.post(`devops/v1/projects/${projectId}/apps/commits/record?app_ids=${apps}&page=${page}&size=5&start_date=${start}&end_date=${end}`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setCommitsRecord(res);
+        }
+        this.setHistoryLoad(false);
+      })
+      .catch((err) => {
+        this.setHistoryLoad(false);
+        Choerodon.handleResponseError(err);
+      });
+  };
 
   handleData = (data) => {
     this.setAllData(data.content);

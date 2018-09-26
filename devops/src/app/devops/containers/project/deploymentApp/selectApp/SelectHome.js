@@ -6,7 +6,6 @@ import {
   Button, Tabs, Icon, Modal, Input, Table, Pagination,
 } from 'choerodon-ui';
 import { stores, Content } from 'choerodon-front-boot';
-import _ from 'lodash';
 import Loadingbar from '../../../../components/loadingBar';
 import '../../../main.scss';
 import './SelectApp.scss';

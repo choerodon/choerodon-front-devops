@@ -180,7 +180,7 @@ class EditNetwork extends Component {
             initIst.push(istId);
             initIstOption.push(
               <Option key={istId} value={istId}>
-                <Tooltip title={<FormattedMessage id={instanceStatus || ''} />} placement="right">{code}</Tooltip>
+                <Tooltip title={instanceStatus ? <FormattedMessage id={instanceStatus} /> : ''} placement="right">{code}</Tooltip>
               </Option>,
             );
             if (instanceStatus !== 'running') {

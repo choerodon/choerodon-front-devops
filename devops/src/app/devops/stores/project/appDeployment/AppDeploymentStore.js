@@ -315,7 +315,7 @@ class AppDeploymentStore {
     }
   });
 
-  loadMutiData = projectId => axios.get(`devops/v1/projects/${projectId}/app_instances/all`).then((data) => {
+  loadMultiData = projectId => axios.get(`devops/v1/projects/${projectId}/app_instances/all`).then((data) => {
     this.changeLoading(true);
     if (data && data.failed) {
       Choerodon.prompt(data.message);

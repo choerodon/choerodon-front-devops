@@ -721,7 +721,7 @@ class SingleApp extends Component {
             return (<div className="c7n-deploy-wrap_gray">
               <div className="c7n-deploy-single-wrap">
                 <h2 className="c7n-space-first">
-                  <FormattedMessage id="ist.title" />
+                  <FormattedMessage id="ist.head" />
                 </h2>
                 <Table
                   filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}

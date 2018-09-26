@@ -363,7 +363,14 @@ class DeployTimes extends Component {
 
     const appDom = this.app.length ? _.map(this.app, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
 
-    return (<Page className="c7n-region">
+    return (<Page
+      className="c7n-region"
+      service={[
+        'devops-service.application.listByActive',
+        'devops-service.application-instance.listDeployFrequency',
+        'devops-service.application-instance.pageDeployFrequencyDetail',
+      ]}
+    >
       <Header
         title={formatMessage({ id: 'report.deploy-times.head' })}
         backPath={`/devops/reports?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`}
@@ -399,7 +406,7 @@ class DeployTimes extends Component {
             <Select
               notFoundContent={formatMessage({ id: 'envoverview.unlist' })}
               value={appDom ? this.appId : null}
-              className="c7n-select_200"
+              className="c7n-select_200 margin-more"
               label={formatMessage({ id: 'deploy.appName' })}
               onChange={this.handleAppSelect}
               optionFilterProp="children"

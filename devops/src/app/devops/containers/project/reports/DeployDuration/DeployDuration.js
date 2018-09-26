@@ -342,7 +342,15 @@ class DeployDuration extends Component {
 
     const appDom = this.app.length ? _.map(this.app, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
 
-    return (<Page className="c7n-region">
+    return (<Page
+      className="c7n-region"
+      service={[
+        'devops-service.application.listByActive',
+        'devops-service.application-instance.listDeployTime',
+        'devops-service.application-instance.pageDeployTimeDetail',
+        'devops-service.devops-environment.listByProjectIdAndActive',
+      ]}
+    >
       <Header
         title={formatMessage({ id: 'report.deploy-duration.head' })}
         backPath={`/devops/reports?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`}
@@ -377,7 +385,7 @@ class DeployDuration extends Component {
               notFoundContent={formatMessage({ id: 'envoverview.unlist' })}
               value={this.appIds.length && this.appIds.slice()}
               label={formatMessage({ id: 'deploy.appName' })}
-              className="c7n-select_400"
+              className="c7n-select_400 margin-more"
               mode="multiple"
               maxTagCount={3}
               onChange={this.handleAppSelect}

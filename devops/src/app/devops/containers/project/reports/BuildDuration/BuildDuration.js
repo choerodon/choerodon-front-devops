@@ -232,14 +232,21 @@ class BuildDuration extends Component {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const { apps, appId, echartsLoading, loading, pageInfo, allData } = ReportsStore;
-    return (<Page className="c7n-region c7n-ciPipeline">
+    return (<Page
+      className="c7n-region c7n-ciPipeline"
+      service={[
+        'devops-service.application.listByActive',
+        'devops-service.devops-gitlab-pipeline.listPipelineTime',
+        'devops-service.devops-gitlab-pipeline.pagePipeline',
+      ]}
+    >
       <Header
         title={formatMessage({ id: 'report.build-duration.head' })}
         backPath={`/devops/reports?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`}
       >
         <ChartSwitch
           history={history}
-          current="buildDuration"
+          current="build-duration"
         />
         <Button
           icon="refresh"

@@ -19,6 +19,7 @@
 # 部署流水线
 "deployment-pipeline": "Deployment Pipeline"
 "deployment-pipeline.environment-pipeline": "Environment Pipeline"
+"deployment-pipeline.deployment-overview": "Deployment Overview"
 "deployment-pipeline.application-deployment": "Application Deployment"
 "deployment-pipeline.instance": "Instance"
 "deployment-pipeline.environment-overview": "Environment Overview"
@@ -48,4 +49,3 @@
 "devops.container": "Container"
 "devops.app-release": "App Release"
 "devops.appstore": "App Store"
-"application-management.reports": "Reports"

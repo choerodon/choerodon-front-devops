@@ -75,3 +75,14 @@ export function getTimeLeft(nowTime, endTime) {
   // return `剩余 ${days} 天 ${hours} 小时`;
   return `剩余 ${days} 天`;
 }
+
+/**
+ * 返回今天时间的字符串 "YYYY-MM-DD"
+ */
+export function getToDayStr() {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return [year, month, day].map(padZero).join('-');
+}
