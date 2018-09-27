@@ -1,4 +1,3 @@
-
 // zh_CN.js
 // 文档地址前缀
 const docServer = 'http://v0-9.choerodon.io/zh/docs';
