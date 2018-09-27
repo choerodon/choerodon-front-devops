@@ -23,6 +23,7 @@ class BuildNumber extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      dateType: 'seven',
     };
   }
 
@@ -204,8 +205,8 @@ class BuildNumber extends Component {
             width: 1,
           },
         },
-        min: Math.max(yAxis.pipelineFrequency) > 3 ? null : 0,
-        max: Math.max(yAxis.pipelineFrequency) > 3 ? null : 4,
+        min: (yAxis.pipelineFrequency && yAxis.pipelineFrequency.length) ? null : 0,
+        max: (yAxis.pipelineFrequency && yAxis.pipelineFrequency.length) ? null : 4,
       },
       series: [
         {
@@ -215,8 +216,9 @@ class BuildNumber extends Component {
           itemStyle: {
             color: '#00BFA5',
             emphasis: {
-              shadowColor: 'rgba(0,191,165,0.20)',
-              shadowBlur: 10,
+              borderColor: 'rgba(0,191,165,0.30)',
+              borderWidth: 10,
+              barBorderRadius: [5, 5, 0, 0],
             },
           },
           stack: 'total',
@@ -229,8 +231,9 @@ class BuildNumber extends Component {
           itemStyle: {
             color: '#FFB100',
             emphasis: {
-              shadowColor: 'rgba(255,177,0,0.20)',
-              shadowBlur: 10,
+              borderColor: 'rgba(255,177,0,0.30)',
+              borderWidth: 10,
+              barBorderRadius: [5, 5, 0, 0],
             },
           },
           stack: 'total',
@@ -260,10 +263,15 @@ class BuildNumber extends Component {
     }
   };
 
+  handleDateChoose = (type) => {
+    this.setState({ dateType: type });
+  };
+
   render() {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
+    const { dateType } = this.state;
     const { id, name, type, organizationId } = AppState.currentMenuType;
-    const { apps, appId, echartsLoading, loading, pageInfo, allData } = ReportsStore;
+    const { apps, appId, echartsLoading, loading, pageInfo, allData, startDate, endDate } = ReportsStore;
     return (<Page
       className="c7n-region c7n-ciPipeline"
       service={[
@@ -311,7 +319,14 @@ class BuildNumber extends Component {
                   </Option>))
               }
             </Select>
-            <TimePicker startTime={ReportsStore.getStartTime} endTime={ReportsStore.getEndTime} func={this.loadCharts} store={ReportsStore} />
+            <TimePicker
+              startTime={ReportsStore.getStartDate}
+              endTime={ReportsStore.getEndDate}
+              func={this.loadCharts}
+              type={dateType}
+              onChange={this.handleDateChoose}
+              store={ReportsStore}
+            />
           </div>
           <Spin spinning={echartsLoading}>
             <ReactEcharts className="c7n-buildNumber-echarts" option={this.getOption()} />

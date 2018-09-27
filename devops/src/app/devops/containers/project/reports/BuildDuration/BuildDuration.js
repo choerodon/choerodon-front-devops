@@ -22,6 +22,7 @@ class BuildDuration extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      dateType: 'seven',
     };
   }
 
@@ -90,7 +91,7 @@ class BuildDuration extends Component {
       tooltip: {
         trigger: 'axis',
         axisPointer: {
-          type: 'shadow',
+          type: 'none',
         },
         backgroundColor: '#fff',
         textStyle: {
@@ -187,8 +188,8 @@ class BuildDuration extends Component {
             width: 1,
           },
         },
-        min: Math.max(pipelineTime) > 3 ? null : 0,
-        max: Math.max(pipelineTime) > 3 ? null : 4,
+        min: (pipelineTime && pipelineTime.length) ? null : 0,
+        max: (pipelineTime && pipelineTime.length) ? null : 4,
       },
       series: [
         {
@@ -197,6 +198,11 @@ class BuildDuration extends Component {
           itemStyle: {
             color: 'rgba(77, 144, 254, 0.60)',
             borderColor: '#4D90FE',
+            emphasis: {
+              borderColor: 'rgba(70,119,221,0.30)',
+              borderWidth: 10,
+              barBorderRadius: [5, 5, 0, 0],
+            },
           },
           data: pipelineTime,
         },
@@ -229,8 +235,13 @@ class BuildDuration extends Component {
     }
   };
 
+  handleDateChoose = (type) => {
+    this.setState({ dateType: type });
+  };
+
   render() {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
+    const { dateType } = this.state;
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const { apps, appId, echartsLoading, loading, pageInfo, allData } = ReportsStore;
     return (<Page
@@ -280,7 +291,14 @@ class BuildDuration extends Component {
                   </Option>))
               }
             </Select>
-            <TimePicker startTime={ReportsStore.getStartTime} endTime={ReportsStore.getEndTime} func={this.loadCharts} store={ReportsStore} />
+            <TimePicker
+              startTime={ReportsStore.getStartDate}
+              endTime={ReportsStore.getEndDate}
+              func={this.loadCharts}
+              type={dateType}
+              onChange={this.handleDateChoose}
+              store={ReportsStore}
+            />
           </div>
           <Spin spinning={echartsLoading}>
             <ReactEcharts className="c7n-buildDuration-echarts" option={this.getOption()} />
