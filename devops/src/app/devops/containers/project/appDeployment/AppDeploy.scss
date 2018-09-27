@@ -118,6 +118,21 @@
   }
 }
 
+.no-value {
+  .ant-table-scroll {
+    height: 68px;
+  }
+
+  .ant-table-tbody {
+    height: 30px;
+    display: inline-block;
+  }
+
+  .ant-table-placeholder {
+    margin-top: -38px;
+  }
+}
+
 .c7n-multi-table {
   .ant-table-fixed-left {
     .ant-table-thead > tr > th,

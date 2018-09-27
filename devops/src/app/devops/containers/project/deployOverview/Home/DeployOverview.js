@@ -150,7 +150,7 @@ class DeployOverview extends Component {
     });
 
     return <Table
-      className="c7n-multi-table"
+      className={`${!appList.length && 'no-value'} c7n-multi-table`}
       pagination={false}
       filterBar={false}
       loading={AppDeploymentStore.getIsLoading}
