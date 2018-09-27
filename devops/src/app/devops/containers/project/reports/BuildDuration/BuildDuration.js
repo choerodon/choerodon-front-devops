@@ -38,6 +38,8 @@ class BuildDuration extends Component {
     ReportsStore.setEndTime(moment());
     ReportsStore.setAppId(null);
     ReportsStore.setPageInfo({ number: 0, totalElements: 0, size: HEIGHT <= 900 ? 10 : 15 });
+    ReportsStore.setStartDate();
+    ReportsStore.setEndDate();
   }
 
   /**
