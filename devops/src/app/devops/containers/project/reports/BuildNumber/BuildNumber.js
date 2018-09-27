@@ -11,6 +11,7 @@ import './BuildNumber.scss';
 import TimePicker from '../Component/TimePicker';
 import NoChart from '../Component/NoChart';
 import BuildTable from '../BuildTable/BuildTable';
+import { getAxis } from '../../../../utils';
 
 
 const { AppState } = stores;
@@ -84,11 +85,14 @@ class BuildNumber extends Component {
     val[0].value = _.reduce(pipelineFailFrequency, (sum, n) => sum + n, 0);
     val[1].value = _.reduce(pipelineSuccessFrequency, (sum, n) => sum + n, 0);
     val[2].value = _.reduce(pipelineFrequencys, (sum, n) => sum + n, 0);
+    const startTime = ReportsStore.getStartTime;
+    const endTime = ReportsStore.getEndTime;
+    const { xAxis, yAxis } = getAxis(startTime, endTime, createDates, { pipelineFailFrequency, pipelineSuccessFrequency, pipelineFrequencys });
     return {
       tooltip: {
         trigger: 'axis',
         axisPointer: {
-          type: 'shadow',
+          type: 'none',
         },
         backgroundColor: '#fff',
         textStyle: {
@@ -100,7 +104,7 @@ class BuildNumber extends Component {
         extraCssText:
           'box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2); border: 1px solid #ddd; border-radius: 0;',
         formatter(params) {
-          if (params[1] && params[0]) {
+          if (params[1] && params[0] && params[0].value) {
             const total = params[0].value + params[1].value;
             return `<div>
               <div>${formatMessage({ id: 'branch.issue.date' })}：${params[1].name}</div>
@@ -109,12 +113,14 @@ class BuildNumber extends Component {
               <div>${formatMessage({ id: 'report.build-number.build' })}${formatMessage({ id: 'report.build-number.total' })}：${total}</div>
               <div>${formatMessage({ id: 'report.build-number.build' })}${formatMessage({ id: 'report.build-number.success.rate' })}：${((params[0].value / total) * 100).toFixed(2)}%</div>
             <div>`;
-          } else {
+          } else if (params[0].value || (params[1] && params[1].value)) {
+            const pr = params[1] || params[0];
             return `<div>
-              <div>${formatMessage({ id: 'branch.issue.date' })}：${params[0].name}</div>
-              <div><span class="c7n-echarts-tooltip" style="background-color:${params[0].color};"></span>${formatMessage({ id: 'report.build-number.build' })}${params[0].seriesName}：${params[0].value}</div>
+              <div>${formatMessage({ id: 'branch.issue.date' })}：${pr.name}</div>
+              <div><span class="c7n-echarts-tooltip" style="background-color:${pr.color};"></span>${formatMessage({ id: 'report.build-number.build' })}${pr.seriesName}：${pr.value}</div>
             <div>`;
           }
+          return null;
         },
       },
       legend: {
@@ -165,7 +171,7 @@ class BuildNumber extends Component {
             type: 'solid',
           },
         },
-        data: createDates,
+        data: xAxis,
       },
       yAxis: {
         name: `${formatMessage({ id: 'report.build-number.yAxis' })}`,
@@ -198,23 +204,37 @@ class BuildNumber extends Component {
             width: 1,
           },
         },
+        min: Math.max(yAxis.pipelineFrequency) > 3 ? null : 0,
+        max: Math.max(yAxis.pipelineFrequency) > 3 ? null : 4,
       },
       series: [
         {
           name: `${formatMessage({ id: 'report.build-number.success' })}`,
           type: 'bar',
-          color: '#00BFA5',
           barWidth: '40%',
+          itemStyle: {
+            color: '#00BFA5',
+            emphasis: {
+              shadowColor: 'rgba(0,191,165,0.20)',
+              shadowBlur: 10,
+            },
+          },
           stack: 'total',
-          data: pipelineSuccessFrequency,
+          data: yAxis.pipelineSuccessFrequency,
         },
         {
           name: `${formatMessage({ id: 'report.build-number.fail' })}`,
           type: 'bar',
-          color: '#FFB100',
           barWidth: '40%',
+          itemStyle: {
+            color: '#FFB100',
+            emphasis: {
+              shadowColor: 'rgba(255,177,0,0.20)',
+              shadowBlur: 10,
+            },
+          },
           stack: 'total',
-          data: pipelineFailFrequency,
+          data: yAxis.pipelineFailFrequency,
         },
         {
           name: `${formatMessage({ id: 'report.build-number.total' })}`,
