@@ -39,6 +39,8 @@ class BuildNumber extends Component {
     ReportsStore.setEndTime(moment());
     ReportsStore.setAppId(null);
     ReportsStore.setPageInfo({ number: 0, totalElements: 0, size: HEIGHT <= 900 ? 10 : 15 });
+    ReportsStore.setStartDate();
+    ReportsStore.setEndDate();
   }
 
   /**
@@ -271,7 +273,7 @@ class BuildNumber extends Component {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { dateType } = this.state;
     const { id, name, type, organizationId } = AppState.currentMenuType;
-    const { apps, appId, echartsLoading, loading, pageInfo, allData, startDate, endDate } = ReportsStore;
+    const { apps, appId, echartsLoading, loading, pageInfo, allData } = ReportsStore;
     return (<Page
       className="c7n-region c7n-ciPipeline"
       service={[
