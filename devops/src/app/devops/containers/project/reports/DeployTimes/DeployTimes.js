@@ -165,10 +165,10 @@ class DeployTimes extends Component {
     val[2].value = _.reduce(this.allArr, (sum, n) => sum + n, 0);
     const startTime = ReportsStore.getStartTime;
     const endTime = ReportsStore.getEndTime;
-    const successArr = this.successArr.slice();
-    const failArr = this.failArr.slice();
-    const allArr = this.allArr.slice();
-    const { xAxis, yAxis } = getAxis(startTime, endTime, this.dateArr.slice(), { successArr, failArr, allArr });
+    const successArr = this.successArr ? this.successArr.slice() : [];
+    const failArr = this.failArr ? this.failArr.slice() : [];
+    const allArr = this.allArr ? this.allArr.slice() : [];
+    const { xAxis, yAxis } = getAxis(startTime, endTime, this.dateArr ? this.dateArr.slice() : [], { successArr, failArr, allArr });
     return {
       tooltip: {
         trigger: 'axis',
