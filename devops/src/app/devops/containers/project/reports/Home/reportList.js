@@ -4,10 +4,6 @@ export default [
     link: '/devops/reports/submission',
     pic: 'submission',
   }, {
-    key: 'core-quality',
-    link: '/devops/reports/core-quality',
-    pic: 'core-quality',
-  }, {
     key: 'build-number',
     link: '/devops/reports/build-number',
     pic: 'number',
@@ -25,3 +21,9 @@ export default [
     pic: 'deploy-duration',
   },
 ];
+
+// {
+//   key: 'core-quality',
+//     link: '/devops/reports/core-quality',
+//   pic: 'core-quality',
+// },
