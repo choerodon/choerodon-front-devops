@@ -13,6 +13,7 @@ import StatusTags from '../../../../components/StatusTags';
 import NoChart from '../Component/NoChart';
 import ContainerStore from '../../../../stores/project/container';
 import './DeployDuration.scss';
+import { getNear7Day } from '../../../../utils';
 
 configure({ enforceActions: false });
 
@@ -228,7 +229,6 @@ class DeployDuration extends Component {
         type: 'time',
         scale: true,
         boundaryGap: false,
-        // data: this.dateArr.slice(),
         axisLine: {
           lineStyle: {
             color: '#eee',
@@ -243,9 +243,6 @@ class DeployDuration extends Component {
             color: 'rgba(0, 0, 0, 0.65)',
             fontSize: 12,
           },
-          // formatter(value) {
-          //   return value.slice(5, 10).replace('-', '/');
-          // },
         },
       },
       yAxis: {
@@ -276,6 +273,8 @@ class DeployDuration extends Component {
         },
         boundaryGap: false,
         name: formatMessage({ id: 'minTime' }),
+        min: this.seriesArr.length ? null : 0,
+        max: this.seriesArr.length ? null : 4,
         scale: true,
       },
       series: this.seriesArr,
