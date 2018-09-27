@@ -50,12 +50,16 @@ class EditNetwork extends Component {
       initIst: [],
       initIstOption: [],
       deletedInstance: [],
+      network: {},
+      envId: null,
+      envName: null,
     };
     this.portKeys = 1;
     this.targetKeys = 0;
   }
 
   componentDidMount() {
+    this.props.form.resetFields();
     this.loadNetworkById();
   }
 
@@ -83,9 +87,10 @@ class EditNetwork extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const { form, store, netId } = this.props;
+    const { network } = this.state;
     const { id } = AppState.currentMenuType;
     this.setState({ submitting: true });
-    form.validateFieldsAndScroll((err, data) => {
+    form.validateFields((err, data) => {
       if (!err) {
         const {
           name,
@@ -125,7 +130,37 @@ class EditNetwork extends Component {
             }
           });
         }
-        const network = {
+        const {
+          name: oldName,
+          appId: oldAppId,
+          target: {
+            appInstance: oldAppInstance,
+            labels: oldLabel,
+          },
+          envId: oldEnvId,
+          config: {
+            externalIps,
+            ports: oldPorts,
+          },
+          type,
+        } = network;
+        const oldIst = _.map(oldAppInstance, item => _.toNumber(item.id));
+        const oldPortId = _.map(oldPorts, item => ({
+          nodePort: item.nodePort ? _.toNumber(item.nodePort) : null,
+          port: item.port ? _.toNumber(item.port) : null,
+          targetPort: item.targetPort ? _.toNumber(item.targetPort) : null,
+        }));
+        const oldNetwork = {
+          name: oldName,
+          appId: oldAppId || null,
+          appInstance: oldIst.length ? oldIst : null,
+          envId: oldEnvId,
+          externalIp: externalIps,
+          ports: oldPortId,
+          label: oldLabel || null,
+          type,
+        };
+        const newNetwork = {
           name,
           appId: appId || null,
           appInstance: appIst,
@@ -135,15 +170,20 @@ class EditNetwork extends Component {
           label: !_.isEmpty(label) ? label : null,
           type: config,
         };
-        store.updateData(id, netId, network).then((res) => {
+        if (_.isEqual(oldNetwork, newNetwork)) {
           this.setState({ submitting: false });
-          if (res) {
-            this.handleClose();
-          }
-        }).catch((error) => {
-          this.setState({ submitting: false });
-          Choerodon.handleResponseError(error);
-        });
+          this.handleClose();
+        } else {
+          store.updateData(id, netId, newNetwork).then((res) => {
+            this.setState({ submitting: false });
+            if (res) {
+              this.handleClose();
+            }
+          }).catch((error) => {
+            this.setState({ submitting: false });
+            Choerodon.handleResponseError(error);
+          });
+        }
       } else {
         this.setState({ submitting: false });
       }
@@ -151,21 +191,18 @@ class EditNetwork extends Component {
   };
 
   handleClose = (isload = true) => {
-    const { onClose, form, store } = this.props;
+    const { onClose, store } = this.props;
     store.setSingleData([]);
-    form.resetFields();
     onClose(isload);
   };
 
   loadNetworkById = () => {
-    const { store, netId } = this.props;
+    const { store, netId, form: { setFieldsValue } } = this.props;
     const { id } = AppState.currentMenuType;
     store.loadEnv(id);
     store.loadDataById(id, netId).then((data) => {
       if (data) {
-        const {
-          name, type, appId, target, config,
-        } = data;
+        const { name, type, appId, target, config, envId, envName } = data;
         const targetKeys = (appId && target && target.appInstance.length) || target.labels === null ? 'instance' : 'param';
         let appInstance = [];
         let labels = {};
@@ -188,6 +225,7 @@ class EditNetwork extends Component {
             }
           });
         }
+        setFieldsValue({ envId: envId || [] });
         this.setState({
           initApp: appId,
           labels: initIst.length ? {} : labels,
@@ -198,6 +236,9 @@ class EditNetwork extends Component {
           initIst,
           initIstOption,
           deletedInstance,
+          network: data,
+          envId,
+          envName,
         });
       }
     });
@@ -211,10 +252,15 @@ class EditNetwork extends Component {
   handleTypeChange = (e, key) => {
     const {
       form: {
-        getFieldValue, getFieldDecorator, resetFields, setFieldsValue,
+        getFieldValue,
+        getFieldDecorator,
+        resetFields,
+        setFieldsValue,
       },
       store,
     } = this.props;
+    const { envId } = this.state;
+    const { id } = AppState.currentMenuType;
     const keys = getFieldValue(key);
     if (key === 'portKeys') {
       // 清除多组port映射
@@ -233,7 +279,8 @@ class EditNetwork extends Component {
       setFieldsValue({
         [key]: [0],
       });
-      this.setState({ initApp: '' });
+      this.setState({ initApp: '', initIstOption: [], initIst: [], deletedInstance: [] });
+      resetFields(['appInstance']);
       store.setIst([]);
     } else {
       this.targetKeys = 0;
@@ -243,6 +290,10 @@ class EditNetwork extends Component {
         [key]: [],
       });
       this.setState({ labels: {} });
+      const app = store.getApp;
+      if (!(app && app.length)) {
+        store.loadApp(id, Number(envId));
+      }
     }
     this.setState({ [key]: e.target.value });
   };
@@ -549,11 +600,13 @@ class EditNetwork extends Component {
       initIstOption,
       initApp,
       labels,
-      config, 
+      config,
+      envId,
+      envName,
     } = this.state;
     const { name: menuName, id: projectId } = AppState.currentMenuType;
-    const { getFieldDecorator, getFieldValue, setFieldsValue } = form;
-    const { envId, envName } = store.getSingleData;
+    const { getFieldDecorator, getFieldValue } = form;
+    // const { envId, envName } = store.getSingleData;
     const localApp = _.filter(store.getApp, item => item.projectId === Number(projectId));
     const storeApp = _.filter(store.getApp, item => item.projectId !== Number(projectId));
     let portWidthSingle = '240';
@@ -657,17 +710,15 @@ class EditNetwork extends Component {
 
     // 生成多组 target
     const initLabels = [];
-    let initKeys = [];
-    let initValues = [];
-    if (!_.isEmpty(labels) && this.targetKeys === 0) {
-      initKeys = _.keys(labels);
-      initValues = _.values(labels);
-      _.forEach(initKeys, (item, index) => initLabels.push(index));
+    const initKeys = _.keys(labels);
+    const initValues = _.values(labels);
+    _.forEach(initKeys, (item, index) => initLabels.push(index));
+    if (this.targetKeys === 0) {
       this.targetKeys = initKeys.length;
     }
     getFieldDecorator('targetKeys', { initialValue: initLabels });
     const targetKeys = getFieldValue('targetKeys');
-    const targetItems = _.map(targetKeys, (k, index) => (
+    const targetItems = _.map(targetKeys, k => (
       <div key={`target-${k}`} className="network-port-wrap">
         <FormItem
           className={`c7n-select_${targetKeys.length > 1 ? 'entryS' : 'entryL'} network-panel-form network-port-form`}
@@ -718,7 +769,7 @@ class EditNetwork extends Component {
     const ist = store.getIst;
     // 将默认的选项过滤
     const istOption = _.map(_.filter(ist, item => !_.includes(initIst, item.id)), (item) => {
-      const { id, code, instanceStatus } = item;
+      const { id, code } = item;
       return (
         <Option key={id} value={id}>
           <Tooltip title={<FormattedMessage id="running" />} placement="right">{code}</Tooltip>

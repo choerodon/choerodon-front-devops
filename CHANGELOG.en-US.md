@@ -3,29 +3,28 @@ All notable changes to choerodon-front-devops will be documented in this file.
 
 ## [0.10.0] - 2018-09-30
 ### Added
-- Support for using shell commands to manipulate pods for debugging
-- Added certificates to determine the ownership and time limit of the registrant for the domain.
-- DevOps reports make it easy to demonstrate code submission, application build and application deployment visually and clearly in the current project.
-- The deployment overview module makes it easy to view the deployment of each application in various environments, and can deploy the latest version quickly on this interface.
-- Support for filling out the release notes when creating tags, and support for viewing, editing and modification.
-- Support for Viewing the log in full screen,and the log component supports the Stop Following and Go Top functions.
-- Added environment group and support for viewing environment pipelines by environment group.
-- Container interface can choose environment and application
+- Added environment group and support to view environment pipeline in environment group.
+- Added certificate management feature for the certificate application and management.
+- Added DevOps report forms, which allow to check code commits, application builds and application deployments.
+- Added deployment overview to view all application deployment in every environment and make it easier to deploy the latest version of the application on this page.
+- Support for using shell commands to control the pod for debugging.
+- Allow to write down release notes while creating tags. Moreover, it is editable and amendable.
+- Added 'Stop Following' and 'Go Top' while viewing container logs and support full screen view of the container logs.
+- Added the droplists to selecte environment and application in the  container page and to  selecte application in the application version page.
 
 ### Changed
-- Optimize the long link status of container logs
-- Unified status display
-- Optimize related status of network, domain, instance, application deployment.
-- Optimize the loading speed of the Environmental overview
-- Optimize paging, filtering, sorting, and refreshing of tables
-- Optimize front-end features
+- Optimized the long link status of container logs.
+- Unified all the status display.
+- Optimized the status of network, ingress, instance and application deployment.
+- Optimized the loading speed of the environmental overview.
+- Optimized paging, filtering, sorting, and refreshing of the tables.
 
 ### Removed
-- Multiple application views in the instance module
+- Removed the 'multiple application view' from the instance management.
 
 ### Fixed
-- Cannot operate after deployment timeout fails
-- The replacement instance in the deployment section has not been modified.
+- Fixed the opration problem after the deployment timeout.
+- Fixed the problem that  instance replacement was not judged if it was modified.
 
 ## [0.9.0] - 2018-08-17
 ### Added

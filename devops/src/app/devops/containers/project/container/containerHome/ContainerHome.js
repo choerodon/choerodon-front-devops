@@ -322,7 +322,7 @@ class ContainerHome extends Component {
       filterMultiple: false,
       filteredValue: filters.ip || [],
     }, {
-      width: 58,
+      width: 68,
       title: <FormattedMessage id="container.usable" />,
       dataIndex: 'ready',
       key: 'ready',
@@ -339,7 +339,7 @@ class ContainerHome extends Component {
         {record.ready ? <i className="icon icon-done" /> : <i className="icon icon-close" />}
       </div>),
     }, {
-      width: 93,
+      width: 103,
       title: <FormattedMessage id="container.createTime" />,
       dataIndex: 'creationDate',
       key: 'creationDate',
