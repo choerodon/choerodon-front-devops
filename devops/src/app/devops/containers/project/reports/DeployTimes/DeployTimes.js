@@ -13,6 +13,7 @@ import TimePicker from '../Component/TimePicker';
 import NoChart from '../Component/NoChart';
 import ContainerStore from '../../../../stores/project/container';
 import '../DeployDuration/DeployDuration.scss';
+import { getAxis } from '../../../../utils';
 
 configure({ enforceActions: false });
 
@@ -77,6 +78,8 @@ class DeployTimes extends Component {
     ReportsStore.setAllData([]);
     ReportsStore.setStartTime(moment().subtract(6, 'days'));
     ReportsStore.setEndTime(moment());
+    ReportsStore.setStartDate(null);
+    ReportsStore.setEndDate(null);
     ReportsStore.setPageInfo({ number: 0, totalElements: 0, size: HEIGHT <= 900 ? 10 : 15 });
   }
 
@@ -153,16 +156,22 @@ class DeployTimes extends Component {
    * @returns {*}
    */
   getOption() {
-    const { intl: { formatMessage } } = this.props;
+    const { intl: { formatMessage }, ReportsStore } = this.props;
     const val = [{ name: `${formatMessage({ id: 'report.build-number.fail' })}` }, { name: `${formatMessage({ id: 'report.build-number.success' })}` }, { name: `${formatMessage({ id: 'report.build-number.total' })}` }];
     val[0].value = _.reduce(this.failArr, (sum, n) => sum + n, 0);
     val[1].value = _.reduce(this.successArr, (sum, n) => sum + n, 0);
     val[2].value = _.reduce(this.allArr, (sum, n) => sum + n, 0);
+    const startTime = ReportsStore.getStartTime;
+    const endTime = ReportsStore.getEndTime;
+    const successArr = this.successArr.slice();
+    const failArr = this.failArr.slice();
+    const allArr = this.allArr.slice();
+    const { xAxis, yAxis } = getAxis(startTime, endTime, this.dateArr.slice(), { successArr, failArr, allArr });
     return {
       tooltip: {
         trigger: 'axis',
         axisPointer: {
-          type: 'shadow',
+          type: 'none',
         },
         backgroundColor: '#fff',
         textStyle: {
@@ -173,8 +182,8 @@ class DeployTimes extends Component {
         padding: [10, 15, 10, 15],
         extraCssText:
           'box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2); border: 1px solid #ddd; border-radius: 0;',
-        formatter(params, ticket) {
-          if (params[1] && params[0]) {
+        formatter(params) {
+          if (params[1] && params[0] && params[0].value) {
             const total = params[0].value + params[1].value;
             return `<div>
                 <div>${formatMessage({ id: 'branch.issue.date' })}：${params[1].name}</div>
@@ -183,10 +192,11 @@ class DeployTimes extends Component {
                 <div>${formatMessage({ id: 'appstore.deploy' })}${formatMessage({ id: 'report.build-number.total' })}：${total}</div>
                 <div>${formatMessage({ id: 'appstore.deploy' })}${formatMessage({ id: 'report.build-number.success.rate' })}：${((params[0].value / total) * 100).toFixed(2)}%</div>
               <div>`;
-          } else {
+          } else if (params[0].value || (params[1] && params[1].value)) {
+            const pr = params[1] || params[0];
             return `<div>
-                <div>${formatMessage({ id: 'branch.issue.date' })}：${params[0].name}</div>
-                <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params[0].color};"></span>${formatMessage({ id: 'appstore.deploy' })}${params[0].seriesName}：${params[0].value}</div>
+                <div>${formatMessage({ id: 'branch.issue.date' })}：${pr.name}</div>
+                <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${pr.color};"></span>${formatMessage({ id: 'appstore.deploy' })}${pr.seriesName}：${pr.value}</div>
               <div>`;
           }
         },
@@ -227,7 +237,7 @@ class DeployTimes extends Component {
             type: 'solid',
           },
         },
-        data: this.dateArr,
+        data: xAxis,
         axisLabel: {
           margin: 13,
           textStyle: {
@@ -241,6 +251,8 @@ class DeployTimes extends Component {
       },
       yAxis: {
         name: `${formatMessage({ id: 'report.build-number.yAxis' })}`,
+        min: yAxis.allArr.length ? null : 0,
+        max: yAxis.allArr.length ? null : 4,
         type: 'value',
         nameTextStyle: {
           fontSize: 13,
@@ -273,18 +285,32 @@ class DeployTimes extends Component {
         {
           name: `${formatMessage({ id: 'report.build-number.success' })}`,
           type: 'bar',
-          color: '#00BFA5',
+          itemStyle: {
+            color: '#00BFA5',
+            emphasis: {
+              borderColor: 'rgba(0,191,165,0.30)',
+              borderWidth: 10,
+              barBorderRadius: [5, 5, 0, 0],
+            },
+          },
           barWidth: '40%',
           stack: 'total',
-          data: this.successArr,
+          data: yAxis.successArr,
         },
         {
           name: `${formatMessage({ id: 'report.build-number.fail' })}`,
           type: 'bar',
-          color: '#FFB100',
+          itemStyle: {
+            color: '#FFB100',
+            emphasis: {
+              borderColor: 'rgba(255,177,0,0.30)',
+              borderWidth: 10,
+              barBorderRadius: [5, 5, 0, 0],
+            },
+          },
           barWidth: '40%',
           stack: 'total',
-          data: this.failArr,
+          data: yAxis.failArr,
         },
         {
           name: `${formatMessage({ id: 'report.build-number.total' })}`,

@@ -73,12 +73,12 @@ function TimePicker(props) {
           value={[startTime, endTime]}
           allowClear={false}
           onChange={(date, dateString) => {
-            if (moment(dateString[1]).calendar() < moment(dateString[0]).add(29, 'days').calendar()) {
+            if (moment(dateString[1]).format() < moment(dateString[0]).add(29, 'days').format()) {
               store.setStartTime(moment(dateString[0]));
               store.setEndTime(moment(dateString[1]));
               store.setStartDate(moment(dateString[0]));
               store.setEndDate(moment(dateString[1]));
-            } else if (moment(dateString[1]).calendar() > moment(dateString[0]).add(29, 'days').calendar()) {
+            } else if (moment(dateString[1]).format() > moment(dateString[0]).add(29, 'days').format()) {
               Choerodon.prompt('报表暂支持最多查看30天，已自动截取开始日期后30天。');
               store.setStartTime(moment(dateString[0]));
               store.setEndTime(moment(dateString[0]).add(29, 'days'));
