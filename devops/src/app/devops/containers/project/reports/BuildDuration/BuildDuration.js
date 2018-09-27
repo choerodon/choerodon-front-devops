@@ -163,7 +163,6 @@ class BuildDuration extends Component {
         nameTextStyle: {
           fontSize: 13,
           color: '#000',
-          padding: [0, 0, 0, 22],
         },
         axisTick: { show: false },
         axisLine: {
@@ -188,6 +187,8 @@ class BuildDuration extends Component {
             width: 1,
           },
         },
+        min: Math.max(pipelineTime) > 3 ? null : 0,
+        max: Math.max(pipelineTime) > 3 ? null : 4,
       },
       series: [
         {

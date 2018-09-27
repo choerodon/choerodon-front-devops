@@ -1,5 +1,6 @@
 /* eslint-disable no-plusplus */
 import moment from 'moment';
+import _ from 'lodash';
 
 /**
  * 处理数据请求错误
@@ -100,4 +101,31 @@ export function getNear7Day() {
     dateArr.push(moment().subtract(i, 'days').format('YYYY-MM-DD'));
   }
   return dateArr.reverse();
+}
+
+/**
+ * 返回次数报表横纵坐标数组
+ * @param startTime 开始时间 时间戳
+ * @param endTime 结束时间 时间戳
+ * @param oldxAxis 横坐标数据 数组
+ * @param oldyAxis 纵坐标数据 {a: [], b: [], ...}
+ * @returns {xAixs: [], yAxis: {a: [], b: [], ...}}
+ */
+export function getAxis(startTime, endTime, oldxAxis = [], oldyAxis = {}) {
+  const xAxis = [];
+  for (; startTime <= endTime; startTime += 86400000) {
+    const tmp = new Date(startTime);
+    xAxis.push(`${tmp.getFullYear()}-${padZero(tmp.getMonth() + 1)}-${padZero(tmp.getDate())}`);
+  }
+  const yAxis = {};
+  _.foreach(oldyAxis, (value, key) => {
+    yAxis[key] = [];
+    const data = oldyAxis[key] || [];
+    if (oldxAxis.length) {
+      _.map(oldxAxis, (str, index) => {
+        yAxis[key][xAxis.indexOf(str)] = data[index];
+      });
+    }
+  });
+  return { xAxis, yAxis };
 }
