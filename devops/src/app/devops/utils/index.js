@@ -1,9 +1,11 @@
+/* eslint-disable no-plusplus */
+import moment from 'moment';
+
 /**
  * 处理数据请求错误
  * @param data
  * @returns {*}
  */
-/* eslint-disable import/prefer-default-export */
 export function handleProptError(data) {
   if (data && data.failed) {
     Choerodon.prompt(data.message);
@@ -85,4 +87,17 @@ export function getToDayStr() {
   const month = date.getMonth() + 1;
   const day = date.getDate();
   return [year, month, day].map(padZero).join('-');
+}
+
+/**
+ * 返回近7天的时间字符串
+ * YYYY-MM-DD
+ * @returns {*[]}
+ */
+export function getNear7Day() {
+  const dateArr = [];
+  for (let i = 0; i < 7; i++) {
+    dateArr.push(moment().subtract(i, 'days').format('YYYY-MM-DD'));
+  }
+  return dateArr.reverse();
 }

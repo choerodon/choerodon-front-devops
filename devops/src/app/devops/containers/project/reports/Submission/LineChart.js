@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Spin, Avatar } from 'choerodon-ui';
 import echarts from 'echarts/lib/echarts';
 import { injectIntl } from 'react-intl';
-import { getToDayStr } from '../../../../utils';
+import { getNear7Day } from '../../../../utils';
 
 import 'echarts/lib/chart/line';
 import 'echarts/lib/component/tooltip';
@@ -22,8 +22,8 @@ class LineChart extends PureComponent {
 
   getOption = () => {
     const { color, data: { items }, intl: { formatMessage } } = this.props;
-    const keys = items ? Object.keys(items) : [getToDayStr()];
-    const value = items ? keys.map(item => items[item]) : [0];
+    const keys = items ? Object.keys(items) : getNear7Day();
+    const value = items ? keys.map(item => items[item]) : [];
     return {
       title: {
         show: false,
@@ -55,7 +55,6 @@ class LineChart extends PureComponent {
         axisLine: {
           show: true,
           lineStyle: {
-            // color: '#bac3ca',
             color: '#eee',
           },
           onZero: true,
@@ -63,7 +62,6 @@ class LineChart extends PureComponent {
         splitLine: {
           show: true,
           lineStyle: {
-            // color: ['#bac3ca'],
             color: ['#eee'],
           },
         },

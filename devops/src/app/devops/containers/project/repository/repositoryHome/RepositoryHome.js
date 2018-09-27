@@ -124,7 +124,7 @@ class RepositoryHome extends Component {
       title: <FormattedMessage id="repository.url" />,
       dataIndex: 'repoUrl',
       key: 'repoUrl',
-      render: (text, record) => (<a href="nofollow me noopener noreferrer" target="_blank">
+      render: (text, record) => (<a href={record.repoUrl || null} rel="nofollow me noopener noreferrer" target="_blank">
         <MouserOverWrapper text={record.repoUrl} width={0.25}>
           {record.repoUrl ? `../${record.repoUrl.split('/')[record.repoUrl.split('/').length - 1]}` : ''}
         </MouserOverWrapper>
