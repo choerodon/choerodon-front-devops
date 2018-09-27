@@ -130,7 +130,7 @@ const pageDetail = {
 
   // 部署总览
   'dpOverview.title': '项目"{name}"的部署总览',
-  'dpOverview.description': '部署总览页面包含了每个环境分组下所有应用在各个环境中的部署情况。您可以通过该界面查看各个应用在各个环境中的部署情况，并能直接在此界面进行应用最新版本的快速部署。',
+  'dpOverview.description': '部署总览页面包含了所有应用在各个环境中的部署情况。您可以通过该界面查看各个应用在各个环境中的部署情况，并能直接在此界面进行应用最新版本的快速部署。',
   'dpOverview.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
   'dpOverview.detail.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
   'dpOverview.edit.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
@@ -913,6 +913,7 @@ const zhCN = {
   'report.commit.num': '次数      ',
   'report.commit.none': '无提交记录',
   'report.app.noselect': '请选择应用',
+  'report.date.more': '报表暂支持最多查看30天，已自动截取开始日期后30天。',
 
   // 部署总览
   'dpOverview.head': '部署总览',

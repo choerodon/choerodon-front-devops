@@ -17,7 +17,11 @@ class ReportsStore {
 
   @observable startTime = moment().subtract(6, 'days');
 
+  @observable startDate = null;
+
   @observable endTime = moment();
+
+  @observable endDate = null;
 
   @observable envId = null;
 
@@ -105,12 +109,28 @@ class ReportsStore {
     this.startTime = data;
   }
 
+  @computed get getStartDate() {
+    return this.startDate;
+  }
+
+  @action setStartDate(data) {
+    this.startDate = data;
+  }
+
   @computed get getEndTime() {
     return this.endTime;
   }
 
   @action setEndTime(data) {
     this.endTime = data;
+  }
+
+  @computed get getEndDate() {
+    return this.endDate;
+  }
+
+  @action setEndDate(data) {
+    this.endDate = data;
   }
 
   @action setEnvId(id) {

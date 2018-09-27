@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { observable, action, configure } from 'mobx';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Page, Header, Content, stores, Permission } from 'choerodon-front-boot';
+import { Page, Header, Content, stores } from 'choerodon-front-boot';
 import { Select, Button, Table, Spin } from 'choerodon-ui';
 import ReactEcharts from 'echarts-for-react';
 import _ from 'lodash';
@@ -39,6 +39,8 @@ class DeployTimes extends Component {
   @observable failArr = [];
 
   @observable allArr = [];
+
+  @observable dateType = 'seven';
 
   handleRefresh = () => {
     this.loadEnvCards();
@@ -210,7 +212,6 @@ class DeployTimes extends Component {
         containLabel: true,
       },
       xAxis: {
-        type: 'category',
         axisTick: { show: false },
         axisLine: {
           lineStyle: {
@@ -354,6 +355,9 @@ class DeployTimes extends Component {
     ReportsStore.loadDeployTimesTable(projectId, appID, startTime, endTime, this.envIds.slice(), pagination.current - 1, pagination.pageSize);
   };
 
+  @action
+  handleDateChoose = (type) => { this.dateType = type; };
+
   render() {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
@@ -416,7 +420,14 @@ class DeployTimes extends Component {
               {appDom}
               {appDom ? <Option key="all" value="all">{formatMessage({ id: 'report.all-app' })}</Option> : null}
             </Select>
-            <TimePicker startTime={ReportsStore.getStartTime} endTime={ReportsStore.getEndTime} func={this.loadCharts} store={ReportsStore} />
+            <TimePicker
+              startTime={ReportsStore.getStartDate}
+              endTime={ReportsStore.getEndDate}
+              type={this.dateType}
+              onChange={this.handleDateChoose}
+              func={this.loadCharts}
+              store={ReportsStore}
+            />
           </div>
           <div className="c7n-report-content">
             <Spin spinning={echartsLoading}>

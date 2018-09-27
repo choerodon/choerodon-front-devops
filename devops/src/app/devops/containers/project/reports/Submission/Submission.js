@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Page, Header, Content, stores, Permission } from 'choerodon-front-boot';
+import { Page, Header, Content, stores } from 'choerodon-front-boot';
 import { Select, Button } from 'choerodon-ui';
 import _ from 'lodash';
 import moment from 'moment';
@@ -54,7 +54,7 @@ class Submission extends Component {
     this.state = {
       appId: null,
       page: 0,
-      dateType: null,
+      dateType: 'seven',
     };
   }
 
@@ -185,8 +185,8 @@ class Submission extends Component {
                 {options}
               </Select>
               <TimePicker
-                startTime={ReportsStore.getStartTime}
-                endTime={ReportsStore.getEndTime}
+                startTime={ReportsStore.getStartDate}
+                endTime={ReportsStore.getEndDate}
                 func={this.loadData}
                 store={ReportsStore}
                 type={dateType}

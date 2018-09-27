@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { observable, action, configure, toJS } from 'mobx';
+import { observable, action, configure } from 'mobx';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Page, Header, Content, stores, Permission } from 'choerodon-front-boot';
+import { Page, Header, Content, stores } from 'choerodon-front-boot';
 import { Select, Button, Table, Spin } from 'choerodon-ui';
 import ReactEcharts from 'echarts-for-react';
 import _ from 'lodash';
@@ -37,6 +37,12 @@ class DeployDuration extends Component {
   @observable dateArr = [];
 
   @observable seriesArr = [];
+
+  @observable startTime = '';
+
+  @observable endTime = '';
+
+  @observable dateType = 'seven';
 
   handleRefresh = () => {
     this.loadEnvCards();
@@ -207,7 +213,7 @@ class DeployDuration extends Component {
             time = null;
           }
           return `<div>
-                <div>${formatMessage({ id: 'branch.issue.date' })}：${params[0].name}</div>
+                <div>${formatMessage({ id: 'branch.issue.date' })}：${params[0].data[0]}</div>
                 <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params[0].color};"></span>${params[0].seriesName}：${time}</div>
               <div>`;
         },
@@ -219,9 +225,10 @@ class DeployDuration extends Component {
         containLabel: true,
       },
       xAxis: {
+        type: 'time',
         scale: true,
         boundaryGap: false,
-        data: this.dateArr,
+        // data: this.dateArr.slice(),
         axisLine: {
           lineStyle: {
             color: '#eee',
@@ -236,9 +243,9 @@ class DeployDuration extends Component {
             color: 'rgba(0, 0, 0, 0.65)',
             fontSize: 12,
           },
-          formatter(value) {
-            return value.slice(5, 10).replace('-', '/');
-          },
+          // formatter(value) {
+          //   return value.slice(5, 10).replace('-', '/');
+          // },
         },
       },
       yAxis: {
@@ -333,6 +340,9 @@ class DeployDuration extends Component {
     ReportsStore.loadDeployDurationTable(projectId, this.envId, startTime, endTime, this.appIds.slice(), pagination.current - 1, pagination.pageSize);
   };
 
+  @action
+  handleDateChoose = (type) => { this.dateType = type; };
+
   render() {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
@@ -395,7 +405,14 @@ class DeployDuration extends Component {
             >
               {appDom}
             </Select>
-            <TimePicker startTime={ReportsStore.getStartTime} endTime={ReportsStore.getEndTime} func={this.loadCharts} store={ReportsStore} />
+            <TimePicker
+              startTime={ReportsStore.getStartDate}
+              endTime={ReportsStore.getEndDate}
+              func={this.loadCharts}
+              type={this.dateType}
+              onChange={this.handleDateChoose}
+              store={ReportsStore}
+            />
           </div>
           <div className="c7n-report-content">
             <Spin spinning={echartsLoading}>
