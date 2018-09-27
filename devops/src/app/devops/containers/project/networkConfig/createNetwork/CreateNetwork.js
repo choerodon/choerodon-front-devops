@@ -50,8 +50,9 @@ class CreateNetwork extends Component {
   }
 
   componentDidMount() {
-    const { store, envId, appId, appCode } = this.props;
+    const { store, envId, appId, appCode, form } = this.props;
     const { id } = AppState.currentMenuType;
+    form.resetFields();
     if (envId) {
       const options = { key: appCode };
       this.handleEnvSelect(envId);
@@ -176,8 +177,7 @@ class CreateNetwork extends Component {
   };
 
   handleClose = (isload = true) => {
-    const { onClose, form } = this.props;
-    form.resetFields();
+    const { onClose } = this.props;
     onClose(isload);
   };
 
@@ -240,11 +240,11 @@ class CreateNetwork extends Component {
     const { id } = AppState.currentMenuType;
     const envId = form.getFieldValue('envId');
     let initName = options.key;
-    if (initName.length > 25) {
+    if (initName.length > 23) {
       // 初始网络名长度限制
-      initName = initName.slice(0, 25);
+      initName = initName.slice(0, 23);
     }
-    initName = `${initName}-${uuidv1().slice(0, 4)}`;
+    initName = `${initName}-${uuidv1().slice(0, 6)}`;
     this.setState({ initName });
     store.loadInstance(id, envId, Number(value)).then((data) => {
       if (data) {
