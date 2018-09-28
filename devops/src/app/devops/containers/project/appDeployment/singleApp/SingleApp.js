@@ -720,9 +720,9 @@ class SingleApp extends Component {
           if (appID && envID) {
             return (<div className="c7n-deploy-wrap_gray">
               <div className="c7n-deploy-single-wrap">
-                <h2 className="c7n-space-first">
+                <div className="c7n-deploy-singleApp-ist">
                   <FormattedMessage id="ist.head" />
-                </h2>
+                </div>
                 <Table
                   filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                   onChange={this.tableChange}
@@ -730,6 +730,7 @@ class SingleApp extends Component {
                   pagination={store.pageInfo}
                   columns={columnApp}
                   filters={param || []}
+                  filterBar={false}
                   dataSource={ist}
                   rowKey={record => record.id}
                 />

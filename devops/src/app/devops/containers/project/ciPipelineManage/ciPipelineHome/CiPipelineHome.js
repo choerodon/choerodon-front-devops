@@ -48,6 +48,16 @@ const ICONS = {
     code: 'skipped',
     display: 'Skipped',
   },
+  created: {
+    icon: 'icon-radio_button_checked',
+    code: 'created',
+    display: 'Created',
+  },
+  manual: {
+    icon: 'icon-radio_button_checked',
+    code: 'manual',
+    display: 'Manual',
+  },
 };
 const ICONS_ACTION = {
   pending: {

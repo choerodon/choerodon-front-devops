@@ -143,11 +143,9 @@ class SingleEnvironment extends Component {
     const { store } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const envNames = store.getEnvcard;
-    const appNames = store.getAppNames;
     const envId = store.getEnvId;
     const appId = store.getAppId;
     const envID = envId || (envNames.length ? envNames[0].id : null);
-    const appID = appId || (appNames.length ? appNames[0].id : null);
     const sort = {};
     if (sorter.column) {
       const { field, order } = sorter;
@@ -161,7 +159,7 @@ class SingleEnvironment extends Component {
       searchParam,
       param: param.toString(),
     };
-    store.loadInstanceAll(projectId, { page: pagination.current - 1, size: pagination.pageSize, envId: envID, appId: appID, datas: postData });
+    store.loadInstanceAll(projectId, { page: pagination.current - 1, size: pagination.pageSize, envId: envID, appId, datas: postData });
     store.setIstTableFilter({ filters, param });
   };
 
@@ -534,9 +532,9 @@ class SingleEnvironment extends Component {
           onShowSizeChange={this.onPageChange}
         />
       </div>
-      <h2>
+      <div className="c7n-deploy-singleEnv-ist">
         <FormattedMessage id="ist.head" />
-      </h2>
+      </div>
       <Table
         filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
         onChange={this.tableChange}
