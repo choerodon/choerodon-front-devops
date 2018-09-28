@@ -107,17 +107,11 @@ class DomainHome extends Component {
       title: intl.formatMessage({ id: 'domain.column.path' }),
       className: 'c7n-network-col',
       key: 'path',
-      sorter: true,
-      sortOrder: columnKey === 'path' && order,
       filters: [],
       filteredValue: filters.path || [],
-      render: record => (
-        <div>
-          {_.map(record.pathList, router => (<div className="c7n-network-col_border" key={`${record.id}-${router.path}`}>
-            <span>{router.path}</span>
-          </div>))}
-        </div>
-      ),
+      render: record => _.map(record.pathList, router => (<div className="c7n-network-col_border" key={`${record.id}-${router.path}`}>
+        <span>{router.path}</span>
+      </div>)),
     }, {
       title: intl.formatMessage({ id: 'domain.column.network' }),
       className: 'c7n-network-col',
