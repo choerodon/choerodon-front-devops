@@ -218,9 +218,8 @@ class BuildNumber extends Component {
           itemStyle: {
             color: '#00BFA5',
             emphasis: {
-              borderColor: 'rgba(0,191,165,0.30)',
-              borderWidth: 10,
-              barBorderRadius: [5, 5, 0, 0],
+              shadowBlur: 10,
+              shadowColor: 'rgba(0,0,0,0.20)',
             },
           },
           stack: 'total',
@@ -233,9 +232,8 @@ class BuildNumber extends Component {
           itemStyle: {
             color: '#FFB100',
             emphasis: {
-              borderColor: 'rgba(255,177,0,0.30)',
-              borderWidth: 10,
-              barBorderRadius: [5, 5, 0, 0],
+              shadowBlur: 10,
+              shadowColor: 'rgba(0,0,0,0.20)',
             },
           },
           stack: 'total',
