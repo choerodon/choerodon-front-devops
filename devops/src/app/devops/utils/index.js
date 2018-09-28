@@ -151,7 +151,7 @@ export function dateSplitAndPad(start, end, date) {
   const timeDiff = end - start;
   if (timeDiff < 3600 * 25 * 1000) {
     const oneDay = _.countBy(date, item => item.slice(0, 10));
-    dateArr = oneDay.length ? oneDay : { [moment().format('YYYY-MM-DD')]: 0 };
+    dateArr = !_.isEmpty(oneDay) ? oneDay : { [moment().format('YYYY-MM-DD')]: 0 };
   } else {
     const days = timeDiff / (3600 * 24 * 1000);
     const dateGroup = _.countBy(date, item => item.slice(0, 10));

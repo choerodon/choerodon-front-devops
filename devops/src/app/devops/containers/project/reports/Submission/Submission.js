@@ -139,7 +139,7 @@ class Submission extends Component {
     const personChart = _.map(user, item => (<div key={item.id} className="c7n-report-submission-item">
       <LineChart
         loading={ReportsStore.getCommitLoading}
-        name={item.name}
+        name={item.name || 'Unknown'}
         color="#ff9915"
         style={{ width: '100%', height: 176 }}
         data={item}

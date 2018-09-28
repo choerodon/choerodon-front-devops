@@ -124,13 +124,13 @@ class LineChart extends PureComponent {
   };
 
   render() {
-    const { style, data: { avatar, count, id }, name, loading, hasAvatar, intl: { formatMessage } } = this.props;
+    const { style, data: { avatar, count, id, name: userName }, name, loading, hasAvatar, intl: { formatMessage } } = this.props;
     return (<Spin spinning={loading}>
       <div className="c7n-report-commits-title">
         {hasAvatar ? (<span className="c7n-report-commits-avatar">
           {avatar
             ? <Avatar size="small" src={avatar} />
-            : <Avatar size="small">{name ? name.toString().slice(0, 1).toUpperCase() : '?'}</Avatar>}
+            : <Avatar size="small">{name && userName ? name.toString().slice(0, 1).toUpperCase() : '?'}</Avatar>}
         </span>) : null}
         {(id === 0) ? (<Tooltip placement="top" title={formatMessage({ id: 'report.commits.unknown' })}>{name}</Tooltip>) : name}
         {count ? <span className="c7n-report-commits-text">{count} commits</span> : null}
