@@ -35,10 +35,15 @@
     padding: 5px;
     box-sizing: border-box;
     height: 36px;
-    line-height: 28px;
+    line-height: 26px;
     margin: 0;
     font-size: 14px;
     font-weight: 400;
+    display: flex;
+
+    .ant-select {
+      line-height: 22px;
+    }
   }
 
   .ant-select-selection-selected-value, .ant-select-arrow > i {
@@ -123,5 +128,14 @@
         color: rgba(0, 0, 0, .87);
       }
     }
+  }
+}
+
+.c7n-shell-title {
+  line-height: 30px;
+  display: flex;
+
+  .ant-select {
+    line-height: 26px;
   }
 }

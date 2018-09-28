@@ -198,6 +198,7 @@ class DeployDuration extends Component {
             type: ['clear'],
           },
         },
+        right: '2%',
       },
       brush: {
       },

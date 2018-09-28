@@ -619,7 +619,7 @@ class AppOverview extends Component {
                       </div>
                       <div className="c7n-envow-contaners-right">
                         <div className="c7n-envow-pod">
-                          <div className="c7n-deploy-status">
+                          {c.podCount !== 0 ? (<div className="c7n-deploy-status">
                             <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
                               <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="45%" strokeWidth="5%" />
                             </svg>
@@ -627,7 +627,7 @@ class AppOverview extends Component {
                               <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="45%" strokeWidth="5%" strokeDashoffset={`${283 * ((c.podCount - c.podRunningCount) / c.podCount)}%`} />
                             </svg>
                             <span className="c7n-deploy-status-num">{c.podCount}</span>
-                          </div>
+                          </div>) : null}
                           <div className="c7n-envow-pod-action">
                             <Icon type="navigate_next" />
                             <Icon type="navigate_next" />
