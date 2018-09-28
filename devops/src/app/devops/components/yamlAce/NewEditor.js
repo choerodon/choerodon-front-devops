@@ -159,7 +159,6 @@ class NewEditor extends Component {
           options={this.props.options}
           value={value}
           onChange={this.onChange}
-          className='noscroll-y'
           ref={(instance) => { this.aceEditor = instance; }} // Let's put things into scope
         />
         {isFileError && <div className="ace-error-message">
