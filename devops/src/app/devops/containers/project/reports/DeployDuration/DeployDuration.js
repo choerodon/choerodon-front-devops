@@ -348,6 +348,7 @@ class DeployDuration extends Component {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const echartsLoading = ReportsStore.getEchartsLoading;
+    const envs = ContainerStore.getEnvcard;
 
     const envDom = this.env.length ? _.map(this.env, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
 
@@ -378,7 +379,7 @@ class DeployDuration extends Component {
         </Button>
       </Header>
       <Content code="report.deploy-duration" value={{ name }}>
-        {this.env.length ? <React.Fragment>
+        {envs && envs.length ? <React.Fragment>
           <div className="c7n-report-screen">
             <Select
               notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}
