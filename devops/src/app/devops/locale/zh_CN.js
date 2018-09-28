@@ -913,6 +913,8 @@ const zhCN = {
   'report.commit.none': '无提交记录',
   'report.app.noselect': '请选择应用',
   'report.date.more': '报表暂支持最多查看30天，已自动截取开始日期后30天。',
+  'report.commits.unknown': '非平台用户提交汇总',
+  'report.unknown.user': '非平台用户',
 
   // 部署总览
   'dpOverview.head': '部署总览',
