@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 import PropTypes from 'prop-types';
-import { Spin, Avatar } from 'choerodon-ui';
+import { Spin, Avatar, Tooltip } from 'choerodon-ui';
 import echarts from 'echarts/lib/echarts';
 import { injectIntl } from 'react-intl';
 import { getNear7Day, dateSplitAndPad, pickEntries } from '../../../../utils';
@@ -124,7 +124,7 @@ class LineChart extends PureComponent {
   };
 
   render() {
-    const { style, data: { avatar, count }, name, loading, hasAvatar } = this.props;
+    const { style, data: { avatar, count, id }, name, loading, hasAvatar, intl: { formatMessage } } = this.props;
     return (<Spin spinning={loading}>
       <div className="c7n-report-commits-title">
         {hasAvatar ? (<span className="c7n-report-commits-avatar">
@@ -132,7 +132,7 @@ class LineChart extends PureComponent {
             ? <Avatar size="small" src={avatar} />
             : <Avatar size="small">{name ? name.toString().slice(0, 1).toUpperCase() : '?'}</Avatar>}
         </span>) : null}
-        {name}
+        {(id === 0) ? (<Tooltip placement="top" title={formatMessage({ id: 'report.commits.unknown' })}>{name}</Tooltip>) : name}
         {count ? <span className="c7n-report-commits-text">{count} commits</span> : null}
       </div>
       <ReactEchartsCore
