@@ -1,6 +1,11 @@
 .c7n-deployDetail-wrapper {
   .c7n-deployDetail-title {
     margin-bottom: 16px;
+    color: #000;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    line-height: 28px;
   }
 
   .c7n-deployDetail-tab {
@@ -24,8 +29,8 @@
       .stage-title-text {
         font-weight: 500;
         vertical-align: middle;
-        font-size: 18px;
-        color: rgba(0, 0, 0, 0.85);
+        font-size: 16px;
+        color: rgb(0, 0, 0);
         line-height: 24px;
       }
     }
@@ -121,7 +126,7 @@
   }
 
   .icon-success {
-    color: #1ab16f;
+    color: #00bf96;
   }
 
   .icon-error {
@@ -129,10 +134,9 @@
   }
 
   .c7n-stage-time {
-    font-size: 10px;
-    color: rgba(0, 0, 0, 0.26);
-    text-align: left;
-    line-height: 16px;
+    font-size: 10px !important;
+    text-align: left !important;
+    line-height: 16px !important;
   }
 
   .ace_gutter-cell.ace_error {

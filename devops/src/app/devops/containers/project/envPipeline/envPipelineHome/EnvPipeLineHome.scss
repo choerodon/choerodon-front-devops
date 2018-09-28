@@ -380,3 +380,18 @@
     margin-bottom: 0;
   }
 }
+
+.no-content-padding {
+  margin: -20px -24px !important;
+}
+
+.c7n-env-modal-content {
+  div {
+    font-size: 20px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 32px;
+    margin-bottom: 8px;
+  }
+}
