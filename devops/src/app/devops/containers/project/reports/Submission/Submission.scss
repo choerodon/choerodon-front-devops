@@ -80,6 +80,9 @@
           }
         }
       }
+      .c7n-report-history-list-none {
+        color: rgba(0,0,0,0.45);
+      }
     }
     .c7n-report-history-page {
       text-align: right;
@@ -88,7 +91,7 @@
 }
 
 .c7n-report-commits-title {
-  color: #3f51b5;
+  color: #000;
   font-size: 16px;
   line-height: 24px;
   .c7n-report-commits-avatar {

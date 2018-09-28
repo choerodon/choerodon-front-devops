@@ -37,6 +37,12 @@ class DeployHome extends Component {
     }
   }
 
+  componentWillUnmount() {
+    const { AppDeploymentStore } = this.props;
+    AppDeploymentStore.setTabActive('instance');
+    AppDeploymentStore.setAppNameByEnv([]);
+  }
+
   /**
    * 刷新函数
    */
@@ -168,7 +174,7 @@ class DeployHome extends Component {
       AppDeploymentStore.setAppId(false);
       AppDeploymentStore.setVerId(false);
       if (envNames.length) {
-        this.loadSingleEnv(AppDeploymentStore.envId || envNames[0].id, Info);
+        this.loadSingleEnv(AppDeploymentStore.getenvId || envNames[0].id, Info);
       }
     }
   };
