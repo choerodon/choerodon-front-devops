@@ -33,7 +33,7 @@ export default function CommitHistory(props) {
       );
     });
   } else {
-    list = [<FormattedMessage key="no.commits" id="report.commit.none" />];
+    list = [<span className="c7n-report-history-list-none"><FormattedMessage key="no.commits" id="report.commit.none" /></span>];
   }
   return (<Fragment>
     <h3 className="c7n-report-history-title"><FormattedMessage id="report.commit.history" /></h3>
