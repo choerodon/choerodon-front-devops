@@ -102,12 +102,11 @@ class Submission extends Component {
     const { ReportsStore: { loadApps, loadCommits, loadCommitsRecord, getStartTime, getEndTime } } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     const { page, appId, dateType } = this.state;
-    const appIds = appId && appId.length ? appId.join(',') : null;
+    const appIds = appId && appId.length ? appId.join(',') : [];
     loadApps(projectId).then((data) => {
       if (data && data.length) {
         const selectApp = appIds || _.map(data, item => item.id);
         const newAppId = _.isString(selectApp) ? _.map(selectApp.split(','), item => _.toNumber(item)) : selectApp;
-        // const startDate = dateType ? getStartTime : null;
         loadCommits(projectId, getStartTime, getEndTime, selectApp);
         loadCommitsRecord(projectId, getStartTime, getEndTime, selectApp, page);
         this.setState({ appId: newAppId });

@@ -135,6 +135,7 @@ const pageDetail = {
   'dpOverview.edit.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
 
   // appstore
+  'appstore.description.label': '描述',
   'appstore.description': '应用市场是应用的集市。您可在此查看已发布至您项目的应用及其详细信息，并选择需要的应用版本进行部署。',
   'appstore.import.title': '应用导入',
   'appstore.export.title': '应用导出',

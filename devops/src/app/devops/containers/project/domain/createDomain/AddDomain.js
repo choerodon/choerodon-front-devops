@@ -227,14 +227,17 @@ class CreateDomain extends Component {
    */
   handleSelectEnv = (value) => {
     const { store, form } = this.props;
-    store.loadNetwork(this.state.projectId, value);
-    store.setCertificates([]);
-    form.resetFields();
-    this.setState({
-      deletedService: {},
-      singleData: {},
-      selectEnv: value,
-    });
+    const { selectEnv } = this.state;
+    if (value !== selectEnv) {
+      store.loadNetwork(this.state.projectId, value);
+      store.setCertificates([]);
+      form.resetFields();
+      this.setState({
+        deletedService: {},
+        singleData: {},
+        selectEnv: value,
+      });
+    }
   };
 
   /**

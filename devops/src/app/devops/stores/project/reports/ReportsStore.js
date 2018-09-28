@@ -346,7 +346,7 @@ class ReportsStore {
    */
   loadCommits = (projectId, start = null, end = null, apps = null) => {
     this.setCommitLoading(true);
-    axios.post(`devops/v1/projects/${projectId}/apps/commits?app_ids=${apps}&start_date=${start}&end_date=${end}`)
+    axios.post(`devops/v1/projects/${projectId}/apps/commits?start_date=${start}&end_date=${end}`, JSON.stringify(apps))
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
@@ -370,7 +370,7 @@ class ReportsStore {
    */
   loadCommitsRecord = (projectId, start = null, end = null, apps = null, page = 0) => {
     this.setHistoryLoad(true);
-    axios.post(`devops/v1/projects/${projectId}/apps/commits/record?app_ids=${apps}&page=${page}&size=5&start_date=${start}&end_date=${end}`)
+    axios.post(`devops/v1/projects/${projectId}/apps/commits/record?page=${page}&size=5&start_date=${start}&end_date=${end}`, JSON.stringify(apps))
       .then((data) => {
         const res = handleProptError(data);
         if (res) {

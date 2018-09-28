@@ -132,7 +132,7 @@ class DeployAppHome extends Component {
       dataIndex: 'category',
       key: 'category',
     }, {
-      title: <FormattedMessage id="appstore.description" />,
+      title: <FormattedMessage id="appstore.description.label" />,
       dataIndex: 'description',
       key: 'description',
     }];
