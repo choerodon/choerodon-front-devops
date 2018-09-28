@@ -180,13 +180,18 @@
   padding: 5px;
   box-sizing: border-box;
   height: 36px;
-  line-height: 28px;
+  line-height: 26px;
   margin: 0;
   font-size: 14px;
   font-weight: 400;
+  display: flex;
+
+  .ant-select {
+    line-height: 22px;
+  }
 
   button {
-    float: right;
+    margin-left: auto;
     width: 24px;
     height: 24px;
     line-height: 24px;
