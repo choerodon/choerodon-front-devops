@@ -156,6 +156,7 @@ class ContainerHome extends Component {
    */
   @action
   onTerminalReady() {
+    this.term.installKeyboard();
     this.io = this.term.io.push();
     this.onTerminalResponseReceived();
     this.io.showOverlay(`${this.term.screenSize.width}x${this.term.screenSize.height}`);
@@ -242,7 +243,6 @@ class ContainerHome extends Component {
     } else {
       this.onTerminalReady();
     }
-    this.term.installKeyboard();
   }
 
   /**
