@@ -431,7 +431,7 @@ class AddAppRelease extends Component {
             onChange={(value) => { this.setState({ description: value.target.value }); }}
             style={{ width: 512 }}
             maxLength={100}
-            label={<span className="apprelease-formItem-label"><FormattedMessage id="appstore.description" /></span>}
+            label={<span className="apprelease-formItem-label"><FormattedMessage id="appstore.description.label" /></span>}
             autosize={{ minRows: 2, maxRows: 6 }}
           />
         </section>
@@ -481,7 +481,7 @@ class AddAppRelease extends Component {
             <div className="deployApp-text">{this.state.category}</div>
           </div>
           <div>
-            <div className="app-release-title">{this.props.intl.formatMessage({ id: 'appstore.description' })}：</div>
+            <div className="app-release-title">{this.props.intl.formatMessage({ id: 'appstore.description.label' })}：</div>
             <div className="deployApp-text">{this.state.description}</div>
           </div>
           <div>

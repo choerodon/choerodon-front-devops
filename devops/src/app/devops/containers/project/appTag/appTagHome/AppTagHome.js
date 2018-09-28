@@ -120,7 +120,7 @@ class AppTagHome extends Component {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
       } else {
-        this.loadTagData(projectId);
+        this.loadTagData();
       }
       this.setState({ deleteLoading: false, visible: false });
     }).catch((error) => {

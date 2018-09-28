@@ -188,7 +188,7 @@ class EditVersion extends Component {
 
   render() {
     const menu = AppState.currentMenuType;
-    const { key } = this.state;
+    const { key, selectedRows } = this.state;
     return (
       <Page
         className="c7n-region"
@@ -214,7 +214,13 @@ class EditVersion extends Component {
           {key === '1' ? <React.Fragment>
             <div className="c7n-appRelease-hr" />
             <Permission service={['devops-service.application-market.updateVersions']}>
-              <Button className="release-button-margin" type="primary" funcType="raised" onClick={this.handleOpen}>{this.props.intl.formatMessage({ id: 'release.add.step.five.btn.confirm' })}</Button>
+              <Button
+                disabled={!(selectedRows && selectedRows.length)}
+                className="release-button-margin"
+                type="primary"
+                funcType="raised"
+                onClick={this.handleOpen}
+              >{this.props.intl.formatMessage({ id: 'release.add.step.five.btn.confirm' })}</Button>
             </Permission>
             <Button funcType="raised" onClick={this.handleBack}>{this.props.intl.formatMessage({ id: 'cancel' })}</Button>
           </React.Fragment> : null}
