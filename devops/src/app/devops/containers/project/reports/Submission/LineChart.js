@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Spin, Avatar } from 'choerodon-ui';
 import echarts from 'echarts/lib/echarts';
 import { injectIntl } from 'react-intl';
-import { getNear7Day } from '../../../../utils';
+import { getNear7Day, dateSplitAndPad, pickEntries } from '../../../../utils';
 
 import 'echarts/lib/chart/line';
 import 'echarts/lib/component/tooltip';
@@ -21,9 +21,10 @@ class LineChart extends PureComponent {
   };
 
   getOption = () => {
-    const { color, data: { items }, intl: { formatMessage } } = this.props;
-    const keys = items ? Object.keys(items) : getNear7Day();
-    const value = items ? keys.map(item => items[item]) : [];
+    const { color, data: { items }, intl: { formatMessage }, start, end } = this.props;
+    const { keys, values } = pickEntries(dateSplitAndPad(start, end, items));
+    const xAxis = keys && keys.length ? keys.reverse() : getNear7Day();
+    const yAxis = values && values.length ? values.reverse() : [];
     return {
       title: {
         show: false,
@@ -47,7 +48,6 @@ class LineChart extends PureComponent {
         containLabel: true,
       },
       xAxis: {
-        type: 'category',
         boundaryGap: false,
         axisTick: {
           show: false,
@@ -71,12 +71,12 @@ class LineChart extends PureComponent {
             return item.split('-').slice(1).join('/');
           },
         },
-        data: keys,
+        data: xAxis,
       },
       yAxis: {
         name: formatMessage({ id: 'report.commit.num' }),
-        min: Math.max(...value) > 3 ? null : 0,
-        max: Math.max(...value) > 3 ? null : 4,
+        min: Math.max(...yAxis) > 3 ? null : 0,
+        max: Math.max(...yAxis) > 3 ? null : 4,
         minInterval: 1,
         nameTextStyle: {
           color: '#000',
@@ -102,7 +102,7 @@ class LineChart extends PureComponent {
         type: 'value',
       },
       series: [{
-        data: value,
+        data: yAxis,
         type: 'line',
         smooth: true,
         smoothMonotone: 'x',
@@ -124,7 +124,7 @@ class LineChart extends PureComponent {
   };
 
   render() {
-    const { style, data: { avatar, count, items }, name, loading, hasAvatar } = this.props;
+    const { style, data: { avatar, count }, name, loading, hasAvatar } = this.props;
     return (<Spin spinning={loading}>
       <div className="c7n-report-commits-title">
         {hasAvatar ? (<span className="c7n-report-commits-avatar">

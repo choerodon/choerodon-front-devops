@@ -23,7 +23,8 @@ function formatData(data) {
   const total = {};
   const user = [];
   if (totalCommitsDate && commitFormUserDTOList) {
-    total.items = _.countBy(totalCommitsDate, item => item.slice(0, 10));
+    // total.items = _.countBy(totalCommitsDate, item => item.slice(0, 10));
+    total.items = totalCommitsDate.slice();
     total.count = totalCommitsDate.length;
     _.forEach(commitFormUserDTOList, (item) => {
       const { name, imgUrl, commitDates, id } = item;
@@ -32,7 +33,8 @@ function formatData(data) {
         avatar: imgUrl,
       };
       userTotal.id = id;
-      userTotal.items = _.countBy(commitDates, cit => cit.slice(0, 10));
+      // userTotal.items = _.countBy(commitDates, cit => cit.slice(0, 10));
+      userTotal.items = commitDates.slice();
       userTotal.count = commitDates.length;
       user.push(userTotal);
     });
@@ -124,6 +126,8 @@ class Submission extends Component {
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const { appId, dateType } = this.state;
     const commits = ReportsStore.getCommits;
+    const startTime = ReportsStore.getStartTime;
+    const endTime = ReportsStore.getEndTime;
     const { total, user } = formatData(commits);
     const apps = ReportsStore.getApps;
     const commitsRecord = ReportsStore.getCommitsRecord;
@@ -139,6 +143,8 @@ class Submission extends Component {
         color="#ff9915"
         style={{ width: '100%', height: 176 }}
         data={item}
+        start={startTime}
+        end={endTime}
         hasAvatar
       />
     </div>));
@@ -202,6 +208,8 @@ class Submission extends Component {
                   style={{ width: '100%', height: 276 }}
                   data={total}
                   hasAvatar={false}
+                  start={startTime}
+                  end={endTime}
                 />
               </div>
               <div className="c7n-report-submission-history">
