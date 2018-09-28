@@ -1,4 +1,6 @@
 /* eslint-disable no-plusplus */
+/* eslint-disable no-useless-return */
+
 import moment from 'moment';
 import _ from 'lodash';
 
@@ -129,3 +131,61 @@ export function getAxis(startTime, endTime, oldxAxis = [], oldyAxis = {}) {
   });
   return { xAxis, yAxis };
 }
+
+/**
+ * 切割补全时间
+ * 小于1天返回时间频数
+ * 大于1天返回按天的聚合
+ * @param start 开始时间
+ * @param end 结束时间
+ * @param date 时间数组
+ * @returns {{}}
+ */
+export function dateSplitAndPad(start, end, date) {
+  start = moment(start, 'x');
+  end = moment(end, 'x');
+  if (start > end) {
+    return {};
+  }
+  let dateArr = {};
+  const timeDiff = end - start;
+  if (timeDiff < 3600 * 25 * 1000) {
+    const oneDay = _.countBy(date, item => item.slice(0, 10));
+    dateArr = !_.isEmpty(oneDay) ? oneDay : { [moment().format('YYYY-MM-DD')]: 0 };
+  } else {
+    const days = timeDiff / (3600 * 24 * 1000);
+    const dateGroup = _.countBy(date, item => item.slice(0, 10));
+    for (let i = 0; i <= Math.floor(days); i++) {
+      const d = moment(end).subtract(i, 'days').format('YYYY-MM-DD');
+      if (dateGroup[d] || dateGroup[d] === 0) {
+        dateArr[d] = dateGroup[d];
+      } else {
+        dateArr[d] = 0;
+      }
+    }
+  }
+  return dateArr;
+}
+
+/**
+ * 提取出对象的键和值，并形成对应的两个数组
+ * @param obj
+ * @param obj
+ * @returns {*}
+ */
+export function pickEntries(obj) {
+  if (Object.prototype.toString.call(obj) !== '[object Object]') {
+    return {};
+  }
+  const keys = Object.keys(obj);
+  const values = keys.map(item => obj[item]);
+  return {
+    keys,
+    values,
+  };
+}
+
+//
+// function CountBy(collection, ite) {
+//
+// }

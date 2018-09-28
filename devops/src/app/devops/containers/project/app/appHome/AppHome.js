@@ -189,17 +189,23 @@ class AppHome extends Component {
       fontSize: 18,
       marginRight: 6,
     };
-    let el = null;
+    let icon = '';
+    let msg = '';
+    let color = '';
     if (record.synchro && text) {
-      if (text) {
-        el = <span><Icon style={{ color: '#1ab16f', ...style }} type="check_circle" /><FormattedMessage id="app.run" /></span>;
-      } else {
-        el = <span><Icon style={{ color: '#f44336', ...style }} type="not_interested" /><FormattedMessage id="app.stop" /></span>;
-      }
+      icon = 'check_circle';
+      msg = 'run';
+      color = '#00bf96';
+    } else if (text) {
+      icon = 'timelapse';
+      msg = 'creating';
+      color = '#4d90fe';
     } else {
-      el = <span><Icon style={{ color: '#4d90fe', ...style }} type="timelapse" /><FormattedMessage id="app.creating" /></span>;
+      icon = 'not_interested';
+      msg = 'stop';
+      color = '#f44336';
     }
-    return el;
+    return (<span><Icon style={{ color, ...style }} type={icon} /><FormattedMessage id={`app.${msg}`} /></span>);
   };
 
   /**

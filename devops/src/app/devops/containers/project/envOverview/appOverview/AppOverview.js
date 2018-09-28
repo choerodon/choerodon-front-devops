@@ -348,44 +348,110 @@ class AppOverview extends Component {
   /**
    * 加载容器日志
    */
+  @action
   loadLog = (followingOK) => {
+    const { following } = this.state;
     const authToken = document.cookie.split('=')[1];
     const logs = [];
     let oldLogs = [];
-    const ws = new WebSocket(`ws://devops-service-front.staging.saas.hand-china.com/ws/log?key=env:${this.namespace}.envId:${this.props.envId}.log:${this.logId}&podName=${this.podName}&containerName=${this.containerName}&logId=${this.logId}&token=${authToken}`);
-    const editor = this.editorLog.getCodeMirror();
-    this.setState({ ws, following: true });
-    if (!followingOK) {
-      editor.setValue('Loading...');
-    }
-    ws.onmessage = (e) => {
-      if (e.data.size) {
-        const reader = new FileReader();
-        reader.readAsText(e.data, 'utf-8');
-        reader.onload = () => {
-          if (reader.result !== '') {
-            logs.push(reader.result);
+    let editor = null;
+    if (this.editorLog) {
+      editor = this.editorLog.getCodeMirror();
+      try {
+        const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${this.namespace}.envId:${this.props.envId}.log:${this.logId}&podName=${this.podName}&containerName=${this.containerName}&logId=${this.logId}&token=${authToken}`);
+        this.setState({ ws, following: true });
+        if (!followingOK) {
+          editor.setValue('Loading...');
+        }
+        ws.onmessage = (e) => {
+          if (e.data.size) {
+            const reader = new FileReader();
+            reader.readAsText(e.data, 'utf-8');
+            reader.onload = () => {
+              if (reader.result !== '') {
+                logs.push(reader.result);
+              }
+            };
           }
         };
-      }
-    };
-    if (logs.length > 0) {
-      const logString = _.join(logs, '');
-      editor.setValue(logString);
-    }
-    this.timer = setInterval(() => {
-      if (logs.length > 0) {
-        if (!_.isEqual(logs, oldLogs)) {
+        if (logs.length > 0) {
           const logString = _.join(logs, '');
           editor.setValue(logString);
-          editor.execCommand('goDocEnd');
-          // 如果没有返回数据，则不进行重新赋值给编辑器
-          oldLogs = _.cloneDeep(logs);
         }
-      } else {
-        editor.setValue('Loading...');
+        this.timer = setInterval(() => {
+          if (logs.length > 0) {
+            if (!_.isEqual(logs, oldLogs)) {
+              const logString = _.join(logs, '');
+              editor.setValue(logString);
+              editor.execCommand('goDocEnd');
+              // 如果没有返回数据，则不进行重新赋值给编辑器
+              oldLogs = _.cloneDeep(logs);
+            }
+          } else {
+            editor.setValue('Loading...');
+          }
+        }, 1000);
+
+        this.setState({ ws, following: true });
+        if (!followingOK) {
+          editor.setValue('Loading...');
+        }
+        ws.onopen = () => {
+          editor.setValue('Loading...');
+        };
+        ws.onerror = (e) => {
+          if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+          }
+          logs.push('连接出错，请重新打开');
+          editor.setValue(_.join(logs, ''));
+          editor.execCommand('goDocEnd');
+        };
+        ws.onclose = (e) => {
+          if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+          }
+          if (following) {
+            logs.push('连接已断开');
+            editor.setValue(_.join(logs, ''));
+          }
+          editor.execCommand('goDocEnd');
+        };
+        ws.onmessage = (e) => {
+          if (e.data.size) {
+            const reader = new FileReader();
+            reader.readAsText(e.data, 'utf-8');
+            reader.onload = () => {
+              if (reader.result !== '') {
+                logs.push(reader.result);
+              }
+            };
+          }
+          if (!logs.length) {
+            const logString = _.join(logs, '');
+            editor.setValue(logString);
+          }
+        };
+
+        this.timer = setInterval(() => {
+          if (logs.length > 0) {
+            if (!_.isEqual(logs, oldLogs)) {
+              const logString = _.join(logs, '');
+              editor.setValue(logString);
+              editor.execCommand('goDocEnd');
+              // 如果没有返回数据，则不进行重新赋值给编辑器
+              oldLogs = _.cloneDeep(logs);
+            }
+          } else if (!followingOK) {
+            editor.setValue('Loading...');
+          }
+        });
+      } catch (e) {
+        editor.setValue('连接失败');
       }
-    }, 1000);
+    }
   };
 
   /**
