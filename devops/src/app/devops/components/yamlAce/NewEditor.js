@@ -44,7 +44,7 @@ class NewEditor extends Component {
     const editor = this.aceEditor.getCodeMirror();
     const { highlightMarkers } = this.props;
     editor.setOption('styleSelectedText',false);
-    editor.setSize('100%', (editor.getDoc().size * 19) + 8);
+    editor.setSize('100%', (editor.getDoc().size * 19) + 18);
     if (highlightMarkers) {
       this.handleHighLight();
     }
@@ -150,7 +150,7 @@ class NewEditor extends Component {
     this.handleError();
     return (
       <div>
-        { !this.props.readOnly && <div className="ace-error">
+        { !this.props.options.readOnly && <div className="ace-error">
           <span className="deployApp-config-block deployApp-config-new" /> <span className="deployApp-config-title">{formatMessage({ id: 'yaml.new' })}</span>
           <span className="deployApp-config-block deployApp-config-lastModify" /> <span className="deployApp-config-title">{formatMessage({ id: 'yaml.lastModify' })}</span>
           <span className="deployApp-config-error" /><span className="deployApp-config-title">{formatMessage({ id: 'yaml.yaml.error' })}</span>
@@ -159,7 +159,6 @@ class NewEditor extends Component {
           options={this.props.options}
           value={value}
           onChange={this.onChange}
-          style={{ height: totalLine ? `${totalLine * 16}px` : '500px' }}
           ref={(instance) => { this.aceEditor = instance; }} // Let's put things into scope
         />
         {isFileError && <div className="ace-error-message">

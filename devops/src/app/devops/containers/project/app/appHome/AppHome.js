@@ -195,7 +195,7 @@ class AppHome extends Component {
     if (record.synchro && text) {
       icon = 'check_circle';
       msg = 'run';
-      color = '#1ab16f';
+      color = '#00bf96';
     } else if (text) {
       icon = 'timelapse';
       msg = 'creating';

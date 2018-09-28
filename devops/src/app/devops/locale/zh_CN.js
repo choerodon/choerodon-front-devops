@@ -242,7 +242,7 @@ const zhCN = {
   deleting: '删除中',
   pending: '部署中',
   stopped: '已停止',
-  failed: '已失败',
+  failed: '失败',
   deleted: '已删除',
   install_failed: '创建失败',
   upgrade_failed: '更新失败',
@@ -397,7 +397,7 @@ const zhCN = {
   'network.config.addtarget': '添加标签',
   'network.config.keyword': '关键字',
   'network.config.value': '值',
-  'network.failed': '已失败',
+  'network.failed': '失败',
   'network.node.port': '节点端口/端口/目标端口',
 
   // deploymentApp
