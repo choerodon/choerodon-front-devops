@@ -404,13 +404,13 @@ class ContainerHome extends Component {
       case 'Completed':
         dom = {
           wrap: true,
-          color: '#1ec024',
+          color: '#00bf96',
         };
         break;
       case 'Running':
         dom = {
           wrap: false,
-          color: '#1ec024',
+          color: '#00bf96',
         };
         break;
       case 'Error':

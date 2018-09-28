@@ -167,7 +167,7 @@ class DeploymentDetail extends Component {
       stageData.map((step, index) => {
         const title = (<div>
           <div className={`${index}-stage-title stage-title-text ${(index + 1) !== current ? 'stage-title-text-grey' : ''}`}>{step.stageName}</div>
-          {step.stageTime && <span className="c7n-stage-time">{intl.formatMessage({ id: 'ist.time' })}:{this.getTime(step.stageTime)}</span>}
+          {step.stageTime && <span className={`${index}-stage-title stage-title-text c7n-stage-time ${(index + 1) !== current ? 'stage-title-text-grey' : ''}`}>{intl.formatMessage({ id: 'ist.time' })}:{this.getTime(step.stageTime)}</span>}
         </div>);
         dom.push(<Step
           key={step.weight}
@@ -348,7 +348,7 @@ class DeploymentDetail extends Component {
             </TabPane> }
             <TabPane tab={intl.formatMessage({ id: 'deploy.detail' })} key="2">
               <div className="c7n-deployDetail-card c7n-deployDetail-card-content ">
-                <h2 className="c7n-space-first c7n-h2-inline c7n-deployDetail-title">{intl.formatMessage({ id: 'deploy.info' })}</h2>
+                <div className="c7n-space-first c7n-h2-inline c7n-deployDetail-title">{intl.formatMessage({ id: 'deploy.info' })}</div>
                 <div role="none" className="c7n-deployDetail-expand" onClick={this.changeStatus}>
                   <Button shape="circle">
                     {this.state.expand

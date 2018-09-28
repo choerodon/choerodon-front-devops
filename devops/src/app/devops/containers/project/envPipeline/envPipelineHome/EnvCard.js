@@ -133,7 +133,7 @@ class EnvCard extends Component {
             </div>
             <div className="c7n-env-des" title={cardData.description}>
               <span className="c7n-env-des-head">{this.props.intl.formatMessage({ id: 'envPl.description' })}</span>
-              {cardData.description}
+              &nbsp;{cardData.description}
             </div>
           </div> : this.props.intl.formatMessage({ id: 'envPl.add' }) }</Tooltip></div>,
     );
