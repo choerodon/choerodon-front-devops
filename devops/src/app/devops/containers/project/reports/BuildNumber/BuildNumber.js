@@ -298,7 +298,7 @@ class BuildNumber extends Component {
         </Button>
       </Header>
       <Content code="report.build-number" value={{ name }} className="c7n-buildNumber-content">
-        {appId ? <React.Fragment>
+        {apps && apps.length ? <React.Fragment>
           <div className="c7n-buildNumber-select">
             <Select
               label={formatMessage({ id: 'chooseApp' })}

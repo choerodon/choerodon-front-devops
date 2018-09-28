@@ -270,7 +270,7 @@ class BuildDuration extends Component {
         </Button>
       </Header>
       <Content code="report.build-duration" value={{ name }} className="c7n-buildDuration-content">
-        {appId ? <React.Fragment>
+        {apps && apps.length ? <React.Fragment>
           <div className="c7n-buildDuration-select">
             <Select
               label={formatMessage({ id: 'chooseApp' })}
