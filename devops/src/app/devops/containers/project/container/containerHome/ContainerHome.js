@@ -112,9 +112,9 @@ class ContainerHome extends Component {
   };
 
   /**
-  * 切换container日志
-  * @param value
-  */
+   * 切换container日志
+   * @param value
+   */
   containerChange = (value) => {
     const { ws, logId } = this.state;
     if (logId !== value.split('+')[0]) {
@@ -124,9 +124,10 @@ class ContainerHome extends Component {
       this.setState({
         containerName: value.split('+')[1],
         logId: value.split('+')[0],
-      }, () => {
-        this.loadLog();
       });
+      setTimeout(() => {
+        this.loadLog();
+      }, 1000);
     }
   };
 
@@ -143,9 +144,10 @@ class ContainerHome extends Component {
       this.setState({
         containerName: value.split('+')[1],
         logId: value.split('+')[0],
-      }, () => {
-        this.onTerminalReady();
       });
+      setTimeout(() => {
+        this.onTerminalReady();
+      }, 1000);
     }
   };
 
