@@ -139,6 +139,7 @@ class BuildNumber extends Component {
           });
           return `${name}：${count}`;
         },
+        selectedMode: false,
       },
       grid: {
         left: '2%',
@@ -207,8 +208,8 @@ class BuildNumber extends Component {
             width: 1,
           },
         },
-        min: (yAxis.pipelineFrequency && yAxis.pipelineFrequency.length) ? null : 0,
-        max: (yAxis.pipelineFrequency && yAxis.pipelineFrequency.length) ? null : 4,
+        min: (yAxis.pipelineFrequencys && yAxis.pipelineFrequencys.length) ? null : 0,
+        max: (yAxis.pipelineFrequencys && yAxis.pipelineFrequencys.length) ? null : 4,
       },
       series: [
         {
