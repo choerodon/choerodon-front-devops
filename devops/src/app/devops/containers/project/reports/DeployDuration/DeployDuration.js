@@ -139,12 +139,6 @@ class DeployDuration extends Component {
     ReportsStore.loadDeployDurationChart(projectId, this.envId, startTime, endTime, this.appIds.slice())
       .then((res) => {
         if (res) {
-          // this.appArr = _.map(res.deployAppDTOS, (v, index) => {
-          //   const obj = {};
-          //   obj.name = v.appName;
-          //   obj.icon = `image://${LENGEND[index]}`;
-          //   return obj;
-          // });
           this.dateArr = res.creationDates;
           const seriesArr = [];
           const appArr = [];

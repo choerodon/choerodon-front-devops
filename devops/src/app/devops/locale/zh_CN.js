@@ -285,6 +285,7 @@ const zhCN = {
   seconds: '秒',
   minTime: '时长（分）',
   nodata: '暂无数据',
+  skipped: '跳过',
 
   'chart.change': '切换报表',
   'confirm.delete': '确认删除吗？',
@@ -488,6 +489,7 @@ const zhCN = {
   'app.detail': '详情',
   'app.stop': '停用',
   'app.run': '启用',
+  'app.failed': '失败',
   'app.creating': '创建中',
   'app.synch': '应用同步中',
   'app.start': '请先启用应用',
