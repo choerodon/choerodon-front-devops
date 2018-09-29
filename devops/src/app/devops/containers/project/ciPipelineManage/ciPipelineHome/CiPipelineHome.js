@@ -402,7 +402,7 @@ class CiPipelineHome extends Component {
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    if (record.status && record.status !== 'passed' && record.status !== 'skipped') {
+    if (record.status && record.status !== 'passed' && record.status !== 'success' && record.status !== 'skipped') {
       return (
         <Permission
           service={['devops-service.project-pipeline.retry', 'devops-service.project-pipeline.cancel']}

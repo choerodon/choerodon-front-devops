@@ -13,7 +13,6 @@ import StatusTags from '../../../../components/StatusTags';
 import NoChart from '../Component/NoChart';
 import ContainerStore from '../../../../stores/project/container';
 import './DeployDuration.scss';
-import { getNear7Day } from '../../../../utils';
 
 configure({ enforceActions: false });
 
@@ -22,8 +21,16 @@ const { Option } = Select;
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 const COLOR = ['50,198,222', '87,170,248', '255,177,0', '116,59,231', '237,74,103'];
+const LENGEND = [
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiMzMkM2REUiIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjMzJDNkRFIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiM1N0FBRjgiIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjNTdBQUY4IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiNGRkIxMDAiIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjRkZCMTAwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiM3NDNCRTciIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjNzQzQkU3IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiNFRDRBNjciIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjRUQ0QTY3IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
+];
 
-@observer
+
+  @observer
 class DeployDuration extends Component {
   @observable env = [];
 
@@ -132,15 +139,15 @@ class DeployDuration extends Component {
     ReportsStore.loadDeployDurationChart(projectId, this.envId, startTime, endTime, this.appIds.slice())
       .then((res) => {
         if (res) {
-          this.appArr = _.map(res.deployAppDTOS, (v, index) => {
-            const obj = {};
-            obj.name = v.appName;
-            // obj.icon = 'path://M30.9,53.2C16.8,53.2,5.3,41.7,5.3,27.6S16.8,2,30.9,2C45,2,56.4,13.5,56.4,27.6S45,53.2,30.9,53.2z M30.9,3.5C17.6,3.5,6.8,14.4,6.8,27.6c0,13.3,10.8,24.1,24.101,24.1C44.2,51.7,55,40.9,55,27.6C54.9,14.4,44.1,3.5,30.9,3.5z M36.9,35.8c0,0.601-0.4,1-0.9,1h-1.3c-0.5,0-0.9-0.399-0.9-1V19.5c0-0.6,0.4-1,0.9-1H36c0.5,0,0.9,0.4,0.9,1V35.8z M27.8,35.8 c0,0.601-0.4,1-0.9,1h-1.3c-0.5,0-0.9-0.399-0.9-1V19.5c0-0.6,0.4-1,0.9-1H27c0.5,0,0.9,0.4,0.9,1L27.8,35.8L27.8,35.8z';
-            obj.icon = 'path://M6.5,16.5 C3.1862915,16.5 0.5,13.8137085 0.5,10.5 C0.5,7.1862915 3.1862915,4.5 6.5,4.5 C9.8137085,4.5 12.5,7.1862915 12.5,10.5 C12.5,13.8137085 9.8137085,16.5 6.5,16.5 Z';
-            return obj;
-          });
+          // this.appArr = _.map(res.deployAppDTOS, (v, index) => {
+          //   const obj = {};
+          //   obj.name = v.appName;
+          //   obj.icon = `image://${LENGEND[index]}`;
+          //   return obj;
+          // });
           this.dateArr = res.creationDates;
           const seriesArr = [];
+          const appArr = [];
           _.map(res.deployAppDTOS, (v, index) => {
             const series = {
               name: v.appName,
@@ -152,9 +159,14 @@ class DeployDuration extends Component {
               data: _.map(v.deployAppDetails, c => Object.values(c)),
               type: 'scatter',
             };
+            const obj = {};
+            obj.name = v.appName;
+            obj.icon = `image://${LENGEND[index]}`;
             seriesArr.push(series);
+            appArr.push(obj);
           });
           this.seriesArr = seriesArr;
+          this.appArr = appArr;
         }
       });
     this.loadTables();
@@ -190,6 +202,8 @@ class DeployDuration extends Component {
         data: this.appArr,
         borderColor: '#000',
         borderWidth: '5px',
+        itemWidth: 12,
+        itemHeight: 12,
       },
       toolbox: {
         feature: {
