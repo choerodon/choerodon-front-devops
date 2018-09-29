@@ -696,11 +696,11 @@ class EnvPipelineHome extends Component {
             closable={false}
             wrapClassName="vertical-center-modal remove"
           >
-            {sideType === 'delGroup' ? <div>
-              <h2>{intl.formatMessage({ id: 'envPl.group.del' })}</h2>
+            {sideType === 'delGroup' ? <div className="c7n-env-modal-content">
+              <div>{intl.formatMessage({ id: 'envPl.group.del' })}</div>
               {intl.formatMessage({ id: 'envPl.confirm.group.del' })}
-            </div> : (<div>
-              <h2>{intl.formatMessage({ id: 'envPl.confirm.disable' })}</h2>
+            </div> : (<div className="c7n-env-modal-content">
+              <div>{intl.formatMessage({ id: 'envPl.confirm.disable' })}</div>
               <span>{ist.length > 0 ? intl.formatMessage({ id: 'envPl.confirm.content.hasInstance' })
                 : intl.formatMessage({ id: 'envPl.confirm.content.noInstance' })}</span>
             </div>)}
@@ -709,17 +709,19 @@ class EnvPipelineHome extends Component {
           {EnvPipelineStore.getIsLoading ? <LoadingBar display />
             : <React.Fragment>
               {BoardDom.length ? BoardDom : <Board projectId={Number(projectId)} key="none" envcardPositionChild={[]} />}
-              <Content code="env.stop" value={{ projectName }}>
-                <div className="c7n-outer-container">
-                  {leftDom}
-                  <div className="c7n-inner-container-ban">
-                    <div className="c7n-env-board-ban">
-                      {DisEnvDom}
+              <div className="no-content-padding">
+                <Content code="env.stop" value={{ projectName }}>
+                  <div className="c7n-outer-container">
+                    {leftDom}
+                    <div className="c7n-inner-container-ban">
+                      <div className="c7n-env-board-ban">
+                        {DisEnvDom}
+                      </div>
                     </div>
+                    {rightDom}
                   </div>
-                  {rightDom}
-                </div>
-              </Content>
+                </Content>
+              </div>
             </React.Fragment>}
         </Content>
       </Page>

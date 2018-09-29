@@ -54,19 +54,17 @@ class NetworkOverview extends Component {
     const page = store.getPageInfo.current;
     const totalPage = Math.ceil(store.getPageInfo.total / store.getPageInfo.pageSize);
     this.submitting = true;
-    NetworkConfigStore.deleteData(projectId, this.id).then((data) => {
-      if (data) {
-        this.submitting = false;
-        if (lastDatas === 1 && page === totalPage) {
-          store.loadNetwork(projectId, envId, store.getPageInfo.current - 2);
-        } else {
-          store.loadNetwork(projectId, envId, store.getPageInfo.current - 1);
-        }
-        this.closeRemove();
+    NetworkConfigStore.deleteData(projectId, this.id).then(() => {
+      this.submitting = false;
+      if (lastDatas === 1 && page === totalPage) {
+        store.loadNetwork(projectId, envId, store.getPageInfo.current - 2);
+      } else {
+        store.loadNetwork(projectId, envId, store.getPageInfo.current - 1);
       }
+      this.closeRemove();
     }).catch((error) => {
       this.submitting = false;
-      Choerodon.prompt(error);
+      Choerodon.handleResponseError(error);
     });
     store.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
   };

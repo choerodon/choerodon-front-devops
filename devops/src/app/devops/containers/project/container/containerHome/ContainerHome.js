@@ -74,6 +74,9 @@ class ContainerHome extends Component {
     const { ContainerStore } = this.props;
     const { filters, sort, paras } = ContainerStore.getInfo;
     const pagination = ContainerStore.getPageInfo;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    ContainerStore.loadActiveEnv(projectId);
+    ContainerStore.loadAppData(projectId);
     this.tableChange(pagination, filters, sort, paras);
   };
 
@@ -112,9 +115,9 @@ class ContainerHome extends Component {
   };
 
   /**
-  * 切换container日志
-  * @param value
-  */
+   * 切换container日志
+   * @param value
+   */
   containerChange = (value) => {
     const { ws, logId } = this.state;
     if (logId !== value.split('+')[0]) {
@@ -124,9 +127,10 @@ class ContainerHome extends Component {
       this.setState({
         containerName: value.split('+')[1],
         logId: value.split('+')[0],
-      }, () => {
-        this.loadLog();
       });
+      setTimeout(() => {
+        this.loadLog();
+      }, 1000);
     }
   };
 
@@ -143,9 +147,10 @@ class ContainerHome extends Component {
       this.setState({
         containerName: value.split('+')[1],
         logId: value.split('+')[0],
-      }, () => {
-        this.onTerminalReady();
       });
+      setTimeout(() => {
+        this.onTerminalReady();
+      }, 1000);
     }
   };
 
@@ -154,6 +159,7 @@ class ContainerHome extends Component {
    */
   @action
   onTerminalReady() {
+    this.term.installKeyboard();
     this.io = this.term.io.push();
     this.onTerminalResponseReceived();
     this.io.showOverlay(`${this.term.screenSize.width}x${this.term.screenSize.height}`);
@@ -240,7 +246,6 @@ class ContainerHome extends Component {
     } else {
       this.onTerminalReady();
     }
-    this.term.installKeyboard();
   }
 
   /**
@@ -402,13 +407,13 @@ class ContainerHome extends Component {
       case 'Completed':
         dom = {
           wrap: true,
-          color: '#1ec024',
+          color: '#00bf96',
         };
         break;
       case 'Running':
         dom = {
           wrap: false,
-          color: '#1ec024',
+          color: '#00bf96',
         };
         break;
       case 'Error':
@@ -570,7 +575,6 @@ class ContainerHome extends Component {
    * top log following
    */
   stopFollowing = () => {
-    const editor = this.editorLog.getCodeMirror();
     const { ws } = this.state;
     if (ws) {
       ws.close();
@@ -784,7 +788,7 @@ class ContainerHome extends Component {
     this.setState({ fullscreen: true });
     document.documentElement.style.overflow = 'hidden';
     cm.refresh();
-    window.addEventListener('keypress', (e) => {
+    window.addEventListener('keydown', (e) => {
       this.setNormal(e.which);
     });
   };
@@ -802,7 +806,7 @@ class ContainerHome extends Component {
     wrap.style.width = info.width; wrap.style.height = info.height;
     window.scrollTo(info.scrollLeft, info.scrollTop);
     cm.refresh();
-    window.removeEventListener('keypress', (e) => {
+    window.removeEventListener('keydown', (e) => {
       this.setNormal(e.which);
     });
   };
@@ -815,7 +819,7 @@ class ContainerHome extends Component {
     const { paras } = ContainerStore.getInfo;
     const proPageSize = (10 * selectProPage) + 3;
     const pubPageSize = (10 * selectPubPage) + 3;
-    const serviceData = ContainerStore.getAllData.slice();
+    const serviceData = ContainerStore.getAllData && ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
       <Header title={<FormattedMessage id="container.header.title" />}>

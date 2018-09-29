@@ -51,19 +51,17 @@ class DomainOverview extends Component {
     const page = store.getPageInfo.current;
     const totalPage = Math.ceil(store.getPageInfo.total / store.getPageInfo.pageSize);
     this.submitting = true;
-    DomainStore.deleteData(projectId, this.id).then((data) => {
-      if (data) {
-        this.submitting = false;
-        if (lastDatas === 1 && page === totalPage) {
-          store.loadDomain(projectId, envId, store.getPageInfo.current - 2);
-        } else {
-          store.loadDomain(projectId, envId, store.getPageInfo.current - 1);
-        }
-        this.closeRemove();
+    DomainStore.deleteData(projectId, this.id).then(() => {
+      this.submitting = false;
+      if (lastDatas === 1 && page === totalPage) {
+        store.loadDomain(projectId, envId, store.getPageInfo.current - 2);
+      } else {
+        store.loadDomain(projectId, envId, store.getPageInfo.current - 1);
       }
+      this.closeRemove();
     }).catch((error) => {
       this.submitting = false;
-      Choerodon.prompt(error);
+      Choerodon.handleResponseError(error);
     });
     store.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
   };

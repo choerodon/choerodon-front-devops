@@ -149,7 +149,10 @@ class EnvOverviewStore {
       });
   };
 
-  loadDomain = (proId, envId, page, pageSize, sort, datas) => {
+  loadDomain = (proId, envId, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
+    searchParam: {},
+    param: '',
+  }) => {
     this.changeLoading(true);
     return axios.post(`/devops/v1/projects/${proId}/ingress/${envId}/listByEnv?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
       .then((data) => {
@@ -163,7 +166,10 @@ class EnvOverviewStore {
       });
   };
 
-  loadNetwork = (proId, envId, page, pageSize, sort, datas) => {
+  loadNetwork = (proId, envId, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
+    searchParam: {},
+    param: '',
+  }) => {
     this.changeLoading(true);
     return axios.post(`/devops/v1/projects/${proId}/service/${envId}/listByEnv?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
       .then((data) => {

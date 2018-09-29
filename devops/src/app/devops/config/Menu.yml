@@ -71,7 +71,6 @@
         Routes: /devops/tag
         sort: 3
         permission:
-          - 'devops-service.application.listByActive'
           - 'devops-service.devops-git.getTagByPage'
           - 'devops-service.devops-git.listByAppId'
           - 'devops-service.devops-git.createTag'
@@ -82,7 +81,6 @@
         Routes: /devops/merge-request
         sort: 4
         permission:
-          - 'devops-service.application.listByActive'
           - 'devops-service.devops-git.getMergeRequestList'
           - 'devops-service.devops-git.getUr'
     - "continuous-integration":
@@ -91,7 +89,6 @@
         sort: 5
         permission:
           - 'devops-service.project-pipeline.list'
-          - 'devops-service.application.listByActive'
           - 'devops-service.gitlab-commit.list'
           - 'devops-service.project-pipeline.cancel'
           - 'devops-service.project-pipeline.retry'

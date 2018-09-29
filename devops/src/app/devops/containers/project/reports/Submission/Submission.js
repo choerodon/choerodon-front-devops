@@ -23,7 +23,8 @@ function formatData(data) {
   const total = {};
   const user = [];
   if (totalCommitsDate && commitFormUserDTOList) {
-    total.items = _.countBy(totalCommitsDate, item => item.slice(0, 10));
+    // total.items = _.countBy(totalCommitsDate, item => item.slice(0, 10));
+    total.items = totalCommitsDate.slice();
     total.count = totalCommitsDate.length;
     _.forEach(commitFormUserDTOList, (item) => {
       const { name, imgUrl, commitDates, id } = item;
@@ -32,7 +33,8 @@ function formatData(data) {
         avatar: imgUrl,
       };
       userTotal.id = id;
-      userTotal.items = _.countBy(commitDates, cit => cit.slice(0, 10));
+      // userTotal.items = _.countBy(commitDates, cit => cit.slice(0, 10));
+      userTotal.items = commitDates.slice();
       userTotal.count = commitDates.length;
       user.push(userTotal);
     });
@@ -79,12 +81,8 @@ class Submission extends Component {
     const { ReportsStore: { loadCommits, loadCommitsRecord, getStartTime, getEndTime } } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ appId: e });
-    let appIds = e.join(',');
-    if (!e.length) {
-      appIds = null;
-    }
-    loadCommits(projectId, getStartTime, getEndTime, appIds);
-    loadCommitsRecord(projectId, getStartTime, getEndTime, appIds, 0);
+    loadCommits(projectId, getStartTime, getEndTime, e);
+    loadCommitsRecord(projectId, getStartTime, getEndTime, e, 0);
   };
 
   handlePageChange = (page) => {
@@ -92,7 +90,6 @@ class Submission extends Component {
     const { appId } = this.state;
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ page: page - 1 });
-    const appIds = appId && appId.length ? appId.join(',') : null;
     loadCommitsRecord(projectId, getStartTime, getEndTime, appId, page - 1);
   };
 
@@ -100,15 +97,14 @@ class Submission extends Component {
     const { ReportsStore: { loadApps, loadCommits, loadCommitsRecord, getStartTime, getEndTime } } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     const { page, appId, dateType } = this.state;
-    const appIds = appId && appId.length ? appId.join(',') : null;
     loadApps(projectId).then((data) => {
       if (data && data.length) {
-        const selectApp = appIds || _.map(data, item => item.id);
-        const newAppId = _.isString(selectApp) ? _.map(selectApp.split(','), item => _.toNumber(item)) : selectApp;
-        // const startDate = dateType ? getStartTime : null;
+        const selectApp = appId || _.map(data, item => item.id);
+        if (!appId) {
+          this.setState({ appId: selectApp });
+        }
         loadCommits(projectId, getStartTime, getEndTime, selectApp);
         loadCommitsRecord(projectId, getStartTime, getEndTime, selectApp, page);
-        this.setState({ appId: newAppId });
       }
     });
   };
@@ -124,25 +120,24 @@ class Submission extends Component {
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const { appId, dateType } = this.state;
     const commits = ReportsStore.getCommits;
+    const startTime = ReportsStore.getStartTime;
+    const endTime = ReportsStore.getEndTime;
     const { total, user } = formatData(commits);
     const apps = ReportsStore.getApps;
     const commitsRecord = ReportsStore.getCommitsRecord;
-    const defaultApp = [];
-    const options = _.map(apps, (item) => {
-      defaultApp.push(item.id);
-      return (<Option key={item.id} value={item.id}>{item.name}</Option>);
-    });
+    const options = _.map(apps, item => (<Option key={item.id} value={item.id}>{item.name}</Option>));
     const personChart = _.map(user, item => (<div key={item.id} className="c7n-report-submission-item">
       <LineChart
         loading={ReportsStore.getCommitLoading}
-        name={item.name}
+        name={item.name || 'Unknown'}
         color="#ff9915"
         style={{ width: '100%', height: 176 }}
         data={item}
+        start={startTime}
+        end={endTime}
         hasAvatar
       />
     </div>));
-    const selectApp = appId || defaultApp;
     return (<Page
       className="c7n-region"
       service={[
@@ -176,8 +171,8 @@ class Submission extends Component {
                 label={formatMessage({ id: 'chooseApp' })}
                 placeholder={formatMessage({ id: 'report.app.noselect' })}
                 maxTagCount={3}
-                value={selectApp}
-                maxTagPlaceholder={`+ ${selectApp.length - 3} ...`}
+                value={appId || []}
+                maxTagPlaceholder={`+ ${appId ? (appId.length - 3) : ''} ...`}
                 onChange={this.handleSelect}
                 optionFilterProp="children"
                 filter
@@ -202,6 +197,8 @@ class Submission extends Component {
                   style={{ width: '100%', height: 276 }}
                   data={total}
                   hasAvatar={false}
+                  start={startTime}
+                  end={endTime}
                 />
               </div>
               <div className="c7n-report-submission-history">

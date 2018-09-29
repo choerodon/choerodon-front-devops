@@ -135,6 +135,7 @@ const pageDetail = {
   'dpOverview.edit.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
 
   // appstore
+  'appstore.description.label': '描述',
   'appstore.description': '应用市场是应用的集市。您可在此查看已发布至您项目的应用及其详细信息，并选择需要的应用版本进行部署。',
   'appstore.import.title': '应用导入',
   'appstore.export.title': '应用导出',
@@ -241,7 +242,7 @@ const zhCN = {
   deleting: '删除中',
   pending: '部署中',
   stopped: '已停止',
-  failed: '已失败',
+  failed: '失败',
   deleted: '已删除',
   install_failed: '创建失败',
   upgrade_failed: '更新失败',
@@ -284,6 +285,7 @@ const zhCN = {
   seconds: '秒',
   minTime: '时长（分）',
   nodata: '暂无数据',
+  skipped: '跳过',
 
   'chart.change': '切换报表',
   'confirm.delete': '确认删除吗？',
@@ -396,7 +398,7 @@ const zhCN = {
   'network.config.addtarget': '添加标签',
   'network.config.keyword': '关键字',
   'network.config.value': '值',
-  'network.failed': '已失败',
+  'network.failed': '失败',
   'network.node.port': '节点端口/端口/目标端口',
 
   // deploymentApp
@@ -466,7 +468,7 @@ const zhCN = {
   'envPl.status.stop': '暂无停用环境',
   'envPl.status.restart': '重启环境',
   'envPl.status.stopped': '已停用',
-  'envPl.description': '描述:',
+  'envPl.description': '描述: ',
   'envPl.add.description': '请添加一个环境，并填写相应的环境描述信息。',
   'envPl.token': '指令',
   'envPl.status.update': '版本过低，请更新',
@@ -487,6 +489,7 @@ const zhCN = {
   'app.detail': '详情',
   'app.stop': '停用',
   'app.run': '启用',
+  'app.failed': '失败',
   'app.creating': '创建中',
   'app.synch': '应用同步中',
   'app.start': '请先启用应用',
@@ -913,6 +916,8 @@ const zhCN = {
   'report.commit.none': '无提交记录',
   'report.app.noselect': '请选择应用',
   'report.date.more': '报表暂支持最多查看30天，已自动截取开始日期后30天。',
+  'report.commits.unknown': '非平台用户提交汇总',
+  'report.unknown.user': '非平台用户',
 
   // 部署总览
   'dpOverview.head': '部署总览',

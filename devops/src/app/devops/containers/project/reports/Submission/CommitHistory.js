@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Avatar, Pagination, Spin } from 'choerodon-ui';
+import { Avatar, Pagination, Spin, Tooltip } from 'choerodon-ui';
 import TimePopover from '../../../../components/timePopover';
 import './Submission.scss';
 
@@ -25,7 +25,7 @@ export default function CommitHistory(props) {
               >{commitContent}</a>
             </div>
             <div className="c7n-report-history-date">
-              <span className="c7n-report-history-name">{userName || 'Unknown'}</span><span>（{appName}）</span>
+              <span className="c7n-report-history-name">{userName || (<Tooltip placement="top" title={<FormattedMessage id="report.unknown.user" />}>Unknown</Tooltip>)}</span><span>（{appName}）</span>
               <FormattedMessage id="report.commit.by" /> <TimePopover style={{ display: 'inline-block' }} content={commitDate} />
             </div>
           </div>
@@ -33,7 +33,7 @@ export default function CommitHistory(props) {
       );
     });
   } else {
-    list = [<FormattedMessage key="no.commits" id="report.commit.none" />];
+    list = [<span className="c7n-report-history-list-none"><FormattedMessage key="no.commits" id="report.commit.none" /></span>];
   }
   return (<Fragment>
     <h3 className="c7n-report-history-title"><FormattedMessage id="report.commit.history" /></h3>

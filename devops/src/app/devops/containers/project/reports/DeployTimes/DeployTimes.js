@@ -15,7 +15,7 @@ import ContainerStore from '../../../../stores/project/container';
 import '../DeployDuration/DeployDuration.scss';
 import { getAxis } from '../../../../utils';
 
-configure({ enforceActions: false });
+configure({ enforceActions: 'never' });
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -216,6 +216,7 @@ class DeployTimes extends Component {
           });
           return `${name}：${count}`;
         },
+        selectedMode: false,
       },
       grid: {
         left: '2%',
@@ -290,9 +291,8 @@ class DeployTimes extends Component {
           itemStyle: {
             color: '#00BFA5',
             emphasis: {
-              borderColor: 'rgba(0,191,165,0.30)',
-              borderWidth: 10,
-              barBorderRadius: [5, 5, 0, 0],
+              shadowBlur: 10,
+              shadowColor: 'rgba(0,0,0,0.20)',
             },
           },
           barWidth: '40%',
@@ -305,9 +305,8 @@ class DeployTimes extends Component {
           itemStyle: {
             color: '#FFB100',
             emphasis: {
-              borderColor: 'rgba(255,177,0,0.30)',
-              borderWidth: 10,
-              barBorderRadius: [5, 5, 0, 0],
+              shadowBlur: 10,
+              shadowColor: 'rgba(0,0,0,0.20)',
             },
           },
           barWidth: '40%',
@@ -390,6 +389,7 @@ class DeployTimes extends Component {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const echartsLoading = ReportsStore.getEchartsLoading;
+    const apps = ReportsStore.getApps;
 
     const envDom = this.env.length ? _.map(this.env, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
 
@@ -419,7 +419,7 @@ class DeployTimes extends Component {
         </Button>
       </Header>
       <Content code="report.deploy-times" value={{ name }}>
-        {this.app.length ? <React.Fragment>
+        {apps && apps.length ? <React.Fragment>
           <div className="c7n-report-screen">
             <Select
               notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}

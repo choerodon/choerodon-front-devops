@@ -218,7 +218,7 @@ class AppReleaseEdit extends Component {
           })(
             <TextArea
               maxLength={100}
-              label={<FormattedMessage id="appstore.description" />}
+              label={<FormattedMessage id="appstore.description.label" />}
               autosize={{ minRows: 2, maxRows: 6 }}
             />,
           )}

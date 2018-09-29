@@ -50,6 +50,16 @@ const ICONS = {
     code: 'skipped',
     display: 'Skipped',
   },
+  created: {
+    icon: 'icon-radio_button_checked',
+    code: 'created',
+    display: 'Created',
+  },
+  manual: {
+    icon: 'icon-radio_button_checked',
+    code: 'manual',
+    display: 'Manual',
+  },
 };
 const ICONS_ACTION = {
   pending: {
@@ -137,7 +147,7 @@ class BuildTable extends Component {
   renderStatus = (status, record) => (
     <div className="c7n-status">
       <a
-        href={`${record.gitlabUrl.slice(0, -4)}/pipelines/${record.pipelineId}`}
+        href={record.gitlabUrl ? `${record.gitlabUrl.slice(0, -4)}/pipelines/${record.pipelineId}` : null}
         target="_blank"
         rel="nofollow me noopener noreferrer"
         className="c7n-status-link"
@@ -166,7 +176,7 @@ class BuildTable extends Component {
         >
           <a
             className="c7n-link-decoration"
-            href={`${record.gitlabUrl.slice(0, -4)}/commits/${record.ref}`}
+            href={record.gitlabUrl ? `${record.gitlabUrl.slice(0, -4)}/commits/${record.ref}` : null}
             target="_blank"
             rel="nofollow me noopener noreferrer"
           >
@@ -186,7 +196,7 @@ class BuildTable extends Component {
             rel="nofollow me noopener noreferrer"
           >
             <span>
-              { record.commit.slice(0, 8) }
+              { record.commit ? record.commit.slice(0, 8) : '' }
             </span>
           </a>
         </Tooltip>
@@ -279,7 +289,7 @@ class BuildTable extends Component {
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    if (record.status && record.status !== 'passed' && record.status !== 'skipped') {
+    if (record.status && record.status !== 'passed' && record.status !== 'success' && record.status !== 'skipped') {
       return (
         <Permission
           service={['devops-service.project-pipeline.retry', 'devops-service.project-pipeline.cancel']}
@@ -293,7 +303,7 @@ class BuildTable extends Component {
               shape="circle"
               onClick={this.handleAction.bind(this, record)}
             >
-              <span className={`icon ${ICONS_ACTION[record.status].icon} c7n-icon-action c7n-icon-sm`} />
+              <span className={`icon ${ICONS_ACTION[record.status] ? ICONS_ACTION[record.status].icon : ''} c7n-icon-action c7n-icon-sm`} />
             </Button>
           </Popover>
         </Permission>

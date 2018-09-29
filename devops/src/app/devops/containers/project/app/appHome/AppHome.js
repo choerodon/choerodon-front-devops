@@ -77,7 +77,6 @@ class AppHome extends Component {
   }
 
   componentDidMount() {
-    const { projectId } = this.state;
     this.loadAllData(this.state.page);
   }
 
@@ -173,6 +172,19 @@ class AppHome extends Component {
                 </Fragment> }
             </Tooltip>
           </Permission>
+          {record.failed ? <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.deleteByAppId']}>
+            <Tooltip
+              placement="bottom"
+              title={<FormattedMessage id="delete" />}
+            >
+              <Button
+                icon="delete_forever"
+                shape="circle"
+                size="small"
+                onClick={this.deleteApp.bind(this, record.id)}
+              />
+            </Tooltip>
+          </Permission> : null}
         </Fragment>
       ),
     }];
@@ -189,17 +201,27 @@ class AppHome extends Component {
       fontSize: 18,
       marginRight: 6,
     };
-    let el = null;
-    if (record.synchro && text) {
-      if (text) {
-        el = <span><Icon style={{ color: '#1ab16f', ...style }} type="check_circle" /><FormattedMessage id="app.run" /></span>;
-      } else {
-        el = <span><Icon style={{ color: '#f44336', ...style }} type="not_interested" /><FormattedMessage id="app.stop" /></span>;
-      }
+    let icon = '';
+    let msg = '';
+    let color = '';
+    if (record.failed) {
+      icon = 'cancel';
+      msg = 'failed';
+      color = '#f44336';
+    } else if (record.synchro && text) {
+      icon = 'check_circle';
+      msg = 'run';
+      color = '#00bf96';
+    } else if (text) {
+      icon = 'timelapse';
+      msg = 'creating';
+      color = '#4d90fe';
     } else {
-      el = <span><Icon style={{ color: '#4d90fe', ...style }} type="timelapse" /><FormattedMessage id="app.creating" /></span>;
+      icon = 'remove_circle';
+      msg = 'stop';
+      color = '#d3d3d3';
     }
-    return el;
+    return (<span><Icon style={{ color, ...style }} type={icon} /><FormattedMessage id={`app.${msg}`} /></span>);
   };
 
   /**
@@ -217,7 +239,7 @@ class AppHome extends Component {
    * @param id 应用id
    * @param status 状态
    */
-  changeAppStatus =(id, status) => {
+  changeAppStatus = (id, status) => {
     const { AppStore } = this.props;
     const { projectId } = this.state;
     AppStore.changeAppStatus(projectId, id, !status)
@@ -225,6 +247,19 @@ class AppHome extends Component {
         if (data) {
           this.loadAllData(this.state.page);
         }
+      });
+  };
+
+  /**
+   * 删除应用
+   * @param id
+   */
+  deleteApp = (id) => {
+    const { AppStore } = this.props;
+    const { projectId } = this.state;
+    AppStore.deleteApps(projectId, id)
+      .then(() => {
+        this.loadAllData(this.state.page);
       });
   };
 

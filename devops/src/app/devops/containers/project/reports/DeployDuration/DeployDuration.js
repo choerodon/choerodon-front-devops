@@ -13,15 +13,21 @@ import StatusTags from '../../../../components/StatusTags';
 import NoChart from '../Component/NoChart';
 import ContainerStore from '../../../../stores/project/container';
 import './DeployDuration.scss';
-import { getNear7Day } from '../../../../utils';
 
-configure({ enforceActions: false });
+configure({ enforceActions: 'never' });
 
 const { AppState } = stores;
 const { Option } = Select;
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 const COLOR = ['50,198,222', '87,170,248', '255,177,0', '116,59,231', '237,74,103'];
+const LENGEND = [
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiMzMkM2REUiIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjMzJDNkRFIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiM1N0FBRjgiIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjNTdBQUY4IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiNGRkIxMDAiIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjRkZCMTAwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiM3NDNCRTciIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjNzQzQkU3IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiNFRDRBNjciIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjRUQ0QTY3IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
+];
 
 @observer
 class DeployDuration extends Component {
@@ -67,10 +73,12 @@ class DeployDuration extends Component {
   @action
   handleAppSelect = (ids) => {
     const { intl: { formatMessage } } = this.props;
-    this.appIds = ids;
     if (ids.length < 6) {
+      this.appIds = ids;
       this.loadCharts();
     } else {
+      this.appIds = ids.splice(0, 5);
+      this.loadCharts();
       Choerodon.prompt(formatMessage({ id: 'report.deploy-duration.apps' }));
     }
   };
@@ -132,9 +140,9 @@ class DeployDuration extends Component {
     ReportsStore.loadDeployDurationChart(projectId, this.envId, startTime, endTime, this.appIds.slice())
       .then((res) => {
         if (res) {
-          this.appArr = _.map(res.deployAppDTOS, v => v.appName);
           this.dateArr = res.creationDates;
           const seriesArr = [];
+          const appArr = [];
           _.map(res.deployAppDTOS, (v, index) => {
             const series = {
               name: v.appName,
@@ -146,9 +154,14 @@ class DeployDuration extends Component {
               data: _.map(v.deployAppDetails, c => Object.values(c)),
               type: 'scatter',
             };
+            const obj = {};
+            obj.name = v.appName;
+            obj.icon = `image://${LENGEND[index]}`;
             seriesArr.push(series);
+            appArr.push(obj);
           });
           this.seriesArr = seriesArr;
+          this.appArr = appArr;
         }
       });
     this.loadTables();
@@ -182,14 +195,19 @@ class DeployDuration extends Component {
     return {
       legend: {
         data: this.appArr,
+        borderColor: '#000',
+        borderWidth: '5px',
+        itemWidth: 12,
+        itemHeight: 12,
       },
       toolbox: {
         feature: {
           dataZoom: {},
           brush: {
-            type: ['clear'],
+            type: [''],
           },
         },
+        right: '2%',
       },
       brush: {
       },
@@ -251,6 +269,7 @@ class DeployDuration extends Component {
         nameTextStyle: {
           fontSize: 13,
           color: '#000',
+          padding: [0, 0, 0, 22],
         },
         axisTick: { show: false },
         axisLine: {
@@ -348,6 +367,7 @@ class DeployDuration extends Component {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const echartsLoading = ReportsStore.getEchartsLoading;
+    const envs = ContainerStore.getEnvcard;
 
     const envDom = this.env.length ? _.map(this.env, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
 
@@ -378,7 +398,7 @@ class DeployDuration extends Component {
         </Button>
       </Header>
       <Content code="report.deploy-duration" value={{ name }}>
-        {this.env.length ? <React.Fragment>
+        {envs && envs.length ? <React.Fragment>
           <div className="c7n-report-screen">
             <Select
               notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}

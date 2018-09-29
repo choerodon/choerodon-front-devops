@@ -139,6 +139,7 @@ class BuildNumber extends Component {
           });
           return `${name}：${count}`;
         },
+        selectedMode: false,
       },
       grid: {
         left: '2%',
@@ -207,8 +208,8 @@ class BuildNumber extends Component {
             width: 1,
           },
         },
-        min: (yAxis.pipelineFrequency && yAxis.pipelineFrequency.length) ? null : 0,
-        max: (yAxis.pipelineFrequency && yAxis.pipelineFrequency.length) ? null : 4,
+        min: (yAxis.pipelineFrequencys && yAxis.pipelineFrequencys.length) ? null : 0,
+        max: (yAxis.pipelineFrequencys && yAxis.pipelineFrequencys.length) ? null : 4,
       },
       series: [
         {
@@ -218,9 +219,8 @@ class BuildNumber extends Component {
           itemStyle: {
             color: '#00BFA5',
             emphasis: {
-              borderColor: 'rgba(0,191,165,0.30)',
-              borderWidth: 10,
-              barBorderRadius: [5, 5, 0, 0],
+              shadowBlur: 10,
+              shadowColor: 'rgba(0,0,0,0.20)',
             },
           },
           stack: 'total',
@@ -233,9 +233,8 @@ class BuildNumber extends Component {
           itemStyle: {
             color: '#FFB100',
             emphasis: {
-              borderColor: 'rgba(255,177,0,0.30)',
-              borderWidth: 10,
-              barBorderRadius: [5, 5, 0, 0],
+              shadowBlur: 10,
+              shadowColor: 'rgba(0,0,0,0.20)',
             },
           },
           stack: 'total',
@@ -298,7 +297,7 @@ class BuildNumber extends Component {
         </Button>
       </Header>
       <Content code="report.build-number" value={{ name }} className="c7n-buildNumber-content">
-        {appId ? <React.Fragment>
+        {apps && apps.length ? <React.Fragment>
           <div className="c7n-buildNumber-select">
             <Select
               label={formatMessage({ id: 'chooseApp' })}

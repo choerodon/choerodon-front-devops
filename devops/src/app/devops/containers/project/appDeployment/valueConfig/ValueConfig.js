@@ -21,6 +21,7 @@ class ValueConfig extends Component {
       loading: false,
       disabled: true,
       isNotChange: false,
+      NotChangeloading: false,
     };
   }
 
@@ -77,7 +78,7 @@ class ValueConfig extends Component {
       });
       this.reDeploy();
     }
-  }
+  };
 
   /**
    * 修改配置重新部署
@@ -96,6 +97,7 @@ class ValueConfig extends Component {
       type: 'update',
       isNotChange: disabled,
     };
+    this.setState({ NotChangeloading: true });
     store.checkYaml(val, projectId)
       .then((datas) => {
         this.setState({ errorLine: datas });
@@ -110,6 +112,7 @@ class ValueConfig extends Component {
               this.setState({
                 loading: false,
                 isNotChange: false,
+                NotChangeloading: false,
               });
             });
         } else {
@@ -117,6 +120,7 @@ class ValueConfig extends Component {
           this.setState({
             loading: false,
             isNotChange: false,
+            NotChangeloading: false,
           });
         }
       });
@@ -127,11 +131,11 @@ class ValueConfig extends Component {
    */
   handleCancel = () => {
     this.setState({ isNotChange: false });
-  }
+  };
 
   render() {
     const { intl, store, name, visible } = this.props;
-    const { errorLine, loading, isNotChange } = this.state;
+    const { errorLine, loading, isNotChange, NotChangeloading } = this.state;
     const data = store.getValue;
     let error = data.errorLines;
     if (errorLine !== undefined) {
@@ -189,8 +193,9 @@ class ValueConfig extends Component {
         onOk={this.reDeploy}
         onCancel={this.handleCancel}
         closable={false}
+        confirmLoading={NotChangeloading}
       >
-        <h2>{intl.formatMessage({ id: 'envOverview.confirm.reDeploy' })}</h2>
+        <div className="c7n-deploy-modal-content">{intl.formatMessage({ id: 'envOverview.confirm.reDeploy' })}</div>
         <span>{intl.formatMessage({ id: 'envOverview.confirm.content.reDeploy' })}</span>
       </Modal>
     </React.Fragment>);

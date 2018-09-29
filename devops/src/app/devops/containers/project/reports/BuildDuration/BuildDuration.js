@@ -201,9 +201,8 @@ class BuildDuration extends Component {
             color: 'rgba(77, 144, 254, 0.60)',
             borderColor: '#4D90FE',
             emphasis: {
-              borderColor: 'rgba(70,119,221,0.30)',
-              borderWidth: 10,
-              barBorderRadius: [5, 5, 0, 0],
+              shadowBlur: 10,
+              shadowColor: 'rgba(0,0,0,0.20)',
             },
           },
           data: pipelineTime,
@@ -270,7 +269,7 @@ class BuildDuration extends Component {
         </Button>
       </Header>
       <Content code="report.build-duration" value={{ name }} className="c7n-buildDuration-content">
-        {appId ? <React.Fragment>
+        {apps && apps.length ? <React.Fragment>
           <div className="c7n-buildDuration-select">
             <Select
               label={formatMessage({ id: 'chooseApp' })}
