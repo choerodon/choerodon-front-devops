@@ -15,7 +15,7 @@ import ContainerStore from '../../../../stores/project/container';
 import '../DeployDuration/DeployDuration.scss';
 import { getAxis } from '../../../../utils';
 
-configure({ enforceActions: false });
+configure({ enforceActions: 'never' });
 
 const { AppState } = stores;
 const { Option } = Select;

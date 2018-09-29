@@ -14,7 +14,7 @@ import NoChart from '../Component/NoChart';
 import ContainerStore from '../../../../stores/project/container';
 import './DeployDuration.scss';
 
-configure({ enforceActions: false });
+configure({ enforceActions: 'never' });
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -204,7 +204,7 @@ class DeployDuration extends Component {
         feature: {
           dataZoom: {},
           brush: {
-            type: ['clear'],
+            type: [''],
           },
         },
         right: '2%',
