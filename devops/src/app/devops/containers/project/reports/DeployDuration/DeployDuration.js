@@ -29,8 +29,7 @@ const LENGEND = [
   'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiNFRDRBNjciIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjRUQ0QTY3IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
 ];
 
-
-  @observer
+@observer
 class DeployDuration extends Component {
   @observable env = [];
 
@@ -270,6 +269,7 @@ class DeployDuration extends Component {
         nameTextStyle: {
           fontSize: 13,
           color: '#000',
+          padding: [0, 0, 0, 22],
         },
         axisTick: { show: false },
         axisLine: {
