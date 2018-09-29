@@ -158,7 +158,7 @@ class AppStore {
       return res;
     });
 
-  deleteApps = (projectId, id) => axios.delete(`/devops//v1/projects/${projectId}/apps/${id}`)
+  deleteApps = (projectId, id) => axios.delete(`/devops/v1/projects/${projectId}/apps/${id}`)
     .then((datas) => {
       const res = this.handleProptError(datas);
       return res;
