@@ -50,6 +50,16 @@ const ICONS = {
     code: 'skipped',
     display: 'Skipped',
   },
+  created: {
+    icon: 'icon-radio_button_checked',
+    code: 'created',
+    display: 'Created',
+  },
+  manual: {
+    icon: 'icon-radio_button_checked',
+    code: 'manual',
+    display: 'Manual',
+  },
 };
 const ICONS_ACTION = {
   pending: {
@@ -279,7 +289,7 @@ class BuildTable extends Component {
     const projectId = AppState.currentMenuType.id;
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    if (record.status && record.status !== 'passed' && record.status !== 'skipped') {
+    if (record.status && record.status !== 'passed' && record.status !== 'success' && record.status !== 'skipped') {
       return (
         <Permission
           service={['devops-service.project-pipeline.retry', 'devops-service.project-pipeline.cancel']}
