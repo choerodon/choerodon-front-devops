@@ -221,7 +221,7 @@ class CiPipelineHome extends Component {
   renderStatus = (status, record) => (
     <div className="c7n-status">
       <a
-        href={`${record.gitlabUrl.slice(0, -4)}/pipelines/${record.pipelineId}`}
+        href={record.gitlabUrl ? `${record.gitlabUrl.slice(0, -4)}/pipelines/${record.pipelineId}` : null}
         target="_blank"
         rel="nofollow me noopener noreferrer"
         className="c7n-status-link"
@@ -238,7 +238,7 @@ class CiPipelineHome extends Component {
         <span>
           <a
             className="c7n-link-decoration"
-            href={`${record.gitlabUrl.slice(0, -4)}/pipelines/${record.pipelineId}`}
+            href={record.gitlabUrl ? `${record.gitlabUrl.slice(0, -4)}/pipelines/${record.pipelineId}` : null}
             target="_blank"
             rel="nofollow me noopener noreferrer"
           >
@@ -289,7 +289,7 @@ class CiPipelineHome extends Component {
         >
           <a
             className="c7n-link-decoration"
-            href={`${record.gitlabUrl.slice(0, -4)}/commits/${record.ref}`}
+            href={record.gitlabUrl ? `${record.gitlabUrl.slice(0, -4)}/commits/${record.ref}` : null}
             target="_blank"
             rel="nofollow me noopener noreferrer"
           >
@@ -304,12 +304,12 @@ class CiPipelineHome extends Component {
         >
           <a
             className="c7n-link-decoration"
-            href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.commit}`}
+            href={record.gitlabUrl ? `${record.gitlabUrl.slice(0, -4)}/commit/${record.commit}` : null}
             target="_blank"
             rel="nofollow me noopener noreferrer"
           >
             <span>
-              { record.commit.slice(0, 8) }
+              { record.commit ? record.commit.slice(0, 8) : '' }
             </span>
           </a>
         </Tooltip>
@@ -329,7 +329,7 @@ class CiPipelineHome extends Component {
         <MouserOverWrapper text={record.commitContent} width={0.2}>
           <a
             className="c7n-link-decoration"
-            href={`${record.gitlabUrl.slice(0, -4)}/commit/${record.commit}`}
+            href={record.gitlabUrl ? `${record.gitlabUrl.slice(0, -4)}/commit/${record.commit}` : null}
             target="_blank"
             rel="nofollow me noopener noreferrer"
           >
@@ -360,7 +360,7 @@ class CiPipelineHome extends Component {
                 c7n-icon-${stages[i].status} c7n-icon-lg`}
             /> : <a
               className=""
-              href={`${record.gitlabUrl.slice(0, -4)}/-/jobs/${stages[i].id}`}
+              href={record.gitlabUrl ? `${record.gitlabUrl.slice(0, -4)}/-/jobs/${stages[i].id}` : null}
               target="_blank"
               rel="nofollow me noopener noreferrer"
             >
