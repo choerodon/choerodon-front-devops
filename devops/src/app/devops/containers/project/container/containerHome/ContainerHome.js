@@ -575,7 +575,6 @@ class ContainerHome extends Component {
    * top log following
    */
   stopFollowing = () => {
-    const editor = this.editorLog.getCodeMirror();
     const { ws } = this.state;
     if (ws) {
       ws.close();
@@ -789,7 +788,7 @@ class ContainerHome extends Component {
     this.setState({ fullscreen: true });
     document.documentElement.style.overflow = 'hidden';
     cm.refresh();
-    window.addEventListener('keypress', (e) => {
+    window.addEventListener('keydown', (e) => {
       this.setNormal(e.which);
     });
   };
@@ -807,7 +806,7 @@ class ContainerHome extends Component {
     wrap.style.width = info.width; wrap.style.height = info.height;
     window.scrollTo(info.scrollLeft, info.scrollTop);
     cm.refresh();
-    window.removeEventListener('keypress', (e) => {
+    window.removeEventListener('keydown', (e) => {
       this.setNormal(e.which);
     });
   };
