@@ -266,15 +266,11 @@ class NetworkHome extends Component {
     }, {
       title: <FormattedMessage id="network.target" />,
       key: 'target',
-      filters: [],
-      filteredValue: filters.target || [],
       render: record => this.targetColumn(record),
     }, {
       width: 108,
       title: <FormattedMessage id="network.config.column" />,
       key: 'type',
-      filters: [],
-      filteredValue: filters.type || [],
       render: record => this.configColumn(record),
     }, {
       width: 82,
