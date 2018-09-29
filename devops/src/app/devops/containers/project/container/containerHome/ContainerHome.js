@@ -820,7 +820,7 @@ class ContainerHome extends Component {
     const { paras } = ContainerStore.getInfo;
     const proPageSize = (10 * selectProPage) + 3;
     const pubPageSize = (10 * selectPubPage) + 3;
-    const serviceData = ContainerStore.getAllData.slice();
+    const serviceData = ContainerStore.getAllData && ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
       <Header title={<FormattedMessage id="container.header.title" />}>

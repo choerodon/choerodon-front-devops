@@ -25,7 +25,7 @@ const { AppState } = stores;
 const { TabPane } = Tabs;
 const { Option } = Select;
 
-configure({ enforceActions: false });
+configure({ enforceActions: 'never' });
 
 @observer
 class EnvOverviewHome extends Component {

@@ -468,7 +468,7 @@ const zhCN = {
   'envPl.status.stop': '暂无停用环境',
   'envPl.status.restart': '重启环境',
   'envPl.status.stopped': '已停用',
-  'envPl.description': '描述:',
+  'envPl.description': '描述: ',
   'envPl.add.description': '请添加一个环境，并填写相应的环境描述信息。',
   'envPl.token': '指令',
   'envPl.status.update': '版本过低，请更新',
