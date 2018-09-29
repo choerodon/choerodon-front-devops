@@ -74,10 +74,12 @@ class DeployDuration extends Component {
   @action
   handleAppSelect = (ids) => {
     const { intl: { formatMessage } } = this.props;
-    this.appIds = ids;
     if (ids.length < 6) {
+      this.appIds = ids;
       this.loadCharts();
     } else {
+      this.appIds = ids.splice(0, 5);
+      this.loadCharts();
       Choerodon.prompt(formatMessage({ id: 'report.deploy-duration.apps' }));
     }
   };

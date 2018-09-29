@@ -207,7 +207,7 @@ class AppHome extends Component {
     if (record.failed) {
       icon = 'cancel';
       msg = 'failed';
-      color = '#d3d3d3';
+      color = '#f44336';
     } else if (record.synchro && text) {
       icon = 'check_circle';
       msg = 'run';
@@ -219,7 +219,7 @@ class AppHome extends Component {
     } else {
       icon = 'remove_circle';
       msg = 'stop';
-      color = '#f44336';
+      color = '#d3d3d3';
     }
     return (<span><Icon style={{ color, ...style }} type={icon} /><FormattedMessage id={`app.${msg}`} /></span>);
   };

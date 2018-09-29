@@ -216,6 +216,7 @@ class DeployTimes extends Component {
           });
           return `${name}：${count}`;
         },
+        selectedMode: false,
       },
       grid: {
         left: '2%',
