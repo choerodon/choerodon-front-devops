@@ -77,7 +77,6 @@ class AppHome extends Component {
   }
 
   componentDidMount() {
-    const { projectId } = this.state;
     this.loadAllData(this.state.page);
   }
 
@@ -173,7 +172,7 @@ class AppHome extends Component {
                 </Fragment> }
             </Tooltip>
           </Permission>
-          {record.failed ? <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']}>
+          {record.failed ? <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.deleteByAppId']}>
             <Tooltip
               placement="bottom"
               title={<FormattedMessage id="delete" />}
