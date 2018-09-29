@@ -888,7 +888,7 @@ class AppOverview extends Component {
     this.setState({ fullscreen: true });
     document.documentElement.style.overflow = 'hidden';
     cm.refresh();
-    window.addEventListener('keypress', (e) => {
+    window.addEventListener('keydown', (e) => {
       this.setNormal(e.which);
     });
   };
@@ -906,7 +906,7 @@ class AppOverview extends Component {
     wrap.style.width = info.width; wrap.style.height = info.height;
     window.scrollTo(info.scrollLeft, info.scrollTop);
     cm.refresh();
-    window.removeEventListener('keypress', (e) => {
+    window.removeEventListener('keydown', (e) => {
       this.setNormal(e.which);
     });
   };
