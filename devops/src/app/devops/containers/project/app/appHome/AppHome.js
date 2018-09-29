@@ -173,6 +173,19 @@ class AppHome extends Component {
                 </Fragment> }
             </Tooltip>
           </Permission>
+          {record.failed ? <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']}>
+            <Tooltip
+              placement="bottom"
+              title={<FormattedMessage id="delete" />}
+            >
+              <Button
+                icon="delete_forever"
+                shape="circle"
+                size="small"
+                onClick={this.deleteApp.bind(this, record.id)}
+              />
+            </Tooltip>
+          </Permission> : null}
         </Fragment>
       ),
     }];
@@ -192,7 +205,11 @@ class AppHome extends Component {
     let icon = '';
     let msg = '';
     let color = '';
-    if (record.synchro && text) {
+    if (record.failed) {
+      icon = 'cancel';
+      msg = 'failed';
+      color = '#d3d3d3';
+    } else if (record.synchro && text) {
       icon = 'check_circle';
       msg = 'run';
       color = '#00bf96';
@@ -201,7 +218,7 @@ class AppHome extends Component {
       msg = 'creating';
       color = '#4d90fe';
     } else {
-      icon = 'not_interested';
+      icon = 'remove_circle';
       msg = 'stop';
       color = '#f44336';
     }
@@ -223,7 +240,7 @@ class AppHome extends Component {
    * @param id 应用id
    * @param status 状态
    */
-  changeAppStatus =(id, status) => {
+  changeAppStatus = (id, status) => {
     const { AppStore } = this.props;
     const { projectId } = this.state;
     AppStore.changeAppStatus(projectId, id, !status)
@@ -231,6 +248,19 @@ class AppHome extends Component {
         if (data) {
           this.loadAllData(this.state.page);
         }
+      });
+  };
+
+  /**
+   * 删除应用
+   * @param id
+   */
+  deleteApp = (id) => {
+    const { AppStore } = this.props;
+    const { projectId } = this.state;
+    AppStore.deleteApps(projectId, id)
+      .then(() => {
+        this.loadAllData(this.state.page);
       });
   };
 

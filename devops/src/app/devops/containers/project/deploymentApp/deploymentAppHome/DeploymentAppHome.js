@@ -280,7 +280,7 @@ class DeploymentAppHome extends Component {
       instanceId: undefined,
       changeYaml: false,
     });
-    if (location.search.indexOf('envId') !== -1) {
+    if (location.search.indexOf('envId') !== -1 || location.search.indexOf('appId') !== -1) {
       const { history } = this.props;
       history.go(-1);
     }
