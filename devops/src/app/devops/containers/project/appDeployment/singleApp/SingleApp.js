@@ -421,7 +421,7 @@ class SingleApp extends Component {
             type,
             organizationId,
             projectId,
-            service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
+            service: ['devops-service.application-instance.listResources'],
             text: intl.formatMessage({ id: 'ist.detail' }),
             action: this.linkDeployDetail.bind(this, record.id, record.status),
           }]}
@@ -433,7 +433,7 @@ class SingleApp extends Component {
             type,
             organizationId,
             projectId,
-            service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
+            service: ['devops-service.application-instance.listResources'],
             text: intl.formatMessage({ id: 'ist.detail' }),
             action: this.linkDeployDetail.bind(this, record.id, record.status),
           }, {
@@ -461,7 +461,7 @@ class SingleApp extends Component {
             type,
             organizationId,
             projectId,
-            service: ['devops-service.devops-pod.getLogs', 'devops-service.application-instance.listResources'],
+            service: ['devops-service.application-instance.listResources'],
             text: intl.formatMessage({ id: 'ist.detail' }),
             action: this.linkDeployDetail.bind(this, record.id, record.status),
           }, {

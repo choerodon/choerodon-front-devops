@@ -69,6 +69,8 @@ class Submission extends Component {
     ReportsStore.setApps([]);
     ReportsStore.setStartTime(moment().subtract(6, 'days'));
     ReportsStore.setEndTime(moment());
+    ReportsStore.setStartDate(null);
+    ReportsStore.setEndDate(null);
   }
 
   handleRefresh = () => this.loadData();
@@ -180,6 +182,7 @@ class Submission extends Component {
                 {options}
               </Select>
               <TimePicker
+                unlimit
                 startTime={ReportsStore.getStartDate}
                 endTime={ReportsStore.getEndDate}
                 func={this.loadData}

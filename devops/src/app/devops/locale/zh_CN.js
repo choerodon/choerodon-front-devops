@@ -1,6 +1,6 @@
 // zh_CN.js
 // 文档地址前缀
-const docServer = 'http://v0-9.choerodon.io/zh/docs';
+const docServer = 'http://v0-10.choerodon.io/zh/docs';
 // 界面标题描述统一管理
 const pageDetail = {
 
@@ -130,9 +130,7 @@ const pageDetail = {
   // 部署总览
   'dpOverview.title': '项目"{name}"的部署总览',
   'dpOverview.description': '部署总览页面包含了所有应用在各个环境中的部署情况。您可以通过该界面查看各个应用在各个环境中的部署情况，并能直接在此界面进行应用最新版本的快速部署。',
-  'dpOverview.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
-  'dpOverview.detail.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
-  'dpOverview.edit.link': `${docServer}/user-guide/deployment-pipeline/instance/`,
+  'dpOverview.link': `${docServer}/user-guide/deployment-pipeline/deployment-overview/`,
 
   // appstore
   'appstore.description.label': '描述',
@@ -213,10 +211,12 @@ const pageDetail = {
   'report.deploy-times.description': '部署次数图能展示出该项目下各个环境中各个应用的部署频率，这将帮助您了解团队的部署频次与整体的效率。',
   'report.build-number.description': '构建次数图将从应用的维度为您展示任意时间段某个应用的构建次数，构建成功次数以及构建成功率。这将帮助您快速地定位构建出现的问题，同时直观地了解到项目中某个应用的构建情况。',
   'report.build-duration.description': '构建时长图将从应用的维度为您展示所选时间段某个应用每一次构建的时长，这将帮助您更为直观地了解应用构建的效率。',
-  'report.submission.link': `${docServer}/user-guide/application-management/report`,
-  'report.build-number.link': `${docServer}/user-guide/application-management/report`,
-  'report.build-duration.link': `${docServer}/user-guide/application-management/report`,
-  'report.link': `${docServer}/user-guide/application-management/report`,
+  'report.submission.link': `${docServer}/user-guide/report/devops-report/code-commits`,
+  'report.build-number.link': `${docServer}/user-guide/report/devops-report/build-frequency`,
+  'report.deploy-duration.link': `${docServer}/user-guide/report/devops-report/deploy-duration`,
+  'report.deploy-times.link': `${docServer}/user-guide/report/devops-report/deploy-frequency`,
+  'report.build-duration.link': `${docServer}/user-guide/report/devops-report/build-duration`,
+  'report.link': `${docServer}/user-guide/report/devops-report/`,
 };
 
 const zhCN = {
