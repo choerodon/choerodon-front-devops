@@ -60,11 +60,16 @@ class ContainerHome extends Component {
   }
 
   componentWillUnmount() {
+    const { ContainerStore } = this.props;
     if (this.state.ws) {
       this.closeSidebar();
     } else if (this.conn) {
       this.closeTerm();
     }
+    ContainerStore.setEnvCard([]);
+    ContainerStore.setAllData([]);
+    ContainerStore.setAppId();
+    ContainerStore.setEnvId();
   }
 
   /**
@@ -109,7 +114,7 @@ class ContainerHome extends Component {
       searchParam,
       param: paras.toString(),
     };
-    const envId = ContainerStore.getenvId;
+    const envId = ContainerStore.getEnvId;
     const appId = ContainerStore.getappId;
     ContainerStore.loadData(false, id, envId, appId, page, pagination.pageSize, sort, postData);
   };
@@ -616,7 +621,7 @@ class ContainerHome extends Component {
    */
   handleEnvSelect = (value) => {
     const { ContainerStore } = this.props;
-    ContainerStore.setenvId(value);
+    ContainerStore.setEnvId(value);
     ContainerStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
     const appId = ContainerStore.getappId;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
@@ -628,7 +633,7 @@ class ContainerHome extends Component {
         .then((data) => {
           const appData = ContainerStore.getAppData;
           if (!_.find(appData, app => app.id === appId)) {
-            ContainerStore.setappId(null);
+            ContainerStore.setAppId(null);
             ContainerStore.loadData(false, projectId, value, null);
           } else {
             ContainerStore.loadData(false, projectId, value, appId);
@@ -643,9 +648,9 @@ class ContainerHome extends Component {
    */
   handleAppSelect = (value) => {
     const { ContainerStore } = this.props;
-    ContainerStore.setappId(value);
+    ContainerStore.setAppId(value);
     ContainerStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
-    const envId = ContainerStore.getenvId;
+    const envId = ContainerStore.getEnvId;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     ContainerStore.loadData(false, projectId, envId, value);
   };
@@ -814,7 +819,7 @@ class ContainerHome extends Component {
   render() {
     const { ContainerStore, intl } = this.props;
     const { showSide, following, fullscreen, containerName, podName, containerArr, showDebug, selectProPage, selectPubPage, appProDom, appPubDom, appProLength, appPubLength } = this.state;
-    const envNames = ContainerStore.getEnvcard;
+    const envNames = ContainerStore.getEnvCard;
     const appId = ContainerStore.getappId;
     const { paras } = ContainerStore.getInfo;
     const proPageSize = (10 * selectProPage) + 3;
