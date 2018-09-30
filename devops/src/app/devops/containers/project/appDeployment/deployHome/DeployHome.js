@@ -41,6 +41,7 @@ class DeployHome extends Component {
     const { AppDeploymentStore } = this.props;
     AppDeploymentStore.setTabActive('instance');
     AppDeploymentStore.setAppNameByEnv([]);
+    AppDeploymentStore.setEnvId();
   }
 
   /**
@@ -87,15 +88,6 @@ class DeployHome extends Component {
     const { AppDeploymentStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     AppDeploymentStore.loadAppNames(projectId);
-  };
-
-  /**
-   * 查询多应用部署数据
-   */
-  loadMuti = () => {
-    const { AppDeploymentStore } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    AppDeploymentStore.loadMutiData(projectId);
   };
 
   /**
@@ -174,7 +166,7 @@ class DeployHome extends Component {
       AppDeploymentStore.setAppId(false);
       AppDeploymentStore.setVerId(false);
       if (envNames.length) {
-        this.loadSingleEnv(AppDeploymentStore.getenvId || envNames[0].id, Info);
+        this.loadSingleEnv(AppDeploymentStore.getEnvId || envNames[0].id, Info);
       }
     }
   };

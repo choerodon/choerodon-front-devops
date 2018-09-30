@@ -22,11 +22,11 @@ const HEIGHT = window.innerHeight || document.documentElement.clientHeight || do
 
 const COLOR = ['50,198,222', '87,170,248', '255,177,0', '116,59,231', '237,74,103'];
 const LENGEND = [
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiMzMkM2REUiIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjMzJDNkRFIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiM1N0FBRjgiIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjNTdBQUY4IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiNGRkIxMDAiIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjRkZCMTAwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiM3NDNCRTciIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjNzQzQkU3IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8Y2lyY2xlIGN4PSI2IiBjeT0iMTEiIHI9IjYiIGZpbGw9IiNFRDRBNjciIGZpbGwtb3BhY2l0eT0iLjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjRUQ0QTY3IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIC00KSIvPgo8L3N2Zz4K',
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDI2IDI2Ij4KICA8Y2lyY2xlIGN4PSI0OTkiIGN5PSI2MiIgcj0iMTIiIGZpbGw9IiMzMkM2REUiIGZpbGwtb3BhY2l0eT0iLjYiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjMzJDNkRFIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNDg2IC00OSkiLz4KPC9zdmc+Cg==',
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDI2IDI2Ij4KICA8Y2lyY2xlIGN4PSI0OTkiIGN5PSI1NyIgcj0iMTIiIGZpbGw9IiM1N0FBRjgiIGZpbGwtb3BhY2l0eT0iLjYiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjNTdBQUY4IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNDg2IC00NCkiLz4KPC9zdmc+Cg==',
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjYiIGhlaWdodD0iMjYiIHZpZXdCb3g9IjAgMCAyNiAyNiI+CiAgPGRlZnM+CiAgICA8Y2lyY2xlIGlkPSI1LWEiIGN4PSI0OTkiIGN5PSI1NyIgcj0iMTIiLz4KICA8L2RlZnM+CiAgPGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNDg2IC00NCkiPgogICAgPHVzZSBmaWxsPSIjRkZCMTAwIiBmaWxsLW9wYWNpdHk9Ii42IiB4bGluazpocmVmPSIjNS1hIiBzdHlsZT0ibWl4LWJsZW5kLW1vZGU6c2F0dXJhdGlvbiIvPgogICAgPHVzZSBzdHJva2U9IiNGRkIxMDAiIHhsaW5rOmhyZWY9IiM1LWEiLz4KICA8L2c+Cjwvc3ZnPgo=',
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDI2IDI2Ij4KICA8Y2lyY2xlIGN4PSI0NDkiIGN5PSI1NyIgcj0iMTIiIGZpbGw9IiM3NDNCRTciIGZpbGwtb3BhY2l0eT0iLjYiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjNzQzQkU3IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNDM2IC00NCkiLz4KPC9zdmc+Cg==',
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDI2IDI2Ij4KICA8Y2lyY2xlIGN4PSI0OTkiIGN5PSI1NyIgcj0iMTIiIGZpbGw9IiNFRDRBNjciIGZpbGwtb3BhY2l0eT0iLjYiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjRUQ0QTY3IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNDg2IC00NCkiLz4KPC9zdmc+Cg==',
 ];
 
 @observer
@@ -148,7 +148,7 @@ class DeployDuration extends Component {
               name: v.appName,
               symbolSize: 24,
               itemStyle: {
-                color: `rgba(${COLOR[index]}, 0.4)`,
+                color: `rgba(${COLOR[index]}, 0.6)`,
                 borderColor: `rgb(${COLOR[index]})`,
               },
               data: _.map(v.deployAppDetails, c => Object.values(c)),
@@ -207,7 +207,7 @@ class DeployDuration extends Component {
             type: [''],
           },
         },
-        right: '2%',
+        right: '3%',
       },
       brush: {
       },
@@ -241,7 +241,7 @@ class DeployDuration extends Component {
       },
       grid: {
         left: '2%',
-        right: '3%',
+        right: '2%',
         bottom: '3%',
         containLabel: true,
       },
@@ -367,7 +367,7 @@ class DeployDuration extends Component {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const echartsLoading = ReportsStore.getEchartsLoading;
-    const envs = ContainerStore.getEnvcard;
+    const envs = ContainerStore.getEnvCard;
 
     const envDom = this.env.length ? _.map(this.env, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
 

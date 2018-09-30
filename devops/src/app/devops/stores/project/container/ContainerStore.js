@@ -21,9 +21,9 @@ class ContainerStore {
     current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
-  @observable appdata = [];
+  @observable appData = [];
 
-  @observable envcard = [];
+  @observable envCard = [];
 
   @observable filterValue = '';
 
@@ -81,20 +81,20 @@ class ContainerStore {
     return this.logs;
   }
 
-  @action setEnvcard(envcard) {
-    this.envcard = envcard;
+  @action setEnvCard(envCard) {
+    this.envCard = envCard;
   }
 
-  @computed get getEnvcard() {
-    return this.envcard;
+  @computed get getEnvCard() {
+    return this.envCard;
   }
 
   @action setAppDate(data) {
-    this.appdata = data;
+    this.appData = data;
   }
 
   @computed get getAppData() {
-    return this.appdata;
+    return this.appData;
   }
 
   @action setFilterValue(filterValue) {
@@ -113,15 +113,15 @@ class ContainerStore {
     return this.Info;
   }
 
-  @action setenvId(id) {
+  @action setEnvId(id) {
     this.envId = id;
   }
 
-  @computed get getenvId() {
+  @computed get getEnvId() {
     return this.envId;
   }
 
-  @action setappId(id) {
+  @action setAppId(id) {
     this.appId = id;
   }
 
@@ -135,7 +135,7 @@ class ContainerStore {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
       } else {
-        this.setEnvcard(data);
+        this.setEnvCard(data);
       }
       return data;
     });
