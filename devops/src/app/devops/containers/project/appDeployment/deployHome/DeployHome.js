@@ -41,7 +41,11 @@ class DeployHome extends Component {
     const { AppDeploymentStore } = this.props;
     AppDeploymentStore.setTabActive('instance');
     AppDeploymentStore.setAppNameByEnv([]);
+    AppDeploymentStore.setAppNameByEnv([]);
     AppDeploymentStore.setEnvId();
+    AppDeploymentStore.setAppId();
+    AppDeploymentStore.setVerId([]);
+    AppDeploymentStore.setAppVer([]);
   }
 
   /**

@@ -907,7 +907,7 @@ const zhCN = {
   'report.no-app': '当前项目下无应用',
   'report.no-env': '当前项目下无可用环境',
   'report.no-app-des': '请使用项目所有者角色登录去创建一个应用',
-  'report.no-env-des': '请使用项目所有者角色登录去创建一个可用环境',
+  'report.no-env-des': '请使用部署管理员角色登录去创建一个可用环境',
   'report.commit.history': '提交历史',
   'report.commit.by': '提交于 ',
   'report.commit.date': '日期：',
