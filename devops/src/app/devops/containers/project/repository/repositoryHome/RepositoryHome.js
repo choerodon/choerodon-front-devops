@@ -144,7 +144,7 @@ class RepositoryHome extends Component {
       render: (text, record) => (
         <div>
           {record.sonarUrl ? <Tooltip title={<FormattedMessage id="repository.quality" />} placement="bottom">
-            <a href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
+            <a className="repo-copy-btn" href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
               <Button shape="circle" size="small">
                 <i className="icon icon-quality" />
               </Button>
@@ -155,7 +155,7 @@ class RepositoryHome extends Component {
               text={record.repoUrl || noRepoUrl}
               onCopy={this.handleCopy}
             >
-              <Button className="repo-copy-btn" shape="circle" size="small">
+              <Button shape="circle" size="small">
                 <i className="icon icon-library_books" />
               </Button>
             </CopyToClipboard>

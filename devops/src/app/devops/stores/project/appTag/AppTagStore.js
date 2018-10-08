@@ -80,8 +80,8 @@ class AppTagStore {
   }
 
   queryTagData = (projectId, page = 0, sizes = 10, postData = { searchParam: {}, param: '' }) => {
+    this.setLoading(true);
     if (this.selectedApp) {
-      this.setLoading(true);
       axios.post(`/devops/v1/projects/${projectId}/apps/${this.selectedApp}/git/tags_list_options?page=${page}&size=${sizes}`, JSON.stringify(postData))
         .then((data) => {
           this.setLoading(false);
@@ -95,6 +95,11 @@ class AppTagStore {
           Choerodon.handleResponseError(err);
           this.setLoading(false);
         });
+    } else {
+      // 增加loading效果，如觉不妥，请删除
+      setTimeout(() => {
+        this.setLoading(false);
+      }, 600);
     }
   };
 
@@ -117,6 +122,8 @@ class AppTagStore {
             this.setSelectApp(result[0].id);
             this.setDefaultAppName(result[0].name);
             this.queryTagData(projectId, 0, 10);
+          } else {
+            this.setLoading(false);
           }
         }
       }).catch(err => Choerodon.handleResponseError(err));
