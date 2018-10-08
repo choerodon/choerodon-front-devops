@@ -415,6 +415,10 @@ class ContainerHome extends Component {
       overflow: 'hidden',
       whiteSpace: 'nowrap',
     };
+    const wrapStyle = {
+      width: 54,
+      verticalAlign: 'bottom',
+    };
     switch (status) {
       case 'Completed':
         dom = {
@@ -424,7 +428,7 @@ class ContainerHome extends Component {
         break;
       case 'Running':
         dom = {
-          wrap: false,
+          wrap: true,
           color: '#00bf96',
         };
         break;
@@ -446,7 +450,12 @@ class ContainerHome extends Component {
           color: 'rgba(0, 0, 0, 0.36)',
         };
     }
-    el = (<StatusTags ellipsis={dom && dom.wrap ? statusStyle : null} color={dom.color} name={status} />);
+    el = (<StatusTags
+      ellipsis={dom && dom.wrap ? statusStyle : null}
+      color={dom.color}
+      name="Completed"
+      style={wrapStyle}
+    />);
     return el;
   };
 
