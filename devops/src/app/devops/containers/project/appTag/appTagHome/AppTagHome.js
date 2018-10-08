@@ -254,19 +254,7 @@ class AppTagHome extends Component {
         </div> : formatMessage({ id: 'apptag.release.empty' })}</div>
       </Panel>);
     });
-    const noTag = (<div className="c7n-tag-empty">
-      <div>
-        <Icon type="info" className="c7n-tag-empty-icon" />
-        <span className="c7n-tag-empty-text">{formatMessage({ id: 'apptag.empty' })}</span>
-      </div>
-      <Button
-        type="primary"
-        funcType="raised"
-        onClick={() => this.displayCreateModal(true)}
-      >
-        <FormattedMessage id="apptag.create" />
-      </Button>
-    </div>);
+    const empty = appData && appData.length ? 'tag' : 'app';
     return (
       <Page
         className="c7n-tag-wrapper"
@@ -334,7 +322,21 @@ class AppTagHome extends Component {
                   onShowSizeChange={this.handlePaginChange}
                 />
               </div>
-            </Fragment> : noTag}
+            </Fragment> : (<div className="c7n-tag-empty">
+              <div>
+                <Icon type="info" className="c7n-tag-empty-icon" />
+                <span className="c7n-tag-empty-text">{formatMessage({ id: `apptag.${empty}.empty` })}</span>
+              </div>
+              {empty === 'tag' ? (
+                <Button
+                  type="primary"
+                  funcType="raised"
+                  onClick={() => this.displayCreateModal(true, empty)}
+                >
+                  <FormattedMessage id="apptag.create" />
+                </Button>
+              ) : null}
+            </div>)}
           </Fragment>}
         </Content>
         <Modal

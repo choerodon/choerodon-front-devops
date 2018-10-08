@@ -137,7 +137,7 @@ class AppHome extends Component {
         <Fragment>
           {record.sonarUrl ? <Tooltip title={<FormattedMessage id="app.quality" />} placement="bottom">
             <a href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
-              <Button icon="qualit" shape="circle" size="small" />
+              <Button icon="quality" shape="circle" size="small" />
             </a>
           </Tooltip> : null }
           <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']}>

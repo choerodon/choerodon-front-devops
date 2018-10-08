@@ -803,7 +803,8 @@ const zhCN = {
   'apptag.delete.tooltip': '确定要删除该标记吗？',
   'apptag.checkNameReg': '由数字和 . 组成，必须以数字开头且不能以 . 结尾，例如：0.0.1',
   'apptag.noRefBranch': '该应用还没有分支，请先创建分支',
-  'apptag.empty': '暂无任何标记，您可在此页面基于某一分支创建标记。',
+  'apptag.tag.empty': '暂无任何标记，您可在此页面基于某一分支创建标记。',
+  'apptag.app.empty': '当前项目下无应用，请使用项目所有者角色登录去创建一个应用。',
   'apptag.release.title': '发布日志',
   'apptag.release.empty': '暂无发布日志',
 

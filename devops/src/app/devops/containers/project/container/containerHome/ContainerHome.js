@@ -277,7 +277,7 @@ class ContainerHome extends Component {
     const { filters, sort: { columnKey, order } } = ContainerStore.getInfo;
     return [{
       title: <FormattedMessage id="container.status" />,
-      dataIndex: 'status',
+      // dataIndex: 'status',
       key: 'status',
       width: 110,
       sorter: true,
@@ -408,6 +408,13 @@ class ContainerHome extends Component {
     const { status } = record;
     let dom = null;
     let el = null;
+    const statusStyle = {
+      textOverflow: 'ellipsis',
+      width: '100%',
+      height: 20,
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+    };
     switch (status) {
       case 'Completed':
         dom = {
@@ -439,13 +446,7 @@ class ContainerHome extends Component {
           color: 'rgba(0, 0, 0, 0.36)',
         };
     }
-    if (dom && dom.wrap) {
-      el = (<MouserOverWrapper text={status} width={0.073}>
-        <StatusTags color={dom.color} name={status} />
-      </MouserOverWrapper>);
-    } else {
-      el = (<StatusTags color={dom.color} name={status} />);
-    }
+    el = (<StatusTags ellipsis={dom && dom.wrap ? statusStyle : null} color={dom.color} name={status} />);
     return el;
   };
 
