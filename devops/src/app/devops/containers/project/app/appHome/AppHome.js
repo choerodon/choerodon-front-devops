@@ -172,7 +172,7 @@ class AppHome extends Component {
                 </Fragment> }
             </Tooltip>
           </Permission>
-          {record.failed ? <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.deleteByAppId']}>
+          {record.fail ? <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.deleteByAppId']}>
             <Tooltip
               placement="bottom"
               title={<FormattedMessage id="delete" />}
@@ -181,7 +181,7 @@ class AppHome extends Component {
                 icon="delete_forever"
                 shape="circle"
                 size="small"
-                onClick={this.deleteApp.bind(this, record.id)}
+                onClick={this.openRemove.bind(this, record.id, record.name)}
               />
             </Tooltip>
           </Permission> : null}
@@ -204,7 +204,7 @@ class AppHome extends Component {
     let icon = '';
     let msg = '';
     let color = '';
-    if (record.failed) {
+    if (record.fail) {
       icon = 'cancel';
       msg = 'failed';
       color = '#f44336';
@@ -257,9 +257,14 @@ class AppHome extends Component {
   deleteApp = (id) => {
     const { AppStore } = this.props;
     const { projectId } = this.state;
+    this.setState({ submitting: true });
     AppStore.deleteApps(projectId, id)
       .then(() => {
         this.loadAllData(this.state.page);
+        this.setState({
+          submitting: false,
+          openRemove: false,
+        });
       });
   };
 
@@ -389,7 +394,7 @@ class AppHome extends Component {
       intl: { formatMessage },
       form: { getFieldDecorator },
     } = this.props;
-    const { type: modeType, show, submitting, openRemove } = this.state;
+    const { type: modeType, show, submitting, openRemove, name: appName, id } = this.state;
     const formContent = (<Form layout="vertical" className="c7n-sidebar-form">
       {modeType === 'create' && <FormItem
         {...formItemLayout}
@@ -541,6 +546,20 @@ class AppHome extends Component {
             />
           </Content>
         </Fragment>}
+        <Modal
+          confirmLoading={submitting}
+          visible={openRemove}
+          title={`${formatMessage({ id: 'app.delete' })}“${appName}”`}
+          closable={false}
+          footer={[
+            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,
+            <Button key="submit" type="danger" onClick={this.deleteApp.bind(this, id)} loading={submitting}>
+              {formatMessage({ id: 'delete' })}
+            </Button>,
+          ]}
+        >
+          <p>{formatMessage({ id: 'app.delete.tooltip' })}</p>
+        </Modal>
       </Page>
     );
   }

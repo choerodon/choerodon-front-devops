@@ -282,7 +282,7 @@ class AppInstance extends Component {
             projectId,
             service: ['devops-service.application-instance.delete'],
             text: intl.formatMessage({ id: 'ist.del' }),
-            action: this.handleOpen.bind(this, record.id),
+            action: this.handleOpen.bind(this, record.id, record.code),
           },
         ]}
       />);
@@ -325,7 +325,7 @@ class AppInstance extends Component {
             projectId,
             service: ['devops-service.application-instance.delete'],
             text: intl.formatMessage({ id: 'ist.del' }),
-            action: this.handleOpen.bind(this, record.id),
+            action: this.handleOpen.bind(this, record.id, record.code),
           },
         ]}
       />);
@@ -336,12 +336,13 @@ class AppInstance extends Component {
    * 打开删除数据模态框
    * @param id
    */
-  handleOpen(id) {
-    this.setState({ openRemove: true, id });
+  handleOpen(id, name) {
+    this.setState({ openRemove: true, id, name });
   }
 
   render() {
     const { store, intl } = this.props;
+    const { name } = this.state;
     const ist = store.getIstAll;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const pageInfo = store.getPageInfo;
@@ -453,6 +454,7 @@ class AppInstance extends Component {
           handleCancel={this.handleClose}
           handleConfirm={this.handleDelete.bind(this, this.state.id)}
           confirmLoading={this.state.loading}
+          name={name}
         />
       </div>
     );

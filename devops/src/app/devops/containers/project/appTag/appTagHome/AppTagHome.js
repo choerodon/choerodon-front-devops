@@ -153,7 +153,7 @@ class AppTagHome extends Component {
   render() {
     const { intl: { formatMessage }, AppTagStore } = this.props;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
-    const { visible, deleteLoading, creationDisplay, appName, editDisplay, editTag, editRelease } = this.state;
+    const { visible, deleteLoading, creationDisplay, appName, editDisplay, editTag, editRelease, tag } = this.state;
     const appData = DevPipelineStore.getAppData;
     const tagData = AppTagStore.getTagData;
     const loading = AppTagStore.getLoading;
@@ -339,7 +339,7 @@ class AppTagHome extends Component {
         <Modal
           confirmLoading={deleteLoading}
           visible={visible}
-          title={<FormattedMessage id="apptag.action.delete" />}
+          title={`${formatMessage({ id: 'apptag.action.delete' })}“${tag}”`}
           closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,

@@ -187,7 +187,7 @@ class TemplateHome extends Component {
                 shape="circle"
                 size="small"
                 funcType="flat"
-                onClick={this.openRemove.bind(this, record.id)}
+                onClick={this.openRemove.bind(this, record.id, record.name)}
               />
             </Tooltip>
           </Permission>
@@ -303,7 +303,7 @@ class TemplateHome extends Component {
       intl: { formatMessage },
       form: { getFieldDecorator },
     } = this.props;
-    const { type: modeType, show, submitting, openRemove } = this.state;
+    const { type: modeType, show, submitting, openRemove, name: temName } = this.state;
     const formContent = (<Form layout="vertical" className="c7n-sidebar-form">
       {modeType === 'create' && <FormItem
         {...formItemLayout}
@@ -478,7 +478,7 @@ class TemplateHome extends Component {
         </React.Fragment>}
         <Modal
           visible={openRemove}
-          title={<FormattedMessage id="template.del" />}
+          title={`${formatMessage({ id: 'template.del' })}“${temName}”`}
           closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}><FormattedMessage id="cancel" /></Button>,

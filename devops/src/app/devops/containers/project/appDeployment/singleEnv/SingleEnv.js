@@ -381,7 +381,7 @@ class SingleEnvironment extends Component {
             projectId,
             service: ['devops-service.application-instance.delete'],
             text: intl.formatMessage({ id: 'ist.del' }),
-            action: this.handleOpen.bind(this, record.id),
+            action: this.handleOpen.bind(this, record.id, record.code),
           },
         ]}
       />);
@@ -424,7 +424,7 @@ class SingleEnvironment extends Component {
             projectId,
             service: ['devops-service.application-instance.delete'],
             text: intl.formatMessage({ id: 'ist.del' }),
-            action: this.handleOpen.bind(this, record.id),
+            action: this.handleOpen.bind(this, record.id, record.code),
           },
         ]}
       />);
@@ -435,12 +435,13 @@ class SingleEnvironment extends Component {
    * 打开删除数据模态框
    * @param id
    */
-  handleOpen(id) {
-    this.setState({ openRemove: true, id });
+  handleOpen(id, name) {
+    this.setState({ openRemove: true, id, name });
   }
 
   render() {
     const { store, intl } = this.props;
+    const { name } = this.state;
     const ist = store.getIstAll;
     const envNames = store.getEnvcard;
     const appNames = store.getAppNameByEnv;
@@ -583,6 +584,7 @@ class SingleEnvironment extends Component {
           handleCancel={this.handleClose}
           handleConfirm={this.handleDelete.bind(this, this.state.id)}
           confirmLoading={this.state.loading}
+          name={name}
         />
       </div>
     );
