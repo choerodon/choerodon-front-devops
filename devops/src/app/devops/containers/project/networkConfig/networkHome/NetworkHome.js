@@ -173,7 +173,7 @@ class NetworkHome extends Component {
    * @returns {*}
    */
   opColumn = (record, type, projectId, orgId) => {
-    const { status, envStatus, id } = record;
+    const { status, envStatus, id, name } = record;
     const { intl } = this.props;
     let editDom = null;
     let deleteDom = null;
@@ -185,7 +185,7 @@ class NetworkHome extends Component {
           </Button>
         </Tooltip>);
         deleteDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="delete" />}>
-          <Button shape="circle" size="small" funcType="flat" onClick={this.openRemove.bind(this, id)}>
+          <Button shape="circle" size="small" funcType="flat" onClick={this.openRemove.bind(this, id, name)}>
             <i className="icon icon-delete_forever" />
           </Button>
         </Tooltip>);
@@ -226,8 +226,8 @@ class NetworkHome extends Component {
   };
 
   render() {
-    const { NetworkConfigStore, intl } = this.props;
-    const { show, showEdit, id, openRemove, submitting } = this.state;
+    const { NetworkConfigStore, intl: { formatMessage } } = this.props;
+    const { show, showEdit, id, openRemove, submitting, name } = this.state;
     const { filters, sort: { columnKey, order } } = NetworkConfigStore.getInfo;
     const {
       type,
@@ -327,7 +327,7 @@ class NetworkHome extends Component {
           </Header>
           <Content code="network" values={{ name: projectName }}>
             <Table
-              filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
+              filterBarPlaceholder={formatMessage({ id: 'filter' })}
               loading={NetworkConfigStore.getLoading}
               pagination={NetworkConfigStore.getPageInfo}
               columns={columns}
@@ -353,7 +353,7 @@ class NetworkHome extends Component {
         <Modal
           confirmLoading={submitting}
           visible={openRemove}
-          title={<FormattedMessage id="network.delete" />}
+          title={`${formatMessage({ id: 'network.delete' })}“${name}”`}
           closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}><FormattedMessage id="cancel" /></Button>,

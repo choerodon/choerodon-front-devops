@@ -581,7 +581,7 @@ class BranchHome extends Component {
         <Modal
           confirmLoading={submitting}
           visible={visible}
-          title={<FormattedMessage id="branch.action.delete" />}
+          title={`${formatMessage({ id: 'branch.action.delete' })}“${branchName}”`}
           closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,

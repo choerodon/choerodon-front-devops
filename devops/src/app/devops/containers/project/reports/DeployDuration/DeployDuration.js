@@ -13,6 +13,7 @@ import StatusTags from '../../../../components/StatusTags';
 import NoChart from '../Component/NoChart';
 import ContainerStore from '../../../../stores/project/container';
 import './DeployDuration.scss';
+import LoadingBar from '../../../../components/loadingBar/LoadingBar';
 
 configure({ enforceActions: 'never' });
 
@@ -104,6 +105,7 @@ class DeployDuration extends Component {
   loadEnvCards = () => {
     const { ReportsStore } = this.props;
     const projectId = AppState.currentMenuType.id;
+    ReportsStore.changeIsRefresh(true);
     ContainerStore.loadActiveEnv(projectId)
       .then((env) => {
         if (env.length) {
@@ -113,6 +115,7 @@ class DeployDuration extends Component {
         } else {
           ReportsStore.setEchartsLoading(false);
         }
+        ReportsStore.changeIsRefresh(false);
       });
   };
 
@@ -368,10 +371,63 @@ class DeployDuration extends Component {
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const echartsLoading = ReportsStore.getEchartsLoading;
     const envs = ContainerStore.getEnvCard;
+    const isRefresh = ReportsStore.getIsRefresh;
 
     const envDom = this.env.length ? _.map(this.env, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
 
     const appDom = this.app.length ? _.map(this.app, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
+
+    const content = (envs && envs.length ? <React.Fragment>
+      <div className="c7n-report-screen">
+        <Select
+          notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}
+          value={this.envId}
+          label={formatMessage({ id: 'deploy.envName' })}
+          className="c7n-select_200"
+          onChange={this.handleEnvSelect}
+          optionFilterProp="children"
+          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          filter
+        >
+          {envDom}
+        </Select>
+        <Select
+          notFoundContent={formatMessage({ id: 'envoverview.unlist' })}
+          value={this.appIds.length && this.appIds.slice()}
+          label={formatMessage({ id: 'deploy.appName' })}
+          className="c7n-select_400 margin-more"
+          mode="multiple"
+          maxTagCount={3}
+          onChange={this.handleAppSelect}
+          optionFilterProp="children"
+          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          filter
+        >
+          {appDom}
+        </Select>
+        <TimePicker
+          startTime={ReportsStore.getStartDate}
+          endTime={ReportsStore.getEndDate}
+          func={this.loadCharts}
+          type={this.dateType}
+          onChange={this.handleDateChoose}
+          store={ReportsStore}
+        />
+      </div>
+      <div className="c7n-report-content">
+        <Spin spinning={echartsLoading}>
+          <ReactEcharts
+            option={this.getOption()}
+            notMerge
+            lazyUpdate
+            style={{ height: '350px', width: '100%' }}
+          />
+        </Spin>
+      </div>
+      <div className="c7n-report-table">
+        {this.renderTable()}
+      </div>
+    </React.Fragment> : <NoChart title={formatMessage({ id: 'report.no-env' })} des={formatMessage({ id: 'report.no-env-des' })} />);
 
     return (<Page
       className="c7n-region"
@@ -398,57 +454,7 @@ class DeployDuration extends Component {
         </Button>
       </Header>
       <Content code="report.deploy-duration" value={{ name }}>
-        {envs && envs.length ? <React.Fragment>
-          <div className="c7n-report-screen">
-            <Select
-              notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}
-              value={this.envId}
-              label={formatMessage({ id: 'deploy.envName' })}
-              className="c7n-select_200"
-              onChange={this.handleEnvSelect}
-              optionFilterProp="children"
-              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-              filter
-            >
-              {envDom}
-            </Select>
-            <Select
-              notFoundContent={formatMessage({ id: 'envoverview.unlist' })}
-              value={this.appIds.length && this.appIds.slice()}
-              label={formatMessage({ id: 'deploy.appName' })}
-              className="c7n-select_400 margin-more"
-              mode="multiple"
-              maxTagCount={3}
-              onChange={this.handleAppSelect}
-              optionFilterProp="children"
-              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-              filter
-            >
-              {appDom}
-            </Select>
-            <TimePicker
-              startTime={ReportsStore.getStartDate}
-              endTime={ReportsStore.getEndDate}
-              func={this.loadCharts}
-              type={this.dateType}
-              onChange={this.handleDateChoose}
-              store={ReportsStore}
-            />
-          </div>
-          <div className="c7n-report-content">
-            <Spin spinning={echartsLoading}>
-              <ReactEcharts
-                option={this.getOption()}
-                notMerge
-                lazyUpdate
-                style={{ height: '350px', width: '100%' }}
-              />
-            </Spin>
-          </div>
-          <div className="c7n-report-table">
-            {this.renderTable()}
-          </div>
-        </React.Fragment> : <NoChart title={formatMessage({ id: 'report.no-env' })} des={formatMessage({ id: 'report.no-env-des' })} />}
+        {isRefresh ? <LoadingBar /> : content}
       </Content>
     </Page>);
   }

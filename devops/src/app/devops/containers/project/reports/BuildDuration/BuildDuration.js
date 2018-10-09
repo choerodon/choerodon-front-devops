@@ -11,6 +11,7 @@ import './BuildDuration.scss';
 import TimePicker from '../Component/TimePicker';
 import NoChart from '../Component/NoChart';
 import BuildTable from '../BuildTable/BuildTable';
+import LoadingBar from '../../../../components/loadingBar/LoadingBar';
 
 
 const { AppState } = stores;
@@ -40,6 +41,7 @@ class BuildDuration extends Component {
     ReportsStore.setPageInfo({ number: 0, totalElements: 0, size: HEIGHT <= 900 ? 10 : 15 });
     ReportsStore.setStartDate();
     ReportsStore.setEndDate();
+    ReportsStore.setApps([]);
   }
 
   /**
@@ -244,7 +246,46 @@ class BuildDuration extends Component {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { dateType } = this.state;
     const { id, name, type, organizationId } = AppState.currentMenuType;
-    const { apps, appId, echartsLoading, loading, pageInfo, allData } = ReportsStore;
+    const { apps, appId, echartsLoading, loading, pageInfo, allData, isRefresh } = ReportsStore;
+
+    const content = (apps && apps.length ? <React.Fragment>
+      <div className="c7n-buildDuration-select">
+        <Select
+          label={formatMessage({ id: 'chooseApp' })}
+          className="c7n-app-select_247"
+          defaultValue={appId}
+          value={appId}
+          optionFilterProp="children"
+          filterOption={(input, option) => option.props.children.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          filter
+          onChange={this.handleAppSelect}
+        >
+          {
+            _.map(apps, (app, index) => (
+              <Option value={app.id} key={index}>
+                <Tooltip title={app.code}>
+                  <span className="c7n-app-select-tooltip">
+                    {app.name}
+                  </span>
+                </Tooltip>
+              </Option>))
+          }
+        </Select>
+        <TimePicker
+          startTime={ReportsStore.getStartDate}
+          endTime={ReportsStore.getEndDate}
+          func={this.loadCharts}
+          type={dateType}
+          onChange={this.handleDateChoose}
+          store={ReportsStore}
+        />
+      </div>
+      <Spin spinning={echartsLoading}>
+        <ReactEcharts className="c7n-buildDuration-echarts" option={this.getOption()} />
+      </Spin>
+      <BuildTable loading={loading} dataSource={allData} pagination={pageInfo} loadDatas={this.loadDatas} />
+    </React.Fragment> : <NoChart title={formatMessage({ id: 'report.no-app' })} des={formatMessage({ id: 'report.no-app-des' })} />);
+
     return (<Page
       className="c7n-region c7n-ciPipeline"
       service={[
@@ -269,43 +310,7 @@ class BuildDuration extends Component {
         </Button>
       </Header>
       <Content code="report.build-duration" value={{ name }} className="c7n-buildDuration-content">
-        {apps && apps.length ? <React.Fragment>
-          <div className="c7n-buildDuration-select">
-            <Select
-              label={formatMessage({ id: 'chooseApp' })}
-              className="c7n-app-select_247"
-              defaultValue={appId}
-              value={appId}
-              optionFilterProp="children"
-              filterOption={(input, option) => option.props.children.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-              filter
-              onChange={this.handleAppSelect}
-            >
-              {
-                _.map(apps, (app, index) => (
-                  <Option value={app.id} key={index}>
-                    <Tooltip title={app.code}>
-                      <span className="c7n-app-select-tooltip">
-                        {app.name}
-                      </span>
-                    </Tooltip>
-                  </Option>))
-              }
-            </Select>
-            <TimePicker
-              startTime={ReportsStore.getStartDate}
-              endTime={ReportsStore.getEndDate}
-              func={this.loadCharts}
-              type={dateType}
-              onChange={this.handleDateChoose}
-              store={ReportsStore}
-            />
-          </div>
-          <Spin spinning={echartsLoading}>
-            <ReactEcharts className="c7n-buildDuration-echarts" option={this.getOption()} />
-          </Spin>
-          <BuildTable loading={loading} dataSource={allData} pagination={pageInfo} loadDatas={this.loadDatas} />
-        </React.Fragment> : <NoChart title={formatMessage({ id: 'report.no-app' })} des={formatMessage({ id: 'report.no-app-des' })} />}
+        {isRefresh ? <LoadingBar /> : content}
       </Content>
     </Page>);
   }

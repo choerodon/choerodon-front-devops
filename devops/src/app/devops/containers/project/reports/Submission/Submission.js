@@ -12,6 +12,7 @@ import TimePicker from '../Component/TimePicker';
 import NoChart from '../Component/NoChart';
 import './Submission.scss';
 import '../../../main.scss';
+import LoadingBar from '../../../../components/loadingBar/LoadingBar';
 
 /**
  * 将数据转为图表可用格式
@@ -82,31 +83,37 @@ class Submission extends Component {
   handleSelect = (e) => {
     const { ReportsStore: { loadCommits, loadCommitsRecord, getStartTime, getEndTime } } = this.props;
     const { id: projectId } = AppState.currentMenuType;
+    const startTime = getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = getEndTime.format().split('T')[0].replace(/-/g, '/');
     this.setState({ appId: e });
-    loadCommits(projectId, getStartTime, getEndTime, e);
-    loadCommitsRecord(projectId, getStartTime, getEndTime, e, 0);
+    loadCommits(projectId, startTime, endTime, e);
+    loadCommitsRecord(projectId, startTime, endTime, e, 0);
   };
 
   handlePageChange = (page) => {
     const { ReportsStore: { loadCommitsRecord, getStartTime, getEndTime } } = this.props;
     const { appId } = this.state;
     const { id: projectId } = AppState.currentMenuType;
+    const startTime = getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = getEndTime.format().split('T')[0].replace(/-/g, '/');
     this.setState({ page: page - 1 });
-    loadCommitsRecord(projectId, getStartTime, getEndTime, appId, page - 1);
+    loadCommitsRecord(projectId, startTime, endTime, appId, page - 1);
   };
 
   loadData = () => {
     const { ReportsStore: { loadApps, loadCommits, loadCommitsRecord, getStartTime, getEndTime } } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     const { page, appId, dateType } = this.state;
+    const startTime = getStartTime.format().split('T')[0].replace(/-/g, '/');
+    const endTime = getEndTime.format().split('T')[0].replace(/-/g, '/');
     loadApps(projectId).then((data) => {
       if (data && data.length) {
         const selectApp = appId || _.map(data, item => item.id);
         if (!appId) {
           this.setState({ appId: selectApp });
         }
-        loadCommits(projectId, getStartTime, getEndTime, selectApp);
-        loadCommitsRecord(projectId, getStartTime, getEndTime, selectApp, page);
+        loadCommits(projectId, startTime, endTime, selectApp);
+        loadCommitsRecord(projectId, startTime, endTime, selectApp, page);
       }
     });
   };
@@ -127,6 +134,7 @@ class Submission extends Component {
     const { total, user } = formatData(commits);
     const apps = ReportsStore.getApps;
     const commitsRecord = ReportsStore.getCommitsRecord;
+    const isRefresh = ReportsStore.getIsRefresh;
     const options = _.map(apps, item => (<Option key={item.id} value={item.id}>{item.name}</Option>));
     const personChart = _.map(user, item => (<div key={item.id} className="c7n-report-submission-item">
       <LineChart
@@ -140,6 +148,59 @@ class Submission extends Component {
         hasAvatar
       />
     </div>));
+
+    const content = (apps && apps.length
+      ? (<Fragment>
+        <div className="c7n-report-control">
+          <Select
+            className=" c7n-report-control-select"
+            mode="multiple"
+            label={formatMessage({ id: 'chooseApp' })}
+            placeholder={formatMessage({ id: 'report.app.noselect' })}
+            maxTagCount={3}
+            value={appId || []}
+            maxTagPlaceholder={`+ ${appId ? (appId.length - 3) : ''} ...`}
+            onChange={this.handleSelect}
+            optionFilterProp="children"
+            filter
+          >
+            {options}
+          </Select>
+          <TimePicker
+            unlimit
+            startTime={ReportsStore.getStartDate}
+            endTime={ReportsStore.getEndDate}
+            func={this.loadData}
+            store={ReportsStore}
+            type={dateType}
+            onChange={this.handleDateChoose}
+          />
+        </div>
+        <div className="c7n-report-submission clearfix">
+          <div className="c7n-report-submission-overview">
+            <LineChart
+              loading={ReportsStore.getCommitLoading}
+              name="提交情况"
+              color="#4677dd"
+              style={{ width: '100%', height: 276 }}
+              data={total}
+              hasAvatar={false}
+              start={startTime}
+              end={endTime}
+            />
+          </div>
+          <div className="c7n-report-submission-history">
+            <CommitHistory
+              loading={ReportsStore.getHistoryLoad}
+              onPageChange={this.handlePageChange}
+              dataSource={commitsRecord}
+            />
+          </div>
+        </div>
+        <div className="c7n-report-submission-wrap clearfix">{personChart}</div>
+      </Fragment>)
+      : <NoChart title={formatMessage({ id: 'report.no-app' })} des={formatMessage({ id: 'report.no-app-des' })} />);
+
     return (<Page
       className="c7n-region"
       service={[
@@ -164,57 +225,7 @@ class Submission extends Component {
         </Button>
       </Header>
       <Content code="report.submission" value={{ name }}>
-        {apps && apps.length
-          ? (<Fragment>
-            <div className="c7n-report-control">
-              <Select
-                className=" c7n-report-control-select"
-                mode="multiple"
-                label={formatMessage({ id: 'chooseApp' })}
-                placeholder={formatMessage({ id: 'report.app.noselect' })}
-                maxTagCount={3}
-                value={appId || []}
-                maxTagPlaceholder={`+ ${appId ? (appId.length - 3) : ''} ...`}
-                onChange={this.handleSelect}
-                optionFilterProp="children"
-                filter
-              >
-                {options}
-              </Select>
-              <TimePicker
-                unlimit
-                startTime={ReportsStore.getStartDate}
-                endTime={ReportsStore.getEndDate}
-                func={this.loadData}
-                store={ReportsStore}
-                type={dateType}
-                onChange={this.handleDateChoose}
-              />
-            </div>
-            <div className="c7n-report-submission clearfix">
-              <div className="c7n-report-submission-overview">
-                <LineChart
-                  loading={ReportsStore.getCommitLoading}
-                  name="提交情况"
-                  color="#4677dd"
-                  style={{ width: '100%', height: 276 }}
-                  data={total}
-                  hasAvatar={false}
-                  start={startTime}
-                  end={endTime}
-                />
-              </div>
-              <div className="c7n-report-submission-history">
-                <CommitHistory
-                  loading={ReportsStore.getHistoryLoad}
-                  onPageChange={this.handlePageChange}
-                  dataSource={commitsRecord}
-                />
-              </div>
-            </div>
-            <div className="c7n-report-submission-wrap clearfix">{personChart}</div>
-          </Fragment>)
-          : <NoChart title={formatMessage({ id: 'report.no-app' })} des={formatMessage({ id: 'report.no-app-des' })} />}
+        {isRefresh ? <LoadingBar /> : content}
       </Content>
     </Page>);
   }

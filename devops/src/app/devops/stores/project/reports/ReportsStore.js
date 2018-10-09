@@ -51,6 +51,8 @@ class ReportsStore {
 
   @observable historyLoad = false;
 
+  @observable isRefresh = true;
+
   @action setHistoryLoad(flag) {
     this.historyLoad = flag;
   }
@@ -225,17 +227,21 @@ class ReportsStore {
    * 加载项目下的应用
    * @param proId
    */
-  loadApps = proId => axios.get(`/devops/v1/projects/${proId}/apps`).then((data) => {
-    const res = handleProptError(data);
-    if (res) {
-      this.setApps(data);
-      if (!data.length) {
-        this.setEchartsLoading(false);
-        this.changeLoading(false);
+  loadApps = (proId) => {
+    this.changeIsRefresh(true);
+    return axios.get(`/devops/v1/projects/${proId}/apps`).then((data) => {
+      const res = handleProptError(data);
+      if (res) {
+        this.setApps(data);
+        if (!data.length) {
+          this.setEchartsLoading(false);
+          this.changeLoading(false);
+        }
       }
-    }
-    return res;
-  });
+      this.changeIsRefresh(false);
+      return res;
+    });
+  }
 
   /**
    * 加载构建次数

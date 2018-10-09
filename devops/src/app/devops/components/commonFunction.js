@@ -23,7 +23,7 @@ export const commonComponent =(storeName) => {
      * 打开删除数据模态框
      * @param id
      */
-    openRemove =(id) => this.setState({ openRemove: true, id });
+    openRemove =(id, name) => this.setState({ openRemove: true, id, name });
 
     /***
      * 删除数据

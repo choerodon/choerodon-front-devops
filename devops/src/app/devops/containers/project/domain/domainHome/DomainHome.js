@@ -121,9 +121,9 @@ class DomainHome extends Component {
       render: record => (
         <div>
           {_.map(record.pathList, instance => (<div className="c7n-network-col_border" key={`${record.id}-${instance.path}-${instance.serviceId}`}>
-            <Tooltip title={intl.formatMessage({ id: `${instance.serviceStatus || 'null'}` })} placement="top">
-              <span className={instance.serviceStatus === 'running' ? 'env-status-success' : 'env-status-error'} />
-            </Tooltip>
+            <div className={`c7n-domain-create-status c7n-domain-create-status_${instance.serviceStatus}`}>
+              <div>{intl.formatMessage({ id: instance.serviceStatus })}</div>
+            </div>
             {instance.serviceName}
           </div>
           ))}
@@ -158,7 +158,7 @@ class DomainHome extends Component {
             </React.Fragment>);
             deletDom = (<React.Fragment>
               {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'delete' })}</div>}>
-                <Button shape="circle" size="small" funcType="flat" onClick={this.openRemove.bind(this, record.id)}>
+                <Button shape="circle" size="small" funcType="flat" onClick={this.openRemove.bind(this, record.id, record.name)}>
                   <i className="icon icon-delete_forever" />
                 </Button>
               </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
@@ -256,7 +256,7 @@ class DomainHome extends Component {
         />}
         <Modal
           visible={this.state.openRemove}
-          title={<FormattedMessage id="domain.header.delete" />}
+          title={`${intl.formatMessage({ id: 'domain.header.delete' })}“${this.state.name}”`}
           closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,
@@ -265,7 +265,7 @@ class DomainHome extends Component {
             </Button>,
           ]}
         >
-          <p>{intl.formatMessage({ id: 'confirm.delete' })}</p>
+          <p>{intl.formatMessage({ id: 'domain.delete.des' })}</p>
         </Modal>
       </Page>
     );

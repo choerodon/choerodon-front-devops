@@ -77,6 +77,8 @@ class AppOverview extends Component {
 
   @observable domainTitle = '';
 
+  @observable istName = '';
+
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -285,9 +287,10 @@ class AppOverview extends Component {
    * @param id
    */
   @action
-  handleOpen(id) {
+  handleOpen(id, name) {
     this.openRemove = true;
     this.id = id;
+    this.istName = name;
   }
 
   /**
@@ -798,7 +801,7 @@ class AppOverview extends Component {
             projectId,
             service: ['devops-service.application-instance.delete'],
             text: intl.formatMessage({ id: 'ist.del' }),
-            action: this.handleOpen.bind(this, record.id),
+            action: this.handleOpen.bind(this, record.id, record.code),
           },
         ]}
       />);
@@ -842,7 +845,7 @@ class AppOverview extends Component {
             projectId,
             service: ['devops-service.application-instance.delete'],
             text: intl.formatMessage({ id: 'ist.del' }),
-            action: this.handleOpen.bind(this, record.id),
+            action: this.handleOpen.bind(this, record.id, record.code),
           },
         ]}
       />);
@@ -998,6 +1001,7 @@ class AppOverview extends Component {
           handleCancel={this.handleCancelUp}
           handleConfirm={this.handleDelete.bind(this, this.id)}
           confirmLoading={this.loading}
+          name={this.istName}
         />
         {this.showDomain && <CreateDomain
           id={this.domainId}
