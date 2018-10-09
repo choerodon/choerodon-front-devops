@@ -59,6 +59,7 @@ class SingleEnvironment extends Component {
     const appIds = store.getAppId;
     const envNames = store.getEnvcard;
     const envID = envId || (envNames.length ? envNames[0].id : null);
+    store.setHasApp(true);
     if (!appIds || appId !== appIds) {
       store.setAppId(appId);
       store.setPId(pId);
@@ -109,8 +110,10 @@ class SingleEnvironment extends Component {
       if (data) {
         const appIds = data.map(item => item.id);
         if (appId && !appIds.includes(appId)) {
+          store.setHasApp(false);
           store.loadInstanceAll(projectId, { envId: id, appId: false });
         } else {
+          store.setHasApp(true);
           store.loadInstanceAll(projectId, { envId: id, appId });
         }
       }

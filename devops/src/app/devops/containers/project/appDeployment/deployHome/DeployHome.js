@@ -66,7 +66,7 @@ class DeployHome extends Component {
       param: param.toString(),
     };
     const pageInfo = AppDeploymentStore.getPageInfo;
-    this.changeTabs(tabName, { page: pageInfo.current - 1, size: pageInfo.pageSize, datas: postData });
+    this.loadData(tabName, { page: pageInfo.current - 1, size: pageInfo.pageSize, datas: postData });
   };
 
   /**
@@ -103,12 +103,23 @@ class DeployHome extends Component {
    */
   loadSingleEnv = (envId, Info = {}) => {
     const { AppDeploymentStore } = this.props;
-    const appId = AppDeploymentStore.getAppId;
+    const hasApp = AppDeploymentStore.getHasApp;
+    const appId = hasApp && AppDeploymentStore.getAppId;
     const { id: projectId } = JSON.parse(sessionStorage.selectData);
     const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
     AppDeploymentStore.setAppPageSize(appPageSize);
-    AppDeploymentStore.loadInstanceAll(projectId, { envId, appId, ...Info });
-    AppDeploymentStore.loadAppNameByEnv(projectId, envId, 0, appPageSize);
+    AppDeploymentStore.loadAppNameByEnv(projectId, envId, 0, appPageSize).then((data) => {
+      if (data) {
+        const appIds = data.map(item => item.id);
+        if (appId && !appIds.includes(appId)) {
+          AppDeploymentStore.setHasApp(false);
+          AppDeploymentStore.loadInstanceAll(projectId, { envId, appId: false, ...Info });
+        } else {
+          AppDeploymentStore.setHasApp(true);
+          AppDeploymentStore.loadInstanceAll(projectId, { envId, appId, ...Info });
+        }
+      }
+    });
   };
 
   /**

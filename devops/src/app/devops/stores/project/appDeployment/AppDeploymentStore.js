@@ -59,6 +59,17 @@ class AppDeploymentStore {
 
   @observable verValue = undefined;
 
+  // 单环境下是否存在该应用
+  @observable hasApp = true;
+
+  @action setHasApp(flag) {
+    this.hasApp = flag;
+  }
+
+  @computed get getHasApp() {
+    return this.hasApp;
+  }
+
   @action setIstTableFilter(param) {
     if (param) {
       this.istParams = param;
