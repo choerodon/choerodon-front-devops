@@ -122,32 +122,6 @@ class BranchStore {
   @action setIssueInitValue(value) {
     this.issueInitValue = value;
   }
-  //
-  // /**
-  //  * 加载项目下的应用
-  //  * @param proId
-  //  * @returns {JQueryPromise<any> | JQueryPromise<void> | PromiseLike<T> | Promise<T> | *}
-  //  */
-  // loadApps = (proId = AppState.currentMenuType.id) => {
-  //   this.setBranchList([]);
-  //   this.setApps([]);
-  //   axios.get(`/devops/v1/projects/${proId}/apps`)
-  //     .then((data) => {
-  //       const res = handleProptError(data);
-  //       this.setApps(data);
-  //       if (data.length) {
-  //         if (this.app) {
-  //           if (_.filter(data, ['id', this.app]).length === 0) {
-  //             this.setApp(data[0].id);
-  //           }
-  //         } else {
-  //           this.setApp(data[0].id);
-  //         }
-  //         this.loadBranchList({ projectId: proId });
-  //       }
-  //       return res;
-  //     });
-  // };
 
   loadIssue = (proId = AppState.currentMenuType.id, search = '', onlyActiveSprint, issueId = '', issueNum = '') => {
     this.setIssueLoading(true);
