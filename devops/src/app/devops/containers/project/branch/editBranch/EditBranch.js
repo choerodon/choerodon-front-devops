@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import { Modal, Form, Radio, Input, Select, Tooltip } from 'choerodon-ui';
-import { stores, axios, Content } from 'choerodon-front-boot';
+import { Modal, Form, Select, Tooltip } from 'choerodon-ui';
+import { stores, Content } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import '../../../main.scss';
 import '../CreateBranch/CreateBranch.scss';
 import '../commom.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import DevPipelineStore from '../../../../stores/project/devPipeline';
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
-const { Option, OptGroup } = Select;
+const { Option } = Select;
 const FormItem = Form.Item;
 const formItemLayout = {
   labelCol: {
@@ -89,8 +90,8 @@ class EditBranch extends Component {
   handleOk = (e) => {
     e.preventDefault();
     const { store } = this.props;
-    const appId = store.app;
-    const { projectId, type } = this.state;
+    const appId = DevPipelineStore.selectedApp;
+    const { projectId } = this.state;
     let isModify = false;
     const issueId = this.props.form.getFieldValue('issueId');
     if (!store.branch.issueId && issueId) {
@@ -144,7 +145,7 @@ class EditBranch extends Component {
 
   render() {
     const { name } = AppState.currentMenuType;
-    const { visible, intl, store, form: { getFieldDecorator } } = this.props;
+    const { visible, store, form: { getFieldDecorator } } = this.props;
     const issueInitValue = store.issueInitValue;
     const issue = store.issue.slice();
     const branch = store.branch;

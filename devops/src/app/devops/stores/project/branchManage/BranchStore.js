@@ -1,16 +1,13 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
 import { handleProptError } from '../../../utils';
+import DevPipelineStore from '../devPipeline';
 
 const { AppState } = stores;
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 @store('BranchStore')
 class BranchStore {
-  @observable apps = [];
-
-  @observable app = null;
-
   @observable branchData = { content: [] };
 
   @observable tagData = { content: [] };
@@ -102,15 +99,6 @@ class BranchStore {
     this.loading = flag;
   }
 
-
-  @action setApps(data) {
-    this.apps = data;
-  }
-
-  @action setApp(data) {
-    this.app = data;
-  }
-
   @action setIssue(data) {
     this.issue = data;
   }
@@ -134,27 +122,32 @@ class BranchStore {
   @action setIssueInitValue(value) {
     this.issueInitValue = value;
   }
-
-  /**
-   * 加载项目下的应用
-   * @param proId
-   * @returns {JQueryPromise<any> | JQueryPromise<void> | PromiseLike<T> | Promise<T> | *}
-   */
-  loadApps = (proId = AppState.currentMenuType.id) => {
-    this.setBranchList([]);
-    this.setApps([]);
-    this.setApp(null);
-    axios.get(`/devops/v1/projects/${proId}/apps`)
-      .then((data) => {
-        const res = handleProptError(data);
-        this.setApps(data);
-        if (data.length) {
-          this.setApp(data[0].id);
-          this.loadBranchList({ projectId: proId });
-        }
-        return res;
-      });
-  };
+  //
+  // /**
+  //  * 加载项目下的应用
+  //  * @param proId
+  //  * @returns {JQueryPromise<any> | JQueryPromise<void> | PromiseLike<T> | Promise<T> | *}
+  //  */
+  // loadApps = (proId = AppState.currentMenuType.id) => {
+  //   this.setBranchList([]);
+  //   this.setApps([]);
+  //   axios.get(`/devops/v1/projects/${proId}/apps`)
+  //     .then((data) => {
+  //       const res = handleProptError(data);
+  //       this.setApps(data);
+  //       if (data.length) {
+  //         if (this.app) {
+  //           if (_.filter(data, ['id', this.app]).length === 0) {
+  //             this.setApp(data[0].id);
+  //           }
+  //         } else {
+  //           this.setApp(data[0].id);
+  //         }
+  //         this.loadBranchList({ projectId: proId });
+  //       }
+  //       return res;
+  //     });
+  // };
 
   loadIssue = (proId = AppState.currentMenuType.id, search = '', onlyActiveSprint, issueId = '', issueNum = '') => {
     this.setIssueLoading(true);
@@ -200,7 +193,7 @@ class BranchStore {
    */
   loadBranchData = ({ projectId, page = 0, size = this.pageInfo.pageSize, sort = { field: 'creationDate', order: 'asc' }, postData = { searchParam: {},
     param: '' } }) => {
-    axios.post(`/devops/v1/projects/${projectId}/apps/${this.app}/git/branches?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+    axios.post(`/devops/v1/projects/${projectId}/apps/${DevPipelineStore.selectedApp}/git/branches?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
@@ -219,9 +212,9 @@ class BranchStore {
    */
   loadBranchList = ({ projectId, page = 0, size = this.pageInfo.pageSize, sort = { field: 'creationDate', order: 'asc' }, postData = { searchParam: {},
     param: '' } }) => {
-    if (this.app) {
+    if (DevPipelineStore.selectedApp) {
       this.changeLoading(true);
-      axios.post(`/devops/v1/projects/${projectId}/apps/${this.app}/git/branches?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+      axios.post(`/devops/v1/projects/${projectId}/apps/${DevPipelineStore.selectedApp}/git/branches?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
         .then((data) => {
           this.changeLoading(false);
           const res = handleProptError(data);
@@ -234,7 +227,7 @@ class BranchStore {
     }
   };
 
-  loadTagData = (projectId, page = 0, sizes = 10, postData = { searchParam: {}, param: '' }) => axios.post(`/devops/v1/projects/${projectId}/apps/${this.app}/git/tags_list_options?page=0&size=${sizes}`, JSON.stringify(postData))
+  loadTagData = (projectId, page = 0, sizes = 10, postData = { searchParam: {}, param: '' }) => axios.post(`/devops/v1/projects/${projectId}/apps/${DevPipelineStore.selectedApp}/git/tags_list_options?page=0&size=${sizes}`, JSON.stringify(postData))
     .then((data) => {
       const res = handleProptError(data);
       if (res) {

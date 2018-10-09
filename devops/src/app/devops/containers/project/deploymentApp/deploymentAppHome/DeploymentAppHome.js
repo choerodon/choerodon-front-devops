@@ -441,6 +441,10 @@ class DeploymentAppHome extends Component {
           <div className="deploy-title">
             <i className="icon icon-description section-title-icon " />
             <span className="section-title">{formatMessage({ id: 'deploy.step.two.config' })}</span>
+            <i className="icon icon-error c7n-deploy-ist-operate section-instance-icon" />
+            <span className="deploy-tip-text">
+              {formatMessage({ id: 'deploy.step.two.description_1' })}
+            </span>
           </div>
           {data && (<AceForYaml
             newLines={data.newLines}

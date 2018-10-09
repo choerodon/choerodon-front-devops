@@ -12,9 +12,10 @@ import CreateTag from '../createTag/CreateTag';
 import EditTag from '../editTag/EditTag';
 import '../../../main.scss';
 import './AppTagHome.scss';
+import DevPipelineStore from '../../../../stores/project/devPipeline';
 
 const { AppState } = stores;
-const { Option, OptGroup } = Select;
+const { Option } = Select;
 const { Panel } = Collapse;
 
 @observer
@@ -37,7 +38,6 @@ class AppTagHome extends Component {
 
   componentDidMount() {
     const { AppTagStore } = this.props;
-    AppTagStore.setSelectApp(null);
     AppTagStore.setLoading(null);
     AppTagStore.setTagData([]);
     this.loadInitData();
@@ -49,9 +49,8 @@ class AppTagHome extends Component {
    * @param option
    */
   handleSelect = (id, option) => {
-    const { AppTagStore } = this.props;
     this.setState({ page: 0, pageSize: 10, appName: option.props.children });
-    AppTagStore.setSelectApp(id);
+    DevPipelineStore.setSelectApp(id);
     this.loadTagData();
   };
 
@@ -67,9 +66,7 @@ class AppTagHome extends Component {
    * 加载应用信息
    */
   loadInitData = () => {
-    const { AppTagStore } = this.props;
-    const { id: projectId } = AppState.currentMenuType;
-    AppTagStore.queryAppData(projectId);
+    DevPipelineStore.queryAppData(AppState.currentMenuType.id, 'tag');
     this.setState({ appName: null });
   };
 
@@ -154,13 +151,13 @@ class AppTagHome extends Component {
   };
 
   render() {
-    const { intl: { formatMessage }, AppTagStore, form } = this.props;
+    const { intl: { formatMessage }, AppTagStore } = this.props;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const { visible, deleteLoading, creationDisplay, appName, editDisplay, editTag, editRelease } = this.state;
-    const appData = AppTagStore.getAppData;
+    const appData = DevPipelineStore.getAppData;
     const tagData = AppTagStore.getTagData;
     const loading = AppTagStore.getLoading;
-    const currentAppName = appName || AppTagStore.getDefaultAppName;
+    const currentAppName = appName || DevPipelineStore.getDefaultAppName;
     const { current, total, pageSize } = AppTagStore.pageInfo;
     const tagList = [];
     _.forEach(tagData, (item) => {
@@ -300,7 +297,7 @@ class AppTagHome extends Component {
           <Select
             filter
             className="c7n-select_512"
-            value={AppTagStore.getSelectApp}
+            value={DevPipelineStore.getSelectApp}
             label={formatMessage({ id: 'chooseApp' })}
             filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             onChange={(value, option) => this.handleSelect(value, option)}
