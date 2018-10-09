@@ -429,7 +429,7 @@ class AppInstance extends Component {
           loading={store.getIsLoading}
           columns={columns}
           pagination={pageInfo}
-          filters={param || []}
+          filters={param.slice() || []}
           dataSource={ist}
           rowKey={record => record.id}
         />
