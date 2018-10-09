@@ -345,6 +345,10 @@ class AppDeploymentStore {
     return axios.post(`devops/v1/projects/${projectId}/app_instances`, JSON.stringify(data));
   }
 
+  reStarts(projectId, id) {
+    return axios.put(`devops/v1/projects/${projectId}/app_instances/${id}/restart`);
+  }
+
   deleteIst(projectId, istId) {
     return axios.delete(`devops/v1/projects/${projectId}/app_instances/${istId}/delete`);
   }

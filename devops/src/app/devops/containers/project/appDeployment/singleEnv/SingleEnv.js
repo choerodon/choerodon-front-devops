@@ -192,6 +192,16 @@ class SingleEnvironment extends Component {
       });
   };
 
+  /**
+   * 重新部署
+   * @param id
+   */
+  reStart = (id) => {
+    const { store } = this.props;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    store.reStarts(projectId, id);
+  };
+
 
   /**
    * 升级配置实例信息
@@ -379,6 +389,21 @@ class SingleEnvironment extends Component {
             type,
             organizationId,
             projectId,
+            service: ['devops-service.application-instance.restart'],
+            text: intl.formatMessage({ id: 'ist.reDeploy' }),
+            action: this.reStart.bind(this, record.id),
+          }, {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.application-version.getUpgradeAppVersion'],
+            text: intl.formatMessage({ id: 'ist.upgrade' }),
+            action: this.upgradeIst.bind(this, record.code, record.id,
+              record.envId, record.appVersionId, record.appId),
+          }, {
+            type,
+            organizationId,
+            projectId,
             service: ['devops-service.application-instance.delete'],
             text: intl.formatMessage({ id: 'ist.del' }),
             action: this.handleOpen.bind(this, record.id, record.code),
@@ -403,6 +428,13 @@ class SingleEnvironment extends Component {
             text: intl.formatMessage({ id: 'ist.values' }),
             action: this.updateConfig.bind(this, record.code, record.id,
               record.envId, record.appVersionId, record.appId),
+          }, {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.application-instance.restart'],
+            text: intl.formatMessage({ id: 'ist.reDeploy' }),
+            action: this.reStart.bind(this, record.id),
           }, {
             type,
             organizationId,
