@@ -21,7 +21,6 @@ class SingleEnvironment extends Component {
     super(props);
     this.state = {
       visibleUp: false,
-      active: -1,
     };
   }
 
@@ -56,21 +55,12 @@ class SingleEnvironment extends Component {
    * @param pId
    */
   loadDetail = (envId, appId, pId) => {
-    const { active } = this.state;
     const { store } = this.props;
-    const appNames = store.getAppNames;
     const appIds = store.getAppId;
-    const appID = appIds || (appNames.length ? appNames[0].id : null);
-    let Active = 1;
-    if (appId === Number(appID)) {
-      Active = active * -1;
-    }
-    this.setState({
-      active: Active,
-    });
     const envNames = store.getEnvcard;
     const envID = envId || (envNames.length ? envNames[0].id : null);
-    if (Active > 0) {
+    store.setHasApp(true);
+    if (!appIds || appId !== appIds) {
       store.setAppId(appId);
       store.setPId(pId);
       this.loadInstance(envID, appId);
@@ -116,8 +106,18 @@ class SingleEnvironment extends Component {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const appId = store.getAppId;
     store.setEnvId(id);
-    store.loadInstanceAll(projectId, { envId: id, appId });
-    store.loadAppNameByEnv(projectId, id, store.appPage - 1, store.appPageSize);
+    store.loadAppNameByEnv(projectId, id, store.appPage - 1, store.appPageSize).then((data) => {
+      if (data) {
+        const appIds = data.map(item => item.id);
+        if (appId && !appIds.includes(appId)) {
+          store.setHasApp(false);
+          store.loadInstanceAll(projectId, { envId: id, appId: false });
+        } else {
+          store.setHasApp(true);
+          store.loadInstanceAll(projectId, { envId: id, appId });
+        }
+      }
+    });
     store.setIstTableFilter(null);
   };
 
@@ -541,7 +541,7 @@ class SingleEnvironment extends Component {
         onChange={this.tableChange}
         loading={store.getIsLoading}
         pagination={store.pageInfo}
-        filters={param || []}
+        filters={param.slice() || []}
         columns={columns}
         dataSource={ist}
         rowKey={record => record.id}

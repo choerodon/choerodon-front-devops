@@ -51,11 +51,24 @@ class AppDeploymentStore {
 
   @observable appId = false;
 
+  @observable sigAppId = false;
+
   @observable pId = false;
 
   @observable istParams = { filters: {}, param: [] };
 
   @observable verValue = undefined;
+
+  // 单环境下是否存在该应用
+  @observable hasApp = true;
+
+  @action setHasApp(flag) {
+    this.hasApp = flag;
+  }
+
+  @computed get getHasApp() {
+    return this.hasApp;
+  }
 
   @action setIstTableFilter(param) {
     if (param) {
@@ -154,7 +167,7 @@ class AppDeploymentStore {
   }
 
   @computed get getIstAll() {
-    return this.istAll;
+    return this.istAll.slice();
   }
 
   @action setAppVer(appVersion) {
@@ -187,6 +200,14 @@ class AppDeploymentStore {
 
   @action setAppId(appId) {
     this.appId = appId;
+  }
+
+  @computed get getSingleAppId() {
+    return this.sigAppId;
+  }
+
+  @action setSingleAppId(appId) {
+    this.sigAppId = appId;
   }
 
   @action setPId(pId) {
@@ -308,11 +329,14 @@ class AppDeploymentStore {
       Choerodon.prompt(data.message);
     } else {
       this.setAppNameByEnv(data.content);
+      // this.setSelectApp(data.content);
       const { number, size, totalElements } = data;
       const pageInfo = { number, size, totalElements };
       this.setAppPageInfo(pageInfo);
       this.changeLoading(false);
+      return data.content;
     }
+    return false;
   });
 
   loadMultiData = projectId => axios.get(`devops/v1/projects/${projectId}/app_instances/all`).then((data) => {
@@ -337,17 +361,11 @@ class AppDeploymentStore {
 
   checkYaml = (value, projectId) => axios.post(`/devops/v1/projects/${projectId}/app_instances/value_format`, { yaml: value });
 
-  changeIstActive(projectId, istId, active) {
-    return axios.put(`devops/v1/projects/${projectId}/app_instances/${istId}/${active}`);
-  }
+  changeIstActive = (projectId, istId, active) => axios.put(`devops/v1/projects/${projectId}/app_instances/${istId}/${active}`);
 
-  reDeploy(projectId, data) {
-    return axios.post(`devops/v1/projects/${projectId}/app_instances`, JSON.stringify(data));
-  }
+  reDeploy = (projectId, data) => axios.post(`devops/v1/projects/${projectId}/app_instances`, JSON.stringify(data));
 
-  deleteIst(projectId, istId) {
-    return axios.delete(`devops/v1/projects/${projectId}/app_instances/${istId}/delete`);
-  }
+  deleteIst = (projectId, istId) => axios.delete(`devops/v1/projects/${projectId}/app_instances/${istId}/delete`);
 
   loadUpVersion = (projectId, verId) => axios.get(`devops/v1/projects/${projectId}/version/${verId}/upgrade_version`)
     .then((data) => {
@@ -364,7 +382,7 @@ class AppDeploymentStore {
     } else {
       return error;
     }
-  }
+  };
 }
 
 const appDeploymentStore = new AppDeploymentStore();

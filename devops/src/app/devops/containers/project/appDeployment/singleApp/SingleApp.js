@@ -54,7 +54,7 @@ class SingleApp extends Component {
       const envId = store.getEnvId;
       const envNames = store.getEnvcard;
       const envID = envId || (envNames.length ? envNames[0].id : null);
-      store.setAppId(idArr[0]);
+      store.setSingleAppId(idArr[0]);
       store.setVerId(false);
       if (envID) {
         this.loadInstance(envID, null, idArr[0]);
@@ -83,7 +83,7 @@ class SingleApp extends Component {
     const envNames = store.getEnvcard;
     const appNames = store.getAppNames;
     const envId = store.getEnvId;
-    const appId = store.getAppId;
+    const appId = store.getSingleAppId;
     const envID = envId || (envNames.length ? envNames[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
     store.setVerId(id);
@@ -102,7 +102,7 @@ class SingleApp extends Component {
     const envNames = store.getEnvcard;
     const appNames = store.getAppNames;
     store.setEnvId(envId);
-    const appId = store.getAppId;
+    const appId = store.getSingleAppId;
     const verId = store.getVerId;
     const envID = envId || (envNames.length ? envNames[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
@@ -169,7 +169,7 @@ class SingleApp extends Component {
     const envNames = store.getEnvcard;
     const appNames = store.getAppNames;
     const envId = store.getEnvId;
-    const appId = store.getAppId;
+    const appId = store.getSingleAppId;
     const verId = store.getVerId;
     const envID = envId || (envNames.length ? envNames[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
@@ -268,7 +268,7 @@ class SingleApp extends Component {
     const appNames = store.getAppNames;
     const envNames = store.getEnvcard;
     const envId = store.getEnvId;
-    const appId = store.getAppId;
+    const appId = store.getSingleAppId;
     const verId = store.getVerId;
     const envID = envId || (envNames.length ? envNames[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
@@ -306,7 +306,7 @@ class SingleApp extends Component {
     const appNames = store.getAppNames;
     const envNames = store.getEnvcard;
     const envId = store.getEnvId;
-    const appId = store.getAppId;
+    const appId = store.getSingleAppId;
     const verId = store.getVerId;
     const envID = envId || (envNames.length ? envNames[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
@@ -345,7 +345,7 @@ class SingleApp extends Component {
     const appNames = store.getAppNames;
     const envNames = store.getEnvcard;
     const envId = store.getEnvId;
-    const appId = store.getAppId;
+    const appId = store.getSingleAppId;
     const verId = store.getVerId;
     const envID = envId || (envNames.length ? envNames[0].id : null);
     const appID = appId || (appNames.length ? appNames[0].id : null);
@@ -624,7 +624,7 @@ class SingleApp extends Component {
     const envCard = store.getEnvcard;
     const ist = store.getIstAll;
     const envId = store.getEnvId;
-    const appId = store.getAppId;
+    const appId = store.getSingleAppId;
     const verId = store.getVerId;
     const pId = store.getPId;
     const envID = envId || (envCard.length ? envCard[0].id : null);
@@ -730,7 +730,7 @@ class SingleApp extends Component {
                   loading={store.getIsLoading}
                   pagination={store.pageInfo}
                   columns={columnApp}
-                  filters={param || []}
+                  filters={param.slice() || []}
                   filterBar={false}
                   dataSource={ist}
                   rowKey={record => record.id}

@@ -27,14 +27,15 @@ class DeployHome extends Component {
   componentDidMount() {
     const { AppDeploymentStore } = this.props;
     AppStoreStore.setBackPath(false);
-    const tabActive = AppDeploymentStore.getTabActive;
+    // const tabActive = AppDeploymentStore.getTabActive;
     this.loadEnvCards();
     this.loadAppName();
-    if (tabActive) {
-      this.changeTabs(tabActive);
-    } else {
-      this.loadIstAlls();
-    }
+    this.loadIstAlls();
+    // if (tabActive) {
+    //   this.loadInitData(tabActive, {});
+    // } else {
+    //   this.loadIstAlls();
+    // }
   }
 
   componentWillUnmount() {
@@ -44,6 +45,7 @@ class DeployHome extends Component {
     AppDeploymentStore.setAppNameByEnv([]);
     AppDeploymentStore.setEnvId();
     AppDeploymentStore.setAppId();
+    AppDeploymentStore.setSingleAppId();
     AppDeploymentStore.setVerId([]);
     AppDeploymentStore.setAppVer([]);
   }
@@ -64,7 +66,7 @@ class DeployHome extends Component {
       param: param.toString(),
     };
     const pageInfo = AppDeploymentStore.getPageInfo;
-    this.changeTabs(tabName, { page: pageInfo.current - 1, size: pageInfo.pageSize, datas: postData });
+    this.loadData(tabName, { page: pageInfo.current - 1, size: pageInfo.pageSize, datas: postData });
   };
 
   /**
@@ -101,13 +103,23 @@ class DeployHome extends Component {
    */
   loadSingleEnv = (envId, Info = {}) => {
     const { AppDeploymentStore } = this.props;
-    const menu = JSON.parse(sessionStorage.selectData);
-    const projectId = menu.id;
+    const hasApp = AppDeploymentStore.getHasApp;
+    const appId = hasApp && AppDeploymentStore.getAppId;
+    const { id: projectId } = JSON.parse(sessionStorage.selectData);
     const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
-    Info.envId = envId;
     AppDeploymentStore.setAppPageSize(appPageSize);
-    AppDeploymentStore.loadInstanceAll(projectId, Info);
-    AppDeploymentStore.loadAppNameByEnv(projectId, envId, 0, appPageSize);
+    AppDeploymentStore.loadAppNameByEnv(projectId, envId, 0, appPageSize).then((data) => {
+      if (data) {
+        const appIds = data.map(item => item.id);
+        if (appId && !appIds.includes(appId)) {
+          AppDeploymentStore.setHasApp(false);
+          AppDeploymentStore.loadInstanceAll(projectId, { envId, appId: false, ...Info });
+        } else {
+          AppDeploymentStore.setHasApp(true);
+          AppDeploymentStore.loadInstanceAll(projectId, { envId, appId, ...Info });
+        }
+      }
+    });
   };
 
   /**
@@ -145,33 +157,41 @@ class DeployHome extends Component {
   /**
    * 切换子页面
    * @param tabName
-   * @param Info
+   * @param info
    */
-  changeTabs = (tabName, Info) => {
+  changeTabs = (tabName, info) => {
     const { AppDeploymentStore } = this.props;
+    const tabActive = AppDeploymentStore.getTabActive;
+    if (tabName === tabActive) {
+      return;
+    }
     AppDeploymentStore.setTabActive(tabName);
     // 设定只要切换tab页就清空筛选条件
-    if (_.isEmpty(Info)) {
+    if (_.isEmpty(info)) {
       AppDeploymentStore.setIstTableFilter(null);
     }
-    if (tabName === 'singleApp') {
-      this.loadEnvCards();
-      this.loadAppName();
-      const appNames = AppDeploymentStore.getAppNames;
-      AppDeploymentStore.setAppId(false);
-      AppDeploymentStore.setPId(false);
-      if (appNames.length) {
-        this.loadAppVer(appNames[0].id, Info);
-      }
-    } else if (tabName === 'instance') {
-      this.loadIstAlls(0, Info);
-    } else if (tabName === 'singleEnv') {
-      const envNames = AppDeploymentStore.getEnvcard;
-      AppDeploymentStore.setAppId(false);
-      AppDeploymentStore.setVerId(false);
-      if (envNames.length) {
-        this.loadSingleEnv(AppDeploymentStore.getEnvId || envNames[0].id, Info);
-      }
+    // AppDeploymentStore.setAppId(false);
+    AppDeploymentStore.setPId(false);
+    // AppDeploymentStore.setVerId(false);
+    this.loadData(tabName, info);
+  };
+
+  handleSigApp = (info) => {
+    const { AppDeploymentStore } = this.props;
+    const appId = AppDeploymentStore.getSingleAppId;
+    this.loadEnvCards();
+    this.loadAppName();
+    const appNames = AppDeploymentStore.getAppNames;
+    if (appNames.length) {
+      this.loadAppVer(appId || appNames[0].id, info);
+    }
+  };
+
+  handleSigEnv = (info) => {
+    const { AppDeploymentStore } = this.props;
+    const envNames = AppDeploymentStore.getEnvcard;
+    if (envNames.length) {
+      this.loadSingleEnv(AppDeploymentStore.getEnvId || envNames[0].id, info);
     }
   };
 
@@ -182,6 +202,19 @@ class DeployHome extends Component {
   linkToChange = (url) => {
     const { history } = this.props;
     history.push(url);
+  };
+
+  loadData = (tab, info) => {
+    switch (tab) {
+      case 'singleApp':
+        this.handleSigApp(info);
+        break;
+      case 'singleEnv':
+        this.handleSigEnv(info);
+        break;
+      default:
+        this.loadIstAlls(0, info);
+    }
   };
 
   render() {
