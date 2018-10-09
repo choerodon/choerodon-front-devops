@@ -10,6 +10,7 @@ import '../../../main.scss';
 import './CiPipelineHome.scss';
 import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import DevPipelineStore from '../../../../stores/project/devPipeline';
 
 const Option = Select.Option;
 const ICONS = {
@@ -87,11 +88,7 @@ class CiPipelineHome extends Component {
   }
 
   componentDidMount() {
-    CiPipelineStore.loadInitData();
-  }
-
-  componentWillUnmount() {
-    CiPipelineStore.setCurrentApp({});
+    DevPipelineStore.queryAppData(AppState.currentMenuType.id, 'ci');
   }
 
   get filterBar() {
@@ -99,14 +96,14 @@ class CiPipelineHome extends Component {
       <div>
         <Select
           className="c7n-app-select_512"
-          value={CiPipelineStore.currentApp.id}
+          value={DevPipelineStore.selectedApp}
           label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
           filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           filter
           onChange={this.handleChange.bind(this)}
         >
           {
-            _.map(CiPipelineStore.apps, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
+            _.map(DevPipelineStore.appData, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
           }
         </Select>
       </div>
@@ -189,7 +186,7 @@ class CiPipelineHome extends Component {
 
   handleTableChange = (pagination) => {
     CiPipelineStore.loadPipelines(
-      CiPipelineStore.currentApp.id,
+      DevPipelineStore.selectedApp,
       pagination.current - 1,
       pagination.pageSize,
     );
@@ -197,15 +194,14 @@ class CiPipelineHome extends Component {
 
   handleRefresh =() => {
     CiPipelineStore.loadPipelines(
-      CiPipelineStore.currentApp.id,
+      DevPipelineStore.selectedApp,
       CiPipelineStore.pagination.current - 1,
       CiPipelineStore.pagination.pageSize,
     );
   };
 
   handleChange(appId) {
-    const currentApp = CiPipelineStore.apps.find(app => app.id === appId);
-    CiPipelineStore.setCurrentApp(currentApp);
+    DevPipelineStore.setSelectApp(appId);
     CiPipelineStore.loadPipelines(appId);
   }
 

@@ -17,6 +17,7 @@
       color: rgba(0, 0, 0, 0.65);
       line-height: 20px;
       text-align: justify;
+      white-space: pre-wrap;
     }
 
     .deployApp-section {
@@ -71,17 +72,6 @@
 
       .section-text-margin {
         margin-left: 30px;
-
-        .icon {
-          // font-size: 13px !important;
-        }
-
-        .section-instance-icon {
-          vertical-align: middle;
-          font-size: 16px;
-          padding: 0 6px 0 12px;
-          color: #f44336;
-        }
       }
     }
 
@@ -125,6 +115,13 @@
   display: block;
   height: 30px;
   line-height: 30px;
+}
+
+.section-instance-icon {
+  vertical-align: middle;
+  font-size: 16px;
+  padding: 0 6px 0 12px;
+  color: #f44336;
 }
 
 .deploy-tip-text {

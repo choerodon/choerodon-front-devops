@@ -64,14 +64,6 @@ class MergeRequestStore {
     return this.pageInfo;
   }
 
-  @action setApps(apps) {
-    this.apps = apps;
-  }
-
-  @computed get getApps() {
-    return this.apps;
-  }
-
   @action setUrl(url) {
     this.url = url;
   }
@@ -117,10 +109,6 @@ class MergeRequestStore {
     this.loading = data;
   }
 
-  @action setCurrentApp(data) {
-    this.currentApp = data;
-  }
-
   @action setCount(data) {
     this.count = data;
   }
@@ -132,24 +120,6 @@ class MergeRequestStore {
   @computed get getAssigneeCount() {
     return this.assigneeCount;
   }
-
-  loadInitData = () => {
-    this.setLoading(true);
-    this.loadApps(AppState.currentMenuType.id).then((res) => {
-      this.setApps(res || []);
-      const response = handleProptError(res);
-      if (response) {
-        if (res.length) {
-          const defaultApp = res[0];
-          this.setCurrentApp(defaultApp);
-          this.loadMergeRquest(defaultApp.id);
-          this.loadUrl(AppState.currentMenuType.id, defaultApp.id);
-        } else {
-          this.setLoading(false);
-        }
-      }
-    });
-  };
 
   loadMergeRquest(appId, key = 'opened', page = 0, size = 10, projectId = AppState.currentMenuType.id) {
     this.setMerge([]);

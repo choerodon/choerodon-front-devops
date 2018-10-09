@@ -9,6 +9,7 @@ import _ from 'lodash';
 import './MergeRequestHome.scss';
 import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import DevPipelineStore from '../../../../stores/project/devPipeline';
 
 const { AppState } = stores;
 const Option = Select.Option;
@@ -25,15 +26,9 @@ class MergeRequestHome extends Component {
 
   componentDidMount() {
     const { MergeRequestStore } = this.props;
-    MergeRequestStore.loadInitData();
+    DevPipelineStore.queryAppData(AppState.currentMenuType.id, 'merge');
     MergeRequestStore.loadUser();
   }
-
-  componentWillUnmount() {
-    const { MergeRequestStore } = this.props;
-    MergeRequestStore.setCurrentApp({});
-  }
-
 
   /**
    * 刷新函数
@@ -45,7 +40,7 @@ class MergeRequestHome extends Component {
     const { MergeRequestStore } = this.props;
     MergeRequestStore.setLoading(true);
     MergeRequestStore.loadMergeRquest(
-      MergeRequestStore.currentApp.id,
+      DevPipelineStore.selectedApp,
       this.state.tabKey,
       MergeRequestStore.pageInfo.current - 1,
       MergeRequestStore.pageInfo.pageSize,
@@ -61,7 +56,7 @@ class MergeRequestHome extends Component {
     if (key === 'assignee') {
       keys = 'opened';
     }
-    MergeRequestStore.loadMergeRquest(MergeRequestStore.currentApp.id, keys);
+    MergeRequestStore.loadMergeRquest(DevPipelineStore.selectedApp, keys);
   };
 
   /**
@@ -80,7 +75,7 @@ class MergeRequestHome extends Component {
     }
     MergeRequestStore.setLoading(true);
     MergeRequestStore.loadMergeRquest(
-      MergeRequestStore.currentApp.id,
+      DevPipelineStore.selectedApp,
       keys,
       pagination.current - 1,
       pagination.pageSize,
@@ -113,9 +108,8 @@ class MergeRequestHome extends Component {
       tabKey: 'opened',
     });
     const { MergeRequestStore } = this.props;
-    const currentApp = MergeRequestStore.apps.find(app => app.id === id);
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    MergeRequestStore.setCurrentApp(currentApp);
+    DevPipelineStore.setSelectApp(id);
     MergeRequestStore.setAssignee([]);
     MergeRequestStore.setAssigneeCount(0);
     MergeRequestStore.loadMergeRquest(id, 'opened');
@@ -131,11 +125,10 @@ class MergeRequestHome extends Component {
       getMerge: { opened: od, merged: md, closed: cd, all: ad },
       getCount: { closeCount, mergeCount, openCount, totalCount },
       getIsLoading,
-      getApps,
       getAssignee,
       getAssigneeCount,
-      currentApp: { id },
     } = MergeRequestStore;
+    const appData = DevPipelineStore.getAppData;
 
     const columnsAll = [{
       title: <FormattedMessage id="app.code" />,
@@ -169,11 +162,11 @@ class MergeRequestHome extends Component {
       key: 'createdAt',
       render: record => (
         <div>
-          <Tooltip title={record.author.username !== record.author.name ? `${record.author.username} ${record.author.name}` : record.author.name}>
+          {record.author ? (<Tooltip title={record.author.username !== record.author.name ? `${record.author.username} ${record.author.name}` : record.author.name}>
             {record.author.avatarUrl
               ? <img className="c7n-merge-avatar" src={record.author.avatarUrl} alt="avatar" />
               : <span className="apptag-commit apptag-commit-avatar">{record.author.name.toString().substr(0, 1)}</span>}
-          </Tooltip>
+          </Tooltip>) : <span className="apptag-commit apptag-commit-avatar">?</span>}
           <Tooltip
             title={record.createdAt}
           >
@@ -256,11 +249,11 @@ class MergeRequestHome extends Component {
       key: 'createdAt',
       render: record => (
         <div>
-          <Tooltip title={record.author.username !== record.author.name ? `${record.author.username} ${record.author.name}` : record.author.name}>
+          {record.author ? (<Tooltip title={record.author.username !== record.author.name ? `${record.author.username} ${record.author.name}` : record.author.name}>
             {record.author.avatarUrl
               ? <img className="c7n-merge-avatar" src={record.author.avatarUrl} alt="avatar" />
               : <span className="apptag-commit apptag-commit-avatar">{record.author.name.toString().substr(0, 1)}</span>}
-          </Tooltip>
+          </Tooltip>) : <span className="apptag-commit apptag-commit-avatar">?</span>}
           <Tooltip title={record.createdAt}>
             <TimeAgo
               className="c7n-merge-time"
@@ -343,11 +336,11 @@ class MergeRequestHome extends Component {
       key: 'createdAt',
       render: record => (
         <div>
-          <Tooltip title={record.author.username !== record.author.name ? `${record.author.username} ${record.author.name}` : record.author.name}>
+          {record.author ? (<Tooltip title={record.author.username !== record.author.name ? `${record.author.username} ${record.author.name}` : record.author.name}>
             {record.author.avatarUrl
               ? <img className="c7n-merge-avatar" src={record.author.avatarUrl} alt="avatar" />
               : <span className="apptag-commit apptag-commit-avatar">{record.author.name.toString().substr(0, 1)}</span>}
-          </Tooltip>
+          </Tooltip>) : <span className="apptag-commit apptag-commit-avatar">?</span>}
           <Tooltip title={record.createdAt}>
             <TimeAgo
               className="c7n-merge-time"
@@ -444,14 +437,14 @@ class MergeRequestHome extends Component {
         <Content code="merge" value={{ name }}>
           <Select
             className="c7n-app-select_512"
-            value={id}
+            value={DevPipelineStore.getSelectApp}
             label={intl.formatMessage({ id: 'deploy.step.one.app' })}
             filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
             onChange={this.handleChange.bind(this)}
           >
             {
-              _.map(getApps, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
+              _.map(appData, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
             }
           </Select>
           <Tabs activeKey={tabKey} onChange={this.tabChange} animated={false}>

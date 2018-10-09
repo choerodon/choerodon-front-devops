@@ -424,6 +424,7 @@ const zhCN = {
   'deploy.step.one.version': '应用版本',
   'deploy.step.two.title': '选择环境及修改配置信息',
   'deploy.step.two.description': '请在此选择需要部署的环境并修改相关配置信息，平台默认会引用该应用上次在该环境部署的信息。',
+  'deploy.step.two.description_1': '该配置信息里的固有字段不可删除，仅允许在此基础上进行修改或新增！',
   'deploy.step.two.env.title': '选择环境',
   'deploy.step.two.env': '环境',
   'deploy.step.two.config': '配置信息',

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { Modal, Form, Progress } from 'choerodon-ui';
-import { stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import './Issue.scss';
@@ -10,14 +9,12 @@ import '../commom.scss';
 import IssueDescription from './IssueDescription';
 import LoadingBar from '../../../../components/loadingBar';
 
-const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
 const QuillDeltaToHtmlConverter = require('quill-delta-to-html');
 
 @observer
 class IssueDetail extends Component {
   constructor(props) {
-    const menu = AppState.currentMenuType;
     super(props);
     this.state = {
     };

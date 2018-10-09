@@ -1,6 +1,5 @@
 import { observable, action } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
-import _ from 'lodash';
 
 const { AppState } = stores;
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
@@ -20,29 +19,6 @@ class CiPipelineStore {
   };
 
   @observable loading = true;
-
-  loadInitData = () => {
-    this.setLoading(true);
-    this.setCiPipelines([]);
-    this.loadApps(AppState.currentMenuType.id).then((res) => {
-      this.setApps(res || []);
-      const response = this.handleProptError(res);
-      if (response) {
-        if (res.length) {
-          const defaultApp = res[0];
-          this.setCurrentApp(defaultApp);
-          this.loadPipelines(defaultApp.id);
-        } else {
-          this.setLoading(false);
-        }
-      }
-    });
-  };
-
-  loadApps(projectId) {
-    return axios.get(`/devops/v1/projects/${projectId}/apps`)
-      .then(datas => this.handleProptError(datas));
-  }
 
   loadPipelines(appId, page = 0, size = this.pagination.pageSize, projectId = AppState.currentMenuType.id) {
     this.setCiPipelines([]);
@@ -87,14 +63,6 @@ class CiPipelineStore {
   retryPipeline(gitlabProjectId, pipelineId) {
     return axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/gitlab_projects/${gitlabProjectId}/pipelines/${pipelineId}/retry`)
       .then(datas => this.handleProptError(datas));
-  }
-
-  @action setApps(data) {
-    this.apps = data;
-  }
-
-  @action setCurrentApp(data) {
-    this.currentApp = data;
   }
 
   @action setCiPipelines(data) {

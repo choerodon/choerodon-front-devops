@@ -59,7 +59,7 @@ class EditTag extends Component {
   handleNoteChange = e => this.setState({ notes: e });
 
   render() {
-    const { intl: { formatMessage }, store, show, tag } = this.props;
+    const { intl: { formatMessage }, show, tag } = this.props;
     const { submitting, notes } = this.state;
     return (<Sidebar
       destroyOnClose

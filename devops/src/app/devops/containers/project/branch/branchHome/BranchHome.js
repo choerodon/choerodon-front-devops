@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Tooltip, Modal, Table, Popover, Progress, Select } from 'choerodon-ui';
-import { Content, Header, Page, Permission, stores, axios } from 'choerodon-front-boot';
+import { Button, Tooltip, Modal, Table, Popover, Select } from 'choerodon-ui';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import '../../../main.scss';
@@ -13,6 +13,7 @@ import EditBranch from '../editBranch';
 import IssueDetail from '../issueDetail';
 import '../commom.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import DevPipelineStore from '../../../../stores/project/devPipeline';
 
 const { AppState } = stores;
 const Option = Select.Option;
@@ -34,8 +35,7 @@ class BranchHome extends Component {
   }
 
   componentDidMount() {
-    const { BranchStore } = this.props;
-    BranchStore.loadApps();
+    DevPipelineStore.queryAppData(AppState.currentMenuType.id, 'branch');
   }
 
   /**
@@ -138,7 +138,7 @@ class BranchHome extends Component {
    * @returns {*}
    */
   get tableBranch() {
-    const { BranchStore, intl } = this.props;
+    const { BranchStore } = this.props;
     const { paras, filters, sort: { columnKey, order } } = this.state;
     const menu = AppState.currentMenuType;
     const { type, organizationId: orgId } = menu;
@@ -359,7 +359,7 @@ class BranchHome extends Component {
   loadData = (value) => {
     const { projectId } = this.state;
     const { BranchStore } = this.props;
-    BranchStore.setApp(value);
+    DevPipelineStore.setSelectApp(value);
     BranchStore.setBranchData({ content: [] });
     BranchStore.loadBranchList({ projectId });
   };
@@ -370,7 +370,7 @@ class BranchHome extends Component {
    */
   handleEdit =(name) => {
     const { BranchStore } = this.props;
-    BranchStore.loadBranchByName(this.state.projectId, BranchStore.app, name);
+    BranchStore.loadBranchByName(this.state.projectId, DevPipelineStore.selectedApp, name);
     BranchStore.setCreateBranchShow('edit');
   };
 
@@ -413,7 +413,7 @@ class BranchHome extends Component {
     const { BranchStore } = this.props;
     BranchStore.setCreateBranchShow(false);
     if (isload) {
-      this.loadData(BranchStore.app);
+      this.loadData(DevPipelineStore.selectedApp);
       this.setState({ paras: [], filters: {}, sort: { columnKey: 'creationDate', order: 'ascend' } });
     }
   };
@@ -442,9 +442,9 @@ class BranchHome extends Component {
     const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     this.setState({ submitting: true });
-    BranchStore.deleteData(organizationId, BranchStore.app, name).then((data) => {
+    BranchStore.deleteData(organizationId, DevPipelineStore.setSelectApp(), name).then((data) => {
       this.setState({ submitting: false });
-      this.loadData(BranchStore.app);
+      this.loadData(DevPipelineStore.selectedApp);
       this.closeRemove();
     }).catch((error) => {
       this.setState({ submitting: false });
@@ -500,7 +500,7 @@ class BranchHome extends Component {
     const { name } = AppState.currentMenuType;
     const { BranchStore, intl: { formatMessage } } = this.props;
     const { name: branchName, submitting, visible } = this.state;
-    const apps = BranchStore.apps.slice();
+    const apps = DevPipelineStore.appData.slice();
     return (
       <Page
         className="c7n-region c7n-branch"
@@ -518,7 +518,7 @@ class BranchHome extends Component {
         ]}
       >
         <Header title={<FormattedMessage id="branch.head" />}>
-          {BranchStore.getBranchList.length && BranchStore.app ? <Permission
+          {BranchStore.getBranchList.length && DevPipelineStore.selectedApp ? <Permission
             service={['devops-service.devops-git.createBranch']}
           >
             <Button
@@ -538,7 +538,7 @@ class BranchHome extends Component {
         <Content code="branch" value={{ name }} className="page-content">
           <Select
             onChange={this.loadData}
-            value={BranchStore.app ? BranchStore.app : undefined}
+            value={DevPipelineStore.selectedApp ? DevPipelineStore.selectedApp : undefined}
             className="branch-select_512"
             label={formatMessage({ id: 'deploy.step.one.app' })}
             filterOption={(input, option) => option.props.children.props.children.props.children
@@ -560,14 +560,14 @@ class BranchHome extends Component {
           {this.tableBranch}
         </Content>
         {BranchStore.createBranchShow === 'create' && <CreateBranch
-          name={_.filter(apps, app => app.id === BranchStore.app)[0].name}
-          appId={BranchStore.app}
+          name={_.filter(apps, app => app.id === DevPipelineStore.selectedApp)[0].name}
+          appId={DevPipelineStore.selectedApp}
           store={BranchStore}
           visible={BranchStore.createBranchShow === 'create'}
           onClose={this.hideSidebar}
         /> }
         {BranchStore.createBranchShow === 'edit' && <EditBranch
-          appId={BranchStore.app}
+          appId={DevPipelineStore.selectedApp}
           store={BranchStore}
           visible={BranchStore.createBranchShow === 'edit'}
           onClose={this.hideSidebar}
