@@ -289,7 +289,7 @@ class DeploymentAppHome extends Component {
   /**
    * 部署应用
    */
-  handleDeploy = () => {
+  handleDeploy = (isNotChange) => {
     this.setState({
       loading: true,
     });
@@ -297,6 +297,7 @@ class DeploymentAppHome extends Component {
     const instances = DeploymentAppStore.currentInstance;
     const value = this.state.value || DeploymentAppStore.value.yaml;
     const applicationDeployDTO = {
+      isNotChange,
       appId: this.state.appId,
       appVerisonId: this.state.versionId,
       environmentId: this.state.envId,
@@ -339,7 +340,6 @@ class DeploymentAppHome extends Component {
     const { DeploymentAppStore, intl } = this.props;
     const { formatMessage } = intl;
     const versions = DeploymentAppStore.versions;
-    const proId = parseInt(AppState.currentMenuType.id, 10);
     return (
       <div className="deployApp-app">
         <p>
@@ -502,14 +502,14 @@ class DeploymentAppHome extends Component {
               label={<span className="deploy-text">{formatMessage({ id: 'deploy.step.three.mode' })}</span>}
             >
               <Radio className="deploy-radio" value="new">{formatMessage({ id: 'deploy.step.three.mode.new' })}</Radio>
-              <Radio className="deploy-radio" value="replace" disabled={instances.length === 0 || (instances.length === 1 && (instances[0].appVersion === this.state.versionDto.version) && !this.state.changeYaml)}>{formatMessage({ id: 'deploy.step.three.mode.replace' })}
+              <Radio className="deploy-radio" value="replace">{formatMessage({ id: 'deploy.step.three.mode.replace' })}
                 <i className="icon icon-error section-instance-icon" />
                 <span className="deploy-tip-text">{formatMessage({ id: 'deploy.step.three.mode.help' })}</span>
               </Radio>
             </RadioGroup>
             {this.state.mode === 'replace' && <Select
               onSelect={this.handleSelectInstance}
-              value={this.state.instanceId 
+              value={this.state.instanceId
                 || (instances && instances.length === 1 && instances[0].id)}
               label={<FormattedMessage id="deploy.step.three.mode.replace.label" />}
               className="deploy-select"
@@ -519,7 +519,7 @@ class DeploymentAppHome extends Component {
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0}
               filter
             >
-              {instances.map(v => (<Option value={v.id} key={v.id} disabled={this.state.changeYaml ? false : v.appVersion === this.state.versionDto.version}>
+              {instances.map(v => (<Option value={v.id} key={v.id}>
                 {v.code}
               </Option>))}
             </Select>}
@@ -551,13 +551,16 @@ class DeploymentAppHome extends Component {
     const { intl } = this.props;
     const { formatMessage } = intl;
     const data = this.state.yaml || DeploymentAppStore.value;
-    const { app, versionId, envId, instanceId, mode } = this.state;
+    const { app, versionId, envId, versionDto, mode, instanceDto, instanceId } = this.state;
+    const instanceID = instanceId || (instances && instances.length === 1 && instances[0].id);
+    const instance = instanceDto || _.filter(instances, v => v.id === instanceID)[0];
     const options = {
       theme: 'neat',
       mode: 'yaml',
       readOnly: true,
       lineNumbers: true,
     };
+    const isNotChange = this.state.changeYaml ? false : versionDto.version === instance.appVersion;
     return (
       <section className="deployApp-review">
         <section>
@@ -597,7 +600,7 @@ class DeploymentAppHome extends Component {
         </section>
         <section className="deployApp-section">
           <Permission service={['devops-service.application-instance.deploy']}>
-            <Button type="primary" funcType="raised" disabled={!(app && versionId && envId && mode)} onClick={this.handleDeploy} loading={this.state.loading}>{formatMessage({ id: 'deploy.btn.deploy' })}</Button>
+            <Button type="primary" funcType="raised" disabled={!(app && versionId && envId && mode)} onClick={this.handleDeploy.bind(this, isNotChange)} loading={this.state.loading}>{formatMessage({ id: 'deploy.btn.deploy' })}</Button>
           </Permission>
           <Button funcType="raised" onClick={this.changeStep.bind(this, 3)}>{formatMessage({ id: 'previous' })}</Button>
           <Button funcType="raised" className="c7n-deploy-clear" onClick={this.clearStepOne}>{formatMessage({ id: 'cancel' })}</Button>
@@ -632,7 +635,7 @@ class DeploymentAppHome extends Component {
           'devops-service.devops-environment.listByProjectIdAndActive',
           'devops-service.application-instance.queryValues',
           'devops-service.application-instance.formatValue',
-          'devops-service.application-instance.listByAppVersionId',
+          'devops-service.application-instance.listByAppIdAndEnvId',
           'devops-service.application-instance.deploy',
           'devops-service.application.pageByOptions',
           'devops-service.application-market.listAllApp',

@@ -168,7 +168,7 @@ class ValueConfig extends Component {
         onOk={this.handleOk}
         onCancel={this.onClose.bind(this, false)}
         cancelText={intl.formatMessage({ id: 'cancel' })}
-        okText={intl.formatMessage({ id: 'ist.reDeploy' })}
+        okText={intl.formatMessage({ id: 'deploy.btn.deploy' })}
         footer={
           <div className="ant-modal-btns">
             <Button 
@@ -179,7 +179,7 @@ class ValueConfig extends Component {
               loading={loading}
               className="ant-modal-btn-ok"
             >
-              {intl.formatMessage({ id: 'ist.reDeploy' })}
+              {intl.formatMessage({ id: 'deploy.btn.deploy' })}
             </Button>
             <Button funcType="raised" className="ant-modal-btn-cancel" key="back" onClick={this.onClose.bind(this, false)}>{intl.formatMessage({ id: 'cancel' })}</Button>
           </div>

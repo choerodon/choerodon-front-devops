@@ -367,6 +367,8 @@ class AppDeploymentStore {
 
   deleteIst = (projectId, istId) => axios.delete(`devops/v1/projects/${projectId}/app_instances/${istId}/delete`);
 
+  reStarts = (projectId, id) => axios.put(`devops/v1/projects/${projectId}/app_instances/${id}/restart`);
+
   loadUpVersion = (projectId, verId) => axios.get(`devops/v1/projects/${projectId}/version/${verId}/upgrade_version`)
     .then((data) => {
       if (data) {
