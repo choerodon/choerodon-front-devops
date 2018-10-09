@@ -178,11 +178,12 @@ class DeployHome extends Component {
 
   handleSigApp = (info) => {
     const { AppDeploymentStore } = this.props;
+    const appId = AppDeploymentStore.getSingleAppId;
     this.loadEnvCards();
     this.loadAppName();
     const appNames = AppDeploymentStore.getAppNames;
     if (appNames.length) {
-      this.loadAppVer(appNames[0].id, info);
+      this.loadAppVer(appId || appNames[0].id, info);
     }
   };
 
