@@ -160,6 +160,15 @@ class AppOverview extends Component {
   };
 
   /**
+   * 重新部署
+   * @param id
+   */
+  reStart = (id) => {
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    AppDeploymentStore.reStarts(projectId, id);
+  };
+
+  /**
    * 修改配置实例信息
    * @param name 实例名
    * @param id 实例ID
@@ -799,6 +808,21 @@ class AppOverview extends Component {
             type,
             organizationId,
             projectId,
+            service: ['devops-service.application-instance.restart'],
+            text: intl.formatMessage({ id: 'ist.reDeploy' }),
+            action: this.reStart.bind(this, record.id),
+          }, {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.application-version.getUpgradeAppVersion'],
+            text: intl.formatMessage({ id: 'ist.upgrade' }),
+            action: this.upgradeIst.bind(this, record.code, record.id,
+              record.envId, record.appVersionId, record.appId),
+          }, {
+            type,
+            organizationId,
+            projectId,
             service: ['devops-service.application-instance.delete'],
             text: intl.formatMessage({ id: 'ist.del' }),
             action: this.handleOpen.bind(this, record.id, record.code),
@@ -824,6 +848,13 @@ class AppOverview extends Component {
             text: intl.formatMessage({ id: 'ist.values' }),
             action: this.updateConfig.bind(this, record.code, record.id,
               record.envId, record.appVersionId, record.appId),
+          }, {
+            type,
+            organizationId,
+            projectId,
+            service: ['devops-service.application-instance.restart'],
+            text: intl.formatMessage({ id: 'ist.reDeploy' }),
+            action: this.reStart.bind(this, record.id),
           }, {
             type,
             organizationId,
