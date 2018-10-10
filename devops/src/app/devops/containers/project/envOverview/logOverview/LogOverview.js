@@ -80,8 +80,8 @@ class LogOverview extends Component {
           <div className="c7n-envow-sync-card">
             <div className="c7n-envow-sync-step"><FormattedMessage id="envoverview.gitlab" /></div>
             <div className="c7n-envow-sync-commit">
-              <a href={sync && `${sync.commitUrl}${sync.gitCommit}`} target="_blank" rel="nofollow me noopener noreferrer">
-                {sync && (sync.gitCommit ? sync.gitCommit.slice(0, 8) : null)}
+              <a href={sync && `${sync.commitUrl}${sync.sagaSyncCommit}`} target="_blank" rel="nofollow me noopener noreferrer">
+                {sync && (sync.sagaSyncCommit ? sync.sagaSyncCommit.slice(0, 8) : null)}
               </a>
             </div>
           </div>
