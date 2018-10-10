@@ -261,6 +261,7 @@ class BranchHome extends Component {
       <Popover
         overlayClassName="branch-popover"
         placement="rightTop"
+        arrowPointAtCenter
         content={<section>
           <div>
             <span className="branch-popover-span span-master" />
