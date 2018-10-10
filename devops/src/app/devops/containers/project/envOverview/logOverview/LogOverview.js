@@ -33,7 +33,7 @@ class LogOverview extends Component {
 
 
   render() {
-    const { store } = this.props;
+    const { store, intl } = this.props;
     const log = store.getLog;
     const sync = store.getSync;
 
@@ -79,6 +79,10 @@ class LogOverview extends Component {
       <h4 className="envow-popover-title"><FormattedMessage id="envoverview.agent" /></h4>
       <p className="envow-popover-desc"><FormattedMessage id="envoverview.commit.carr" /></p>
     </Fragment>);
+
+    const tableLocale = {
+      emptyText: intl.formatMessage({ id: 'envoverview.log.table' }),
+    };
 
     return (<div>
       <div className="c7n-envow-sync-wrap">
@@ -132,6 +136,7 @@ class LogOverview extends Component {
       </div>
       <Table
         filterBar={false}
+        locale={tableLocale}
         loading={store.isLoading}
         pagination={store.getPageInfo}
         columns={columns}

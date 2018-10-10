@@ -27,10 +27,15 @@
     }
 
     .c7n-envow-sync-wrap {
-      padding-right: 10px;
+      padding-right: 30px;
     }
 
-    div i {
+    .c7n-envow-error-icon {
+      font-size: 32px;
+      color: #f44336;
+    }
+
+    .c7n-envow-sync-icon i {
       font-size: 32px;
       color: #3f51b5;
       animation: ant-progress-rotate 1.4s linear infinite;
