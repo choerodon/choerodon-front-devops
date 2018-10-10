@@ -29,6 +29,8 @@ class BuildNumber extends Component {
   }
 
   componentDidMount() {
+    const { ReportsStore } = this.props;
+    ReportsStore.changeIsRefresh(true);
     this.loadDatas();
   }
 
