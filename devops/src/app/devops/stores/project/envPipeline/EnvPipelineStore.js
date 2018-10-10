@@ -32,6 +32,12 @@ class EnvPipelineStore {
 
   @observable shell = '';
 
+  @observable sortLoading = false;
+
+  @action setSortLoaing(flag) {
+    this.sortLoading = flag;
+  }
+
   @action setIst(ist) {
     this.ist = ist;
   }
@@ -169,7 +175,9 @@ class EnvPipelineStore {
   }
 
   loadEnv = (projectId, active) => {
-    this.changeLoading(true);
+    if (!this.sortLoading) {
+      this.changeLoading(true);
+    }
     return axios.get(`devops/v1/projects/${projectId}/envs/groups?active=${active}`).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
@@ -192,7 +200,7 @@ class EnvPipelineStore {
 
   @action
   updateSort = (projectId, envIds, groupId) => {
-    this.changeLoading(true);
+    this.setSortLoaing(true);
     return axios.put(`/devops/v1/projects/${projectId}/envs/sort`, JSON.stringify(envIds)).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
@@ -204,7 +212,7 @@ class EnvPipelineStore {
         });
         this.setEnvcardPosition(this.envcardPosition);
         this.loadEnv(projectId, true);
-        this.changeLoading(false);
+        this.setSortLoaing(false);
       }
     });
   };
