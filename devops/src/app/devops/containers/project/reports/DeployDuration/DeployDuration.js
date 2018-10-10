@@ -85,6 +85,8 @@ class DeployDuration extends Component {
   };
 
   componentDidMount() {
+    const { ReportsStore } = this.props;
+    ReportsStore.changeIsRefresh(true);
     this.loadEnvCards();
   }
 
@@ -105,7 +107,6 @@ class DeployDuration extends Component {
   loadEnvCards = () => {
     const { ReportsStore } = this.props;
     const projectId = AppState.currentMenuType.id;
-    ReportsStore.changeIsRefresh(true);
     ContainerStore.loadActiveEnv(projectId)
       .then((env) => {
         if (env.length) {
