@@ -184,7 +184,8 @@ const pageDetail = {
 
   // 环境总览
   'envoverview.description': '环境总览页面包含了某个环境内所有与应用部署相关的详情。您可以直接通过环境总览对某个环境下所有与部署相关的实体进行查看或管理。',
-  'envoverview.title': '项目"{name}"的环境总览',
+  'envoverview.title': '环境"{name}"总览',
+  'envoverview.noenv.title': '项目"{name}"的环境总览',
   'envoverview.link': `${docServer}/user-guide/deployment-pipeline/environments-overview/`,
   'envoverview.unlist': '暂无可用应用',
   'envOverview.confirm.reDeploy': '确认部署',
