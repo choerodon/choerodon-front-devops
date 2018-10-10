@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { observable, action, configure } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Tabs, Form, Select, Icon, Tooltip } from 'choerodon-ui';
+import { Button, Tabs, Form, Select, Icon, Tooltip, Menu, Dropdown } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../EnvOverview.scss';
@@ -421,6 +421,74 @@ class EnvOverviewHome extends Component {
 
     const istStatusType = ['running', 'operating', 'stopped', 'failed'];
 
+    const menu = (
+      <Menu className="c7n-envow-dropdown-link">
+        <Menu.Item
+          key="0"
+          disabled={!envState.connect}
+        >
+          <Permission
+            service={['devops-service.devops-service.create']}
+            type={type}
+            projectId={projectId}
+            organizationId={orgId}
+          >
+            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
+              <Button
+                funcType="flat"
+                disabled={!envState.connect}
+                onClick={this.createNetwork}
+              >
+                <FormattedMessage id="network.header.create" />
+              </Button>
+            </Tooltip>
+          </Permission>
+        </Menu.Item>
+        <Menu.Item
+          key="1"
+          disabled={!envState.connect}
+        >
+          <Permission
+            service={['devops-service.devops-ingress.create']}
+            type={type}
+            projectId={projectId}
+            organizationId={orgId}
+          >
+            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
+              <Button
+                funcType="flat"
+                disabled={!envState.connect}
+                onClick={this.createDomain.bind(this, 'create', '')}
+              >
+                <FormattedMessage id="domain.header.create" />
+              </Button>
+            </Tooltip>
+          </Permission>
+        </Menu.Item>
+        <Menu.Item
+          key="3"
+          disabled={!envState.connect}
+        >
+          <Permission
+            type={type}
+            projectId={projectId}
+            organizationId={orgId}
+            service={['devops-service.certification.create']}
+          >
+            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
+              <Button
+                funcType="flat"
+                disabled={!envState.connect}
+                onClick={this.openCreateModal}
+              >
+                <FormattedMessage id="ctf.create" />
+              </Button>
+            </Tooltip>
+          </Permission>
+        </Menu.Item>
+      </Menu>
+    );
+
     return (
       <Page
         className="c7n-region c7n-app-wrapper"
@@ -468,6 +536,15 @@ class EnvOverviewHome extends Component {
           >
             {envNameDom}
           </Select>
+          <div className="c7n-envow-select">
+            <Dropdown overlay={menu} trigger={['click']}>
+              <a href="#">
+                <Icon type="playlist_add" />
+                {intl.formatMessage({ id: 'create' })}
+                <Icon type="arrow_drop_down" />
+              </a>
+            </Dropdown>
+          </div>
           <Permission
             service={[
               'devops-service.application-instance.deploy',
@@ -483,57 +560,6 @@ class EnvOverviewHome extends Component {
                 icon="jsfiddle"
               >
                 <FormattedMessage id="deploy.header.title" />
-              </Button>
-            </Tooltip>
-          </Permission>
-          <Permission
-            service={['devops-service.devops-service.create']}
-            type={type}
-            projectId={projectId}
-            organizationId={orgId}
-          >
-            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
-              <Button
-                funcType="flat"
-                disabled={!envState.connect}
-                onClick={this.createNetwork}
-                icon="playlist_add"
-              >
-                <FormattedMessage id="network.header.create" />
-              </Button>
-            </Tooltip>
-          </Permission>
-          <Permission
-            service={['devops-service.devops-ingress.create']}
-            type={type}
-            projectId={projectId}
-            organizationId={orgId}
-          >
-            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
-              <Button
-                funcType="flat"
-                disabled={!envState.connect}
-                onClick={this.createDomain.bind(this, 'create', '')}
-                icon="playlist_add"
-              >
-                <FormattedMessage id="domain.header.create" />
-              </Button>
-            </Tooltip>
-          </Permission>
-          <Permission
-            type={type}
-            projectId={projectId}
-            organizationId={orgId}
-            service={['devops-service.certification.create']}
-          >
-            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
-              <Button
-                funcType="flat"
-                disabled={!envState.connect}
-                onClick={this.openCreateModal}
-                icon="playlist_add"
-              >
-                <FormattedMessage id="ctf.create" />
               </Button>
             </Tooltip>
           </Permission>
