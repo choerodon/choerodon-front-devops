@@ -373,16 +373,17 @@ class EnvOverviewHome extends Component {
       {d.name}</Option>)) : [];
 
     const envState = this.env.length
-      ? this.env.filter(d => d.id === Number(tpEnvId || this.env[0].id))[0] : true;
+      ? this.env.filter(d => d.id === Number(tpEnvId || this.env[0].id))[0] : { connect: false };
 
     const tabEnvId = this.envId || (this.env.length ? this.env[0].id : null);
+
     // tab页选项
     const tabOption = [{
       key: 'app',
       component: <AppOverview
         store={EnvOverviewStore}
         tabkey={this.tabKey}
-        envState={envState.connect}
+        envState={envState && envState.connect}
         envId={tabEnvId}
       />,
       msg: 'network.column.app',
@@ -425,7 +426,7 @@ class EnvOverviewHome extends Component {
       <Menu className="c7n-envow-dropdown-link">
         <Menu.Item
           key="0"
-          disabled={!envState.connect}
+          disabled={envState && !envState.connect}
         >
           <Permission
             service={['devops-service.devops-service.create']}
@@ -433,10 +434,10 @@ class EnvOverviewHome extends Component {
             projectId={projectId}
             organizationId={orgId}
           >
-            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
+            <Tooltip title={envState && !envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
               <Button
                 funcType="flat"
-                disabled={!envState.connect}
+                disabled={envState && !envState.connect}
                 onClick={this.createNetwork}
               >
                 <FormattedMessage id="network.header.create" />
@@ -446,7 +447,7 @@ class EnvOverviewHome extends Component {
         </Menu.Item>
         <Menu.Item
           key="1"
-          disabled={!envState.connect}
+          disabled={envState && !envState.connect}
         >
           <Permission
             service={['devops-service.devops-ingress.create']}
@@ -454,10 +455,10 @@ class EnvOverviewHome extends Component {
             projectId={projectId}
             organizationId={orgId}
           >
-            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
+            <Tooltip title={envState && !envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
               <Button
                 funcType="flat"
-                disabled={!envState.connect}
+                disabled={envState && !envState.connect}
                 onClick={this.createDomain.bind(this, 'create', '')}
               >
                 <FormattedMessage id="domain.header.create" />
@@ -467,7 +468,7 @@ class EnvOverviewHome extends Component {
         </Menu.Item>
         <Menu.Item
           key="3"
-          disabled={!envState.connect}
+          disabled={envState && !envState.connect}
         >
           <Permission
             type={type}
@@ -475,10 +476,10 @@ class EnvOverviewHome extends Component {
             organizationId={orgId}
             service={['devops-service.certification.create']}
           >
-            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
+            <Tooltip title={envState && !envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
               <Button
                 funcType="flat"
-                disabled={!envState.connect}
+                disabled={envState && !envState.connect}
                 onClick={this.openCreateModal}
               >
                 <FormattedMessage id="ctf.create" />
@@ -488,6 +489,8 @@ class EnvOverviewHome extends Component {
         </Menu.Item>
       </Menu>
     );
+
+    const envName = this.env.length ? _.filter(this.env, e => e.id === this.envNameDom())[0].name : '';
 
     return (
       <Page
@@ -520,6 +523,7 @@ class EnvOverviewHome extends Component {
           'devops-service.devops-ingress.pageByOptions',
           'devops-service.devops-ingress.queryDomainId',
           'devops-service.devops-ingress.delete',
+          'devops-service.devops-ingress.create',
           'devops-service.devops-ingress.listByEnv',
           'devops-service.certification.listByOptions',
           'devops-service.certification.create',
@@ -553,9 +557,9 @@ class EnvOverviewHome extends Component {
             projectId={projectId}
             organizationId={orgId}
           >
-            <Tooltip title={!envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
+            <Tooltip title={envState && !envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
               <Button
-                disabled={!envState.connect}
+                disabled={envState && !envState.connect}
                 onClick={this.deployApp.bind(this, this.envId)}
                 icon="jsfiddle"
               >
@@ -564,11 +568,11 @@ class EnvOverviewHome extends Component {
             </Tooltip>
           </Permission>
           <Tooltip title={sync && sync.commitUrl
-            ? sync.commitUrl.substr(0, sync.commitUrl.length - 7) : null}
+            ? sync.commitUrl.substr(0, sync.commitUrl.length - 8) : null}
           >
             <a
               href={sync && sync.commitUrl
-                ? sync.commitUrl.substr(0, sync.commitUrl.length - 7) : null}
+                ? sync.commitUrl.substr(0, sync.commitUrl.length - 8) : null}
               target="_blank"
               rel="nofollow me noopener noreferrer"
             >
@@ -591,12 +595,17 @@ class EnvOverviewHome extends Component {
           <div className="c7n-envow-status-wrap">
             <div>
               <h2 className="c7n-space-first">
-                <FormattedMessage
+                {this.env.length ? <FormattedMessage
                   id="envoverview.title"
+                  values={{
+                    name: `${envName}`,
+                  }}
+                /> : <FormattedMessage
+                  id="envoverview.noenv.title"
                   values={{
                     name: `${name}`,
                   }}
-                />
+                />}
               </h2>
               <p>
                 <FormattedMessage
