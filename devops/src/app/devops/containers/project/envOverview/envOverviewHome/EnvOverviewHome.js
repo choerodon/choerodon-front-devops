@@ -115,6 +115,7 @@ class EnvOverviewHome extends Component {
 
   loadModuleDate = (key, env, sort, post) => {
     this.loadSync(env);
+    this.loadLog(env);
     switch (key) {
       case 'domain':
         this.loadDomainOrNet('domain', env, sort, post);
@@ -123,7 +124,6 @@ class EnvOverviewHome extends Component {
         this.loadDomainOrNet('net', env, sort, post);
         break;
       case 'log':
-        this.loadLog(env);
         break;
       case 'cert':
         this.loadCertData(env);
@@ -361,10 +361,18 @@ class EnvOverviewHome extends Component {
     return envName;
   };
 
+  /**
+   * 点击失败状态跳转到日志tab页
+   */
+  linkToLogTabs = () => {
+    this.tabKey = 'log';
+  };
+
   render() {
     const { intl, EnvOverviewStore } = this.props;
     const { createDisplay } = this.state;
     const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
+    const log = EnvOverviewStore.getLog;
     const sync = EnvOverviewStore.getSync;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
 
@@ -491,6 +499,25 @@ class EnvOverviewHome extends Component {
     );
 
     const envName = this.env.length ? _.filter(this.env, e => e.id === this.envNameDom())[0].name : '';
+
+    let syncDom = null;
+
+    if (log && log.length) {
+      syncDom = (<div className="c7n-envow-sync-wrap">
+        <div className="c7n-envow-status-text"><FormattedMessage id="envoverview.error" /></div>
+        <div>
+          <Button ghost funcType="flat" shape="circle" onClick={this.linkToLogTabs}>
+            <Icon type="cancel" className="c7n-envow-error-icon" />
+          </Button>
+        </div>
+      </div>);
+    } else if ((sync && (sync.devopsSyncCommit !== sync.sagaSyncCommit
+      || sync.sagaSyncCommit !== sync.agentSyncCommit)) && envState.connect) {
+      syncDom = (<div className="c7n-envow-sync-wrap">
+        <div className="c7n-envow-status-text"><FormattedMessage id="envoverview.sync" /></div>
+        <div className="c7n-envow-sync-icon"><Icon type="autorenew" /></div>
+      </div>);
+    }
 
     return (
       <Page
@@ -620,13 +647,7 @@ class EnvOverviewHome extends Component {
               </p>
             </div>
             <div className="c7n-envow-status-content">
-              {(sync && sync.devopsSyncCommit === sync.sagaSyncCommit
-              && sync.sagaSyncCommit === sync.agentSyncCommit) || !envState.connect
-                ? null
-                : <div className="c7n-envow-sync-wrap">
-                  <div className="c7n-envow-status-text"><FormattedMessage id="envoverview.sync" /></div>
-                  <div><Icon type="autorenew" /></div>
-                </div>}
+              {syncDom}
               <div>
                 <div className="c7n-envow-status-text"><FormattedMessage id="envoverview.istov" /></div>
                 <div className="c7n-envow-status-wrap">
