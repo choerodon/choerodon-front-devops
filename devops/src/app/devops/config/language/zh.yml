@@ -29,8 +29,8 @@
 "deployment-pipeline.certificate": "证书"
 
 # 报表
-"platform_reports": "报表"
-"platform_reports.reports": "DevOps报表"
+"platform-reports": "报表"
+"platform-reports.reports": "DevOps报表"
 
 # 0.8版本废弃项
 "application-market": "应用市场"
@@ -49,3 +49,5 @@
 "devops.container": "容器"
 "devops.app-release": "应用发布"
 "devops.appstore": "应用市场"
+"platform_reports": "报表"
+"platform_reports.reports": "DevOps报表"

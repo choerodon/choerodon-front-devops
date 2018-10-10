@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Table, Form } from 'choerodon-ui';
+import { Table, Form, Icon, Popover } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import TimePopover from '../../../../components/timePopover';
 import '../EnvOverview.scss';
@@ -70,11 +70,29 @@ class LogOverview extends Component {
       render: record => <TimePopover content={record.errorTime} />,
     }];
 
+    const content = (<Fragment>
+      <p className="envow-popover-describe"><FormattedMessage id="envoverview.commit.desc" /></p>
+      <h4 className="envow-popover-title"><FormattedMessage id="envoverview.gitlab" /></h4>
+      <p className="envow-popover-desc"><FormattedMessage id="envoverview.commit.repo" /></p>
+      <h4 className="envow-popover-title"><FormattedMessage id="envoverview.analysis" /></h4>
+      <p className="envow-popover-desc"><FormattedMessage id="envoverview.commit.anal" /></p>
+      <h4 className="envow-popover-title"><FormattedMessage id="envoverview.agent" /></h4>
+      <p className="envow-popover-desc"><FormattedMessage id="envoverview.commit.carr" /></p>
+    </Fragment>);
 
     return (<div>
       <div className="c7n-envow-sync-wrap">
         <div className="c7n-envow-sync-title">
-          <FormattedMessage id="envoverview.commit.sync" />
+          <span className="envow-sync-text"><FormattedMessage id="envoverview.commit.sync" /></span>
+          <Popover
+            overlayClassName="c7n-envow-sync-popover"
+            placement="bottomLeft"
+            content={content}
+            trigger="hover"
+            arrowPointAtCenter
+          >
+            <Icon type="help" className="c7n-envow-sync-icon" />
+          </Popover>
         </div>
         <div className="c7n-envow-sync-line">
           <div className="c7n-envow-sync-card">

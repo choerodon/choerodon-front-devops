@@ -837,6 +837,10 @@ const zhCN = {
   'envoverview.agent': '已执行',
   'envoverview.logs.time': '错误时间',
   'envoverview.envinfo': '请选择运行中的环境',
+  'envoverview.commit.desc': '由于 GitOps 对部署信息进行异步处理，提交同步情况用于查看当前对部署信息的解析进度。点击配置库可以查看对应的 GitOps环境库。',
+  'envoverview.commit.repo': '即 GitOps 环境库',
+  'envoverview.commit.anal': 'DevOps 平台会对部署文件进行解析，并在平台上生成相应的对象',
+  'envoverview.commit.carr': '执行后，k8s 平台也会生成相应的对象',
 
   // 证书管理
   'ctf.head': '证书',

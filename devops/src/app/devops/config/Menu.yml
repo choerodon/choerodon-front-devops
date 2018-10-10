@@ -236,7 +236,7 @@
           - 'devops-service.certification.listByOptions'
           - 'devops-service.certification.create'
           - 'devops-service.certification.delete'
-"platform_reports":
+"platform-reports":
   icon: bar_chart
   sort: 99
   project:
@@ -376,3 +376,16 @@
         delete: true
         permission:
           - 'devops-service.devops-env-pod-container.queryLogByPod'
+
+"platform_reports":
+  icon: bar_chart
+  sort: 99
+  delete: true
+  project:
+  - "reports":
+      icon: devops_chart
+      Routes: /devops/reports
+      sort: 2
+      delete: true
+      permission:
+      - 'devops-service.application.listByActive'

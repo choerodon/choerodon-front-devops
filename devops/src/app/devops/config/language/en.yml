@@ -29,8 +29,8 @@
 "deployment-pipeline.certificate": "Certificate"
 
 # 报表
-"platform_reports": "Reports"
-"platform_reports.reports": "DevOps Report"
+"platform-reports": "Reports"
+"platform-reports.reports": "DevOps Report"
 
 # 0.8废弃
 "application-market": "Application Market"
@@ -49,3 +49,5 @@
 "devops.container": "Container"
 "devops.app-release": "App Release"
 "devops.appstore": "App Store"
+"platform_reports": "Reports"
+"platform_reports.reports": "DevOps Report"
