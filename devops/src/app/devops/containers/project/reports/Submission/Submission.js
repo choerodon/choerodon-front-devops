@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Page, Header, Content, stores } from 'choerodon-front-boot';
-import { Select, Button } from 'choerodon-ui';
+import { Select, Button, Popover } from 'choerodon-ui';
 import _ from 'lodash';
 import moment from 'moment';
 import ChartSwitch from '../Component/ChartSwitch';
@@ -10,6 +10,7 @@ import LineChart from './LineChart';
 import CommitHistory from './CommitHistory';
 import TimePicker from '../Component/TimePicker';
 import NoChart from '../Component/NoChart';
+import MaxTagPopover from '../Component/MaxTagPopover';
 import './Submission.scss';
 import '../../../main.scss';
 import LoadingBar from '../../../../components/loadingBar/LoadingBar';
@@ -126,6 +127,8 @@ class Submission extends Component {
    */
   handleDateChoose = type => this.setState({ dateType: type });
 
+  maxTagNode = (data, value) => <MaxTagPopover dataSource={data} value={value} />;
+
   render() {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
@@ -161,7 +164,7 @@ class Submission extends Component {
             placeholder={formatMessage({ id: 'report.app.noselect' })}
             maxTagCount={3}
             value={appId || []}
-            maxTagPlaceholder={`+ ${appId ? (appId.length - 3) : ''} ...`}
+            maxTagPlaceholder={this.maxTagNode.bind(this, apps)}
             onChange={this.handleSelect}
             optionFilterProp="children"
             filter
