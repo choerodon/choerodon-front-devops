@@ -210,6 +210,7 @@ class EnvPipelineHome extends Component {
             this.reload();
           }
           this.setState({ submitting: false });
+          EnvPipelineStore.setBan(false);
         });
     } else {
       const envId = EnvPipelineStore.getEnvData.id;
@@ -220,9 +221,10 @@ class EnvPipelineHome extends Component {
           } else if (data) {
             this.loadEnvs();
           }
+          this.setState({ submitting: false });
+          EnvPipelineStore.setBan(false);
         });
     }
-    EnvPipelineStore.setBan(false);
   };
 
   /**
