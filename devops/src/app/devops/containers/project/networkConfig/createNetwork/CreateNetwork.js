@@ -331,7 +331,7 @@ class CreateNetwork extends Component {
    * @param value
    * @param callback
    */
-  checkName = (rule, value, callback) => {
+  checkName = _.debounce((rule, value, callback) => {
     const { intl, store, form } = this.props;
     const { id } = AppState.currentMenuType;
     const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
@@ -350,7 +350,7 @@ class CreateNetwork extends Component {
     } else {
       callback();
     }
-  };
+  }, 1000);
 
   /**
    * 验证ip
