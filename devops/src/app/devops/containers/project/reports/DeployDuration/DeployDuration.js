@@ -14,6 +14,7 @@ import NoChart from '../Component/NoChart';
 import ContainerStore from '../../../../stores/project/container';
 import './DeployDuration.scss';
 import LoadingBar from '../../../../components/loadingBar/LoadingBar';
+import MaxTagPopover from '../Component/MaxTagPopover';
 
 configure({ enforceActions: 'never' });
 
@@ -367,6 +368,8 @@ class DeployDuration extends Component {
   @action
   handleDateChoose = (type) => { this.dateType = type; };
 
+  maxTagNode = (data, value) => <MaxTagPopover dataSource={data} value={value} />;
+
   render() {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
@@ -393,6 +396,7 @@ class DeployDuration extends Component {
           {envDom}
         </Select>
         <Select
+          showCheckAll={false}
           notFoundContent={formatMessage({ id: 'envoverview.unlist' })}
           value={this.appIds.length && this.appIds.slice()}
           label={formatMessage({ id: 'deploy.appName' })}
@@ -400,6 +404,7 @@ class DeployDuration extends Component {
           mode="multiple"
           maxTagCount={3}
           onChange={this.handleAppSelect}
+          maxTagPlaceholder={this.maxTagNode.bind(this, this.app)}
           optionFilterProp="children"
           filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           filter
