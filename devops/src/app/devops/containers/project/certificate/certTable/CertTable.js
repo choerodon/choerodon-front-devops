@@ -288,7 +288,7 @@ class CertTable extends Component {
         title={`${formatMessage({ id: 'ctf.delete' })}“${certName}”`}
         closable={false}
         footer={[
-          <Button key="back" onClick={this.closeRemoveModal}><FormattedMessage id="cancel" /></Button>,
+          <Button key="back" onClick={this.closeRemoveModal} disabled={deleteStatus}><FormattedMessage id="cancel" /></Button>,
           <Button key="submit" loading={deleteStatus} type="danger" onClick={this.handleDelete}>
             <FormattedMessage id="delete" />
           </Button>,

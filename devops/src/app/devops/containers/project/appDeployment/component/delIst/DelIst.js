@@ -13,7 +13,7 @@ class DelIst extends React.Component {
         onOk={handleCancel}
         closable={false}
         footer={[
-          <Button key="back" onClick={handleCancel}><FormattedMessage id="cancel" /></Button>,
+          <Button key="back" onClick={handleCancel} disabled={confirmLoading}><FormattedMessage id="cancel" /></Button>,
           <Button key="submit" type="danger" loading={confirmLoading} onClick={handleConfirm}>
             <FormattedMessage id="delete" />
           </Button>,

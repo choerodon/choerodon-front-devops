@@ -552,7 +552,7 @@ class AppHome extends Component {
           title={`${formatMessage({ id: 'app.delete' })}“${appName}”`}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,
+            <Button key="back" onClick={this.closeRemove} disabled={submitting}>{<FormattedMessage id="cancel" />}</Button>,
             <Button key="submit" type="danger" onClick={this.deleteApp.bind(this, id)} loading={submitting}>
               {formatMessage({ id: 'delete' })}
             </Button>,

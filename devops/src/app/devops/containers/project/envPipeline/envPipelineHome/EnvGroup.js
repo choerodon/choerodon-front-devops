@@ -81,7 +81,6 @@ class EnvGroup extends Component {
             }
           });
         }
-        store.setBtnLoading(false);
       });
     } else {
       this.props.form.validateFieldsAndScroll((err, data, modify) => {
@@ -112,7 +111,6 @@ class EnvGroup extends Component {
           store.setShowGroup(false);
           store.setBtnLoading(false);
         }
-        store.setBtnLoading(false);
       });
     }
   };
@@ -142,7 +140,7 @@ class EnvGroup extends Component {
         closable={false}
         onCancel={this.groupCancel}
         footer={[
-          <Button key="back" onClick={this.groupCancel}><FormattedMessage id="cancel" /></Button>,
+          <Button key="back" onClick={this.groupCancel} disabled={btnLoading}><FormattedMessage id="cancel" /></Button>,
           <Button key="submit" type="primary" loading={btnLoading} onClick={this.groupOk}>
             {okText(sideType)}
           </Button>,

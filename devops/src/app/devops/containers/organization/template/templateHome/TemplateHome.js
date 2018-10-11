@@ -481,7 +481,7 @@ class TemplateHome extends Component {
           title={`${formatMessage({ id: 'template.del' })}“${temName}”`}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove}><FormattedMessage id="cancel" /></Button>,
+            <Button key="back" onClick={this.closeRemove} disabled={submitting}><FormattedMessage id="cancel" /></Button>,
             <Button key="submit" type="danger" onClick={this.handleDelete} loading={submitting}>
               <FormattedMessage id="delete" />
             </Button>,

@@ -68,6 +68,7 @@
 
 .c7n-envow-select {
   margin-right: 18px;
+  line-height: 58px;
 
   .ant-select-selection__rendered {
     margin-bottom: 0;
@@ -83,7 +84,12 @@
   a {
     height: 20px;
     line-height: 20px;
-    display: inline-block;
+    display: flex;
+    align-items: center;
+  }
+
+  i {
+    line-height: 58px;
   }
 }
 
