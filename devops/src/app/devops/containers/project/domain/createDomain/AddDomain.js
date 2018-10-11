@@ -257,7 +257,7 @@ class CreateDomain extends Component {
    * @param value
    * @param callback
    */
-  checkPath = (rule, value, callback) => {
+  checkPath = _.debounce((rule, value, callback) => {
     const { form: { getFieldValue, getFieldError }, intl, store, type, id } = this.props;
     const { projectId } = this.state;
     if (value) {
@@ -289,7 +289,7 @@ class CreateDomain extends Component {
     } else {
       callback(intl.formatMessage({ id: 'domain.path.check.notSet' }));
     }
-  };
+  }, 1000);
 
   /**
    * 处理路径校验返回结果
@@ -316,7 +316,7 @@ class CreateDomain extends Component {
    * 检查域名是否符合规则
    * @type {Function}
    */
-  checkDomain = (rule, value, callback) => {
+  checkDomain = _.debounce((rule, value, callback) => {
     const { intl, form: { getFieldValue }, store } = this.props;
     const pattern = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)+)$/;
     if (pattern.test(value)) {
@@ -328,7 +328,7 @@ class CreateDomain extends Component {
     } else {
       callback(intl.formatMessage({ id: 'domain.domain.check.failed' }));
     }
-  };
+  }, 1000);
 
   /**
    * 触发路径检查
