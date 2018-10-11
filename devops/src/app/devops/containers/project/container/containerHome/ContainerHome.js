@@ -277,7 +277,6 @@ class ContainerHome extends Component {
     const { filters, sort: { columnKey, order } } = ContainerStore.getInfo;
     return [{
       title: <FormattedMessage id="container.status" />,
-      // dataIndex: 'status',
       key: 'status',
       width: 110,
       sorter: true,
@@ -428,7 +427,7 @@ class ContainerHome extends Component {
         break;
       case 'Running':
         dom = {
-          wrap: true,
+          wrap: false,
           color: '#00bf96',
         };
         break;
@@ -453,7 +452,7 @@ class ContainerHome extends Component {
     el = (<StatusTags
       ellipsis={dom && dom.wrap ? statusStyle : null}
       color={dom.color}
-      name="Completed"
+      name={status}
       style={wrapStyle}
     />);
     return el;

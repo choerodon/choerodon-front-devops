@@ -50,6 +50,10 @@
 
   .page-content-header {
     max-width: 100%;
+
+    .description {
+      max-width: 512px;
+    }
   }
 
   .ant-modal-body {
