@@ -400,7 +400,7 @@ class DeployDuration extends Component {
           notFoundContent={formatMessage({ id: 'envoverview.unlist' })}
           value={this.appIds.length && this.appIds.slice()}
           label={formatMessage({ id: 'deploy.appName' })}
-          className="c7n-select_400 margin-more"
+          className={`c7n-select_400 margin-more ${this.appIds.length ? 'c7n-select-multi-top' : ''}`}
           mode="multiple"
           maxTagCount={3}
           onChange={this.handleAppSelect}

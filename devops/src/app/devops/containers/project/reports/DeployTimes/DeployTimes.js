@@ -406,7 +406,7 @@ class DeployTimes extends Component {
           notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}
           value={this.envIds.length && this.envIds.slice()}
           label={formatMessage({ id: 'deploy.envName' })}
-          className="c7n-select_400"
+          className={`c7n-select_400 ${this.envIds.length ? 'c7n-select-multi-top' : ''}`}
           mode="multiple"
           maxTagCount={3}
           onChange={this.handleEnvSelect}

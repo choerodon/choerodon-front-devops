@@ -35,6 +35,15 @@
     &.margin-more {
       margin-right: 60px;
     }
+    &.c7n-select-multi-top {
+      &.ant-select-multiple {
+        .ant-select-selection--multiple {
+          .ant-select-selection__rendered {
+            margin-top: 1px;
+          }
+        }
+      }
+    }
 
     .ant-select-selection__choice {
       padding: 0 4px;
