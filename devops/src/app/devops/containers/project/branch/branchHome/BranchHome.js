@@ -443,7 +443,7 @@ class BranchHome extends Component {
     const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     this.setState({ submitting: true });
-    BranchStore.deleteData(organizationId, DevPipelineStore.setSelectApp(), name).then((data) => {
+    BranchStore.deleteData(organizationId, DevPipelineStore.getSelectApp, name).then((data) => {
       this.setState({ submitting: false });
       this.loadData(DevPipelineStore.selectedApp);
       this.closeRemove();
