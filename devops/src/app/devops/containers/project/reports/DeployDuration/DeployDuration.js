@@ -216,7 +216,7 @@ class DeployDuration extends Component {
       brush: {
       },
       tooltip: {
-        trigger: 'axis',
+        trigger: 'item',
         backgroundColor: '#fff',
         textStyle: {
           color: '#000',
@@ -227,7 +227,7 @@ class DeployDuration extends Component {
         extraCssText:
           'box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2); border: 1px solid #ddd; border-radius: 0;',
         formatter(params, ticket) {
-          let time = params[0].value[1];
+          let time = params.value[1];
           if (time.split('.')[1] === '00') {
             time = `${time.toString().split('.')[0]}${formatMessage({ id: 'minutes' })}`;
           } else if (time.split('.')[0] === '0') {
@@ -238,8 +238,8 @@ class DeployDuration extends Component {
             time = null;
           }
           return `<div>
-                <div>${formatMessage({ id: 'branch.issue.date' })}：${params[0].data[0]}</div>
-                <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params[0].color};"></span>${params[0].seriesName}：${time}</div>
+                <div>${formatMessage({ id: 'branch.issue.date' })}：${params.data[0]}</div>
+                <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params.color};"></span>${params.seriesName}：${time}</div>
               <div>`;
         },
       },
