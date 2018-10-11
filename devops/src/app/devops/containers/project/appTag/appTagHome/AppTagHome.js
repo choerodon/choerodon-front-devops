@@ -342,7 +342,7 @@ class AppTagHome extends Component {
           title={`${formatMessage({ id: 'apptag.action.delete' })}“${tag}”`}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,
+            <Button key="back" onClick={this.closeRemove} disabled={deleteLoading}>{<FormattedMessage id="cancel" />}</Button>,
             <Button key="submit" type="danger" onClick={this.deleteTag} loading={deleteLoading}>
               {formatMessage({ id: 'delete' })}
             </Button>,

@@ -356,7 +356,7 @@ class NetworkHome extends Component {
           title={`${formatMessage({ id: 'network.delete' })}“${name}”`}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove}><FormattedMessage id="cancel" /></Button>,
+            <Button key="back" onClick={this.closeRemove} disabled={this.state.submitting}><FormattedMessage id="cancel" /></Button>,
             <Button key="submit" loading={this.state.submitting} type="danger" onClick={this.handleDelete}>
               <FormattedMessage id="delete" />
             </Button>,

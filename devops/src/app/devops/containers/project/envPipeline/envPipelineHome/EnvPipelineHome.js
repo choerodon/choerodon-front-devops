@@ -199,6 +199,7 @@ class EnvPipelineHome extends Component {
     const projectId = AppState.currentMenuType.id;
     const sideType = EnvPipelineStore.getSideType;
     const groupOne = EnvPipelineStore.getGroupOne;
+    this.setState({ submitting: true });
     if (sideType === 'delGroup') {
       EnvPipelineStore.delGroupById(projectId, groupOne.id)
         .then((data) => {
@@ -208,6 +209,8 @@ class EnvPipelineHome extends Component {
             EnvPipelineStore.setGroupOne([]);
             this.reload();
           }
+          this.setState({ submitting: false });
+          EnvPipelineStore.setBan(false);
         });
     } else {
       const envId = EnvPipelineStore.getEnvData.id;
@@ -218,9 +221,10 @@ class EnvPipelineHome extends Component {
           } else if (data) {
             this.loadEnvs();
           }
+          this.setState({ submitting: false });
+          EnvPipelineStore.setBan(false);
         });
     }
-    EnvPipelineStore.setBan(false);
   };
 
   /**
@@ -265,7 +269,6 @@ class EnvPipelineHome extends Component {
               }
             }
           });
-          this.setState({ submitting: false });
         }
       });
     } else {
@@ -297,7 +300,6 @@ class EnvPipelineHome extends Component {
           EnvPipelineStore.setShow(false);
         }
         this.props.form.resetFields();
-        this.setState({ submitting: false });
       });
     }
   };
@@ -694,6 +696,7 @@ class EnvPipelineHome extends Component {
             onOk={this.banEnv}
             onCancel={this.banCancel}
             closable={false}
+            confirmLoading={submitting}
             wrapClassName="vertical-center-modal remove"
           >
             {sideType === 'delGroup' ? <div className="c7n-env-modal-content">

@@ -259,7 +259,7 @@ class DomainHome extends Component {
           title={`${intl.formatMessage({ id: 'domain.header.delete' })}“${this.state.name}”`}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,
+            <Button key="back" onClick={this.closeRemove} disabled={this.state.submitting}>{<FormattedMessage id="cancel" />}</Button>,
             <Button key="submit" loading={this.state.submitting} type="danger" onClick={this.handleDelete}>
               {intl.formatMessage({ id: 'delete' })}
             </Button>,
