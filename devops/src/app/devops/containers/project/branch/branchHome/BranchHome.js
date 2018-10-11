@@ -443,7 +443,7 @@ class BranchHome extends Component {
     const menu = AppState.currentMenuType;
     const organizationId = menu.id;
     this.setState({ submitting: true });
-    BranchStore.deleteData(organizationId, DevPipelineStore.setSelectApp(), name).then((data) => {
+    BranchStore.deleteData(organizationId, DevPipelineStore.getSelectApp, name).then((data) => {
       this.setState({ submitting: false });
       this.loadData(DevPipelineStore.selectedApp);
       this.closeRemove();
@@ -585,7 +585,7 @@ class BranchHome extends Component {
           title={`${formatMessage({ id: 'branch.action.delete' })}“${branchName}”`}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove}>{<FormattedMessage id="cancel" />}</Button>,
+            <Button key="back" onClick={this.closeRemove} disabled={submitting}>{<FormattedMessage id="cancel" />}</Button>,
             <Button key="submit" type="danger" onClick={this.handleDelete} loading={submitting}>
               {formatMessage({ id: 'delete' })}
             </Button>,
