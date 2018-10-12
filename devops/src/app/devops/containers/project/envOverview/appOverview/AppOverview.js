@@ -165,7 +165,14 @@ class AppOverview extends Component {
    */
   reStart = (id) => {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    AppDeploymentStore.reStarts(projectId, id);
+    AppDeploymentStore.reStarts(projectId, id)
+      .then((error) => {
+        if (error && error.failed) {
+          Choerodon.prompt(error.message);
+        } else {
+          AppDeploymentStore.loadInstanceAll(projectId);
+        }
+      });
   };
 
   /**

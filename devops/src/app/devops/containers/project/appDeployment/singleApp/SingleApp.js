@@ -198,7 +198,14 @@ class SingleApp extends Component {
   reStart = (id) => {
     const { store } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    store.reStarts(projectId, id);
+    store.reStarts(projectId, id)
+      .then((error) => {
+        if (error && error.failed) {
+          Choerodon.prompt(error.message);
+        } else {
+          store.loadInstanceAll(projectId);
+        }
+      });
   };
 
   /**
