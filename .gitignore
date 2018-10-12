@@ -20,3 +20,4 @@ src/app
 
 # 菜单配置
 config.yml
+dashboard.yml
