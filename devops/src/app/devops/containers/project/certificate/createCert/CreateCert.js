@@ -288,7 +288,7 @@ class CreateCert extends Component {
         })(
           <Input
             type="text"
-            maxLength={100}
+            maxLength={50}
             label={<FormattedMessage id="ctf.config.domain" />}
           />,
         )}
