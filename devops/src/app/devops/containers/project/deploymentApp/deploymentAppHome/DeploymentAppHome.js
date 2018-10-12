@@ -502,7 +502,7 @@ class DeploymentAppHome extends Component {
               label={<span className="deploy-text">{formatMessage({ id: 'deploy.step.three.mode' })}</span>}
             >
               <Radio className="deploy-radio" value="new">{formatMessage({ id: 'deploy.step.three.mode.new' })}</Radio>
-              <Radio className="deploy-radio" value="replace">{formatMessage({ id: 'deploy.step.three.mode.replace' })}
+              <Radio className="deploy-radio" value="replace" disabled={instances.length === 0}>{formatMessage({ id: 'deploy.step.three.mode.replace' })}
                 <i className="icon icon-error section-instance-icon" />
                 <span className="deploy-tip-text">{formatMessage({ id: 'deploy.step.three.mode.help' })}</span>
               </Radio>
@@ -560,7 +560,7 @@ class DeploymentAppHome extends Component {
       readOnly: true,
       lineNumbers: true,
     };
-    const isNotChange = this.state.changeYaml ? false : versionDto.version === instance.appVersion;
+    const isNotChange = (this.state.changeYaml || mode === 'new') ? false : versionDto.version === instance.appVersion;
     return (
       <section className="deployApp-review">
         <section>

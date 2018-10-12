@@ -18,7 +18,6 @@ const { AppState } = stores;
 @observer
 class DomainHome extends Component {
   constructor(props, context) {
-    const menu = AppState.currentMenuType;
     super(props, context);
     this.state = {
       openRemove: false,
@@ -132,7 +131,6 @@ class DomainHome extends Component {
     }, {
       key: 'action',
       align: 'right',
-      // width: '96px',
       className: 'c7n-network-text_top',
       render: (record) => {
         let editDom = null;
