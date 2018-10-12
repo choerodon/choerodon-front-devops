@@ -125,7 +125,7 @@ class DeployOverview extends Component {
             <Tooltip title={<FormattedMessage id="dpOverview.deploy" />}>
               <Button
                 shape="circle"
-                icon="keyboard_arrow_right"
+                icon="jsfiddle"
                 onClick={this.quickDeploy.bind(this, record.applicationId, record.latestVersionId, record.projectId)}
               />
             </Tooltip>
