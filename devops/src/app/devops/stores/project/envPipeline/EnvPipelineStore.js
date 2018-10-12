@@ -32,12 +32,6 @@ class EnvPipelineStore {
 
   @observable shell = '';
 
-  @observable sortLoading = false;
-
-  @action setSortLoaing(flag) {
-    this.sortLoading = flag;
-  }
-
   @action setIst(ist) {
     this.ist = ist;
   }
@@ -174,8 +168,8 @@ class EnvPipelineStore {
     return this.btnLoading;
   }
 
-  loadEnv = (projectId, active) => {
-    if (!this.sortLoading) {
+  loadEnv = (projectId, active, sort = false) => {
+    if (!sort) {
       this.changeLoading(true);
     }
     return axios.get(`devops/v1/projects/${projectId}/envs/groups?active=${active}`).then((data) => {
@@ -199,23 +193,19 @@ class EnvPipelineStore {
   }
 
   @action
-  updateSort = (projectId, envIds, groupId) => {
-    this.setSortLoaing(true);
-    return axios.put(`/devops/v1/projects/${projectId}/envs/sort`, JSON.stringify(envIds)).then((data) => {
-      if (data && data.failed) {
-        Choerodon.prompt(data.message);
-      } else {
-        _.map(this.envcardPosition, (e) => {
-          if (e.devopsEnvGroupId === groupId) {
-            e.devopsEnviromentRepDTOs = data;
-          }
-        });
-        this.setEnvcardPosition(this.envcardPosition);
-        this.loadEnv(projectId, true);
-        this.setSortLoaing(false);
-      }
-    });
-  };
+  updateSort = (projectId, envIds, groupId) => axios.put(`/devops/v1/projects/${projectId}/envs/sort`, JSON.stringify(envIds)).then((data) => {
+    if (data && data.failed) {
+      Choerodon.prompt(data.message);
+    } else {
+      _.map(this.envcardPosition, (e) => {
+        if (e.devopsEnvGroupId === groupId) {
+          e.devopsEnviromentRepDTOs = data;
+        }
+      });
+      this.setEnvcardPosition(this.envcardPosition);
+      Choerodon.prompt('更新成功');
+    }
+  });
 
   updateEnv(projectId, data) {
     return axios.put(`/devops/v1/projects/${projectId}/envs`, JSON.stringify(data));
