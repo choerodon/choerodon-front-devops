@@ -1,6 +1,11 @@
 .c7n-container-wrapper {
   .c7n-container-col-inside {
     margin-bottom: 6px;
+    display: flex;
+  }
+
+  .c7n-deploy-col-inside {
+    margin-bottom: 6px;
   }
 
   .c7n-container-square {
@@ -20,12 +25,6 @@
     }
   }
 
-  .c7n-icon-publish {
-    font-size: 16px;
-    vertical-align: sub;
-    margin-right: 8px;
-  }
-
   .c7n-container-table {
     padding-left: 15%;
 
@@ -43,6 +42,13 @@
     float: right;
     display: block;
   }
+}
+
+.c7n-container-icon-publish {
+  font-size: 16px;
+  vertical-align: sub;
+  margin-right: 2px;
+  line-height: 20px;
 }
 
 .c7n-podLog-content {

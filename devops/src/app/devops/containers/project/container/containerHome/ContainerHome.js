@@ -299,8 +299,8 @@ class ContainerHome extends Component {
       key: 'app',
       render: (text, record) => (<div>
         <div className="c7n-container-col-inside">
-          {record.projectId === projectId ? <Tooltip title={<FormattedMessage id="project" />}><i className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id="market" />}><i className="icon icon-apps c7n-icon-publish" /></Tooltip>}
-          <span>{record.appName}</span>
+          {record.projectId === projectId ? <Tooltip title={<FormattedMessage id="project" />}><i className="icon icon-project c7n-container-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id="market" />}><i className="icon icon-apps c7n-container-icon-publish" /></Tooltip>}
+          <MouserOverWrapper text={record.appName} width={0.18}>{record.appName}</MouserOverWrapper>
         </div>
         <div>
           <MouserOverWrapper text={record.appVersion} width={0.2}>
@@ -733,8 +733,8 @@ class ContainerHome extends Component {
               </div>}
             >
               <div className="c7n-container-option-popover">
-                <i className="icon icon-apps c7n-icon-publish" />
-                {d.name}
+                <i className="icon icon-apps c7n-container-icon-publish" />
+                <MouserOverWrapper text={d.name} width={0.9}>{d.name}</MouserOverWrapper>
               </div>
             </Popover>
           </Option>);
@@ -754,8 +754,8 @@ class ContainerHome extends Component {
               </div>}
             >
               <div className="c7n-container-option-popover">
-                <i className="icon icon-project c7n-icon-publish" />
-                {d.name}
+                <i className="icon icon-project c7n-container-icon-publish" />
+                <MouserOverWrapper text={d.name} width={0.9}>{d.name}</MouserOverWrapper>
               </div>
             </Popover>
           </Option>);
@@ -844,7 +844,7 @@ class ContainerHome extends Component {
           <span>{<FormattedMessage id="refresh" />}</span>
         </Button>
       </Header>
-      <Content className="page-content" code="container" values={{ name: projectName }}>
+      <Content className="page-content c7n-container-wrapper" code="container" values={{ name: projectName }}>
         <Select
           label={intl.formatMessage({ id: 'container.chooseEnv' })}
           className="c7n-app-select_247"

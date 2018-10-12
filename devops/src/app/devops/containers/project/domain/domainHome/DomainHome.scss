@@ -39,6 +39,11 @@
     }
   }
 
+  .c7n-network-service {
+    display: flex;
+    align-items: center;
+  }
+
   .c7n-network-square {
     display: inline-block;
     background: #f3f3f3;
