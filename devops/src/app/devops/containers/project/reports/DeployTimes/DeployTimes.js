@@ -15,7 +15,7 @@ import ContainerStore from '../../../../stores/project/container';
 import '../DeployDuration/DeployDuration.scss';
 import { getAxis } from '../../../../utils';
 import LoadingBar from '../../../../components/loadingBar/LoadingBar';
-import MaxTagPopover from "../Component/MaxTagPopover";
+import MaxTagPopover from '../Component/MaxTagPopover';
 
 configure({ enforceActions: 'never' });
 
