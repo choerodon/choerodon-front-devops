@@ -278,11 +278,7 @@ class CiPipelineHome extends Component {
     <div className="c7n-commit">
       <div className="c7n-title-commit">
         <i className="icon icon-branch mr7" />
-        <Tooltip
-          placement="top"
-          title={record.ref}
-          trigger="hover"
-        >
+        <MouserOverWrapper text={record.ref} width={0.1}>
           <a
             className="c7n-link-decoration"
             href={record.gitlabUrl ? `${record.gitlabUrl.slice(0, -4)}/commits/${record.ref}` : null}
@@ -291,7 +287,7 @@ class CiPipelineHome extends Component {
           >
             <span className="black">{record.ref}</span>
           </a>
-        </Tooltip>
+        </MouserOverWrapper>
         <i className="icon icon-point m8" />
         <Tooltip
           placement="top"

@@ -325,7 +325,7 @@ class MergeRequestHome extends Component {
       render: record => (
         <div className="c7n-merge-branches">
           <Icon type="branch" />
-          <span>{record.sourceBranch}</span>
+          <MouserOverWrapper text={record.sourceBranch} width={0.1}>{record.sourceBranch}</MouserOverWrapper>
           <Icon type="keyboard_backspace" className="c7n-merge-right" />
           <Icon type="branch" />
           <span>{record.targetBranch}</span>

@@ -11,6 +11,7 @@ import './DomainHome.scss';
 import '../../../main.scss';
 import { commonComponent } from '../../../../components/commonFunction';
 import StatusIcon from '../../../../components/StatusIcon';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper/MouserOverWrapper';
 
 const { AppState } = stores;
 
@@ -74,11 +75,14 @@ class DomainHome extends Component {
       sortOrder: columnKey === 'name' && order,
       filters: [],
       filteredValue: filters.name || [],
-      render: (text, record) => <StatusIcon
-        name={text}
-        status={record.commandStatus || ''}
-        error={record.error || ''}
-      />,
+      render: (text, record) => <div className="c7n-network-service">
+        <MouserOverWrapper text={text} width={0.16}>{text}</MouserOverWrapper>
+        <StatusIcon
+          name=""
+          status={record.commandStatus || ''}
+          error={record.error || ''}
+        />
+      </div>,
     }, {
       title: intl.formatMessage({ id: 'domain.column.domain' }),
       key: 'domain',
@@ -119,11 +123,11 @@ class DomainHome extends Component {
       filteredValue: filters.serviceName || [],
       render: record => (
         <div>
-          {_.map(record.pathList, instance => (<div className="c7n-network-col_border" key={`${record.id}-${instance.path}-${instance.serviceId}`}>
+          {_.map(record.pathList, instance => (<div className="c7n-network-col_border c7n-network-service" key={`${record.id}-${instance.path}-${instance.serviceId}`}>
             <div className={`c7n-domain-create-status c7n-domain-create-status_${instance.serviceStatus}`}>
               <div>{intl.formatMessage({ id: instance.serviceStatus })}</div>
             </div>
-            {instance.serviceName}
+            <MouserOverWrapper text={instance.serviceName} width={0.1}>{instance.serviceName}</MouserOverWrapper>
           </div>
           ))}
         </div>

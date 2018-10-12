@@ -88,11 +88,9 @@ class BuildDuration extends Component {
     const { intl: { formatMessage }, ReportsStore } = this.props;
     const { pipelineTime, refs, versions, createDates } = ReportsStore.getBuildDuration;
     const averageDuration = [];
-    let sum = 0;
-    _.map(pipelineTime, (value, index) => {
-      sum += parseFloat(value);
-      averageDuration[index] = sum / (index + 1);
-    });
+    averageDuration.length = pipelineTime && pipelineTime.length ? pipelineTime.length : 0;
+    const ava = pipelineTime && pipelineTime.length ? ((_.reduce(pipelineTime, (sum, n) => sum + parseFloat(n), 0)) / pipelineTime.length) : 0;
+    _.fill(averageDuration, ava);
     return {
       tooltip: {
         trigger: 'axis',

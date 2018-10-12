@@ -405,7 +405,7 @@ class CreateBranch extends Component {
                 initialValue: this.state.issueDto ? this.state.issueDto.issueNum : '',
               })(
                 <Input
-                  maxLength={64}
+                  maxLength={50}
                   label={<FormattedMessage id="branch.name" />}
                   prefix={`${this.state.type === 'custom' ? '' : `${this.state.type}-`}`}
                 />,
