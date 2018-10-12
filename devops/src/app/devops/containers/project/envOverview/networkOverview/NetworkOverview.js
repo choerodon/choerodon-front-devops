@@ -165,8 +165,18 @@ class NetworkOverview extends Component {
     const node = [];
     if (appInstance && appInstance.length) {
       _.forEach(appInstance, (item) => {
-        const { id, code } = item;
-        node.push(<div className="network-column-instance" key={id}>{code}</div>);
+        const { id, code, instanceStatus } = item;
+        const statusStyle = (instanceStatus !== 'operating' && instanceStatus !== 'running')
+          ? 'c7n-network-status-failed' : '';
+        node.push(<div
+          className={`network-column-instance ${statusStyle}`}
+          key={id}
+        >
+          <Tooltip
+            title={instanceStatus ? <FormattedMessage id={instanceStatus} /> : ''}
+            placement="top"
+          >{code}</Tooltip>
+        </div>);
       });
     }
     if (!_.isEmpty(labels)) {

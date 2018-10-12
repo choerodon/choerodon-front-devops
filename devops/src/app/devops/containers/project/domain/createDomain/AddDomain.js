@@ -4,7 +4,6 @@ import { withRouter } from 'react-router-dom';
 import { Button, Form, Select, Input, Modal, Tooltip, Icon, Radio } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { stores, Content } from 'choerodon-front-boot';
-import classnames from 'classnames';
 import _ from 'lodash';
 import '../../../main.scss';
 import './CreateDomain.scss';
@@ -150,7 +149,6 @@ class CreateDomain extends Component {
     e.preventDefault();
     const { store, id, type, form: { validateFieldsAndScroll } } = this.props;
     const { projectId } = this.state;
-    const service = store.getNetwork;
     validateFieldsAndScroll((err, data) => {
       if (!err) {
         this.setState({ submitting: true });
@@ -340,7 +338,7 @@ class CreateDomain extends Component {
     _.forEach(paths, item => fields.push(`path[${item}]`));
     validateFields(fields, { force: true });
     this.setState({ pathCountChange: false });
-  }
+  };
 
   /**
    * 校验网络是否可用
@@ -472,6 +470,15 @@ class CreateDomain extends Component {
       // 生成端口选项
       const portOption = (type === 'edit' && !portInNetwork[k] && hasServerInit)
         ? portWithNetwork[pathList[k].serviceId] : portInNetwork[k];
+      // 生成网络选项
+      const networkOption = network.map(item => (<Option value={item.id} key={`${item.id}-network`}>
+        <div className="c7n-domain-create-status c7n-domain-create-status_running">
+          <div>{formatMessage({ id: 'running' })}</div>
+        </div>
+        <Tooltip title={item.name}>
+          {item.name}
+        </Tooltip>
+      </Option>));
       return (<div className="domain-network-wrap" key={`paths-${k}`}>
         <FormItem
           className="domain-network-item c7n-select_160"
@@ -503,7 +510,7 @@ class CreateDomain extends Component {
             }, {
               validator: this.checkService,
             }],
-            initialValue: initNetwork,
+            initialValue: networkOption.length ? initNetwork : undefined,
           })(
             <Select
               getPopupContainer={triggerNode => triggerNode.parentNode}
@@ -522,11 +529,7 @@ class CreateDomain extends Component {
               }
             >
               {delNetOption}
-              {network.map(item => (<Option value={item.id} key={`${item.id}-network`}>
-                <div className="c7n-domain-create-status c7n-domain-create-status_running">
-                  <div>{formatMessage({ id: 'running' })}</div>
-                </div>
-                {item.name}</Option>))}
+              {networkOption}
             </Select>,
           )}
         </FormItem>
