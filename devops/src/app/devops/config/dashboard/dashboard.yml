@@ -1,7 +1,7 @@
 dashboard:
-- code: "DevopsDoc"
-  icon: devops
-  title: "持续交付文档"
-  description: "持续交付文档"
-  level: project
-  sort: 1
+  - code: "DevOpsCommit"
+    icon: code
+    title: "代码提交"
+    description: "代码提交"
+    level: project
+    sort: 1
