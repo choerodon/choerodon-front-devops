@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Page, Header, Content, stores } from 'choerodon-front-boot';
@@ -104,15 +105,28 @@ class Submission extends Component {
   };
 
   loadData = () => {
-    const { ReportsStore: { loadApps, loadCommits, loadCommitsRecord, getStartTime, getEndTime } } = this.props;
+    const {
+      ReportsStore: {
+        loadApps,
+        loadCommits,
+        loadCommitsRecord,
+        getStartTime,
+        getEndTime,
+      },
+      history: { location: { state } },
+    } = this.props;
+    const repoAppId = state && state.appId;
     const { id: projectId } = AppState.currentMenuType;
     const { page, appId, dateType } = this.state;
     const startTime = getStartTime.format().split('T')[0].replace(/-/g, '/');
     const endTime = getEndTime.format().split('T')[0].replace(/-/g, '/');
     loadApps(projectId).then((data) => {
       if (data && data.length) {
-        const selectApp = appId || _.map(data, item => item.id);
+        let selectApp = appId || _.map(data, item => item.id);
         if (!appId) {
+          if (repoAppId) {
+            selectApp = [Number(repoAppId)];
+          }
           this.setState({ appId: selectApp });
         }
         loadCommits(projectId, startTime, endTime, selectApp);
@@ -236,4 +250,4 @@ class Submission extends Component {
   }
 }
 
-export default injectIntl(Submission);
+export default withRouter(injectIntl(Submission));
