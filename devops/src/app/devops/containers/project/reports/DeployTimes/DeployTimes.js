@@ -305,7 +305,7 @@ class DeployTimes extends Component {
           name: `${formatMessage({ id: 'report.build-number.fail' })}`,
           type: 'bar',
           itemStyle: {
-            color: '#FFB100',
+            color: '#F44336',
             emphasis: {
               shadowBlur: 10,
               shadowColor: 'rgba(0,0,0,0.20)',

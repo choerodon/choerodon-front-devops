@@ -235,7 +235,7 @@ class BuildNumber extends Component {
           type: 'bar',
           barWidth: '40%',
           itemStyle: {
-            color: '#FFB100',
+            color: '#F44336',
             emphasis: {
               shadowBlur: 10,
               shadowColor: 'rgba(0,0,0,0.20)',
