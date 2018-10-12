@@ -82,14 +82,6 @@ class RepositoryHome extends Component {
    * 页面刷新
    */
   handleRefresh = () => {
-    // this.setState({
-    //   param: [],
-    //   sort: {
-    //     columnKey: 'id',
-    //     order: 'desc',
-    //   },
-    //   filters: {},
-    // });
     const { RepositoryStore } = this.props;
     const { param, sort, filters } = this.state;
     const pageInfos = RepositoryStore.getPageInfo;
@@ -102,12 +94,54 @@ class RepositoryHome extends Component {
    */
   handleCopy = () => Choerodon.prompt('复制成功');
 
+  /**
+   * 点击跳转到应用提交情况报表
+   * @param appId 应用id
+   */
+  linkToReports = (appId) => {
+    const { history } = this.props;
+    const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
+    history.push({
+      pathname: '/devops/reports/submission',
+      search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}`,
+      state: { appId },
+    });
+  };
+
+  renderAction = (text, record) => {
+    const noRepoUrl = this.props.intl.formatMessage({ id: 'repository.noUrl' });
+    return (<div>
+      { record.sonarUrl ? <Tooltip title={<FormattedMessage id="repository.quality" />} placement="bottom">
+        <a className="repo-copy-btn" href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
+          <Button shape="circle" size="small" icon="quality" />
+        </a>
+      </Tooltip> : null }
+      <Tooltip title={<FormattedMessage id="repository.report" />} placement="bottom">
+        <Button
+          className="repo-copy-btn"
+          shape="circle"
+          size="small"
+          icon="exit_to_app"
+          onClick={this.linkToReports.bind(this, record.id)}
+        />
+      </Tooltip>
+      <Tooltip title={<FormattedMessage id="repository.copyUrl" />} placement="bottom">
+        <CopyToClipboard
+          text={record.repoUrl || noRepoUrl}
+          onCopy={this.handleCopy}
+        >
+          <Button shape="circle" size="small">
+            <i className="icon icon-library_books" />
+          </Button>
+        </CopyToClipboard>
+      </Tooltip>
+    </div>);
+  };
+
   render() {
     const { intl, RepositoryStore } = this.props;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const { param, filters, sort: { columnKey, order } } = this.state;
-    const pageInfos = RepositoryStore.getPageInfo;
-    const noRepoUrl = intl.formatMessage({ id: 'repository.noUrl' });
     const columns = [{
       title: <FormattedMessage id="repository.repository" />,
       dataIndex: 'code',
@@ -141,26 +175,8 @@ class RepositoryHome extends Component {
       align: 'right',
       width: 120,
       key: 'action',
-      render: (text, record) => (
-        <div>
-          {record.sonarUrl ? <Tooltip title={<FormattedMessage id="repository.quality" />} placement="bottom">
-            <a className="repo-copy-btn" href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
-              <Button shape="circle" size="small">
-                <i className="icon icon-quality" />
-              </Button>
-            </a>
-          </Tooltip> : null }
-          <Tooltip title={<FormattedMessage id="repository.copyUrl" />} placement="bottom">
-            <CopyToClipboard
-              text={record.repoUrl || noRepoUrl}
-              onCopy={this.handleCopy}
-            >
-              <Button shape="circle" size="small">
-                <i className="icon icon-library_books" />
-              </Button>
-            </CopyToClipboard>
-          </Tooltip>
-        </div>) }];
+      render: this.renderAction,
+    }];
     return (
       <Page
         className="c7n-region c7n-app-wrapper"
@@ -193,4 +209,4 @@ class RepositoryHome extends Component {
   }
 }
 
-export default withRouter(injectIntl(RepositoryHome));
+export default injectIntl(withRouter(RepositoryHome));
