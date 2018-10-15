@@ -168,10 +168,8 @@ class EnvPipelineStore {
     return this.btnLoading;
   }
 
-  loadEnv = (projectId, active, sort = false) => {
-    if (!sort) {
-      this.changeLoading(true);
-    }
+  loadEnv = (projectId, active) => {
+    this.changeLoading(true);
     return axios.get(`devops/v1/projects/${projectId}/envs/groups?active=${active}`).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
