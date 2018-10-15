@@ -6,25 +6,25 @@ dashboard:
     level: project
     sort: 1
   - code: "DevOpsBuild"
-    icon: code
+    icon: build
     title: "构建情况"
     description: "构建情况"
     level: project
     sort: 2
   - code: "DevOpsDeploy"
-    icon: code
+    icon: layers
     title: "部署情况"
     description: "部署情况"
     level: project
     sort: 3
   - code: "DevOpsBranch"
-    icon: code
+    icon: branch
     title: "分支管理"
     description: "分支管理"
     level: project
     sort: 4
   - code: "DevOpsAppDep"
-    icon: code
+    icon: jsfiddle
     title: "应用部署"
     description: "应用部署"
     level: project

@@ -820,7 +820,7 @@ const zhCN = {
   'repository.url': '仓库地址',
   'repository.application': '应用名称',
   'repository.copyUrl': '复制仓库地址',
-  'repository.report': '进入报表',
+  'repository.report': '查看报表',
   'repository.quality': '代码质量',
   'repository.noUrl': '仓库代码为空',
 
