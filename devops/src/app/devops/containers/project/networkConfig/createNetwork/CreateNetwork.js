@@ -11,6 +11,21 @@ import _ from 'lodash';
 import '../../../main.scss';
 import './CreateNetwork.scss';
 
+/**
+ * 生成网络名
+ * @param opt
+ * @returns {string}
+ */
+function createNetworkName(opt) {
+  let initName = opt.key;
+  if (initName.length > 23) {
+    // 初始网络名长度限制
+    initName = initName.slice(0, 23);
+  }
+  initName = `${initName}-${uuidv1().slice(0, 6)}`;
+  return initName;
+}
+
 const { AppState } = stores;
 const { Sidebar } = Modal;
 const { Item: FormItem } = Form;
@@ -236,16 +251,14 @@ class CreateNetwork extends Component {
    * @param options
    */
   handleAppSelect = (value, options) => {
-    const { store, form } = this.props;
+    const { store, form: { getFieldValue, setFieldsValue } } = this.props;
     const { id } = AppState.currentMenuType;
-    const envId = form.getFieldValue('envId');
-    let initName = options.key;
-    if (initName.length > 23) {
-      // 初始网络名长度限制
-      initName = initName.slice(0, 23);
-    }
-    initName = `${initName}-${uuidv1().slice(0, 6)}`;
+    const envId = getFieldValue('envId');
+    const initName = createNetworkName(options);
     this.setState({ initName });
+    setFieldsValue({
+      appInstance: [],
+    });
     store.loadInstance(id, envId, Number(value)).then((data) => {
       if (data) {
         const initIst = [];
@@ -273,7 +286,7 @@ class CreateNetwork extends Component {
    * @param type
    */
   removeGroup = (k, type) => {
-    const { getFieldValue, setFieldsValue } = this.props.form;
+    const { form: { getFieldValue, setFieldsValue } } = this.props;
     const keys = getFieldValue(type);
     if (keys.length === 1) {
       return;
