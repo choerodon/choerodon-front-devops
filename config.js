@@ -39,7 +39,10 @@ const config = {
     'icon-font-size-base': '16px',
   },
   dashboard: {
-    devops: 'src/app/devops/dashboard/*',
+    devops: {
+      components: 'src/app/devops/dashboard/*',
+      locale: 'src/app/devops/locale/dashboard/*',
+    },
   },
 };
 
