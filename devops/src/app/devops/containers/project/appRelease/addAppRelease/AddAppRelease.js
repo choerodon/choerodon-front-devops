@@ -31,7 +31,7 @@ class AddAppRelease extends Component {
   componentDidMount() {
     const { EditReleaseStore } = this.props;
     EditReleaseStore.loadApps({ projectId: this.state.projectId });
-    DevOpsDeploy.loadApp(this.state.projectId, this.state.appId);
+    EditReleaseStore.loadApp(this.state.projectId, this.state.appId);
     EditReleaseStore.setSelectData([]);
   }
 

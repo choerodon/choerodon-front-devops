@@ -292,7 +292,7 @@ class EditNetwork extends Component {
       this.setState({ labels: {} });
       const app = store.getApp;
       if (!(app && app.length)) {
-        DevOpsDeploy.loadApp(id, Number(envId));
+        store.loadApp(id, Number(envId));
       }
     }
     this.setState({ [key]: e.target.value });

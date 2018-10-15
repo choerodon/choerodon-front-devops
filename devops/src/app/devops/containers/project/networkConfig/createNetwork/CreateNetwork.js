@@ -207,7 +207,7 @@ class CreateNetwork extends Component {
     }
     const { store } = this.props;
     const { id } = AppState.currentMenuType;
-    DevOpsDeploy.loadApp(id, Number(value));
+    store.loadApp(id, Number(value));
   };
 
   /**
