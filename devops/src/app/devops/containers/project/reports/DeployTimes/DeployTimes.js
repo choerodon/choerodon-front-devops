@@ -16,6 +16,7 @@ import '../DeployDuration/DeployDuration.scss';
 import { getAxis } from '../../../../utils';
 import LoadingBar from '../../../../components/loadingBar/LoadingBar';
 import MaxTagPopover from '../Component/MaxTagPopover';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper/MouserOverWrapper';
 
 configure({ enforceActions: 'never' });
 
@@ -347,14 +348,17 @@ class DeployTimes extends Component {
         title: formatMessage({ id: 'deploy.instance' }),
         key: 'appInstanceCode',
         dataIndex: 'appInstanceCode',
+        render: text => (<MouserOverWrapper text={text} width={0.2}>{text}</MouserOverWrapper>),
       }, {
         title: formatMessage({ id: 'deploy.appName' }),
         key: 'appName',
         dataIndex: 'appName',
+        render: text => (<MouserOverWrapper text={text} width={0.2}>{text}</MouserOverWrapper>),
       }, {
         title: formatMessage({ id: 'deploy.ver' }),
         key: 'appVersion',
         dataIndex: 'appVersion',
+        render: text => (<MouserOverWrapper text={text} width={0.2}>{text}</MouserOverWrapper>),
       }, {
         title: formatMessage({ id: 'report.deploy-duration.user' }),
         key: 'lastUpdatedName',
