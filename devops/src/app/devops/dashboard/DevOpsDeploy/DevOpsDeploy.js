@@ -11,7 +11,7 @@ const { AppState } = stores;
 const { Option } = Select;
 
 @observer
-class DevOpsCommit extends Component {
+class DevOpsDeploy extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -55,4 +55,4 @@ class DevOpsCommit extends Component {
   }
 }
 
-export default withRouter(DevOpsCommit);
+export default withRouter(DevOpsDeploy);
