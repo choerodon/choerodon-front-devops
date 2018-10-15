@@ -7,8 +7,19 @@ const zh_CN = {
   // 构建详情
   'dashboard.build': '查看构建详情',
 
-  //
+  // 部署情况
   'dashboard.deployment': '查看部署详情',
+  'dashboard.noApp': '无应用',
+  'dashboard.noEnv': '无环境',
+  'dashboard.allApp': '全部应用',
+  'report.build-number.success': '成功次数',
+  'report.build-number.fail': '失败次数',
+  'report.build-number.total': '总次数',
+  'report.build-number.success.rate': '成功率',
+  'report.build-number.yAxis': '次数',
+  'branch.issue.date': '日期',
+  'appstore.deploy': '部署',
+  more: '更多',
 
   //
   'dashboard.branch': '转到分支管理详情',

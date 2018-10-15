@@ -1,0 +1,47 @@
+.env-multi {
+  right: 126px !important;
+  width: 110px !important;
+
+  .ant-select-selection__rendered {
+    margin: 0 !important;
+
+    ul > li {
+      margin: 0 !important;
+    }
+
+    i {
+      line-height: 24px;
+    }
+  }
+}
+
+.env-multi_150 {
+  width: 150px !important;
+}
+
+.c7n-select_100 {
+  line-height: 24px;
+  height: 24px;
+  width: 100px;
+  text-align: right;
+  position: absolute;
+  top: 22px;
+  right: 16px;
+
+  .ant-select-selection__rendered {
+    margin-bottom: 0;
+
+    i {
+      line-height: 24px;
+    }
+  }
+
+  .ant-select-underline {
+    display: none;
+  }
+}
+
+.c7n-boot-dashboard-card {
+  width: 419px !important;
+}
+
