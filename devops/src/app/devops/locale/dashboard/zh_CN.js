@@ -6,6 +6,7 @@ const zh_CN = {
 
   // 构建详情
   'dashboard.build': '查看构建详情',
+  'report.build-number.build': '构建',
 
   // 部署情况
   'dashboard.deployment': '查看部署详情',
