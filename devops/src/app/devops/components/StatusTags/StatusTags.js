@@ -5,6 +5,7 @@ import './StatusTags.scss';
 const Color = {
   success: '#00bf96',
   error: '#f44336',
+  failed: '#f44336',
 };
 
 class StatusTags extends Component {
