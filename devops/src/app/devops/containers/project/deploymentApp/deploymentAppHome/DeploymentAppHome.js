@@ -101,6 +101,7 @@ class DeploymentAppHome extends Component {
           this.setState({ errorLine: data.errorLines });
         });
     }
+    document.getElementsByClassName('page-content')[0].scrollTop = 0;
   };
 
   /**

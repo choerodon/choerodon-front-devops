@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Page, Header, Content, stores } from 'choerodon-front-boot';
 import { Select, Button, Tooltip, Spin } from 'choerodon-ui';
-import ReactEcharts from 'echarts-for-react';
 import _ from 'lodash';
 import moment from 'moment';
 import ChartSwitch from '../Component/ChartSwitch';
@@ -11,8 +10,8 @@ import './BuildNumber.scss';
 import TimePicker from '../Component/TimePicker';
 import NoChart from '../Component/NoChart';
 import BuildTable from '../BuildTable/BuildTable';
-import { getAxis } from '../../../../utils';
 import LoadingBar from '../../../../components/loadingBar/LoadingBar';
+import BuildChart from './BuildChart';
 
 
 const { AppState } = stores;
@@ -82,178 +81,6 @@ class BuildNumber extends Component {
     this.loadCharts();
   };
 
-  /**
-   * 图表函数
-   */
-  getOption() {
-    const { intl: { formatMessage }, ReportsStore } = this.props;
-    const { createDates, pipelineFrequencys, pipelineSuccessFrequency, pipelineFailFrequency } = ReportsStore.getBuildNumber;
-    const val = [{ name: `${formatMessage({ id: 'report.build-number.fail' })}` }, { name: `${formatMessage({ id: 'report.build-number.success' })}` }, { name: `${formatMessage({ id: 'report.build-number.total' })}` }];
-    val[0].value = _.reduce(pipelineFailFrequency, (sum, n) => sum + n, 0);
-    val[1].value = _.reduce(pipelineSuccessFrequency, (sum, n) => sum + n, 0);
-    val[2].value = _.reduce(pipelineFrequencys, (sum, n) => sum + n, 0);
-    const startTime = ReportsStore.getStartTime;
-    const endTime = ReportsStore.getEndTime;
-    const { xAxis, yAxis } = getAxis(startTime, endTime, createDates, { pipelineFailFrequency, pipelineSuccessFrequency, pipelineFrequencys });
-    return {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'none',
-        },
-        backgroundColor: '#fff',
-        textStyle: {
-          color: '#000',
-          fontSize: 13,
-          lineHeight: 20,
-        },
-        padding: [10, 15],
-        extraCssText:
-          'box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2); border: 1px solid #ddd; border-radius: 0;',
-        formatter(params) {
-          if (params[1] && params[0] && params[0].value) {
-            const total = params[0].value + params[1].value;
-            return `<div>
-              <div>${formatMessage({ id: 'branch.issue.date' })}：${params[1].name}</div>
-              <div><span class="c7n-echarts-tooltip" style="background-color:${params[1].color};"></span>${formatMessage({ id: 'report.build-number.build' })}${params[1].seriesName}：${params[1].value}</div>
-              <div><span class="c7n-echarts-tooltip" style="background-color:${params[0].color};"></span>${formatMessage({ id: 'report.build-number.build' })}${params[0].seriesName}：${params[0].value}</div>
-              <div>${formatMessage({ id: 'report.build-number.build' })}${formatMessage({ id: 'report.build-number.total' })}：${total}</div>
-              <div>${formatMessage({ id: 'report.build-number.build' })}${formatMessage({ id: 'report.build-number.success.rate' })}：${((params[0].value / total) * 100).toFixed(2)}%</div>
-            <div>`;
-          } else if (params[0].value || (params[1] && params[1].value)) {
-            const pr = params[1] || params[0];
-            return `<div>
-              <div>${formatMessage({ id: 'branch.issue.date' })}：${pr.name}</div>
-              <div><span class="c7n-echarts-tooltip" style="background-color:${pr.color};"></span>${formatMessage({ id: 'report.build-number.build' })}${pr.seriesName}：${pr.value}</div>
-            <div>`;
-          }
-          return null;
-        },
-      },
-      legend: {
-        left: 'right',
-        itemWidth: 14,
-        itemGap: 20,
-        formatter(name) {
-          let count = 0;
-          _.map(val, (data) => {
-            if (data.name === name) {
-              count = data.value;
-            }
-          });
-          return `${name}：${count}`;
-        },
-        selectedMode: false,
-      },
-      grid: {
-        left: '2%',
-        right: '3%',
-        bottom: '3%',
-        containLabel: true,
-      },
-      xAxis: {
-        type: 'category',
-        axisTick: { show: false },
-        axisLine: {
-          lineStyle: {
-            color: '#eee',
-            type: 'solid',
-            width: 2,
-          },
-        },
-
-        axisLabel: {
-          margin: 13,
-          textStyle: {
-            color: 'rgba(0, 0, 0, 0.65)',
-            fontSize: 12,
-          },
-          formatter(value) {
-            return `${value.substr(5).replace('-', '/')}`;
-          },
-        },
-        splitLine: {
-          lineStyle: {
-            color: ['#eee'],
-            width: 1,
-            type: 'solid',
-          },
-        },
-        data: xAxis,
-      },
-      yAxis: {
-        name: `${formatMessage({ id: 'report.build-number.yAxis' })}`,
-        type: 'value',
-
-        nameTextStyle: {
-          fontSize: 13,
-          color: '#000',
-        },
-        axisTick: { show: false },
-        axisLine: {
-          lineStyle: {
-            color: '#eee',
-            type: 'solid',
-            width: 2,
-          },
-        },
-
-        axisLabel: {
-          margin: 13,
-          textStyle: {
-            color: 'rgba(0, 0, 0, 0.65)',
-            fontSize: 12,
-          },
-        },
-        splitLine: {
-          lineStyle: {
-            color: '#eee',
-            type: 'solid',
-            width: 1,
-          },
-        },
-        min: (yAxis.pipelineFrequencys && yAxis.pipelineFrequencys.length) ? null : 0,
-        max: (yAxis.pipelineFrequencys && yAxis.pipelineFrequencys.length) ? null : 4,
-      },
-      series: [
-        {
-          name: `${formatMessage({ id: 'report.build-number.success' })}`,
-          type: 'bar',
-          barWidth: '40%',
-          itemStyle: {
-            color: '#00BFA5',
-            emphasis: {
-              shadowBlur: 10,
-              shadowColor: 'rgba(0,0,0,0.20)',
-            },
-          },
-          stack: 'total',
-          data: yAxis.pipelineSuccessFrequency,
-        },
-        {
-          name: `${formatMessage({ id: 'report.build-number.fail' })}`,
-          type: 'bar',
-          barWidth: '40%',
-          itemStyle: {
-            color: '#F44336',
-            emphasis: {
-              shadowBlur: 10,
-              shadowColor: 'rgba(0,0,0,0.20)',
-            },
-          },
-          stack: 'total',
-          data: yAxis.pipelineFailFrequency,
-        },
-        {
-          name: `${formatMessage({ id: 'report.build-number.total' })}`,
-          type: 'bar',
-          color: '#FFF',
-          stack: 'total',
-        },
-      ],
-    };
-  }
-
   loadCharts = (pageInfo) => {
     const { ReportsStore } = this.props;
     const projectId = AppState.currentMenuType.id;
@@ -310,9 +137,7 @@ class BuildNumber extends Component {
           store={ReportsStore}
         />
       </div>
-      <Spin spinning={echartsLoading}>
-        <ReactEcharts className="c7n-buildNumber-echarts" option={this.getOption()} />
-      </Spin>
+      <BuildChart echartsLoading={echartsLoading} height="400px" top="10%" />
       <BuildTable loading={loading} dataSource={allData} pagination={pageInfo} loadDatas={this.loadDatas} />
     </React.Fragment> : <NoChart title={formatMessage({ id: 'report.no-app' })} des={formatMessage({ id: 'report.no-app-des' })} />);
 
