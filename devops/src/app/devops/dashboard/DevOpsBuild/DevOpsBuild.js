@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Link, withRouter, intl } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { DashBoardNavBar, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { observer } from 'mobx-react';
@@ -56,7 +56,7 @@ class DevOpsBuild extends Component {
     if (loading) {
       return (<Spin />);
     }
-    return (<div className="c7n-buildNumber-content"><BuildChart height="200px" echartsLoading={echartsLoading} top="17%" /></div>);
+    return (<div className="c7n-buildNumber-content"><BuildChart height="300px" echartsLoading={echartsLoading} /></div>);
   };
 
   render() {
