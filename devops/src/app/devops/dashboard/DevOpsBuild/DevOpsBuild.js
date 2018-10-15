@@ -62,7 +62,7 @@ class DevOpsBuild extends Component {
   render() {
     const { history } = this.props;
     const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
-    const { apps, echartsLoading } = ReportsStore;
+    const { apps } = ReportsStore;
     const { appId } = this.state;
     return (<Fragment>
       <Select
