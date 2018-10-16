@@ -339,7 +339,7 @@ class DeployTimes extends Component {
       {
         title: formatMessage({ id: 'app.active' }),
         key: 'status',
-        render: record => (<StatusTags name={formatMessage({ id: record.status })} colorCode={record.status} />),
+        render: record => (<StatusTags name={formatMessage({ id: record.status })} colorCode={record.status} error={record.error} />),
       }, {
         title: formatMessage({ id: 'report.deploy-duration.time' }),
         key: 'creationDate',

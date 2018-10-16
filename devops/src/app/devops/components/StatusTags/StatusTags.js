@@ -15,7 +15,7 @@ class StatusTags extends Component {
   }
 
   render() {
-    const { name, color, colorCode, style, ellipsis } = this.props;
+    const { name, color, colorCode, style, ellipsis, error } = this.props;
     return (
       <div
         className="c7n-status-tags"
@@ -25,7 +25,7 @@ class StatusTags extends Component {
         }}
       >
         <div style={ellipsis || {}}>
-          <Tooltip title={ellipsis ? (name || '') : ''}>
+          <Tooltip title={ellipsis ? (name || '') : (error)}>
             { name || '' }
           </Tooltip>
         </div>
