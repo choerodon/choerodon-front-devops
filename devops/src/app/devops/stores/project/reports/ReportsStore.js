@@ -227,7 +227,7 @@ class ReportsStore {
    * 加载项目下的应用
    * @param proId
    */
-  loadApps = proId => axios.get(`/devops/v1/projects/${proId}/apps`).then((data) => {
+  loadApps = proId => axios.get(`/devops/v1/projects/${proId}/apps/list_all`).then((data) => {
     const res = handleProptError(data);
     if (res) {
       this.setApps(data);

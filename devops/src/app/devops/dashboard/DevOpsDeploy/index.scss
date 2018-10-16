@@ -30,6 +30,7 @@
 
   .ant-select-selection__rendered {
     margin-bottom: 0;
+    font-weight: 500;
 
     i {
       line-height: 24px;
@@ -39,4 +40,14 @@
   .ant-select-underline {
     display: none;
   }
+}
+
+.c7n-spin-wrap-chart {
+  height: 300px;
+  line-height: 300px;
+  text-align: center;
+}
+
+.c7n-spin-wrap {
+  text-align: center;
 }

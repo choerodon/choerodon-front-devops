@@ -1010,7 +1010,7 @@ class AppOverview extends Component {
           okCancel={false}
           destroyOnClose
         >
-          <Content className="sidebar-content" code={'container.log'} values={{ name: this.podName }}>
+          <Content className="sidebar-content" code="container.log" values={{ name: this.podName }}>
             <section className="c7n-podLog-section">
               <div className="c7n-podLog-hei-wrap">
                 <div className="c7n-podShell-title">

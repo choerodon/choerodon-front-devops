@@ -29,6 +29,7 @@ class DevOpsDeploy extends Component {
       failArr: [],
       allArr: [],
       loading: true,
+      noSelect: false,
     };
   }
 
@@ -37,29 +38,26 @@ class DevOpsDeploy extends Component {
   }
 
   loadData() {
-    const loadApp = () => {
-      const { projectId } = AppState.currentMenuType;
-      return axios.get(`/devops/v1/projects/${projectId}/apps`);
-    };
+    const { projectId } = AppState.currentMenuType;
+    const loadApp = () => axios.get(`/devops/v1/projects/${projectId}/apps/list_all`);
 
-    const loadEnv = () => {
-      const { projectId } = AppState.currentMenuType;
-      return axios.get(`devops/v1/projects/${projectId}/envs?active=true`);
-    };
+    const loadEnv = () => axios.get(`devops/v1/projects/${projectId}/envs?active=true`);
 
     axios.all([loadApp(), loadEnv()])
       .then(axios.spread((app, env) => {
         const appRes = handleProptError(app);
         const envRes = handleProptError(env);
-        if (appRes && envRes) {
+        if (appRes.length && envRes.length) {
           this.setState({
             app: appRes,
             env: envRes,
             appId: appRes[0].id,
             envIds: [envRes[0].id],
           });
+          this.loadCharts(appRes[0].id, [envRes[0].id]);
+        } else {
+          this.setState({ loading: false, noSelect: true });
         }
-        this.loadCharts(appRes[0].id, [envRes[0].id]);
       }));
   }
 
@@ -85,6 +83,8 @@ class DevOpsDeploy extends Component {
             allArr: res.deployFrequencys,
             loading: false,
           });
+        } else {
+          this.setState({ loading: false });
         }
       });
   };
@@ -284,49 +284,54 @@ class DevOpsDeploy extends Component {
   maxTagNode = (data, value) => <MaxTagPopover dataSource={data} value={value} />;
 
   getContent = () => {
-    const { loading, app, appId, env, envIds } = this.state;
-    const { intl: { formatMessage } } = this.props;
-    const appDom = app.length ? _.map(app, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
-    const envDom = env.length ? _.map(env, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
-
+    const { loading } = this.state;
     if (loading) {
-      return (<Spin />);
+      return (<div className="c7n-spin-wrap"><Spin wrapperClassName="c7n-spin-wrap-chart" /></div>);
     }
-    return (<div>
-      <Select
-        notFoundContent={formatMessage({ id: 'dashboard.noEnv' })}
-        value={envIds}
-        className={`c7n-select_100 env-multi ${envIds.length > 1 ? 'env-multi_150' : ''}`}
-        mode="multiple"
-        maxTagCount={1}
-        onChange={this.handleEnvSelect}
-        maxTagPlaceholder={this.maxTagNode.bind(this, env)}
-      >
-        {envDom}
-      </Select>
-      <Select
-        dropdownMatchSelectWidth
-        notFoundContent={formatMessage({ id: 'dashboard.noApp' })}
-        value={appDom ? appId : null}
-        className="c7n-select_100"
-        onChange={this.handleAppSelect}
-      >
-        {appDom}
-        {appDom ? <Option key="all" value="all">{formatMessage({ id: 'dashboard.allApp' })}</Option> : null}
-      </Select>
-      <ReactEcharts
-        option={this.getOption()}
-        notMerge
-        lazyUpdate
-        style={{ height: '300px', width: '100%' }}
-      />
-    </div>);
+    return (<ReactEcharts
+      option={this.getOption()}
+      notMerge
+      lazyUpdate
+      style={{ height: '300px', width: '100%' }}
+    />);
   };
 
   render() {
     const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
+    const { app, appId, env, envIds, noSelect } = this.state;
+    const { intl: { formatMessage } } = this.props;
+    const appDom = app.length ? _.map(app, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
+    const envDom = env.length ? _.map(env, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
+
     return (<Fragment>
-      <div className="c7ncd-db-panel">{this.getContent()}</div>
+      <div className="c7ncd-db-panel">
+        <Select
+          notFoundContent={formatMessage({ id: 'dashboard.noEnv' })}
+          placeholder={formatMessage({ id: 'dashboard.noEnv' })}
+          value={envIds}
+          className={`c7n-select_100 env-multi ${envIds.length > 1 ? 'env-multi_150' : ''} ${noSelect ? 'c7n-select-noSelect' : ''}`}
+          mode="multiple"
+          disabled={noSelect}
+          maxTagCount={1}
+          onChange={this.handleEnvSelect}
+          maxTagPlaceholder={this.maxTagNode.bind(this, env)}
+        >
+          {envDom}
+        </Select>
+        <Select
+          disabled={noSelect}
+          dropdownMatchSelectWidth
+          notFoundContent={formatMessage({ id: 'dashboard.noApp' })}
+          placeholder={formatMessage({ id: 'dashboard.noApp' })}
+          value={appDom ? appId : null}
+          className={`c7n-select_100 ${noSelect ? 'c7n-select-noSelect' : ''}`}
+          onChange={this.handleAppSelect}
+        >
+          {appDom}
+          {appDom ? <Option key="all" value="all">{formatMessage({ id: 'dashboard.allApp' })}</Option> : null}
+        </Select>
+        {this.getContent()}
+      </div>
       <DashBoardNavBar>
         <Link to={`/devops/reports/deploy-times?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <FormattedMessage id="dashboard.deployment" />
