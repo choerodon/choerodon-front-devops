@@ -87,6 +87,7 @@ class DevOpsAppDep extends Component {
 
   getContent = () => {
     const { loading, ist } = this.state;
+    const { intl: { formatMessage } } = this.props;
     if (loading) {
       return (<div className="c7n-spin-wrap"><Spin wrapperClassName="c7n-spin-wrap" /></div>);
     }
@@ -116,14 +117,14 @@ class DevOpsAppDep extends Component {
     if (ist.latestVersion) {
       return (<div className="c7n-appDep-wrap">
         <div className="c7n-appDep-title">
-          最新版本
+          {formatMessage({ id: 'dashboard.latestVersion' })}
         </div>
         <div className="c7n-appDep-ver">{ist.latestVersion}</div>
         {istDom}
       </div>);
     } else {
       return (<div className="c7n-appDep-wrap">
-        <div className="c7n-appDep-ver">暂无应用部署</div>
+        <div className="c7n-appDep-ver">{formatMessage({ id: 'dashboard.noDeploy' })}</div>
       </div>);
     }
   };
@@ -137,10 +138,9 @@ class DevOpsAppDep extends Component {
     return (<Fragment>
       <div className="c7ncd-db-panel">
         <Select
-          disabled={noSelect}
           dropdownMatchSelectWidth
           notFoundContent={formatMessage({ id: 'dashboard.noApp' })}
-          placeholder={formatMessage({ id: 'dashboard.noApp' })}
+          placeholder={formatMessage({ id: 'env.select' })}
           value={appDom ? appId : null}
           className={`c7n-select_100 ${noSelect ? 'c7n-select-noSelect' : ''}`}
           onChange={this.handleAppSelect}

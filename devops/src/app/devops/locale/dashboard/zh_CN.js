@@ -19,6 +19,7 @@ const zh_CN = {
   'dashboard.deployment': '查看部署详情',
   'dashboard.noApp': '无应用',
   'dashboard.noEnv': '无环境',
+  'dashboard.env': '选择环境',
   'dashboard.allApp': '全部应用',
   'report.build-number.success': '成功次数',
   'report.build-number.fail': '失败次数',
@@ -34,6 +35,8 @@ const zh_CN = {
 
   //
   'dashboard.deploy': '转到部署总览界面',
+  'dashboard.noDeploy': '暂无应用部署',
+  'dashboard.latestVersion': '最新版本',
   'dashboard.ist': '实例个数：',
   'dpOverview.update': '可升级',
 
