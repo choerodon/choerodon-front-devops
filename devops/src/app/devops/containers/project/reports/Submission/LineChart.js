@@ -10,6 +10,7 @@ import 'echarts/lib/chart/line';
 import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/title';
 import 'echarts/lib/component/grid';
+import 'echarts/lib/component/legend';
 import './Submission.scss';
 
 class LineChart extends PureComponent {
@@ -18,10 +19,28 @@ class LineChart extends PureComponent {
     name: PropTypes.string.isRequired,
     loading: PropTypes.bool.isRequired,
     hasAvatar: PropTypes.bool.isRequired,
+    tooltip: PropTypes.bool,
+    legend: PropTypes.bool,
+    /* eslint-disable-next-line */
+    grid: PropTypes.array,
+  };
+
+  static defaultProps = {
+    grid: [42, 14, 20, 0],
+    tooltip: true,
+    legend: false,
   };
 
   getOption = () => {
-    const { color, data: { items }, intl: { formatMessage }, start, end } = this.props;
+    const {
+      color,
+      data: { items, count },
+      intl: { formatMessage },
+      start,
+      end,
+      grid,
+      legend,
+    } = this.props;
     const { keys, values } = pickEntries(dateSplitAndPad(start, end, items));
     const xAxis = keys && keys.length ? keys.reverse() : getNear7Day();
     const yAxis = values && values.length ? values.reverse() : [];
@@ -39,11 +58,22 @@ class LineChart extends PureComponent {
           return `${formatMessage({ id: 'report.commit.date' })}${obj.name}<br/>${formatMessage({ id: 'report.commit.count' })}${obj.value}`;
         },
       },
+      legend: {
+        show: legend,
+        left: 'right',
+        itemWidth: 14,
+        itemGap: 20,
+        formatter(name) {
+          // 在series中必须有对应的name，否则不显示
+          return `${name}：${count || 0}`;
+        },
+        selectedMode: false,
+      },
       grid: {
-        top: 42,
-        left: 14,
-        right: 20,
-        bottom: 0,
+        top: grid[0],
+        left: grid[1],
+        right: grid[2],
+        bottom: grid[3],
         // 防止标签溢出
         containLabel: true,
       },
@@ -119,14 +149,26 @@ class LineChart extends PureComponent {
         lineStyle: {
           color,
         },
+      }, {
+        name: `${formatMessage({ id: 'total' })}`,
+        type: 'line',
+        color: '#fff',
       }],
     };
   };
 
   render() {
-    const { style, data: { avatar, count, id, name: userName }, name, loading, hasAvatar, intl: { formatMessage } } = this.props;
+    const {
+      style,
+      data: { avatar, count, id, name: userName },
+      name,
+      loading,
+      hasAvatar,
+      intl: { formatMessage },
+      tooltip,
+    } = this.props;
     return (<Spin spinning={loading}>
-      <div className="c7n-report-commits-title">
+      {tooltip ? (<div className="c7n-report-commits-title">
         {hasAvatar ? (<span className="c7n-report-commits-avatar">
           {avatar
             ? <Avatar size="small" src={avatar} />
@@ -134,7 +176,7 @@ class LineChart extends PureComponent {
         </span>) : null}
         {(id === 0) ? (<Tooltip placement="top" title={formatMessage({ id: 'report.commits.unknown' })}>{name}</Tooltip>) : name}
         {count ? <span className="c7n-report-commits-text">{count} commits</span> : null}
-      </div>
+      </div>) : null}
       <ReactEchartsCore
         echarts={echarts}
         option={this.getOption()}

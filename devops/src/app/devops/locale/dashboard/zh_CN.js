@@ -1,8 +1,15 @@
 /* eslint-disable-next-line */
 const zh_CN = {
+  'env.none': '无应用',
+  'env.select': '选择应用',
+  more: '···',
+  total: '总次数',
 
   // 代码提交
   'dashboard.commits': '查看代码提交详情',
+  'report.commit.num': '次数      ',
+  'report.commit.date': '日期：',
+  'report.commit.count': '提交次数：',
 
   // 构建详情
   'dashboard.build': '查看构建详情',

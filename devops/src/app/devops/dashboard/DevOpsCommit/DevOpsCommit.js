@@ -1,11 +1,30 @@
 import React, { Component, Fragment } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { DashBoardNavBar, stores } from 'choerodon-front-boot';
-import { FormattedMessage } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { observer } from 'mobx-react';
-import { Select, Spin } from 'choerodon-ui';
+import { Select, Spin, Tooltip } from 'choerodon-ui';
+import moment from 'moment';
+import _ from 'lodash';
+import ReportsStore from '../../stores/project/reports/ReportsStore';
+import LineChart from '../../containers/project/reports/Submission/LineChart';
+import MaxTagPopover from '../../containers/project/reports/Component/MaxTagPopover';
 import '../common.scss';
 import './index.scss';
+
+const START = moment().subtract(7, 'days').format().split('T')[0].replace(/-/g, '/');
+const END = moment().format().split('T')[0].replace(/-/g, '/');
+
+function formatData(data) {
+  const { totalCommitsDate } = data;
+  const total = {};
+  if (totalCommitsDate) {
+    total.items = totalCommitsDate.slice();
+    total.count = totalCommitsDate.length;
+  }
+
+  return total;
+}
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -15,37 +34,104 @@ class DevOpsCommit extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      appId: null,
+      appId: [],
       loading: false,
     };
   }
 
+  componentDidMount() {
+    this.loadCommits();
+  }
+
   handleChange = (id) => {
+    const { id: projectId } = AppState.currentMenuType;
     this.setState({ appId: id });
+    ReportsStore.loadCommits(projectId, START, END, id);
   };
 
-  getContent = () => {
+  get getContent() {
     const { loading } = this.state;
     if (loading) {
       return (<Spin />);
     }
-    return (<div>hello</div>);
+    const commits = ReportsStore.getCommits;
+    const total = formatData(commits);
+    return (<LineChart
+      loading={ReportsStore.getCommitLoading}
+      tooltip={false}
+      hasAvatar={false}
+      legend
+      name=""
+      color="#4677dd"
+      grid={[40, 10, 20, 0]}
+      style={{ width: '100%', height: 185 }}
+      data={total}
+      start={moment().subtract(7, 'days')}
+      end={moment()}
+    />);
+  }
+
+  loadCommits = () => {
+    const { id: projectId } = AppState.currentMenuType;
+    ReportsStore.loadApps(projectId).then((data) => {
+      if (data && data.length) {
+        const selectApp = _.map(data, item => item.id);
+        this.setState({ appId: selectApp });
+        ReportsStore.loadCommits(projectId, START, END, selectApp);
+      }
+    });
   };
 
+  choiceRender = (liNode, value) => React.cloneElement(liNode, {
+    className: 'c7ncd-db-select-li',
+    title: liNode.props.title[0],
+  });
+
+  maxTagNode = (data, value) => (<MaxTagPopover
+    placement="bottomRight"
+    width={220}
+    dataSource={data}
+    value={value}
+  />);
+
   render() {
-    const { history } = this.props;
+    const { history, intl: { formatMessage } } = this.props;
+    const { appId } = this.state;
     const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
+    const apps = ReportsStore.getApps;
+    const options = _.map(apps, item => (<Option key={item.id} value={item.id}>
+      <Tooltip
+        // arrowPointAtCenter
+        placement="bottomLeft"
+        title={item.name}
+      ><span className="c7ncd-db-option-text">{item.name}</span></Tooltip>
+    </Option>));
+
+    let selectWidth = 100;
+
+    if (appId.length > 2) {
+      selectWidth = 206;
+    } else if (appId.length === 2) {
+      selectWidth = 185;
+    }
+
     return (<Fragment>
       <Select
-        className="c7ncd-db-select"
-        placeholder="选择应用"
-        style={{ width: 150 }}
+        className="c7ncd-db-select c7n-report-select"
+        mode="multiple"
+        value={appId}
+        placeholder={formatMessage({ id: 'env.select' })}
+        style={{ width: selectWidth }}
+        maxTagCount={2}
+        choiceRender={this.choiceRender}
+        maxTagPlaceholder={this.maxTagNode.bind(this, apps)}
         onChange={this.handleChange}
+        notFoundContent={formatMessage({ id: 'env.none' })}
+        choiceRemove={false}
       >
-        <Option value="jack">Jack</Option>
-        <Option value="lucy">Lucy</Option>
+        {options}
       </Select>
-      <div className="c7ncd-db-panel">{this.getContent()}</div>
+      <div className="c7ncd-db-panel">{this.getContent}</div>
       <DashBoardNavBar>
         <Link to={`/devops/reports/submission?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <FormattedMessage id="dashboard.commits" />
@@ -55,4 +141,4 @@ class DevOpsCommit extends Component {
   }
 }
 
-export default withRouter(DevOpsCommit);
+export default withRouter(injectIntl(DevOpsCommit));
