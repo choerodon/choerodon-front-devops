@@ -405,7 +405,7 @@ class DeployTimes extends Component {
     const appDom = this.app.length ? _.map(this.app, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
 
     const content = (apps && apps.length ? <React.Fragment>
-      <div className="c7n-report-screen">
+      <div className="c7n-report-screen c7n-report-select">
         <Select
           notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}
           value={this.envIds.length && this.envIds.slice()}

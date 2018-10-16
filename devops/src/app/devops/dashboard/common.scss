@@ -5,6 +5,38 @@
   .ant-select-underline {
     display: none;
   }
+  ul {
+    li {
+      &.c7ncd-db-select-li {
+        &:not(:first-child) {
+          position: relative;
+          &::after {
+            content: '，';
+            position: absolute;
+            left: -8px;
+          }
+        }
+      }
+    }
+  }
+  .ant-select-arrow {
+    top: 0;
+  }
+  .c7ncd-db-select-li {
+    float: left;
+    margin: 0 0 0 8px;
+    padding: 0;
+    &:first-child {
+      margin: 0;
+    }
+  }
+  .c7ncd-db-option-text {
+    max-width: 80px;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
 }
 
 .c7ncd-db-panel {

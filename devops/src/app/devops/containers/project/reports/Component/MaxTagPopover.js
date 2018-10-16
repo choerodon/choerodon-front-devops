@@ -1,11 +1,12 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Popover } from 'choerodon-ui';
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 import '../common.scss';
 
 export default function MaxTagPopover(props) {
-  const { value, dataSource } = props;
+  const { value, dataSource, width, placement } = props;
   const moreOption = [];
   _.forEach(value, (item, index) => {
     const appName = _.find(dataSource, ['id', item]);
@@ -14,12 +15,23 @@ export default function MaxTagPopover(props) {
   return (
     <Popover
       arrowPointAtCenter
-      placement="bottomLeft"
-      content={<div className="c7n-report-maxPlace">{moreOption}</div>}
+      placement={placement}
+      content={<div className="c7n-report-maxPlace" style={{ width }}>{moreOption}</div>}
     >
-      <div title="">
+      <div className="c7n-report-maxPlace-inner" title="">
         <FormattedMessage id="more" />
       </div>
     </Popover>
   );
 }
+
+/* eslint-disable-next-line */
+MaxTagPopover.PropTypes = {
+  placement: PropTypes.string,
+  width: PropTypes.number,
+};
+
+MaxTagPopover.defaultProps = {
+  placement: 'bottomLeft',
+  width: 260,
+};

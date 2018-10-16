@@ -170,7 +170,7 @@ class Submission extends Component {
 
     const content = (apps && apps.length
       ? (<Fragment>
-        <div className="c7n-report-control">
+        <div className="c7n-report-control c7n-report-select">
           <Select
             className=" c7n-report-control-select"
             mode="multiple"

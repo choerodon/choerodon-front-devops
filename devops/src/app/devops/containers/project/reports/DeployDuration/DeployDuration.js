@@ -386,7 +386,7 @@ class DeployDuration extends Component {
     const appDom = this.app.length ? _.map(this.app, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
 
     const content = (envs && envs.length ? <React.Fragment>
-      <div className="c7n-report-screen">
+      <div className="c7n-report-screen c7n-report-select">
         <Select
           notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}
           value={this.envId}

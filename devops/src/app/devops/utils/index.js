@@ -73,6 +73,9 @@ export function scrollTo(element, change, duration = 0.5) {
  * @returns {string}
  */
 export function getTimeLeft(nowTime, endTime) {
+  if (nowTime >= endTime) {
+    return '剩余 0 天';
+  }
   const resTime = endTime - nowTime;
   const days = Math.floor(resTime / (24 * 3600 * 1000));
   // const lefts = resTime % (24 * 3600 * 1000);

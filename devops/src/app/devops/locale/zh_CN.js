@@ -288,6 +288,7 @@ const zhCN = {
   nodata: '暂无数据',
   skipped: '跳过',
   more: '更多',
+  total: '总次数',
 
   'chart.change': '切换报表',
   'confirm.delete': '确认删除吗？',
