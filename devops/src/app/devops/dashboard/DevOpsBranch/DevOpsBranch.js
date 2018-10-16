@@ -1,11 +1,15 @@
 import React, { Component, Fragment } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { DashBoardNavBar, stores } from 'choerodon-front-boot';
-import { FormattedMessage } from 'react-intl';
+import { axios, DashBoardNavBar, stores } from 'choerodon-front-boot';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { observer } from 'mobx-react';
-import { Select, Spin } from 'choerodon-ui';
+import { Select, Spin, Tooltip, Avatar, Button } from 'choerodon-ui';
+import _ from 'lodash';
 import '../common.scss';
 import './index.scss';
+import ReportsStore from '../../stores/project/reports';
+import TimePopover from '../../components/timePopover';
+import { handleProptError } from '../../utils';
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -16,43 +20,125 @@ class DevOpsBranch extends Component {
     super(props);
     this.state = {
       appId: null,
-      loading: false,
+      loading: true,
+      noSelect: false,
+      branchList: [],
     };
   }
 
+  componentDidMount() {
+    const { id } = AppState.currentMenuType;
+    ReportsStore.loadApps(id).then((data) => {
+      if (data && data.length) {
+        this.setState({ appId: data[0].id });
+        this.loadData();
+      } else {
+        this.setState({ loading: false, noSelect: true });
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    ReportsStore.setApps([]);
+  }
+
+  /**
+   * 加载数据
+   */
+  loadData = () => {
+    const projectId = AppState.currentMenuType.id;
+    const { appId } = this.state;
+    this.setState({ loading: true });
+    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git/branches`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setState({ branchList: data.content });
+        }
+        this.setState({ loading: false });
+      });
+  };
+
   handleChange = (id) => {
-    this.setState({ appId: id });
+    this.setState({ appId: id }, () => this.loadData());
   };
 
   getContent = () => {
     const { loading } = this.state;
+    let list = [];
     if (loading) {
-      return (<Spin />);
+      return (<Spin className="c7n-dashboard-loading-position" />);
     }
-    return (<div>hello</div>);
+    const { branchList } = this.state;
+    if (branchList && branchList.length) {
+      list = branchList.map((item) => {
+        const { branchName, commitUserName, commitDate, commitUserUrl, commitUrl } = item;
+        return (
+          <div className="c7n-dashboard-branch-item" key={branchName}>
+            {commitUserUrl
+              ? <Avatar size="small" src={commitUserUrl} />
+              : <Avatar size="small">{commitUserName ? commitUserName.toString().slice(0, 1).toUpperCase() : '?'}</Avatar>}
+            <div className="c7n-report-history-info">
+              <div className="c7n-report-history-content">
+                <span>{branchName}</span>
+              </div>
+              <div className="c7n-report-history-date">
+                <span>{commitUserName} </span>
+                <FormattedMessage id="report.commit.by" /> <TimePopover style={{ display: 'inline-block' }} content={commitDate} />
+              </div>
+            </div>
+            <Tooltip
+              title={<FormattedMessage id="branch.request" />}
+            >
+              <a
+                href={commitUrl && `${commitUrl.split('/commit')[0]}/merge_requests/new?change_branches=true&merge_request[source_branch]=${branchName}&merge_request[target_branch]=master`}
+                target="_blank"
+                rel="nofollow me noopener noreferrer"
+              >
+                <Button size="small" shape="circle" icon="merge_request" />
+              </a>
+            </Tooltip>
+          </div>
+        );
+      });
+    }
+    return list;
   };
 
   render() {
-    const { history } = this.props;
+    const { intl: { formatMessage } } = this.props;
     const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
+    const { apps } = ReportsStore;
+    const { appId, noSelect } = this.state;
     return (<Fragment>
       <Select
-        className="c7ncd-db-select"
-        placeholder="选择应用"
-        style={{ width: 150 }}
+        className={`c7ncd-dashboard-select ${noSelect ? 'c7n-dashboard-build-select' : ''}`}
+        notFoundContent={formatMessage({ id: 'dashboard.noApp' })}
+        placeholder={formatMessage({ id: 'env.select' })}
         onChange={this.handleChange}
+        defaultValue={appId}
+        value={appId}
+        // disabled={noSelect}
       >
-        <Option value="jack">Jack</Option>
-        <Option value="lucy">Lucy</Option>
+        {
+          _.map(apps, (app, index) => (
+            <Option value={app.id} key={index}>
+              <Tooltip title={app.code}>
+                <span className="c7n-app-select-tooltip">
+                  {app.name}
+                </span>
+              </Tooltip>
+            </Option>))
+        }
       </Select>
-      <div className="c7ncd-db-panel">{this.getContent()}</div>
+      <div className="c7ncd-db-panel pdb1">{this.getContent()}</div>
       <DashBoardNavBar>
-        <Link to={`/devops/reports/submission?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
-          <FormattedMessage id="dashboard.commits" />
+        <Link to={`/devops/branch?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+          <FormattedMessage id="dashboard.branch" />
         </Link>
       </DashBoardNavBar>
     </Fragment>);
   }
 }
 
-export default withRouter(DevOpsBranch);
+export default withRouter(injectIntl(DevOpsBranch));
