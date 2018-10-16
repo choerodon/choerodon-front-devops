@@ -137,7 +137,7 @@ class DevOpsDeploy extends Component {
           fontSize: 13,
           lineHeight: 20,
         },
-        padding: [10, 15, 10, 15],
+        top: 'bottom',
         extraCssText:
           'box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2); border: 1px solid #ddd; border-radius: 0;',
         formatter(params) {
@@ -163,6 +163,7 @@ class DevOpsDeploy extends Component {
         left: 'right',
         itemWidth: 14,
         itemGap: 20,
+        padding: [20, 5, 0, 5],
         formatter(name) {
           let count = 0;
           _.map(val, (data) => {
@@ -216,6 +217,7 @@ class DevOpsDeploy extends Component {
         nameTextStyle: {
           fontSize: 13,
           color: '#000',
+          padding: [0, 5, 12, 5],
         },
         axisTick: { show: false },
         axisLine: {
