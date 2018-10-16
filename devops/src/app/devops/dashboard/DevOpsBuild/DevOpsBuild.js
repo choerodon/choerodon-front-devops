@@ -10,6 +10,7 @@ import './index.scss';
 import BuildChart from '../../containers/project/reports/BuildNumber/BuildChart';
 import ReportsStore from '../../stores/project/reports';
 import '../../containers/project/reports/BuildNumber/BuildNumber.scss';
+import '../DevOpsBranch/index.scss';
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -21,6 +22,7 @@ class DevOpsBuild extends Component {
     this.state = {
       appId: null,
       loading: true,
+      noSelect: false,
     };
   }
 
@@ -30,8 +32,15 @@ class DevOpsBuild extends Component {
       if (data && data.length) {
         this.setState({ appId: data[0].id });
         this.loadCharts();
+      } else {
+        this.setState({ noSelect: true, loading: false });
       }
     });
+  }
+
+  componentWillUnmount() {
+    ReportsStore.setBuildNumber({});
+    ReportsStore.setApps([]);
   }
 
   /**
@@ -42,8 +51,10 @@ class DevOpsBuild extends Component {
     const { appId } = this.state;
     const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
     const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
-    ReportsStore.loadBuildNumber(projectId, appId, startTime, endTime);
-    this.setState({ loading: false });
+    ReportsStore.loadBuildNumber(projectId, appId, startTime, endTime)
+      .then(() => {
+        this.setState({ loading: false });
+      });
   };
 
   handleChange = (id) => {
@@ -54,21 +65,21 @@ class DevOpsBuild extends Component {
     const { loading } = this.state;
     const { echartsLoading } = ReportsStore;
     if (loading) {
-      return (<Spin />);
+      return (<Spin className="c7n-dashboard-loading-position" />);
     }
-    return (<div className="c7n-buildNumber-content"><BuildChart height="300px" echartsLoading={echartsLoading} /></div>);
+    return (<div className="c7n-buildNumber-content"><BuildChart height="300px" echartsLoading={echartsLoading} top="10%" bottom="4%" /></div>);
   };
 
   render() {
-    const { history } = this.props;
+    const { intl: { formatMessage } } = this.props;
     const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
     const { apps } = ReportsStore;
-    const { appId } = this.state;
+    const { appId, noSelect } = this.state;
     return (<Fragment>
       <Select
-        className="c7ncd-db-select"
-        placeholder="选择应用"
-        style={{ width: 85 }}
+        className={`c7ncd-dashboard-select ${noSelect ? 'c7n-dashboard-build-select' : ''}`}
+        notFoundContent={formatMessage({ id: 'dashboard.noApp' })}
+        placeholder={formatMessage({ id: 'env.select' })}
         onChange={this.handleChange}
         defaultValue={appId}
         value={appId}

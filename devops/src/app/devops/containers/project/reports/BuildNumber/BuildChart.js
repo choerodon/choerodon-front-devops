@@ -16,7 +16,7 @@ class BuildTable extends Component {
   }
 
   getOption() {
-    const { intl: { formatMessage } } = this.props;
+    const { intl: { formatMessage }, top, bottom } = this.props;
     const { createDates, pipelineFrequencys, pipelineSuccessFrequency, pipelineFailFrequency } = ReportsStore.getBuildNumber;
     const val = [{ name: `${formatMessage({ id: 'report.build-number.fail' })}` }, { name: `${formatMessage({ id: 'report.build-number.success' })}` }, { name: `${formatMessage({ id: 'report.build-number.total' })}` }];
     val[0].value = _.reduce(pipelineFailFrequency, (sum, n) => sum + n, 0);
@@ -64,6 +64,7 @@ class BuildTable extends Component {
         left: 'right',
         itemWidth: 14,
         itemGap: 20,
+        padding: [0, 5, 5, 5],
         formatter(name) {
           let count = 0;
           _.map(val, (data) => {
@@ -78,7 +79,8 @@ class BuildTable extends Component {
       grid: {
         left: '2%',
         right: '3%',
-        bottom: '3%',
+        bottom: bottom || '3%',
+        top: `${top}`,
         containLabel: true,
       },
       xAxis: {
@@ -118,6 +120,7 @@ class BuildTable extends Component {
         nameTextStyle: {
           fontSize: 13,
           color: '#000',
+          padding: [0, 5, 2, 5],
         },
         axisTick: { show: false },
         axisLine: {

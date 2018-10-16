@@ -163,7 +163,7 @@ class DevOpsDeploy extends Component {
         left: 'right',
         itemWidth: 14,
         itemGap: 20,
-        padding: [20, 5, 0, 5],
+        padding: [0, 5, 5, 5],
         formatter(name) {
           let count = 0;
           _.map(val, (data) => {
@@ -176,9 +176,10 @@ class DevOpsDeploy extends Component {
         selectedMode: false,
       },
       grid: {
+        top: '10%',
         left: '2%',
         right: '3%',
-        bottom: '3%',
+        bottom: '4%',
         containLabel: true,
       },
       xAxis: {
@@ -217,7 +218,7 @@ class DevOpsDeploy extends Component {
         nameTextStyle: {
           fontSize: 13,
           color: '#000',
-          padding: [0, 5, 12, 5],
+          padding: [0, 5, 2, 5],
         },
         axisTick: { show: false },
         axisLine: {
