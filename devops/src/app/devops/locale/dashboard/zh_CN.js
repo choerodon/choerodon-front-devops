@@ -27,6 +27,8 @@ const zh_CN = {
 
   //
   'dashboard.deploy': '转到部署总览界面',
+  'dashboard.ist': '实例个数：',
+  'dpOverview.update': '可升级',
 
 };
 /* eslint-disable-next-line */

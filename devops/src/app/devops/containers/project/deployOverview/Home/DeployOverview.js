@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { Button, Popover, Tooltip, Table } from 'choerodon-ui';
