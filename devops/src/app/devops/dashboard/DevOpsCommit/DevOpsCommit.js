@@ -131,7 +131,7 @@ class DevOpsCommit extends Component {
       >
         {options}
       </Select>
-      <div className="c7ncd-db-panel">{this.getContent}</div>
+      <div className="c7ncd-db-panel c7ncd-db-panel-commit">{this.getContent}</div>
       <DashBoardNavBar>
         <Link to={`/devops/reports/submission?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <FormattedMessage id="dashboard.commits" />
