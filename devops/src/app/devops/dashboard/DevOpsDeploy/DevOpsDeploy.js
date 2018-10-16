@@ -308,11 +308,10 @@ class DevOpsDeploy extends Component {
       <div className="c7ncd-db-panel">
         <Select
           notFoundContent={formatMessage({ id: 'dashboard.noEnv' })}
-          placeholder={formatMessage({ id: 'dashboard.noEnv' })}
+          placeholder={formatMessage({ id: 'dashboard.env' })}
           value={envIds}
-          className={`c7n-select_100 env-multi ${envIds.length > 1 ? 'env-multi_150' : ''} ${noSelect ? 'c7n-select-noSelect' : ''}`}
+          className={`c7n-select_100 env-multi ${envIds.length > 1 ? 'env-multi_150' : ''} ${envIds.length === 0 ? 'c7n-select-noSelect' : ''}`}
           mode="multiple"
-          disabled={noSelect}
           maxTagCount={1}
           onChange={this.handleEnvSelect}
           maxTagPlaceholder={this.maxTagNode.bind(this, env)}
@@ -320,10 +319,9 @@ class DevOpsDeploy extends Component {
           {envDom}
         </Select>
         <Select
-          disabled={noSelect}
           dropdownMatchSelectWidth
           notFoundContent={formatMessage({ id: 'dashboard.noApp' })}
-          placeholder={formatMessage({ id: 'dashboard.noApp' })}
+          placeholder={formatMessage({ id: 'env.select' })}
           value={appDom ? appId : null}
           className={`c7n-select_100 ${noSelect ? 'c7n-select-noSelect' : ''}`}
           onChange={this.handleAppSelect}
