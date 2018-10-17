@@ -64,7 +64,7 @@ class DevOpsCommit extends Component {
       name=""
       color="#4677dd"
       grid={[40, 10, 20, 0]}
-      style={{ width: '100%', height: 185 }}
+      style={{ width: '100%', height: 286 }}
       data={total}
       start={moment().subtract(7, 'days')}
       end={moment()}

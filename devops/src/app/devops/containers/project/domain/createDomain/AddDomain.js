@@ -481,7 +481,7 @@ class CreateDomain extends Component {
       </Option>));
       return (<div className="domain-network-wrap" key={`paths-${k}`}>
         <FormItem
-          className="domain-network-item c7n-select_160"
+          className="domain-network-item c7n-select_160 c7ncd-domain-path"
           {...formItemLayout}
         >
           {getFieldDecorator(`path[${k}]`, {
