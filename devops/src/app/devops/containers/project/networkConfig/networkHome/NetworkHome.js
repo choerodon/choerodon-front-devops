@@ -131,15 +131,18 @@ class NetworkHome extends Component {
         const { id, code, instanceStatus } = item;
         const statusStyle = (instanceStatus !== 'operating' && instanceStatus !== 'running')
           ? 'c7n-network-status-failed' : '';
-        node.push(<div
-          className={`network-column-instance ${statusStyle}`}
-          key={id}
-        >
-          <Tooltip
-            title={instanceStatus ? <FormattedMessage id={instanceStatus} /> : ''}
-            placement="top"
-          >{code}</Tooltip>
-        </div>);
+        // const status = instanceStatus ? code : <FormattedMessage id="deleted" />;
+        if (code) {
+          node.push(<div
+            className={`network-column-instance ${statusStyle}`}
+            key={id}
+          >
+            <Tooltip
+              title={instanceStatus ? <FormattedMessage id={instanceStatus} /> : <FormattedMessage id="network.ist.deleted" />}
+              placement="top"
+            >{code}</Tooltip>
+          </div>);
+        }
       });
     }
     if (!_.isEmpty(labels)) {

@@ -78,37 +78,6 @@
   }
 }
 
-.c7n-domain-create-status {
-  display: inline-block;
-  height: 16px;
-  font-size: 13px;
-  border-radius: 2px;
-  color: white;
-  text-align: center;
-  line-height: 16px;
-  margin-right: 8px;
-
-  div {
-    transform: scale(0.8);
-  }
-}
-
-.c7n-domain-create-status_running {
-  background: #00bf96;
-}
-
-.c7n-domain-create-status_failed {
-  background: #f44336;
-}
-
-.c7n-domain-create-status_operating {
-  background: #4d90fe;
-}
-
-.c7n-domain-create-status_deleted {
-  background: rgba(0, 0, 0, 0.36);
-}
-
 .domain-port-disable {
   color: #f44336;
 }

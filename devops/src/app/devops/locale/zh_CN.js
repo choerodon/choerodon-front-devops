@@ -403,6 +403,7 @@ const zhCN = {
   'network.config.value': '值',
   'network.failed': '失败',
   'network.node.port': '节点端口/端口/目标端口',
+  'network.ist.deleted': '实例被删除',
 
   // deploymentApp
   'deploy.title': '应用部署',

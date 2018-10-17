@@ -481,6 +481,38 @@ table {
   }
 }
 
+.c7n-domain-create-status {
+  display: inline-block;
+  height: 16px;
+  font-size: 12px;
+  border-radius: 2px;
+  color: white;
+  text-align: center;
+  line-height: 16px;
+  margin-right: 8px;
+
+  div {
+    transform: scale(0.83333);
+    white-space: nowrap;
+  }
+}
+
+.c7n-domain-create-status_running {
+  background: #00bf96;
+}
+
+.c7n-domain-create-status_failed {
+  background: #f44336;
+}
+
+.c7n-domain-create-status_operating {
+  background: #4d90fe;
+}
+
+.c7n-domain-create-status_deleted {
+  background: rgba(0, 0, 0, 0.36);
+}
+
 // 创建侧边栏中的卡片区域
 .c7n-creation-panel {
   margin-bottom: 32px;

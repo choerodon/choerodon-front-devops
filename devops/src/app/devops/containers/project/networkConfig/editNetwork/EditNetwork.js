@@ -217,7 +217,7 @@ class EditNetwork extends Component {
             initIst.push(istId);
             initIstOption.push(
               <Option key={istId} value={istId}>
-                <Tooltip title={instanceStatus ? <FormattedMessage id={instanceStatus} /> : ''} placement="right">{code}</Tooltip>
+                <Tooltip title={instanceStatus ? <FormattedMessage id={instanceStatus} /> : <FormattedMessage id="network.ist.deleted" />} placement="right">{code}</Tooltip>
               </Option>,
             );
             if (instanceStatus !== 'running') {
@@ -338,6 +338,10 @@ class EditNetwork extends Component {
     const { store, form } = this.props;
     const { id } = AppState.currentMenuType;
     const envId = form.getFieldValue('envId');
+    this.setState({
+      initIst: [],
+      initIstOption: [],
+    });
     store.loadInstance(id, envId, Number(value));
   };
 
@@ -777,6 +781,10 @@ class EditNetwork extends Component {
       );
     });
 
+    const localAppOptions = _.map(localApp, node => this.makeAppGroup(node));
+
+    const storeAppOptions = _.map(storeApp, node => this.makeAppGroup(node));
+
     return (
       <div className="c7n-region">
         <Sidebar
@@ -867,7 +875,7 @@ class EditNetwork extends Component {
                       {...formItemLayout}
                     >
                       {getFieldDecorator('appId', {
-                        initialValue: initApp,
+                        initialValue: (localAppOptions.length || storeAppOptions.length) ? initApp : undefined,
                         rules: [{
                           required: true,
                           message: intl.formatMessage({ id: 'required' }),
@@ -886,10 +894,10 @@ class EditNetwork extends Component {
                             .props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                         >
                           <OptGroup label={<FormattedMessage id="project" />} key="project">
-                            {_.map(localApp, node => this.makeAppGroup(node))}
+                            {localAppOptions}
                           </OptGroup>
                           <OptGroup label={<FormattedMessage id="market" />} key="markert">
-                            {_.map(storeApp, node => this.makeAppGroup(node))}
+                            {storeAppOptions}
                           </OptGroup>
                         </Select>,
                       )}

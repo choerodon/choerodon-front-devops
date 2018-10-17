@@ -194,7 +194,7 @@ class NetworkConfigStore {
         const res = handleProptError(data);
         if (res) {
           this.setApp(res);
-          if (option === 'update') {
+          if (option === 'update' && appId) {
             this.loadInstance(projectId, envId, appId);
           }
         }
@@ -259,7 +259,7 @@ class NetworkConfigStore {
       const res = handleProptError(data);
       if (res) {
         this.setSingleData(data);
-        if (res.appId) {
+        if (!res.target.label) {
           this.loadApp(projectId, res.envId, 'update', res.appId);
         }
         return res;

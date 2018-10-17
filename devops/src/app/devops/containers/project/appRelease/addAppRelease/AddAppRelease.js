@@ -298,7 +298,6 @@ class AddAppRelease extends Component {
     }, {
       width: 64,
       key: 'action',
-      className: 'c7n-network-text_top',
       render: record => (
         <div>
           <Tooltip trigger="hover" placement="bottom" content={<div>{this.props.intl.formatMessage({ id: 'delete' })}</div>}>
