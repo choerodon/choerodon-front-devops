@@ -16,7 +16,7 @@ import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
 
 const { AppState } = stores;
-const Option = Select.Option;
+const { Option, OptGroup } = Select;
 
 @observer
 class BranchHome extends Component {
@@ -361,6 +361,7 @@ class BranchHome extends Component {
     const { projectId } = this.state;
     const { BranchStore } = this.props;
     DevPipelineStore.setSelectApp(value);
+    DevPipelineStore.setRecentApp(value);
     BranchStore.setBranchData({ content: [] });
     BranchStore.loadBranchList({ projectId });
   };
@@ -547,16 +548,17 @@ class BranchHome extends Component {
             }
             filter
           >
-            {
-              _.map(apps, (app, index) => (
+            <OptGroup label={formatMessage({ id: 'recent' })} key="recent">
+              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
+                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+              </Option>)}
+            </OptGroup>
+            <OptGroup label={formatMessage({ id: 'deploy.app' })} key="app">
+              {_.map(apps, (app, index) => (
                 <Option value={app.id} key={index}>
-                  <Tooltip title={app.code}>
-                    <span style={{ width: '100%', display: 'inline-block' }}>
-                      {app.name}
-                    </span>
-                  </Tooltip>
-                </Option>))
-            }
+                  <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+                </Option>))}
+            </OptGroup>
           </Select>
           {this.tableBranch}
         </Content>

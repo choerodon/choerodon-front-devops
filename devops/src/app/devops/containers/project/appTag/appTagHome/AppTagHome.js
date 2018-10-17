@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
@@ -15,7 +15,7 @@ import './AppTagHome.scss';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
 
 const { AppState } = stores;
-const { Option } = Select;
+const { Option, OptGroup } = Select;
 const { Panel } = Collapse;
 
 @observer
@@ -51,6 +51,7 @@ class AppTagHome extends Component {
   handleSelect = (id, option) => {
     this.setState({ page: 0, pageSize: 10, appName: option.props.children });
     DevPipelineStore.setSelectApp(id);
+    DevPipelineStore.setRecentApp(id);
     this.loadTagData();
   };
 
@@ -302,9 +303,19 @@ class AppTagHome extends Component {
             filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             onChange={(value, option) => this.handleSelect(value, option)}
           >
-            {
-              _.map(appData, app => <Option key={app.id} value={app.id}>{app.name}</Option>)
-            }
+            <OptGroup label={formatMessage({ id: 'recent' })} key="recent">
+              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
+                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+              </Option>)}
+            </OptGroup>
+            <OptGroup label={formatMessage({ id: 'deploy.app' })} key="app">
+              {
+                _.map(appData, (app, index) => (
+                  <Option value={app.id} key={index}>
+                    <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+                  </Option>))
+              }
+            </OptGroup>
           </Select>
           <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
           {loading || _.isNull(loading) ? <LoadingBar display /> : <Fragment>

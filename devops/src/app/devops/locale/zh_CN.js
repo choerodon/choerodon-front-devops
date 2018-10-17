@@ -289,6 +289,7 @@ const zhCN = {
   skipped: '跳过',
   more: '更多',
   total: '总次数',
+  recent: '最近',
 
   'chart.change': '切换报表',
   'confirm.delete': '确认删除吗？',

@@ -12,7 +12,7 @@ import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
 
 const { AppState } = stores;
-const Option = Select.Option;
+const { Option, OptGroup } = Select;
 const TabPane = Tabs.TabPane;
 
 @observer
@@ -110,6 +110,7 @@ class MergeRequestHome extends Component {
     const { MergeRequestStore } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     DevPipelineStore.setSelectApp(id);
+    DevPipelineStore.setRecentApp(id);
     MergeRequestStore.setAssignee([]);
     MergeRequestStore.setAssigneeCount(0);
     MergeRequestStore.loadMergeRquest(id, 'opened');
@@ -443,9 +444,17 @@ class MergeRequestHome extends Component {
             filter
             onChange={this.handleChange.bind(this)}
           >
-            {
-              _.map(appData, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
-            }
+            <OptGroup label={intl.formatMessage({ id: 'recent' })} key="recent">
+              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
+                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+              </Option>)}
+            </OptGroup>
+            <OptGroup label={intl.formatMessage({ id: 'deploy.app' })} key="app">
+              {_.map(appData, (app, index) => (
+                <Option value={app.id} key={index}>
+                  <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+                </Option>))}
+            </OptGroup>
           </Select>
           <Tabs activeKey={tabKey} onChange={this.tabChange} animated={false}>
             <TabPane tab={`${intl.formatMessage({ id: 'merge.tab1' })}(${openCount || 0})`} key="opened">
@@ -500,7 +509,7 @@ class MergeRequestHome extends Component {
                 filterBar={false}
               />
             </TabPane>
-            {getAssigneeCount !== 0 ? <TabPane tab={`${intl.formatMessage({ id: 'merge.tab5' })}(${assigneeCount || 0})`} key="assignee">
+            {getAssigneeCount !== 0 ? <TabPane tab={`${intl.formatMessage({ id: 'merge.tab5' })}(${getAssigneeCount || 0})`} key="assignee">
               <Table
                 filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                 onChange={this.tableChange}
