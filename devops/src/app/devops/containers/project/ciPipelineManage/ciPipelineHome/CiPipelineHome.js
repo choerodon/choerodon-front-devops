@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Table, Tooltip, Popover, Select } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
@@ -12,7 +12,7 @@ import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
 
-const Option = Select.Option;
+const { Option, OptGroup } = Select;
 const ICONS = {
   passed: {
     icon: 'icon-check_circle',
@@ -92,6 +92,7 @@ class CiPipelineHome extends Component {
   }
 
   get filterBar() {
+    const { intl: { formatMessage } } = this.props;
     return (
       <div>
         <Select
@@ -102,9 +103,19 @@ class CiPipelineHome extends Component {
           filter
           onChange={this.handleChange.bind(this)}
         >
-          {
-            _.map(DevPipelineStore.appData, (app, index) => <Option key={index} value={app.id}>{app.name}</Option>)
-          }
+          <OptGroup label={formatMessage({ id: 'recent' })} key="recent">
+            {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
+              <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+            </Option>)}
+          </OptGroup>
+          <OptGroup label={formatMessage({ id: 'deploy.app' })} key="app">
+            {
+              _.map(DevPipelineStore.appData, (app, index) => (
+                <Option value={app.id} key={index}>
+                  <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+                </Option>))
+            }
+          </OptGroup>
         </Select>
       </div>
     );
@@ -202,6 +213,7 @@ class CiPipelineHome extends Component {
 
   handleChange(appId) {
     DevPipelineStore.setSelectApp(appId);
+    DevPipelineStore.setRecentApp(appId);
     CiPipelineStore.loadPipelines(appId);
   }
 

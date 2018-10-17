@@ -9,6 +9,26 @@ import CiPipelineStore from '../ciPipelineManage';
 
 const { AppState } = stores;
 
+function findDataIndex(collection, value) {
+  return collection ? collection.findIndex(
+    ({ id, projectId }) => id === value.id && (
+      (!projectId && !value.projectId)
+      || projectId === value.projectId
+    ),
+  ) : -1;
+}
+
+// 保留多少recent内容,更新最新顺序
+function saveRecent(collection = [], value, number) {
+  const index = findDataIndex(collection, value);
+  if (index !== -1) {
+    return collection.splice(index, 1).concat(collection.slice());
+  } else {
+    collection.unshift(value);
+    return collection.slice(0, number);
+  }
+}
+
 @store('DevPipelineStore')
 class DevPipelineStore {
   @observable appData = [];
@@ -16,6 +36,8 @@ class DevPipelineStore {
   @observable selectedApp = null;
 
   @observable defaultAppName = null;
+
+  @observable recentApp = null;
 
   @action setAppData(data) {
     this.appData = data;
@@ -39,6 +61,29 @@ class DevPipelineStore {
 
   @computed get getDefaultAppName() {
     return this.defaultAppName;
+  }
+
+  @computed
+  get getRecentApp() {
+    let recents = [];
+    if (this.recentApp) {
+      recents = this.recentApp;
+    } else if (localStorage.recentApp) {
+      recents = JSON.parse(localStorage.recentApp);
+    }
+    return recents.filter(
+      value => findDataIndex(this.appData, value) !== -1,
+    );
+  }
+
+  @action
+  setRecentApp(id) {
+    if (id) {
+      const recent = this.appData.filter(value => value.id === id)[0];
+      const recentApp = saveRecent(this.getRecentApp, recent, 3);
+      localStorage.recentApp = JSON.stringify(recentApp);
+      this.recentApp = recentApp;
+    }
   }
 
   /**
@@ -83,6 +128,7 @@ class DevPipelineStore {
             }
             AppTagStore.setDefaultAppName(result[0].name);
           } else {
+            this.setSelectApp(null);
             AppTagStore.setLoading(false);
           }
         }
