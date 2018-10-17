@@ -53,6 +53,14 @@
     display: flex;
     width: 542px;
     .domain-network-item {
+      &.c7ncd-domain-path {
+        .ant-input-content {
+          padding-top: 19px;
+          .ant-input-label {
+            margin-bottom: 3px;
+          }
+        }
+      }
       flex: 0 0 160px;
       margin-right: 16px;
       &:nth-last-child(2) {
