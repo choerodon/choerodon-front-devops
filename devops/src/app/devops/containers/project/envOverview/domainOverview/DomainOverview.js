@@ -154,7 +154,6 @@ class DomainOverview extends Component {
     const data = store.getDomain;
     const { filters, sort: { columnKey, order }, paras } = store.getInfo;
     const menu = AppState.currentMenuType;
-    const projectName = menu.name;
     const { type, id: projectId, organizationId: orgId } = menu;
     const columns = [{
       title: intl.formatMessage({ id: 'domain.column.name' }),

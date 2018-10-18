@@ -241,7 +241,7 @@ class CreateDomain extends Component {
   /**
    * 关闭弹框
    */
-  handleClose =(isload = true) => {
+  handleClose = (isload = true) => {
     const { store, onClose } = this.props;
     store.setEnv([]);
     store.setNetwork([]);
@@ -593,7 +593,7 @@ class CreateDomain extends Component {
                   required: true,
                   message: formatMessage({ id: 'required' }),
                 }],
-                initialValue: envId || initEnvId,
+                initialValue: env.dataSource.length ? (envId || initEnvId) : undefined,
               })(
                 <Select
                   dropdownClassName="c7n-domain-env"
