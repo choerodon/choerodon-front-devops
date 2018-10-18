@@ -43,6 +43,10 @@ class DevOpsCommit extends Component {
     this.loadCommits();
   }
 
+  componentWillUnmount() {
+    ReportsStore.setCommits({});
+  }
+
   handleChange = (id) => {
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ appId: id });
