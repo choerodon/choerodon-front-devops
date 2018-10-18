@@ -50,13 +50,13 @@ class DevOpsAppDep extends Component {
             app: appRes,
             appId: appRes[0].id,
           });
+          this.loadBoard(appRes[0].id);
         } else {
           this.setState({
             noSelect: true,
             loading: false,
           });
         }
-        this.loadBoard(appRes[0].id);
       });
   }
 

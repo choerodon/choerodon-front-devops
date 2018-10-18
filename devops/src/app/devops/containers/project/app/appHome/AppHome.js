@@ -352,6 +352,8 @@ class AppHome extends Component {
    * 关闭操作框
    */
   hideSidebar = () => {
+    const { AppStore } = this.props;
+    AppStore.setSingleData(null);
     this.setState({ show: false });
     this.props.form.resetFields();
   };
