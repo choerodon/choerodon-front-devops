@@ -107,7 +107,7 @@ class CreateCert extends Component {
    * @param promise
    */
   handleResponse = (promise) => {
-    const { onClose, store, envId } = this.props;
+    const { store, envId } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     promise.then((res) => {
       this.setState({ submitting: false });
@@ -129,12 +129,20 @@ class CreateCert extends Component {
         };
         store.setTableFilter(filter);
         store.loadCertData(projectId, 0, initSize, { field: 'id', order: 'descend' }, { searchParam: {}, param: '' }, envId);
-        onClose();
+        this.handleClose(true);
       }
     }).catch((error) => {
       Choerodon.handleResponseError(error);
       this.setState({ submitting: false });
     });
+  };
+
+  /**
+   * 关闭弹框
+   */
+  handleClose = (isload = true) => {
+    const { onClose } = this.props;
+    onClose(isload);
   };
 
   /**
@@ -304,7 +312,7 @@ class CreateCert extends Component {
         title={<FormattedMessage id="ctf.sidebar.create" />}
         visible={visible}
         onOk={this.handleSubmit}
-        onCancel={onClose}
+        onCancel={this.handleClose.bind(this, false)}
         confirmLoading={submitting}
       >
         <Content code="ctf.create" values={{ name: menuName }} className="c7n-ctf-create sidebar-content">
@@ -314,7 +322,7 @@ class CreateCert extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('envId', {
-                initialValue: envId,
+                initialValue: env.length ? envId : undefined,
                 rules: [{
                   required: true,
                   message: intl.formatMessage({ id: 'required' }),

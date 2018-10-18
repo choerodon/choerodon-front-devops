@@ -67,7 +67,6 @@ class EnvOverviewHome extends Component {
   handleRefresh = () => {
     const { EnvOverviewStore } = this.props;
     EnvOverviewStore.setVal('');
-    const projectId = AppState.currentMenuType.id;
     const key = this.tabKey;
     const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
     const { filters, sort, paras } = EnvOverviewStore.getInfo;
@@ -228,7 +227,7 @@ class EnvOverviewHome extends Component {
    * @param envId
    */
   loadCertData = (envId) => {
-    const { page, pageSize, sorter, postData } = CertificateStore.getTableFilter;
+    const { page, pageSize } = CertificateStore.getTableFilter;
     const { id: projectId } = AppState.currentMenuType;
     CertificateStore.loadCertData(projectId, page, pageSize, { field: 'id', order: 'descend' }, { searchParam: {}, param: '' }, envId);
   };
@@ -271,8 +270,8 @@ class EnvOverviewHome extends Component {
     if (isload) {
       const envId = this.envId || this.env[0].id;
       this.loadDomainOrNet('domain', envId);
-      this.loadIstOverview(envId);
       EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
+      this.tabKey = 'domain';
     }
   };
 
@@ -287,8 +286,8 @@ class EnvOverviewHome extends Component {
     if (isload) {
       const envId = this.envId || this.env[0].id;
       this.loadDomainOrNet('net', envId);
-      this.loadIstOverview(envId);
       EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
+      this.tabKey = 'network';
     }
   };
 
@@ -303,7 +302,17 @@ class EnvOverviewHome extends Component {
   /**
    * 关闭证书侧边栏
    */
-  closeCreateModal = () => this.setState({ createDisplay: false });
+  closeCreateModal = (isload) => {
+    const { EnvOverviewStore } = this.props;
+    this.setState({ createDisplay: false });
+    this.props.form.resetFields();
+    if (isload) {
+      const envId = this.envId || this.env[0].id;
+      this.loadCertData(envId);
+      EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
+      this.tabKey = 'cert';
+    }
+  };
 
   /**
    * 处理页面跳转
