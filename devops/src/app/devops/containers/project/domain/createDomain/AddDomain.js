@@ -255,7 +255,7 @@ class CreateDomain extends Component {
    * @param value
    * @param callback
    */
-  checkPath = _.debounce((rule, value, callback) => {
+  checkPath = (rule, value, callback) => {
     const { form: { getFieldValue, getFieldError }, intl, store, type, id } = this.props;
     const { projectId } = this.state;
     if (value) {
@@ -287,7 +287,7 @@ class CreateDomain extends Component {
     } else {
       callback(intl.formatMessage({ id: 'domain.path.check.notSet' }));
     }
-  }, 1000);
+  };
 
   /**
    * 处理路径校验返回结果
