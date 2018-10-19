@@ -72,6 +72,8 @@ class Submission extends Component {
   componentWillUnmount() {
     const { ReportsStore } = this.props;
     ReportsStore.setApps([]);
+    ReportsStore.setCommits({});
+    ReportsStore.setCommitsRecord([]);
     ReportsStore.setStartTime(moment().subtract(6, 'days'));
     ReportsStore.setEndTime(moment());
     ReportsStore.setStartDate(null);

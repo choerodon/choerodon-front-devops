@@ -123,9 +123,7 @@ class DevOpsAppDep extends Component {
         {istDom}
       </div>);
     } else {
-      return (<div className="c7n-appDep-wrap">
-        <div className="c7n-appDep-ver">{formatMessage({ id: 'dashboard.noDeploy' })}</div>
-      </div>);
+      return (<div className="c7n-db-noData pdb1"><FormattedMessage id="dashboard.noDeploy" /></div>);
     }
   };
 

@@ -101,6 +101,8 @@ class DevOpsBranch extends Component {
           </div>
         );
       });
+    } else {
+      list = (<div className="c7n-db-noData"><FormattedMessage id="dashboard.nobranch" /></div>);
     }
     return list;
   };
