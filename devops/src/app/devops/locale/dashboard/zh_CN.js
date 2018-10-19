@@ -33,6 +33,7 @@ const zh_CN = {
   'dashboard.branch': '转到分支管理详情',
   'report.commit.by': '提交于 ',
   'branch.request': '创建合并请求',
+  'dashboard.nobranch': '暂无分支',
 
   //
   'dashboard.deploy': '转到部署总览界面',

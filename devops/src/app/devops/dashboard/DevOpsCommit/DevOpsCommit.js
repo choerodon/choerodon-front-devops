@@ -35,7 +35,7 @@ class DevOpsCommit extends Component {
     super(props);
     this.state = {
       appId: [],
-      loading: false,
+      loading: true,
     };
   }
 
@@ -44,7 +44,10 @@ class DevOpsCommit extends Component {
   }
 
   componentWillUnmount() {
+    ReportsStore.setApps([]);
     ReportsStore.setCommits({});
+    ReportsStore.setCommitsRecord([]);
+    ReportsStore.setCommitLoading(false);
   }
 
   handleChange = (id) => {
@@ -53,10 +56,10 @@ class DevOpsCommit extends Component {
     ReportsStore.loadCommits(projectId, START, END, id);
   };
 
-  get getContent() {
+  getContent = () => {
     const { loading } = this.state;
     if (loading) {
-      return (<Spin />);
+      return (<div className="c7ncd-dashboard-loading"><Spin /></div>);
     }
     const commits = ReportsStore.getCommits;
     const total = formatData(commits);
@@ -67,7 +70,7 @@ class DevOpsCommit extends Component {
       legend
       name=""
       color="#4677dd"
-      grid={[40, 10, 20, 0]}
+      grid={[30, 10, 20, 0]}
       style={{ width: '100%', height: 286 }}
       data={total}
       start={moment().subtract(7, 'days')}
@@ -77,12 +80,14 @@ class DevOpsCommit extends Component {
 
   loadCommits = () => {
     const { id: projectId } = AppState.currentMenuType;
+    this.setState({ loading: true });
     ReportsStore.loadApps(projectId).then((data) => {
       if (data && data.length) {
         const selectApp = _.map(data, item => item.id);
         this.setState({ appId: selectApp });
         ReportsStore.loadCommits(projectId, START, END, selectApp);
       }
+      this.setState({ loading: false });
     });
   };
 
@@ -135,7 +140,7 @@ class DevOpsCommit extends Component {
       >
         {options}
       </Select>
-      <div className="c7ncd-db-panel c7ncd-db-panel-commit">{this.getContent}</div>
+      <div className="c7ncd-db-panel c7ncd-db-panel-commit">{this.getContent()}</div>
       <DashBoardNavBar>
         <Link to={`/devops/reports/submission?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <FormattedMessage id="dashboard.commits" />

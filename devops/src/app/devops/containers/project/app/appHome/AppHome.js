@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Table, Tootip, Button, Input, Form, Modal, Tooltip, Select, Icon } from 'choerodon-ui';
+import { Table, Button, Input, Form, Modal, Tooltip, Select, Icon } from 'choerodon-ui';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
