@@ -266,6 +266,31 @@ class AppTagHome extends Component {
         ]}
       >
         <Header title={<FormattedMessage id="apptag.head" />}>
+          <Select
+            filter
+            className="c7n-header-select"
+            dropdownClassName="c7n-header-select_drop"
+            placeholder={formatMessage({ id: 'ist.noApp' })}
+            value={DevPipelineStore.getSelectApp}
+            disabled={appData.length === 0}
+            filterOption={(input, option) => option.props.children.props.children.props.children
+              .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            onChange={(value, option) => this.handleSelect(value, option)}
+          >
+            <OptGroup label={formatMessage({ id: 'recent' })} key="recent">
+              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
+                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+              </Option>)}
+            </OptGroup>
+            <OptGroup label={formatMessage({ id: 'deploy.app' })} key="app">
+              {
+                _.map(appData, (app, index) => (
+                  <Option value={app.id} key={index}>
+                    <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+                  </Option>))
+              }
+            </OptGroup>
+          </Select>
           {appData && appData.length ? (
             <Permission
               service={[
@@ -295,28 +320,6 @@ class AppTagHome extends Component {
           </Button>
         </Header>
         <Content code="apptag" value={{ name }}>
-          <Select
-            filter
-            className="c7n-select_512"
-            value={DevPipelineStore.getSelectApp}
-            label={formatMessage({ id: 'chooseApp' })}
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            onChange={(value, option) => this.handleSelect(value, option)}
-          >
-            <OptGroup label={formatMessage({ id: 'recent' })} key="recent">
-              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
-                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
-              </Option>)}
-            </OptGroup>
-            <OptGroup label={formatMessage({ id: 'deploy.app' })} key="app">
-              {
-                _.map(appData, (app, index) => (
-                  <Option value={app.id} key={index}>
-                    <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
-                  </Option>))
-              }
-            </OptGroup>
-          </Select>
           <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
           {loading || _.isNull(loading) ? <LoadingBar display /> : <Fragment>
             {tagList.length ? <Fragment>

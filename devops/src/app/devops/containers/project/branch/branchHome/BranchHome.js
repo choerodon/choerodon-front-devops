@@ -520,6 +520,31 @@ class BranchHome extends Component {
         ]}
       >
         <Header title={<FormattedMessage id="branch.head" />}>
+          <Select
+            filter
+            className="c7n-header-select"
+            dropdownClassName="c7n-header-select_drop"
+            placeholder={formatMessage({ id: 'ist.noApp' })}
+            value={DevPipelineStore.getSelectApp}
+            disabled={apps.length === 0}
+            filterOption={(input, option) => option.props.children.props.children.props.children
+              .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            onChange={this.loadData}
+          >
+            <OptGroup label={formatMessage({ id: 'recent' })} key="recent">
+              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
+                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+              </Option>)}
+            </OptGroup>
+            <OptGroup label={formatMessage({ id: 'deploy.app' })} key="app">
+              {
+                _.map(apps, (app, index) => (
+                  <Option value={app.id} key={index}>
+                    <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+                  </Option>))
+              }
+            </OptGroup>
+          </Select>
           {BranchStore.getBranchList.length && DevPipelineStore.selectedApp ? <Permission
             service={['devops-service.devops-git.createBranch']}
           >
@@ -538,28 +563,6 @@ class BranchHome extends Component {
           </Button>
         </Header>
         <Content code="branch" value={{ name }} className="page-content">
-          <Select
-            onChange={this.loadData}
-            value={DevPipelineStore.selectedApp ? DevPipelineStore.selectedApp : undefined}
-            className="branch-select_512"
-            label={formatMessage({ id: 'deploy.step.one.app' })}
-            filterOption={(input, option) => option.props.children.props.children.props.children
-              .toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
-            filter
-          >
-            <OptGroup label={formatMessage({ id: 'recent' })} key="recent">
-              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
-                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
-              </Option>)}
-            </OptGroup>
-            <OptGroup label={formatMessage({ id: 'deploy.app' })} key="app">
-              {_.map(apps, (app, index) => (
-                <Option value={app.id} key={index}>
-                  <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
-                </Option>))}
-            </OptGroup>
-          </Select>
           {this.tableBranch}
         </Content>
         {BranchStore.createBranchShow === 'create' && <CreateBranch

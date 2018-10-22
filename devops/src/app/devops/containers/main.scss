@@ -585,3 +585,23 @@ input::-webkit-contacts-auto-fill-button {
   width: 100%;
   display: inline-block;
 }
+
+.c7n-header-select {
+  max-width: 100px;
+  min-width: 70px;
+  margin-right: 18px;
+
+  .ant-select-selection__rendered {
+    margin-bottom: 0;
+    color: #3f51b5;
+  }
+
+  .ant-select-underline {
+    display: none;
+  }
+}
+
+.c7n-header-select_drop {
+  width: 200px !important;
+  top: 90px !important;
+}

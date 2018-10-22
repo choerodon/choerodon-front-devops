@@ -420,6 +420,31 @@ class MergeRequestHome extends Component {
         ]}
       >
         <Header title={<FormattedMessage id="merge.head" />}>
+          <Select
+            filter
+            className="c7n-header-select"
+            dropdownClassName="c7n-header-select_drop"
+            placeholder={intl.formatMessage({ id: 'ist.noApp' })}
+            value={DevPipelineStore.getSelectApp}
+            disabled={appData.length === 0}
+            filterOption={(input, option) => option.props.children.props.children.props.children
+              .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            onChange={this.handleChange.bind(this)}
+          >
+            <OptGroup label={intl.formatMessage({ id: 'recent' })} key="recent">
+              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
+                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+              </Option>)}
+            </OptGroup>
+            <OptGroup label={intl.formatMessage({ id: 'deploy.app' })} key="app">
+              {
+                _.map(appData, (app, index) => (
+                  <Option value={app.id} key={index}>
+                    <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+                  </Option>))
+              }
+            </OptGroup>
+          </Select>
           <Button
             funcType="flat"
             onClick={this.linkToNewMerge}
@@ -436,26 +461,6 @@ class MergeRequestHome extends Component {
           </Button>
         </Header>
         <Content code="merge" value={{ name }}>
-          <Select
-            className="c7n-app-select_512"
-            value={DevPipelineStore.getSelectApp}
-            label={intl.formatMessage({ id: 'deploy.step.one.app' })}
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            filter
-            onChange={this.handleChange.bind(this)}
-          >
-            <OptGroup label={intl.formatMessage({ id: 'recent' })} key="recent">
-              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
-                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
-              </Option>)}
-            </OptGroup>
-            <OptGroup label={intl.formatMessage({ id: 'deploy.app' })} key="app">
-              {_.map(appData, (app, index) => (
-                <Option value={app.id} key={index}>
-                  <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
-                </Option>))}
-            </OptGroup>
-          </Select>
           <Tabs activeKey={tabKey} onChange={this.tabChange} animated={false}>
             <TabPane tab={`${intl.formatMessage({ id: 'merge.tab1' })}(${openCount || 0})`} key="opened">
               <Table
