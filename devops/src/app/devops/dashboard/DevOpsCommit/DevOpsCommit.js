@@ -44,7 +44,7 @@ class DevOpsCommit extends Component {
   }
 
   componentWillUnmount() {
-    ReportsStore.setApps([]);
+    ReportsStore.setAllApps([]);
     ReportsStore.setCommits({});
     ReportsStore.setCommitsRecord([]);
     ReportsStore.setCommitLoading(false);
@@ -81,7 +81,7 @@ class DevOpsCommit extends Component {
   loadCommits = () => {
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ loading: true });
-    ReportsStore.loadApps(projectId).then((data) => {
+    ReportsStore.loadAllApps(projectId).then((data) => {
       if (data && data.length) {
         const selectApp = _.map(data, item => item.id);
         this.setState({ appId: selectApp });
@@ -107,7 +107,7 @@ class DevOpsCommit extends Component {
     const { history, intl: { formatMessage } } = this.props;
     const { appId } = this.state;
     const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
-    const apps = ReportsStore.getApps;
+    const apps = ReportsStore.getAllApps;
     const options = _.map(apps, item => (<Option key={item.id} value={item.id}>
       <Tooltip
         // arrowPointAtCenter
@@ -130,7 +130,7 @@ class DevOpsCommit extends Component {
         mode="multiple"
         value={appId}
         placeholder={formatMessage({ id: 'env.select' })}
-        style={{ width: selectWidth }}
+        style={{ maxWidth: selectWidth, minWidth: 100 }}
         maxTagCount={2}
         choiceRender={this.choiceRender}
         maxTagPlaceholder={this.maxTagNode.bind(this, apps)}
@@ -140,9 +140,15 @@ class DevOpsCommit extends Component {
       >
         {options}
       </Select>
-      <div className="c7ncd-db-panel c7ncd-db-panel-commit">{this.getContent()}</div>
+      <div className="c7ncd-db-panel c7ncd-db-panel-size">{this.getContent()}</div>
       <DashBoardNavBar>
-        <Link to={`/devops/reports/submission?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+        <Link
+          to={{
+            pathname: '/devops/reports/submission',
+            search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}`,
+            state: { appId },
+          }}
+        >
           <FormattedMessage id="dashboard.commits" />
         </Link>
       </DashBoardNavBar>

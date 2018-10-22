@@ -43,7 +43,7 @@ class BuildDuration extends Component {
     ReportsStore.setPageInfo({ number: 0, totalElements: 0, size: HEIGHT <= 900 ? 10 : 15 });
     ReportsStore.setStartDate();
     ReportsStore.setEndDate();
-    ReportsStore.setApps([]);
+    ReportsStore.setAllApps([]);
   }
 
   /**
@@ -52,7 +52,7 @@ class BuildDuration extends Component {
   loadDatas = () => {
     const { ReportsStore } = this.props;
     const { id } = AppState.currentMenuType;
-    ReportsStore.loadApps(id).then((data) => {
+    ReportsStore.loadAllApps(id).then((data) => {
       if (data && data.length) {
         ReportsStore.setAppId(data[0].id);
         this.loadCharts();
@@ -246,9 +246,9 @@ class BuildDuration extends Component {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { dateType } = this.state;
     const { id, name, type, organizationId } = AppState.currentMenuType;
-    const { apps, appId, echartsLoading, loading, pageInfo, allData, isRefresh } = ReportsStore;
+    const { getAllApps, appId, echartsLoading, loading, pageInfo, allData, isRefresh } = ReportsStore;
 
-    const content = (apps && apps.length ? <React.Fragment>
+    const content = (getAllApps && getAllApps.length ? <React.Fragment>
       <div className="c7n-buildDuration-select">
         <Select
           label={formatMessage({ id: 'chooseApp' })}
@@ -261,7 +261,7 @@ class BuildDuration extends Component {
           onChange={this.handleAppSelect}
         >
           {
-            _.map(apps, (app, index) => (
+            _.map(getAllApps, (app, index) => (
               <Option value={app.id} key={index}>
                 <Tooltip title={app.code}>
                   <span className="c7n-app-select-tooltip">

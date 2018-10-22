@@ -53,6 +53,16 @@ class ReportsStore {
 
   @observable isRefresh = true;
 
+  @observable allApps = [];
+
+  @action setAllApps(data) {
+    this.allApps = data;
+  }
+
+  @computed get getAllApps() {
+    return this.allApps.slice();
+  }
+
   @action setHistoryLoad(flag) {
     this.historyLoad = flag;
   }
@@ -229,16 +239,30 @@ class ReportsStore {
    */
   loadApps = proId => axios.get(`/devops/v1/projects/${proId}/apps/list_all`).then((data) => {
     const res = handleProptError(data);
-    if (res) {
-      this.setApps(data);
+    this.handleAppsDate(res);
+    return res;
+  });
+
+  /**
+   * 加载项目下所有应用，代码提交报表使用
+   * @param proId
+   */
+  loadAllApps = proId => axios.get(`/devops/v1/projects/${proId}/apps`).then((data) => {
+    const res = handleProptError(data);
+    this.handleAppsDate(res);
+    return res;
+  });
+
+  handleAppsDate = (data) => {
+    if (data) {
+      this.setAllApps(data);
       if (!data.length) {
         this.setEchartsLoading(false);
         this.changeLoading(false);
       }
     }
     this.changeIsRefresh(false);
-    return res;
-  });
+  };
 
   /**
    * 加载构建次数

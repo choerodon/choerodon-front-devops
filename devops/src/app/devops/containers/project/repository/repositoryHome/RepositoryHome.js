@@ -104,7 +104,7 @@ class RepositoryHome extends Component {
     history.push({
       pathname: '/devops/reports/submission',
       search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}`,
-      state: { appId },
+      state: { appId: [appId] },
     });
   };
 

@@ -71,7 +71,7 @@ class Submission extends Component {
 
   componentWillUnmount() {
     const { ReportsStore } = this.props;
-    ReportsStore.setApps([]);
+    ReportsStore.setAllApps([]);
     ReportsStore.setCommits({});
     ReportsStore.setCommitsRecord([]);
     ReportsStore.setStartTime(moment().subtract(6, 'days'));
@@ -109,7 +109,7 @@ class Submission extends Component {
   loadData = () => {
     const {
       ReportsStore: {
-        loadApps,
+        loadAllApps,
         loadCommits,
         loadCommitsRecord,
         getStartTime,
@@ -117,17 +117,20 @@ class Submission extends Component {
       },
       history: { location: { state } },
     } = this.props;
-    const repoAppId = state && state.appId;
+    let repoAppId = [];
+    if (state && state.appId) {
+      repoAppId = state.appId;
+    }
     const { id: projectId } = AppState.currentMenuType;
     const { page, appId, dateType } = this.state;
     const startTime = getStartTime.format().split('T')[0].replace(/-/g, '/');
     const endTime = getEndTime.format().split('T')[0].replace(/-/g, '/');
-    loadApps(projectId).then((data) => {
+    loadAllApps(projectId).then((data) => {
       if (data && data.length) {
         let selectApp = appId || _.map(data, item => item.id);
         if (!appId) {
-          if (repoAppId) {
-            selectApp = [Number(repoAppId)];
+          if (repoAppId.length) {
+            selectApp = repoAppId;
           }
           this.setState({ appId: selectApp });
         }
@@ -146,31 +149,41 @@ class Submission extends Component {
   maxTagNode = (data, value) => <MaxTagPopover dataSource={data} value={value} />;
 
   render() {
-    const { intl: { formatMessage }, history, ReportsStore } = this.props;
+    const {
+      intl: { formatMessage },
+      history,
+      ReportsStore,
+    } = this.props;
+    const {
+      getCommits,
+      getStartTime,
+      getEndTime,
+      getAllApps,
+      getCommitsRecord,
+      getIsRefresh,
+      getCommitLoading,
+      getStartDate,
+      getEndDate,
+      getHistoryLoad,
+    } = ReportsStore;
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const { appId, dateType } = this.state;
-    const commits = ReportsStore.getCommits;
-    const startTime = ReportsStore.getStartTime;
-    const endTime = ReportsStore.getEndTime;
-    const { total, user } = formatData(commits);
-    const apps = ReportsStore.getApps;
-    const commitsRecord = ReportsStore.getCommitsRecord;
-    const isRefresh = ReportsStore.getIsRefresh;
-    const options = _.map(apps, item => (<Option key={item.id} value={item.id}>{item.name}</Option>));
+    const { total, user } = formatData(getCommits);
+    const options = _.map(getAllApps, item => (<Option key={item.id} value={item.id}>{item.name}</Option>));
     const personChart = _.map(user, item => (<div key={item.id} className="c7n-report-submission-item">
       <LineChart
-        loading={ReportsStore.getCommitLoading}
+        loading={getCommitLoading}
         name={item.name || 'Unknown'}
         color="#ff9915"
         style={{ width: '100%', height: 176 }}
         data={item}
-        start={startTime}
-        end={endTime}
+        start={getStartTime}
+        end={getEndTime}
         hasAvatar
       />
     </div>));
 
-    const content = (apps && apps.length
+    const content = (getAllApps.length
       ? (<Fragment>
         <div className="c7n-report-control c7n-report-select">
           <Select
@@ -180,7 +193,7 @@ class Submission extends Component {
             placeholder={formatMessage({ id: 'report.app.noselect' })}
             maxTagCount={3}
             value={appId || []}
-            maxTagPlaceholder={this.maxTagNode.bind(this, apps)}
+            maxTagPlaceholder={this.maxTagNode.bind(this, getAllApps)}
             onChange={this.handleSelect}
             optionFilterProp="children"
             filter
@@ -189,8 +202,8 @@ class Submission extends Component {
           </Select>
           <TimePicker
             unlimit
-            startTime={ReportsStore.getStartDate}
-            endTime={ReportsStore.getEndDate}
+            startTime={getStartDate}
+            endTime={getEndDate}
             func={this.loadData}
             store={ReportsStore}
             type={dateType}
@@ -200,21 +213,21 @@ class Submission extends Component {
         <div className="c7n-report-submission clearfix">
           <div className="c7n-report-submission-overview">
             <LineChart
-              loading={ReportsStore.getCommitLoading}
+              loading={getCommitLoading}
               name="提交情况"
               color="#4677dd"
               style={{ width: '100%', height: 276 }}
               data={total}
               hasAvatar={false}
-              start={startTime}
-              end={endTime}
+              start={getStartTime}
+              end={getEndTime}
             />
           </div>
           <div className="c7n-report-submission-history">
             <CommitHistory
-              loading={ReportsStore.getHistoryLoad}
+              loading={getHistoryLoad}
               onPageChange={this.handlePageChange}
-              dataSource={commitsRecord}
+              dataSource={getCommitsRecord}
             />
           </div>
         </div>
@@ -246,7 +259,7 @@ class Submission extends Component {
         </Button>
       </Header>
       <Content code="report.submission" value={{ name }}>
-        {isRefresh ? <LoadingBar /> : content}
+        {getIsRefresh ? <LoadingBar /> : content}
       </Content>
     </Page>);
   }

@@ -287,7 +287,7 @@ class DevOpsDeploy extends Component {
   getContent = () => {
     const { loading } = this.state;
     if (loading) {
-      return (<div className="c7n-spin-wrap"><Spin wrapperClassName="c7n-spin-wrap-chart" /></div>);
+      return (<div className="c7ncd-dashboard-loading"><Spin /></div>);
     }
     return (<ReactEcharts
       option={this.getOption()}
@@ -329,7 +329,7 @@ class DevOpsDeploy extends Component {
           {appDom}
           {appDom ? <Option key="all" value="all">{formatMessage({ id: 'dashboard.allApp' })}</Option> : null}
         </Select>
-        {this.getContent()}
+        <div className="c7ncd-db-panel-size">{this.getContent()}</div>
       </div>
       <DashBoardNavBar>
         <Link to={`/devops/reports/deploy-times?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>

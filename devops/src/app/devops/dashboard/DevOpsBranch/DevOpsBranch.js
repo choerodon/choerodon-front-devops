@@ -28,7 +28,7 @@ class DevOpsBranch extends Component {
 
   componentDidMount() {
     const { id } = AppState.currentMenuType;
-    ReportsStore.loadApps(id).then((data) => {
+    ReportsStore.loadAllApps(id).then((data) => {
       if (data && data.length) {
         this.setState({ appId: data[0].id });
         this.loadData();
@@ -110,7 +110,7 @@ class DevOpsBranch extends Component {
   render() {
     const { intl: { formatMessage } } = this.props;
     const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
-    const { apps } = ReportsStore;
+    const { getAllApps } = ReportsStore;
     const { appId, noSelect } = this.state;
     return (<Fragment>
       <Select
@@ -120,10 +120,9 @@ class DevOpsBranch extends Component {
         onChange={this.handleChange}
         defaultValue={appId}
         value={appId}
-        // disabled={noSelect}
       >
         {
-          _.map(apps, (app, index) => (
+          _.map(getAllApps, (app, index) => (
             <Option value={app.id} key={index}>
               <Tooltip title={app.code}>
                 <span className="c7n-app-select-tooltip">
