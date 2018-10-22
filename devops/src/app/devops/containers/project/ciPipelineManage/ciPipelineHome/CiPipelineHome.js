@@ -91,36 +91,6 @@ class CiPipelineHome extends Component {
     DevPipelineStore.queryAppData(AppState.currentMenuType.id, 'ci');
   }
 
-  get filterBar() {
-    const { intl: { formatMessage } } = this.props;
-    return (
-      <div>
-        <Select
-          className="c7n-app-select_512"
-          value={DevPipelineStore.selectedApp}
-          label={this.props.intl.formatMessage({ id: 'deploy.step.one.app' })}
-          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-          filter
-          onChange={this.handleChange.bind(this)}
-        >
-          <OptGroup label={formatMessage({ id: 'recent' })} key="recent">
-            {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
-              <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
-            </Option>)}
-          </OptGroup>
-          <OptGroup label={formatMessage({ id: 'deploy.app' })} key="app">
-            {
-              _.map(DevPipelineStore.appData, (app, index) => (
-                <Option value={app.id} key={index}>
-                  <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
-                </Option>))
-            }
-          </OptGroup>
-        </Select>
-      </div>
-    );
-  }
-
   get tableCiPipeline() {
     const { loading, pagination, ciPipelines } = CiPipelineStore;
     const { intl: { formatMessage } } = this.props;
@@ -269,7 +239,7 @@ class CiPipelineHome extends Component {
         </Tooltip>
       </div>
       {
-        record.latest 
+        record.latest
           ? (
             <Tooltip
               placement="top"
@@ -432,6 +402,9 @@ class CiPipelineHome extends Component {
 
   render() {
     const { name } = AppState.currentMenuType;
+    const { intl: { formatMessage } } = this.props;
+    const appData = DevPipelineStore.appData;
+
     return (
       <Page
         className="c7n-region c7n-ciPipeline"
@@ -444,6 +417,31 @@ class CiPipelineHome extends Component {
         ]}
       >
         <Header title={<FormattedMessage id="ciPipeline.head" />}>
+          <Select
+            filter
+            className="c7n-header-select"
+            dropdownClassName="c7n-header-select_drop"
+            placeholder={formatMessage({ id: 'ist.noApp' })}
+            value={DevPipelineStore.getSelectApp}
+            disabled={appData.length === 0}
+            filterOption={(input, option) => option.props.children.props.children.props.children
+              .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            onChange={this.handleChange.bind(this)}
+          >
+            <OptGroup label={formatMessage({ id: 'recent' })} key="recent">
+              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
+                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+              </Option>)}
+            </OptGroup>
+            <OptGroup label={formatMessage({ id: 'deploy.app' })} key="app">
+              {
+                _.map(appData, (app, index) => (
+                  <Option value={app.id} key={index}>
+                    <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+                  </Option>))
+              }
+            </OptGroup>
+          </Select>
           <Button
             funcType="flat"
             onClick={this.handleRefresh}
@@ -453,7 +451,6 @@ class CiPipelineHome extends Component {
           </Button>
         </Header>
         <Content code="ciPipeline" value={{ name }}>
-          {this.filterBar}
           {this.tableCiPipeline}
         </Content>
       </Page>
