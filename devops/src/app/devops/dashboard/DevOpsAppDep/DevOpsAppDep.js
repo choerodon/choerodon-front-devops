@@ -7,7 +7,6 @@ import { Select, Spin, Tooltip, Button } from 'choerodon-ui';
 import _ from 'lodash';
 import './index.scss';
 import '../common.scss';
-import '../DevOpsDeploy/index.scss';
 import { handleProptError } from '../../utils';
 
 const { AppState } = stores;
@@ -89,7 +88,7 @@ class DevOpsAppDep extends Component {
     const { loading, ist } = this.state;
     const { intl: { formatMessage } } = this.props;
     if (loading) {
-      return (<div className="c7n-spin-wrap"><Spin wrapperClassName="c7n-spin-wrap" /></div>);
+      return (<div className="c7ncd-dashboard-loading"><Spin /></div>);
     }
     const istDom = _.map(ist.deployEnvVersionDTO, i => (<Fragment>
       <div className="c7n-appDep-title">
@@ -148,7 +147,9 @@ class DevOpsAppDep extends Component {
         {this.getContent()}
       </div>
       <DashBoardNavBar>
-        <Link to={`/devops/deploy-overview?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+        <Link
+          to={`/devops/deploy-overview?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}
+        >
           <FormattedMessage id="dashboard.deploy" />
         </Link>
       </DashBoardNavBar>

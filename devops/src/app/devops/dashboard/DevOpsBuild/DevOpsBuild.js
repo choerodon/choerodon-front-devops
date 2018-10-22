@@ -28,7 +28,7 @@ class DevOpsBuild extends Component {
 
   componentDidMount() {
     const { id } = AppState.currentMenuType;
-    ReportsStore.loadApps(id).then((data) => {
+    ReportsStore.loadAllApps(id).then((data) => {
       if (data && data.length) {
         this.setState({ appId: data[0].id });
         this.loadCharts();
@@ -40,7 +40,7 @@ class DevOpsBuild extends Component {
 
   componentWillUnmount() {
     ReportsStore.setBuildNumber({});
-    ReportsStore.setApps([]);
+    ReportsStore.setAllApps([]);
   }
 
   /**
@@ -65,7 +65,7 @@ class DevOpsBuild extends Component {
     const { loading } = this.state;
     const { echartsLoading } = ReportsStore;
     if (loading) {
-      return (<Spin className="c7n-dashboard-loading-position" />);
+      return (<div className="c7ncd-dashboard-loading"><Spin /></div>);
     }
     return (<div className="c7n-buildNumber-content"><BuildChart height="300px" echartsLoading={echartsLoading} top="10%" bottom="4%" /></div>);
   };
@@ -73,7 +73,7 @@ class DevOpsBuild extends Component {
   render() {
     const { intl: { formatMessage } } = this.props;
     const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
-    const { apps } = ReportsStore;
+    const { getAllApps } = ReportsStore;
     const { appId, noSelect } = this.state;
     return (<Fragment>
       <Select
@@ -85,7 +85,7 @@ class DevOpsBuild extends Component {
         value={appId}
       >
         {
-          _.map(apps, (app, index) => (
+          _.map(getAllApps, (app, index) => (
             <Option value={app.id} key={index}>
               <Tooltip title={app.code}>
                 <span className="c7n-app-select-tooltip">
@@ -95,7 +95,7 @@ class DevOpsBuild extends Component {
             </Option>))
         }
       </Select>
-      <div className="c7ncd-db-panel">{this.getContent()}</div>
+      <div className="c7ncd-db-panel c7ncd-db-panel-size">{this.getContent()}</div>
       <DashBoardNavBar>
         <Link to={`/devops/reports/build-number?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
           <FormattedMessage id="dashboard.build" />
