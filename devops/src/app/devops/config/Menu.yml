@@ -89,8 +89,8 @@
           - 'devops-service.devops-git.deleteTag'
     - "merge-request":
         icon: merge_request
-Routes: /devops/merge-request
-                sort: 5
+        Routes: /devops/merge-request
+        sort: 5
         permission:
           - 'devops-service.devops-git.getMergeRequestList'
           - 'devops-service.devops-git.getUrl'
