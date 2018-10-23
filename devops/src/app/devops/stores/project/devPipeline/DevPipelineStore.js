@@ -130,6 +130,13 @@ class DevPipelineStore {
               case 'ci':
                 CiPipelineStore.loadPipelines(this.selectedApp);
                 break;
+              case 'all':
+                // BranchStore.loadBranchList({ projectId });
+                AppTagStore.queryTagData(projectId, 0, 10);
+                // MergeRequestStore.loadMergeRquest(this.selectedApp);
+                // MergeRequestStore.loadUrl(projectId, this.selectedApp);
+                // CiPipelineStore.loadPipelines(this.selectedApp);
+                break;
               default:
                 break;
             }

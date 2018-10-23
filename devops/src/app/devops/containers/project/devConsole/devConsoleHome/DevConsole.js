@@ -3,23 +3,26 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-import { Button, Select, Modal, Form, Icon, Collapse, Avatar, Pagination, Tooltip } from 'choerodon-ui';
+import { Button, Select, Modal, Form, Icon, Collapse, Avatar, Pagination, Tooltip, Menu, Dropdown } from 'choerodon-ui';
 import ReactMarkdown from 'react-markdown';
 import _ from 'lodash';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import LoadingBar from '../../../../components/loadingBar';
 import TimePopover from '../../../../components/timePopover/index';
-import CreateTag from '../createTag';
-import EditTag from '../editTag';
+import CreateTag from '../../appTag/createTag';
+import EditTag from '../../appTag/editTag';
 import '../../../main.scss';
-import './AppTagHome.scss';
+import '../../appTag/appTagHome/AppTagHome.scss';
+import './DevConsole.scss';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
+import AppTagStore from '../../../../stores/project/appTag';
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
 const { Panel } = Collapse;
 
 @observer
-class AppTagHome extends Component {
+class DevConsole extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,7 +40,6 @@ class AppTagHome extends Component {
   }
 
   componentDidMount() {
-    const { AppTagStore } = this.props;
     AppTagStore.setLoading(null);
     AppTagStore.setTagData([]);
     this.loadInitData();
@@ -67,7 +69,7 @@ class AppTagHome extends Component {
    * 加载应用信息
    */
   loadInitData = () => {
-    DevPipelineStore.queryAppData(AppState.currentMenuType.id, 'tag');
+    DevPipelineStore.queryAppData(AppState.currentMenuType.id, 'all');
     this.setState({ appName: null });
   };
 
@@ -77,7 +79,6 @@ class AppTagHome extends Component {
    * @param pageSize
    */
   loadTagData = (page = 0, pageSize = 10) => {
-    const { AppTagStore } = this.props;
     const { projectId } = AppState.currentMenuType;
     AppTagStore.queryTagData(projectId, page, pageSize);
   };
@@ -99,7 +100,7 @@ class AppTagHome extends Component {
   openRemove = (e, tag) => {
     e.stopPropagation();
     this.setState({ visible: true, tag });
-  }
+  };
 
   /**
    * 关闭删除确认框
@@ -110,7 +111,6 @@ class AppTagHome extends Component {
    * 删除tag
    */
   deleteTag = () => {
-    const { AppTagStore } = this.props;
     const { projectId } = AppState.currentMenuType;
     const { tag } = this.state;
     this.setState({ deleteLoading: true });
@@ -152,15 +152,45 @@ class AppTagHome extends Component {
   };
 
   render() {
-    const { intl: { formatMessage }, AppTagStore } = this.props;
+    const { intl: { formatMessage } } = this.props;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const { visible, deleteLoading, creationDisplay, appName, editDisplay, editTag, editRelease, tag } = this.state;
     const appData = DevPipelineStore.getAppData;
+    const appId = DevPipelineStore.getSelectApp;
     const tagData = AppTagStore.getTagData;
     const loading = AppTagStore.getLoading;
     const currentAppName = appName || DevPipelineStore.getDefaultAppName;
     const { current, total, pageSize } = AppTagStore.pageInfo;
     const tagList = [];
+
+    const titleName = _.find(appData, ['id', appId]) ? _.find(appData, ['id', appId]).name : name;
+    const currentApp = _.find(appData, ['id', appId]);
+
+    const menu = (
+      <Menu className="c7n-envow-dropdown-link">
+        <Menu.Item
+          key="0"
+        >
+          <Permission
+            service={[
+              'devops-service.devops-git.createTag',
+            ]}
+            type={type}
+            projectId={projectId}
+            organizationId={orgId}
+          >
+            <Button
+              type="primary"
+              funcType="flat"
+              onClick={() => this.displayCreateModal(true)}
+            >
+              <FormattedMessage id="apptag.create" />
+            </Button>
+          </Permission>
+        </Menu.Item>
+      </Menu>
+    );
+
     _.forEach(tagData, (item) => {
       const {
         commit: {
@@ -253,6 +283,8 @@ class AppTagHome extends Component {
       </Panel>);
     });
     const empty = appData && appData.length ? 'tag' : 'app';
+    const noRepoUrl = formatMessage({ id: 'repository.noUrl' });
+
     return (
       <Page
         className="c7n-tag-wrapper"
@@ -266,7 +298,7 @@ class AppTagHome extends Component {
           'devops-service.devops-git.deleteTag',
         ]}
       >
-        <Header title={<FormattedMessage id="apptag.head" />}>
+        <Header title={<FormattedMessage id="devCs.head" />}>
           <Select
             filter
             className="c7n-header-select"
@@ -292,25 +324,15 @@ class AppTagHome extends Component {
               }
             </OptGroup>
           </Select>
-          {appData && appData.length ? (
-            <Permission
-              service={[
-                'devops-service.devops-git.createTag',
-              ]}
-              type={type}
-              projectId={projectId}
-              organizationId={orgId}
-            >
-              <Button
-                type="primary"
-                funcType="flat"
-                icon="playlist_add"
-                onClick={() => this.displayCreateModal(true)}
-              >
-                <FormattedMessage id="apptag.create" />
-              </Button>
-            </Permission>
-          ) : null}
+          {appData && appData.length ? (<div className="c7n-dc-create-select">
+            <Dropdown overlay={menu} trigger={['click']}>
+              <a href="#">
+                <Icon type="playlist_add" />
+                {formatMessage({ id: 'create' })}
+                <Icon type="arrow_drop_down" />
+              </a>
+            </Dropdown>
+          </div>) : null}
           <Button
             type="primary"
             funcType="flat"
@@ -320,36 +342,87 @@ class AppTagHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="apptag" value={{ name }}>
-          <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
-          {loading || _.isNull(loading) ? <LoadingBar display /> : <Fragment>
-            {tagList.length ? <Fragment>
-              <Collapse bordered={false}>{tagList}</Collapse>
-              <div className="c7n-tag-pagin">
-                <Pagination
-                  total={total}
-                  current={current}
-                  pageSize={pageSize}
-                  onChange={this.handlePaginChange}
-                  onShowSizeChange={this.handlePaginChange}
-                />
-              </div>
-            </Fragment> : (<div className="c7n-tag-empty">
-              <div>
+        <Content>
+          <div className="c7n-dc-content_1">
+            <div className="page-content-header">
+              <div className="title">{appData.length && appId ? `应用"${titleName}"的开发控制台` : `项目"${titleName}"的开发控制台`}</div>
+              {appData && appData.length ? <Fragment>
+                <div>
+                  <FormattedMessage id="ciPipeline.appCode" />：{currentApp ? currentApp.code : ''}
+                  {currentApp && currentApp.sonarUrl ? <Tooltip title={<FormattedMessage id="repository.quality" />} placement="bottom">
+                    <a className="repo-copy-btn" href={currentApp.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
+                      <Button shape="circle" size="small" icon="quality" />
+                    </a>
+                  </Tooltip> : null }
+                </div>
+                <div className="c7n-dc-url-wrap">
+                  <FormattedMessage id="app.url" />：{currentApp ? currentApp.repUrl : ''}
+                  {currentApp && currentApp.sonarUrl ? <Tooltip title={<FormattedMessage id="repository.copyUrl" />} placement="bottom">
+                    <CopyToClipboard
+                      text={currentApp.repoUrl || noRepoUrl}
+                      onCopy={this.handleCopy}
+                    >
+                      <Button shape="circle" size="small">
+                        <i className="icon icon-library_books" />
+                      </Button>
+                    </CopyToClipboard>
+                  </Tooltip> : null}
+                </div>
+              </Fragment> : <div className="c7n-tag-empty">
                 <Icon type="info" className="c7n-tag-empty-icon" />
                 <span className="c7n-tag-empty-text">{formatMessage({ id: `apptag.${empty}.empty` })}</span>
+              </div>}
+            </div>
+            <div className="c7n-dc-data-wrap">
+                184
+            </div>
+          </div>
+          <div className="c7n-dc-content_1">
+            <div className="c7n-dc-card-wrap c7n-dc-card-branch">
+              <div className="c7n-dc-card-title">
+                <Icon type="branch" />
+                <FormattedMessage id="branch.branch" />
               </div>
-              {empty === 'tag' ? (
-                <Button
-                  type="primary"
-                  funcType="raised"
-                  onClick={() => this.displayCreateModal(true, empty)}
-                >
-                  <FormattedMessage id="apptag.create" />
-                </Button>
-              ) : null}
-            </div>)}
-          </Fragment>}
+            </div>
+            <div className="c7n-dc-card-wrap c7n-dc-card-merge">
+              <div className="c7n-dc-card-title">
+                <Icon type="merge_request" />
+                <FormattedMessage id="merge.head" />
+              </div>
+            </div>
+          </div>
+          <div className="c7n-dc-card-wrap">
+            <div className="c7n-dc-card-title">
+              <Icon type="local_offer" />
+              <FormattedMessage id="apptag.head" />
+            </div>
+            {loading || _.isNull(loading) ? <LoadingBar display /> : <Fragment>
+              {tagList.length ? <Fragment>
+                <Collapse className="c7n-dc-collapse-padding" bordered={false}>{tagList}</Collapse>
+                <div className="c7n-tag-pagin">
+                  <Pagination
+                    total={total}
+                    current={current}
+                    pageSize={pageSize}
+                    onChange={this.handlePaginChange}
+                    onShowSizeChange={this.handlePaginChange}
+                  />
+                </div>
+              </Fragment> : (<Fragment>
+                {empty === 'tag' ? (
+                  <div className="c7n-tag-empty">
+                    <Button
+                      type="primary"
+                      funcType="raised"
+                      onClick={() => this.displayCreateModal(true, empty)}
+                    >
+                      <FormattedMessage id="apptag.create" />
+                    </Button>
+                  </div>
+                ) : null}
+              </Fragment>)}
+            </Fragment>}
+          </div>
         </Content>
         <Modal
           confirmLoading={deleteLoading}
@@ -382,4 +455,4 @@ class AppTagHome extends Component {
   }
 }
 
-export default Form.create({})(withRouter(injectIntl(AppTagHome)));
+export default Form.create({})(withRouter(injectIntl(DevConsole)));

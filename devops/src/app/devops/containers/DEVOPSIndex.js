@@ -28,6 +28,7 @@ const EnvOverview = asyncRouter(() => import('./project/envOverview'));
 const DeployOverview = asyncRouter(() => import('./project/deployOverview'));
 const Certificate = asyncRouter(() => import('./project/certificate'));
 const Reports = asyncRouter(() => import('./project/reports'));
+const DevConsole = asyncRouter(() => import('./project/devConsole'));
 
 @inject('AppState')
 class DEVOPSIndex extends React.Component {
@@ -58,6 +59,7 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/repository`} component={Repository} />
           <Route path={`${match.url}/certificate`} component={Certificate} />
           <Route path={`${match.url}/reports`} component={Reports} />
+          <Route path={`${match.url}/dev-console`} component={DevConsole} />
           <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>

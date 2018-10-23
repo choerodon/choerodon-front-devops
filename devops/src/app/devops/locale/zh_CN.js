@@ -218,6 +218,9 @@ const pageDetail = {
   'report.deploy-times.link': `${docServer}/user-guide/report/devops-report/deploy-frequency`,
   'report.build-duration.link': `${docServer}/user-guide/report/devops-report/build-duration`,
   'report.link': `${docServer}/user-guide/report/devops-report/`,
+
+  // 开发控制台
+  'devCs.title': '应用"{name}"的开发控制台',
 };
 
 const zhCN = {
@@ -940,6 +943,9 @@ const zhCN = {
   'dpOverview.head': '部署总览',
   'dpOverview.update': '可升级',
   'dpOverview.deploy': '快速部署',
+
+  // devConsole
+  'devCs.head': '开发控制台',
 
   ...pageDetail,
 };

@@ -438,12 +438,15 @@
 
 .c7n-envow-dropdown-link {
   button {
-    padding: 0;
+    padding: 5px 12px;
     line-height: 22px;
-    height: 22px;
 
     &:hover {
       background-color: transparent;
     }
+  }
+
+  .ant-dropdown-menu-item {
+    padding: 0;
   }
 }
