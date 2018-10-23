@@ -39,7 +39,8 @@ class SingleApp extends Component {
   }
 
   componentDidMount() {
-    this.loadSelectData([this.state.selectProPage, this.state.selectPubPage], '');
+    const { selectProPage, selectPubPage } = this.state;
+    this.loadSelectData([selectProPage, selectPubPage], '');
     scrollLeft = 0;
   }
 
@@ -123,25 +124,14 @@ class SingleApp extends Component {
   };
 
   /**
-   * 处理页面跳转
-   * @param url 跳转地址
-   */
-  linkToChange = (url) => {
-    const { history } = this.props;
-    history.push(url);
-  };
-
-  /**
    * 查看部署详情
    * @param id 实例ID
    * @param status 实例状态
    */
   linkDeployDetail = (id, status) => {
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const projectName = AppState.currentMenuType.name;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    const { history } = this.props;
+    const { id: projectId, name, organizationId, type } = AppState.currentMenuType;
+    history.push(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`);
   };
 
   /**

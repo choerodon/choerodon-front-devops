@@ -40,15 +40,6 @@ class SingleEnvironment extends Component {
   };
 
   /**
-   * 处理页面跳转
-   * @param url 跳转地址
-   */
-  linkToChange = (url) => {
-    const { history } = this.props;
-    history.push(url);
-  };
-
-  /**
    * envID & appID获取实例列表
    * @param envId
    * @param appId
@@ -78,11 +69,9 @@ class SingleEnvironment extends Component {
    * @param status 实例状态
    */
   linkDeployDetail = (id, status) => {
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const projectName = AppState.currentMenuType.name;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+    const { history } = this.props;
+    const { id: projectId, name, organizationId, type } = AppState.currentMenuType;
+    history.push(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`);
   };
 
   /**

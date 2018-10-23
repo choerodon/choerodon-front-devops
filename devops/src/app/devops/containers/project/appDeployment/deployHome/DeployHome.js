@@ -27,20 +27,17 @@ class DeployHome extends Component {
   componentDidMount() {
     const { AppDeploymentStore } = this.props;
     AppStoreStore.setBackPath(false);
-    // const tabActive = AppDeploymentStore.getTabActive;
+    const tabActive = AppDeploymentStore.getTabActive;
     this.loadEnvCards();
     this.loadAppName();
-    this.loadIstAlls();
-    // if (tabActive) {
-    //   this.loadInitData(tabActive, {});
-    // } else {
-    //   this.loadIstAlls();
-    // }
+    if (tabActive) {
+      this.loadData(tabActive, {});
+    }
   }
 
   componentWillUnmount() {
     const { AppDeploymentStore } = this.props;
-    AppDeploymentStore.setTabActive('instance');
+    // AppDeploymentStore.setTabActive('instance');
     AppDeploymentStore.setAppNameByEnv([]);
     AppDeploymentStore.setAppNameByEnv([]);
     AppDeploymentStore.setEnvId();
