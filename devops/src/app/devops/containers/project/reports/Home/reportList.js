@@ -23,7 +23,7 @@ export default [
 ];
 
 // {
-//   key: 'core-quality',
-//     link: '/devops/reports/core-quality',
-//   pic: 'core-quality',
+//   key: 'code-quality',
+//   link: '/devops/reports/code-quality',
+//   pic: 'code-quality',
 // },

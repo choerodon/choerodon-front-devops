@@ -566,7 +566,7 @@ class AppOverview extends Component {
                       </div>)
                         : (<div>
                           <span className="c7n-deploy-istCode">{c.code}</span>
-                          <Tooltip title={`${c.status}: ${c.error}`}>
+                          <Tooltip title={`${c.status}${c.error ? `：${c.error}` : ''}`}>
                             <i className="icon icon-error c7n-deploy-ist-operate" />
                           </Tooltip>
                         </div>)}

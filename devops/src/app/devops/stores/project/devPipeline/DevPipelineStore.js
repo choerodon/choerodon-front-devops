@@ -144,6 +144,8 @@ class DevPipelineStore {
           } else {
             this.setSelectApp(null);
             AppTagStore.setLoading(false);
+            CiPipelineStore.setLoading(false);
+            MergeRequestStore.setLoading(false);
           }
         }
       }).catch(err => Choerodon.handleResponseError(err));

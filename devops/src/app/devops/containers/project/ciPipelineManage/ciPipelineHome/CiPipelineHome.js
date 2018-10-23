@@ -91,6 +91,10 @@ class CiPipelineHome extends Component {
     DevPipelineStore.queryAppData(AppState.currentMenuType.id, 'ci');
   }
 
+  componentWillUnmount() {
+    CiPipelineStore.setCiPipelines([]);
+  }
+
   get tableCiPipeline() {
     const { loading, pagination, ciPipelines } = CiPipelineStore;
     const { intl: { formatMessage } } = this.props;
@@ -403,17 +407,17 @@ class CiPipelineHome extends Component {
   render() {
     const { name } = AppState.currentMenuType;
     const { intl: { formatMessage } } = this.props;
-    const appData = DevPipelineStore.appData;
-
+    const appData = DevPipelineStore.getAppData;
+    const appId = DevPipelineStore.getSelectApp;
+    const titleName = _.find(appData, ['id', appId]) ? _.find(appData, ['id', appId]).name : name;
     return (
       <Page
         className="c7n-region c7n-ciPipeline"
         service={[
-          'devops-service.project-pipeline.list',
           'devops-service.application.listByActive',
-          'devops-service.gitlab-commit.list',
           'devops-service.project-pipeline.cancel',
           'devops-service.project-pipeline.retry',
+          'devops-service.devops-gitlab-pipeline.pagePipeline',
         ]}
       >
         <Header title={<FormattedMessage id="ciPipeline.head" />}>
@@ -450,7 +454,7 @@ class CiPipelineHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="ciPipeline" value={{ name }}>
+        <Content code={appData.length ? 'ciPipeline.app' : 'ciPipeline'} values={{ name: titleName }}>
           {this.tableCiPipeline}
         </Content>
       </Page>

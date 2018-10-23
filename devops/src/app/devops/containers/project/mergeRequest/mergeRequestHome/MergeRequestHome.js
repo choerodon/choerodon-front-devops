@@ -130,6 +130,8 @@ class MergeRequestHome extends Component {
       getAssigneeCount,
     } = MergeRequestStore;
     const appData = DevPipelineStore.getAppData;
+    const appId = DevPipelineStore.getSelectApp;
+    const titleName = _.find(appData, ['id', appId]) ? _.find(appData, ['id', appId]).name : name;
 
     const columnsAll = [{
       title: <FormattedMessage id="app.code" />,
@@ -445,13 +447,13 @@ class MergeRequestHome extends Component {
               }
             </OptGroup>
           </Select>
-          <Button
+          {appData.length ? (<Button
             funcType="flat"
             onClick={this.linkToNewMerge}
           >
             <i className="icon-playlist_add icon" />
             <FormattedMessage id="merge.createMerge" />
-          </Button>
+          </Button>) : null}
           <Button
             funcType="flat"
             onClick={this.reload}
@@ -460,7 +462,7 @@ class MergeRequestHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="merge" value={{ name }}>
+        <Content code={appData.length ? 'merge.app' : 'merge'} values={{ name: titleName }}>
           <Tabs activeKey={tabKey} onChange={this.tabChange} animated={false}>
             <TabPane tab={`${intl.formatMessage({ id: 'merge.tab1' })}(${openCount || 0})`} key="opened">
               <Table

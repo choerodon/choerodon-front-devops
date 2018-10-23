@@ -105,6 +105,8 @@ const pageDetail = {
   // branch
   'branch.title': '项目"{name}"的分支',
   'branch.description': '分支是将您的开发工作从主线上分离开来，以免影响主线。您可在此查看各应用的分支，创建分支，并将代码拉至本地开发后提交代码。',
+  'branch.app.title': '应用"{name}"的分支',
+  'branch.app.description': '分支是将您的开发工作从主线上分离开来，以免影响主线。您可在此查看各应用的分支，创建分支，并将代码拉至本地开发后提交代码。',
   'branch.create.title': '在应用"{name}"中创建分支',
   'branch.create.description': '您在此选择该分支要解决的问题、分支来源，修改默认的分支类型及分支名称，即可创建分支。',
   'branch.edit.title': '修改分支"{name}"关联的问题',
@@ -157,16 +159,22 @@ const pageDetail = {
   // ci-pipeline
   'ciPipeline.title': '项目"{name}"的持续集成',
   'ciPipeline.description': '您可在此查看各应用所有持续集成流水线的运行情况。',
+  'ciPipeline.app.title': '应用"{name}"的持续集成',
+  'ciPipeline.app.description': '您可在此查看各应用所有持续集成流水线的运行情况。',
   'ciPipeline.link': `${docServer}/user-guide/development-pipeline/continuous-integration/`,
 
   // merge-request
   'merge.title': '项目"{name}"的合并请求',
   'merge.description': '合并请求是将某一分支的代码合并至另一分支的操作。您可在此查看各应用的合并请求，及创建合并请求。',
+  'merge.app.title': '应用"{name}"的合并请求',
+  'merge.app.description': '合并请求是将某一分支的代码合并至另一分支的操作。您可在此查看各应用的合并请求，及创建合并请求。',
   'merge.link': `${docServer}/user-guide/development-pipeline/merge-request/`,
 
   // app-tag
   'apptag.description': '标记是用于标识某一时间点形成的稳定可发布的代码版本。您可在此查看各应用的所有标记及相关提交信息，还可以基于某一分支创建标记。',
   'apptag.title': '项目"{name}"的标记',
+  'apptag.app.description': '标记是用于标识某一时间点形成的稳定可发布的代码版本。您可在此查看各应用的所有标记及相关提交信息，还可以基于某一分支创建标记。',
+  'apptag.app.title': '应用"{name}"的标记',
   'apptag.link': `${docServer}/user-guide/development-pipeline/tag/`,
   'apptag.createTag': '在应用"{name}"中创建标记',
   'apptag.createDescription': '您在此填写标记名称，选择标记来源，即可基于某一分支创建标记。',
@@ -893,13 +901,13 @@ const zhCN = {
   // 报表
   'report.head': '报告',
   'report.submission.head': '代码提交图',
-  'report.core-quality.head': '代码质量报表',
+  'report.code-quality.head': '代码质量报表',
   'report.deploy-duration.head': '部署时长图',
   'report.build-number.head': '构建次数图',
   'report.build-duration.head': '构建时长图',
   'report.deploy-times.head': '部署次数图',
   'report.submission.des': '跟踪项目下团队与个人的代码提交情况。这有助于了解团队的整体效率与个人效率。',
-  'report.core-quality.des': '展示项目下所有应用的代码质量详情。这有助于您了解到每个应用的质量情况。',
+  'report.code-quality.des': '展示项目下所有应用的代码质量详情。这有助于您了解到每个应用的质量情况。',
   'report.deploy-duration.des': '展示该项目下某一环境中各个应用部署时长等部署相关的信息。这将帮助您了解各个应用的部署情况。',
   'report.deploy-times.des': '展示了项目下各个环境中各个应用的部署频率。这将帮助您了解团队的部署频次与整体的效率。',
   'report.build-number.des': '从应用的维度展示某个应用的构建次数，构建成功次数以及构建成功率。这将帮助您快速地了解到该应用的构建情况。',

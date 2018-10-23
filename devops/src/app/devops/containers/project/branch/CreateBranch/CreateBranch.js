@@ -271,8 +271,7 @@ class CreateBranch extends Component {
   };
 
   render() {
-    const { name } = AppState.currentMenuType;
-    const { visible, intl, store, form: { getFieldDecorator } } = this.props;
+    const { visible, intl, store, form: { getFieldDecorator }, name } = this.props;
     const issue = store.issue.slice();
     const branches = store.branchData;
     const tags = store.tagData;

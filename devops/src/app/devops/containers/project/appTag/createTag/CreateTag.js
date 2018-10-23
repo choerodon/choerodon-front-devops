@@ -136,9 +136,8 @@ class CreateTag extends Component {
   };
 
   render() {
-    const { intl: { formatMessage }, store, form: { getFieldDecorator }, show } = this.props;
+    const { intl: { formatMessage }, store, form: { getFieldDecorator }, show, app: name } = this.props;
     const { submitting, release } = this.state;
-    const { name } = AppState.currentMenuType;
     const { content, totalElements, numberOfElements } = store.getBranchData;
     return (<Sidebar
       destroyOnClose

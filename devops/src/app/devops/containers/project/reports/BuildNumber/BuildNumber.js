@@ -157,6 +157,8 @@ class BuildNumber extends Component {
         'devops-service.application.listByActive',
         'devops-service.devops-gitlab-pipeline.listPipelineFrequency',
         'devops-service.devops-gitlab-pipeline.pagePipeline',
+        'devops-service.project-pipeline.cancel',
+        'devops-service.project-pipeline.retry',
       ]}
     >
       <Header

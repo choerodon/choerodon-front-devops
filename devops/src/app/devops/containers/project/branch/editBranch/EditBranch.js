@@ -144,8 +144,7 @@ class EditBranch extends Component {
 
 
   render() {
-    const { name } = AppState.currentMenuType;
-    const { visible, store, form: { getFieldDecorator } } = this.props;
+    const { visible, store, form: { getFieldDecorator }, name } = this.props;
     const issueInitValue = store.issueInitValue;
     const issue = store.issue.slice();
     const branch = store.branch;
