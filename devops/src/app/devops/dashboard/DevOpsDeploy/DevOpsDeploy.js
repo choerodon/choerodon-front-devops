@@ -332,7 +332,16 @@ class DevOpsDeploy extends Component {
         <div className="c7ncd-db-panel-size">{this.getContent()}</div>
       </div>
       <DashBoardNavBar>
-        <Link to={`/devops/reports/deploy-times?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+        <Link
+          to={{
+            pathname: '/devops/reports/deploy-times',
+            search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}`,
+            state: {
+              appId,
+              envIds,
+            },
+          }}
+        >
           <FormattedMessage id="dashboard.deployment" />
         </Link>
       </DashBoardNavBar>

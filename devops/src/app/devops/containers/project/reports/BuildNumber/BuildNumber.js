@@ -50,11 +50,22 @@ class BuildNumber extends Component {
    * 加载数据
    */
   loadDatas = () => {
-    const { ReportsStore } = this.props;
+    const {
+      ReportsStore,
+      history: { location: { state } },
+    } = this.props;
+    let historyAppId = null;
+    if (state && state.appId) {
+      historyAppId = state.appId;
+    }
     const { id } = AppState.currentMenuType;
     ReportsStore.loadAllApps(id).then((data) => {
       if (data && data.length) {
-        ReportsStore.setAppId(data[0].id);
+        let selectApp = data[0].id;
+        if (historyAppId) {
+          selectApp = historyAppId;
+        }
+        ReportsStore.setAppId(selectApp);
         this.loadCharts();
       }
     });

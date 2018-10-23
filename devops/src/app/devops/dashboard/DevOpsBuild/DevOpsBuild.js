@@ -97,7 +97,13 @@ class DevOpsBuild extends Component {
       </Select>
       <div className="c7ncd-db-panel c7ncd-db-panel-size">{this.getContent()}</div>
       <DashBoardNavBar>
-        <Link to={`/devops/reports/build-number?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+        <Link
+          to={{
+            pathname: '/devops/reports/build-number',
+            search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}`,
+            state: { appId },
+          }}
+        >
           <FormattedMessage id="dashboard.build" />
         </Link>
       </DashBoardNavBar>

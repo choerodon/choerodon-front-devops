@@ -134,7 +134,13 @@ class DevOpsBranch extends Component {
       </Select>
       <div className="c7ncd-db-panel pdb1">{this.getContent()}</div>
       <DashBoardNavBar>
-        <Link to={`/devops/branch?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}>
+        <Link
+          to={{
+            pathname: '/devops/branch',
+            search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}`,
+            state: { appId },
+          }}
+        >
           <FormattedMessage id="dashboard.branch" />
         </Link>
       </DashBoardNavBar>
