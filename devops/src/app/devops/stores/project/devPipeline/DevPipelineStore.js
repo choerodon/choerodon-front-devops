@@ -79,10 +79,15 @@ class DevPipelineStore {
   @action
   setRecentApp(id) {
     if (id) {
-      const recent = this.appData.filter(value => value.id === id)[0];
-      const recentApp = saveRecent(this.getRecentApp, recent, 3);
-      localStorage.recentApp = JSON.stringify(recentApp);
-      this.recentApp = recentApp;
+      if (this.appData.length) {
+        const recent = this.appData.filter(value => value.id === id)[0];
+        const recentApp = saveRecent(this.getRecentApp, recent, 3);
+        localStorage.recentApp = JSON.stringify(recentApp);
+        this.recentApp = recentApp;
+      } else {
+        localStorage.recentApp = JSON.stringify([id]);
+        this.recentApp = [id];
+      }
     }
   }
 
@@ -90,9 +95,9 @@ class DevPipelineStore {
    * 查询该项目下的所有应用
    * @param projectId
    * @param type
-   * @returns {Promise<T>}
+   * @param apps
    */
-  queryAppData = (projectId = AppState.currentMenuType.id, type) => {
+  queryAppData = (projectId = AppState.currentMenuType.id, type, apps) => {
     AppTagStore.setTagData([]);
     BranchStore.setBranchList([]);
     this.setAppData([]);
@@ -102,7 +107,9 @@ class DevPipelineStore {
         if (result) {
           this.setAppData(result);
           if (result.length) {
-            if (this.selectedApp) {
+            if (apps) {
+              this.setSelectApp(apps);
+            } else if (this.selectedApp) {
               if (_.filter(result, ['id', this.selectedApp]).length === 0) {
                 this.setSelectApp(result[0].id);
               }

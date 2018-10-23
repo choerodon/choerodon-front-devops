@@ -35,7 +35,14 @@ class BranchHome extends Component {
   }
 
   componentDidMount() {
-    DevPipelineStore.queryAppData(AppState.currentMenuType.id, 'branch');
+    const {
+      history: { location: { state } },
+    } = this.props;
+    let historyAppId = null;
+    if (state && state.appId) {
+      historyAppId = state.appId;
+    }
+    DevPipelineStore.queryAppData(AppState.currentMenuType.id, 'branch', historyAppId);
   }
 
   /**
