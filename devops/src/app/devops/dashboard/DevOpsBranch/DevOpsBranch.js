@@ -8,6 +8,7 @@ import _ from 'lodash';
 import '../common.scss';
 import './index.scss';
 import ReportsStore from '../../stores/project/reports';
+import DevPipelineStore from '../../stores/project/devPipeline';
 import TimePopover from '../../components/timePopover';
 import { handleProptError } from '../../utils';
 
@@ -30,6 +31,7 @@ class DevOpsBranch extends Component {
     const { id } = AppState.currentMenuType;
     ReportsStore.loadAllApps(id).then((data) => {
       if (data && data.length) {
+        DevPipelineStore.setRecentApp(data[0].id);
         this.setState({ appId: data[0].id });
         this.loadData();
       } else {
@@ -60,6 +62,7 @@ class DevOpsBranch extends Component {
   };
 
   handleChange = (id) => {
+    DevPipelineStore.setRecentApp(id);
     this.setState({ appId: id }, () => this.loadData());
   };
 

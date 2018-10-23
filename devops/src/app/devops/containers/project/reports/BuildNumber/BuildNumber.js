@@ -13,7 +13,6 @@ import BuildTable from '../BuildTable/BuildTable';
 import LoadingBar from '../../../../components/loadingBar/LoadingBar';
 import BuildChart from './BuildChart';
 
-
 const { AppState } = stores;
 const { Option } = Select;
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;

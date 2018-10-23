@@ -93,12 +93,21 @@ class DeployTimes extends Component {
    */
   @action
   loadEnvCards = () => {
+    const { history: { location: { state } } } = this.props;
     const projectId = AppState.currentMenuType.id;
+    let historyEnvsId = null;
+    if (state && state.envIds) {
+      historyEnvsId = state.envIds;
+    }
     ContainerStore.loadActiveEnv(projectId)
       .then((env) => {
         if (env.length) {
+          let selectEnv = this.envIds.length ? this.envIds : [env[0].id];
+          if (historyEnvsId) {
+            selectEnv = historyEnvsId;
+          }
           this.env = env;
-          this.envIds = this.envIds.length ? this.envIds : [env[0].id];
+          this.envIds = selectEnv;
         }
         this.loadCharts();
       });
@@ -109,13 +118,24 @@ class DeployTimes extends Component {
    */
   @action
   loadApps = () => {
-    const { ReportsStore } = this.props;
+    const {
+      ReportsStore,
+      history: { location: { state } },
+    } = this.props;
     const { id } = AppState.currentMenuType;
+    let historyAppId = null;
+    if (state && state.appId) {
+      historyAppId = state.appId;
+    }
     ReportsStore.loadApps(id)
       .then((app) => {
         if (app.length) {
+          let selectApp = this.appId || 'all';
+          if (historyAppId) {
+            selectApp = historyAppId;
+          }
           this.app = app;
-          this.appId = this.appId || 'all';
+          this.appId = selectApp;
         }
       });
   };
