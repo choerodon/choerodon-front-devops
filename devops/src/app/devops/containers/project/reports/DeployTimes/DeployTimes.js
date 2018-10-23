@@ -397,14 +397,13 @@ class DeployTimes extends Component {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const echartsLoading = ReportsStore.getEchartsLoading;
-    const apps = ReportsStore.getApps;
     const isRefresh = ReportsStore.getIsRefresh;
 
     const envDom = this.env.length ? _.map(this.env, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
 
     const appDom = this.app.length ? _.map(this.app, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
 
-    const content = (apps && apps.length ? <React.Fragment>
+    const content = (this.app.length ? <React.Fragment>
       <div className="c7n-report-screen c7n-report-select">
         <Select
           notFoundContent={formatMessage({ id: 'envoverview.noEnv' })}
