@@ -1,0 +1,78 @@
+.c7n-dc-card-wrap {
+  padding: 20px 16px;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+
+  .c7n-tag-empty {
+    box-shadow: none;
+    padding-left: 28px;
+  }
+}
+
+.c7n-dc-card-title {
+  font-size: 18px;
+  color: rgba(0,0,0,0.87);
+
+  i {
+    margin-right: 12px;
+   }
+}
+
+.c7n-dc-collapse-padding {
+  padding-left: 12px;
+}
+
+.c7n-dc-url-wrap {
+  margin-bottom: 28px;
+}
+
+.c7n-dc-content_1 {
+  display: flex;
+  margin-bottom: 20px;
+
+  .c7n-tag-empty {
+    box-shadow: none;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .c7n-dc-card-branch, .page-content-header {
+    flex: 6;
+    margin-right: 20px;
+    max-width: none;
+  }
+
+  .c7n-dc-card-merge {
+    flex: 4;
+  }
+
+  .c7n-dc-data-wrap {
+    flex: 4;
+  }
+}
+
+.c7n-envow-dropdown-link {
+  button {
+    padding: 5px 12px;
+    line-height: 22px;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  .ant-dropdown-menu-item {
+    padding: 0;
+  }
+}
+
+.c7n-dc-create-select {
+  line-height: 58px;
+  margin-right: 18px;
+
+  a {
+    height: 20px;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+  }
+}

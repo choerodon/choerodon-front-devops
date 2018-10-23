@@ -50,16 +50,27 @@
   icon: wrench
   sort: 2
   project:
+    - "development-console":
+        icon: develop_console
+        Routes: /devops/dev-console
+        sort: 1
+        permission:
+          - 'devops-service.application.listCodeRepository'
+          - 'devops-service.devops-git.queryByAppId'
+          - 'devops-service.devops-git.listByAppId'
+          - 'devops-service.devops-git.getTagByPage'
+          - 'devops-service.devops-git.getMergeRequestList'
+          - 'devops-service.devops-gitlab-pipeline.pagePipeline'
     - "repository":
         icon: account_balance
         Routes: /devops/repository
-        sort: 1
+        sort: 2
         permission:
-            - 'devops-service.application.listCodeRepository'
+          - 'devops-service.application.listCodeRepository'
     - "branch":
         icon: branch
         Routes: /devops/branch
-        sort: 2
+        sort: 3
         permission:
           - 'devops-service.devops-git.createBranch'
           - 'devops-service.devops-git.queryByAppId'
@@ -69,7 +80,7 @@
     - "tag":
         icon: local_offer
         Routes: /devops/tag
-        sort: 3
+        sort: 4
         permission:
           - 'devops-service.devops-git.getTagByPage'
           - 'devops-service.devops-git.listByAppId'
@@ -79,17 +90,16 @@
     - "merge-request":
         icon: merge_request
         Routes: /devops/merge-request
-        sort: 4
+        sort: 5
         permission:
           - 'devops-service.devops-git.getMergeRequestList'
-          - 'devops-service.devops-git.getUr'
+          - 'devops-service.devops-git.getUrl'
     - "continuous-integration":
         icon: CI
         Routes: /devops/ci-pipeline
-        sort: 5
+        sort: 6
         permission:
-          - 'devops-service.project-pipeline.list'
-          - 'devops-service.gitlab-commit.list'
+          - 'devops-service.devops-gitlab-pipeline.pagePipeline'
           - 'devops-service.project-pipeline.cancel'
           - 'devops-service.project-pipeline.retry'
     - "application":
