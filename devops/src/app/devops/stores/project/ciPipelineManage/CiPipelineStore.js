@@ -38,23 +38,6 @@ class CiPipelineStore {
       });
   }
 
-  loadCommits(content, shas, projectId = AppState.currentMenuType.id) {
-    this.setCommits([]);
-    axios.post(`/devops/v1/projects/${projectId}/gitlab_projects/${content[0].gitlabProjectId}/commit_sha`, shas)
-      .then((res) => {
-        const response = this.handleProptError(res);
-        if (response) {
-          this.setCommits(res);
-          this.setCiPipelines(content);
-        }
-        this.setLoading(false);
-      })
-      .catch((error) => {
-        this.setLoading(false);
-        Choerodon.prompt(error.message);
-      });
-  }
-
   cancelPipeline(gitlabProjectId, pipelineId) {
     return axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/gitlab_projects/${gitlabProjectId}/pipelines/${pipelineId}/cancel`)
       .then(datas => this.handleProptError(datas));

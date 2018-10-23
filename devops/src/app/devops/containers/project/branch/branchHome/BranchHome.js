@@ -379,6 +379,7 @@ class BranchHome extends Component {
    */
   handleEdit =(name) => {
     const { BranchStore } = this.props;
+    this.setState({ name });
     BranchStore.loadBranchByName(this.state.projectId, DevPipelineStore.selectedApp, name);
     BranchStore.setCreateBranchShow('edit');
   };
@@ -510,6 +511,8 @@ class BranchHome extends Component {
     const { BranchStore, intl: { formatMessage } } = this.props;
     const { name: branchName, submitting, visible } = this.state;
     const apps = DevPipelineStore.appData.slice();
+    const appId = DevPipelineStore.getSelectApp;
+    const titleName = _.find(apps, ['id', appId]) ? _.find(apps, ['id', appId]).name : name;
     return (
       <Page
         className="c7n-region c7n-branch"
@@ -569,7 +572,7 @@ class BranchHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="branch" value={{ name }} className="page-content">
+        <Content code={apps.length ? 'branch.app' : 'branch'} values={{ name: titleName }} className="page-content">
           {this.tableBranch}
         </Content>
         {BranchStore.createBranchShow === 'create' && <CreateBranch
@@ -580,6 +583,7 @@ class BranchHome extends Component {
           onClose={this.hideSidebar}
         /> }
         {BranchStore.createBranchShow === 'edit' && <EditBranch
+          name={branchName}
           appId={DevPipelineStore.selectedApp}
           store={BranchStore}
           visible={BranchStore.createBranchShow === 'edit'}

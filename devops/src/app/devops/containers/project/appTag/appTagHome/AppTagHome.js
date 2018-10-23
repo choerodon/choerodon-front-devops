@@ -156,6 +156,8 @@ class AppTagHome extends Component {
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const { visible, deleteLoading, creationDisplay, appName, editDisplay, editTag, editRelease, tag } = this.state;
     const appData = DevPipelineStore.getAppData;
+    const appId = DevPipelineStore.getSelectApp;
+    const titleName = _.find(appData, ['id', appId]) ? _.find(appData, ['id', appId]).name : name;
     const tagData = AppTagStore.getTagData;
     const loading = AppTagStore.getLoading;
     const currentAppName = appName || DevPipelineStore.getDefaultAppName;
@@ -320,7 +322,7 @@ class AppTagHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="apptag" value={{ name }}>
+        <Content code={appData.length ? 'apptag.app' : 'apptag'} values={{ name: titleName }}>
           <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
           {loading || _.isNull(loading) ? <LoadingBar display /> : <Fragment>
             {tagList.length ? <Fragment>
@@ -364,7 +366,7 @@ class AppTagHome extends Component {
           ]}
         ><p>{formatMessage({ id: 'apptag.delete.tooltip' })}</p></Modal>
         {creationDisplay ? <CreateTag
-          app={currentAppName}
+          app={titleName}
           store={AppTagStore}
           show={creationDisplay}
           close={this.displayCreateModal}
