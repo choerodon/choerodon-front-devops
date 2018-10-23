@@ -411,6 +411,8 @@ class DevConsole extends Component {
               </Fragment> : (<Fragment>
                 {empty === 'tag' ? (
                   <div className="c7n-tag-empty">
+                    <Icon type="info" className="c7n-tag-empty-icon" />
+                    <span className="c7n-tag-empty-text">{formatMessage({ id: `apptag.${empty}.empty` })}</span>
                     <Button
                       type="primary"
                       funcType="raised"

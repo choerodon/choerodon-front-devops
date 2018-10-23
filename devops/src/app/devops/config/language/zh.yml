@@ -8,7 +8,7 @@
 
 # 开发流水线
 "development-pipeline": "开发流水线"
-"development-console": "开发控制台"
+"development-pipeline.development-console": "开发控制台"
 "development-pipeline.branch": "分支"
 "development-pipeline.tag": "标记"
 "development-pipeline.repository": "代码仓库"
