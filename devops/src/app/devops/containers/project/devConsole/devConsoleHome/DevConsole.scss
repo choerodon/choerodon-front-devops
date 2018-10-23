@@ -5,6 +5,12 @@
   .c7n-tag-empty {
     box-shadow: none;
     padding-left: 28px;
+    justify-content: flex-start;
+    align-items: center;
+
+    button {
+      margin-left: auto;
+    }
   }
 }
 
@@ -22,7 +28,7 @@
 }
 
 .c7n-dc-url-wrap {
-  margin-bottom: 28px;
+  margin-bottom: 8px;
 }
 
 .c7n-dc-content_1 {
