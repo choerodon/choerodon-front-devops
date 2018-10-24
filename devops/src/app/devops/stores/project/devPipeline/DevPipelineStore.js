@@ -39,6 +39,8 @@ class DevPipelineStore {
 
   @observable recentApp = null;
 
+  @observable preProId = AppState.currentMenuType.id;
+
   @action setAppData(data) {
     this.appData = data;
   }
@@ -49,6 +51,10 @@ class DevPipelineStore {
 
   @action setSelectApp(app) {
     this.selectedApp = app;
+  }
+
+  @action setPreProId(id) {
+    this.preProId = id;
   }
 
   @computed get getSelectApp() {
@@ -100,7 +106,10 @@ class DevPipelineStore {
   queryAppData = (projectId = AppState.currentMenuType.id, type, apps) => {
     AppTagStore.setTagData([]);
     BranchStore.setBranchList([]);
-    this.setAppData([]);
+    if (this.preProId !== projectId) {
+      this.setAppData([]);
+    }
+    this.setPreProId(projectId);
     axios.get(`/devops/v1/projects/${projectId}/apps`)
       .then((data) => {
         const result = handleProptError(data);

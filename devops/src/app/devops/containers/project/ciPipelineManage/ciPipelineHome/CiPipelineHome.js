@@ -426,7 +426,7 @@ class CiPipelineHome extends Component {
             className="c7n-header-select"
             dropdownClassName="c7n-header-select_drop"
             placeholder={formatMessage({ id: 'ist.noApp' })}
-            value={DevPipelineStore.getSelectApp}
+            value={appData && appData.length ? DevPipelineStore.getSelectApp : undefined}
             disabled={appData.length === 0}
             filterOption={(input, option) => option.props.children.props.children.props.children
               .toLowerCase().indexOf(input.toLowerCase()) >= 0}
