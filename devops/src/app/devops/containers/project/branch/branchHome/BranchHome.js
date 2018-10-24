@@ -535,7 +535,7 @@ class BranchHome extends Component {
             className="c7n-header-select"
             dropdownClassName="c7n-header-select_drop"
             placeholder={formatMessage({ id: 'ist.noApp' })}
-            value={DevPipelineStore.getSelectApp}
+            value={apps && apps.length ? DevPipelineStore.getSelectApp : undefined}
             disabled={apps.length === 0}
             filterOption={(input, option) => option.props.children.props.children.props.children
               .toLowerCase().indexOf(input.toLowerCase()) >= 0}
