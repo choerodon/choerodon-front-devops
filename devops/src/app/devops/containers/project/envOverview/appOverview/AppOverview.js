@@ -23,6 +23,7 @@ import CreateDomain from '../../domain/createDomain';
 import CreateNetwork from '../../networkConfig/createNetwork';
 import NetworkConfigStore from '../../../../stores/project/networkConfig';
 import LoadingBar from '../../../../components/loadingBar';
+import ExpandRow from '../../appDeployment/component/ExpandRow';
 import '../../container/containerHome/ContainerHome.scss';
 import '../../container/containerHome/Term.scss';
 
@@ -30,6 +31,14 @@ const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
 const Option = Select.Option;
 const Panel = Collapse.Panel;
+
+const deploy = [{
+  name: 'abc-sdf-355',
+  replica: '2/2',
+  replicaCount: 1,
+  time: '2018/10/24',
+  pods: [],
+}];
 
 @observer
 class AppOverview extends Component {
@@ -576,15 +585,6 @@ class AppOverview extends Component {
                     <FormattedMessage id="app.appVersion" />:&nbsp;&nbsp;
                     {c.appVersion}
                   </span>
-                  <div className="c7n-deploy-status">
-                    <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
-                      <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" />
-                    </svg>
-                    <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle-process'}>
-                      <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" strokeDashoffset={`${251 * ((c.podCount - c.podRunningCount) / c.podCount)}%`} />
-                    </svg>
-                    <span className="c7n-deploy-status-num">{c.podCount}</span>
-                  </div>
                   <div className="c7n-envow-ist-action">
                     {this.columnAction(c)}
                   </div>
@@ -592,154 +592,92 @@ class AppOverview extends Component {
                 key={c.id}
               >
                 <div>
-                  <div>
-                    <div className="c7n-envow-contaners-title c7n-envow-width_50">
-                      PODS
-                    </div>
-                    <div className="c7n-envow-contaners-wrap">
-                      <div className="c7n-envow-width_50">
-                        {c.devopsEnvPodDTOS.length ? _.map(c.devopsEnvPodDTOS, p => (<div className="c7n-envow-contaners-left" key={p.id}>
-                          <div className="c7n-envow-ls-wrap">
-                            <div className="c7n-envow-ls">
-                              <Tooltip title={<FormattedMessage id="container.name" />}>
-                                <Icon type="kubernetes" />
-                              </Tooltip>
-                              {p.name}
-                              <Permission
-                                service={['devops-service.devops-env-pod-container.queryLogByPod']}
-                                organizationId={orgId}
-                                projectId={projectId}
-                                type={type}
-                              >
-                                <Tooltip title={<FormattedMessage id="container.log" />}>
-                                  <Button
-                                    size="small"
-                                    shape="circle"
-                                    onClick={this.showLog.bind(this, p)}
-                                  >
-                                    <i className="icon icon-insert_drive_file" />
-                                  </Button>
-                                </Tooltip>
-                              </Permission>
-                            </div>
-                            {p.ip ? (<div className="c7n-envow-ls">
-                              <Tooltip title={<FormattedMessage id="container.ip" />}>
-                                <Icon type="room" />
-                              </Tooltip>
-                              {p.ip}
-                            </div>) : (<div className="c7n-envow-ls c7n-envow-hidden">
-                              <Tooltip title={<FormattedMessage id="container.ip" />}>
-                                <Icon type="room" />
-                              </Tooltip>
-                              {p.ip}
-                            </div>)}
-                          </div>
-                        </div>)) : null}
+                  <ExpandRow deploy={deploy} />
+                  <div className="c7n-envow-contaners-title">
+                    NETWORKING
+                  </div>
+                  <div className="c7n-envow-contaners-wrap">
+                    <div className="c7n-envow-contaners-left">
+                      <div className="c7n-envow-network-title">
+                        <FormattedMessage id="network.header.title" />
                       </div>
-                      <div className="c7n-envow-contaners-right">
-                        <div className="c7n-envow-pod">
-                          {c.podCount !== 0 ? (<div className="c7n-deploy-status">
-                            <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
-                              <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="45%" strokeWidth="5%" />
-                            </svg>
-                            <svg className={c.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle-process'}>
-                              <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="45%" strokeWidth="5%" strokeDashoffset={`${283 * ((c.podCount - c.podRunningCount) / c.podCount)}%`} />
-                            </svg>
-                            <span className="c7n-deploy-status-num">{c.podCount}</span>
-                          </div>) : null}
-                          <div className="c7n-envow-pod-action">
-                            <Icon type="navigate_next" />
-                            <Icon type="navigate_next" />
-                          </div>
+                      {c.serviceDTOS.length ? _.map(c.serviceDTOS, s => (<div className="c7n-envow-ls-wrap" key={s.name}>
+                        <div className="c7n-envow-ls">
+                          <Tooltip title={<FormattedMessage id="network.form.name" />}>
+                            <Icon type="router" />
+                          </Tooltip>
+                          {s.name}
                         </div>
-                      </div>
-                    </div>
-                    <div className="c7n-envow-contaners-title">
-                      NETWORKING
-                    </div>
-                    <div className="c7n-envow-contaners-wrap">
-                      <div className="c7n-envow-contaners-left">
-                        <div className="c7n-envow-network-title">
-                          <FormattedMessage id="network.header.title" />
+                        <div className="c7n-envow-ls">
+                          <Tooltip title={<FormattedMessage id="network.form.ip" />}>
+                            <Icon type="IP_out" />
+                          </Tooltip>
+                          {s.clusterIp}
                         </div>
-                        {c.serviceDTOS.length ? _.map(c.serviceDTOS, s => (<div className="c7n-envow-ls-wrap" key={s.name}>
-                          <div className="c7n-envow-ls">
-                            <Tooltip title={<FormattedMessage id="network.form.name" />}>
-                              <Icon type="router" />
-                            </Tooltip>
-                            {s.name}
-                          </div>
-                          <div className="c7n-envow-ls">
-                            <Tooltip title={<FormattedMessage id="network.form.ip" />}>
-                              <Icon type="IP_out" />
-                            </Tooltip>
-                            {s.clusterIp}
-                          </div>
-                          <div className="c7n-envow-ls">
-                            <div className="c7n-envow-ls-arrow-wrap">
-                              <span>
-                                <Tooltip title={<FormattedMessage id="network.form.port" />}>
-                                  <Icon type="port" />
-                                </Tooltip>
-                                {s.port}
-                              </span>
-                              <span className="c7n-envow-ls-arrow">
+                        <div className="c7n-envow-ls">
+                          <div className="c7n-envow-ls-arrow-wrap">
+                            <span>
+                              <Tooltip title={<FormattedMessage id="network.form.port" />}>
+                                <Icon type="port" />
+                              </Tooltip>
+                              {s.port}
+                            </span>
+                            <span className="c7n-envow-ls-arrow">
                                 →
-                              </span>
-                              <span>
-                                <Tooltip title={<FormattedMessage id="network.form.targetPort" />}>
-                                  <Icon type="aim_port" />
-                                </Tooltip>
-                                {s.targetPort}
-                              </span>
-                            </div>
+                            </span>
+                            <span>
+                              <Tooltip title={<FormattedMessage id="network.form.targetPort" />}>
+                                <Icon type="aim_port" />
+                              </Tooltip>
+                              {s.targetPort}
+                            </span>
                           </div>
-                        </div>)) : null}
-                        <Permission
-                          service={['devops-service.devops-service.create']}
-                          type={type}
-                          projectId={projectId}
-                          organizationId={orgId}
-                        >
-                          <Tooltip title={!envState ? <FormattedMessage id="envoverview.envinfo" /> : null}>
-                            <Button
-                              className="c7n-envow-create-btn"
-                              funcType="flat"
-                              disabled={!envState}
-                              onClick={this.createNetwork.bind(this, c.appId, c.id, i.appCode)}
-                            >
-                              <i className="icon-playlist_add icon" />
-                              <span><FormattedMessage id="network.header.create" /></span>
-                            </Button>
-                          </Tooltip>
-                        </Permission>
-                      </div>
-                      <div className="c7n-envow-contaners-right">
-                        <div className="c7n-envow-network-title">
-                          <FormattedMessage id="domain.header.title" />
                         </div>
-                        {c.ingressDTOS.length ? _.map(c.ingressDTOS, d => (<div className="c7n-envow-ls-wrap" key={d.hosts}>
-                          <div className="c7n-envow-ls"><Icon type="language" />{d.hosts}</div>
-                        </div>)) : null}
-                        <Permission
-                          service={['devops-service.devops-ingress.create']}
-                          type={type}
-                          projectId={projectId}
-                          organizationId={orgId}
-                        >
-                          <Tooltip title={!envState ? <FormattedMessage id="envoverview.envinfo" /> : null}>
-                            <Button
-                              funcType="flat"
-                              disabled={!envState}
-                              className="c7n-envow-create-btn"
-                              onClick={this.createDomain.bind(this, 'create', '')}
-                            >
-                              <i className="icon icon-playlist_add icon" />
-                              <FormattedMessage id="domain.header.create" />
-                            </Button>
-                          </Tooltip>
-                        </Permission>
+                      </div>)) : null}
+                      <Permission
+                        service={['devops-service.devops-service.create']}
+                        type={type}
+                        projectId={projectId}
+                        organizationId={orgId}
+                      >
+                        <Tooltip title={!envState ? <FormattedMessage id="envoverview.envinfo" /> : null}>
+                          <Button
+                            className="c7n-envow-create-btn"
+                            funcType="flat"
+                            disabled={!envState}
+                            onClick={this.createNetwork.bind(this, c.appId, c.id, i.appCode)}
+                          >
+                            <i className="icon-playlist_add icon" />
+                            <span><FormattedMessage id="network.header.create" /></span>
+                          </Button>
+                        </Tooltip>
+                      </Permission>
+                    </div>
+                    <div className="c7n-envow-contaners-right">
+                      <div className="c7n-envow-network-title">
+                        <FormattedMessage id="domain.header.title" />
                       </div>
+                      {c.ingressDTOS.length ? _.map(c.ingressDTOS, d => (<div className="c7n-envow-ls-wrap" key={d.hosts}>
+                        <div className="c7n-envow-ls"><Icon type="language" />{d.hosts}</div>
+                      </div>)) : null}
+                      <Permission
+                        service={['devops-service.devops-ingress.create']}
+                        type={type}
+                        projectId={projectId}
+                        organizationId={orgId}
+                      >
+                        <Tooltip title={!envState ? <FormattedMessage id="envoverview.envinfo" /> : null}>
+                          <Button
+                            funcType="flat"
+                            disabled={!envState}
+                            className="c7n-envow-create-btn"
+                            onClick={this.createDomain.bind(this, 'create', '')}
+                          >
+                            <i className="icon icon-playlist_add icon" />
+                            <FormattedMessage id="domain.header.create" />
+                          </Button>
+                        </Tooltip>
+                      </Permission>
                     </div>
                   </div>
                 </div>

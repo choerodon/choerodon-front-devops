@@ -355,6 +355,10 @@ const zhCN = {
   'ist.more': '展开更多',
   'ist.yamlErr': '请先修改yaml格式错误',
   'ist.delDes': '删除实例将不可恢复，其配置网络同时失效，确定要删除该实例吗？',
+  'ist.expand.name': '名称',
+  'ist.expand.replica': 'ReplicaSet可用数',
+  'ist.expand.date': '创建时间',
+
 
   // network
   network_delete: '网络删除中，请耐心等待',

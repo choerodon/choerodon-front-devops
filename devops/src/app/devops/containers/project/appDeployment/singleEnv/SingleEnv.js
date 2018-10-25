@@ -8,9 +8,17 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import ValueConfig from '../valueConfig';
 import UpgradeIst from '../upgrateIst';
 import DelIst from '../component/delIst/DelIst';
+import ExpandRow from '../component/ExpandRow';
 import '../AppDeploy.scss';
 import '../../../main.scss';
 
+const deploy = [{
+  name: 'abc-sdf-355',
+  replica: '2/2',
+  replicaCount: 1,
+  time: '2018/10/24',
+  pods: [],
+}];
 const Option = Select.Option;
 
 const { AppState } = stores;
@@ -462,6 +470,7 @@ class SingleEnvironment extends Component {
   /**
    * 打开删除数据模态框
    * @param id
+   * @param name
    */
   handleOpen(id, name) {
     this.setState({ openRemove: true, id, name });
@@ -493,22 +502,6 @@ class SingleEnvironment extends Component {
     </div>);
 
     const columns = [{
-      title: <FormattedMessage id="deploy.status" />,
-      key: 'podCount',
-      filters: [],
-      filteredValue: filters.podCount || [],
-      render: record => (
-        <div className="c7n-deploy-status">
-          <svg className={record.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
-            <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" />
-          </svg>
-          <svg className={record.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle-process'}>
-            <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" strokeDashoffset={`${251 * ((record.podCount - record.podRunningCount) / record.podCount)}%`} />
-          </svg>
-          <span className="c7n-deploy-status-num">{record.podCount}</span>
-        </div>
-      ),
-    }, {
       title: <FormattedMessage id="deploy.instance" />,
       key: 'code',
       filters: [],
@@ -565,6 +558,7 @@ class SingleEnvironment extends Component {
         <FormattedMessage id="ist.head" />
       </div>
       <Table
+        className="c7n-devops-instance-table"
         filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
         onChange={this.tableChange}
         loading={store.getIsLoading}
@@ -573,6 +567,7 @@ class SingleEnvironment extends Component {
         columns={columns}
         dataSource={ist}
         rowKey={record => record.id}
+        expandedRowRender={record => <ExpandRow record={record} deploy={deploy} />}
       />
     </div>);
 
