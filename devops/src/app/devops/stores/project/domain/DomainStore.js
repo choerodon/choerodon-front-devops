@@ -170,7 +170,7 @@ class DomainStore {
   checkName = (projectId, envId, value) => axios.get(`/devops/v1/projects/${projectId}/ingress/check_name?name=${envId}&envId=${value}`)
     .then(data => handleProptError(data));
 
-  checkPath =(projectId, domain, value, id = '') => axios.get(`/devops/v1/projects/${projectId}/ingress/check_domain?domain=${domain}&path=${value}&id=${id}`)
+  checkPath =(projectId, domain, env, value, id = '') => axios.get(`/devops/v1/projects/${projectId}/ingress/check_domain?domain=${domain}&envId=${env}&path=${value}&id=${id}`)
     .then(data => handleProptError(data));
 
   updateData = (projectId, id, data) => axios.put(`/devops/v1/projects/${projectId}/ingress/${id}`, JSON.stringify(data))
