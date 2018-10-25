@@ -12,10 +12,19 @@ import '../AppDeploy.scss';
 import './SingleApp.scss';
 import '../../../main.scss';
 import DelIst from '../component/delIst/DelIst';
+import ExpandRow from '../component/ExpandRow';
 import { scrollTo } from '../../../../utils';
 
 let scrollLeft = 0;
 const { Option, OptGroup } = Select;
+
+const deploy = [{
+  name: 'abc-sdf-355',
+  replica: '2/2',
+  replicaCount: 1,
+  time: '2018/10/24',
+  pods: [],
+}];
 
 const { AppState } = stores;
 const height = window.screen.height;
@@ -695,22 +704,6 @@ class SingleApp extends Component {
     const { filters, param } = store.getIstParams;
 
     const columnApp = [{
-      title: <FormattedMessage id="deploy.status" />,
-      key: 'podCount',
-      filters: [],
-      filteredValue: filters.podCount || [],
-      render: record => (
-        <div className="c7n-deploy-status">
-          <svg className={record.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
-            <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" />
-          </svg>
-          <svg className={record.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle-process'}>
-            <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" strokeDashoffset={`${251 * ((record.podCount - record.podRunningCount) / record.podCount)}%`} />
-          </svg>
-          <span className="c7n-deploy-status-num">{record.podCount}</span>
-        </div>
-      ),
-    }, {
       title: <FormattedMessage id="deploy.instance" />,
       key: 'code',
       filters: [],
@@ -754,6 +747,7 @@ class SingleApp extends Component {
                   <FormattedMessage id="ist.head" />
                 </div>
                 <Table
+                  className="c7n-devops-instance-table"
                   filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
                   onChange={this.tableChange}
                   loading={store.getIsLoading}
@@ -763,6 +757,7 @@ class SingleApp extends Component {
                   filterBar={false}
                   dataSource={ist}
                   rowKey={record => record.id}
+                  expandedRowRender={record => <ExpandRow record={record} deploy={deploy} />}
                 />
               </div>
             </div>);

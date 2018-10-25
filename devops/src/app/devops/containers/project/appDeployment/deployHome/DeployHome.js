@@ -170,6 +170,7 @@ class DeployHome extends Component {
     // AppDeploymentStore.setAppId(false);
     AppDeploymentStore.setPId(false);
     // AppDeploymentStore.setVerId(false);
+    AppDeploymentStore.setIstAll([]);
     this.loadData(tabName, info);
   };
 
