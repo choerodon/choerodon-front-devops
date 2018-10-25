@@ -257,7 +257,7 @@ class CreateDomain extends Component {
    */
   checkPath = (rule, value, callback) => {
     const { form: { getFieldValue, getFieldError }, intl, store, type, id } = this.props;
-    const { projectId } = this.state;
+    const { projectId, selectEnv } = this.state;
     if (value) {
       const p = /^\/(\S)*$/;
       const count = _.countBy(getFieldValue('path'));
@@ -270,9 +270,9 @@ class CreateDomain extends Component {
           if (!domainError) {
             let checkPromise = null;
             if (type === 'edit') {
-              checkPromise = store.checkPath(projectId, domain, decodeURIComponent(value), id);
+              checkPromise = store.checkPath(projectId, domain, selectEnv, encodeURIComponent(value), id);
             } else {
-              checkPromise = store.checkPath(projectId, domain, decodeURIComponent(value));
+              checkPromise = store.checkPath(projectId, domain, selectEnv, encodeURIComponent(value));
             }
             this.handleCheckResponse(checkPromise, callback);
           } else {
