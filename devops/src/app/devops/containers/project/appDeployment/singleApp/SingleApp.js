@@ -18,14 +18,6 @@ import { scrollTo } from '../../../../utils';
 let scrollLeft = 0;
 const { Option, OptGroup } = Select;
 
-const deploy = [{
-  name: 'abc-sdf-355',
-  replica: '2/2',
-  replicaCount: 1,
-  time: '2018/10/24',
-  pods: [],
-}];
-
 const { AppState } = stores;
 const height = window.screen.height;
 @observer
@@ -757,7 +749,7 @@ class SingleApp extends Component {
                   filterBar={false}
                   dataSource={ist}
                   rowKey={record => record.id}
-                  expandedRowRender={record => <ExpandRow record={record} deploy={deploy} />}
+                  expandedRowRender={record => <ExpandRow record={record} />}
                 />
               </div>
             </div>);

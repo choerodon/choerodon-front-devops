@@ -358,6 +358,7 @@ const zhCN = {
   'ist.expand.name': '名称',
   'ist.expand.replica': 'ReplicaSet可用数',
   'ist.expand.date': '创建时间',
+  'ist.expand.empty': '暂无实例详细信息',
 
 
   // network

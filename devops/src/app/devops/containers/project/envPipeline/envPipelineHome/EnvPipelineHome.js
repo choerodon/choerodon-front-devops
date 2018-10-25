@@ -269,6 +269,10 @@ class EnvPipelineHome extends Component {
               }
             }
           });
+        } else {
+          this.setState({
+            submitting: false,
+          });
         }
       });
     } else {

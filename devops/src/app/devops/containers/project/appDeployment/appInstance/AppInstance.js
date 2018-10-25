@@ -13,14 +13,6 @@ import '../../../main.scss';
 
 const { AppState } = stores;
 
-const deploy = [{
-  name: 'abc-sdf-355',
-  replica: '2/2',
-  replicaCount: 1,
-  time: '2018/10/24',
-  pods: [],
-}];
-
 @observer
 class AppInstance extends Component {
   constructor(props, context) {
@@ -395,23 +387,6 @@ class AppInstance extends Component {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const pageInfo = store.getPageInfo;
     const { filters, param } = store.getIstParams;
-    // {
-    //   title: <FormattedMessage id="deploy.status" />,
-    //     key: 'podCount',
-    //   filters: [],
-    //   filteredValue: filters.podCount || [],
-    //   render: record => (
-    //   <div className="c7n-deploy-status">
-    //     <svg className={record.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle_red'}>
-    //       <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" />
-    //     </svg>
-    //     <svg className={record.podCount === 0 ? 'c7n-deploy-circle-process-ban' : 'c7n-deploy-circle-process'}>
-    //       <circle className="c7n-transition-rotate" cx="50%" cy="50%" r="40%" strokeWidth="16.5%" strokeDashoffset={`${251 * ((record.podCount - record.podRunningCount) / record.podCount)}%`} />
-    //     </svg>
-    //     <span className="c7n-deploy-status-num">{record.podCount}</span>
-    //   </div>
-    // ),
-    // },
     const columns = [{
       title: <FormattedMessage id="deploy.instance" />,
       key: 'code',
@@ -482,7 +457,7 @@ class AppInstance extends Component {
           filters={param.slice() || []}
           dataSource={ist}
           rowKey={record => record.id}
-          expandedRowRender={record => <ExpandRow record={record} deploy={deploy} />}
+          expandedRowRender={record => <ExpandRow record={record} />}
         />
         {this.state.visible && <ValueConfig
           store={this.props.store}
