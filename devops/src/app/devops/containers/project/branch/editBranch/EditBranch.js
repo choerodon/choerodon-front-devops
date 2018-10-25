@@ -10,6 +10,7 @@ import '../CreateBranch/CreateBranch.scss';
 import '../commom.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
+import DevConsoleStore from '../../../../stores/project/devConsole';
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -89,7 +90,7 @@ class EditBranch extends Component {
    */
   handleOk = (e) => {
     e.preventDefault();
-    const { store } = this.props;
+    const { store, isDevConsole } = this.props;
     const appId = DevPipelineStore.selectedApp;
     const { projectId } = this.state;
     let isModify = false;
@@ -104,6 +105,9 @@ class EditBranch extends Component {
         store.updateBranchByName(projectId, appId, data)
           .then(() => {
             store.loadBranchData({ projectId });
+            if (isDevConsole) {
+              DevConsoleStore.loadBranchList(projectId, appId);
+            }
             this.props.onClose();
             this.props.form.resetFields();
             this.setState({ submitting: false });

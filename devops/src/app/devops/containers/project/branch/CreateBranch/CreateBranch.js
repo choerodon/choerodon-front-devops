@@ -10,6 +10,7 @@ import './CreateBranch.scss';
 import '../commom.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
+import DevConsoleStore from '../../../../stores/project/devConsole';
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -126,7 +127,7 @@ class CreateBranch extends Component {
    */
   handleOk = (e) => {
     e.preventDefault();
-    const { store } = this.props;
+    const { store, isDevConsole } = this.props;
     const appId = DevPipelineStore.selectedApp;
     const { projectId, type } = this.state;
     this.props.form.validateFieldsAndScroll((err, data) => {
@@ -137,6 +138,9 @@ class CreateBranch extends Component {
         store.createBranch(projectId, appId, postData)
           .then(() => {
             store.loadBranchList({ projectId, appId: this.props.appId });
+            if (isDevConsole) {
+              DevConsoleStore.loadBranchList(projectId, appId);
+            }
             this.props.onClose();
             this.props.form.resetFields();
             this.setState({ submitting: false });

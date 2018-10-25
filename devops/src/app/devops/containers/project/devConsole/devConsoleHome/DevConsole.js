@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { Button, Select, Modal, Form, Icon, Collapse, Avatar, Pagination, Tooltip, Menu, Dropdown } from 'choerodon-ui';
 import ReactMarkdown from 'react-markdown';
 import _ from 'lodash';
+import moment from 'moment';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import LoadingBar from '../../../../components/loadingBar';
 import TimePopover from '../../../../components/timePopover/index';
@@ -13,13 +14,23 @@ import CreateTag from '../../appTag/createTag';
 import EditTag from '../../appTag/editTag';
 import '../../../main.scss';
 import '../../appTag/appTagHome/AppTagHome.scss';
+import '../../branch/commom.scss';
 import './DevConsole.scss';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
 import AppTagStore from '../../../../stores/project/appTag';
+import BranchStore from '../../../../stores/project/branchManage';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import EditBranch from '../../branch/editBranch';
+import CreateBranch from '../../branch/CreateBranch';
+import MergeRequestStore from '../../../../stores/project/mergeRequest';
+import StatusTags from '../../../../components/StatusTags';
+import ReportsStore from '../../../../stores/project/reports/ReportsStore';
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
 const { Panel } = Collapse;
+const START = moment().subtract(7, 'days').format().split('T')[0].replace(/-/g, '/');
+const END = moment().format().split('T')[0].replace(/-/g, '/');
 
 @observer
 class DevConsole extends Component {
@@ -45,6 +56,15 @@ class DevConsole extends Component {
     this.loadInitData();
   }
 
+  componentWillUnmount() {
+    const { DevConsoleStore } = this.props;
+    DevConsoleStore.setBranchList([]);
+    ReportsStore.setCommits({});
+    MergeRequestStore.setMerge([], 'opened');
+    MergeRequestStore.setMerge([], 'merged');
+  }
+
+
   /**
    * 通过下拉选择器选择应用时，获取应用id
    * @param id
@@ -55,6 +75,9 @@ class DevConsole extends Component {
     DevPipelineStore.setSelectApp(id);
     DevPipelineStore.setRecentApp(id);
     this.loadTagData();
+    this.loadBranchData();
+    this.loadMergeData();
+    this.loadCommitData();
   };
 
   /**
@@ -63,6 +86,9 @@ class DevConsole extends Component {
   handleRefresh = () => {
     const { page, pageSize } = this.state;
     this.loadTagData(page, pageSize);
+    this.loadBranchData();
+    this.loadMergeData();
+    this.loadCommitData();
   };
 
   /**
@@ -71,6 +97,31 @@ class DevConsole extends Component {
   loadInitData = () => {
     DevPipelineStore.queryAppData(AppState.currentMenuType.id, 'all');
     this.setState({ appName: null });
+  };
+
+  /**
+   * 加载分支信息
+   */
+  loadBranchData = () => {
+    const { DevConsoleStore } = this.props;
+    const { projectId } = AppState.currentMenuType;
+    DevConsoleStore.loadBranchList(projectId, DevPipelineStore.getSelectApp);
+  };
+
+  /**
+   * 加载合并请求信息
+   */
+  loadMergeData = () => {
+    MergeRequestStore.loadMergeRquest(DevPipelineStore.getSelectApp, 'opened', 0, 5);
+    MergeRequestStore.loadMergeRquest(DevPipelineStore.getSelectApp, 'merged', 0, 5);
+  };
+
+  /**
+   * 加载提交记录
+   */
+  loadCommitData = () => {
+    const { projectId } = AppState.currentMenuType;
+    ReportsStore.loadCommits(projectId, START, END, [DevPipelineStore.getSelectApp]);
   };
 
   /**
@@ -151,10 +202,267 @@ class DevConsole extends Component {
     this.setState({ editDisplay: flag, editTag, editRelease });
   };
 
+  /**
+   * 获取列表的icon
+   * @param name 分支类型
+   */
+  getIcon =(name) => {
+    let type = '';
+    if (name) {
+      type = name.split('-')[0];
+    }
+    return <span className={`c7n-branch-icon icon-${type}`}>{type.slice(0, 1).toUpperCase()}</span>;
+  };
+
+  /**
+   * 获取issue的options
+   * @param typeCode
+   * @param issueCode
+   * @param issueName
+   */
+  getIssue =(typeCode, issueCode, issueName) => {
+    const { formatMessage } = this.props.intl;
+    let mes = '';
+    let icon = '';
+    let color = '';
+    switch (typeCode) {
+      case 'story':
+        mes = formatMessage({ id: 'branch.issue.story' });
+        icon = 'turned_in';
+        color = '#00bfa5';
+        break;
+      case 'bug':
+        mes = formatMessage({ id: 'branch.issue.bug' });
+        icon = 'bug_report';
+        color = '#f44336';
+        break;
+      case 'issue_epic':
+        mes = formatMessage({ id: 'branch.issue.epic' });
+        icon = 'priority';
+        color = '#743be7';
+        break;
+      case 'sub_task':
+        mes = formatMessage({ id: 'branch.issue.subtask' });
+        icon = 'relation';
+        color = '#4d90fe';
+        break;
+      default:
+        mes = formatMessage({ id: 'branch.issue.task' });
+        icon = 'assignment';
+        color = '#4d90fe';
+    }
+    return (<span className="c7n-branch-issue">
+      <Tooltip title={mes}>
+        <div style={{ background: color }} className="c7n-issue-type"><i className={`icon icon-${icon}`} /></div>
+      </Tooltip>
+      <Tooltip title={issueName}>
+        <span className="branch-issue-content"><span>{issueCode}</span></span>
+      </Tooltip>
+    </span>);
+  };
+
+  /**
+   * 修改相关联问题
+   * @param name
+   */
+  openEditBranch = (branchName) => {
+    const { projectId } = AppState.currentMenuType;
+    this.setState({ branchName, editBranch: true });
+    BranchStore.loadBranchByName(projectId, DevPipelineStore.selectedApp, branchName);
+    BranchStore.setCreateBranchShow('edit');
+  };
+
+  /**
+   * 关闭分支关联问题弹窗
+   */
+  closeEditBranch = () => {
+    this.setState({ branchName: '', editBranch: false });
+    BranchStore.setCreateBranchShow(false);
+  };
+
+  /**
+   * 打开创建分支弹框
+   */
+  openCreateBranch = (branchName) => {
+    const { projectId } = AppState.currentMenuType;
+    this.setState({ branchName, createBranch: true });
+    BranchStore.loadTagData(projectId);
+    BranchStore.loadBranchData({
+      projectId,
+      size: 3,
+    });
+    BranchStore.setCreateBranchShow('create');
+  };
+
+  /**
+   * 关闭创建分支弹窗
+   */
+  closeCreateBranch = () => {
+    this.setState({ branchName: '', createBranch: false });
+    BranchStore.setCreateBranchShow(false);
+  };
+
+  /**
+   * 打开删除分支确认框
+   */
+  openDeleteBranch = (e, branchName) => {
+    e.stopPropagation();
+    this.setState({ visible: true, branchName });
+  };
+
+  /**
+   * 删除分支
+   */
+  deleteBranch = () => {
+    const { branchName } = this.state;
+    const { projectId } = AppState.currentMenuType;
+    this.setState({ deleteLoading: true });
+    BranchStore.deleteData(projectId, DevPipelineStore.getSelectApp, branchName)
+      .then((res) => {
+        if (res) {
+          this.loadBranchData();
+          this.closeRemove();
+        }
+        this.setState({ deleteLoading: false });
+      });
+  };
+
+  /**
+   * 获取分支内容
+   */
+  getBranch = () => {
+    const { DevConsoleStore } = this.props;
+    const branchList = DevConsoleStore.getBranchList;
+    let list = [];
+    if (branchList && branchList.length) {
+      list = branchList.map((item) => {
+        const { branchName, commitUserName, commitDate, commitUserUrl, commitUrl, issueCode, typeCode, sha, commitContent, issueName } = item;
+        const { type, projectId, organizationId: orgId } = AppState.currentMenuType;
+        return (<div className="c7n-dc-branch-content">
+          <div className="branch-content-title">
+            {this.getIcon(branchName)}
+            <div className="branch-name">{branchName}</div>
+            {typeCode ? this.getIssue(typeCode, issueCode, issueName) : null}
+            {branchName !== 'master' ? <div className="c7n-branch-action">
+              <Permission
+                projectId={projectId}
+                organizationId={orgId}
+                type={type}
+                service={['devops-service.devops-git.update']}
+              >
+                <Tooltip title={<FormattedMessage id="branch.edit" />}>
+                  <Button size="small" shape="circle" icon="mode_edit" onClick={this.openEditBranch.bind(this, branchName)} />
+                </Tooltip>
+              </Permission>
+              <Tooltip title={<FormattedMessage id="branch.request" />}>
+                <a
+                  href={commitUrl && `${commitUrl.split('/commit')[0]}/merge_requests/new?change_branches=true&merge_request[source_branch]=${branchName}&merge_request[target_branch]=master`}
+                  target="_blank"
+                  rel="nofollow me noopener noreferrer"
+                >
+                  <Button size="small" shape="circle" icon="merge_request" />
+                </a>
+              </Tooltip>
+              <Permission
+                projectId={projectId}
+                organizationId={orgId}
+                type={type}
+                service={['devops-service.devops-git.delete']}
+              >
+                <Tooltip title={<FormattedMessage id="delete" />}>
+                  <Button size="small" shape="circle" icon="delete" onClick={e => this.openDeleteBranch(e, branchName)} />
+                </Tooltip>
+              </Permission>
+            </div> : null}
+          </div>
+          <div className="c7n-branch-commit">
+            <i className="icon icon-point branch-column-icon" />
+            <a href={commitUrl} target="_blank" rel="nofollow me noopener noreferrer" className="branch-sha">
+              <span>{sha && sha.slice(0, 8) }</span>
+            </a>
+            <i className="icon icon-schedule branch-col-icon branch-column-icon" />
+            <div className="c7n-branch-time"><TimePopover content={commitDate} /></div>
+            <Tooltip title={commitUserName}>
+              {commitUserUrl
+                ? <Avatar size="small" src={commitUserUrl} className="c7n-branch-avatar" />
+                : <Avatar size="small" className="c7n-branch-avatar">{commitUserName ? commitUserName.toString().slice(0, 1).toUpperCase() : '?'}</Avatar>
+              }
+            </Tooltip>
+            <MouserOverWrapper text={commitContent} width={0.3}>{commitContent}</MouserOverWrapper>
+          </div>
+        </div>);
+      });
+    }
+    return <div className="c7n-dc-branch">{list}</div>;
+  };
+
+  /**
+   * 查看合并请求详情
+   */
+  linkToMerge = (iid) => {
+    let url = '';
+    if (iid) {
+      url = `${MergeRequestStore.getUrl}/merge_requests/${iid}`;
+    } else {
+      url = `${MergeRequestStore.getUrl}/merge_requests/new`;
+    }
+    window.open(url);
+  };
+
+  /**
+   * 获取合并请求内容
+   */
+  getMergeRequest = () => {
+    const appData = DevPipelineStore.getAppData;
+    const { opened, merged } = MergeRequestStore.getMerge;
+    const mergeList = opened.concat(merged).slice(0, 5);
+    let list = [];
+    if (mergeList && mergeList.length) {
+      list = mergeList.map((item) => {
+        const { iid, sourceBranch, targetBranch, title, state } = item;
+        const { type, projectId, organizationId: orgId } = AppState.currentMenuType;
+        return (<div className="c7n-dc-branch-content">
+          <div className="branch-content-title">
+            <StatusTags name={state} colorCode={state} />
+            <span className="c7n-merge-title">!{iid}</span>
+            <MouserOverWrapper text={title} width={0.25}>{title}</MouserOverWrapper>
+          </div>
+          <div className="c7n-merge-branch">
+            <Icon type="branch" className="c7n-merge-icon" />
+            <MouserOverWrapper text={sourceBranch} width={0.12}>{sourceBranch}</MouserOverWrapper>
+            <span><Icon type="keyboard_backspace" className="c7n-merge-icon-arrow" /></span>
+            <Icon type="branch" className="c7n-merge-icon" />
+            <MouserOverWrapper text={targetBranch} width={0.12}>{targetBranch}</MouserOverWrapper>
+            <div className="c7n-branch-action">
+              <Permission
+                service={['devops-service.devops-git.getMergeRequestList']}
+                organizationId={orgId}
+                projectId={projectId}
+                type={type}
+              >
+                <Tooltip title={<FormattedMessage id="merge.detail" />}>
+                  <Button
+                    size="small"
+                    shape="circle"
+                    icon="find_in_page"
+                    onClick={this.linkToMerge.bind(this, iid)}
+                  />
+                </Tooltip>
+              </Permission>
+            </div>
+          </div>
+        </div>);
+      });
+    } else if (appData && appData.length) {
+      list = (<div className="c7n-devCs-nomerge"><FormattedMessage id="devCs.nomerge" /></div>);
+    }
+    return <div>{list}</div>;
+  };
+
   render() {
     const { intl: { formatMessage } } = this.props;
-    const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
-    const { visible, deleteLoading, creationDisplay, appName, editDisplay, editTag, editRelease, tag } = this.state;
+    const { type, projectId, organizationId: orgId, name } = AppState.currentMenuType;
+    const { visible, deleteLoading, creationDisplay, appName, editDisplay, editTag, editRelease, tag, branchName, editBranch, createBranch } = this.state;
     const appData = DevPipelineStore.getAppData;
     const appId = DevPipelineStore.getSelectApp;
     const tagData = AppTagStore.getTagData;
@@ -162,14 +470,58 @@ class DevConsole extends Component {
     const currentAppName = appName || DevPipelineStore.getDefaultAppName;
     const { current, total, pageSize } = AppTagStore.pageInfo;
     const tagList = [];
+    const { DevConsoleStore } = this.props;
+    const branchList = DevConsoleStore.getBranchList;
+    const { totalCommitsDate } = ReportsStore.getCommits;
+    const branchLoading = DevConsoleStore.getBranchLoading;
+    const { loading: mergeLoading, getCount: { totalCount } } = MergeRequestStore;
 
     const titleName = _.find(appData, ['id', appId]) ? _.find(appData, ['id', appId]).name : name;
     const currentApp = _.find(appData, ['id', appId]);
+
+    const numberData = [
+      {
+        name: 'branch',
+        number: branchList.length,
+        message: 'devCs.branch.number',
+        icon: 'branch',
+      },
+      {
+        name: 'merge-request',
+        number: totalCount,
+        message: 'devCs.merge.number',
+        icon: 'merge_request',
+      },
+      {
+        name: 'tag',
+        number: total,
+        message: 'devCs.tag.number',
+        icon: 'local_offer',
+      },
+    ];
 
     const menu = (
       <Menu className="c7n-envow-dropdown-link">
         <Menu.Item
           key="0"
+        >
+          <Permission
+            service={['devops-service.devops-git.createBranch']}
+            type={type}
+            projectId={projectId}
+            organizationId={orgId}
+          >
+            <Button
+              type="primary"
+              funcType="flat"
+              onClick={this.openCreateBranch.bind(this, branchName)}
+            >
+              <FormattedMessage id="branch.create" />
+            </Button>
+          </Permission>
+        </Menu.Item>
+        <Menu.Item
+          key="1"
         >
           <Permission
             service={[
@@ -187,6 +539,17 @@ class DevConsole extends Component {
               <FormattedMessage id="apptag.create" />
             </Button>
           </Permission>
+        </Menu.Item>
+        <Menu.Item
+          key="2"
+        >
+          <Button
+            type="primary"
+            funcType="flat"
+            onClick={this.linkToMerge.bind(this, false)}
+          >
+            <FormattedMessage id="merge.createMerge" />
+          </Button>
         </Menu.Item>
       </Menu>
     );
@@ -296,6 +659,11 @@ class DevConsole extends Component {
           'devops-service.devops-git.createTag',
           'devops-service.devops-git.checkTag',
           'devops-service.devops-git.deleteTag',
+          'devops-service.devops-git.listByAppId',
+          'devops-service.devops-git.createBranch',
+          'devops-service.devops-git.update',
+          'devops-service.devops-git.delete',
+          'devops-service.devops-git.getMergeRequestList',
         ]}
       >
         <Header title={<FormattedMessage id="devCs.head" />}>
@@ -347,7 +715,7 @@ class DevConsole extends Component {
             <div className="page-content-header">
               <div className="title">{appData.length && appId ? `应用"${titleName}"的开发控制台` : `项目"${titleName}"的开发控制台`}</div>
               {appData && appData.length ? <Fragment>
-                <div>
+                <div className="c7n-dc-app-code">
                   <FormattedMessage id="ciPipeline.appCode" />：{currentApp ? currentApp.code : ''}
                   {currentApp && currentApp.sonarUrl ? <Tooltip title={<FormattedMessage id="repository.quality" />} placement="bottom">
                     <a className="repo-copy-btn" href={currentApp.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
@@ -356,8 +724,13 @@ class DevConsole extends Component {
                   </Tooltip> : null }
                 </div>
                 <div className="c7n-dc-url-wrap">
-                  <FormattedMessage id="app.url" />：{currentApp ? currentApp.repUrl : ''}
-                  {currentApp && currentApp.sonarUrl ? <Tooltip title={<FormattedMessage id="repository.copyUrl" />} placement="bottom">
+                  <FormattedMessage id="app.url" />：
+                  {currentApp && currentApp.repoUrl ? (<a href={currentApp.repoUrl || null} rel="nofollow me noopener noreferrer" target="_blank">
+                    <Tooltip title={currentApp.repoUrl}>
+                      {`../${currentApp.repoUrl.split('/')[currentApp.repoUrl.split('/').length - 1]}`}
+                    </Tooltip>
+                  </a>) : ''}
+                  {currentApp && currentApp.repoUrl ? <Tooltip title={<FormattedMessage id="repository.copyUrl" />} placement="bottom">
                     <CopyToClipboard
                       text={currentApp.repoUrl || noRepoUrl}
                       onCopy={this.handleCopy}
@@ -374,7 +747,23 @@ class DevConsole extends Component {
               </div>}
             </div>
             <div className="c7n-dc-data-wrap">
-                184
+              <div className="commit-number">
+                <Link to={`/devops/reports/submission?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}`}>
+                  { totalCommitsDate ? totalCommitsDate.length : 0}
+                </Link>
+              </div>
+              <div className="c7n-commit-title"><FormattedMessage id="devCs.commit.number" /></div>
+            </div>
+            <div className="c7n-dc-data-wrap">
+              {
+                _.map(numberData, item => (<div className="c7n-data-number" key={item.name}>
+                  <Link to={`/devops/${item.name}?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}`}>
+                    {item.number}
+                  </Link>
+                  <Icon type={item.icon} />
+                  <span><FormattedMessage id={item.message} /></span>
+                </div>))
+              }
             </div>
           </div>
           <div className="c7n-dc-content_1">
@@ -383,12 +772,14 @@ class DevConsole extends Component {
                 <Icon type="branch" />
                 <FormattedMessage id="branch.branch" />
               </div>
+              {branchLoading ? <LoadingBar display /> : (this.getBranch())}
             </div>
             <div className="c7n-dc-card-wrap c7n-dc-card-merge">
               <div className="c7n-dc-card-title">
                 <Icon type="merge_request" />
                 <FormattedMessage id="merge.head" />
               </div>
+              {mergeLoading ? <LoadingBar display /> : this.getMergeRequest()}
             </div>
           </div>
           <div className="c7n-dc-card-wrap">
@@ -438,8 +829,22 @@ class DevConsole extends Component {
             </Button>,
           ]}
         ><p>{formatMessage({ id: 'apptag.delete.tooltip' })}</p></Modal>
+        <Modal
+          confirmLoading={deleteLoading}
+          visible={visible}
+          title={`${formatMessage({ id: 'branch.action.delete' })}“${branchName}”`}
+          closable={false}
+          footer={[
+            <Button key="back" onClick={this.closeRemove} disabled={deleteLoading}>{<FormattedMessage id="cancel" />}</Button>,
+            <Button key="submit" type="danger" onClick={this.deleteBranch} loading={deleteLoading}>
+              {formatMessage({ id: 'delete' })}
+            </Button>,
+          ]}
+        >
+          <p>{formatMessage({ id: 'branch.delete.tooltip' })}</p>
+        </Modal>
         {creationDisplay ? <CreateTag
-          app={currentAppName}
+          app={titleName}
           store={AppTagStore}
           show={creationDisplay}
           close={this.displayCreateModal}
@@ -451,6 +856,22 @@ class DevConsole extends Component {
           release={editRelease}
           show={editDisplay}
           close={this.displayEditModal}
+        /> : null}
+        {createBranch ? <CreateBranch
+          name={titleName}
+          appId={DevPipelineStore.selectedApp}
+          store={BranchStore}
+          visible={createBranch}
+          onClose={this.closeCreateBranch}
+          isDevConsole
+        /> : null}
+        {editBranch ? <EditBranch
+          name={branchName}
+          appId={DevPipelineStore.selectedApp}
+          store={BranchStore}
+          visible={editBranch}
+          onClose={this.closeEditBranch}
+          isDevConsole
         /> : null}
       </Page>
     );

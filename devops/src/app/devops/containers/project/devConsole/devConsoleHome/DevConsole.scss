@@ -17,9 +17,12 @@
 .c7n-dc-card-title {
   font-size: 18px;
   color: rgba(0,0,0,0.87);
+  display: flex;
 
   i {
     margin-right: 12px;
+    font-size: 24px;
+    line-height: 27px;
    }
 }
 
@@ -27,13 +30,24 @@
   padding-left: 12px;
 }
 
+.c7n-dc-app-code {
+
+  .ant-btn-sm {
+    margin-left: 12px;
+  }
+}
+
 .c7n-dc-url-wrap {
-  margin-bottom: 8px;
+  margin-bottom: 2px;
+
+  .ant-btn-sm {
+    margin-left: 12px;
+  }
 }
 
 .c7n-dc-content_1 {
   display: flex;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 
   .c7n-tag-empty {
     box-shadow: none;
@@ -52,7 +66,38 @@
   }
 
   .c7n-dc-data-wrap {
-    flex: 4;
+    flex: 2;
+    color: rgba(0, 0, 0, 0.65);
+
+    .commit-number {
+      margin: 10px 0 10px 30px;
+      font-size: 24px;
+
+      a {
+        color: #303F9F;
+      }
+    }
+
+    .c7n-commit-title {
+      font-size: 12px;
+    }
+
+    .c7n-data-number {
+      margin-bottom: 10px;
+
+      &:last-child {
+        margin: 0;
+      }
+
+      a {
+        font-size: 14px;
+        color: #303F9F;
+      }
+
+      i {
+        margin: 0 2px 0 16px;
+      }
+    }
   }
 }
 
@@ -81,4 +126,112 @@
     display: flex;
     align-items: center;
   }
+}
+
+.c7n-dc-branch {
+  max-height: 350px;
+  overflow: scroll;
+  padding-right: 1px;
+}
+
+.c7n-dc-branch-content {
+  padding: 18px 0 0 28px;
+
+  .branch-content-title {
+    display: flex;
+    width: 100%;
+    height: 20px;
+
+    .branch-name {
+      width: 30%;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+  }
+
+  .c7n-branch-issue {
+    margin-left: 19px;
+
+    .c7n-issue-type {
+      display: inline-block;
+      text-align: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      color: white;
+      line-height: 14px;
+      margin-right: 10px;
+
+      i {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .c7n-branch-action {
+    flex-grow: 1;
+    text-align: right;
+  }
+
+  .c7n-branch-commit {
+    margin: 10px 0 0 24px;
+    color: rgba(0,0,0,0.65);
+    display: flex;
+
+    .branch-column-icon {
+      color: rgba(0,0,0,0.54);
+      line-height: 20px;
+      padding-right: 6px;
+    }
+
+    .branch-col-icon {
+      margin-left: 10px;
+    }
+
+    .c7n-branch-avatar {
+      margin: 0 8px 0 12px;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+      border-radius: 9px;
+    }
+
+    .ant-avatar-sm > * {
+      line-height: 18px;
+    }
+
+    .branch-sha {
+      width: 60px;
+    }
+
+    .c7n-branch-time {
+      width: 11%;
+    }
+  }
+
+  .c7n-merge-title {
+    margin: 0 12px 0 6px;
+  }
+
+  .c7n-merge-branch {
+    color: rgba(0,0,0,0.65);
+    margin-top: 10px;
+    display: flex;
+
+    .c7n-merge-icon {
+      line-height: 20px;
+      margin-right: 6px;
+    }
+
+    .c7n-merge-icon-arrow {
+      line-height: 20px;
+      margin: 0 10px;
+      transform: rotate(180deg)
+    }
+  }
+}
+
+.c7n-devCs-nomerge {
+  padding: 18px 0 0 36px;
 }

@@ -12,7 +12,7 @@ import MaxTagPopover from '../../containers/project/reports/Component/MaxTagPopo
 import '../common.scss';
 import './index.scss';
 
-const START = moment().subtract(7, 'days').format().split('T')[0].replace(/-/g, '/');
+const START = moment().subtract(6, 'days').format().split('T')[0].replace(/-/g, '/');
 const END = moment().format().split('T')[0].replace(/-/g, '/');
 
 function formatData(data) {
