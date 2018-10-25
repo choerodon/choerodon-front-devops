@@ -12,13 +12,6 @@ import ExpandRow from '../component/ExpandRow';
 import '../AppDeploy.scss';
 import '../../../main.scss';
 
-const deploy = [{
-  name: 'abc-sdf-355',
-  replica: '2/2',
-  replicaCount: 1,
-  time: '2018/10/24',
-  pods: [],
-}];
 const Option = Select.Option;
 
 const { AppState } = stores;
@@ -538,9 +531,9 @@ class SingleEnvironment extends Component {
     }];
 
     const detailDom = (<div className="c7n-deploy-single-wrap">
-      <h2 className="c7n-space-first">
+      <div className="c7n-deploy-singleEnv-ist">
         <FormattedMessage id="deploy.app" />
-      </h2>
+      </div>
       <div>
         {appNameDom}
       </div>
@@ -567,7 +560,7 @@ class SingleEnvironment extends Component {
         columns={columns}
         dataSource={ist}
         rowKey={record => record.id}
-        expandedRowRender={record => <ExpandRow record={record} deploy={deploy} />}
+        expandedRowRender={record => <ExpandRow record={record} />}
       />
     </div>);
 

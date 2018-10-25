@@ -1,16 +1,19 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
 import _ from 'lodash';
+import TimeAgo from 'timeago-react';
+import { Tooltip } from 'choerodon-ui';
+import { formatDate } from '../../../../../utils';
 import './index.scss';
 
 export default function ExpandRow(props) {
-  const { deploy } = props;
-  const content = _.map(deploy, (item) => {
-    const { name, replica, replicaCount, time, pods } = item;
+  const { record: { deploymentDTOS } } = props;
+  const content = _.map(deploymentDTOS, (item) => {
+    const { name, available, age, devopsEnvPodDTOS, current, desired } = item;
     let correctCount = 0;
     let errorCount = 0;
-    _.forEach(pods, (p) => {
-      if (p.status) {
+    _.forEach(devopsEnvPodDTOS, (p) => {
+      if (p.ready) {
         correctCount += 1;
       } else {
         errorCount += 1;
@@ -22,19 +25,24 @@ export default function ExpandRow(props) {
       <ul className="c7n-deploy-expanded-text">
         <li className="c7n-deploy-expanded-lists">
           <span className="c7n-deploy-expanded-keys"><FormattedMessage id="ist.expand.name" />：</span>
-          <span className="c7n-deploy-expanded-values">{name}</span>
+          <span title={name} className="c7n-deploy-expanded-values">{name}</span>
         </li>
         <li className="c7n-deploy-expanded-lists">
           <span className="c7n-deploy-expanded-keys">ReplicaSet：</span>
-          <span className="c7n-deploy-expanded-values">2 current / 2 desired</span>
-        </li>
-        <li className="c7n-deploy-expanded-lists">
-          <span className="c7n-deploy-expanded-keys"><FormattedMessage id="ist.expand.replica" />：</span>
-          <span className="c7n-deploy-expanded-values">{replicaCount}</span>
+          <span title={`${available || 0} available / ${current || 0} current / ${desired || 0} desired`} className="c7n-deploy-expanded-values">{`${available || 0} available / ${current || 0} current / ${desired || 0} desired`}</span>
         </li>
         <li className="c7n-deploy-expanded-lists">
           <span className="c7n-deploy-expanded-keys"><FormattedMessage id="ist.expand.date" />：</span>
-          <span className="c7n-deploy-expanded-values">{time}</span>
+          <span className="c7n-deploy-expanded-values">
+            <Tooltip
+              title={formatDate(age)}
+            >
+              <TimeAgo
+                datetime={age}
+                locale={Choerodon.getMessage('zh_CN', 'en')}
+              />
+            </Tooltip>
+          </span>
         </li>
       </ul>
       <div className="c7n-deploy-expanded-pod">
@@ -60,8 +68,10 @@ export default function ExpandRow(props) {
       </div>
     </div>);
   });
-  return (<div className="c7n-deploy-expanded">
-    <div className="c7n-deploy-expanded-title">Deployments</div>
-    {content}
-  </div>);
+  return (<Fragment>
+    {deploymentDTOS && deploymentDTOS.length ? (<div className="c7n-deploy-expanded">
+      <div className="c7n-deploy-expanded-title">Deployments</div>
+      {content}
+    </div>) : <div className="c7n-deploy-expanded-empty"><FormattedMessage id="ist.expand.empty" /></div>}
+  </Fragment>);
 }

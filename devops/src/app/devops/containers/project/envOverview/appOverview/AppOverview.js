@@ -32,14 +32,6 @@ const Sidebar = Modal.Sidebar;
 const Option = Select.Option;
 const Panel = Collapse.Panel;
 
-const deploy = [{
-  name: 'abc-sdf-355',
-  replica: '2/2',
-  replicaCount: 1,
-  time: '2018/10/24',
-  pods: [],
-}];
-
 @observer
 class AppOverview extends Component {
   @observable pageSize = 10;
@@ -592,7 +584,7 @@ class AppOverview extends Component {
                 key={c.id}
               >
                 <div>
-                  <ExpandRow deploy={deploy} />
+                  {/* <ExpandRow deploy={deploy} /> */}
                   <div className="c7n-envow-contaners-title">
                     NETWORKING
                   </div>

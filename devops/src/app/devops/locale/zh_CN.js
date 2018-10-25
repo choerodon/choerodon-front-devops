@@ -356,8 +356,8 @@ const zhCN = {
   'ist.yamlErr': '请先修改yaml格式错误',
   'ist.delDes': '删除实例将不可恢复，其配置网络同时失效，确定要删除该实例吗？',
   'ist.expand.name': '名称',
-  'ist.expand.replica': 'ReplicaSet可用数',
   'ist.expand.date': '创建时间',
+  'ist.expand.empty': '暂无实例详细信息',
 
 
   // network
