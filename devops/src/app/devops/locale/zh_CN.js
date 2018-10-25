@@ -8,9 +8,9 @@ const pageDetail = {
   'network.title': '项目"{name}"的网络',
   'network.description': '网络是一种管理内部服务连通方式的策略，实现容器内部资源的负载均衡以及流量转发。配置后，平台会将网络流量定向转发到指定的单个或者多个实例容器组，完成服务的连通与流转。',
   'network.link': `${docServer}/user-guide/deployment-pipeline/service/`,
-  'network.create.title': '项目"{name}"中创建网络',
+  'network.create.title': '在项目"{name}"中创建网络',
   'network.create.description': '您可在此选择环境及实例，配置网络转发策略。目前支持内部和外部两种网络转发方式。\n'
-    + '        转发内部网络，则只需定义端口即可，系统会自动为您分配集群内部IP；转发外部网络，则需要定义外部IP及端口。',
+  + '        转发内部网络，则只需定义端口即可，系统会自动为您分配集群内部IP；转发外部网络，则需要定义外部IP及端口。',
   'network.create.link': `${docServer}/user-guide/deployment-pipeline/service/`,
   'network.update.title': '对网络"{name}"进行修改',
   'network.update.description': '您可在此修改网络配置信息。',
@@ -20,10 +20,10 @@ const pageDetail = {
   'env.title': '项目"{name}"的环境流水线',
   'env.description': '环境是指一个应用可以被部署的地方。常见环境有开发测试环境，预生产环境，生产环境等。平台自动为您的项目生成一条环境流水线，您可在下方拖拽需要调整顺序的环境至目标位置。',
   'env.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
-  'env.create.title': '项目"{name}"的环境创建',
+  'env.create.title': '在项目"{name}"中创建环境',
   'env.create.description': '请在下面输入环境编码、名称、描述，创建新环境。新环境默认新增在环境流水线的最后一个节点。',
   'env.create.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
-  'env.edit.title': '对"{name}"环境修改',
+  'env.edit.title': '对环境"{name}"进行修改',
   'env.edit.description': '您可在此修改环境名称及描述，也可以复制指令至Kubernetes运行，与平台建立连接。',
   'env.edit.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
   'env.token.title': '复制环境"{name}"的指令',
@@ -203,7 +203,7 @@ const pageDetail = {
   'ctf.description': '域名证书是受法律认可的证书文件，确定了域名注册者对域名的拥有权与拥有时限。您在每个环境中添加的所有域名都需要有域名证书。',
   'ctf.title': '项目"{name}"的证书',
   'ctf.link': `${docServer}/user-guide/deployment-pipeline/certificate`,
-  'ctf.create.title': '项目"{name}"中创建证书',
+  'ctf.create.title': '在项目"{name}"中创建证书',
   'ctf.create.description': '您可以在此处选择环境，并在该环境下面配置相应的参数创建证书。',
   'ctf.create.link': `${docServer}/user-guide/deployment-pipeline/certificate`,
 
@@ -356,9 +356,10 @@ const zhCN = {
   'ist.yamlErr': '请先修改yaml格式错误',
   'ist.delDes': '删除实例将不可恢复，其配置网络同时失效，确定要删除该实例吗？',
   'ist.expand.name': '名称',
-  'ist.expand.date': '创建时间',
   'ist.expand.empty': '暂无部署详细信息',
   'ist.expand.link': '点击查看详情',
+  'ist.expand.date': '创建时间',
+
 
 
   // network
