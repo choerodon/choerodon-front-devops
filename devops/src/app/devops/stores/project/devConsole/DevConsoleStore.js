@@ -19,6 +19,42 @@ class DevConsoleStore {
     pageSize: HEIGHT <= 900 ? 10 : 15,
     total: 0,
   };
+
+  @observable branchList = [];
+
+  @observable branchLoading = false;
+
+  @action
+  setBranchList(data) {
+    this.branchList = data;
+  }
+
+  @computed get
+  getBranchList() {
+    return this.branchList.slice();
+  }
+
+  @action
+  setBranchLoading(flag) {
+    this.branchLoading = flag;
+  }
+
+  @computed get
+  getBranchLoading() {
+    return this.branchLoading;
+  }
+
+  loadBranchList = (projectId, appId) => {
+    this.setBranchLoading(true);
+    axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/git/branches`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setBranchList(data.content);
+        }
+        this.setBranchLoading(false);
+      });
+  };
 }
 
 

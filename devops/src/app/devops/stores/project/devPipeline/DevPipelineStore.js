@@ -1,13 +1,18 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
+import moment from 'moment';
 import { handleProptError } from '../../../utils';
 import AppTagStore from '../appTag';
 import BranchStore from '../branchManage';
 import MergeRequestStore from '../mergeRequest';
 import CiPipelineStore from '../ciPipelineManage';
+import DevConsoleStore from '../devConsole';
+import ReportsStore from '../reports';
 
 const { AppState } = stores;
+const START = moment().subtract(6, 'days').format().split('T')[0].replace(/-/g, '/');
+const END = moment().format().split('T')[0].replace(/-/g, '/');
 
 function findDataIndex(collection, value) {
   return collection ? collection.findIndex(
@@ -140,11 +145,12 @@ class DevPipelineStore {
                 CiPipelineStore.loadPipelines(this.selectedApp);
                 break;
               case 'all':
-                // BranchStore.loadBranchList({ projectId });
+                DevConsoleStore.loadBranchList(projectId, this.selectedApp);
                 AppTagStore.queryTagData(projectId, 0, 10);
-                // MergeRequestStore.loadMergeRquest(this.selectedApp);
-                // MergeRequestStore.loadUrl(projectId, this.selectedApp);
-                // CiPipelineStore.loadPipelines(this.selectedApp);
+                MergeRequestStore.loadMergeRquest(this.selectedApp, 'opened', 0, 5);
+                MergeRequestStore.loadMergeRquest(this.selectedApp, 'merged', 0, 5);
+                MergeRequestStore.loadUrl(projectId, this.selectedApp);
+                ReportsStore.loadCommits(projectId, START, END, [this.selectedApp]);
                 break;
               default:
                 break;

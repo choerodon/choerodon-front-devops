@@ -958,6 +958,12 @@ const zhCN = {
 
   // devConsole
   'devCs.head': '开发控制台',
+  'devCs.commit.number': '近七天代码提交数',
+  'devCs.branch.number': '分支数',
+  'devCs.merge.number': '合并请求数',
+  'devCs.tag.number': '标记数',
+  'devCs.nobranch': '暂无分支',
+  'devCs.nomerge': '暂无合并请求',
 
   ...pageDetail,
 };

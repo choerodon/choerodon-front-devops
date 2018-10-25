@@ -6,6 +6,8 @@ const Color = {
   success: '#00bf96',
   error: '#f44336',
   failed: '#f44336',
+  merged: '#4D90FE',
+  opened: '#FFB100',
 };
 
 class StatusTags extends Component {
