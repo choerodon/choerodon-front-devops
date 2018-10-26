@@ -338,7 +338,7 @@ class DevConsole extends Component {
       list = branchList.map((item) => {
         const { branchName, commitUserName, commitDate, commitUserUrl, commitUrl, issueCode, typeCode, sha, commitContent, issueName } = item;
         const { type, projectId, organizationId: orgId } = AppState.currentMenuType;
-        return (<div className="c7n-dc-branch-content">
+        return (<div className="c7n-dc-branch-content" key={branchName}>
           <div className="branch-content-title">
             {this.getIcon(branchName)}
             <div className="branch-name">{branchName}</div>
@@ -421,7 +421,7 @@ class DevConsole extends Component {
       list = mergeList.map((item) => {
         const { iid, sourceBranch, targetBranch, title, state } = item;
         const { type, projectId, organizationId: orgId } = AppState.currentMenuType;
-        return (<div className="c7n-dc-branch-content">
+        return (<div className="c7n-dc-branch-content" key={iid}>
           <div className="branch-content-title">
             <StatusTags name={state} colorCode={state} />
             <span className="c7n-merge-title">!{iid}</span>
