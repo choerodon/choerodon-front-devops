@@ -19,6 +19,13 @@ let scrollLeft = 0;
 const { Option, OptGroup } = Select;
 
 const { AppState } = stores;
+const {
+  AppState: {
+    currentMenuType: {
+      id: projectId,
+    },
+  },
+} = stores;
 const height = window.screen.height;
 @observer
 class SingleApp extends Component {
@@ -40,6 +47,9 @@ class SingleApp extends Component {
   }
 
   componentDidMount() {
+    const { store } = this.props;
+    store.loadActiveEnv(projectId);
+    store.loadAppNames(projectId);
     const { selectProPage, selectPubPage } = this.state;
     this.loadSelectData([selectProPage, selectPubPage], '');
     scrollLeft = 0;
@@ -52,11 +62,10 @@ class SingleApp extends Component {
     const { store } = this.props;
     if (ids && ids !== 'more') {
       const idArr = ids.split('-');
-      const projectId = AppState.currentMenuType.id;
       const envId = store.getEnvId;
       const envNames = store.getEnvcard;
       const envID = envId || (envNames.length ? envNames[0].id : null);
-      store.setSingleAppId(idArr[0]);
+      store.setSingleAppId(ids);
       store.setVerId(false);
       if (envID) {
         this.loadInstance(envID, null, idArr[0]);
@@ -120,7 +129,6 @@ class SingleApp extends Component {
    */
   loadInstance = (envId, verId, appId) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     store.loadInstanceAll(projectId, { envId, versionId: verId, appId });
   };
 
@@ -131,20 +139,8 @@ class SingleApp extends Component {
    */
   linkDeployDetail = (id, status) => {
     const { history } = this.props;
-    const { id: projectId, name, organizationId, type } = AppState.currentMenuType;
+    const { name, organizationId, type } = AppState.currentMenuType;
     history.push(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`);
-  };
-
-  /**
-   * 查看版本特性
-   * @param id 实例id
-   * @param istName 实例名
-   */
-  linkVersionFeature = (id, istName) => {
-    const { store } = this.props;
-    store.setAlertType('versionFeature');
-    this.setState({ id });
-    store.changeShow(true);
   };
 
   /**
@@ -156,7 +152,6 @@ class SingleApp extends Component {
    */
   tableChange =(pagination, filters, sorter, param) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const envNames = store.getEnvcard;
     const appNames = store.getAppNames;
     const envId = store.getEnvId;
@@ -188,7 +183,6 @@ class SingleApp extends Component {
    */
   reStart = (id) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     store.reStarts(projectId, id)
       .then((error) => {
         if (error && error.failed) {
@@ -209,7 +203,6 @@ class SingleApp extends Component {
    */
   updateConfig = (name, id, envId, verId, appId) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
       idArr: [envId, verId, appId],
       name,
@@ -239,7 +232,6 @@ class SingleApp extends Component {
    */
   upgradeIst = (name, id, envId, verId, appId) => {
     const { store, intl } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     store.loadUpVersion(projectId, verId)
       .then((val) => {
         if (val && val.failed) {
@@ -272,7 +264,6 @@ class SingleApp extends Component {
    */
   handleCancel = (res) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const appNames = store.getAppNames;
     const envNames = store.getEnvcard;
     const envId = store.getEnvId;
@@ -295,7 +286,6 @@ class SingleApp extends Component {
    */
   handleCancelUp = (res) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
       visibleUp: false,
     });
@@ -310,7 +300,6 @@ class SingleApp extends Component {
    */
   handleDelete = (id) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const appNames = store.getAppNames;
     const envNames = store.getEnvcard;
     const envId = store.getEnvId;
@@ -348,7 +337,6 @@ class SingleApp extends Component {
    */
   activeIst = (id, status) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const { page, pageSize } = this.state;
     const appNames = store.getAppNames;
     const envNames = store.getEnvcard;
@@ -419,7 +407,6 @@ class SingleApp extends Component {
    */
   columnAction = (record) => {
     const { intl } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
     if (record.status === 'operating' || !record.connect) {
@@ -552,7 +539,6 @@ class SingleApp extends Component {
 
   loadSelectData = (pageArr, filterValue) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     let allItems = store.getAppNames;
     const appPubDom = [];
     const appProDom = [];
@@ -566,11 +552,7 @@ class SingleApp extends Component {
     if (allItems.length) {
       _.map(allItems, (d) => {
         if (d.projectId !== projectId) {
-          pubLength += 1;
-        } else {
-          proLength += 1;
-        }
-        if (d.projectId !== projectId && appPubDom.length < pubPageSize) {
+          (appPubDom.length < pubPageSize) && (pubLength += 1);
           appPubDom.push(<Option key={`${d.id}-${d.projectId}`} value={`${d.id}-${d.projectId}`}>
             <Popover
               placement="right"
@@ -595,7 +577,8 @@ class SingleApp extends Component {
               </div>
             </Popover>
           </Option>);
-        } else if (appProDom.length < proPageSize) {
+        } else {
+          (appProDom.length < proPageSize) && (proLength += 1);
           appProDom.push(<Option key={`${d.id}-${d.projectId}`} value={`${d.id}-${d.projectId}`}>
             <Popover
               placement="right"
@@ -647,8 +630,7 @@ class SingleApp extends Component {
 
   render() {
     const { store, intl } = this.props;
-    const { name } = this.state;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    const { name, appProDom, appPubDom } = this.state;
     const appNames = store.getAppNames;
     const appVer = store.getAppVer;
     const envCard = store.getEnvcard;
@@ -656,11 +638,8 @@ class SingleApp extends Component {
     const envId = store.getEnvId;
     const appId = store.getSingleAppId;
     const verId = store.getVerId;
-    const pId = store.getPId;
     const envID = envId || (envCard.length ? envCard[0].id : null);
-    const appID = appId || (appNames.length ? appNames[0].id : null);
-
-    const appName = appID ? `${appID}-${pId || projectId}` : null;
+    const appID = appId || (appNames.length ? `${appNames[0].id}-${appNames[0].projectId}` : null);
 
     const appVersion = appVer.length
       ? _.map(appVer, d => d.version && <Option key={d.id}>{d.version}</Option>) : undefined;
@@ -766,7 +745,7 @@ class SingleApp extends Component {
     return (
       <div className="c7n-region">
         <Select
-          value={appName}
+          value={appID}
           label={intl.formatMessage({ id: 'deploy.appName' })}
           className="c7n-app-select_220"
           onChange={this.loadAppVer}
@@ -776,7 +755,7 @@ class SingleApp extends Component {
           filter
         >
           <OptGroup label={intl.formatMessage({ id: 'project' })} key="proGroup">
-            {this.state.appProDom}
+            {appProDom}
             { proPageSize < this.state.appProLength && (<Option key="more">
               <div role="none" onClick={this.appDomMore.bind(this, 'pro')} className="c7n-option-popover c7n-dom-more">
                 {intl.formatMessage({ id: 'ist.more' })}
@@ -784,7 +763,7 @@ class SingleApp extends Component {
             </Option>)}
           </OptGroup>
           <OptGroup label={intl.formatMessage({ id: 'market' })} key="pubGroup">
-            {this.state.appPubDom}
+            {appPubDom}
             { pubPageSize < this.state.appPubLength && (<Option key="pubMore">
               <div role="none" onClick={this.appDomMore.bind(this, 'pub')} className="c7n-option-popover c7n-dom-more">
                 {intl.formatMessage({ id: 'ist.more' })}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button } from 'choerodon-ui';
 import { Content, Header, Page, stores } from 'choerodon-front-boot';
@@ -8,43 +8,31 @@ import _ from 'lodash';
 import SingleApp from '../singleApp';
 import SingleEnv from '../singleEnv';
 import AppInstance from '../appInstance';
+import AppStoreStore from '../../../../stores/project/appStore';
 import './DeployHome.scss';
 import '../AppDeploy.scss';
 import '../../../main.scss';
-import AppStoreStore from '../../../../stores/project/appStore';
 
 const ButtonGroup = Button.Group;
 const { AppState } = stores;
 
 @observer
 class DeployHome extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-    };
-  }
-
   componentDidMount() {
-    const { AppDeploymentStore } = this.props;
     AppStoreStore.setBackPath(false);
-    const tabActive = AppDeploymentStore.getTabActive;
-    this.loadEnvCards();
-    this.loadAppName();
-    if (tabActive) {
-      this.loadData(tabActive, {});
-    }
+    // this.loadEnvCards();
+    // this.loadAppName();
   }
 
   componentWillUnmount() {
     const { AppDeploymentStore } = this.props;
-    // AppDeploymentStore.setTabActive('instance');
-    AppDeploymentStore.setAppNameByEnv([]);
-    AppDeploymentStore.setAppNameByEnv([]);
     AppDeploymentStore.setEnvId();
     AppDeploymentStore.setAppId();
-    AppDeploymentStore.setSingleAppId();
     AppDeploymentStore.setVerId([]);
     AppDeploymentStore.setAppVer([]);
+    AppDeploymentStore.setSingleAppId();
+    AppDeploymentStore.setAppNameByEnv([]);
+    AppDeploymentStore.setIstTableFilter(null);
   }
 
   /**
@@ -54,16 +42,12 @@ class DeployHome extends Component {
     const { AppDeploymentStore } = this.props;
     const tabName = AppDeploymentStore.getTabActive;
     const { filters, param } = AppDeploymentStore.getIstParams;
-    let searchParam = {};
-    if (Object.keys(filters).length) {
-      searchParam = filters;
-    }
-    const postData = {
-      searchParam,
+    const { current, pageSize } = AppDeploymentStore.getPageInfo;
+    const datas = {
+      searchParam: filters,
       param: param.toString(),
     };
-    const pageInfo = AppDeploymentStore.getPageInfo;
-    this.loadData(tabName, { page: pageInfo.current - 1, size: pageInfo.pageSize, datas: postData });
+    this.loadData(tabName, { page: current - 1, size: pageSize, datas });
   };
 
   /**
@@ -76,47 +60,12 @@ class DeployHome extends Component {
   };
 
   /**
-   * 加载部署实例
-   */
-  loadIstAlls = (pages = 0, Info = {}) => {
-    const { AppDeploymentStore } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    AppDeploymentStore.loadInstanceAll(projectId, Info);
-  };
-
-  /**
    * 获取应用名称
    */
   loadAppName = () => {
     const { AppDeploymentStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     AppDeploymentStore.loadAppNames(projectId);
-  };
-
-  /**
-   * 查询应用标签及实例列表
-   * @param envId
-   * @param Info
-   */
-  loadSingleEnv = (envId, Info = {}) => {
-    const { AppDeploymentStore } = this.props;
-    const hasApp = AppDeploymentStore.getHasApp;
-    const appId = hasApp && AppDeploymentStore.getAppId;
-    const { id: projectId } = JSON.parse(sessionStorage.selectData);
-    const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
-    AppDeploymentStore.setAppPageSize(appPageSize);
-    AppDeploymentStore.loadAppNameByEnv(projectId, envId, 0, appPageSize).then((data) => {
-      if (data) {
-        const appIds = data.map(item => item.id);
-        if (appId && !appIds.includes(appId)) {
-          AppDeploymentStore.setHasApp(false);
-          AppDeploymentStore.loadInstanceAll(projectId, { envId, appId: false, ...Info });
-        } else {
-          AppDeploymentStore.setHasApp(true);
-          AppDeploymentStore.loadInstanceAll(projectId, { envId, appId, ...Info });
-        }
-      }
-    });
   };
 
   /**
@@ -163,35 +112,31 @@ class DeployHome extends Component {
       return;
     }
     AppDeploymentStore.setTabActive(tabName);
-    // 设定只要切换tab页就清空筛选条件
     if (_.isEmpty(info)) {
       AppDeploymentStore.setIstTableFilter(null);
     }
-    // AppDeploymentStore.setAppId(false);
-    AppDeploymentStore.setPId(false);
-    // AppDeploymentStore.setVerId(false);
+    // if (tabName !== 'instance') {
+    //   this.loadEnvCards();
+    //   this.loadAppName();
+    // }
     AppDeploymentStore.setIstAll([]);
-    this.loadData(tabName, info);
   };
 
+  /**
+   * 加载单应用数据
+   * @param info
+   */
   handleSigApp = (info) => {
     const { AppDeploymentStore } = this.props;
     const appId = AppDeploymentStore.getSingleAppId;
-    this.loadEnvCards();
-    this.loadAppName();
+    // this.loadEnvCards();
+    // this.loadAppName();
     const appNames = AppDeploymentStore.getAppNames;
     if (appNames.length) {
       this.loadAppVer(appId || appNames[0].id, info);
     }
   };
 
-  handleSigEnv = (info) => {
-    const { AppDeploymentStore } = this.props;
-    const envNames = AppDeploymentStore.getEnvcard;
-    if (envNames.length) {
-      this.loadSingleEnv(AppDeploymentStore.getEnvId || envNames[0].id, info);
-    }
-  };
 
   /**
    * 处理页面跳转
@@ -200,19 +145,6 @@ class DeployHome extends Component {
   linkToChange = (url) => {
     const { history } = this.props;
     history.push(url);
-  };
-
-  loadData = (tab, info) => {
-    switch (tab) {
-      case 'singleApp':
-        this.handleSigApp(info);
-        break;
-      case 'singleEnv':
-        this.handleSigEnv(info);
-        break;
-      default:
-        this.loadIstAlls(0, info);
-    }
   };
 
   render() {
@@ -239,10 +171,10 @@ class DeployHome extends Component {
       >
         <Header title={<FormattedMessage id="ist.head" />}>
           <Button
+            icon="refresh"
             funcType="flat"
             onClick={this.reload}
           >
-            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>

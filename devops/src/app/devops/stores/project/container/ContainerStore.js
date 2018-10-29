@@ -155,6 +155,17 @@ class ContainerStore {
     return res;
   });
 
+  /**
+   * 加载容器
+   * @param isRefresh 是否刷新
+   * @param proId 项目id
+   * @param envId 环境id
+   * @param appId 应用id
+   * @param page
+   * @param size
+   * @param sort
+   * @param datas 筛选条件
+   */
   loadData = (isRefresh = false, proId, envId = this.envId, appId = this.appId, page = 0, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
     searchParam: {},
     param: '',

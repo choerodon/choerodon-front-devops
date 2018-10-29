@@ -775,14 +775,16 @@
   vertical-align: text-bottom;
 }
 
-.c7n-deploy-singleEnv-ist {
+.c7n-deploy-env-title {
   color: #000;
   font-size: 16px;
   font-weight: 500;
   letter-spacing: .005em;
   line-height: 28px;
   margin-bottom: 8px;
-  margin-top: 32px;
+  &.c7n-deploy-env-ist {
+    margin-top: 32px;
+  }
 }
 
 .c7n-deploy-modal-content {
