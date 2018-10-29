@@ -45,17 +45,14 @@ class ContainerHome extends Component {
       appProLength: 0,
       appPubDom: [],
       appProDom: [],
+      envIds: null,
     };
     this.timer = null;
   }
 
   componentDidMount() {
-    const { ContainerStore } = this.props;
     const { selectProPage, selectPubPage } = this.state;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    ContainerStore.loadActiveEnv(projectId);
-    ContainerStore.loadAppData(projectId);
-    ContainerStore.loadData(false, projectId);
+    this.loadInitData();
     this.loadSelectData([selectProPage, selectPubPage], '');
   }
 
@@ -634,6 +631,7 @@ class ContainerHome extends Component {
     ContainerStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
     const appId = ContainerStore.getappId;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
+    this.setState({ envIds: value });
     if (!value) {
       ContainerStore.loadAppData(projectId);
       ContainerStore.loadData(false, projectId, value, appId);
@@ -714,7 +712,7 @@ class ContainerHome extends Component {
           proLength += 1;
         }
         if (d.projectId !== projectId && appPubDom.length < pubPageSize) {
-          appPubDom.push(<Option key={d.id}>
+          appPubDom.push(<Option key={d.id} value={d.id}>
             <Popover
               placement="right"
               content={<div>
@@ -739,7 +737,7 @@ class ContainerHome extends Component {
             </Popover>
           </Option>);
         } else if (appProDom.length < proPageSize) {
-          appProDom.push(<Option key={d.id}>
+          appProDom.push(<Option key={d.id} value={d.id}>
             <Popover
               placement="right"
               content={<div>
@@ -768,6 +766,30 @@ class ContainerHome extends Component {
       appPubLength: pubLength,
       appProLength: proLength,
     });
+  };
+
+  loadInitData = () => {
+    const {
+      ContainerStore,
+      history: { location: { state } },
+    } = this.props;
+    const {
+      loadActiveEnv,
+      loadAppData,
+      loadData,
+    } = ContainerStore;
+    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    let envId = null;
+    let appId = null;
+    if (state) {
+      envId = state.envId;
+      appId = state.appId;
+    }
+    this.setState({ envIds: envId });
+    ContainerStore.setAppId(appId);
+    loadActiveEnv(projectId);
+    loadAppData(projectId);
+    loadData(false, projectId, envId, appId);
   };
 
   /**
@@ -826,15 +848,36 @@ class ContainerHome extends Component {
   };
 
   render() {
-    const { ContainerStore, intl } = this.props;
-    const { showSide, following, fullscreen, containerName, podName, containerArr, showDebug, selectProPage, selectPubPage, appProDom, appPubDom, appProLength, appPubLength } = this.state;
+    const {
+      ContainerStore,
+      intl,
+      history: { location: { state } },
+    } = this.props;
+    const {
+      showSide,
+      following,
+      fullscreen,
+      containerName,
+      podName,
+      containerArr,
+      showDebug,
+      selectProPage,
+      selectPubPage,
+      appProDom,
+      appPubDom,
+      appProLength,
+      appPubLength,
+      envIds,
+    } = this.state;
     const envNames = ContainerStore.getEnvCard;
-    const appId = ContainerStore.getappId;
     const { paras } = ContainerStore.getInfo;
     const proPageSize = (10 * selectProPage) + 3;
     const pubPageSize = (10 * selectPubPage) + 3;
     const serviceData = ContainerStore.getAllData && ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
+    const envOptions = _.map(envNames, d => (<Option key={d.id} value={d.id}>
+      {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
+      {d.name}</Option>));
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
       <Header title={<FormattedMessage id="container.header.title" />}>
         <Button
@@ -849,21 +892,18 @@ class ContainerHome extends Component {
           label={intl.formatMessage({ id: 'container.chooseEnv' })}
           className="c7n-app-select_247"
           optionFilterProp="children"
+          value={envOptions.length ? envIds : undefined}
           filterOption={(input, option) => option.props.children[1].toLowerCase().indexOf(input.toLowerCase()) >= 0}
           filter
           onChange={this.handleEnvSelect}
           allowClear
         >
-          {
-            _.map(envNames, d => (<Option key={d.id}>
-              {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
-              {d.name}</Option>))
-          }
+          {envOptions}
         </Select>
         <Select
           className="c7n-app-select_247"
           label={intl.formatMessage({ id: 'chooseApp' })}
-          value={appId}
+          value={envOptions.length ? ContainerStore.getappId : undefined}
           optionFilterProp="children"
           onChange={this.handleAppSelect}
           filterOption={false}

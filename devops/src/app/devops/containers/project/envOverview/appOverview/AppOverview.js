@@ -6,7 +6,6 @@ import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Form, Collapse, Icon, Input, Tooltip, Modal, Progress, Select } from 'choerodon-ui';
 import { Permission, Content, Action, stores } from 'choerodon-front-boot';
-import CodeMirror from 'react-codemirror';
 import _ from 'lodash';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/base16-dark.css';
@@ -16,7 +15,6 @@ import DelIst from '../../appDeployment/component/delIst/DelIst';
 import '../EnvOverview.scss';
 import '../../appDeployment/AppDeploy.scss';
 import '../../../main.scss';
-import ContainerStore from '../../../../stores/project/container';
 import AppDeploymentStore from '../../../../stores/project/appDeployment';
 import DomainStore from '../../../../stores/project/domain';
 import CreateDomain from '../../domain/createDomain';
@@ -24,8 +22,6 @@ import CreateNetwork from '../../networkConfig/createNetwork';
 import NetworkConfigStore from '../../../../stores/project/networkConfig';
 import LoadingBar from '../../../../components/loadingBar';
 import ExpandRow from '../../appDeployment/component/ExpandRow';
-import '../../container/containerHome/ContainerHome.scss';
-import '../../container/containerHome/Term.scss';
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -79,15 +75,6 @@ class AppOverview extends Component {
   @observable domainTitle = '';
 
   @observable istName = '';
-
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      ws: false,
-      following: true,
-      fullscreen: false,
-    };
-  }
 
   componentDidMount() {
     const { store } = this.props;
@@ -330,168 +317,6 @@ class AppOverview extends Component {
   };
 
   /**
-   * 显示日志
-   * @param record 容器record
-   */
-  @action
-  showLog =(record) => {
-    const projectId = AppState.currentMenuType.id;
-    ContainerStore.loadPodParam(projectId, record.id)
-      .then((data) => {
-        this.namespace = record.namespace;
-        this.podName = data[0].podName;
-        this.containerName = data[0].containerName;
-        this.logId = data[0].logId;
-        this.showSide = true;
-        this.containerArr = data;
-        this.loadLog();
-      });
-  };
-
-  /**
-   * 切换container日志
-   * @param value
-   */
-  @action
-  containerChange = (value) => {
-    const { ws } = this.state;
-    if (this.logId !== value.split('+')[0]) {
-      if (ws) {
-        ws.close();
-      }
-      this.containerName = value.split('+')[1];
-      this.logId = value.split('+')[0];
-      this.loadLog();
-    }
-  };
-
-  /**
-   * 加载容器日志
-   */
-  @action
-  loadLog = (followingOK) => {
-    const { following } = this.state;
-    const authToken = document.cookie.split('=')[1];
-    const logs = [];
-    let oldLogs = [];
-    let editor = null;
-    if (this.editorLog) {
-      editor = this.editorLog.getCodeMirror();
-      try {
-        const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${this.namespace}.envId:${this.props.envId}.log:${this.logId}&podName=${this.podName}&containerName=${this.containerName}&logId=${this.logId}&token=${authToken}`);
-        this.setState({ ws, following: true });
-        if (!followingOK) {
-          editor.setValue('Loading...');
-        }
-        ws.onmessage = (e) => {
-          if (e.data.size) {
-            const reader = new FileReader();
-            reader.readAsText(e.data, 'utf-8');
-            reader.onload = () => {
-              if (reader.result !== '') {
-                logs.push(reader.result);
-              }
-            };
-          }
-        };
-        if (logs.length > 0) {
-          const logString = _.join(logs, '');
-          editor.setValue(logString);
-        }
-        this.timer = setInterval(() => {
-          if (logs.length > 0) {
-            if (!_.isEqual(logs, oldLogs)) {
-              const logString = _.join(logs, '');
-              editor.setValue(logString);
-              editor.execCommand('goDocEnd');
-              // 如果没有返回数据，则不进行重新赋值给编辑器
-              oldLogs = _.cloneDeep(logs);
-            }
-          } else {
-            editor.setValue('Loading...');
-          }
-        }, 1000);
-
-        this.setState({ ws, following: true });
-        if (!followingOK) {
-          editor.setValue('Loading...');
-        }
-        ws.onopen = () => {
-          editor.setValue('Loading...');
-        };
-        ws.onerror = (e) => {
-          if (this.timer) {
-            clearInterval(this.timer);
-            this.timer = null;
-          }
-          logs.push('连接出错，请重新打开');
-          editor.setValue(_.join(logs, ''));
-          editor.execCommand('goDocEnd');
-        };
-        ws.onclose = (e) => {
-          if (this.timer) {
-            clearInterval(this.timer);
-            this.timer = null;
-          }
-          if (following) {
-            logs.push('连接已断开');
-            editor.setValue(_.join(logs, ''));
-          }
-          editor.execCommand('goDocEnd');
-        };
-        ws.onmessage = (e) => {
-          if (e.data.size) {
-            const reader = new FileReader();
-            reader.readAsText(e.data, 'utf-8');
-            reader.onload = () => {
-              if (reader.result !== '') {
-                logs.push(reader.result);
-              }
-            };
-          }
-          if (!logs.length) {
-            const logString = _.join(logs, '');
-            editor.setValue(logString);
-          }
-        };
-
-        this.timer = setInterval(() => {
-          if (logs.length > 0) {
-            if (!_.isEqual(logs, oldLogs)) {
-              const logString = _.join(logs, '');
-              editor.setValue(logString);
-              editor.execCommand('goDocEnd');
-              // 如果没有返回数据，则不进行重新赋值给编辑器
-              oldLogs = _.cloneDeep(logs);
-            }
-          } else if (!followingOK) {
-            editor.setValue('Loading...');
-          }
-        });
-      } catch (e) {
-        editor.setValue('连接失败');
-      }
-    }
-  };
-
-  /**
-   * 关闭日志
-   */
-  @action
-  closeSidebar = () => {
-    clearInterval(this.timer);
-    this.timer = null;
-    const { ws } = this.state;
-    if (ws) {
-      ws.close();
-    }
-    const editor = this.editorLog.getCodeMirror();
-    this.showSide = false;
-    editor.setValue('');
-  };
-
-
-  /**
    *打开域名创建弹框
    */
   @action
@@ -584,7 +409,7 @@ class AppOverview extends Component {
                 key={c.id}
               >
                 <div>
-                  {/* <ExpandRow deploy={deploy} /> */}
+                  <ExpandRow record={c} />
                   <div className="c7n-envow-contaners-title">
                     NETWORKING
                   </div>
@@ -820,71 +645,9 @@ class AppOverview extends Component {
     }
   };
 
-  /**
-   * 日志go top
-   */
-  goTop = () => {
-    const editor = this.editorLog.getCodeMirror();
-    editor.execCommand('goDocStart');
-  };
-
-  /**
-   * top log following
-   */
-  stopFollowing = () => {
-    const { ws } = this.state;
-    if (ws) {
-      ws.close();
-    }
-    this.setState({
-      following: false,
-    });
-  };
-
-  /**
-   *  全屏查看日志
-   */
-  setFullscreen = () => {
-    const cm = this.editorLog.getCodeMirror();
-    const wrap = cm.getWrapperElement();
-    cm.state.fullScreenRestore = {
-      scrollTop: window.pageYOffset,
-      scrollLeft: window.pageXOffset,
-      width: wrap.style.width,
-      height: wrap.style.height,
-    };
-    wrap.style.width = '';
-    wrap.style.height = 'auto';
-    wrap.className += ' CodeMirror-fullscreen';
-    this.setState({ fullscreen: true });
-    document.documentElement.style.overflow = 'hidden';
-    cm.refresh();
-    window.addEventListener('keydown', (e) => {
-      this.setNormal(e.which);
-    });
-  };
-
-  /**
-   * 任意键退出全屏查看
-   */
-  setNormal = () => {
-    const cm = this.editorLog.getCodeMirror();
-    const wrap = cm.getWrapperElement();
-    wrap.className = wrap.className.replace(/\s*CodeMirror-fullscreen\b/, '');
-    this.setState({ fullscreen: false });
-    document.documentElement.style.overflow = '';
-    const info = cm.state.fullScreenRestore;
-    wrap.style.width = info.width; wrap.style.height = info.height;
-    window.scrollTo(info.scrollLeft, info.scrollTop);
-    cm.refresh();
-    window.removeEventListener('keydown', (e) => {
-      this.setNormal(e.which);
-    });
-  };
 
   render() {
     const { intl, store } = this.props;
-    const { fullscreen, following } = this.state;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const val = store.getVal;
     const prefix = <Icon type="search" onClick={this.onSearch} />;
@@ -931,39 +694,6 @@ class AppOverview extends Component {
           idArr={this.idArr}
           onClose={this.handleCancelUp}
         /> }
-        {this.showSide && <Sidebar
-          visible={this.showSide}
-          title={<FormattedMessage id="container.log.header.title" />}
-          onOk={this.closeSidebar}
-          className="c7n-podLog-content c7n-region"
-          okText={<FormattedMessage id="close" />}
-          okCancel={false}
-          destroyOnClose
-        >
-          <Content className="sidebar-content" code="container.log" values={{ name: this.podName }}>
-            <section className="c7n-podLog-section">
-              <div className="c7n-podLog-hei-wrap">
-                <div className="c7n-podShell-title">
-                  <FormattedMessage id="container.term.log" />&nbsp;
-                  <Select value={this.containerName} onChange={this.containerChange}>
-                    {containerDom}
-                  </Select>
-                  <Button type="primary" funcType="flat" shape="circle" icon="fullscreen" onClick={this.setFullscreen} />
-                </div>
-                {following ? <div className={`c7n-podLog-action log-following ${fullscreen ? 'f-top' : ''}`} onClick={this.stopFollowing}>Stop Following</div>
-                  : <div className={`c7n-podLog-action log-following ${fullscreen ? 'f-top' : ''}`} onClick={this.loadLog.bind(this, true)}>Start Following</div>}
-                <CodeMirror
-                  ref={(editor) => { this.editorLog = editor; }}
-                  value="Loading..."
-                  className="c7n-podLog-editor"
-                  onChange={code => this.props.ChangeCode(code)}
-                  options={options}
-                />
-                <div className={`c7n-podLog-action log-goTop ${fullscreen ? 'g-top' : ''}`} onClick={this.goTop}>Go Top</div>
-              </div>
-            </section>
-          </Content>
-        </Sidebar>}
         <DelIst
           open={this.openRemove}
           handleCancel={this.handleCancelUp}

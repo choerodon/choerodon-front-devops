@@ -1,6 +1,7 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import _ from 'lodash';
+import { handleProptError } from '../../../utils';
 
 const height = window.screen.height;
 @store('AppDeploymentStore')
@@ -41,7 +42,7 @@ class AppDeploymentStore {
 
   @observable appPageSize = 1;
 
-  @observable tabActive = 'instance';
+  @observable tabActive = 'singleEnv';
 
   @observable filterValue = '';
 
@@ -52,8 +53,6 @@ class AppDeploymentStore {
   @observable appId = false;
 
   @observable sigAppId = false;
-
-  @observable pId = false;
 
   @observable istParams = { filters: {}, param: [] };
 
@@ -210,14 +209,6 @@ class AppDeploymentStore {
     this.sigAppId = appId;
   }
 
-  @action setPId(pId) {
-    this.pId = pId;
-  }
-
-  @computed get getPId() {
-    return this.pId;
-  }
-
   @computed get getVerId() {
     return this.verId;
   }
@@ -264,20 +255,19 @@ class AppDeploymentStore {
 
   loadInstanceAll = (projectId, Info = {}) => {
     this.changeLoading(true);
-    Info.page = Info.page ? Info.page : 0;
-    Info.size = Info.size ? Info.size : this.pageInfo.pageSize;
-    Info.datas = Info.datas ? Info.datas : { searchParam: {}, param: '' };
+    const { page, size, datas } = Info;
+    const normal = ['page', 'size', 'datas'];
+    // 除了normal中的字段外，其他不一定有
+    // 所以需要使用下面方法拼接url
     let url = '';
     _.forEach(Info, (value, key) => {
-      if (key !== 'datas' && value) {
-        url = `${url}&${key}=${value}`;
+      if (value && !normal.includes(key)) {
+        url = url.concat(`&${key}=${value}`);
       }
     });
-    url = _.replace(url, '&', '?');
-    return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options${url}`, JSON.stringify(Info.datas)).then((data) => {
-      if (data && data.failed) {
-        Choerodon.prompt(data.message);
-      } else {
+    return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page || 0}&size=${size || this.pageInfo.pageSize}${url}`, JSON.stringify(datas || { searchParam: {}, param: '' })).then((data) => {
+      const res = handleProptError(data);
+      if (res) {
         this.handleData(data);
         this.changeLoading(false);
       }
@@ -285,8 +275,8 @@ class AppDeploymentStore {
   };
 
   handleData =(data) => {
-    this.setIstAll(data.content);
-    const { number, size, totalElements } = data;
+    const { number, size, totalElements, content } = data;
+    this.setIstAll(content);
     const page = { number, size, totalElements };
     this.setPageInfo(page);
     this.changeLoading(false);
@@ -295,39 +285,34 @@ class AppDeploymentStore {
 
   loadAppNames = projectId => axios.get(`devops/v1/projects/${projectId}/apps/list_all`).then((data) => {
     this.changeLoading(true);
-    if (data && data.failed) {
-      Choerodon.prompt(data.message);
-    } else {
-      this.setAppNames(data);
+    const res = handleProptError(data);
+    if (res) {
+      this.setAppNames(res);
       this.changeLoading(false);
+      return res;
     }
   });
 
-  loadVersionFeature(projectId, id) {
-    return axios.get(`devops/v1/projects/${projectId}/app_instances/${id}/version_features`);
-  }
-
   loadActiveEnv = projectId => axios.get(`devops/v1/projects/${projectId}/envs?active=true`).then((data) => {
-    if (data && data.failed) {
-      Choerodon.prompt(data.message);
-    } else {
-      this.setEnvcard(data);
+    const res = handleProptError(data);
+    if (res) {
+      this.setEnvcard(res);
+      return res;
     }
+    return false;
   });
 
   loadAppVersion = (projectId, appId) => axios.get(`devops/v1/projects/${projectId}/apps/${appId}/version/list_deployed`).then((data) => {
-    if (data && data.failed) {
-      Choerodon.prompt(data.message);
-    } else {
+    const res = handleProptError(data);
+    if (res) {
       this.setAppVer(data);
     }
   });
 
   loadAppNameByEnv = (projectId, envId, page, appPageSize) => axios.get(`devops/v1/projects/${projectId}/apps/pages?env_id=${envId}&page=${page}&size=${appPageSize}`).then((data) => {
     this.changeLoading(true);
-    if (data && data.failed) {
-      Choerodon.prompt(data.message);
-    } else {
+    const res = handleProptError(data);
+    if (res) {
       this.setAppNameByEnv(data.content);
       // this.setSelectApp(data.content);
       const { number, size, totalElements } = data;
@@ -341,9 +326,8 @@ class AppDeploymentStore {
 
   loadMultiData = projectId => axios.get(`devops/v1/projects/${projectId}/app_instances/all`).then((data) => {
     this.changeLoading(true);
-    if (data && data.failed) {
-      Choerodon.prompt(data.message);
-    } else {
+    const res = handleProptError(data);
+    if (res) {
       this.setMutiData(data);
       this.changeLoading(false);
     }
@@ -351,7 +335,7 @@ class AppDeploymentStore {
 
   loadValue = (projectId, id, verId) => axios.get(`devops/v1/projects/${projectId}/app_instances/${id}/appVersion/${verId}/value`)
     .then((data) => {
-      const res = this.handleProptError(data);
+      const res = handleProptError(data);
       if (res) {
         this.setValue(data);
         return res;
@@ -376,15 +360,6 @@ class AppDeploymentStore {
       }
       return data;
     });
-
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
-  };
 }
 
 const appDeploymentStore = new AppDeploymentStore();

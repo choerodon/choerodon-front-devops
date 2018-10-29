@@ -357,7 +357,8 @@ const zhCN = {
   'ist.delDes': '删除实例将不可恢复，其配置网络同时失效，确定要删除该实例吗？',
   'ist.expand.name': '名称',
   'ist.expand.date': '创建时间',
-  'ist.expand.empty': '暂无实例详细信息',
+  'ist.expand.empty': '暂无部署详细信息',
+  'ist.expand.link': '点击查看详情',
 
 
   // network

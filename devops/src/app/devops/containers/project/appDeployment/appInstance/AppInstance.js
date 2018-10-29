@@ -11,7 +11,16 @@ import ExpandRow from '../component/ExpandRow';
 import '../AppDeploy.scss';
 import '../../../main.scss';
 
-const { AppState } = stores;
+const {
+  AppState: {
+    currentMenuType: {
+      id: projectId,
+      name: projectName,
+      type,
+      organizationId,
+    },
+  },
+} = stores;
 
 @observer
 class AppInstance extends Component {
@@ -26,6 +35,11 @@ class AppInstance extends Component {
       loading: false,
       name: '',
     };
+  }
+
+  componentDidMount() {
+    const { store } = this.props;
+    store.loadInstanceAll(projectId, {});
   }
 
   /**
@@ -43,24 +57,7 @@ class AppInstance extends Component {
    * @param status 实例状态
    */
   linkDeployDetail = (id, status) => {
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const projectName = AppState.currentMenuType.name;
-    const type = AppState.currentMenuType.type;
-    const organizationId = AppState.currentMenuType.organizationId;
     this.linkToChange(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
-  };
-
-  /**
-   * 查看版本特性
-   * @param id 实例ID
-   * @param istName 实例名
-   */
-  linkVersionFeature = (id, istName) => {
-    const { store } = this.props;
-    store.setAlertType('versionFeature');
-    this.setState({
-      id,
-    });
   };
 
   /**
@@ -73,7 +70,6 @@ class AppInstance extends Component {
    */
   updateConfig = (name, id, envId, verId, appId) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
       idArr: [envId, verId, appId],
       name,
@@ -98,7 +94,6 @@ class AppInstance extends Component {
    */
   reStart = (id) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     store.reStarts(projectId, id)
       .then((error) => {
         if (error && error.failed) {
@@ -119,7 +114,6 @@ class AppInstance extends Component {
    */
   upgradeIst = (name, id, envId, verId, appId) => {
     const { store, intl } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     store.loadUpVersion(projectId, verId)
       .then((val) => {
         if (val && val.failed) {
@@ -153,7 +147,6 @@ class AppInstance extends Component {
    */
   activeIst = (id, status) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     store.changeIstActive(projectId, id, status)
       .then((error) => {
         if (error && error.failed) {
@@ -173,18 +166,8 @@ class AppInstance extends Component {
    */
   tableChange =(pagination, filters, sorter, param) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const sort = {};
-    if (sorter.column) {
-      const { field, order } = sorter;
-      sort[field] = order;
-    }
-    let searchParam = {};
-    if (Object.keys(filters).length) {
-      searchParam = filters;
-    }
     const postData = {
-      searchParam,
+      searchParam: filters,
       param: param.toString(),
     };
     store.loadInstanceAll(projectId, { page: pagination.current - 1, size: pagination.pageSize, datas: postData });
@@ -197,7 +180,6 @@ class AppInstance extends Component {
    */
   handleCancel = (res) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
       visible: false,
     });
@@ -213,7 +195,6 @@ class AppInstance extends Component {
    */
   handleCancelUp = (res) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
       visibleUp: false,
     });
@@ -228,7 +209,6 @@ class AppInstance extends Component {
    */
   handleDelete = (id) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
       loading: true,
     });
@@ -260,9 +240,6 @@ class AppInstance extends Component {
    * @returns {*}
    */
   columnAction = (record) => {
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
     const { intl } = this.props;
     if (record.status === 'operating' || !record.connect) {
       return (<Action
@@ -375,18 +352,25 @@ class AppInstance extends Component {
   /**
    * 打开删除数据模态框
    * @param id
+   * @param name
    */
   handleOpen(id, name) {
     this.setState({ openRemove: true, id, name });
   }
 
   render() {
-    const { store, intl } = this.props;
+    const {
+      store: {
+        getIstAll,
+        getPageInfo,
+        getIsLoading,
+        getIstParams: { filters, param },
+      },
+      intl,
+    } = this.props;
     const { name } = this.state;
-    const ist = store.getIstAll;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const pageInfo = store.getPageInfo;
-    const { filters, param } = store.getIstParams;
+    const ist = getIstAll;
+    const pageInfo = getPageInfo;
     const columns = [{
       title: <FormattedMessage id="deploy.instance" />,
       key: 'code',
@@ -451,7 +435,7 @@ class AppInstance extends Component {
           className="c7n-devops-instance-table"
           filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
           onChange={this.tableChange}
-          loading={store.getIsLoading}
+          loading={getIsLoading}
           columns={columns}
           pagination={pageInfo}
           filters={param.slice() || []}

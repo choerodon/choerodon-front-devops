@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Table, Icon, Select, Progress, Tooltip, Pagination } from 'choerodon-ui';
@@ -14,7 +14,16 @@ import '../../../main.scss';
 
 const Option = Select.Option;
 
-const { AppState } = stores;
+const {
+  AppState: {
+    currentMenuType: {
+      id: projectId,
+      name: projectName,
+      type,
+      organizationId,
+    },
+  },
+} = stores;
 
 @observer
 class SingleEnvironment extends Component {
@@ -22,7 +31,13 @@ class SingleEnvironment extends Component {
     super(props);
     this.state = {
       visibleUp: false,
+      envId: null,
+      appId: null,
     };
+  }
+
+  componentDidMount() {
+    this.loadInitData();
   }
 
   /**
@@ -32,35 +47,30 @@ class SingleEnvironment extends Component {
    */
   onPageChange = (appPage, appPageSize) => {
     const { store } = this.props;
-    const envNames = store.getEnvcard;
-    const envId = store.getEnvId;
-    const envID = envId || (envNames.length ? envNames[0].id : null);
+    const { envId } = this.state;
     store.setAppPage(appPage);
     store.setAppPageSize(appPageSize);
-    this.loadSingleEnv(envID);
+    this.loadSingleEnv(envId);
   };
 
   /**
-   * envID & appID获取实例列表
+   * 选择应用后获取实例列表
    * @param envId
    * @param appId
-   * @param pId
    */
-  loadDetail = (envId, appId, pId) => {
+  loadDetail = (envId, appId) => {
     const { store } = this.props;
-    const appIds = store.getAppId;
-    const envNames = store.getEnvcard;
-    const envID = envId || (envNames.length ? envNames[0].id : null);
-    store.setHasApp(true);
-    if (!appIds || appId !== appIds) {
-      store.setAppId(appId);
-      store.setPId(pId);
-      this.loadInstance(envID, appId);
+    const { appId: currentApp } = this.state;
+    let nextApp = false;
+    if (appId === currentApp) {
+      nextApp = false;
+      this.loadInstance(envId);
     } else {
-      store.setAppId(false);
-      store.setPId(false);
-      this.loadInstance(envID);
+      nextApp = appId;
+      this.loadInstance(envId, appId);
     }
+    this.setState({ appId: nextApp });
+    store.setAppId(nextApp);
     store.setIstTableFilter(null);
   };
 
@@ -71,20 +81,7 @@ class SingleEnvironment extends Component {
    */
   linkDeployDetail = (id, status) => {
     const { history } = this.props;
-    const { id: projectId, name, organizationId, type } = AppState.currentMenuType;
-    history.push(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`);
-  };
-
-  /**
-   * 查看版本特性
-   * @param id 实例ID
-   * @param istName 实例名
-   */
-  linkVersionFeature = (id, istName) => {
-    const { store } = this.props;
-    store.setAlertType('versionFeature');
-    this.setState({ id });
-    store.changeShow(true);
+    history.push(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}`);
   };
 
   /**
@@ -93,17 +90,15 @@ class SingleEnvironment extends Component {
    */
   loadSingleEnv = (id) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const appId = store.getAppId;
+    const { appId } = this.state;
     store.setEnvId(id);
+    this.setState({ envId: id });
     store.loadAppNameByEnv(projectId, id, store.appPage - 1, store.appPageSize).then((data) => {
       if (data) {
         const appIds = data.map(item => item.id);
         if (appId && !appIds.includes(appId)) {
-          store.setHasApp(false);
           store.loadInstanceAll(projectId, { envId: id, appId: false });
         } else {
-          store.setHasApp(true);
           store.loadInstanceAll(projectId, { envId: id, appId });
         }
       }
@@ -118,7 +113,6 @@ class SingleEnvironment extends Component {
    */
   loadInstance = (envId, appId) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     store.loadInstanceAll(projectId, { envId, appId });
   };
 
@@ -131,25 +125,17 @@ class SingleEnvironment extends Component {
    */
   tableChange =(pagination, filters, sorter, param) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const envNames = store.getEnvcard;
-    const envId = store.getEnvId;
-    const appId = store.getAppId;
-    const envID = envId || (envNames.length ? envNames[0].id : null);
-    const sort = {};
-    if (sorter.column) {
-      const { field, order } = sorter;
-      sort[field] = order;
-    }
+    const { envId, appId } = this.state;
+    const { current, pageSize } = pagination;
     let searchParam = {};
     if (Object.keys(filters).length) {
       searchParam = filters;
     }
-    const postData = {
+    const datas = {
       searchParam,
       param: param.toString(),
     };
-    store.loadInstanceAll(projectId, { page: pagination.current - 1, size: pagination.pageSize, envId: envID, appId, datas: postData });
+    store.loadInstanceAll(projectId, { page: current - 1, size: pageSize, envId, appId, datas });
     store.setIstTableFilter({ filters, param });
   };
 
@@ -163,7 +149,6 @@ class SingleEnvironment extends Component {
    */
   updateConfig = (name, id, envId, verId, appId) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
       idArr: [envId, verId, appId],
       name,
@@ -188,7 +173,6 @@ class SingleEnvironment extends Component {
    */
   reStart = (id) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     store.reStarts(projectId, id)
       .then((error) => {
         if (error && error.failed) {
@@ -210,7 +194,6 @@ class SingleEnvironment extends Component {
    */
   upgradeIst = (name, id, envId, verId, appId) => {
     const { store, intl } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     store.loadUpVersion(projectId, verId)
       .then((val) => {
         if (val && val.failed) {
@@ -243,19 +226,12 @@ class SingleEnvironment extends Component {
    */
   handleCancel =(res) => {
     const { store } = this.props;
-    const menu = JSON.parse(sessionStorage.selectData);
-    const projectId = menu.id;
-    const envNames = store.getEnvcard;
-    const appNames = store.getAppNames;
-    const envId = store.getEnvId;
-    const appId = store.getAppId;
-    const envID = envId || (envNames.length ? envNames[0].id : null);
-    const appID = appId || (appNames.length ? appNames[0].id : null);
+    const { appId, envId } = this.state;
     this.setState({
       visible: false,
     });
     if (res) {
-      store.loadInstanceAll(projectId, { envId: envID, appId: appID });
+      store.loadInstanceAll(projectId, { envId, appId });
       store.setIstTableFilter(null);
     }
   };
@@ -266,7 +242,6 @@ class SingleEnvironment extends Component {
    */
   handleCancelUp = (res) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.setState({
       visibleUp: false,
     });
@@ -281,13 +256,7 @@ class SingleEnvironment extends Component {
    */
   handleDelete = (id) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const envNames = store.getEnvcard;
-    const appNames = store.getAppNames;
-    const envId = store.getEnvId;
-    const appId = store.getAppId;
-    const envID = envId || (envNames.length ? envNames[0].id : null);
-    const appID = appId || (appNames.length ? appNames[0].id : null);
+    const { appId, envId } = this.state;
     this.setState({
       loading: true,
     });
@@ -304,7 +273,7 @@ class SingleEnvironment extends Component {
             openRemove: false,
             loading: false,
           });
-          store.loadInstanceAll(projectId, { envId: envID, appId: appID });
+          store.loadInstanceAll(projectId, { envId, appId });
         }
       });
     store.setIstTableFilter(null);
@@ -318,19 +287,13 @@ class SingleEnvironment extends Component {
    */
   activeIst = (id, status) => {
     const { store } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const envNames = store.getEnvcard;
-    const appNames = store.getAppNames;
-    const envId = store.getEnvId;
-    const appId = store.getAppId;
-    const envID = envId || (envNames.length ? envNames[0].id : null);
-    const appID = appId || (appNames.length ? appNames[0].id : null);
+    const { envId, appId } = this.state;
     store.changeIstActive(projectId, id, status)
       .then((error) => {
         if (error && error.failed) {
           Choerodon.prompt(error.message);
         } else {
-          store.loadInstanceAll(projectId, { envId: envID, appId: appID });
+          store.loadInstanceAll(projectId, { envId, appId });
         }
       });
   };
@@ -349,9 +312,6 @@ class SingleEnvironment extends Component {
    */
   columnAction = (record) => {
     const { intl } = this.props;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
     if (record.status === 'operating' || !record.connect) {
       return (<Action
         data={[
@@ -460,6 +420,29 @@ class SingleEnvironment extends Component {
     }
   };
 
+  loadInitData = () => {
+    const { store } = this.props;
+    const { getEnvId, getAppId } = store;
+    store.loadActiveEnv(projectId).then((env) => {
+      if (env && env.length) {
+        const envId = getEnvId || env[0].id;
+        const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
+        store.setAppPageSize(appPageSize);
+        this.setState({ appId: getAppId, envId });
+        store.loadAppNameByEnv(projectId, envId, 0, appPageSize).then((data) => {
+          if (data) {
+            const appIds = data.map(item => item.id);
+            if (appIds.includes(getAppId)) {
+              store.loadInstanceAll(projectId, { envId, appId: getAppId });
+            } else {
+              store.loadInstanceAll(projectId, { envId, appId: false });
+            }
+          }
+        });
+      }
+    });
+  }
+
   /**
    * 打开删除数据模态框
    * @param id
@@ -471,22 +454,23 @@ class SingleEnvironment extends Component {
 
   render() {
     const { store, intl } = this.props;
-    const { name } = this.state;
+    const { name, envId, appId } = this.state;
     const ist = store.getIstAll;
     const envNames = store.getEnvcard;
     const appNames = store.getAppNameByEnv;
-    const appId = store.getAppId;
-    const envId = store.getEnvId;
-    const envID = envId || (envNames.length ? envNames[0].id : null);
     const appPageInfo = store.getAppPageInfo;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
     const { filters, param } = store.getIstParams;
 
     const envNameDom = envNames.length ? _.map(envNames, d => (<Option key={d.id} value={d.id}>
       {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
       {d.name}</Option>)) : [];
 
-    const appNameDom = appNames.length ? _.map(appNames, d => (<div role="none" className={Number(appId) === d.id ? 'c7n-deploy-single_card c7n-deploy-single_card-active' : 'c7n-deploy-single_card'} onClick={this.loadDetail.bind(this, envID, d.id, d.projectId)} key={d.id}>
+    const appNameDom = appNames.length ? _.map(appNames, d => (<div
+      role="none"
+      className={Number(appId) === d.id ? 'c7n-deploy-single_card c7n-deploy-single_card-active' : 'c7n-deploy-single_card'}
+      onClick={this.loadDetail.bind(this, envId, d.id, d.projectId)}
+      key={`${d.id}-${d.projectId}`}
+    >
       {d.projectId === projectId ? <i className="icon icon-project c7n-icon-publish" /> : <i className="icon icon-apps c7n-icon-publish" />}
       <div className="c7n-text-ellipsis"><Tooltip title={d.name || ''}>{d.name}</Tooltip></div>
     </div>)) : (<div className="c7n-deploy-single_card">
@@ -530,8 +514,8 @@ class SingleEnvironment extends Component {
       render: record => this.columnAction(record),
     }];
 
-    const detailDom = (<div className="c7n-deploy-single-wrap">
-      <div className="c7n-deploy-singleEnv-ist">
+    const detailDom = (<Fragment>
+      <div className="c7n-deploy-env-title">
         <FormattedMessage id="deploy.app" />
       </div>
       <div>
@@ -547,7 +531,7 @@ class SingleEnvironment extends Component {
           onShowSizeChange={this.onPageChange}
         />
       </div>
-      <div className="c7n-deploy-singleEnv-ist">
+      <div className="c7n-deploy-env-title c7n-deploy-env-ist">
         <FormattedMessage id="ist.head" />
       </div>
       <Table
@@ -562,12 +546,12 @@ class SingleEnvironment extends Component {
         rowKey={record => record.id}
         expandedRowRender={record => <ExpandRow record={record} />}
       />
-    </div>);
+    </Fragment>);
 
     return (
       <div className="c7n-region">
         <Select
-          value={envID}
+          value={envId}
           label={intl.formatMessage({ id: 'deploy.envName' })}
           className="c7n-app-select"
           onChange={this.loadSingleEnv}
