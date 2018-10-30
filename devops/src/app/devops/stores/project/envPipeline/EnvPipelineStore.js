@@ -301,7 +301,7 @@ class EnvPipelineStore {
     }
   });
 
-  loadTags = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/envs/list_all?env_id=${id}`).then((data) => {
+  loadTags = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/envs/${id}/list_all`).then((data) => {
     if (data && data.failed) {
       Choerodon.prompt(data.message);
     } else {
