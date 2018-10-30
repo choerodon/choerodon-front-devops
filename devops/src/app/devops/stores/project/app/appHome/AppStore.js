@@ -35,7 +35,6 @@ class AppStore {
     return this.pageInfo;
   }
 
-
   @computed get getAllData() {
     return this.allData.slice();
   }

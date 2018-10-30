@@ -19,7 +19,7 @@
     "lint-staged:es": "eslint"
   },
   "dependencies": {
-    "choerodon-front-boot": "^0.7.4",
+    "choerodon-front-boot": "0.9.0",
     "echarts": "^4.1.0",
     "echarts-for-react": "^2.0.12",
     "file-loader": "^2.0.0",
