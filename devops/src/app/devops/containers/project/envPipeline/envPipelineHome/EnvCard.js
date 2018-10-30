@@ -35,25 +35,34 @@ function collect(connect, monitor) {
 class EnvCard extends Component {
   editEnv = (id) => {
     const { projectId } = this.props;
-    EnvPipelineStore.setShow(true);
     EnvPipelineStore.setSideType('edit');
     EnvPipelineStore.loadEnvById(projectId, id);
+    EnvPipelineStore.setShow(true);
+  };
+
+  editPrm = (id) => {
+    const { projectId } = this.props;
+    EnvPipelineStore.setSideType('permission');
+    EnvPipelineStore.loadPrm(projectId, 0, 10, id);
+    EnvPipelineStore.loadTags(projectId, id);
+    EnvPipelineStore.loadEnvById(projectId, id);
+    EnvPipelineStore.setShow(true);
   };
 
   copyKey = (id, update) => {
     const { projectId } = this.props;
-    EnvPipelineStore.setShow(true);
     EnvPipelineStore.setSideType('key');
     EnvPipelineStore.loadEnvById(projectId, id);
     EnvPipelineStore.loadShell(projectId, id, update);
+    EnvPipelineStore.setShow(true);
   };
 
   banEnv = (id) => {
     const { projectId } = this.props;
     EnvPipelineStore.setSideType(null);
-    EnvPipelineStore.setBan(true);
     EnvPipelineStore.loadEnvById(projectId, id);
     EnvPipelineStore.loadInstance(projectId, 0, 10, null, id);
+    EnvPipelineStore.setBan(true);
   };
 
   render() {
@@ -92,6 +101,22 @@ class EnvCard extends Component {
                     </Tooltip>
                   </Permission>}
                   <Permission
+                    service={['devops-service.devops-environment.listUserPermissionByEnvId']}
+                    organizationId={organizationId}
+                    projectId={projectId}
+                    type={type}
+                  >
+                    <Tooltip title={<FormattedMessage id="envPl.authority" />}>
+                      <Button
+                        funcType="flat"
+                        shape="circle"
+                        onClick={this.editPrm.bind(this, cardData.id)}
+                      >
+                        <Icon type="authority" />
+                      </Button>
+                    </Tooltip>
+                  </Permission>
+                  <Permission
                     service={['devops-service.devops-environment.update']}
                     organizationId={organizationId}
                     projectId={projectId}
@@ -108,7 +133,7 @@ class EnvCard extends Component {
                     </Tooltip>
                   </Permission>
                   <Permission
-                    service={['devops-service.devops-environment.queryByEnvIdAndActive']}
+                    service={['devops-service.devops-environment.enableOrDisableEnv']}
                     organizationId={organizationId}
                     projectId={projectId}
                     type={type}

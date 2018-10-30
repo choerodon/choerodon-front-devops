@@ -21,7 +21,7 @@ const pageDetail = {
   'env.description': '环境是指一个应用可以被部署的地方。常见环境有开发测试环境，预生产环境，生产环境等。平台自动为您的项目生成一条环境流水线，您可在下方拖拽需要调整顺序的环境至目标位置。',
   'env.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
   'env.create.title': '在项目"{name}"中创建环境',
-  'env.create.description': '请在下面输入环境编码、名称、描述，创建新环境。新环境默认新增在环境流水线的最后一个节点。',
+  'env.create.description': '请在下面输入环境编码、名称、描述，来创建新环境，同时您还需要为此环境配置特定的操作人员，配置后，只有被勾选的成员才有权限在该环境下进行部署操作。新环境会默认新增在环境流水线的最后一个节点。',
   'env.create.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
   'env.edit.title': '对环境"{name}"进行修改',
   'env.edit.description': '您可在此修改环境名称及描述，也可以复制指令至Kubernetes运行，与平台建立连接。',
@@ -35,6 +35,9 @@ const pageDetail = {
   'env.stop.title': '项目"{name}"的环境停用区',
   'env.stop.description': '您可在此查看已被停用的环境，也可以重新启用这些环境。',
   'env.stop.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
+  'env.permission.title': '对"{name}"环境的权限分配',
+  'env.permission.description': '环境权限分配主要用于为环境配置特定的操作人员，配置后，只有被勾选的成员才有权限在该环境下进行部署操作。表中人员是除环境创建者外项目下所有的成员。',
+  'env.permission.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
 
   // domain
   'domain.title': '项目"{name}"的域名',
@@ -499,6 +502,11 @@ const zhCN = {
   'envPl.stop': '停用环境',
   'envPl.add': '请添加一个环境',
   'envPl.no.add': '未添加',
+  'envPl.loginName': '登录名',
+  'envPl.userName': '用户名',
+  'envPl.authority': '环境权限分配',
+  'envPl.authority.member': '已分配权限成员',
+  'envPl.authority.help': '此操作用于为环境配置特定的操作人员。配置后，只有被勾选的成员才有权限在该环境下进行部署操作。表中人员是除环境创建者外项目下所有的成员。',
 
   // app
   'app.head': '应用',

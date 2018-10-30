@@ -2,6 +2,8 @@ import { observable, action, computed } from 'mobx';
 import _ from 'lodash';
 import { axios, store } from 'choerodon-front-boot';
 
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
 @store('EnvPipelineStore')
 class EnvPipelineStore {
   @observable isLoading = true;
@@ -12,7 +14,17 @@ class EnvPipelineStore {
 
   @observable disEnvcardPosition = [];
 
-  @observable envdata = [];
+  @observable prmMbr = [];
+
+  @observable mbr = [];
+
+  @observable selectedRowKeys = [];
+
+  @observable tagKeys = [{"loginName":"20399","iamUserId":12725,"realName":"林岩芳","permitted":true},{"loginName":"o1","iamUserId":22365,"realName":"o1","permitted":true},{"loginName":"20682","iamUserId":12039,"realName":"张磊","permitted":true},{"loginName":"20655","iamUserId":11993,"realName":"毛智伟","permitted":true},{"loginName":"13708","iamUserId":6414,"realName":"王柯","permitted":true},{"loginName":"deployer09","iamUserId":14685,"realName":"deployer09","permitted":true},{"loginName":"10980","iamUserId":4679,"realName":"朱智阳","permitted":true}];
+
+  // @observable tagKeys = [];
+
+  @observable envdata = null;
 
   @observable group = [];
 
@@ -32,12 +44,80 @@ class EnvPipelineStore {
 
   @observable shell = '';
 
+  @observable loading = false;
+
+  @observable pageInfo = {
+    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
+  };
+
+  @observable Info = {
+    filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+  };
+
+  @action setPageInfo(page) {
+    this.pageInfo.current = page.number + 1;
+    this.pageInfo.total = page.totalElements;
+    this.pageInfo.pageSize = page.size;
+  }
+
+  @computed get getPageInfo() {
+    return this.pageInfo;
+  }
+
+  @action setInfo(Info) {
+    this.Info = Info;
+  }
+
+  @computed get getInfo() {
+    return this.Info;
+  }
+
+  @action tableLoading(flag) {
+    this.loading = flag;
+  }
+
+  @computed get getTableLoading() {
+    return this.loading;
+  }
+
   @action setIst(ist) {
     this.ist = ist;
   }
 
   @computed get getIst() {
     return this.ist;
+  }
+
+  @action setPrmMbr(prmMbr) {
+    this.prmMbr = prmMbr;
+  }
+
+  @computed get getPrmMbr() {
+    return this.prmMbr.slice();
+  }
+
+  @action setMbr(mbr) {
+    this.mbr = mbr;
+  }
+
+  @computed get getMbr() {
+    return this.mbr.slice();
+  }
+
+  @action setSelectedRk(selectedRowKeys) {
+    this.selectedRowKeys = selectedRowKeys;
+  }
+
+  @computed get getSelectedRk() {
+    return this.selectedRowKeys.slice();
+  }
+
+  @action setTagKeys(tagKeys) {
+    this.tagKeys = tagKeys;
+  }
+
+  @computed get getTagKeys() {
+    return this.tagKeys.slice();
   }
 
   @action
@@ -221,6 +301,37 @@ class EnvPipelineStore {
     }
   });
 
+  loadTags = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/envs/list_all?env_id=${id}`).then((data) => {
+    if (data && data.failed) {
+      Choerodon.prompt(data.message);
+    } else {
+      this.setTagKeys(data);
+    }
+  });
+
+  loadPrm = (projectId, page = 0, size = 10, envId = null, sort = { field: '', order: 'desc' }, postData = { searchParam: {},
+    param: '',
+  }) => {
+    this.tableLoading(true);
+    return axios.post(`/devops/v1/projects/${projectId}/envs/list?env_id=${envId}&page=${page}&size=${size}`, JSON.stringify(postData)).then((data) => {
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else if(envId) {
+        this.setPrmMbr(data.content);
+        this.setSelectedRk(_.map(_.filter(data.content, 'permitted'), k => k.iamUserId));
+        const { number, size, totalElements } = data;
+        const page = { number, size, totalElements };
+        this.setPageInfo(page);
+      } else {
+        this.setMbr(data.content);
+        const { number, size, totalElements } = data;
+        const page = { number, size, totalElements };
+        this.setPageInfo(page);
+      }
+      this.tableLoading(false);
+    });
+  };
+
   loadShell = (projectId, id, update) => axios.get(`/devops/v1/projects/${projectId}/envs/${id}/shell?update=${update}`).then((data) => {
     if (data && data.failed) {
       Choerodon.prompt(data.message);
@@ -237,14 +348,6 @@ class EnvPipelineStore {
     }
   });
 
-  // loadGroupById = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/env_groups/${id}`).then((data) => {
-  //   if (data && data.failed) {
-  //     Choerodon.prompt(data.message);
-  //   } else {
-  //     this.setGroupOne(data);
-  //   }
-  // });
-
   loadInstance = (projectId, page, size = 10, sorter = { id: 'asc' }, envId, datas = {
     searchParam: {},
     param: '',
@@ -255,6 +358,10 @@ class EnvPipelineStore {
       this.setIst(data.content);
     }
   });
+
+  assignPrm(projectId, envId, ids) {
+    return axios.post(`devops/v1/projects/${projectId}/envs/${envId}/permission`, JSON.stringify(ids));
+  }
 
   banEnvById(projectId, id, active) {
     return axios.put(`/devops/v1/projects/${projectId}/envs/${id}/active?active=${active}`);
@@ -275,6 +382,8 @@ class EnvPipelineStore {
   loadCode(projectId, code) {
     return axios.get(`/devops/v1/projects/${projectId}/envs/checkCode?code=${code}`);
   }
+
+
 }
 
 const envPipelineStore = new EnvPipelineStore();
