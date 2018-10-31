@@ -299,7 +299,7 @@ class AppStoreHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="appstore" value={{ name }}>
+        <Content code="appstore" values={{ name }}>
           <div className="c7n-store-search">
             <Input
               placeholder={formatMessage({ id: 'appstore.search' })}

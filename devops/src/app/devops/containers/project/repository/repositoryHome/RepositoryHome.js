@@ -192,7 +192,7 @@ class RepositoryHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="repository" value={{ name }}>
+        <Content code="repository" values={{ name }}>
           <Table
             filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
             loading={RepositoryStore.loading}

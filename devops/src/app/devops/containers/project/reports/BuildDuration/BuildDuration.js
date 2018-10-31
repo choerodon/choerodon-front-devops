@@ -311,7 +311,7 @@ class BuildDuration extends Component {
           <FormattedMessage id="refresh" />
         </Button>
       </Header>
-      <Content code="report.build-duration" value={{ name }} className="c7n-buildDuration-content">
+      <Content code="report.build-duration" values={{ name }} className="c7n-buildDuration-content">
         {isRefresh ? <LoadingBar /> : content}
       </Content>
     </Page>);

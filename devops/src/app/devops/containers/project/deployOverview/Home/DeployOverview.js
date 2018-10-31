@@ -6,7 +6,7 @@ import { Button, Popover, Tooltip, Table } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
-import '../../appDeployment/AppDeploy.scss';
+import '../../instances/Instances.scss';
 import '../../../main.scss';
 
 const { AppState } = stores;
@@ -24,8 +24,8 @@ class DeployOverview extends Component {
   }
 
   componentWillUnmount() {
-    const { AppDeploymentStore } = this.props;
-    AppDeploymentStore.setMutiData([]);
+    const { InstancesStore } = this.props;
+    InstancesStore.setMutiData([]);
   }
 
   /**
@@ -39,9 +39,9 @@ class DeployOverview extends Component {
    * 获取可用环境
    */
   loadEnvCards = () => {
-    const { AppDeploymentStore } = this.props;
+    const { InstancesStore } = this.props;
     const projectId = AppState.currentMenuType.id;
-    AppDeploymentStore.loadActiveEnv(projectId);
+    InstancesStore.loadActiveEnv(projectId);
     this.loadMulti();
   };
 
@@ -49,9 +49,9 @@ class DeployOverview extends Component {
    * 查询多应用部署数据
    */
   loadMulti = () => {
-    const { AppDeploymentStore } = this.props;
+    const { InstancesStore } = this.props;
     const projectId = AppState.currentMenuType.id;
-    AppDeploymentStore.loadMultiData(projectId);
+    InstancesStore.loadMultiData(projectId);
   };
 
   /**
@@ -84,10 +84,10 @@ class DeployOverview extends Component {
    * @returns {*}
    */
   renderTable() {
-    const { AppDeploymentStore, intl: { formatMessage } } = this.props;
+    const { InstancesStore, intl: { formatMessage } } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const appList = AppDeploymentStore.getMutiData;
-    const envNames = AppDeploymentStore.getEnvcard;
+    const appList = InstancesStore.getMutiData;
+    const envNames = InstancesStore.getEnvcard;
     const { type, organizationId: orgId } = AppState.currentMenuType;
 
     const columns = [
@@ -153,7 +153,7 @@ class DeployOverview extends Component {
       className={`${!appList.length && 'no-value'} c7n-multi-table`}
       pagination={false}
       filterBar={false}
-      loading={AppDeploymentStore.getIsLoading}
+      loading={InstancesStore.getIsLoading}
       columns={columns}
       dataSource={appList}
       rowKey={record => record.applicationId}
@@ -229,7 +229,7 @@ class DeployOverview extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="dpOverview" value={{ name }} className="page-content">
+        <Content code="dpOverview" values={{ name }} className="page-content">
           <div className="c7n-multi-wrap">
             {this.renderTable()}
           </div>

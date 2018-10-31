@@ -6,7 +6,7 @@ import {
 
 import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
-const DeployOverview = asyncRouter(() => import('./Home'), () => import('../../../stores/project/appDeployment'));
+const DeployOverview = asyncRouter(() => import('./Home'), () => import('../../../stores/project/instances/index'));
 
 const DeployOverviewIndex = ({ match }) => (
   <Switch>

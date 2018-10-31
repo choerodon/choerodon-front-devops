@@ -5,9 +5,9 @@ import { Modal, Select, Icon } from 'choerodon-ui';
 import { stores, Content } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
-import Ace from '../../../../components/yamlAce';
-import '../AppDeploy.scss';
-import '../../../main.scss';
+import Ace from '../../../components/yamlAce/index';
+import './Instances.scss';
+import '../../main.scss';
 
 const { Sidebar } = Modal;
 const { AppState } = stores;
@@ -132,7 +132,7 @@ class UpgradeIst extends Component {
     const data = oldData || store.getValue;
     const verValue = this.props.store.getVerValue;
     const sideDom = (<div className="c7n-region">
-      <Content code="ist.upgrade" value={{ name }} className="sidebar-content">
+      <Content code="ist.upgrade" values={{ name }} className="sidebar-content">
         {verValue && (<div>
           <Select
             className="c7n-app-select_512"

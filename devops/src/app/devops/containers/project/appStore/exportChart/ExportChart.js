@@ -493,7 +493,7 @@ class ExportChart extends Component {
         className="c7n-region"
       >
         <Header title={formatMessage({ id: 'appstore.export' })} backPath={`/devops/app-market?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}`} />
-        <Content code="appstore.export" value={{ name }}>
+        <Content code="appstore.export" values={{ name }}>
           <div className="c7n-store-card-wrap" style={{ minHeight: window.innerHeight - 277 }}>
             <Steps current={current}>
               <Step

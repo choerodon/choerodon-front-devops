@@ -258,7 +258,7 @@ class Submission extends Component {
           <FormattedMessage id="refresh" />
         </Button>
       </Header>
-      <Content code="report.submission" value={{ name }}>
+      <Content code="report.submission" values={{ name }}>
         {getIsRefresh ? <LoadingBar /> : content}
       </Content>
     </Page>);

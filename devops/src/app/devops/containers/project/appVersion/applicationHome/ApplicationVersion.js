@@ -153,7 +153,7 @@ class ApplicationVersion extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="appVer" value={{ name }}>
+        <Content code="appVer" values={{ name }}>
           <Select
             className="c7n-select_512 c7n-appVersion-select"
             value={appId}

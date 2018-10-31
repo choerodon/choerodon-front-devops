@@ -5,9 +5,9 @@ import { Modal, Button } from 'choerodon-ui';
 import { Content, stores } from 'choerodon-front-boot';
 import YAML from 'yamljs';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import Ace from '../../../../components/yamlAce';
-import '../AppDeploy.scss';
-import '../../../main.scss';
+import Ace from '../../../components/yamlAce/index';
+import './Instances.scss';
+import '../../main.scss';
 
 const { Sidebar } = Modal;
 const { AppState } = stores;
@@ -142,7 +142,7 @@ class ValueConfig extends Component {
       error = errorLine;
     }
     const sideDom = (<div className="c7n-region">
-      <Content code="ist.edit" value={{ name }} className="sidebar-content">
+      <Content code="ist.edit" values={{ name }} className="sidebar-content">
         <div className="c7n-ace-section">
           <div className="c7n-body-section c7n-border-done">
             <div>
