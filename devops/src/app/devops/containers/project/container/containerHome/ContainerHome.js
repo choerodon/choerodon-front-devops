@@ -77,8 +77,13 @@ class ContainerHome extends Component {
     const { filters, sort, paras } = ContainerStore.getInfo;
     const pagination = ContainerStore.getPageInfo;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
+    const envId = ContainerStore.getEnvId;
     ContainerStore.loadActiveEnv(projectId);
-    ContainerStore.loadAppData(projectId);
+    if (envId) {
+      ContainerStore.loadAppDataByEnv(projectId, envId);
+    } else {
+      ContainerStore.loadAppData(projectId);
+    }
     this.tableChange(pagination, filters, sort, paras);
   };
 
