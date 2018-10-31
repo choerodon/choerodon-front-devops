@@ -9,19 +9,19 @@ import { Permission, Content, Action, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/base16-dark.css';
-import ValueConfig from '../../appDeployment/valueConfig';
-import UpgradeIst from '../../appDeployment/upgrateIst';
-import DelIst from '../../appDeployment/component/delIst/DelIst';
+import ValueConfig from '../../instances/ValueConfig';
+import UpgradeIst from '../../instances/UpgradeIst';
+import DelIst from '../../instances/components/DelIst';
 import '../EnvOverview.scss';
-import '../../appDeployment/AppDeploy.scss';
+import '../../instances/Instances.scss';
 import '../../../main.scss';
-import AppDeploymentStore from '../../../../stores/project/appDeployment';
+import InstancesStore from '../../../../stores/project/instances/index';
 import DomainStore from '../../../../stores/project/domain';
 import CreateDomain from '../../domain/createDomain';
 import CreateNetwork from '../../networkConfig/createNetwork';
 import NetworkConfigStore from '../../../../stores/project/networkConfig';
 import LoadingBar from '../../../../components/loadingBar';
-import ExpandRow from '../../appDeployment/component/ExpandRow';
+import ExpandRow from '../../instances/components/ExpandRow';
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -136,15 +136,21 @@ class AppOverview extends Component {
 
   /**
    * 查看部署详情
-   * @param id 实例ID
-   * @param status 实例状态
    */
-  linkDeployDetail = (id, status) => {
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const projectName = AppState.currentMenuType.name;
-    const type = AppState.currentMenuType.type;
-    const organizationId = AppState.currentMenuType.organizationId;
-    this.linkToChange(`/devops/instance/${id}/${status}/detail?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}&overview`);
+  linkDeployDetail = (record) => {
+    const { id, status, appName } = record;
+    const { history } = this.props;
+    const {
+      id: projectId,
+      name: projectName,
+      type,
+      organizationId,
+    } = AppState.currentMenuType;
+    history.push({
+      pathname: `/devops/instance/${id}/${status}/detail`,
+      search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}&overview`,
+      state: { appName },
+    });
   };
 
   /**
@@ -153,53 +159,45 @@ class AppOverview extends Component {
    */
   reStart = (id) => {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    AppDeploymentStore.reStarts(projectId, id)
+    InstancesStore.reStarts(projectId, id)
       .then((error) => {
         if (error && error.failed) {
           Choerodon.prompt(error.message);
         } else {
-          AppDeploymentStore.loadInstanceAll(projectId);
+          InstancesStore.loadInstanceAll(projectId);
         }
       });
   };
 
   /**
    * 修改配置实例信息
-   * @param name 实例名
-   * @param id 实例ID
-   * @param envId
-   * @param verId
-   * @param appId
    */
   @action
-  updateConfig = (name, id, envId, verId, appId) => {
+  updateConfig = (record) => {
+    const { code, id, envId, appVersionId, appId } = record;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    AppDeploymentStore.loadValue(projectId, id, verId)
+    InstancesStore.loadValue(projectId, id, appVersionId)
       .then((res) => {
         if (res && res.failed) {
           Choerodon.prompt(res.message);
         } else {
           this.visible = true;
           this.id = id;
-          this.name = name;
-          this.idArr = [envId, verId, appId];
+          this.name = code;
+          this.idArr = [envId, appVersionId, appId];
         }
       });
   };
 
   /**
    * 升级配置实例信息
-   * @param name 实例名
-   * @param id 实例ID
-   * @param envId
-   * @param verId
-   * @param appId
    */
   @action
-  upgradeIst = (name, id, envId, verId, appId) => {
+  upgradeIst = (record) => {
     const { intl } = this.props;
+    const { code, id, envId, appVersionId, appId } = record;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    AppDeploymentStore.loadUpVersion(projectId, verId)
+    InstancesStore.loadUpVersion(projectId, appVersionId)
       .then((val) => {
         if (val && val.failed) {
           Choerodon.prompt(val.message);
@@ -207,9 +205,9 @@ class AppOverview extends Component {
           Choerodon.prompt(intl.formatMessage({ id: 'ist.noUpVer' }));
         } else {
           this.id = id;
-          this.name = name;
+          this.name = code;
           this.idArr = [envId, val[0].id, appId];
-          AppDeploymentStore.loadValue(projectId, id, val[0].id)
+          InstancesStore.loadValue(projectId, id, val[0].id)
             .then((res) => {
               if (res && res.failed) {
                 Choerodon.prompt(res.message);
@@ -228,7 +226,7 @@ class AppOverview extends Component {
    */
   activeIst = (id, status) => {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    AppDeploymentStore.changeIstActive(projectId, id, status)
+    InstancesStore.changeIstActive(projectId, id, status)
       .then((error) => {
         if (error && error.failed) {
           Choerodon.prompt(error.message);
@@ -288,13 +286,13 @@ class AppOverview extends Component {
 
   /**
    * 打开删除数据模态框
-   * @param id
    */
   @action
-  handleOpen(id, name) {
+  handleOpen(record) {
+    const { id, code } = record;
     this.openRemove = true;
     this.id = id;
-    this.istName = name;
+    this.istName = code;
   }
 
   /**
@@ -304,7 +302,7 @@ class AppOverview extends Component {
   handleDelete = (id) => {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.loading = true;
-    AppDeploymentStore.deleteIst(projectId, id)
+    InstancesStore.deleteIst(projectId, id)
       .then((res) => {
         if (res && res.failed) {
           Choerodon.prompt(res.message);
@@ -530,121 +528,71 @@ class AppOverview extends Component {
    * @returns {*}
    */
   columnAction = (record) => {
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
-    const { intl } = this.props;
-    if (record.status === 'operating' || !record.connect) {
-      return (<Action
-        onClick={this.handlerAction}
-        data={[
-          {
-            type,
-            organizationId,
-            projectId,
-            service: ['devops-service.application-instance.listResources'],
-            text: intl.formatMessage({ id: 'ist.detail' }),
-            action: this.linkDeployDetail.bind(this, record.id, record.status),
-          }]}
-      />);
-    } else if (record.status === 'failed') {
-      return (<Action
-        onClick={this.handlerAction}
-        data={[
-          {
-            type,
-            organizationId,
-            projectId,
-            service: ['devops-service.application-instance.listResources'],
-            text: intl.formatMessage({ id: 'ist.detail' }),
-            action: this.linkDeployDetail.bind(this, record.id, record.status),
-          }, {
-            type,
-            organizationId,
-            projectId,
-            service: ['devops-service.application-instance.queryValues'],
-            text: intl.formatMessage({ id: 'ist.values' }),
-            action: this.updateConfig.bind(this, record.code, record.id,
-              record.envId, record.appVersionId, record.appId),
-          }, {
-            type,
-            organizationId,
-            projectId,
-            service: ['devops-service.application-instance.restart'],
-            text: intl.formatMessage({ id: 'ist.reDeploy' }),
-            action: this.reStart.bind(this, record.id),
-          }, {
-            type,
-            organizationId,
-            projectId,
-            service: ['devops-service.application-version.getUpgradeAppVersion'],
-            text: intl.formatMessage({ id: 'ist.upgrade' }),
-            action: this.upgradeIst.bind(this, record.code, record.id,
-              record.envId, record.appVersionId, record.appId),
-          }, {
-            type,
-            organizationId,
-            projectId,
-            service: ['devops-service.application-instance.delete'],
-            text: intl.formatMessage({ id: 'ist.del' }),
-            action: this.handleOpen.bind(this, record.id, record.code),
-          },
-        ]}
-      />);
-    } else {
-      return (<Action
-        onClick={this.handlerAction}
-        data={[
-          {
-            type,
-            organizationId,
-            projectId,
-            service: ['devops-service.application-instance.listResources'],
-            text: intl.formatMessage({ id: 'ist.detail' }),
-            action: this.linkDeployDetail.bind(this, record.id, record.status),
-          }, {
-            type,
-            organizationId,
-            projectId,
-            service: ['devops-service.application-instance.queryValues'],
-            text: intl.formatMessage({ id: 'ist.values' }),
-            action: this.updateConfig.bind(this, record.code, record.id,
-              record.envId, record.appVersionId, record.appId),
-          }, {
-            type,
-            organizationId,
-            projectId,
-            service: ['devops-service.application-instance.restart'],
-            text: intl.formatMessage({ id: 'ist.reDeploy' }),
-            action: this.reStart.bind(this, record.id),
-          }, {
-            type,
-            organizationId,
-            projectId,
-            service: ['devops-service.application-version.getUpgradeAppVersion'],
-            text: intl.formatMessage({ id: 'ist.upgrade' }),
-            action: this.upgradeIst.bind(this, record.code, record.id,
-              record.envId, record.appVersionId, record.appId),
-          }, {
-            type,
-            organizationId,
-            projectId,
-            service: ['devops-service.application-instance.start', 'devops-service.application-instance.stop'],
-            text: record.status !== 'stopped' ? intl.formatMessage({ id: 'ist.stop' }) : intl.formatMessage({ id: 'ist.run' }),
-            action: record.status !== 'stopped' ? this.activeIst.bind(this, record.id, 'stop') : this.activeIst.bind(this, record.id, 'start'),
-          }, {
-            type,
-            organizationId,
-            projectId,
-            service: ['devops-service.application-instance.delete'],
-            text: intl.formatMessage({ id: 'ist.del' }),
-            action: this.handleOpen.bind(this, record.id, record.code),
-          },
-        ]}
-      />);
+    const {
+      id: projectId,
+      type,
+      organizationId,
+    } = AppState.currentMenuType;
+    const { intl: { formatMessage } } = this.props;
+    const { id, status, connect } = record;
+    const actionType = {
+      detail: {
+        service: ['devops-service.application-instance.listResources'],
+        text: formatMessage({ id: 'ist.detail' }),
+        action: this.linkDeployDetail.bind(this, record),
+      },
+      change: {
+        service: ['devops-service.application-instance.queryValues'],
+        text: formatMessage({ id: 'ist.values' }),
+        action: this.updateConfig.bind(this, record),
+      },
+      restart: {
+        service: ['devops-service.application-instance.restart'],
+        text: formatMessage({ id: 'ist.reDeploy' }),
+        action: this.reStart.bind(this, id),
+      },
+      update: {
+        service: ['devops-service.application-version.getUpgradeAppVersion'],
+        text: formatMessage({ id: 'ist.upgrade' }),
+        action: this.upgradeIst.bind(this, record),
+      },
+      stop: {
+        service: ['devops-service.application-instance.start', 'devops-service.application-instance.stop'],
+        text: status !== 'stopped' ? formatMessage({ id: 'ist.stop' }) : formatMessage({ id: 'ist.run' }),
+        action: status !== 'stopped' ? this.activeIst.bind(this, id, 'stop') : this.activeIst.bind(this, id, 'start'),
+      },
+      delete: {
+        service: ['devops-service.application-instance.delete'],
+        text: formatMessage({ id: 'ist.del' }),
+        action: this.handleOpen.bind(this, record),
+      },
+    };
+    let actionItem = [];
+    switch (status) {
+      case 'operating' || !connect:
+        actionItem = ['detail'];
+        break;
+      case 'stopped':
+        actionItem = ['detail', 'change', 'stop', 'delete'];
+        break;
+      case 'failed':
+      case 'running':
+        actionItem = ['detail', 'change', 'restart', 'update', 'stop', 'delete'];
+        break;
+      default:
+        actionItem = ['detail'];
     }
+    const actionData = _.map(actionItem, item => ({
+      projectId,
+      type,
+      organizationId,
+      ...actionType[item],
+    }));
+    return (<Action
+      onClick={this.handlerAction}
+      data={actionData}
+    />);
   };
-
 
   render() {
     const { intl, store } = this.props;
@@ -679,7 +627,7 @@ class AppOverview extends Component {
         </div>
         {this.panelDom()}
         {this.visible && <ValueConfig
-          store={AppDeploymentStore}
+          store={InstancesStore}
           visible={this.visible}
           name={this.name}
           id={this.id}
@@ -687,7 +635,7 @@ class AppOverview extends Component {
           onClose={this.handleCancel}
         /> }
         {this.visibleUp && <UpgradeIst
-          store={AppDeploymentStore}
+          store={InstancesStore}
           visible={this.visibleUp}
           name={this.name}
           appInstanceId={this.id}

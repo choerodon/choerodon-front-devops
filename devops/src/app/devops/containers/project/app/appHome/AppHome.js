@@ -522,7 +522,7 @@ class AppHome extends Component {
               <FormattedMessage id="refresh" />
             </Button>
           </Header>
-          <Content code="app" value={{ name }}>
+          <Content code="app" values={{ name }}>
             {show && <Sidebar
               title={<FormattedMessage id={modeType === 'create' ? 'app.create' : 'app.edit'} />}
               visible={show}

@@ -14,7 +14,7 @@ const CiPipelineManageIndex = asyncRouter(() => import('./project/ciPipelineMana
 const AppVersion = asyncRouter(() => import('./project/appVersion'));
 const App = asyncRouter(() => import('./project/app'));
 const AppStore = asyncRouter(() => import('./project/appStore'));
-const AppDeployment = asyncRouter(() => import('./project/appDeployment'));
+const InstancesIndex = asyncRouter(() => import('./project/instances'));
 const DeploymentApp = asyncRouter(() => import('./project/deploymentApp'));
 const NetworkConfig = asyncRouter(() => import('./project/networkConfig'));
 const Domain = asyncRouter(() => import('./project/domain'));
@@ -47,7 +47,7 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/app-version`} component={AppVersion} />
           <Route path={`${match.url}/app`} component={App} />
           <Route path={`${match.url}/app-market`} component={AppStore} />
-          <Route path={`${match.url}/instance`} component={AppDeployment} />
+          <Route path={`${match.url}/instance`} component={InstancesIndex} />
           <Route path={`${match.url}/deployment-app`} component={DeploymentApp} />
           <Route path={`${match.url}/service`} component={NetworkConfig} />
           <Route path={`${match.url}/ingress`} component={Domain} />

@@ -1,16 +1,12 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import _ from 'lodash';
-import { handleProptError } from '../../../utils';
+import { handleProptError } from '../../../utils/index';
 
 const height = window.screen.height;
-@store('AppDeploymentStore')
-class AppDeploymentStore {
+@store('InstancesStore')
+class InstancesStore {
   @observable isLoading = true;
-
-  @observable deployData = [];
-
-  @observable appNames = [];
 
   @observable appNameByEnv = [];
 
@@ -18,13 +14,7 @@ class AppDeploymentStore {
 
   @observable size = 10;
 
-  @observable show = false;
-
-  @observable featureData = [];
-
   @observable istAll = [];
-
-  @observable appVersion = [];
 
   @observable mutiData = [];
 
@@ -38,35 +28,42 @@ class AppDeploymentStore {
 
   @observable appPageInfo = {};
 
-  @observable appPage = 0;
+  @observable appPage = 1;
 
-  @observable appPageSize = 1;
-
-  @observable tabActive = 'singleEnv';
-
-  @observable filterValue = '';
-
-  @observable envId = false;
-
-  @observable verId = false;
-
-  @observable appId = false;
-
-  @observable sigAppId = false;
+  @observable appPageSize = 10;
 
   @observable istParams = { filters: {}, param: [] };
 
   @observable verValue = undefined;
 
-  // 单环境下是否存在该应用
-  @observable hasApp = true;
+  @observable envId = null;
 
-  @action setHasApp(flag) {
-    this.hasApp = flag;
+  @observable isCache = false;
+
+  @observable appId = null;
+
+  @action setAppId(id) {
+    this.appId = id;
   }
 
-  @computed get getHasApp() {
-    return this.hasApp;
+  @computed get getAppId() {
+    return this.appId;
+  }
+
+  @action setIsCache(flag) {
+    this.isCache = flag;
+  }
+
+  @computed get getIsCache() {
+    return this.isCache;
+  }
+
+  @action setEnvId(id) {
+    this.envId = id;
+  }
+
+  @computed get getEnvId() {
+    return this.envId;
   }
 
   @action setIstTableFilter(param) {
@@ -97,38 +94,6 @@ class AppDeploymentStore {
     return this.appPageInfo;
   }
 
-  @action changeShow(flag) {
-    this.show = flag;
-  }
-
-  @computed get getShow() {
-    return this.show;
-  }
-
-  @action setFilterValue(filterValue) {
-    this.filterValue = filterValue;
-  }
-
-  @computed get getFilterValue() {
-    return this.filterValue;
-  }
-
-  @action setTabActive(tabActive) {
-    this.tabActive = tabActive;
-  }
-
-  @computed get getTabActive() {
-    return this.tabActive;
-  }
-
-  @action setAppNames(appNames) {
-    this.appNames = appNames;
-  }
-
-  @computed get getAppNames() {
-    return this.appNames;
-  }
-
   @action setAppNameByEnv(appNameByEnv) {
     this.appNameByEnv = appNameByEnv;
   }
@@ -145,20 +110,12 @@ class AppDeploymentStore {
     return this.isLoading;
   }
 
-  @action setFeature(data) {
-    this.featureData = data;
-  }
-
-  @computed get getFeature() {
-    return this.featureData;
-  }
-
   @action setEnvcard(envcard) {
     this.envcard = envcard;
   }
 
   @computed get getEnvcard() {
-    return this.envcard;
+    return this.envcard.slice();
   }
 
   @action setIstAll(istAll) {
@@ -169,52 +126,12 @@ class AppDeploymentStore {
     return this.istAll.slice();
   }
 
-  @action setAppVer(appVersion) {
-    this.appVersion = appVersion;
-  }
-
-  @computed get getAppVer() {
-    return this.appVersion;
-  }
-
   @action setMutiData(mutiData) {
     this.mutiData = mutiData;
   }
 
   @computed get getMutiData() {
     return this.mutiData;
-  }
-
-  @computed get getEnvId() {
-    return this.envId;
-  }
-
-  @action setEnvId(envId) {
-    this.envId = envId;
-  }
-
-  @computed get getAppId() {
-    return this.appId;
-  }
-
-  @action setAppId(appId) {
-    this.appId = appId;
-  }
-
-  @computed get getSingleAppId() {
-    return this.sigAppId;
-  }
-
-  @action setSingleAppId(appId) {
-    this.sigAppId = appId;
-  }
-
-  @computed get getVerId() {
-    return this.verId;
-  }
-
-  @action setVerId(verId) {
-    this.verId = verId;
   }
 
   @computed get getValue() {
@@ -233,6 +150,7 @@ class AppDeploymentStore {
     this.verValue = data;
   }
 
+  // 应用分页器的页码
   @computed get getAppPage() {
     return this.appPage;
   }
@@ -241,6 +159,7 @@ class AppDeploymentStore {
     this.appPage = appPage;
   }
 
+  // 应用分页器的每页条数
   @computed get getAppPageSize() {
     return this.appPageSize;
   }
@@ -253,24 +172,28 @@ class AppDeploymentStore {
     this.alertType = data;
   }
 
-  loadInstanceAll = (projectId, Info = {}) => {
+  loadInstanceAll = (projectId, info = {}) => {
     this.changeLoading(true);
-    const { page, size, datas } = Info;
+    const { page, size, datas } = info;
     const normal = ['page', 'size', 'datas'];
-    // 除了normal中的字段外，其他不一定有
-    // 所以需要使用下面方法拼接url
-    let url = '';
-    _.forEach(Info, (value, key) => {
+    // 除了normal中的字段必有，其他字段不确定
+    // 循环拼接url
+    let search = '';
+    _.forEach(info, (value, key) => {
       if (value && !normal.includes(key)) {
-        url = url.concat(`&${key}=${value}`);
+        search = search.concat(`&${key}=${value}`);
       }
     });
-    return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page || 0}&size=${size || this.pageInfo.pageSize}${url}`, JSON.stringify(datas || { searchParam: {}, param: '' })).then((data) => {
+    axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page || 0}&size=${size || this.pageInfo.pageSize}${search}`, JSON.stringify(datas || { searchParam: {}, param: '' })).then((data) => {
       const res = handleProptError(data);
       if (res) {
         this.handleData(data);
+      } else {
         this.changeLoading(false);
       }
+    }).catch((err) => {
+      this.changeLoading(false);
+      Choerodon.handleResponseError(err);
     });
   };
 
@@ -282,17 +205,6 @@ class AppDeploymentStore {
     this.changeLoading(false);
   };
 
-
-  loadAppNames = projectId => axios.get(`devops/v1/projects/${projectId}/apps/list_all`).then((data) => {
-    this.changeLoading(true);
-    const res = handleProptError(data);
-    if (res) {
-      this.setAppNames(res);
-      this.changeLoading(false);
-      return res;
-    }
-  });
-
   loadActiveEnv = projectId => axios.get(`devops/v1/projects/${projectId}/envs?active=true`).then((data) => {
     const res = handleProptError(data);
     if (res) {
@@ -302,23 +214,13 @@ class AppDeploymentStore {
     return false;
   });
 
-  loadAppVersion = (projectId, appId) => axios.get(`devops/v1/projects/${projectId}/apps/${appId}/version/list_deployed`).then((data) => {
-    const res = handleProptError(data);
-    if (res) {
-      this.setAppVer(data);
-    }
-  });
-
   loadAppNameByEnv = (projectId, envId, page, appPageSize) => axios.get(`devops/v1/projects/${projectId}/apps/pages?env_id=${envId}&page=${page}&size=${appPageSize}`).then((data) => {
-    this.changeLoading(true);
     const res = handleProptError(data);
     if (res) {
       this.setAppNameByEnv(data.content);
-      // this.setSelectApp(data.content);
       const { number, size, totalElements } = data;
       const pageInfo = { number, size, totalElements };
       this.setAppPageInfo(pageInfo);
-      this.changeLoading(false);
       return data.content;
     }
     return false;
@@ -362,5 +264,5 @@ class AppDeploymentStore {
     });
 }
 
-const appDeploymentStore = new AppDeploymentStore();
-export default appDeploymentStore;
+const instancesStore = new InstancesStore();
+export default instancesStore;

@@ -450,7 +450,7 @@ class TemplateHome extends Component {
               </Button>
             </Permission>
           </Header>
-          <Content code="template" value={{ name }}>
+          <Content code="template" values={{ name }}>
             {show && <Sidebar
               okText={<FormattedMessage id={modeType === 'create' ? 'create' : 'save'} />}
               cancelText={<FormattedMessage id="cancel" />}

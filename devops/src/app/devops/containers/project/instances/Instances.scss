@@ -719,7 +719,7 @@
 
 .c7n-ist-status_stopped,
 .c7n-ist-status_stop {
-    background: rgba(0, 0, 0, 0.36);
+  background: rgba(0, 0, 0, 0.36);
 }
 
 .c7n-ist-status_ {
@@ -816,6 +816,30 @@
     .ant-table-row-expand-icon {
       &:before {
         content: '\E5CF';
+      }
+    }
+  }
+}
+
+.c7n-instance-header {
+  display: block;
+  max-width: 512px;
+  .c7n-instance-title {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+    margin-bottom: 10px;
+  }
+  .c7n-instance-describe {
+    font-size: 13px;
+    line-height: 20px;
+    margin-bottom: 24px;
+    a {
+      text-decoration: underline;
+      color: #3f51b5;
+      cursor: pointer;
+      .icon {
+        font-size: 13px;
       }
     }
   }

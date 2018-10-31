@@ -679,7 +679,7 @@ class EnvPipelineHome extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="env" value={{ projectName }}>
+        <Content code="env" values={{ projectName }}>
           <Sidebar
             title={this.showTitle(sideType)}
             visible={show}
@@ -690,7 +690,7 @@ class EnvPipelineHome extends Component {
             cancelText={<FormattedMessage id="cancel" />}
             okText={this.okText(sideType)}
           >
-            <Content code={`env.${sideType}`} value={{ projectName }} className="sidebar-content">
+            <Content code={`env.${sideType}`} values={{ projectName }} className="sidebar-content">
               {formContent}
             </Content>
           </Sidebar>
@@ -717,7 +717,7 @@ class EnvPipelineHome extends Component {
             : <React.Fragment>
               {BoardDom.length ? BoardDom : <Board projectId={Number(projectId)} key="none" envcardPositionChild={[]} />}
               <div className="no-content-padding">
-                <Content code="env.stop" value={{ projectName }}>
+                <Content code="env.stop" values={{ projectName }}>
                   <div className="c7n-outer-container">
                     {leftDom}
                     <div className="c7n-inner-container-ban">

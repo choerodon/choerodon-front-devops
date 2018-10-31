@@ -117,7 +117,8 @@ const pageDetail = {
   'branch.edit.link': `${docServer}/user-guide/development-pipeline/branch/`,
 
   // instance
-  'ist.title': '项目"{name}"的实例',
+  'ist.title.project': '项目"{name}"的实例',
+  'ist.title.env': '环境"{name}"的实例',
   'ist.description': '实例是一次应用部署生成的应用实体。您可在此用三种视图查看该项目的实例情况及相关应用、环境信息。',
   'ist.edit.title': '对"{name}"进行修改',
   'ist.edit.description': '对实例配置信息进行修改后重新部署。',
@@ -359,7 +360,6 @@ const zhCN = {
   'ist.expand.date': '创建时间',
   'ist.expand.empty': '暂无部署详细信息',
   'ist.expand.link': '点击查看详情',
-
 
   // network
   network_delete: '网络删除中，请耐心等待',

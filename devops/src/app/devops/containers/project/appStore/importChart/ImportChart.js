@@ -421,7 +421,7 @@ class ImportChart extends Component {
         ]}
       >
         <Header title={<FormattedMessage id="appstore.import.title" />} backPath={`/devops/app-market?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}`} />
-        <Content code="appstore.import" value={{ name }}>
+        <Content code="appstore.import" values={{ name }}>
           <div className="c7n-store-content-wrap">
             <div className="c7n-store-card-wrap" style={{ minHeight: window.innerHeight - 277 }}>
               <Steps current={current}>

@@ -176,7 +176,7 @@ class BuildNumber extends Component {
           <FormattedMessage id="refresh" />
         </Button>
       </Header>
-      <Content code="report.build-number" value={{ name }} className="c7n-buildNumber-content">
+      <Content code="report.build-number" values={{ name }} className="c7n-buildNumber-content">
         {isRefresh ? <LoadingBar /> : content}
       </Content>
     </Page>);

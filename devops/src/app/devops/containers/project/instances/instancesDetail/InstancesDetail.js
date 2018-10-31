@@ -7,11 +7,11 @@ import classnames from 'classnames';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import CodeMirror from 'react-codemirror';
 import TimePopover from '../../../../components/timePopover';
-import '../../../main.scss';
-import './Deploydetail.scss';
-import '../../container/containerHome/ContainerHome.scss';
 import LoadingBar from '../../../../components/loadingBar';
 import Ace from '../../../../components/yamlAce';
+import '../../../main.scss';
+import './index.scss';
+import '../../container/containerHome/ContainerHome.scss';
 
 const Step = Steps.Step;
 const TabPane = Tabs.TabPane;
@@ -25,7 +25,7 @@ require('codemirror/theme/base16-light.css');
 require('codemirror/theme/base16-dark.css');
 
 @observer
-class DeploymentDetail extends Component {
+class InstancesDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -138,7 +138,11 @@ class DeploymentDetail extends Component {
 
   render() {
     const { name: projectName, organizationId, id: projectId, type } = AppState.currentMenuType;
-    const { DeployDetailStore, intl } = this.props;
+    const {
+      DeployDetailStore,
+      intl,
+      history: { location: { state } },
+    } = this.props;
     const { expand, log, overview, current } = this.state;
     const valueStyle = classnames({
       'c7n-deployDetail-show': expand,
@@ -211,7 +215,7 @@ class DeploymentDetail extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="ist.detail" value={{ projectName }} className="page-content">
+        <Content code="ist.detail" values={{ name: state ? state.appName : projectName }} className="page-content">
           {DeployDetailStore.isLoading ? <LoadingBar display /> : <Tabs
             className="c7n-deployDetail-tab"
             defaultActiveKey={this.state.status === 'running' ? '1' : '2'}
@@ -385,4 +389,4 @@ class DeploymentDetail extends Component {
       </Page>);
   }
 }
-export default withRouter(injectIntl(DeploymentDetail));
+export default withRouter(injectIntl(InstancesDetail));

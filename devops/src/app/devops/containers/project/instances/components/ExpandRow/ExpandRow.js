@@ -5,7 +5,7 @@ import _ from 'lodash';
 import TimeAgo from 'timeago-react';
 import { stores } from 'choerodon-front-boot';
 import { Tooltip } from 'choerodon-ui';
-import { formatDate } from '../../../../../utils';
+import { formatDate } from '../../../../../utils/index';
 import './index.scss';
 
 const { AppState } = stores;
