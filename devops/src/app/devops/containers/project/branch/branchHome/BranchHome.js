@@ -334,6 +334,7 @@ class BranchHome extends Component {
   hideSidebar = (isload = true) => {
     const { BranchStore } = this.props;
     BranchStore.setCreateBranchShow(false);
+    BranchStore.setBranch(null);
     if (isload) {
       this.loadData(DevPipelineStore.selectedApp);
       this.setState({ paras: [], filters: {}, sort: { columnKey: 'creationDate', order: 'ascend' } });
@@ -419,12 +420,13 @@ class BranchHome extends Component {
   };
 
   render() {
-    const { name } = AppState.currentMenuType;
-    const { BranchStore, intl: { formatMessage } } = this.props;
+    const { name, projectId, organizationId, type } = AppState.currentMenuType;
+    const { BranchStore, intl: { formatMessage }, history: { location: { state } } } = this.props;
     const { name: branchName, submitting, visible } = this.state;
     const apps = DevPipelineStore.appData.slice();
     const appId = DevPipelineStore.getSelectApp;
     const titleName = _.find(apps, ['id', appId]) ? _.find(apps, ['id', appId]).name : name;
+    const  historyIsDevconsole = state && state.isDevconsole;
     return (
       <Page
         className="c7n-region c7n-branch"
@@ -441,7 +443,10 @@ class BranchHome extends Component {
           'agile-service.work-log.queryWorkLogListByIssueId',
         ]}
       >
-        <Header title={<FormattedMessage id="branch.head" />}>
+        <Header
+          title={<FormattedMessage id="branch.head" />}
+          backPath={historyIsDevconsole ? `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}` : ''}
+        >
           <Select
             filter
             className="c7n-header-select"
