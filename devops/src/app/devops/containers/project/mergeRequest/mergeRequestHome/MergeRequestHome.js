@@ -119,7 +119,7 @@ class MergeRequestHome extends Component {
 
   render() {
     const { type, organizationId, name, id: projectId } = AppState.currentMenuType;
-    const { MergeRequestStore, intl } = this.props;
+    const { MergeRequestStore, intl, history: { location: { state } } } = this.props;
     const { param, tabKey } = this.state;
     const {
       getPageInfo: { opened: op, merged: mp, closed: cp, all: ap },
@@ -132,6 +132,7 @@ class MergeRequestHome extends Component {
     const appData = DevPipelineStore.getAppData;
     const appId = DevPipelineStore.getSelectApp;
     const titleName = _.find(appData, ['id', appId]) ? _.find(appData, ['id', appId]).name : name;
+    const  historyIsDevconsole = state && state.isDevconsole;
 
     const columnsAll = [{
       title: <FormattedMessage id="app.code" />,
@@ -421,7 +422,10 @@ class MergeRequestHome extends Component {
           'devops-service.devops-git.getUrl',
         ]}
       >
-        <Header title={<FormattedMessage id="merge.head" />}>
+        <Header
+          title={<FormattedMessage id="merge.head" />}
+          backPath={historyIsDevconsole ? `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}` : ''}
+        >
           <Select
             filter
             className="c7n-header-select"

@@ -152,7 +152,7 @@ class AppTagHome extends Component {
   };
 
   render() {
-    const { intl: { formatMessage }, AppTagStore } = this.props;
+    const { intl: { formatMessage }, AppTagStore, history: { location: { state } } } = this.props;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const { visible, deleteLoading, creationDisplay, appName, editDisplay, editTag, editRelease, tag } = this.state;
     const appData = DevPipelineStore.getAppData;
@@ -163,6 +163,7 @@ class AppTagHome extends Component {
     const currentAppName = appName || DevPipelineStore.getDefaultAppName;
     const { current, total, pageSize } = AppTagStore.pageInfo;
     const tagList = [];
+    const  historyIsDevconsole = state && state.isDevconsole;
     _.forEach(tagData, (item) => {
       const {
         commit: {
@@ -268,7 +269,10 @@ class AppTagHome extends Component {
           'devops-service.devops-git.deleteTag',
         ]}
       >
-        <Header title={<FormattedMessage id="apptag.head" />}>
+        <Header
+          title={<FormattedMessage id="apptag.head" />}
+          backPath={historyIsDevconsole ? `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}` : ''}
+        >
           <Select
             filter
             className="c7n-header-select"

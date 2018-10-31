@@ -154,6 +154,8 @@ class Submission extends Component {
       history,
       ReportsStore,
     } = this.props;
+    const { location: { state } } = history;
+    const  historyIsDevconsole = state && state.isDevconsole;
     const {
       getCommits,
       getStartTime,
@@ -245,7 +247,7 @@ class Submission extends Component {
     >
       <Header
         title={formatMessage({ id: 'report.submission.head' })}
-        backPath={`/devops/reports?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`}
+        backPath={historyIsDevconsole ? `/devops/dev-console?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}` : `/devops/reports?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`}
       >
         <ChartSwitch
           history={history}

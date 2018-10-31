@@ -748,7 +748,13 @@ class DevConsole extends Component {
             </div>
             <div className="c7n-dc-data-wrap">
               <div className="commit-number">
-                <Link to={`/devops/reports/submission?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}`}>
+                <Link
+                  to={{
+                    pathname: `/devops/reports/submission`,
+                    search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${orgId}`,
+                    state: { isDevconsole: true },
+                  }}
+                >
                   { totalCommitsDate ? totalCommitsDate.length : 0}
                 </Link>
               </div>
@@ -757,7 +763,13 @@ class DevConsole extends Component {
             <div className="c7n-dc-data-wrap">
               {
                 _.map(numberData, item => (<div className="c7n-data-number" key={item.name}>
-                  <Link to={`/devops/${item.name}?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}`}>
+                  <Link
+                    to={{
+                      pathname: `/devops/${item.name}`,
+                      search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${orgId}`,
+                      state: { isDevconsole: true },
+                    }}
+                  >
                     {item.number}
                   </Link>
                   <Icon type={item.icon} />
