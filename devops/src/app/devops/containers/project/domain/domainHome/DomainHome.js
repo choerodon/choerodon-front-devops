@@ -64,9 +64,7 @@ class DomainHome extends Component {
     const { DomainStore, intl } = this.props;
     const data = DomainStore.getAllData;
     const { filters, sort: { columnKey, order } } = DomainStore.getInfo;
-    const menu = AppState.currentMenuType;
-    const projectName = menu.name;
-    const { type, id: projectId, organizationId: orgId } = menu;
+    const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const columns = [{
       title: intl.formatMessage({ id: 'domain.column.name' }),
       key: 'name',
@@ -234,7 +232,7 @@ class DomainHome extends Component {
               </Button>
             </Permission>
           </Header>
-          <Content code="domain" values={{ name: projectName }}>
+          <Content code="domain" values={{ name }}>
             <Table
               filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
               loading={DomainStore.loading}
