@@ -101,7 +101,7 @@ class EnvCard extends Component {
                     </Tooltip>
                   </Permission>}
                   <Permission
-                    service={['devops-service.devops-environment.listUserPermissionByEnvId']}
+                    service={['devops-service.devops-environment.updateEnvUserPermission']}
                     organizationId={organizationId}
                     projectId={projectId}
                     type={type}
