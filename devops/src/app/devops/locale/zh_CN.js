@@ -975,6 +975,14 @@ const zhCN = {
   'devCs.nobranch': '暂无分支',
   'devCs.nomerge': '暂无合并请求',
 
+  // Deploy Pipeline
+  'depPl.noEnv': '当前项目下暂无环境，请创建环境。',
+  'depPl.noPermission': '暂无权限',
+  'depPl.noPerDes': '您目前还没有任何环境的管理权限，无法查看部署流水线相关内容。',
+  'depPl.addPermission': '若需查看莫个环境相关内容，请联系项目所有者进行权限添加。',
+  'depPl.more': '了解更多',
+  'depPl.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
+
   ...pageDetail,
 };
 
