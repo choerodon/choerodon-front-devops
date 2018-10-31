@@ -814,6 +814,8 @@ class EnvPipelineHome extends Component {
         className="c7n-region"
         service={[
           'devops-service.devops-environment.listByProjectIdAndActive',
+          'devops-service.devops-environment.listAllUserPermission',
+          'devops-service.devops-environment.listUserPermissionByEnvId',
           'devops-service.devops-environment.create',
           'devops-service.devops-environment.update',
           'devops-service.devops-environment.checkCode',
