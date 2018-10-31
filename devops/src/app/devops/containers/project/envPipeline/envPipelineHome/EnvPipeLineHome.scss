@@ -134,6 +134,13 @@
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+
+  span {
+    text-overflow: ellipsis;
+    width: 90%;
+    overflow: hidden;
+    white-space: nowrap;
+  }
 }
 
 .c7n-env-boardsquare {
@@ -394,4 +401,36 @@
     line-height: 32px;
     margin-bottom: 8px;
   }
+}
+
+.c7n-env-tag {
+  line-height: 26px;
+  height: 26px;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  color: #000;
+  margin-right: 12px;
+  margin-bottom: 8px;
+}
+
+.c7n-env-tag-title {
+  font-size: 16px;
+  color: rgba(0,0,0,0.87);
+  line-height: 24px;
+  margin-bottom: 7px;
+
+  i {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.36);
+    padding-left: 5px;
+    height: 20px;
+  }
+}
+
+.c7n-env-tag-wrap {
+  width: 65%;
+  display: flex;
+  flex-wrap: wrap;
 }

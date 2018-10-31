@@ -200,19 +200,23 @@ class CiPipelineHome extends Component {
     this.handleRefresh();
   }
 
-  renderStatus = (status, record) => (
-    <div className="c7n-status">
-      <a
-        href={record.gitlabUrl ? `${record.gitlabUrl.slice(0, -4)}/pipelines/${record.pipelineId}` : null}
-        target="_blank"
-        rel="nofollow me noopener noreferrer"
-        className="c7n-status-link"
-      >
-        <i className={`icon ${ICONS[status].icon} c7n-icon-${status} c7n-icon-lg`} />
-        <span className="c7n-text-status black">{ICONS[status].display}</span>
-      </a>
-    </div>
-  );
+  renderStatus = (status, record) => {
+    if (status) {
+      return (<div className="c7n-status">
+        <a
+          href={record.gitlabUrl ? `${record.gitlabUrl.slice(0, -4)}/pipelines/${record.pipelineId}` : null}
+          target="_blank"
+          rel="nofollow me noopener noreferrer"
+          className="c7n-status-link"
+        >
+          <i className={`icon ${ICONS[status].icon} c7n-icon-${status} c7n-icon-lg`} />
+          <span className="c7n-text-status black">{ICONS[status].display}</span>
+        </a>
+      </div>);
+    } else {
+      return 'Null';
+    }
+  };
 
   renderSign = (id, record) => (
     <div className="c7n-sign">

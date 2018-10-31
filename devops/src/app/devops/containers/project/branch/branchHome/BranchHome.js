@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Tooltip, Modal, Table, Popover, Select } from 'choerodon-ui';
+import { Button, Tooltip, Modal, Table, Popover, Select, Icon } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
@@ -338,7 +338,7 @@ class BranchHome extends Component {
           </div>
         </section>}
       >
-        <i className="icon icon-help branch-icon-help" />
+        <Icon className="branch-icon-help" type="help"/>
       </Popover>
     </div>);
     return (

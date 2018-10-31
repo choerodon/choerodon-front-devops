@@ -16,7 +16,7 @@
   "plugins": [
     "react"
   ],
-  "extends": "airbnb",
+//  "extends": "airbnb",
   "rules": {
     "react/jsx-no-bind": ["error", {
       "ignoreRefs": true,

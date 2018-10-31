@@ -540,10 +540,10 @@ class AppHome extends Component {
               filterBarPlaceholder={formatMessage({ id: 'filter' })}
               pagination={getPageInfo}
               loading={loading}
+              onChange={this.tableChange}
               columns={this.getColumn()}
               dataSource={serviceData}
               rowKey={record => record.id}
-              onChange={this.tableChange}
               filters={paras.slice()}
             />
           </Content>
