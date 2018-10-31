@@ -40,6 +40,7 @@ class DevConsole extends Component {
       page: 0,
       pageSize: 10,
       visible: false,
+      visibleBranch: false,
       deleteLoading: false,
       tag: null,
       editTag: null,
@@ -203,6 +204,12 @@ class DevConsole extends Component {
   };
 
   /**
+   * 点击复制代码成功回调
+   * @returns {*|string}
+   */
+  handleCopy = () => Choerodon.prompt('复制成功');
+
+  /**
    * 获取列表的icon
    * @param name 分支类型
    */
@@ -307,8 +314,13 @@ class DevConsole extends Component {
    */
   openDeleteBranch = (e, branchName) => {
     e.stopPropagation();
-    this.setState({ visible: true, branchName });
+    this.setState({ visibleBranch: true, branchName });
   };
+
+  /**
+   * 关闭删除分支确认框
+   */
+  closeDeleteBranch = () => this.setState({ visibleBranch: false });
 
   /**
    * 删除分支
@@ -321,7 +333,7 @@ class DevConsole extends Component {
       .then((res) => {
         if (res) {
           this.loadBranchData();
-          this.closeRemove();
+          this.closeDeleteBranch();
         }
         this.setState({ deleteLoading: false });
       });
@@ -370,7 +382,7 @@ class DevConsole extends Component {
                 service={['devops-service.devops-git.delete']}
               >
                 <Tooltip title={<FormattedMessage id="delete" />}>
-                  <Button size="small" shape="circle" icon="delete" onClick={e => this.openDeleteBranch(e, branchName)} />
+                  <Button size="small" shape="circle" icon="delete_forever" onClick={e => this.openDeleteBranch(e, branchName)} />
                 </Tooltip>
               </Permission>
             </div> : null}
@@ -462,7 +474,7 @@ class DevConsole extends Component {
   render() {
     const { intl: { formatMessage } } = this.props;
     const { type, projectId, organizationId: orgId, name } = AppState.currentMenuType;
-    const { visible, deleteLoading, creationDisplay, appName, editDisplay, editTag, editRelease, tag, branchName, editBranch, createBranch } = this.state;
+    const { visible, deleteLoading, creationDisplay, appName, editDisplay, editTag, editRelease, tag, branchName, editBranch, createBranch, visibleBranch } = this.state;
     const appData = DevPipelineStore.getAppData;
     const appId = DevPipelineStore.getSelectApp;
     const tagData = AppTagStore.getTagData;
@@ -752,7 +764,7 @@ class DevConsole extends Component {
                   to={{
                     pathname: `/devops/reports/submission`,
                     search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${orgId}`,
-                    state: { isDevconsole: true },
+                    state: { isDevconsole: true, appId: appData && appData.length ? [DevPipelineStore.getSelectApp] : [] },
                   }}
                 >
                   { totalCommitsDate ? totalCommitsDate.length : 0}
@@ -843,11 +855,11 @@ class DevConsole extends Component {
         ><p>{formatMessage({ id: 'apptag.delete.tooltip' })}</p></Modal>
         <Modal
           confirmLoading={deleteLoading}
-          visible={visible}
+          visible={visibleBranch}
           title={`${formatMessage({ id: 'branch.action.delete' })}“${branchName}”`}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove} disabled={deleteLoading}>{<FormattedMessage id="cancel" />}</Button>,
+            <Button key="back" onClick={this.closeDeleteBranch} disabled={deleteLoading}>{<FormattedMessage id="cancel" />}</Button>,
             <Button key="submit" type="danger" onClick={this.deleteBranch} loading={deleteLoading}>
               {formatMessage({ id: 'delete' })}
             </Button>,
