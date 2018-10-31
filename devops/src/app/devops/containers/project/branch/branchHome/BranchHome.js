@@ -214,7 +214,7 @@ class BranchHome extends Component {
                     title={<FormattedMessage id="delete" />}
                   >
                     <Button size="small" shape="circle" onClick={this.openRemove.bind(this, record.branchName)}>
-                      <i className="icon icon-delete" />
+                      <i className="icon icon-delete_forever" />
                     </Button>
                   </Tooltip>
                 </Permission>
