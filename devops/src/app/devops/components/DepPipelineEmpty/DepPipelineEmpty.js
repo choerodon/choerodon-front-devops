@@ -32,7 +32,7 @@ class DepPipelineEmpty extends Component {
     const proRole = deploymentPipelineStore.getProRole;
     return (<div className="c7n-depPi-empty-card">
       {proRole === 'owner' ? (<Card title={formatMessage({ id: 'envPl.create' })}>
-        <p>
+        <div className="c7n-noEnv-content">
           <FormattedMessage id="depPl.noEnv" />
           <a
             href={formatMessage({ id: 'depPl.link' })}
@@ -41,7 +41,7 @@ class DepPipelineEmpty extends Component {
           >
             <FormattedMessage id="depPl.more" /><Icon type="open_in_new" />
           </a>
-        </p>
+        </div>
         <Button
           type="primary"
           funcType="raised"
@@ -51,8 +51,10 @@ class DepPipelineEmpty extends Component {
         </Button>
       </Card>) : ''}
       {proRole === 'member' ?(<Card title={formatMessage({ id: 'depPl.noPermission' })}>
-        <div><FormattedMessage id="depPl.noPerDes" /></div>
-        <div className="c7n-noPer-text"><FormattedMessage id="depPl.addPermission" /></div>
+        <div className="c7n-noPer-text">
+          <FormattedMessage id="depPl.noPerDes" /><br />
+          <FormattedMessage id="depPl.addPermission" />
+        </div>
         <a
           href={formatMessage({ id: 'depPl.link' })}
           rel="nofollow me noopener noreferrer"
