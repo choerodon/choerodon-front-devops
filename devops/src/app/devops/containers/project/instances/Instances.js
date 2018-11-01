@@ -13,6 +13,7 @@ import ExpandRow from './components/ExpandRow';
 import StatusIcon from '../../../components/StatusIcon';
 import './Instances.scss';
 import '../../main.scss';
+import EnvOverviewStore from '../../../stores/project/envOverview';
 
 const Option = Select.Option;
 const { AppState } = stores;
@@ -35,9 +36,7 @@ class Instances extends Component {
   componentWillUnmount() {
     const { InstancesStore } = this.props;
     if (!InstancesStore.getIsCache) {
-      InstancesStore.setEnvId(null);
       InstancesStore.setAppId(null);
-      InstancesStore.setEnvcard([]);
       InstancesStore.setAppNameByEnv([]);
       InstancesStore.setIstAll([]);
     }
@@ -95,14 +94,14 @@ class Instances extends Component {
    * 查询应用标签及实例列表
    * @param id 环境id
    */
-  handleEnvChange = (id) => {
+  handleEnvSelect = (id) => {
     const {
       id: projectId,
     } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
     const { loadAppNameByEnv, getAppPage, getAppPageSize } = InstancesStore;
-    InstancesStore.setEnvId(id);
-    this.setState({ envId: id, appId: false });
+    EnvOverviewStore.setTpEnvId(id);
+    this.setState({ appId: false });
     loadAppNameByEnv(projectId, id, getAppPage - 1, getAppPageSize);
     this.reloadData(id);
   };
@@ -273,7 +272,8 @@ class Instances extends Component {
         getAppPage,
       },
     } = this.props;
-    const { envId, appId } = this.state;
+    const { appId } = this.state;
+    const envId = EnvOverviewStore.getTpEnvId;
     loadAppNameByEnv(projectId, envId, getAppPage - 1, getAppPageSize);
     this.reloadData(envId, appId);
   };
@@ -414,6 +414,8 @@ class Instances extends Component {
       id: projectId,
     } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
+    EnvOverviewStore.loadActiveEnv(projectId, 'instance');
+    const envId = EnvOverviewStore.getTpEnvId;
     const {
       loadActiveEnv,
       loadAppNameByEnv,
@@ -467,7 +469,6 @@ class Instances extends Component {
     } = InstancesStore;
     const {
       name,
-      envId,
       appId,
       visible,
       visibleUp,
@@ -476,6 +477,9 @@ class Instances extends Component {
       id,
       loading,
     } = this.state;
+
+    const envData = EnvOverviewStore.getEnvcard;
+    const envId = EnvOverviewStore.getTpEnvId;
 
     const title = _.find(getEnvcard, ['id', envId]);
 
@@ -572,6 +576,24 @@ class Instances extends Component {
         ]}
       >
         <Header title={<FormattedMessage id="ist.head" />}>
+          <Select
+            className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
+            dropdownClassName="c7n-header-env_drop"
+            placeholder={formatMessage({ id: 'envoverview.noEnv' })}
+            value={envData && envData.length ? envId : undefined}
+            disabled={envData && envData.length === 0}
+            onChange={this.handleEnvSelect}
+          >
+            {_.map(envData,  e => (
+              <Option key={e.id} value={e.id} disabled={!e.permission} title={e.name}>
+                <Tooltip placement="right" title={e.name}>
+                  <span className="c7n-ib-width_100">
+                    {e.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
+                    {e.name}
+                  </span>
+                </Tooltip>
+              </Option>))}
+          </Select>
           <Button
             icon="refresh"
             funcType="flat"

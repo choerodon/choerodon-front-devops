@@ -691,14 +691,14 @@ class DevConsole extends Component {
             onChange={(value, option) => this.handleSelect(value, option)}
           >
             <OptGroup label={formatMessage({ id: 'recent' })} key="recent">
-              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
+              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id} title={app.name}>
                 <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
               </Option>)}
             </OptGroup>
             <OptGroup label={formatMessage({ id: 'deploy.app' })} key="app">
               {
                 _.map(appData, (app, index) => (
-                  <Option value={app.id} key={index}>
+                  <Option value={app.id} key={index} title={app.name}>
                     <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
                   </Option>))
               }

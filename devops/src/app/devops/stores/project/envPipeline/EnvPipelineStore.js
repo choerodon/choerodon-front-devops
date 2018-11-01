@@ -20,9 +20,7 @@ class EnvPipelineStore {
 
   @observable selectedRowKeys = [];
 
-  @observable tagKeys = [{"loginName":"20399","iamUserId":12725,"realName":"林岩芳","permitted":true},{"loginName":"o1","iamUserId":22365,"realName":"o1","permitted":true},{"loginName":"20682","iamUserId":12039,"realName":"张磊","permitted":true},{"loginName":"20655","iamUserId":11993,"realName":"毛智伟","permitted":true},{"loginName":"13708","iamUserId":6414,"realName":"王柯","permitted":true},{"loginName":"deployer09","iamUserId":14685,"realName":"deployer09","permitted":true},{"loginName":"10980","iamUserId":4679,"realName":"朱智阳","permitted":true}];
-
-  // @observable tagKeys = [];
+  @observable tagKeys = [];
 
   @observable envdata = null;
 

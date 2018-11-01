@@ -18,6 +18,7 @@ import StatusTags from '../../../../components/StatusTags';
 import '../../../main.scss';
 import './ContainerHome.scss';
 import './Term.scss';
+import EnvOverviewStore from '../../../../stores/project/envOverview';
 
 const Sidebar = Modal.Sidebar;
 const { Option, OptGroup } = Select;
@@ -45,7 +46,6 @@ class ContainerHome extends Component {
       appProLength: 0,
       appPubDom: [],
       appProDom: [],
-      envIds: null,
     };
     this.timer = null;
   }
@@ -275,7 +275,7 @@ class ContainerHome extends Component {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const organizationId = AppState.currentMenuType.organizationId;
     const type = AppState.currentMenuType.type;
-    const { ContainerStore, intl } = this.props;
+    const { ContainerStore, intl: { formatMessage } } = this.props;
     const { filters, sort: { columnKey, order } } = ContainerStore.getInfo;
     return [{
       title: <FormattedMessage id="container.status" />,
@@ -338,10 +338,10 @@ class ContainerHome extends Component {
       dataIndex: 'ready',
       key: 'ready',
       filters: [{
-        text: intl.formatMessage({ id: 'container.usable' }),
+        text: formatMessage({ id: 'container.usable' }),
         value: '1',
       }, {
-        text: intl.formatMessage({ id: 'container.disable' }),
+        text: formatMessage({ id: 'container.disable' }),
         value: '0',
       }],
       filterMultiple: false,
@@ -629,29 +629,26 @@ class ContainerHome extends Component {
   /**
    * 环境选择
    * @param value
+   * @param option
    */
-  handleEnvSelect = (value) => {
+  handleEnvSelect = (value, option) => {
+    this.setState({ page: 0, pageSize: 10, envName: option.props.children });
+    EnvOverviewStore.setTpEnvId(value);
     const { ContainerStore } = this.props;
-    ContainerStore.setEnvId(value);
     ContainerStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
     const appId = ContainerStore.getappId;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    this.setState({ envIds: value });
-    if (!value) {
-      ContainerStore.loadAppData(projectId);
-      ContainerStore.loadData(false, projectId, value, appId);
-    } else {
-      ContainerStore.loadAppDataByEnv(projectId, value)
-        .then((data) => {
-          const appData = ContainerStore.getAppData;
-          if (!_.find(appData, app => app.id === appId)) {
-            ContainerStore.setAppId(null);
-            ContainerStore.loadData(false, projectId, value, null);
-          } else {
-            ContainerStore.loadData(false, projectId, value, appId);
-          }
-        });
-    }
+    ContainerStore.loadAppDataByEnv(projectId, value)
+      .then((data) => {
+        const appData = ContainerStore.getAppData;
+        if (!_.find(appData, app => app.id === appId)) {
+          ContainerStore.setAppId(null);
+          ContainerStore.loadData(false, projectId, value, null);
+        } else {
+          ContainerStore.loadData(false, projectId, value, appId);
+        }
+      });
+    // }
   };
 
   /**
@@ -662,7 +659,7 @@ class ContainerHome extends Component {
     const { ContainerStore } = this.props;
     ContainerStore.setAppId(value);
     ContainerStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
-    const envId = ContainerStore.getEnvId;
+    const envId = EnvOverviewStore.getTpEnvId;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     ContainerStore.loadData(false, projectId, envId, value);
   };
@@ -778,23 +775,13 @@ class ContainerHome extends Component {
       ContainerStore,
       history: { location: { state } },
     } = this.props;
-    const {
-      loadActiveEnv,
-      loadAppData,
-      loadData,
-    } = ContainerStore;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    let envId = null;
     let appId = null;
     if (state) {
-      envId = state.envId;
       appId = state.appId;
     }
-    this.setState({ envIds: envId });
     ContainerStore.setAppId(appId);
-    loadActiveEnv(projectId);
-    loadAppData(projectId);
-    loadData(false, projectId, envId, appId);
+    EnvOverviewStore.loadActiveEnv(projectId, 'container');
   };
 
   /**
@@ -855,7 +842,7 @@ class ContainerHome extends Component {
   render() {
     const {
       ContainerStore,
-      intl,
+      intl: { formatMessage },
       history: { location: { state } },
     } = this.props;
     const {
@@ -872,19 +859,35 @@ class ContainerHome extends Component {
       appPubDom,
       appProLength,
       appPubLength,
-      envIds,
     } = this.state;
-    const envNames = ContainerStore.getEnvCard;
+    const envData = EnvOverviewStore.getEnvcard;
+    const envId = EnvOverviewStore.getTpEnvId;
     const { paras } = ContainerStore.getInfo;
     const proPageSize = (10 * selectProPage) + 3;
     const pubPageSize = (10 * selectPubPage) + 3;
     const serviceData = ContainerStore.getAllData && ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
-    const envOptions = _.map(envNames, d => (<Option key={d.id} value={d.id}>
-      {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
-      {d.name}</Option>));
     const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
       <Header title={<FormattedMessage id="container.header.title" />}>
+        <Select
+          className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
+          dropdownClassName="c7n-header-env_drop"
+          dropdownMatchSelectWidth
+          placeholder={formatMessage({ id: 'envoverview.noEnv' })}
+          value={envData && envData.length ? envId : undefined}
+          disabled={envData && envData.length === 0}
+          onChange={this.handleEnvSelect}
+        >
+            {_.map(envData,  e => (
+                <Option key={e.id} value={e.id} disabled={!e.permission} title={e.name}>
+                  <Tooltip placement="right" title={e.name}>
+                    <span className="c7n-ib-width_100">
+                      {e.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
+                      {e.name}
+                    </span>
+                  </Tooltip>
+                </Option>))}
+        </Select>
         <Button
           onClick={this.handleRefresh}
         >
@@ -894,21 +897,9 @@ class ContainerHome extends Component {
       </Header>
       <Content className="page-content c7n-container-wrapper" code="container" values={{ name: projectName }}>
         <Select
-          label={intl.formatMessage({ id: 'container.chooseEnv' })}
           className="c7n-app-select_247"
-          optionFilterProp="children"
-          value={envOptions.length ? envIds : undefined}
-          filterOption={(input, option) => option.props.children[1].toLowerCase().indexOf(input.toLowerCase()) >= 0}
-          filter
-          onChange={this.handleEnvSelect}
-          allowClear
-        >
-          {envOptions}
-        </Select>
-        <Select
-          className="c7n-app-select_247"
-          label={intl.formatMessage({ id: 'chooseApp' })}
-          value={envOptions.length ? ContainerStore.getappId : undefined}
+          label={formatMessage({ id: 'chooseApp' })}
+          value={envData && envData.length ? ContainerStore.getappId : undefined}
           optionFilterProp="children"
           onChange={this.handleAppSelect}
           filterOption={false}
@@ -916,25 +907,25 @@ class ContainerHome extends Component {
           filter
           allowClear
         >
-          <OptGroup label={intl.formatMessage({ id: 'project' })} key="proGroup">
+          <OptGroup label={formatMessage({ id: 'project' })} key="proGroup">
             {appProDom}
             { proPageSize < appProLength && (<Option key="more">
               <div role="none" onClick={this.appDomMore.bind(this, 'pro')} className="c7n-container-option-popover c7n-dom-more">
-                {intl.formatMessage({ id: 'ist.more' })}
+                {formatMessage({ id: 'ist.more' })}
               </div>
             </Option>)}
           </OptGroup>
-          <OptGroup label={intl.formatMessage({ id: 'market' })} key="pubGroup">
+          <OptGroup label={formatMessage({ id: 'market' })} key="pubGroup">
             {appPubDom}
             { pubPageSize < appPubLength && (<Option key="pubMore">
               <div role="none" onClick={this.appDomMore.bind(this, 'pub')} className="c7n-container-option-popover c7n-dom-more">
-                {intl.formatMessage({ id: 'ist.more' })}
+                {formatMessage({ id: 'ist.more' })}
               </div>
             </Option>)}
           </OptGroup>
         </Select>
         <Table
-          filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
+          filterBarPlaceholder={formatMessage({ id: 'filter' })}
           loading={ContainerStore.loading}
           pagination={ContainerStore.pageInfo}
           columns={this.getColumn()}

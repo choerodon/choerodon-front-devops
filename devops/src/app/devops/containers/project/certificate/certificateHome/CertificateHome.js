@@ -3,15 +3,17 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-import { Select, Button, Modal } from 'choerodon-ui';
+import { Select, Button, Tooltip } from 'choerodon-ui';
+import _ from 'lodash';
 import '../../../main.scss';
 import './CertificateHome.scss';
 import CertTable from '../certTable';
 import CreateCert from '../createCert';
+import EnvOverviewStore from '../../../../stores/project/envOverview';
 
 const { AppState } = stores;
 const { Option } = Select;
-const { Sidebar } = Modal;
+
 @observer
 class CertificateHome extends Component {
   constructor(props) {
@@ -22,7 +24,8 @@ class CertificateHome extends Component {
   }
 
   componentDidMount() {
-    this.loadCertData();
+    const { id: projectId } = AppState.currentMenuType;
+    EnvOverviewStore.loadActiveEnv(projectId, 'certificate');
   }
 
   /**
@@ -44,17 +47,29 @@ class CertificateHome extends Component {
    */
   reload = () => this.loadCertData();
 
-  loadCertData = () => {
+  loadCertData = (value) => {
+    const envId = value || EnvOverviewStore.getTpEnvId;
     const { CertificateStore } = this.props;
     const { page, pageSize, sorter, postData } = CertificateStore.getTableFilter;
     const { id: projectId } = AppState.currentMenuType;
-    CertificateStore.loadCertData(projectId, page, pageSize, sorter, postData);
+    CertificateStore.loadCertData(projectId, page, pageSize, sorter, postData, envId);
+  };
+
+  /**
+   * 环境选择
+   * @param value
+   */
+  handleEnvSelect = (value) => {
+    EnvOverviewStore.setTpEnvId(value);
+    this.loadCertData(value);
   };
 
   render() {
-    const { CertificateStore } = this.props;
+    const { CertificateStore, intl: { formatMessage } } = this.props;
     const { createDisplay } = this.state;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
+    const envData = EnvOverviewStore.getEnvcard;
+    const envId = EnvOverviewStore.getTpEnvId;
 
     return (
       <Page
@@ -67,6 +82,24 @@ class CertificateHome extends Component {
         ]}
       >
         <Header title={<FormattedMessage id="ctf.head" />}>
+          <Select
+            className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
+            dropdownClassName="c7n-header-env_drop"
+            placeholder={formatMessage({ id: 'envoverview.noEnv' })}
+            value={envData && envData.length ? envId : undefined}
+            disabled={envData && envData.length === 0}
+            onChange={this.handleEnvSelect}
+          >
+            {_.map(envData,  e => (
+              <Option key={e.id} value={e.id} disabled={!e.permission} title={e.name}>
+                <Tooltip placement="right" title={e.name}>
+                  <span className="c7n-ib-width_100">
+                    {e.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
+                    {e.name}
+                  </span>
+                </Tooltip>
+              </Option>))}
+          </Select>
           <Permission
             type={type}
             projectId={projectId}
@@ -92,13 +125,14 @@ class CertificateHome extends Component {
         <Content
           className="page-content"
           code="ctf"
-          value={{ name }}
+          values={{ name }}
         >
-          <CertTable store={CertificateStore} />
+          <CertTable store={CertificateStore} envId={envId} />
         </Content>
         {createDisplay && <CreateCert
           visible={createDisplay}
           store={CertificateStore}
+          envId={envId}
           onClose={this.closeCreateModal}
         />}
       </Page>

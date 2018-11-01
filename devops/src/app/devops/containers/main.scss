@@ -601,6 +601,16 @@ input::-webkit-contacts-auto-fill-button {
   }
 }
 
+.c7n-select_min100 {
+  min-width: 100px;
+}
+
+.c7n-header-env_drop {
+  .ant-select-dropdown-menu-item {
+    padding: 4px 6px !important;
+  }
+}
+
 .c7n-header-select_drop {
   width: 200px !important;
   top: 90px !important;
