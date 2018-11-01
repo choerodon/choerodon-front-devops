@@ -22,6 +22,7 @@ import CreateNetwork from '../../networkConfig/createNetwork';
 import NetworkConfigStore from '../../../../stores/project/networkConfig';
 import LoadingBar from '../../../../components/loadingBar';
 import ExpandRow from '../../instances/components/ExpandRow';
+import UploadIcon from "../../instances/components/UploadIcon";
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -373,38 +374,54 @@ class AppOverview extends Component {
             key={`${i.appName}-collapse`}
             onChange={this.onChange}
           >
-            {_.map(i.applicationInstanceDTOS, c => (
-              <Panel
+            {_.map(i.applicationInstanceDTOS, c => {
+              const { status, code, error, appVersion, id, serviceDTOS, ingressDTOS, commandVersion, appId } = c;
+              let uploadIcon = null;
+              if (appVersion !== commandVersion) {
+                if (status !== 'failed') {
+                  uploadIcon = 'upload';
+                } else {
+                  uploadIcon = 'failed';
+                }
+              } else {
+                uploadIcon = 'text'
+              }
+              return(<Panel
                 forceRender
                 showArrow={false}
                 header={(<div className="c7n-envow-ist-header-wrap">
                   <Icon type="navigate_next" />
                   <div className="c7n-envow-ist-name">
-                    {(c.status === 'running' || c.status === 'stopped') ? <span className="c7n-deploy-istCode">{c.code}</span> : <div className="c7n-envow-ist-fail">
-                      {c.status === 'operating' ? (<div>
-                        <span className="c7n-deploy-istCode">{c.code}</span>
-                        <Tooltip title={intl.formatMessage({ id: `ist_${c.status}` })}>
-                          <Progress type="loading" width={15} />
-                        </Tooltip>
-
-                      </div>)
+                    {(status === 'running' || status === 'stopped')
+                      ? <span className="c7n-deploy-istCode">{code}</span>
+                      : <div className="c7n-envow-ist-fail">
+                      {status === 'operating' ? (<div>
+                          <span className="c7n-deploy-istCode">{code}</span>
+                          <Tooltip title={intl.formatMessage({ id: `ist_${status}` })}>
+                            <Progress type="loading" width={15} />
+                          </Tooltip>
+                        </div>)
                         : (<div>
-                          <span className="c7n-deploy-istCode">{c.code}</span>
-                          <Tooltip title={`${c.status}${c.error ? `：${c.error}` : ''}`}>
+                          <span className="c7n-deploy-istCode">{code}</span>
+                          <Tooltip title={`${status}${error ? `：${error}` : ''}`}>
                             <i className="icon icon-error c7n-deploy-ist-operate" />
                           </Tooltip>
                         </div>)}
                     </div>}
                   </div>
                   <span className="c7n-envow-ist-version">
-                    <FormattedMessage id="app.appVersion" />:&nbsp;&nbsp;
-                    {c.appVersion}
+                    <span className="c7n-envow-version-text"><FormattedMessage id="app.appVersion" />:&nbsp;&nbsp;</span>
+                    <UploadIcon
+                      status={uploadIcon}
+                      text={appVersion}
+                      prevText={commandVersion}
+                    />
                   </span>
                   <div className="c7n-envow-ist-action">
                     {this.columnAction(c)}
                   </div>
                 </div>)}
-                key={c.id}
+                key={id}
               >
                 <div>
                   <ExpandRow record={c} />
@@ -416,7 +433,7 @@ class AppOverview extends Component {
                       <div className="c7n-envow-network-title">
                         <FormattedMessage id="network.header.title" />
                       </div>
-                      {c.serviceDTOS.length ? _.map(c.serviceDTOS, s => (<div className="c7n-envow-ls-wrap" key={s.name}>
+                      {serviceDTOS.length ? _.map(serviceDTOS, s => (<div className="c7n-envow-ls-wrap" key={s.name}>
                         <div className="c7n-envow-ls">
                           <Tooltip title={<FormattedMessage id="network.form.name" />}>
                             <Icon type="router" />
@@ -460,7 +477,7 @@ class AppOverview extends Component {
                             className="c7n-envow-create-btn"
                             funcType="flat"
                             disabled={!envState}
-                            onClick={this.createNetwork.bind(this, c.appId, c.id, i.appCode)}
+                            onClick={this.createNetwork.bind(this, appId, id, i.appCode)}
                           >
                             <i className="icon-playlist_add icon" />
                             <span><FormattedMessage id="network.header.create" /></span>
@@ -472,7 +489,7 @@ class AppOverview extends Component {
                       <div className="c7n-envow-network-title">
                         <FormattedMessage id="domain.header.title" />
                       </div>
-                      {c.ingressDTOS.length ? _.map(c.ingressDTOS, d => (<div className="c7n-envow-ls-wrap" key={d.hosts}>
+                      {ingressDTOS.length ? _.map(ingressDTOS, d => (<div className="c7n-envow-ls-wrap" key={d.hosts}>
                         <div className="c7n-envow-ls"><Icon type="language" />{d.hosts}</div>
                       </div>)) : null}
                       <Permission
@@ -496,8 +513,8 @@ class AppOverview extends Component {
                     </div>
                   </div>
                 </div>
-              </Panel>
-            ))}
+              </Panel>);
+            })}
             {/* 处理Safari浏览器下，折叠面板渲染最后一个节点panel卡顿问题 */}
             <Panel
               className="c7n-envow-none"
@@ -573,7 +590,7 @@ class AppOverview extends Component {
         actionItem = ['detail'];
         break;
       case 'stopped':
-        actionItem = ['detail', 'change', 'stop', 'delete'];
+        actionItem = ['detail', 'stop', 'delete'];
         break;
       case 'failed':
       case 'running':

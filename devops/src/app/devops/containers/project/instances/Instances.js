@@ -11,6 +11,7 @@ import UpgradeIst from './UpgradeIst';
 import DelIst from './components/DelIst';
 import ExpandRow from './components/ExpandRow';
 import StatusIcon from '../../../components/StatusIcon';
+import UploadIcon from './components/UploadIcon';
 import './Instances.scss';
 import '../../main.scss';
 
@@ -26,6 +27,8 @@ class Instances extends Component {
       envId: null,
       appId: null,
     };
+    this.columnAction = this.columnAction.bind(this);
+    this.renderVersion = this.renderVersion.bind(this);
   }
 
   componentDidMount() {
@@ -345,7 +348,7 @@ class Instances extends Component {
    * @param record 行数据
    * @returns {*}
    */
-  columnAction = (record) => {
+  columnAction(record) {
     const {
       id: projectId,
       type,
@@ -391,7 +394,7 @@ class Instances extends Component {
         actionItem = ['detail'];
         break;
       case 'stopped':
-        actionItem = ['detail', 'change', 'stop', 'delete'];
+        actionItem = ['detail', 'stop', 'delete'];
         break;
       case 'failed':
       case 'running':
@@ -438,6 +441,35 @@ class Instances extends Component {
     }
     InstancesStore.setIsCache(false);
   };
+
+  renderStatus(record) {
+    const { code, commandStatus, error } = record;
+    return (<StatusIcon
+      name={code}
+      status={commandStatus || ''}
+      error={error || ''}
+    />);
+  }
+
+  renderVersion(record) {
+    const { intl: { formatMessage } } = this.props;
+    const { appVersion, commandVersion, status } = record;
+    let uploadIcon = null;
+    if (appVersion !== commandVersion) {
+      if (status !== 'failed') {
+        uploadIcon = 'upload';
+      } else {
+        uploadIcon = 'failed';
+      }
+    } else {
+      uploadIcon = 'text'
+    }
+    return(<UploadIcon
+      status={uploadIcon}
+      text={appVersion}
+      prevText={commandVersion}
+    />);
+  }
 
   /**
    * 打开删除数据模态框
@@ -500,17 +532,13 @@ class Instances extends Component {
       key: 'code',
       filters: [],
       filteredValue: filters.code || [],
-      render: record => <StatusIcon
-        name={record.code}
-        status={record.commandStatus || ''}
-        error={record.error || ''}
-      />,
+      render: this.renderStatus,
     }, {
       title: <FormattedMessage id="deploy.ver" />,
       key: 'appVersion',
-      dataIndex: 'appVersion',
       filters: [],
       filteredValue: filters.appVersion || [],
+      render: this.renderVersion
     }, {
       width: 56,
       className: 'c7n-operate-icon',

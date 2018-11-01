@@ -655,13 +655,13 @@ class CreateNetwork extends Component {
       this.envSelect.focus();
     }
 
-    const istOption = _.map(_.filter(ist, item => !_.includes(initIst, item.id)),
+    const istOption = ist.length ? _.map(_.filter(ist, item => (item && !_.includes(initIst, item.id))),
       (item) => {
         const { id, code } = item;
         return (<Option key={id} value={id}>
           {code}
         </Option>);
-      });
+      }) : [];
 
     return (
       <div className="c7n-region">

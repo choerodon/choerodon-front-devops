@@ -363,7 +363,12 @@ const zhCN = {
   'ist.expand.empty': '暂无部署详细信息',
   'ist.expand.link': '点击查看详情',
   'ist.expand.date': '创建时间',
-
+  'ist.version.upload': '升级至版本 “{text}”',
+  'ist.version.deploy': '部署版本 “{text}”',
+  'ist.version.failed': '升级至版本 “{text}” 失败',
+  'ist.version.deploy.failed': '部署版本 “{text}” 失败',
+  'ist.deploy.failed': '部署失败',
+  'ist.deploy.upload': '部署中...',
 
   // network
   network_delete: '网络删除中，请耐心等待',
@@ -403,7 +408,7 @@ const zhCN = {
   'network.form.version.disable': '请先选择应用',
   'network.form.version.checked': '该应用下没有多余的可用版本',
   'network.form.app.disable': '请先选择环境',
-  'network.form.instance.disable': '请先选择应用',
+  'network.form.instance.disable': '暂无可用实例',
   'network.btn.add': '添加版本',
   'network.form.targetPort.help': '网络选择的目标实例所暴露的端口号',
   'network.env': '环境',
