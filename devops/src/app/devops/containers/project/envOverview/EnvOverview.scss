@@ -216,6 +216,10 @@
   .c7n-envow-ist-version {
     line-height: 30px;
     width: 35%;
+    .c7n-envow-version-text {
+      display: inline-block;
+      vertical-align: middle;
+    }
   }
 
   .c7n-envow-ist-action {

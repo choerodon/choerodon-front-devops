@@ -22,7 +22,7 @@ function StatusIcon(props) {
       statusDom = null;
   }
   return (<React.Fragment>
-    {name}
+    <span className="c7n-status-text">{name}</span>
     {statusDom}
   </React.Fragment>);
 }
