@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Table, Button, Form, Tooltip, Modal, Popover, Icon } from 'choerodon-ui';
+import { Table, Button, Form, Tooltip, Modal, Popover, Icon, Select } from 'choerodon-ui';
 import { Permission, Content, Header, Page, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import './NetworkHome.scss';
@@ -13,8 +13,10 @@ import EditNetwork from '../editNetwork';
 import { commonComponent } from '../../../../components/commonFunction';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import StatusIcon from '../../../../components/StatusIcon';
+import EnvOverviewStore from '../../../../stores/project/envOverview';
 
 const { AppState } = stores;
+const { Option } = Select;
 
 // commonComponent装饰器
 @commonComponent('NetworkConfigStore')
@@ -30,6 +32,8 @@ class NetworkHome extends Component {
   }
 
   componentDidMount() {
+    const { id: projectId } = AppState.currentMenuType;
+    EnvOverviewStore.loadActiveEnv(projectId, 'network');
     // 这个方法定义在 commonComponent装饰器中
     this.loadAllData();
   }
@@ -228,6 +232,15 @@ class NetworkHome extends Component {
     </Fragment>);
   };
 
+  /**
+   * 环境选择
+   * @param value
+   */
+  handleEnvSelect = (value) => {
+    EnvOverviewStore.setTpEnvId(value);
+    const projectId = AppState.currentMenuType.id;
+  };
+
   render() {
     const { NetworkConfigStore, intl: { formatMessage } } = this.props;
     const { show, showEdit, id, openRemove, submitting, name } = this.state;
@@ -238,6 +251,8 @@ class NetworkHome extends Component {
       organizationId: orgId,
       name: projectName } = AppState.currentMenuType;
     const data = NetworkConfigStore.getAllData;
+    const envData = EnvOverviewStore.getEnvcard;
+    const envId = EnvOverviewStore.getTpEnvId;
     const columns = [{
       title: <FormattedMessage id="network.column.name" />,
       key: 'name',
@@ -299,6 +314,24 @@ class NetworkHome extends Component {
       >
         {NetworkConfigStore.isRefresh ? <LoadingBar display /> : <Fragment>
           <Header title={<FormattedMessage id="network.header.title" />}>
+            <Select
+              className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
+              dropdownClassName="c7n-header-env_drop"
+              placeholder={formatMessage({ id: 'envoverview.noEnv' })}
+              value={envData && envData.length ? envId : undefined}
+              disabled={envData && envData.length === 0}
+              onChange={this.handleEnvSelect}
+            >
+              {_.map(envData,  e => (
+                <Option key={e.id} value={e.id} disabled={!e.permission} title={e.name}>
+                  <Tooltip placement="right" title={e.name}>
+                    <span className="c7n-ib-width_100">
+                      {e.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
+                      {e.name}
+                    </span>
+                  </Tooltip>
+                </Option>))}
+            </Select>
             <Permission
               service={['devops-service.devops-service.create']}
               type={type}

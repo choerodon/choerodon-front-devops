@@ -92,52 +92,16 @@ class BranchHome extends Component {
   };
 
   /**
-   * 获取头像的首字母
-   * @param name
-   */
-  getName = (name) => {
-    const p = /[\u4e00-\u9fa5]/;
-    const str = p.exec(name);
-    let names = '';
-    if (str) {
-      names = str[0];
-    } else {
-      names = name.slice(0, 1);
-    }
-    return names;
-  };
-
-  /**
    * 获取列表的icon
    * @param name 分支类型
    * @returns {*}
    */
   getIcon =(name) => {
-    let icon;
-    let type;
+    let type = '';
     if (name) {
       type = name.split('-')[0];
     }
-    switch (type) {
-      case 'feature':
-        icon = <span className="c7n-branch-icon icon-feature">F</span>;
-        break;
-      case 'bugfix':
-        icon = <span className="c7n-branch-icon icon-develop">B</span>;
-        break;
-      case 'hotfix':
-        icon = <span className="c7n-branch-icon icon-hotfix">H</span>;
-        break;
-      case 'master':
-        icon = <span className="c7n-branch-icon icon-master">M</span>;
-        break;
-      case 'release':
-        icon = <span className="c7n-branch-icon icon-release">R</span>;
-        break;
-      default:
-        icon = <span className="c7n-branch-icon icon-custom">C</span>;
-    }
-    return icon;
+    return <span className={`c7n-branch-icon icon-${type}`}>{type.slice(0, 1).toUpperCase()}</span>;
   };
 
   /**
@@ -198,7 +162,7 @@ class BranchHome extends Component {
             </React.Fragment>
             : <React.Fragment>
               {record.createUserName ? <div>
-                <div className="branch-user-img">{record.createUserRealName && this.getName(record.createUserRealName)}</div>
+                <div className="branch-user-img">{record.createUserRealName && record.createUserRealName.slice(0, 1).toUpperCase()}</div>
                 <div style={{ display: 'inline-block' }}>
                   <span style={{ paddingRight: 5 }}>{record.createUserName}</span>
                   {record.createUserName !== record.createUserRealName
@@ -250,7 +214,7 @@ class BranchHome extends Component {
                     title={<FormattedMessage id="delete" />}
                   >
                     <Button size="small" shape="circle" onClick={this.openRemove.bind(this, record.branchName)}>
-                      <i className="icon icon-delete" />
+                      <i className="icon icon-delete_forever" />
                     </Button>
                   </Tooltip>
                 </Permission>
@@ -261,6 +225,7 @@ class BranchHome extends Component {
         ),
       },
     ];
+    const titleData = ['master', 'feature', 'bugfix', 'release', 'hotfix', 'custom'];
     const title = (<div className="c7n-header-table">
       <span>
         <FormattedMessage id="branch.list" />
@@ -270,72 +235,19 @@ class BranchHome extends Component {
         placement="rightTop"
         arrowPointAtCenter
         content={<section>
-          <div>
-            <span className="branch-popover-span span-master" />
-            <div className="branch-popover-content">
-              <p className="branch-popover-p">
-                <FormattedMessage id="branch.master" />
-              </p>
-              <p>
-                <FormattedMessage id="branch.masterDes" />
-              </p>
-            </div>
-          </div>
-          <div className="c7n-branch-block">
-            <span className="branch-popover-span span-feature" />
-            <div className="branch-popover-content">
-              <p className="branch-popover-p">
-                <FormattedMessage id="branch.feature" />
-              </p>
-              <p>
-                <FormattedMessage id="branch.featureDes" />
-              </p>
-            </div>
-          </div>
-          <div className="c7n-branch-block">
-            <span className="branch-popover-span span-bugfix" />
-            <div className="branch-popover-content">
-              <p className="branch-popover-p">
-                <FormattedMessage id="branch.bugfix" />
-              </p>
-              <p>
-                <FormattedMessage id="branch.bugfixDes" />
-              </p>
-            </div>
-          </div>
-          <div className="c7n-branch-block">
-            <span className="branch-popover-span span-release" />
-            <div className="branch-popover-content">
-              <p className="branch-popover-p">
-                <FormattedMessage id="branch.release" />
-              </p>
-              <p>
-                <FormattedMessage id="branch.releaseDes" />
-              </p>
-            </div>
-          </div>
-          <div className="c7n-branch-block">
-            <span className="branch-popover-span span-hotfix" />
-            <div className="branch-popover-content">
-              <p className="branch-popover-p">
-                <FormattedMessage id="branch.hotfix" />
-              </p>
-              <p>
-                <FormattedMessage id="branch.hotfixDes" />
-              </p>
-            </div>
-          </div>
-          <div className="c7n-branch-block">
-            <span className="branch-popover-span span-custom" />
-            <div className="branch-popover-content">
-              <p className="branch-popover-p">
-                <FormattedMessage id="branch.custom" />
-              </p>
-              <p>
-                <FormattedMessage id="branch.customDes" />
-              </p>
-            </div>
-          </div>
+          {
+            _.map(titleData, item => (<div className="c7n-branch-block">
+              <span className={`branch-popover-span span-${item}`} />
+              <div className="branch-popover-content">
+                <p className="branch-popover-p">
+                  <FormattedMessage id={`branch.${item}`} />
+                </p>
+                <p>
+                  <FormattedMessage id={`branch.${item}Des`} />
+                </p>
+              </div>
+            </div>))
+          }
         </section>}
       >
         <Icon className="branch-icon-help" type="help"/>
@@ -422,6 +334,7 @@ class BranchHome extends Component {
   hideSidebar = (isload = true) => {
     const { BranchStore } = this.props;
     BranchStore.setCreateBranchShow(false);
+    BranchStore.setBranch(null);
     if (isload) {
       this.loadData(DevPipelineStore.selectedApp);
       this.setState({ paras: [], filters: {}, sort: { columnKey: 'creationDate', order: 'ascend' } });
@@ -507,12 +420,13 @@ class BranchHome extends Component {
   };
 
   render() {
-    const { name } = AppState.currentMenuType;
-    const { BranchStore, intl: { formatMessage } } = this.props;
+    const { name, projectId, organizationId, type } = AppState.currentMenuType;
+    const { BranchStore, intl: { formatMessage }, history: { location: { state } } } = this.props;
     const { name: branchName, submitting, visible } = this.state;
     const apps = DevPipelineStore.appData.slice();
     const appId = DevPipelineStore.getSelectApp;
     const titleName = _.find(apps, ['id', appId]) ? _.find(apps, ['id', appId]).name : name;
+    const  historyIsDevconsole = state && state.isDevconsole;
     return (
       <Page
         className="c7n-region c7n-branch"
@@ -529,7 +443,10 @@ class BranchHome extends Component {
           'agile-service.work-log.queryWorkLogListByIssueId',
         ]}
       >
-        <Header title={<FormattedMessage id="branch.head" />}>
+        <Header
+          title={<FormattedMessage id="branch.head" />}
+          backPath={historyIsDevconsole ? `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}` : ''}
+        >
           <Select
             filter
             className="c7n-header-select"

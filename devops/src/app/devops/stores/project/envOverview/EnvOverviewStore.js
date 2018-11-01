@@ -1,5 +1,11 @@
 import { observable, action, computed } from 'mobx';
-import { axios, store } from 'choerodon-front-boot';
+import { axios, store, stores } from 'choerodon-front-boot';
+import _ from 'lodash';
+import ContainerStore from '../container';
+import CertificateStore from '../certificate';
+import { handleProptError } from '../../../utils';
+
+const { AppState } = stores;
 
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 @store('EnvOverviewStore')
@@ -8,7 +14,9 @@ class EnvOverviewStore {
 
   @observable val = '';
 
-  @observable envcard = [];
+  @observable envCard = [];
+
+  @observable preProId = AppState.currentMenuType.id;
 
   @observable ist = null;
 
@@ -30,6 +38,10 @@ class EnvOverviewStore {
     filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
   };
 
+  @action setPreProId(id) {
+    this.preProId = id;
+  }
+
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
     this.pageInfo.total = page.totalElements;
@@ -40,8 +52,8 @@ class EnvOverviewStore {
     return this.pageInfo;
   }
 
-  @action setEnvcard(envcard) {
-    this.envcard = envcard;
+  @action setEnvcard(envCard) {
+    this.envCard = envCard;
   }
 
   @action setIst(ist) {
@@ -65,7 +77,7 @@ class EnvOverviewStore {
   }
 
   @computed get getEnvcard() {
-    return this.envcard;
+    return this.envCard;
   }
 
   @action setVal(val) {
@@ -122,15 +134,50 @@ class EnvOverviewStore {
     return this.isLoading;
   }
 
-  loadActiveEnv = projectId => axios.get(`devops/v1/projects/${projectId}/envs?active=true`)
-    .then((data) => {
-      if (data && data.failed) {
-        Choerodon.prompt(data.message);
-      } else {
-        this.setEnvcard(data);
-      }
-      return data;
-    });
+  loadActiveEnv = (projectId, type) => {
+    if (this.preProId !== projectId) {
+      this.setEnvcard([]);
+      this.setTpEnvId(null);
+    }
+    this.setPreProId(projectId);
+    return axios.get(`devops/v1/projects/${projectId}/envs?active=true`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          const envSort = _.concat(_.filter(data, ['connect', true]), _.filter(data, ['connect', false]));
+          const flag = _.filter(envSort, ['permission', true]);
+          const flagConnect = _.filter(flag, ['connect', true]);
+          this.setEnvcard(envSort);
+          if (!this.tpEnvId && flagConnect.length) {
+            const envId = flagConnect[0].id;
+            this.setTpEnvId(envId);
+          } else if (!this.tpEnvId && flag.length) {
+            const envId = flag[0].id;
+            this.setTpEnvId(envId);
+          }
+          if (data.length && this.tpEnvId) {
+            switch (type) {
+              case 'container':
+                ContainerStore.loadAppData(projectId);
+                ContainerStore.loadData(false, projectId, this.tpEnvId);
+                break;
+              case 'certificate':
+                const { page, pageSize, sorter, postData } = CertificateStore.getTableFilter;
+                CertificateStore.loadCertData(projectId, page, pageSize, sorter, postData, this.tpEnvId);
+                break;
+              case 'instance':
+                break;
+              case 'all':
+                break;
+              default:
+                break;
+            }
+          }
+        }
+        this.changeLoading(false);
+        return data;
+      });
+  };
 
   loadIstOverview = (projectId, envId, datas = {
     searchParam: {},
@@ -140,12 +187,11 @@ class EnvOverviewStore {
     this.setIst(null);
     axios.post(`/devops/v1/projects/${projectId}/app_instances/${envId}/listByEnv`, JSON.stringify(datas))
       .then((data) => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else {
+        const res = handleProptError(data);
+        if (res) {
           this.setIst(data);
         }
-        this.changeLoading(false);        
+        this.changeLoading(false);
       });
   };
 
@@ -156,7 +202,7 @@ class EnvOverviewStore {
     this.changeLoading(true);
     return axios.post(`/devops/v1/projects/${proId}/ingress/${envId}/listByEnv?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           const { number, size, totalElements } = data;
           this.setPageInfo({ number, size, totalElements });
@@ -173,7 +219,7 @@ class EnvOverviewStore {
     this.changeLoading(true);
     return axios.post(`/devops/v1/projects/${proId}/service/${envId}/listByEnv?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           const { number, size, totalElements } = data;
           this.setPageInfo({ number, size, totalElements });
@@ -187,7 +233,7 @@ class EnvOverviewStore {
     this.changeLoading(true);
     return axios.get(`/devops/v1/projects/${proId}/envs/${envId}/error_file/list_by_page?page=${page}&size=${pageSize}`)
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           const { number, size, totalElements } = data;
           this.setPageInfo({ number, size, totalElements });
@@ -209,17 +255,6 @@ class EnvOverviewStore {
       this.setSync(null);
       Choerodon.prompt(error);
     });
-
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      this.changeLoading(false);
-      return false;
-    } else {
-      this.changeLoading(false);
-      return error;
-    }
-  }
 }
 
 const envOverviewStore = new EnvOverviewStore();
