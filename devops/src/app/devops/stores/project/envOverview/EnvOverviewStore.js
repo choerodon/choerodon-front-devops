@@ -146,9 +146,13 @@ class EnvOverviewStore {
         if (res) {
           const envSort = _.concat(_.filter(data, ['connect', true]), _.filter(data, ['connect', false]));
           const flag = _.filter(envSort, ['permission', true]);
+          const flagConnect = _.filter(flag, ['connect', true]);
           this.setEnvcard(envSort);
-          if (!this.tpEnvId && flag.length) {
-            const envId = _.filter(flag, ['connect', true]).length ? _.filter(flag, ['connect', true])[0].id : null;
+          if (!this.tpEnvId && flagConnect.length) {
+            const envId = flagConnect[0].id;
+            this.setTpEnvId(envId);
+          } else if (flag.length) {
+            const envId = flag[0].id;
             this.setTpEnvId(envId);
           }
           if (data.length && this.tpEnvId) {
