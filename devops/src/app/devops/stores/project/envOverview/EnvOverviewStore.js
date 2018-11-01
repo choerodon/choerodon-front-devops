@@ -151,7 +151,7 @@ class EnvOverviewStore {
           if (!this.tpEnvId && flagConnect.length) {
             const envId = flagConnect[0].id;
             this.setTpEnvId(envId);
-          } else if (flag.length) {
+          } else if (!this.tpEnvId && flag.length) {
             const envId = flag[0].id;
             this.setTpEnvId(envId);
           }
