@@ -33,8 +33,6 @@ class EnvOverviewHome extends Component {
 
   @observable env = [];
 
-  @observable envId = null;
-
   @observable showDomain = false;
 
   @observable showNetwork = false;
@@ -68,7 +66,7 @@ class EnvOverviewHome extends Component {
     const { EnvOverviewStore } = this.props;
     EnvOverviewStore.setVal('');
     const key = this.tabKey;
-    const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
+    const envId = EnvOverviewStore.getTpEnvId;
     const { filters, sort, paras } = EnvOverviewStore.getInfo;
     const sorter = { field: '', order: 'desc' };
     if (sort.column) {
@@ -88,7 +86,7 @@ class EnvOverviewHome extends Component {
       param: paras.toString(),
     };
     if (this.env.length) {
-      this.loadModuleDate(key, tpEnvId || this.env[0].id, sorter, postData);
+      this.loadModuleDate(key, envId, sorter, postData);
     }
   };
 
@@ -100,14 +98,14 @@ class EnvOverviewHome extends Component {
   tabChange = (key) => {
     this.tabKey = key;
     const { EnvOverviewStore } = this.props;
-    const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
+    const envId = EnvOverviewStore.getTpEnvId;
     const sort = { field: 'id', order: 'desc' };
     const post = {
       searchParam: {},
       param: '',
     };
     if (this.env.length) {
-      this.loadModuleDate(key, tpEnvId || this.env[0].id, sort, post);
+      this.loadModuleDate(key, envId, sort, post);
     }
     EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
   };
@@ -138,10 +136,9 @@ class EnvOverviewHome extends Component {
    * @param value
    */
   @action
-  selectEnv = (value) => {
+  handleEnvSelect = (value) => {
     const { EnvOverviewStore } = this.props;
     EnvOverviewStore.setTpEnvId(value);
-    this.envId = value || this.env[0].id;
     this.loadIstOverview(value);
     this.loadDomainOrNet('domain', value);
     this.loadDomainOrNet('net', value);
@@ -160,17 +157,16 @@ class EnvOverviewHome extends Component {
     EnvOverviewStore.loadActiveEnv(projectId)
       .then((env) => {
         if (env.length) {
-          const envSort = _.concat(_.filter(env, ['connect', true]), _.filter(env, ['connect', false]));
-          const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
-          this.env = envSort;
-          const flag = _.filter(env, { id: tpEnvId }).length;
-          const envId = flag ? tpEnvId : envSort[0].id;
-          this.loadIstOverview(envId);
-          this.loadDomainOrNet('domain', envId);
-          this.loadDomainOrNet('net', envId);
-          this.loadLog(envId);
-          this.loadSync(envId);
-          this.loadCertData(envId);
+          const envId = EnvOverviewStore.getTpEnvId;
+          this.env = env;
+          if (envId) {
+            this.loadIstOverview(envId);
+            this.loadDomainOrNet('domain', envId);
+            this.loadDomainOrNet('net', envId);
+            this.loadLog(envId);
+            this.loadSync(envId);
+            this.loadCertData(envId);
+          }
         }
       });
   };
@@ -268,7 +264,7 @@ class EnvOverviewHome extends Component {
     this.showDomain = false;
     this.domainId = null;
     if (isload) {
-      const envId = this.envId || this.env[0].id;
+      const envId = EnvOverviewStore.getTpEnvId;
       this.loadDomainOrNet('domain', envId);
       EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
       this.tabKey = 'domain';
@@ -284,7 +280,7 @@ class EnvOverviewHome extends Component {
     this.props.form.resetFields();
     this.showNetwork = false;
     if (isload) {
-      const envId = this.envId || this.env[0].id;
+      const envId = EnvOverviewStore.getTpEnvId;
       this.loadDomainOrNet('net', envId);
       EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
       this.tabKey = 'network';
@@ -307,7 +303,7 @@ class EnvOverviewHome extends Component {
     this.setState({ createDisplay: false });
     this.props.form.resetFields();
     if (isload) {
-      const envId = this.envId || this.env[0].id;
+      const envId = EnvOverviewStore.getTpEnvId;
       this.loadCertData(envId);
       EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
       this.tabKey = 'cert';
@@ -325,12 +321,12 @@ class EnvOverviewHome extends Component {
 
   /**
    * 条件部署应用
-   * @param envId
    */
-  deployApp = (envId) => {
-    const envID = envId || this.env[0].id;
+  deployApp = () => {
+    const { EnvOverviewStore } = this.props;
+    const envId = EnvOverviewStore.getTpEnvId;
     const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
-    this.linkToChange(`/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}&envId=${envID}`);
+    this.linkToChange(`/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}&envId=${envId}`);
   };
 
   /**
@@ -351,26 +347,6 @@ class EnvOverviewHome extends Component {
   };
 
   /**
-   * 处理环境默认值DOM
-   * @returns {*}
-   */
-  envNameDom = () => {
-    const { intl, EnvOverviewStore } = this.props;
-    const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
-    let envName = '';
-    if (this.env.length) {
-      if (tpEnvId) {
-        envName = tpEnvId;
-      } else {
-        envName = this.env[0].id;
-      }
-    } else {
-      envName = intl.formatMessage({ id: 'envoverview.noEnv' });
-    }
-    return envName;
-  };
-
-  /**
    * 点击失败状态跳转到日志tab页
    */
   linkToLogTabs = () => {
@@ -378,21 +354,16 @@ class EnvOverviewHome extends Component {
   };
 
   render() {
-    const { intl, EnvOverviewStore } = this.props;
+    const { intl: { formatMessage }, EnvOverviewStore } = this.props;
     const { createDisplay } = this.state;
-    const tpEnvId = this.envId || EnvOverviewStore.getTpEnvId;
+    const envId = EnvOverviewStore.getTpEnvId;
+    const envData = EnvOverviewStore.getEnvcard;
     const log = EnvOverviewStore.getLog;
     const sync = EnvOverviewStore.getSync;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
 
-    const envNameDom = this.env.length ? _.map(this.env, d => (<Option key={d.id} value={d.id}>
-      {d.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
-      {d.name}</Option>)) : [];
-
     const envState = this.env.length
-      ? this.env.filter(d => d.id === Number(tpEnvId || this.env[0].id))[0] : { connect: false };
-
-    const tabEnvId = this.envId || (this.env.length ? this.env[0].id : null);
+      ? this.env.filter(d => d.id === Number(envId))[0] : { connect: false };
 
     // tab页选项
     const tabOption = [{
@@ -401,7 +372,7 @@ class EnvOverviewHome extends Component {
         store={EnvOverviewStore}
         tabkey={this.tabKey}
         envState={envState && envState.connect}
-        envId={tabEnvId}
+        envId={envId}
       />,
       msg: 'network.column.app',
     }, {
@@ -409,7 +380,7 @@ class EnvOverviewHome extends Component {
       component: <NetworkOverview
         store={EnvOverviewStore}
         tabkey={this.tabKey}
-        envId={tabEnvId}
+        envId={envId}
       />,
       msg: 'network.header.title',
     }, {
@@ -417,14 +388,14 @@ class EnvOverviewHome extends Component {
       component: <DomainOverview
         store={EnvOverviewStore}
         tabkey={this.tabKey}
-        envId={tabEnvId}
+        envId={envId}
       />,
       msg: 'domain.header.title',
     }, {
       key: 'cert',
       component: <CertTable
         store={CertificateStore}
-        envId={tabEnvId}
+        envId={envId}
       />,
       msg: 'ctf.head',
     }, {
@@ -432,7 +403,7 @@ class EnvOverviewHome extends Component {
       component: <LogOverview
         store={EnvOverviewStore}
         tabkey={this.tabKey}
-        envId={tabEnvId}
+        envId={envId}
       />,
       msg: 'envoverview.logs',
     }];
@@ -507,8 +478,6 @@ class EnvOverviewHome extends Component {
       </Menu>
     );
 
-    const envName = this.env.length ? _.filter(this.env, e => e.id === this.envNameDom())[0].name : '';
-
     let syncDom = null;
 
     if (log && log.length) {
@@ -569,19 +538,28 @@ class EnvOverviewHome extends Component {
       >
         <Header title={<FormattedMessage id="envoverview.head" />}>
           <Select
-            value={this.envNameDom()}
-            dropdownClassName="c7n-envow-select-dropdown"
-            onChange={this.selectEnv}
-            className="c7n-envow-select"
-            notFoundContent={intl.formatMessage({ id: 'envoverview.noEnv' })}
+            className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
+            dropdownClassName="c7n-header-env_drop"
+            placeholder={formatMessage({ id: 'envoverview.noEnv' })}
+            value={envData && envData.length ? envId : undefined}
+            disabled={envData && envData.length === 0}
+            onChange={this.handleEnvSelect}
           >
-            {envNameDom}
+            {_.map(envData,  e => (
+              <Option key={e.id} value={e.id} disabled={!e.permission} title={e.name}>
+                <Tooltip placement="right" title={e.name}>
+                    <span className="c7n-ib-width_100">
+                      {e.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
+                      {e.name}
+                    </span>
+                </Tooltip>
+              </Option>))}
           </Select>
           <div className="c7n-envow-select">
             <Dropdown overlay={menu} trigger={['click']}>
               <a href="#">
                 <Icon type="playlist_add" />
-                {intl.formatMessage({ id: 'create' })}
+                {formatMessage({ id: 'create' })}
                 <Icon type="arrow_drop_down" />
               </a>
             </Dropdown>
@@ -596,8 +574,8 @@ class EnvOverviewHome extends Component {
           >
             <Tooltip title={envState && !envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
               <Button
-                disabled={envState && !envState.connect}
-                onClick={this.deployApp.bind(this, this.envId)}
+                disabled={(envState && !envState.connect) || !envId}
+                onClick={this.deployApp.bind(this, envId)}
                 icon="jsfiddle"
               >
                 <FormattedMessage id="deploy.header.title" />
@@ -632,10 +610,10 @@ class EnvOverviewHome extends Component {
           <div className="c7n-envow-status-wrap">
             <div>
               <h2 className="c7n-space-first">
-                {this.env.length ? <FormattedMessage
+                {envId ? <FormattedMessage
                   id="envoverview.title"
                   values={{
-                    name: `${envName}`,
+                    name: `${envState && envState.name}`,
                   }}
                 /> : <FormattedMessage
                   id="envoverview.noenv.title"
@@ -648,7 +626,7 @@ class EnvOverviewHome extends Component {
                 <FormattedMessage
                   id="envoverview.description"
                 />
-                <a href={this.props.intl.formatMessage({ id: 'envoverview.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
+                <a href={formatMessage({ id: 'envoverview.link' })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
                   <span className="c7n-external-link-content">
                     <FormattedMessage id="learnmore" />
                   </span>
@@ -672,7 +650,7 @@ class EnvOverviewHome extends Component {
           <Tabs className="c7n-envoverview-tabs" activeKey={this.tabKey} animated={false} onChange={this.tabChange}>
             {_.map(tabOption, (item) => {
               const { key, component, msg } = item;
-              return (<TabPane tab={intl.formatMessage({ id: msg })} key={key}>
+              return (<TabPane tab={formatMessage({ id: msg })} key={key}>
                 {this.tabKey === key ? component : null}
               </TabPane>);
             })}
@@ -681,12 +659,12 @@ class EnvOverviewHome extends Component {
         {this.showNetwork && <CreateNetwork
           visible={this.showNetwork}
           store={NetworkConfigStore}
-          envId={this.envId || this.env[0].id}
+          envId
           onClose={this.closeNetwork}
         />}
         {this.showDomain && <CreateDomain
           id={this.domainId}
-          envId={this.envId || this.env[0].id}
+          envId
           title={this.domainTitle}
           visible={this.showDomain}
           type={this.domainType}
@@ -695,7 +673,7 @@ class EnvOverviewHome extends Component {
         />}
         {createDisplay ? <CreateCert
           visible={createDisplay}
-          envId={this.envId || this.env[0].id}
+          envId
           store={CertificateStore}
           onClose={this.closeCreateModal}
         /> : null}

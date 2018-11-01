@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Button, Form, Tooltip, Modal, Progress } from 'choerodon-ui';
+import { Table, Button, Form, Tooltip, Modal, Select } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
@@ -12,8 +12,10 @@ import '../../../main.scss';
 import { commonComponent } from '../../../../components/commonFunction';
 import StatusIcon from '../../../../components/StatusIcon';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper/MouserOverWrapper';
+import EnvOverviewStore from '../../../../stores/project/envOverview';
 
 const { AppState } = stores;
+const { Option } = Select;
 
 @commonComponent('DomainStore')
 @observer
@@ -28,6 +30,8 @@ class DomainHome extends Component {
   }
 
   componentDidMount() {
+    const { id: projectId } = AppState.currentMenuType;
+    EnvOverviewStore.loadActiveEnv(projectId, 'domain');
     this.loadAllData();
   }
 
@@ -60,13 +64,25 @@ class DomainHome extends Component {
     }
   };
 
+
+  /**
+   * 环境选择
+   * @param value
+   */
+  handleEnvSelect = (value) => {
+    EnvOverviewStore.setTpEnvId(value);
+    const projectId = AppState.currentMenuType.id;
+  };
+
   render() {
-    const { DomainStore, intl } = this.props;
+    const { DomainStore, intl: { formatMessage } } = this.props;
     const data = DomainStore.getAllData;
+    const envData = EnvOverviewStore.getEnvcard;
+    const envId = EnvOverviewStore.getTpEnvId;
     const { filters, sort: { columnKey, order } } = DomainStore.getInfo;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const columns = [{
-      title: intl.formatMessage({ id: 'domain.column.name' }),
+      title: formatMessage({ id: 'domain.column.name' }),
       key: 'name',
       dataIndex: 'name',
       sorter: true,
@@ -82,13 +98,13 @@ class DomainHome extends Component {
         />
       </div>,
     }, {
-      title: intl.formatMessage({ id: 'domain.column.domain' }),
+      title: formatMessage({ id: 'domain.column.domain' }),
       key: 'domain',
       filters: [],
       filteredValue: filters.domain || [],
       dataIndex: 'domain',
     }, {
-      title: intl.formatMessage({ id: 'domain.column.env' }),
+      title: formatMessage({ id: 'domain.column.env' }),
       key: 'envName',
       sorter: true,
       sortOrder: columnKey === 'envName' && order,
@@ -105,7 +121,7 @@ class DomainHome extends Component {
         </React.Fragment>
       ),
     }, {
-      title: intl.formatMessage({ id: 'domain.column.path' }),
+      title: formatMessage({ id: 'domain.column.path' }),
       className: 'c7n-network-col',
       key: 'path',
       filters: [],
@@ -114,7 +130,7 @@ class DomainHome extends Component {
         <span>{router.path}</span>
       </div>)),
     }, {
-      title: intl.formatMessage({ id: 'domain.column.network' }),
+      title: formatMessage({ id: 'domain.column.network' }),
       className: 'c7n-network-col',
       key: 'serviceName',
       filters: [],
@@ -123,7 +139,7 @@ class DomainHome extends Component {
         <div>
           {_.map(record.pathList, instance => (<div className="c7n-network-col_border c7n-network-service" key={`${record.id}-${instance.path}-${instance.serviceId}`}>
             <div className={`c7n-domain-create-status c7n-domain-create-status_${instance.serviceStatus}`}>
-              <div>{intl.formatMessage({ id: instance.serviceStatus })}</div>
+              <div>{formatMessage({ id: instance.serviceStatus })}</div>
             </div>
             <MouserOverWrapper text={instance.serviceName} width={0.1}>{instance.serviceName}</MouserOverWrapper>
           </div>
@@ -139,29 +155,29 @@ class DomainHome extends Component {
         let deletDom = null;
         switch (record.status) {
           case 'operating':
-            editDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `domain_${record.status}` })}>
+            editDom = (<Tooltip trigger="hover" placement="bottom" title={formatMessage({ id: `domain_${record.status}` })}>
               <i className="icon icon-mode_edit c7n-app-icon-disabled" />
             </Tooltip>);
-            deletDom = (<Tooltip trigger="hover" placement="bottom" title={intl.formatMessage({ id: `domain_${record.status}` })}>
+            deletDom = (<Tooltip trigger="hover" placement="bottom" title={formatMessage({ id: `domain_${record.status}` })}>
               <i className="icon icon-delete_forever c7n-app-icon-disabled" />
             </Tooltip>);
             break;
           default:
             editDom = (<React.Fragment>
-              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'edit' })}</div>}>
+              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{formatMessage({ id: 'edit' })}</div>}>
                 <Button shape="circle" size="small" funcType="flat" onClick={this.showSideBar.bind(this, 'edit', record.id)}>
                   <i className="icon icon-mode_edit" />
                 </Button>
-              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
+              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{formatMessage({ id: 'network.env.tooltip' })}</div>}>
                 <i className="icon icon-mode_edit c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
             deletDom = (<React.Fragment>
-              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'delete' })}</div>}>
+              {record.envStatus ? <Tooltip trigger="hover" placement="bottom" title={<div>{formatMessage({ id: 'delete' })}</div>}>
                 <Button shape="circle" size="small" funcType="flat" onClick={this.openRemove.bind(this, record.id, record.name)}>
                   <i className="icon icon-delete_forever" />
                 </Button>
-              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{intl.formatMessage({ id: 'network.env.tooltip' })}</div>}>
+              </Tooltip> : <Tooltip trigger="hover" placement="bottom" title={<div>{formatMessage({ id: 'network.env.tooltip' })}</div>}>
                 <i className="icon icon-delete_forever c7n-app-icon-disabled" />
               </Tooltip>}
             </React.Fragment>);
@@ -186,6 +202,7 @@ class DomainHome extends Component {
         </div>);
       },
     }];
+
     return (
       <Page
         className="c7n-region c7n-domain-wrapper"
@@ -202,7 +219,25 @@ class DomainHome extends Component {
         ]}
       >
         { DomainStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
-          <Header title={intl.formatMessage({ id: 'domain.header.title' })}>
+          <Header title={formatMessage({ id: 'domain.header.title' })}>
+            <Select
+              className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
+              dropdownClassName="c7n-header-env_drop"
+              placeholder={formatMessage({ id: 'envoverview.noEnv' })}
+              value={envData && envData.length ? envId : undefined}
+              disabled={envData && envData.length === 0}
+              onChange={this.handleEnvSelect}
+            >
+              {_.map(envData,  e => (
+                <Option key={e.id} value={e.id} disabled={!e.permission} title={e.name}>
+                  <Tooltip placement="right" title={e.name}>
+                    <span className="c7n-ib-width_100">
+                      {e.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
+                      {e.name}
+                    </span>
+                  </Tooltip>
+                </Option>))}
+            </Select>
             <Permission
               service={['devops-service.devops-ingress.create']}
               type={type}
@@ -234,7 +269,7 @@ class DomainHome extends Component {
           </Header>
           <Content code="domain" values={{ name }}>
             <Table
-              filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
+              filterBarPlaceholder={formatMessage({ id: 'filter' })}
               loading={DomainStore.loading}
               onChange={this.tableChange}
               pagination={DomainStore.pageInfo}
@@ -256,16 +291,16 @@ class DomainHome extends Component {
         />}
         <Modal
           visible={this.state.openRemove}
-          title={`${intl.formatMessage({ id: 'domain.header.delete' })}“${this.state.name}”`}
+          title={`${formatMessage({ id: 'domain.header.delete' })}“${this.state.name}”`}
           closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove} disabled={this.state.submitting}>{<FormattedMessage id="cancel" />}</Button>,
             <Button key="submit" loading={this.state.submitting} type="danger" onClick={this.handleDelete}>
-              {intl.formatMessage({ id: 'delete' })}
+              {formatMessage({ id: 'delete' })}
             </Button>,
           ]}
         >
-          <p>{intl.formatMessage({ id: 'domain.delete.des' })}</p>
+          <p>{formatMessage({ id: 'domain.delete.des' })}</p>
         </Modal>
       </Page>
     );
