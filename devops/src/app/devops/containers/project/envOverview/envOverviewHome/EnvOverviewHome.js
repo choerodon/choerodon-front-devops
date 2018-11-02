@@ -104,7 +104,7 @@ class EnvOverviewHome extends Component {
       searchParam: {},
       param: '',
     };
-    if (this.env.length) {
+    if (this.env.length && envId) {
       this.loadModuleDate(key, envId, sort, post);
     }
     EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
