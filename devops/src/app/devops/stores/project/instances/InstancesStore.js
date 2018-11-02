@@ -10,8 +10,6 @@ class InstancesStore {
 
   @observable appNameByEnv = [];
 
-  @observable envcard = [];
-
   @observable size = 10;
 
   @observable istAll = [];
@@ -110,14 +108,6 @@ class InstancesStore {
     return this.isLoading;
   }
 
-  @action setEnvcard(envcard) {
-    this.envcard = envcard;
-  }
-
-  @computed get getEnvcard() {
-    return this.envcard.slice();
-  }
-
   @action setIstAll(istAll) {
     this.istAll = istAll;
   }
@@ -204,15 +194,6 @@ class InstancesStore {
     this.setPageInfo(page);
     this.changeLoading(false);
   };
-
-  loadActiveEnv = projectId => axios.get(`devops/v1/projects/${projectId}/envs?active=true`).then((data) => {
-    const res = handleProptError(data);
-    if (res) {
-      this.setEnvcard(res);
-      return res;
-    }
-    return false;
-  });
 
   loadAppNameByEnv = (projectId, envId, page, appPageSize) => axios.get(`devops/v1/projects/${projectId}/apps/pages?env_id=${envId}&page=${page}&size=${appPageSize}`).then((data) => {
     const res = handleProptError(data);

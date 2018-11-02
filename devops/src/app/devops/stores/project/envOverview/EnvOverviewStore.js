@@ -3,6 +3,7 @@ import { axios, store, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import ContainerStore from '../container';
 import CertificateStore from '../certificate';
+import InstancesStore from '../instances';
 import { handleProptError } from '../../../utils';
 
 const { AppState } = stores;
@@ -166,6 +167,19 @@ class EnvOverviewStore {
                 CertificateStore.loadCertData(projectId, page, pageSize, sorter, postData, this.tpEnvId);
                 break;
               case 'instance':
+                const {
+                  loadAppNameByEnv,
+                  loadInstanceAll,
+                  getIsCache,
+                  getAppId,
+                } = InstancesStore;
+                if (!getIsCache) {
+                  const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
+                  InstancesStore.setAppPageSize(appPageSize);
+                  loadAppNameByEnv(projectId, this.tpEnvId, 0, appPageSize);
+                  loadInstanceAll(projectId, { envId: this.tpEnvId, appId: false });
+                }
+                InstancesStore.setIsCache(false);
                 break;
               case 'all':
                 break;

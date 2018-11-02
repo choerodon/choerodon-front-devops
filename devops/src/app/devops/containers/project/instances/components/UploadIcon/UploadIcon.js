@@ -10,8 +10,8 @@ function UploadIcon (props) {
   switch (status) {
     case 'upload':
       dom = (<Fragment>
-        <span className="c7n-instance-upload-text">{text || formatMessage({ id: 'ist.deploy.upload' })}</span>
-        <Tooltip title={formatMessage({ id: `ist.version.${text ? 'upload' : 'deploy'}` }, { text: prevText })}>
+        <span className="c7n-instance-upload-text">{text || formatMessage({ id: 'ist.version.deploy' }, { text: prevText })}</span>
+        {text ? <Tooltip title={formatMessage({ id: `ist.version.${text ? 'upload' : 'deploy'}` }, { text: prevText })}>
           <svg className="c7n-instance-upload" width="16" height="16">
             <path className="c7n-instance-upload-arrow" d="
             M 4.5  13
@@ -25,15 +25,15 @@ function UploadIcon (props) {
           "/>
             <line  className="c7n-instance-upload-line" x1="1.5" y1="14" x2="14.5" y2="14" />
           </svg>
-        </Tooltip>
+        </Tooltip> : null}
       </Fragment>)
       break;
     case 'failed':
       dom = (<Fragment>
-        <span className="c7n-instance-upload-text">{text ||  formatMessage({ id: 'ist.deploy.failed' })}</span>
-        <Tooltip title={formatMessage({ id: `ist.version.${text ? '' : 'deploy.'}failed` }, { text: prevText })}>
+        <span className="c7n-instance-upload-text">{text ||  formatMessage({ id: 'ist.version.deploy.failed' }, { text: prevText })}</span>
+        {text ? <Tooltip title={formatMessage({ id: 'ist.version.failed' }, { text: prevText })}>
           <Icon type="error" className="c7n-instance-upload-failed" />
-        </Tooltip>
+        </Tooltip> : null}
       </Fragment>);
       break;
     default:
@@ -50,7 +50,7 @@ UploadIcon.defaultProps = {
 UploadIcon.propTypes = {
   status: PropTypes.string,
   prevText: PropTypes.string,
-  text: PropTypes.string.isRequired,
+  text: PropTypes.string,
 };
 
 export default injectIntl(UploadIcon);

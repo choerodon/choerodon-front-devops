@@ -25,15 +25,14 @@ class Instances extends Component {
     super(props);
     this.state = {
       visibleUp: false,
-      envId: null,
-      appId: null,
     };
     this.columnAction = this.columnAction.bind(this);
     this.renderVersion = this.renderVersion.bind(this);
   }
 
   componentDidMount() {
-    this.loadInitData();
+    const { id: projectId } = AppState.currentMenuType;
+    EnvOverviewStore.loadActiveEnv(projectId, 'instance');
   }
 
   componentWillUnmount() {
@@ -52,7 +51,7 @@ class Instances extends Component {
    */
   onPageChange = (page, size) => {
     const { InstancesStore } = this.props;
-    const { envId } = this.state;
+    const envId = EnvOverviewStore.getTpEnvId;
     InstancesStore.setAppPage(page);
     InstancesStore.setAppPageSize(size);
     this.handleEnvChange(envId);
@@ -65,10 +64,9 @@ class Instances extends Component {
    */
   loadDetail = (envId, appId) => {
     const { InstancesStore } = this.props;
-    const { appId: currentApp } = this.state;
+    const currentApp = InstancesStore.getAppId;
     const nextApp = (appId !== currentApp) && appId;
     InstancesStore.setAppId(nextApp);
-    this.setState({ appId: nextApp });
     this.reloadData(envId, nextApp);
   };
 
@@ -104,7 +102,7 @@ class Instances extends Component {
     const { InstancesStore } = this.props;
     const { loadAppNameByEnv, getAppPage, getAppPageSize } = InstancesStore;
     EnvOverviewStore.setTpEnvId(id);
-    this.setState({ appId: false });
+    InstancesStore.setAppId(false);
     loadAppNameByEnv(projectId, id, getAppPage - 1, getAppPageSize);
     this.reloadData(id);
   };
@@ -121,8 +119,9 @@ class Instances extends Component {
       id: projectId,
     } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
-    const { envId, appId } = this.state;
     const { current, pageSize } = pagination;
+    const appId = InstancesStore.getAppId;
+    const envId = EnvOverviewStore.getTpEnvId;
     let searchParam = {};
     if (Object.keys(filters).length) {
       searchParam = filters;
@@ -184,7 +183,6 @@ class Instances extends Component {
       });
   };
 
-
   /**
    * 升级配置实例信息
    */
@@ -231,7 +229,9 @@ class Instances extends Component {
    * @param res 是否重新部署需要重载数据
    */
   handleCancel =(res) => {
-    const { appId, envId } = this.state;
+    const { InstancesStore } = this.props;
+    const appId = InstancesStore.getAppId;
+    const envId = EnvOverviewStore.getTpEnvId;
     this.setState({
       visible: false,
     });
@@ -273,12 +273,12 @@ class Instances extends Component {
         getAppPageSize,
         loadAppNameByEnv,
         getAppPage,
+        getAppId,
       },
     } = this.props;
-    const { appId } = this.state;
     const envId = EnvOverviewStore.getTpEnvId;
     loadAppNameByEnv(projectId, envId, getAppPage - 1, getAppPageSize);
-    this.reloadData(envId, appId);
+    this.reloadData(envId, getAppId);
   };
 
   /**
@@ -292,8 +292,9 @@ class Instances extends Component {
     const {
       loadInstanceAll,
       deleteIst,
+      getAppId,
     } = InstancesStore;
-    const { appId, envId } = this.state;
+    const envId = EnvOverviewStore.getTpEnvId;
     this.setState({
       loading: true,
     });
@@ -301,7 +302,7 @@ class Instances extends Component {
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(projectId, { envId, appId });
+          loadInstanceAll(projectId, { envId, getAppId });
         }
         this.setState({
           openRemove: false,
@@ -324,14 +325,15 @@ class Instances extends Component {
       InstancesStore: {
         changeIstActive,
         loadInstanceAll,
+        getAppId,
       },
     } = this.props;
-    const { envId, appId } = this.state;
+    const envId = EnvOverviewStore.getTpEnvId;
     changeIstActive(projectId, id, status)
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(projectId, { envId, appId });
+          loadInstanceAll(projectId, { envId, getAppId });
         }
       });
   };
@@ -412,43 +414,11 @@ class Instances extends Component {
     return (<Action data={actionData} />);
   };
 
-  loadInitData = () => {
-    const {
-      id: projectId,
-    } = AppState.currentMenuType;
-    const { InstancesStore } = this.props;
-    EnvOverviewStore.loadActiveEnv(projectId, 'instance');
-    const envId = EnvOverviewStore.getTpEnvId;
-    const {
-      loadActiveEnv,
-      loadAppNameByEnv,
-      loadInstanceAll,
-      getEnvId,
-      getIsCache,
-      getAppId,
-    } = InstancesStore;
-    if (getIsCache && getEnvId) {
-      this.setState({ envId: getEnvId, appId: getAppId });
-    } else {
-      loadActiveEnv(projectId).then((env) => {
-        if (env && env.length) {
-          const envId = getEnvId || env[0].id;
-          const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
-          InstancesStore.setAppPageSize(appPageSize);
-          this.setState({ envId });
-          loadAppNameByEnv(projectId, envId, 0, appPageSize);
-          loadInstanceAll(projectId, { envId, appId: false });
-        }
-      });
-    }
-    InstancesStore.setIsCache(false);
-  };
-
   renderStatus(record) {
-    const { code, commandStatus, error } = record;
+    const { code, status, error } = record;
     return (<StatusIcon
       name={code}
-      status={commandStatus || ''}
+      status={status || ''}
       error={error || ''}
     />);
   }
@@ -493,15 +463,14 @@ class Instances extends Component {
     const {
       getIstAll,
       getPageInfo,
-      getEnvcard,
       getAppNameByEnv,
       getAppPageInfo: { current, total, pageSize },
       getIsLoading,
       getIstParams: { filters, param },
+      getAppId
     } = InstancesStore;
     const {
       name,
-      appId,
       visible,
       visibleUp,
       idArr,
@@ -513,14 +482,11 @@ class Instances extends Component {
     const envData = EnvOverviewStore.getEnvcard;
     const envId = EnvOverviewStore.getTpEnvId;
 
-    const title = _.find(getEnvcard, ['id', envId]);
-
-    const envNameDom = getEnvcard.length ? _.map(getEnvcard, d => (<Option key={d.id} value={d.id}>
-      <span className={`c7n-ist-status_${d.connect ? 'on' : 'off'}`} />{d.name}</Option>)) : [];
+    const title = _.find(envData, ['id', envId]);
 
     const appNameDom = getAppNameByEnv.length ? _.map(getAppNameByEnv, d => (<div
       role="none"
-      className={`c7n-deploy-single_card ${Number(appId) === d.id ? 'c7n-deploy-single_card-active' : ''}`}
+      className={`c7n-deploy-single_card ${Number(getAppId) === d.id ? 'c7n-deploy-single_card-active' : ''}`}
       onClick={this.loadDetail.bind(this, envId, d.id)}
       key={`${d.id}-${d.projectId}`}
     >
@@ -562,9 +528,9 @@ class Instances extends Component {
           tiny={false}
           showSizeChanger
           showSizeChangerLabel={false}
-          total={total}
-          current={current}
-          pageSize={pageSize}
+          total={total || 0}
+          current={current || 0}
+          pageSize={pageSize || 0}
           onChange={this.onPageChange}
           onShowSizeChange={this.onPageChange}
         />
@@ -593,7 +559,6 @@ class Instances extends Component {
           'devops-service.application-instance.pageByOptions',
           'devops-service.application.pageByEnvIdAndStatus',
           'devops-service.devops-environment.listByProjectIdAndActive',
-          'devops-service.application-version.queryByAppId',
           'devops-service.application-instance.listByAppId',
           'devops-service.application-instance.queryValues',
           'devops-service.application-instance.formatValue',
@@ -637,18 +602,6 @@ class Instances extends Component {
               <a href={formatMessage({ id: 'ist.link' })}>{formatMessage({ id: 'learnmore' })}<Icon type="open_in_new" /></a>
             </div>
           </div>
-          <Select
-            value={envId}
-            label={formatMessage({ id: 'deploy.envName' })}
-            className="c7n-app-select"
-            onChange={this.handleEnvChange}
-            optionFilterProp="children"
-            filterOption={(input, option) => option.props.children[1].toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            filter
-            showSearch
-          >
-            {envNameDom}
-          </Select>
           {detailDom}
           {visible && <ValueConfig
             store={InstancesStore}
