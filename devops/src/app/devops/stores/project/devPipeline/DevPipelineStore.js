@@ -111,7 +111,7 @@ class DevPipelineStore {
   queryAppData = (projectId = AppState.currentMenuType.id, type, apps) => {
     AppTagStore.setTagData([]);
     BranchStore.setBranchList([]);
-    if (this.preProId !== projectId) {
+    if (Number(this.preProId) !== Number(projectId)) {
       this.setAppData([]);
     }
     this.setPreProId(projectId);

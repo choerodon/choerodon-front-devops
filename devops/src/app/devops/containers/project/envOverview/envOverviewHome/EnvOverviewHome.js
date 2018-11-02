@@ -1,5 +1,5 @@
 /* eslint-disable react/sort-comp */
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { observable, action, configure } from 'mobx';
 import { withRouter } from 'react-router-dom';
@@ -20,6 +20,7 @@ import CreateCert from '../../certificate/createCert';
 import DomainStore from '../../../../stores/project/domain';
 import NetworkConfigStore from '../../../../stores/project/networkConfig';
 import CertificateStore from '../../../../stores/project/certificate';
+import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 
 const { AppState } = stores;
 const { TabPane } = Tabs;
@@ -536,7 +537,7 @@ class EnvOverviewHome extends Component {
           'devops-service.certification.delete',
         ]}
       >
-        <Header title={<FormattedMessage id="envoverview.head" />}>
+        {envId ? <Fragment><Header title={<FormattedMessage id="envoverview.head" />}>
           <Select
             className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
             dropdownClassName="c7n-header-env_drop"
@@ -655,7 +656,7 @@ class EnvOverviewHome extends Component {
               </TabPane>);
             })}
           </Tabs>
-        </Content>
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="envoverview.head" />} />}
         {this.showNetwork && <CreateNetwork
           visible={this.showNetwork}
           store={NetworkConfigStore}

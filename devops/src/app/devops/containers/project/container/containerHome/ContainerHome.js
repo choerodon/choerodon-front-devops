@@ -19,6 +19,7 @@ import '../../../main.scss';
 import './ContainerHome.scss';
 import './Term.scss';
 import EnvOverviewStore from '../../../../stores/project/envOverview';
+import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
 
 const Sidebar = Modal.Sidebar;
 const { Option, OptGroup } = Select;
@@ -76,14 +77,9 @@ class ContainerHome extends Component {
     const { ContainerStore } = this.props;
     const { filters, sort, paras } = ContainerStore.getInfo;
     const pagination = ContainerStore.getPageInfo;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const envId = ContainerStore.getEnvId;
-    ContainerStore.loadActiveEnv(projectId);
-    if (envId) {
-      ContainerStore.loadAppDataByEnv(projectId, envId);
-    } else {
-      ContainerStore.loadAppData(projectId);
-    }
+    const { projectId } = AppState.currentMenuType;
+    const envId = EnvOverviewStore.getTpEnvId;
+    ContainerStore.loadAppDataByEnv(projectId, envId);
     this.tableChange(pagination, filters, sort, paras);
   };
 
@@ -116,7 +112,7 @@ class ContainerHome extends Component {
       searchParam,
       param: paras.toString(),
     };
-    const envId = ContainerStore.getEnvId;
+    const envId = EnvOverviewStore.getTpEnvId;
     const appId = ContainerStore.getappId;
     ContainerStore.loadData(false, id, envId, appId, page, pagination.pageSize, sort, postData);
   };
@@ -867,7 +863,7 @@ class ContainerHome extends Component {
     const pubPageSize = (10 * selectPubPage) + 3;
     const serviceData = ContainerStore.getAllData && ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
-    const contentDom = ContainerStore.isRefresh ? <LoadingBar display /> : (<React.Fragment>
+    const contentDom = envId ? (<React.Fragment>
       <Header title={<FormattedMessage id="container.header.title" />}>
         <Select
           className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
@@ -935,7 +931,7 @@ class ContainerHome extends Component {
           filters={paras.slice()}
         />
       </Content>
-    </React.Fragment>);
+    </React.Fragment>) : <DepPipelineEmpty title={<FormattedMessage id="container.header.title" />} />;
 
     const containerDom = containerArr.length && (_.map(containerArr, c => <Option key={c.logId} value={`${c.logId}+${c.containerName}`}>{c.containerName}</Option>));
 
@@ -956,7 +952,7 @@ class ContainerHome extends Component {
           'devops-service.devops-env-pod-container.handleShellByPod',
         ]}
       >
-        {contentDom}
+        {ContainerStore.isRefresh ? <LoadingBar display /> : contentDom}
         <Sidebar
           visible={showSide}
           title={<FormattedMessage id="container.log.header.title" />}

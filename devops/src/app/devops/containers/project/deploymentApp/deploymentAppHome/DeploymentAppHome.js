@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
@@ -11,6 +11,7 @@ import './DeployApp.scss';
 import AceForYaml from '../../../../components/yamlAce';
 import SelectApp from '../selectApp';
 import EnvOverviewStore from '../../../../stores/project/envOverview';
+import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 
 const RadioGroup = Radio.Group;
 const Step = Steps.Step;
@@ -629,6 +630,7 @@ class DeploymentAppHome extends Component {
     const data = DeploymentAppStore.value;
     const projectName = AppState.currentMenuType.name;
     const { appId, versionId, envId, instanceId, mode, value, current } = this.state;
+    const { getTpEnvId } = EnvOverviewStore;
     return (
       <Page
         service={[
@@ -645,7 +647,7 @@ class DeploymentAppHome extends Component {
         ]}
         className="c7n-region c7n-deployApp"
       >
-        <Header title={<FormattedMessage id="deploy.header.title" />} />
+        {getTpEnvId ? <Fragment><Header title={<FormattedMessage id="deploy.header.title" />} />
         <Content className="c7n-deployApp-wrapper" code="deploy" values={{ name: projectName }}>
           <div className="deployApp-card">
             <Steps current={this.state.current}>
@@ -690,7 +692,7 @@ class DeploymentAppHome extends Component {
             handleCancel={this.handleCancel}
             handleOk={this.handleOk}
           />}
-        </Content>
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="deploy.header.title" />} />}
       </Page>
     );
   }

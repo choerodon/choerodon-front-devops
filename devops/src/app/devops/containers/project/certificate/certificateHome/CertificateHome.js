@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -10,6 +10,7 @@ import './CertificateHome.scss';
 import CertTable from '../certTable';
 import CreateCert from '../createCert';
 import EnvOverviewStore from '../../../../stores/project/envOverview';
+import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -81,7 +82,7 @@ class CertificateHome extends Component {
           'devops-service.certification.delete',
         ]}
       >
-        <Header title={<FormattedMessage id="ctf.head" />}>
+        {envId ? <Fragment><Header title={<FormattedMessage id="ctf.head" />}>
           <Select
             className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
             dropdownClassName="c7n-header-env_drop"
@@ -128,7 +129,7 @@ class CertificateHome extends Component {
           values={{ name }}
         >
           <CertTable store={CertificateStore} envId={envId} />
-        </Content>
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ctf.head" />} />}
         {createDisplay && <CreateCert
           visible={createDisplay}
           store={CertificateStore}

@@ -15,6 +15,7 @@ import UploadIcon from './components/UploadIcon';
 import './Instances.scss';
 import '../../main.scss';
 import EnvOverviewStore from '../../../stores/project/envOverview';
+import DepPipelineEmpty from "../../../components/DepPipelineEmpty/DepPipelineEmpty";
 
 const Option = Select.Option;
 const { AppState } = stores;
@@ -568,7 +569,7 @@ class Instances extends Component {
           'devops-service.application-instance.delete',
         ]}
       >
-        <Header title={<FormattedMessage id="ist.head" />}>
+        {envId ? <Fragment><Header title={<FormattedMessage id="ist.head" />}>
           <Select
             className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
             dropdownClassName="c7n-header-env_drop"
@@ -626,7 +627,7 @@ class Instances extends Component {
             confirmLoading={loading}
             name={name}
           />
-        </Content>
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ist.head" />} />}
       </Page>
     );
   }
