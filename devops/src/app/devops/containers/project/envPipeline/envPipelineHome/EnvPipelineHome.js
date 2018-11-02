@@ -234,11 +234,12 @@ class EnvPipelineHome extends Component {
    * 辅助函数
    */
   handleCopy =() => {
-    this.setState({ copyMsg: '已复制' });
+    const { intl: { formatMessage } } = this.props;
+    this.setState({ copyMsg: formatMessage({ id: 'envPl.code.coped' }) });
   };
 
   mouseEnter = () => {
-    const { intl: {} } = this.props;
+    const { intl: { formatMessage } } = this.props;
     this.setState({ copyMsg: formatMessage({ id: 'envPl.code.copy.tooltip' }) });
   };
 

@@ -496,6 +496,7 @@ const zhCN = {
   'envPl.code.check.exist': '编码已存在',
   'envPl.name.check.exist': '名称已存在',
   'envPl.token.copy.tooltip': '复制指令',
+  'envPl.token.coped': '已复制',
   'envPl.status.stop': '暂无停用环境',
   'envPl.status.restart': '重启环境',
   'envPl.status.stopped': '已停用',
