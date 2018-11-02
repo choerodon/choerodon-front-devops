@@ -152,7 +152,7 @@ class ValueConfig extends Component {
                 errorLines={error}
                 totalLine={data.totalLine}
                 value={data.yaml}
-                highlightMarkers={data.highlightMarkers}
+                highlightMarkers={data.highlightMarkers && data.highlightMarkers.slice()}
                 onChange={this.onChange}
                 change
               /> }
