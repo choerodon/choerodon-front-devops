@@ -1,23 +1,17 @@
 import React, { Component, Fragment } from 'react';
 import { withRouter } from 'react-router-dom';
+import { observer } from 'mobx-react';
 import { Card, Button, Icon } from 'choerodon-ui';
-import { stores } from 'choerodon-front-boot';
+import { stores, Header, Content } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import './DepPipelineEmpty.scss';
 import EnvPipelineStore from '../../stores/project/envPipeline';
-import deploymentPipelineStore from '../../stores/project/deploymentPipeline';
+import DeploymentPipelineStore from '../../stores/project/deploymentPipeline';
 
 const { AppState } = stores;
 
+@observer
 class DepPipelineEmpty extends Component {
-
-  componentDidMount() {
-    deploymentPipelineStore.judgeRole();
-  }
-
-  componentWillUnmount() {
-    deploymentPipelineStore.setProRole('');
-  }
 
   handleClick = () => {
     const { history } = this.props;
@@ -28,42 +22,47 @@ class DepPipelineEmpty extends Component {
   };
 
   render() {
-    const { intl: { formatMessage } } = this.props;
-    const proRole = deploymentPipelineStore.getProRole;
-    return (<div className="c7n-depPi-empty-card">
-      {proRole === 'owner' ? (<Card title={formatMessage({ id: 'envPl.create' })}>
-        <div className="c7n-noEnv-content">
-          <FormattedMessage id="depPl.noEnv" />
-          <a
-            href={formatMessage({ id: 'depPl.link' })}
-            rel="nofollow me noopener noreferrer"
-            target="_blank"
-          >
-            <FormattedMessage id="depPl.more" /><Icon type="open_in_new" />
-          </a>
+    const { intl: { formatMessage }, title } = this.props;
+    const proRole = DeploymentPipelineStore.getProRole;
+    return (<Fragment>
+      <Header title={title} />
+      <Content>
+        <div className="c7n-depPi-empty-card">
+          {proRole === 'owner' && (<Card title={formatMessage({ id: 'envPl.create' })}>
+            <div className="c7n-noEnv-content">
+              <FormattedMessage id="depPl.noEnv" />
+              <a
+                href={formatMessage({ id: 'depPl.link' })}
+                rel="nofollow me noopener noreferrer"
+                target="_blank"
+              >
+                <FormattedMessage id="depPl.more" /><Icon type="open_in_new" />
+              </a>
+            </div>
+            <Button
+              type="primary"
+              funcType="raised"
+              onClick={this.handleClick}
+            >
+              <FormattedMessage id="envPl.create" />
+            </Button>
+          </Card>)}
+          {proRole === 'member' && (<Card title={formatMessage({ id: 'depPl.noPermission' })}>
+            <div className="c7n-noPer-text">
+              <FormattedMessage id="depPl.noPerDes" /><br />
+              <FormattedMessage id="depPl.addPermission" />
+            </div>
+            <a
+              href={formatMessage({ id: 'depPl.link' })}
+              rel="nofollow me noopener noreferrer"
+              target="_blank"
+            >
+              <FormattedMessage id="depPl.more" /><Icon type="open_in_new" />
+            </a>
+          </Card>)}
         </div>
-        <Button
-          type="primary"
-          funcType="raised"
-          onClick={this.handleClick}
-        >
-          <FormattedMessage id="envPl.create" />
-        </Button>
-      </Card>) : ''}
-      {proRole === 'member' ?(<Card title={formatMessage({ id: 'depPl.noPermission' })}>
-        <div className="c7n-noPer-text">
-          <FormattedMessage id="depPl.noPerDes" /><br />
-          <FormattedMessage id="depPl.addPermission" />
-        </div>
-        <a
-          href={formatMessage({ id: 'depPl.link' })}
-          rel="nofollow me noopener noreferrer"
-          target="_blank"
-        >
-          <FormattedMessage id="depPl.more" /><Icon type="open_in_new" />
-        </a>
-      </Card>) : ''}
-    </div>);
+      </Content>
+    </Fragment>);
   }
 }
 

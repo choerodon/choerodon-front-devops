@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
@@ -8,6 +8,8 @@ import _ from 'lodash';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import '../../instances/Instances.scss';
 import '../../../main.scss';
+import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
+import DeploymentPipelineStore from  '../../../../stores/project/deploymentPipeline';
 
 const { AppState } = stores;
 
@@ -39,9 +41,8 @@ class DeployOverview extends Component {
    * 获取可用环境
    */
   loadEnvCards = () => {
-    const { InstancesStore } = this.props;
     const projectId = AppState.currentMenuType.id;
-    InstancesStore.loadActiveEnv(projectId);
+    DeploymentPipelineStore.loadActiveEnv(projectId);
     this.loadMulti();
   };
 
@@ -87,7 +88,7 @@ class DeployOverview extends Component {
     const { InstancesStore, intl: { formatMessage } } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const appList = InstancesStore.getMutiData;
-    const envNames = _.filter(InstancesStore.getEnvcard, ['permission', true]);
+    const envNames = _.filter(DeploymentPipelineStore.getEnvLine, ['permission', true]);
     const { type, organizationId: orgId } = AppState.currentMenuType;
 
     const columns = [
@@ -210,6 +211,7 @@ class DeployOverview extends Component {
 
   render() {
     const { name } = AppState.currentMenuType;
+    const envNames = _.filter(DeploymentPipelineStore.getEnvLine, ['permission', true]);
 
     return (
       <Page
@@ -220,20 +222,22 @@ class DeployOverview extends Component {
           'devops-service.application-instance.deploy',
         ]}
       >
-        <Header title={<FormattedMessage id="dpOverview.head" />}>
-          <Button
-            funcType="flat"
-            onClick={this.reload}
-          >
-            <i className="icon-refresh icon" />
-            <FormattedMessage id="refresh" />
-          </Button>
-        </Header>
-        <Content code="dpOverview" values={{ name }} className="page-content">
-          <div className="c7n-multi-wrap">
-            {this.renderTable()}
-          </div>
-        </Content>
+        {envNames && envNames.length ? <Fragment>
+          <Header title={<FormattedMessage id="dpOverview.head" />}>
+            <Button
+              funcType="flat"
+              onClick={this.reload}
+            >
+              <i className="icon-refresh icon" />
+              <FormattedMessage id="refresh" />
+            </Button>
+          </Header>
+          <Content code="dpOverview" values={{ name }} className="page-content">
+            <div className="c7n-multi-wrap">
+              {this.renderTable()}
+            </div>
+          </Content>
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="dpOverview.head" />} />}
       </Page>
     );
   }

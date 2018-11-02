@@ -5,6 +5,7 @@ import ContainerStore from '../container';
 import CertificateStore from '../certificate';
 import InstancesStore from '../instances';
 import { handleProptError } from '../../../utils';
+import DeploymentPipelineStore from '../deploymentPipeline';
 
 const { AppState } = stores;
 
@@ -136,9 +137,10 @@ class EnvOverviewStore {
   }
 
   loadActiveEnv = (projectId, type) => {
-    if (this.preProId !== projectId) {
+    if (Number(this.preProId) !== Number(projectId)) {
       this.setEnvcard([]);
       this.setTpEnvId(null);
+      DeploymentPipelineStore.setProRole('');
     }
     this.setPreProId(projectId);
     return axios.get(`devops/v1/projects/${projectId}/envs?active=true`)
@@ -159,7 +161,7 @@ class EnvOverviewStore {
           if (data.length && this.tpEnvId) {
             switch (type) {
               case 'container':
-                ContainerStore.loadAppData(projectId);
+                ContainerStore.loadAppDataByEnv(projectId, this.tpEnvId);
                 ContainerStore.loadData(false, projectId, this.tpEnvId);
                 break;
               case 'certificate':
@@ -186,6 +188,8 @@ class EnvOverviewStore {
               default:
                 break;
             }
+          } else {
+            DeploymentPipelineStore.judgeRole();
           }
         }
         this.changeLoading(false);

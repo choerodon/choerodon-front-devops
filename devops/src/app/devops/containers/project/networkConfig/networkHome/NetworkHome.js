@@ -14,6 +14,7 @@ import { commonComponent } from '../../../../components/commonFunction';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import StatusIcon from '../../../../components/StatusIcon';
 import EnvOverviewStore from '../../../../stores/project/envOverview';
+import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -321,7 +322,7 @@ class NetworkHome extends Component {
         ]}
         className="c7n-region c7n-network-wrapper"
       >
-        {NetworkConfigStore.isRefresh ? <LoadingBar display /> : <Fragment>
+        {NetworkConfigStore.isRefresh ? <LoadingBar display /> : (envId ? <Fragment>
           <Header title={<FormattedMessage id="network.header.title" />}>
             <Select
               className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
@@ -384,7 +385,7 @@ class NetworkHome extends Component {
               rowKey={record => record.id}
             />
           </Content>
-        </Fragment>
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="network.header.title" />} />)
         }
 
         {show && <CreateNetwork

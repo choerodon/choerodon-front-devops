@@ -13,6 +13,7 @@ import { commonComponent } from '../../../../components/commonFunction';
 import StatusIcon from '../../../../components/StatusIcon';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper/MouserOverWrapper';
 import EnvOverviewStore from '../../../../stores/project/envOverview';
+import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -228,7 +229,7 @@ class DomainHome extends Component {
           'devops-service.devops-environment.listByProjectIdAndActive',
         ]}
       >
-        { DomainStore.isRefresh ? <LoadingBar display /> : <React.Fragment>
+        { DomainStore.isRefresh ? <LoadingBar display /> : (envId ? <React.Fragment>
           <Header title={formatMessage({ id: 'domain.header.title' })}>
             <Select
               className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
@@ -292,7 +293,7 @@ class DomainHome extends Component {
             />
 
           </Content>
-        </React.Fragment> }
+        </React.Fragment> : <DepPipelineEmpty title={formatMessage({ id: 'domain.header.title' })} />)}
 
         {this.state.show && <CreateDomain
           id={this.state.id}

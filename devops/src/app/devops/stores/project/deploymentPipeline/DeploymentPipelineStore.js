@@ -1,5 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
+import _ from 'lodash';
 
 const { AppState } = stores;
 
@@ -7,12 +8,22 @@ const { AppState } = stores;
 class DeploymentPipelineStore {
   @observable proRole = '';
 
+  @observable envLine = [];
+
   @action setProRole(data) {
     this.proRole = data;
   }
 
   @computed get getProRole() {
     return this.proRole;
+  }
+
+  @action setEnvLine(data) {
+    this.envLine = data;
+  }
+
+  @computed get getEnvLine() {
+    return this.envLine.slice();
   }
 
   /**
@@ -35,6 +46,22 @@ class DeploymentPipelineStore {
         }
       });
   };
+
+  /**
+   * 获取可用环境
+   */
+  loadActiveEnv = projectId => axios.get(`devops/v1/projects/${projectId}/envs?active=true`).then((data) => {
+    const res = this.handleProptError(data);
+    if (res) {
+      this.setEnvLine(res);
+      const env = _.filter(res, ['permission', true]);
+      if (!env.length) {
+        this.judgeRole();
+      }
+      return res;
+    }
+    return false;
+  });
 
   handleProptError = (error) => {
     if (error && error.failed) {
