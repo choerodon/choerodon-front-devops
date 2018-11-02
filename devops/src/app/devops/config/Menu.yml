@@ -147,12 +147,10 @@
           - 'devops-service.application.listByEnvIdAndStatus'
           - 'devops-service.devops-service.create'
           - 'devops-service.devops-service.checkName'
-          - 'devops-service.devops-service.pageByOptions'
           - 'devops-service.devops-service.query'
           - 'devops-service.devops-service.update'
           - 'devops-service.devops-service.delete'
           - 'devops-service.devops-service.listByEnv'
-          - 'devops-service.devops-ingress.pageByOptions'
           - 'devops-service.devops-ingress.queryDomainId'
           - 'devops-service.devops-ingress.delete'
           - 'devops-service.devops-ingress.listByEnv'
@@ -161,21 +159,7 @@
         Routes: /devops/env-pipeline
         sort: 2
         permission:
-          - 'devops-service.devops-environment.listByProjectIdAndActive'
           - 'devops-service.devops-environment.create'
-          - 'devops-service.devops-environment.update'
-          - 'devops-service.devops-environment.checkCode'
-          - 'devops-service.devops-environment.checkName'
-          - 'devops-service.devops-environment.sort'
-          - 'devops-service.devops-environment.query'
-          - 'devops-service.devops-environment.activeEnvironment'
-          - 'devops-service.devops-environment.queryShell'
-          - 'devops-service.application-instance.pageByOptions'
-          - 'devops-service.devops-env-group.listByProject'
-          - 'devops-service.devops-env-group.create'
-          - 'devops-service.devops-env-group.update'
-          - 'devops-service.devops-env-group.checkName'
-          - 'devops-service.devops-env-group.delete'
     - "deployment-overview":
         icon: Operation-monitoring
         Routes: /devops/deploy-overview
@@ -216,7 +200,7 @@
         permission:
           - 'devops-service.devops-service.create'
           - 'devops-service.devops-service.checkName'
-          - 'devops-service.devops-service.pageByOptions'
+          - 'devops-service.devops-service.listByEnv'
           - 'devops-service.devops-service.query'
           - 'devops-service.devops-service.update'
           - 'devops-service.devops-service.delete'
@@ -225,7 +209,7 @@
         Routes: /devops/ingress
         sort: 7
         permission:
-          - 'devops-service.devops-ingress.pageByOptions'
+          - 'devops-service.devops-ingress.listByEnv'
           - 'devops-service.devops-ingress.queryDomainId'
           - 'devops-service.devops-ingress.delete'
           - 'devops-service.certification.getActiveByDomain'
