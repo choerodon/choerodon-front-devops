@@ -7,6 +7,7 @@ import { stores, Content } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
 import './CreateDomain.scss';
+import EnvOverviewStore from '../../../../stores/project/envOverview';
 
 const { Option } = Select;
 const { Item: FormItem } = Form;
@@ -62,7 +63,6 @@ class CreateDomain extends Component {
     this.state = {
       projectId: menu.id,
       deletedService: {},
-      env: { loading: false, dataSource: [] },
       portInNetwork: {},
       protocol: 'normal',
       selectEnv: null,
@@ -117,10 +117,7 @@ class CreateDomain extends Component {
     if (envId) {
       this.handleSelectEnv(envId);
     }
-    store.loadEnv(projectId)
-      .then((data) => {
-        this.setState({ env: { loading: false, dataSource: data } });
-      });
+    EnvOverviewStore.loadActiveEnv(id);
   }
 
   /**
@@ -132,18 +129,6 @@ class CreateDomain extends Component {
       this.triggerPathCheck();
     }
   }
-
-  /**
-   * 加载环境
-   */
-  loadEnv = () => {
-    const { store } = this.props;
-    this.setState({ env: { loading: true, dataSource: [] } });
-    store.loadEnv(this.state.projectId)
-      .then((data) => {
-        this.setState({ env: { loading: false, dataSource: data } });
-      });
-  };
 
   handleSubmit =(e) => {
     e.preventDefault();
@@ -411,20 +396,19 @@ class CreateDomain extends Component {
   };
 
   render() {
-    const { store, form, intl: { formatMessage }, type, visible, envId: propsEnv } = this.props;
+    const { store, form, intl: { formatMessage }, type, visible, envId } = this.props;
+    const env = EnvOverviewStore.getEnvcard;
     const { getFieldDecorator, getFieldValue, getFieldsError } = form;
     const { name: menuName } = AppState.currentMenuType;
     const {
       singleData,
-      env,
       portInNetwork,
       protocol,
       deletedService,
       submitting,
     } = this.state;
     const network = store.getNetwork;
-    const { pathList, envId, name, domain } = singleData;
-    const initEnvId = propsEnv ? Number(propsEnv) : undefined;
+    const { pathList, name, domain } = singleData;
     let initPaths = [0];
     if (pathList && pathList.length) {
       initPaths.pop();
@@ -593,30 +577,29 @@ class CreateDomain extends Component {
                   required: true,
                   message: formatMessage({ id: 'required' }),
                 }],
-                initialValue: env.dataSource.length ? (envId || initEnvId) : undefined,
-              })(
-                <Select
-                  dropdownClassName="c7n-domain-env"
-                  onFocus={this.loadEnv}
-                  loading={env.loading}
-                  filter
-                  getPopupContainer={triggerNode => triggerNode.parentNode}
-                  onSelect={this.handleSelectEnv}
-                  showSearch
-                  label={formatMessage({ id: 'domain.column.env' })}
-                  optionFilterProp="children"
-                  filterOption={(input, option) => option.props.children[2]
-                    .toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                >
-                  {env.dataSource.map(v => (
-                    <Option value={v.id} key={`${v.id}-env`} disabled={!v.connect}>
-                      {!v.connect && <span className="env-status-error" />}
-                      {v.connect && <span className="env-status-success" />}
-                      {v.name}
-                    </Option>
-                  ))}
-                </Select>,
-              )}
+                initialValue: env.length ? envId : undefined,
+              })(<Select
+                ref={this.envSelectRef}
+                className="c7n-select_512"
+                dropdownClassName="c7n-network-env"
+                label={<FormattedMessage id="network.env" />}
+                placeholder={formatMessage({ id: 'network.env.placeholder' })}
+                optionFilterProp="children"
+                onSelect={this.handleEnvSelect}
+                getPopupContainer={triggerNode => triggerNode.parentNode}
+                filterOption={(input, option) => option.props.children[1]
+                  .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                filter
+                showSearch
+              >
+                {_.map(env, (item) => {
+                  const { id, connect, name, permission } = item;
+                  return (<Option key={id} value={id} disabled={!connect || !permission}>
+                    {connect ? <span className="env-status-success" /> : <span className="env-status-error" />}
+                    {name}
+                  </Option>);
+                })}
+              </Select>)}
             </FormItem>
             <FormItem
               className="c7n-domain-formItem c7n-select_512"

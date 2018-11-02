@@ -1,6 +1,5 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-import _ from 'lodash';
 import { handleProptError } from '../../../utils';
 
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
@@ -139,13 +138,14 @@ class NetworkConfigStore {
    * 加载网络列表数据
    * @param isRefresh
    * @param proId
+   * @param envId
    * @param page
    * @param pageSize
    * @param sort
    * @param datas
    * @returns {JQueryPromise<any>}
    */
-  loadData = (isRefresh = false, proId, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
+  loadData = (isRefresh = false, proId, envId, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
     searchParam: {},
     param: '',
   }) => {
@@ -153,7 +153,7 @@ class NetworkConfigStore {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return axios.post(`/devops/v1/projects/${proId}/service/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
+    return axios.post(`/devops/v1/projects/${proId}/service/${envId}/listByEnv?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
       .then((data) => {
         const res = handleProptError(data);
         if (res) {

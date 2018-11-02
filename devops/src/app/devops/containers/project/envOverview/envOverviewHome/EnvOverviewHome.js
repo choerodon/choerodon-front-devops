@@ -659,12 +659,12 @@ class EnvOverviewHome extends Component {
         {this.showNetwork && <CreateNetwork
           visible={this.showNetwork}
           store={NetworkConfigStore}
-          envId
+          envId={envId}
           onClose={this.closeNetwork}
         />}
         {this.showDomain && <CreateDomain
           id={this.domainId}
-          envId
+          envId={envId}
           title={this.domainTitle}
           visible={this.showDomain}
           type={this.domainType}
@@ -673,7 +673,7 @@ class EnvOverviewHome extends Component {
         />}
         {createDisplay ? <CreateCert
           visible={createDisplay}
-          envId
+          envId={envId}
           store={CertificateStore}
           onClose={this.closeCreateModal}
         /> : null}

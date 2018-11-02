@@ -1,5 +1,6 @@
 import React from 'react';
 import { stores } from 'choerodon-front-boot';
+import EnvOverviewStore from "../stores/project/envOverview";
 
 const { AppState } = stores;
 
@@ -13,10 +14,10 @@ export const commonComponent =(storeName) => {
     /***
      * 加载table数据
      */
-    loadAllData = (isRefresh = false) => {
+    loadAllData = (envId, isRefresh = false) => {
       const store = this.props[storeName];
       const { id } = AppState.currentMenuType;
-      store.loadData(isRefresh, id);
+      store.loadData(isRefresh, id, envId);
     };
 
     /**

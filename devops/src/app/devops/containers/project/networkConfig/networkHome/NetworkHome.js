@@ -33,9 +33,16 @@ class NetworkHome extends Component {
 
   componentDidMount() {
     const { id: projectId } = AppState.currentMenuType;
-    EnvOverviewStore.loadActiveEnv(projectId, 'network');
-    // 这个方法定义在 commonComponent装饰器中
-    this.loadAllData();
+    EnvOverviewStore.loadActiveEnv(projectId)
+      .then((env) => {
+        if (env.length) {
+          const envId = EnvOverviewStore.getTpEnvId;
+          if (envId) {
+            // 这个方法定义在 commonComponent装饰器中
+            this.loadAllData(envId);
+          }
+        }
+      })
   }
 
   /**
@@ -238,7 +245,7 @@ class NetworkHome extends Component {
    */
   handleEnvSelect = (value) => {
     EnvOverviewStore.setTpEnvId(value);
-    const projectId = AppState.currentMenuType.id;
+    this.loadAllData(value);
   };
 
   render() {
@@ -253,6 +260,8 @@ class NetworkHome extends Component {
     const data = NetworkConfigStore.getAllData;
     const envData = EnvOverviewStore.getEnvcard;
     const envId = EnvOverviewStore.getTpEnvId;
+    const envState = envData.length
+      ? envData.filter(d => d.id === Number(envId))[0] : { connect: false };
     const columns = [{
       title: <FormattedMessage id="network.column.name" />,
       key: 'name',
@@ -338,13 +347,16 @@ class NetworkHome extends Component {
               projectId={projectId}
               organizationId={orgId}
             >
-              <Button
-                funcType="flat"
-                onClick={this.showSideBar}
-              >
-                <i className="icon-playlist_add icon" />
-                <span><FormattedMessage id="network.header.create" /></span>
-              </Button>
+              <Tooltip title={envState && !envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
+                <Button
+                  disabled={envState && !envState.connect}
+                  funcType="flat"
+                  onClick={this.showSideBar}
+                >
+                  <i className="icon-playlist_add icon" />
+                  <span><FormattedMessage id="network.header.create" /></span>
+                </Button>
+              </Tooltip>
             </Permission>
             <Permission
               service={['devops-service.devops-service.pageByOptions']}
@@ -376,6 +388,7 @@ class NetworkHome extends Component {
         }
 
         {show && <CreateNetwork
+          envId={envId}
           visible={show}
           store={NetworkConfigStore}
           onClose={this.handleCancelFun}
