@@ -556,15 +556,24 @@ class EnvOverviewHome extends Component {
                 </Tooltip>
               </Option>))}
           </Select>
-          <div className="c7n-envow-select">
-            <Dropdown overlay={menu} trigger={['click']}>
-              <a href="#">
-                <Icon type="playlist_add" />
-                {formatMessage({ id: 'create' })}
-                <Icon type="arrow_drop_down" />
-              </a>
-            </Dropdown>
-          </div>
+          <Permission
+            service={[
+              'devops-service.devops-service.create',
+            ]}
+            type={type}
+            projectId={projectId}
+            organizationId={orgId}
+          >
+            <div className="c7n-envow-select">
+              <Dropdown overlay={menu} trigger={['click']}>
+                <a href="#">
+                  <Icon type="playlist_add" />
+                  {formatMessage({ id: 'create' })}
+                  <Icon type="arrow_drop_down" />
+                </a>
+              </Dropdown>
+            </div>
+          </Permission>
           <Permission
             service={[
               'devops-service.application-instance.deploy',
