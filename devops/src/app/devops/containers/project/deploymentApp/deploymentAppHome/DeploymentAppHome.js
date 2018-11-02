@@ -10,6 +10,7 @@ import '../../../main.scss';
 import './DeployApp.scss';
 import AceForYaml from '../../../../components/yamlAce';
 import SelectApp from '../selectApp';
+import EnvOverviewStore from '../../../../stores/project/envOverview';
 
 const RadioGroup = Radio.Group;
 const Step = Steps.Step;
@@ -63,7 +64,7 @@ class DeploymentAppHome extends Component {
     } else {
       DeploymentAppStore.setVersions([]);
     }
-    DeploymentAppStore.loadEnv();
+    EnvOverviewStore.loadActiveEnv(this.state.projectId);
   }
 
 
@@ -162,7 +163,7 @@ class DeploymentAppHome extends Component {
    */
   handleSelectEnv = (value) => {
     const { DeploymentAppStore } = this.props;
-    const envs = DeploymentAppStore.envs;
+    const envs = EnvOverviewStore.getEnvcard;
     const envDto = _.filter(envs, v => v.id === value)[0];
     this.setState({ envId: value, envDto, value: null, yaml: null, changeYaml: false, mode: 'new' });
     const { appId, versionId } = this.state;
@@ -409,7 +410,7 @@ class DeploymentAppHome extends Component {
   handleRenderEnv = () => {
     const { DeploymentAppStore, intl } = this.props;
     const { formatMessage } = intl;
-    const envs = DeploymentAppStore.envs;
+    const envs = EnvOverviewStore.getEnvcard;
     const data = this.state.yaml || DeploymentAppStore.value;
     return (
       <div className="deployApp-env">
@@ -432,7 +433,7 @@ class DeploymentAppHome extends Component {
               .toLowerCase().indexOf(input.toLowerCase()) >= 0}
             filter
           >
-            {envs.map(v => (<Option value={v.id} key={v.id} disabled={!v.connect}>
+            {envs.map(v => (<Option value={v.id} key={v.id} disabled={!v.connect || !v.permission}>
               {v.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
               {v.name}
             </Option>))}
@@ -465,7 +466,7 @@ class DeploymentAppHome extends Component {
             type="primary"
             funcType="raised"
             onClick={this.changeStep.bind(this, 3)}
-            disabled={!(this.state.envId && (this.state.value || (data && data.yaml)) 
+            disabled={!(this.state.envId && (this.state.value || (data && data.yaml))
               && (this.state.errorLine
                 ? this.state.errorLine.length === 0 : (data && data.errorLines === null)))}
           >

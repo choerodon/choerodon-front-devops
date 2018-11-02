@@ -87,7 +87,7 @@ class DeployOverview extends Component {
     const { InstancesStore, intl: { formatMessage } } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const appList = InstancesStore.getMutiData;
-    const envNames = InstancesStore.getEnvcard;
+    const envNames = _.filter(InstancesStore.getEnvcard, ['permission', true]);
     const { type, organizationId: orgId } = AppState.currentMenuType;
 
     const columns = [
