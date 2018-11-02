@@ -10,6 +10,7 @@ import classnames from 'classnames';
 import _ from 'lodash';
 import '../../../main.scss';
 import './CreateNetwork.scss';
+import EnvOverviewStore from '../../../../stores/project/envOverview';
 
 /**
  * 生成网络名
@@ -65,7 +66,7 @@ class CreateNetwork extends Component {
   }
 
   componentDidMount() {
-    const { store, envId, appId, appCode, form } = this.props;
+    const { envId, appId, appCode, form } = this.props;
     const { id } = AppState.currentMenuType;
     form.resetFields();
     if (envId) {
@@ -76,7 +77,7 @@ class CreateNetwork extends Component {
         this.loadIstById();
       }
     }
-    store.loadEnv(id);
+    EnvOverviewStore.loadActiveEnv(id);
   }
 
   setIpInSelect = (value) => {
@@ -205,6 +206,7 @@ class CreateNetwork extends Component {
     if (!value) {
       return;
     }
+    EnvOverviewStore.setTpEnvId(value);
     const { store } = this.props;
     const { id } = AppState.currentMenuType;
     store.loadApp(id, Number(value));
@@ -530,7 +532,7 @@ class CreateNetwork extends Component {
       initName } = this.state;
     const { name: menuName, id: projectId } = AppState.currentMenuType;
     const { getFieldDecorator, getFieldValue } = form;
-    const env = store.getEnv;
+    const env = EnvOverviewStore.getEnvcard;
     const localApp = _.filter(store.getApp, item => item.projectId === Number(projectId));
     const storeApp = _.filter(store.getApp, item => item.projectId !== Number(projectId));
     const ist = store.getIst;
@@ -702,8 +704,8 @@ class CreateNetwork extends Component {
                   showSearch
                 >
                   {_.map(env, (item) => {
-                    const { id, connect, name } = item;
-                    return (<Option key={id} value={id} disabled={!connect}>
+                    const { id, connect, name, permission } = item;
+                    return (<Option key={id} value={id} disabled={!connect || !permission}>
                       {connect ? <span className="env-status-success" /> : <span className="env-status-error" />}
                       {name}
                     </Option>);

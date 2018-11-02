@@ -45,7 +45,7 @@ class EnvPipelineHome extends Component {
    * @param callback 回调提示
    */
   checkCode = _.debounce((rule, value, callback) => {
-    const { EnvPipelineStore, intl } = this.props;
+    const { EnvPipelineStore, intl: { formatMessage } } = this.props;
     const projectId = AppState.currentMenuType.id;
     const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     if (value && pa.test(value)) {
@@ -71,7 +71,7 @@ class EnvPipelineHome extends Component {
    * @param callback 回调提示
    */
   checkName = _.debounce((rule, value, callback) => {
-    const { EnvPipelineStore, intl } = this.props;
+    const { EnvPipelineStore, intl: { formatMessage } } = this.props;
     const projectId = AppState.currentMenuType.id;
     const envData = EnvPipelineStore.getEnvData;
     const flag = envData ? value !== envData.name : value;
@@ -162,6 +162,7 @@ class EnvPipelineHome extends Component {
     if (sideType === 'token') {
       this.loadEnvs();
     }
+    this.setState({ createSelectedRowKeys: [], createSelected: [] });
     EnvPipelineStore.setShow(false);
     EnvPipelineStore.setEnvData(null);
     EnvPipelineStore.setSelectedRk([]);
@@ -268,7 +269,7 @@ class EnvPipelineHome extends Component {
               } else {
                 this.loadEnvs();
                 EnvPipelineStore.setSideType('token');
-                this.setState({ token: res, submitting: false });
+                this.setState({ token: res, submitting: false, createSelectedRowKeys: [], createSelected: [] });
               }
             }
           });
@@ -315,7 +316,8 @@ class EnvPipelineHome extends Component {
         .then((data) => {
           if (data && data.failed) {
             Choerodon.prompt(data.message);
-          } else if (data || data === 0) {
+            this.setState({ submitting: false });
+          } else if (data) {
             this.setState({ submitting: false });
           }
         });
@@ -673,7 +675,6 @@ class EnvPipelineHome extends Component {
             <div className="c7n-env-tag-title">
               <FormattedMessage id="envPl.authority" />
               <Popover
-                placement="rightTop"
                 content={formatMessage({ id: 'envPl.authority.help' })}
               >
                 <Icon type="help"/>

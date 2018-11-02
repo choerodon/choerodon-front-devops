@@ -31,8 +31,16 @@ class DomainHome extends Component {
 
   componentDidMount() {
     const { id: projectId } = AppState.currentMenuType;
-    EnvOverviewStore.loadActiveEnv(projectId, 'domain');
-    this.loadAllData();
+    EnvOverviewStore.loadActiveEnv(projectId)
+      .then((env) => {
+        if (env.length) {
+          const envId = EnvOverviewStore.getTpEnvId;
+          if (envId) {
+            // 这个方法定义在 commonComponent装饰器中
+            this.loadAllData(envId);
+          }
+        }
+      })
   }
 
   /**
@@ -71,7 +79,7 @@ class DomainHome extends Component {
    */
   handleEnvSelect = (value) => {
     EnvOverviewStore.setTpEnvId(value);
-    const projectId = AppState.currentMenuType.id;
+    this.loadAllData(value);
   };
 
   render() {
@@ -79,6 +87,8 @@ class DomainHome extends Component {
     const data = DomainStore.getAllData;
     const envData = EnvOverviewStore.getEnvcard;
     const envId = EnvOverviewStore.getTpEnvId;
+    const envState = envData.length
+      ? envData.filter(d => d.id === Number(envId))[0] : { connect: false };
     const { filters, sort: { columnKey, order } } = DomainStore.getInfo;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const columns = [{
@@ -244,13 +254,16 @@ class DomainHome extends Component {
               projectId={projectId}
               organizationId={orgId}
             >
-              <Button
-                funcType="flat"
-                onClick={this.showSideBar.bind(this, 'create', '')}
-              >
-                <i className="icon icon-playlist_add icon" />
-                <FormattedMessage id="domain.header.create" />
-              </Button>
+              <Tooltip title={envState && !envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : null}>
+                <Button
+                  funcType="flat"
+                  disabled={envState && !envState.connect}
+                  onClick={this.showSideBar.bind(this, 'create', '')}
+                >
+                  <i className="icon icon-playlist_add icon" />
+                  <FormattedMessage id="domain.header.create" />
+                </Button>
+              </Tooltip>
             </Permission>
             <Permission
               service={['devops-service.devops-ingress.pageByOptions']}
