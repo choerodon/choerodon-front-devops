@@ -140,13 +140,12 @@ class ContainerStore {
       return data;
     });
 
-  loadAppData = projectId => axios.get(`devops/v1/projects/${projectId}/apps/list_all`).then((data) => {
-    const res = handleProptError(data);
-    if (res) {
-      this.setAppDate(data);
-    }
-  });
-
+  /**
+   *
+   * @param projectId
+   * @param envId
+   * @param appId 返回的数据中必须包含被传入的appId
+   */
   loadAppDataByEnv = (projectId, envId) => axios.get(`devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=running`).then((data) => {
     const res = handleProptError(data);
     if (res) {
@@ -154,6 +153,21 @@ class ContainerStore {
     }
     return res;
   });
+
+  /**
+   *
+   * @param projectId
+   * @param envId
+   * @param appId 返回的数据中必须包含被传入的appId
+   */
+  loadAppDataByEnv = (projectId, envId, appId=null) => axios.get(`devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=running${appId ? `$appId=${appId}` : ''}`).then((data) => {
+    const res = handleProptError(data);
+    if (res) {
+      this.setAppDate(data);
+    }
+    return res;
+  });
+
 
   /**
    * 加载容器
@@ -202,15 +216,8 @@ class ContainerStore {
     this.setPageInfo(page);
   };
 
-  loadPodParam(projectId, id, type) {
-    if (type) {
-      return axios.get(`devops/v1/projects/${projectId}/app_pod/${id}/containers/logs/${type}`)
-        .then(datas => this.handleProptError(datas));
-    } else {
-      return axios.get(`devops/v1/projects/${projectId}/app_pod/${id}/containers/logs`)
-        .then(datas => this.handleProptError(datas));
-    }
-  }
+  loadPodParam = (projectId, id, type) => axios.get(`devops/v1/projects/${projectId}/app_pod/${id}/containers/logs${type ? `/${type}` : ''}`)
+    .then(data => this.handleProptError(data));
 
   handleProptError =(error) => {
     if (error && error.failed) {

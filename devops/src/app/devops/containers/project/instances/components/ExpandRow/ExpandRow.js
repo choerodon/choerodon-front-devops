@@ -11,7 +11,7 @@ import './index.scss';
 const { AppState } = stores;
 
 function ExpandRow(props) {
-  const { record: { deploymentDTOS, envId, appId }, url } = props;
+  const { record: { deploymentDTOS, envId, appId, status }, url } = props;
   const content = _.map(deploymentDTOS, (item) => {
     const { name, available, age, devopsEnvPodDTOS, current, desired } = item;
     let correctCount = 0;
@@ -26,6 +26,25 @@ function ExpandRow(props) {
     const sum = correctCount + errorCount;
     const correct = sum > 0 ? (correctCount / sum) * (Math.PI * 2 * 30) : 0;
     const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
+    const circle = (<svg width="70" height="70">
+      <circle
+        cx="35"
+        cy="35"
+        r="30"
+        strokeWidth={(sum === 0 || sum > correctCount) ? 5 : 0}
+        stroke={sum > 0 ? '#f44336' : '#f3f3f3'}
+        className="c7n-pod-circle-error"
+      />
+      <circle
+        cx="35"
+        cy="35"
+        r="30"
+        className="c7n-pod-circle"
+        strokeDasharray={`${correct}, 10000`}
+      />
+      <text x="50%" y="32.5" className="c7n-pod-circle-num">{sum}</text>
+      <text x="50%" y="50" className="c7n-pod-circle-text">pod</text>
+    </svg>);
     return (<div key={name} className="c7n-deploy-expanded-item">
       <ul className="c7n-deploy-expanded-text">
         <li className="c7n-deploy-expanded-lists">
@@ -51,7 +70,7 @@ function ExpandRow(props) {
         </li>
       </ul>
       <div className="c7n-deploy-expanded-pod">
-        <Link
+        {status === 'running' ? (<Link
           to={{
             pathname: '/devops/container',
             search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}`,
@@ -59,27 +78,9 @@ function ExpandRow(props) {
           }}
         >
           <Tooltip title={<FormattedMessage id="ist.expand.link" />}>
-            <svg width="70" height="70">
-              <circle
-                cx="35"
-                cy="35"
-                r="30"
-                strokeWidth={(sum === 0 || sum > correctCount) ? 5 : 0}
-                stroke={sum > 0 ? '#f44336' : '#f3f3f3'}
-                className="c7n-pod-circle-error"
-              />
-              <circle
-                cx="35"
-                cy="35"
-                r="30"
-                className="c7n-pod-circle"
-                strokeDasharray={`${correct}, 10000`}
-              />
-              <text x="50%" y="32.5" className="c7n-pod-circle-num">{sum}</text>
-              <text x="50%" y="50" className="c7n-pod-circle-text">pod</text>
-            </svg>
+            {circle}
           </Tooltip>
-        </Link>
+        </Link>) : circle}
       </div>
     </div>);
   });

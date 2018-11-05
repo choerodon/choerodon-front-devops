@@ -12,19 +12,22 @@ function UploadIcon (props) {
       dom = (<Fragment>
         <span className="c7n-instance-upload-text">{text || formatMessage({ id: 'ist.version.deploy' }, { text: prevText })}</span>
         {text ? <Tooltip title={formatMessage({ id: `ist.version.${text ? 'upload' : 'deploy'}` }, { text: prevText })}>
-          <svg className="c7n-instance-upload" width="16" height="16">
-            <path className="c7n-instance-upload-arrow" d="
-            M 4.5  13
-            L 11.5 13
-            L 11.5 7
-            L 15   7
-            L 8    1
-            L 1    7
-            L 4.5  7
-            Z
-          "/>
-            <line  className="c7n-instance-upload-line" x1="1.5" y1="14" x2="14.5" y2="14" />
-          </svg>
+          <div className="c7n-instance-upload">
+            <svg width="16" height="14">
+              <path className="c7n-instance-upload-arrow" d="
+              M 5  11
+              L 11 11
+              L 11 6.5
+              L 15 6.5
+              L 8  1
+              L 1  6.5
+              L 5  6.5
+              Z
+            "/>
+              <line  className="c7n-instance-upload-line1" x1="3" y1="10" x2="13" y2="10" />
+              <line  className="c7n-instance-upload-line2" x1="3" y1="12.5" x2="13" y2="12.5" />
+            </svg>
+          </div>
         </Tooltip> : null}
       </Fragment>)
       break;
