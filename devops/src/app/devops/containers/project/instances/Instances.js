@@ -524,7 +524,7 @@ class Instances extends Component {
       <div>
         {appNameDom}
       </div>
-      <div className="c7n-store-pagination">
+      {getAppNameByEnv.length ? <div className="c7n-store-pagination">
         <Pagination
           tiny={false}
           showSizeChanger
@@ -535,7 +535,7 @@ class Instances extends Component {
           onChange={this.onPageChange}
           onShowSizeChange={this.onPageChange}
         />
-      </div>
+      </div> : null}
       <div className="c7n-deploy-env-title c7n-deploy-env-ist">
         <FormattedMessage id="ist.head" />
       </div>

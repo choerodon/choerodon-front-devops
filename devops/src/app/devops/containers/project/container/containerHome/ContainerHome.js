@@ -774,7 +774,7 @@ class ContainerHome extends Component {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     let appId = null;
     if (state) {
-      appId = state.appId;
+      appId = Number(state.appId);
     }
     ContainerStore.setAppId(appId);
     EnvOverviewStore.loadActiveEnv(projectId, 'container');

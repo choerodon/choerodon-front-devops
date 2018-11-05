@@ -161,8 +161,9 @@ class EnvOverviewStore {
           if (data.length && this.tpEnvId) {
             switch (type) {
               case 'container':
-                ContainerStore.loadAppDataByEnv(projectId, this.tpEnvId);
-                ContainerStore.loadData(false, projectId, this.tpEnvId);
+                const appId = ContainerStore.getappId
+                ContainerStore.loadAppDataByEnv(projectId, this.tpEnvId, appId);
+                ContainerStore.loadData(false, projectId, this.tpEnvId, appId);
                 break;
               case 'certificate':
                 const { page, pageSize, sorter, postData } = CertificateStore.getTableFilter;
