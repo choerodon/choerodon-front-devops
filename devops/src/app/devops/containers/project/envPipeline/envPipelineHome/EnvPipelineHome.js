@@ -452,7 +452,7 @@ class EnvPipelineHome extends Component {
   tableChange =(pagination, filters, sorter, paras) => {
     const { EnvPipelineStore } = this.props;
     const { id } = AppState.currentMenuType;
-    const envId = EnvPipelineStore.getEnvData.id;
+    const envId = EnvPipelineStore.getEnvData ? EnvPipelineStore.getEnvData.id : null;
     const sideType = EnvPipelineStore.getSideType;
     EnvPipelineStore.setInfo({ filters, sort: sorter, paras });
     let sort = { field: '', order: 'desc' };
@@ -682,6 +682,7 @@ class EnvPipelineHome extends Component {
               </Popover>
             </div>
             <Table
+              className="c7n-env-noTotal"
               rowSelection={rowCreateSelection}
               columns={columns}
               dataSource={mbr}
@@ -788,6 +789,7 @@ class EnvPipelineHome extends Component {
         formContent = (<div>
           <div className="c7n-sidebar-form">
             <Table
+              className="c7n-env-noTotal"
               rowSelection={rowSelection}
               dataSource={prmMbr}
               columns={columns}
@@ -818,6 +820,7 @@ class EnvPipelineHome extends Component {
           'devops-service.devops-environment.listByProjectIdAndActive',
           'devops-service.devops-environment.listAllUserPermission',
           'devops-service.devops-environment.listUserPermissionByEnvId',
+          'devops-service.devops-environment.updateEnvUserPermission',
           'devops-service.devops-environment.create',
           'devops-service.devops-environment.update',
           'devops-service.devops-environment.checkCode',

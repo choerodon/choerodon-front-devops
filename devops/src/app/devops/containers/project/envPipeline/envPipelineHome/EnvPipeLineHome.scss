@@ -434,3 +434,9 @@
   display: flex;
   flex-wrap: wrap;
 }
+
+.c7n-env-noTotal {
+  .ant-pagination-total-text {
+    display: none;
+  }
+}
