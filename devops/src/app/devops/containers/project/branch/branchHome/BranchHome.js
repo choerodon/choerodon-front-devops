@@ -236,7 +236,7 @@ class BranchHome extends Component {
         arrowPointAtCenter
         content={<section>
           {
-            _.map(titleData, item => (<div className="c7n-branch-block">
+            _.map(titleData, item => (<div className="c7n-branch-block" key={item}>
               <span className={`branch-popover-span span-${item}`} />
               <div className="branch-popover-content">
                 <p className="branch-popover-p">
@@ -420,13 +420,13 @@ class BranchHome extends Component {
   };
 
   render() {
-    const { name, projectId, organizationId, type } = AppState.currentMenuType;
+    const { name } = AppState.currentMenuType;
     const { BranchStore, intl: { formatMessage }, history: { location: { state } } } = this.props;
     const { name: branchName, submitting, visible } = this.state;
     const apps = DevPipelineStore.appData.slice();
     const appId = DevPipelineStore.getSelectApp;
     const titleName = _.find(apps, ['id', appId]) ? _.find(apps, ['id', appId]).name : name;
-    const  historyIsDevconsole = state && state.isDevconsole;
+    const  backPath = state && state.backPath;
     return (
       <Page
         className="c7n-region c7n-branch"
@@ -445,7 +445,7 @@ class BranchHome extends Component {
       >
         <Header
           title={<FormattedMessage id="branch.head" />}
-          backPath={historyIsDevconsole ? `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}` : ''}
+          backPath={backPath}
         >
           <Select
             filter

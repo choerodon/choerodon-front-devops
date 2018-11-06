@@ -163,7 +163,7 @@ class AppTagHome extends Component {
     const currentAppName = appName || DevPipelineStore.getDefaultAppName;
     const { current, total, pageSize } = AppTagStore.pageInfo;
     const tagList = [];
-    const  historyIsDevconsole = state && state.isDevconsole;
+    const  backPath = state && state.backPath;
     _.forEach(tagData, (item) => {
       const {
         commit: {
@@ -271,7 +271,7 @@ class AppTagHome extends Component {
       >
         <Header
           title={<FormattedMessage id="apptag.head" />}
-          backPath={historyIsDevconsole ? `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}` : ''}
+          backPath={backPath}
         >
           <Select
             filter
