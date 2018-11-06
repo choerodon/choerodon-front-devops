@@ -132,7 +132,7 @@ class MergeRequestHome extends Component {
     const appData = DevPipelineStore.getAppData;
     const appId = DevPipelineStore.getSelectApp;
     const titleName = _.find(appData, ['id', appId]) ? _.find(appData, ['id', appId]).name : name;
-    const  historyIsDevconsole = state && state.isDevconsole;
+    const  backPath = state && state.backPath;
 
     const columnsAll = [{
       title: <FormattedMessage id="app.code" />,
@@ -424,7 +424,7 @@ class MergeRequestHome extends Component {
       >
         <Header
           title={<FormattedMessage id="merge.head" />}
-          backPath={historyIsDevconsole ? `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}` : ''}
+          backPath={backPath}
         >
           <Select
             filter

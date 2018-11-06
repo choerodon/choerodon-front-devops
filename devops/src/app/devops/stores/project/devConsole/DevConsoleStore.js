@@ -22,7 +22,7 @@ class DevConsoleStore {
 
   @observable branchList = [];
 
-  @observable branchLoading = false;
+  @observable branchLoading = true;
 
   @action
   setBranchList(data) {

@@ -161,6 +161,7 @@ class DevPipelineStore {
             AppTagStore.setLoading(false);
             CiPipelineStore.setLoading(false);
             MergeRequestStore.setLoading(false);
+            DevConsoleStore.setBranchLoading(false);
           }
         }
       }).catch(err => Choerodon.handleResponseError(err));

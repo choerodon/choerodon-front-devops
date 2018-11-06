@@ -140,7 +140,7 @@ class AppHome extends Component {
               <Button icon="quality" shape="circle" size="small" />
             </a>
           </Tooltip> : null }
-          <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']}>
+          {!record.fail ? <Fragment><Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']}>
             <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <Fragment>{record.active ? <FormattedMessage id="edit" /> : <FormattedMessage id="app.start" />}</Fragment>}</div>}>
               {record.active && record.synchro
                 ? <Button
@@ -171,8 +171,8 @@ class AppHome extends Component {
                     : <Icon type="finished" className="c7n-app-icon-disabled" />}
                 </Fragment> }
             </Tooltip>
-          </Permission>
-          {record.fail ? <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.deleteByAppId']}>
+          </Permission></Fragment>
+          : <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.deleteByAppId']}>
             <Tooltip
               placement="bottom"
               title={<FormattedMessage id="delete" />}
@@ -184,7 +184,7 @@ class AppHome extends Component {
                 onClick={this.openRemove.bind(this, record.id, record.name)}
               />
             </Tooltip>
-          </Permission> : null}
+          </Permission>}
         </Fragment>
       ),
     }];

@@ -764,7 +764,9 @@ class DevConsole extends Component {
                   to={{
                     pathname: `/devops/reports/submission`,
                     search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${orgId}`,
-                    state: { isDevconsole: true, appId: appData && appData.length ? [DevPipelineStore.getSelectApp] : [] },
+                    state: {
+                      backPath: `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}`,
+                      appId: appData && appData.length ? [DevPipelineStore.getSelectApp] : [] },
                   }}
                 >
                   { totalCommitsDate ? totalCommitsDate.length : 0}
@@ -779,7 +781,7 @@ class DevConsole extends Component {
                     to={{
                       pathname: `/devops/${item.name}`,
                       search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${orgId}`,
-                      state: { isDevconsole: true },
+                      state: { backPath: `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}` },
                     }}
                   >
                     {item.number}
