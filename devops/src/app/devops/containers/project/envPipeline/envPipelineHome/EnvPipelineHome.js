@@ -235,7 +235,7 @@ class EnvPipelineHome extends Component {
    */
   handleCopy =() => {
     const { intl: { formatMessage } } = this.props;
-    this.setState({ copyMsg: formatMessage({ id: 'envPl.code.coped' }) });
+    this.setState({ copyMsg: formatMessage({ id: 'envPl.token.coped' }) });
   };
 
   mouseEnter = () => {
@@ -548,13 +548,13 @@ class EnvPipelineHome extends Component {
       </div>));
     }
 
-    const suffix = (<Popover placement="right" trigger="hover" content={copyMsg}>
+    const suffix = (<Tooltip placement="right" trigger="hover" title={copyMsg}>
       <div onMouseEnter={this.mouseEnter}>
         <CopyToBoard text={shell || token} onCopy={this.handleCopy}>
           <i className="icon icon-library_books" />
         </CopyToBoard>
       </div>
-    </Popover>);
+    </Tooltip>);
 
     const BoardDom = _.map(envcardPosition, e => <Board projectId={Number(projectId)} key={e.devopsEnvGroupId} groupId={e.devopsEnvGroupId} Title={e.devopsEnvGroupName} envcardPositionChild={e.devopsEnviromentRepDTOs || []} />);
 
