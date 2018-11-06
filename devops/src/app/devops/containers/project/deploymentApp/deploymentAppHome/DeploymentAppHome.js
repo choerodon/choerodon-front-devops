@@ -165,6 +165,7 @@ class DeploymentAppHome extends Component {
   handleSelectEnv = (value) => {
     const { DeploymentAppStore } = this.props;
     const envs = EnvOverviewStore.getEnvcard;
+    EnvOverviewStore.setTpEnvId(value);
     const envDto = _.filter(envs, v => v.id === value)[0];
     this.setState({ envId: value, envDto, value: null, yaml: null, changeYaml: false, mode: 'new' });
     const { appId, versionId } = this.state;
@@ -186,10 +187,11 @@ class DeploymentAppHome extends Component {
     const versions = DeploymentAppStore.versions;
     const versionDto = _.filter(versions, v => v.id === value)[0];
     DeploymentAppStore.setValue(null);
-    this.setState({ versionId: value, versionDto, value: null, markers: [] });
-    if (this.state.envId) {
-      this.handleSelectEnv(this.state.envId);
-    }
+    this.setState({ versionId: value, versionDto, value: null, markers: [] }, () => {
+      if (this.state.envId) {
+        this.handleSelectEnv(this.state.envId);
+      }
+    });
   };
 
   /**

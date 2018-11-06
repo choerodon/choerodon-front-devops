@@ -277,12 +277,9 @@ class AppOverview extends Component {
    * @param res 是否重新部署需要重载数据
    */
   @action
-  handleCancelUp = (res) => {
+  handleCancelUp = () => {
     this.visibleUp = false;
     this.openRemove = false;
-    if (res) {
-      this.loadIstOverview();
-    }
   };
 
   /**
@@ -307,6 +304,7 @@ class AppOverview extends Component {
       .then((res) => {
         if (res && res.failed) {
           Choerodon.prompt(res.message);
+          this.loading = false;
         } else {
           this.openRemove = false;
           this.loading = false;
