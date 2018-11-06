@@ -32,6 +32,8 @@ class EnvOverviewStore {
 
   @observable tpEnvId = null;
 
+  @observable tabKey = 'app';
+
   @observable pageInfo = {
     current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
   };
@@ -96,6 +98,14 @@ class EnvOverviewStore {
 
   @computed get getTpEnvId() {
     return this.tpEnvId;
+  }
+
+  @action setTabKey(tabKey) {
+    this.tabKey = tabKey;
+  }
+
+  @computed get getTabKey() {
+    return this.tabKey;
   }
 
   @computed get getVal() {

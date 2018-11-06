@@ -241,12 +241,15 @@ class AppOverview extends Component {
    * 关闭网络侧边栏
    */
   @action
-  closeNetwork = () => {
+  closeNetwork = (isLoad) => {
+    const { store } = this.props;
     this.props.form.resetFields();
     this.showNetwork = false;
-    this.loadIstOverview();
+    if (isLoad) {
+      this.loadIstOverview();
+      store.setTabKey('network');
+    }
   };
-
 
   /**
    * 关闭域名侧边栏
