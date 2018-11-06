@@ -30,8 +30,6 @@ configure({ enforceActions: 'never' });
 
 @observer
 class EnvOverviewHome extends Component {
-  @observable tabKey = 'app';
-
   @observable env = [];
 
   @observable showDomain = false;
@@ -58,6 +56,7 @@ class EnvOverviewHome extends Component {
   componentWillUnmount() {
     const { EnvOverviewStore } = this.props;
     EnvOverviewStore.setIst(null);
+    EnvOverviewStore.setTabKey('app');
   }
 
   /**
@@ -66,7 +65,7 @@ class EnvOverviewHome extends Component {
   handleRefresh = () => {
     const { EnvOverviewStore } = this.props;
     EnvOverviewStore.setVal('');
-    const key = this.tabKey;
+    const key = EnvOverviewStore.getTabKey;
     const envId = EnvOverviewStore.getTpEnvId;
     const { filters, sort, paras } = EnvOverviewStore.getInfo;
     const sorter = { field: '', order: 'desc' };
@@ -97,8 +96,8 @@ class EnvOverviewHome extends Component {
    */
   @action
   tabChange = (key) => {
-    this.tabKey = key;
     const { EnvOverviewStore } = this.props;
+    EnvOverviewStore.setTabKey(key);
     const envId = EnvOverviewStore.getTpEnvId;
     const sort = { field: 'id', order: 'desc' };
     const post = {
@@ -259,16 +258,16 @@ class EnvOverviewHome extends Component {
    * 关闭域名侧边栏
    */
   @action
-  closeDomain = (isload) => {
+  closeDomain = (isLoad) => {
     const { EnvOverviewStore } = this.props;
     this.props.form.resetFields();
     this.showDomain = false;
     this.domainId = null;
-    if (isload) {
+    if (isLoad) {
       const envId = EnvOverviewStore.getTpEnvId;
       this.loadDomainOrNet('domain', envId);
       EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
-      this.tabKey = 'domain';
+      EnvOverviewStore.setTabKey('domain');
     }
   };
 
@@ -276,15 +275,15 @@ class EnvOverviewHome extends Component {
    * 关闭网络侧边栏
    */
   @action
-  closeNetwork = (isload) => {
+  closeNetwork = (isLoad) => {
     const { EnvOverviewStore } = this.props;
     this.props.form.resetFields();
     this.showNetwork = false;
-    if (isload) {
+    if (isLoad) {
       const envId = EnvOverviewStore.getTpEnvId;
       this.loadDomainOrNet('net', envId);
       EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
-      this.tabKey = 'network';
+      EnvOverviewStore.setTabKey('network');
     }
   };
 
@@ -299,15 +298,15 @@ class EnvOverviewHome extends Component {
   /**
    * 关闭证书侧边栏
    */
-  closeCreateModal = (isload) => {
+  closeCreateModal = (isLoad) => {
     const { EnvOverviewStore } = this.props;
     this.setState({ createDisplay: false });
     this.props.form.resetFields();
-    if (isload) {
+    if (isLoad) {
       const envId = EnvOverviewStore.getTpEnvId;
       this.loadCertData(envId);
       EnvOverviewStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
-      this.tabKey = 'cert';
+      EnvOverviewStore.setTabKey('cert');
     }
   };
 
@@ -351,7 +350,8 @@ class EnvOverviewHome extends Component {
    * 点击失败状态跳转到日志tab页
    */
   linkToLogTabs = () => {
-    this.tabKey = 'log';
+    const { EnvOverviewStore } = this.props;
+    EnvOverviewStore.setTabKey('log');
   };
 
   render() {
@@ -359,6 +359,7 @@ class EnvOverviewHome extends Component {
     const { createDisplay } = this.state;
     const envId = EnvOverviewStore.getTpEnvId;
     const envData = EnvOverviewStore.getEnvcard;
+    const tabKey = EnvOverviewStore.getTabKey;
     const log = EnvOverviewStore.getLog;
     const sync = EnvOverviewStore.getSync;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
@@ -371,7 +372,7 @@ class EnvOverviewHome extends Component {
       key: 'app',
       component: <AppOverview
         store={EnvOverviewStore}
-        tabkey={this.tabKey}
+        tabkey={tabKey}
         envState={envState && envState.connect}
         envId={envId}
       />,
@@ -380,7 +381,7 @@ class EnvOverviewHome extends Component {
       key: 'network',
       component: <NetworkOverview
         store={EnvOverviewStore}
-        tabkey={this.tabKey}
+        tabkey={tabKey}
         envId={envId}
       />,
       msg: 'network.header.title',
@@ -388,7 +389,7 @@ class EnvOverviewHome extends Component {
       key: 'domain',
       component: <DomainOverview
         store={EnvOverviewStore}
-        tabkey={this.tabKey}
+        tabkey={tabKey}
         envId={envId}
       />,
       msg: 'domain.header.title',
@@ -403,7 +404,7 @@ class EnvOverviewHome extends Component {
       key: 'log',
       component: <LogOverview
         store={EnvOverviewStore}
-        tabkey={this.tabKey}
+        tabkey={tabKey}
         envId={envId}
       />,
       msg: 'envoverview.logs',
@@ -657,11 +658,11 @@ class EnvOverviewHome extends Component {
               </div>
             </div>
           </div>
-          <Tabs className="c7n-envoverview-tabs" activeKey={this.tabKey} animated={false} onChange={this.tabChange}>
+          <Tabs className="c7n-envoverview-tabs" activeKey={tabKey} animated={false} onChange={this.tabChange}>
             {_.map(tabOption, (item) => {
               const { key, component, msg } = item;
               return (<TabPane tab={formatMessage({ id: msg })} key={key}>
-                {this.tabKey === key ? component : null}
+                {tabKey === key ? component : null}
               </TabPane>);
             })}
           </Tabs>
