@@ -117,7 +117,7 @@ class CreateDomain extends Component {
     if (envId) {
       this.handleSelectEnv(envId);
     }
-    EnvOverviewStore.loadActiveEnv(id);
+    EnvOverviewStore.loadActiveEnv(projectId);
   }
 
   /**
