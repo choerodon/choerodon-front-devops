@@ -368,7 +368,7 @@ const zhCN = {
   'ist.version.failed': '升级至版本 “{text}” 失败',
   'ist.version.deploy.failed': '部署版本 “{text}” 失败',
   'ist.deploy.failed': '部署失败',
-  'ist.deploy.upload': '部署中...',
+  'ist.deploy.upload': '部署中',
 
   // network
   network_delete: '网络删除中，请耐心等待',
