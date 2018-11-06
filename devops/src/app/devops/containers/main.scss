@@ -587,9 +587,10 @@ input::-webkit-contacts-auto-fill-button {
 }
 
 .c7n-header-select {
-  max-width: 100px;
+  max-width: 105px;
   min-width: 70px;
-  margin-right: 18px;
+  margin-right: 28px;
+  font-weight: 500;
 
   .ant-select-selection__rendered {
     margin-bottom: 0;
@@ -606,6 +607,7 @@ input::-webkit-contacts-auto-fill-button {
 }
 
 .c7n-header-env_drop {
+  width: 100px !important;
   .ant-select-dropdown-menu-item {
     padding: 4px 6px !important;
   }

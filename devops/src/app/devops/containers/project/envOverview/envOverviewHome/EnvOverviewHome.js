@@ -597,6 +597,7 @@ class EnvOverviewHome extends Component {
             ? sync.commitUrl.substr(0, sync.commitUrl.length - 8) : null}
           >
             <a
+              className="c7n-envow-gitlab"
               href={sync && sync.commitUrl
                 ? sync.commitUrl.substr(0, sync.commitUrl.length - 8) : null}
               target="_blank"
