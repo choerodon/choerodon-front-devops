@@ -124,8 +124,11 @@ class AppHome extends Component {
         text: formatMessage({ id: 'app.run' }),
         value: 1,
       }, {
-        text: formatMessage({ id: 'app.creating' }),
+        text: formatMessage({ id: 'app.failed' }),
         value: -1,
+      }, {
+        text: formatMessage({ id: 'app.creating' }),
+        value: 2,
       }],
       filteredValue: filters.active || [],
       render: this.getAppStatus,
