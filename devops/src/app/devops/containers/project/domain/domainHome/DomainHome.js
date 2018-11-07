@@ -297,6 +297,7 @@ class DomainHome extends Component {
 
         {this.state.show && <CreateDomain
           id={this.state.id}
+          envId={envId}
           title={this.state.title}
           visible={this.state.show}
           type={this.state.type}
