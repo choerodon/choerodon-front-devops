@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component, Fragment} from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -8,6 +8,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper/index';
 import '../../../main.scss';
 import './RepositoryHome.scss';
+import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -145,6 +146,7 @@ class RepositoryHome extends Component {
     const { intl, RepositoryStore } = this.props;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const { param, filters, sort: { columnKey, order } } = this.state;
+    const { getRepoData } = RepositoryStore;
     const columns = [{
       title: <FormattedMessage id="repository.repository" />,
       dataIndex: 'code',
@@ -187,26 +189,28 @@ class RepositoryHome extends Component {
           'devops-service.application.listCodeRepository',
         ]}
       >
-        <Header title={<FormattedMessage id="repository.head" />}>
-          <Button
-            onClick={this.handleRefresh}
-          >
-            <i className="icon-refresh icon" />
-            <FormattedMessage id="refresh" />
-          </Button>
-        </Header>
-        <Content code="repository" values={{ name }}>
-          <Table
-            filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
-            loading={RepositoryStore.loading}
-            onChange={this.tableChange}
-            pagination={RepositoryStore.getPageInfo}
-            columns={columns}
-            filters={param || []}
-            dataSource={RepositoryStore.getRepoData}
-            rowKey={record => record.id}
-          />
-        </Content>
+        {getRepoData && getRepoData.length ? <Fragment>
+          <Header title={<FormattedMessage id="repository.head" />}>
+            <Button
+              onClick={this.handleRefresh}
+            >
+              <i className="icon-refresh icon" />
+              <FormattedMessage id="refresh" />
+            </Button>
+          </Header>
+          <Content code="repository" values={{ name }}>
+            <Table
+              filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
+              loading={RepositoryStore.loading}
+              onChange={this.tableChange}
+              pagination={RepositoryStore.getPageInfo}
+              columns={columns}
+              filters={param || []}
+              dataSource={getRepoData}
+              rowKey={record => record.id}
+            />
+          </Content>
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="repository.head" />} />}
       </Page>
     );
   }

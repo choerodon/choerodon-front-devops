@@ -150,7 +150,7 @@ class EnvOverviewStore {
     if (Number(this.preProId) !== Number(projectId)) {
       this.setEnvcard([]);
       this.setTpEnvId(null);
-      DeploymentPipelineStore.setProRole('');
+      DeploymentPipelineStore.setProRole('env', '');
     }
     this.setPreProId(projectId);
     return axios.get(`devops/v1/projects/${projectId}/envs?active=true`)

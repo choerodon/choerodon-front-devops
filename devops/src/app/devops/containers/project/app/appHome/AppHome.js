@@ -10,6 +10,8 @@ import LoadingBar from '../../../../components/loadingBar';
 import './AppHome.scss';
 import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
+import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
+import DeploymentPipelineStore from '../../../../stores/project/deploymentPipeline';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -66,12 +68,14 @@ class AppHome extends Component {
 
   constructor(props) {
     const menu = AppState.currentMenuType;
+    const { location: { state } } = props.history;
     super(props);
     this.state = {
       page: 0,
       id: '',
       projectId: menu.id,
-      show: false,
+      show: state && state.show,
+      type: state && state.modeType,
       submitting: false,
     };
   }
@@ -400,6 +404,7 @@ class AppHome extends Component {
       form: { getFieldDecorator },
     } = this.props;
     const { type: modeType, show, submitting, openRemove, name: appName, id } = this.state;
+    const { app } = DeploymentPipelineStore.getProRole;
     const formContent = (<Form layout="vertical" className="c7n-sidebar-form">
       {modeType === 'create' && <FormItem
         {...formItemLayout}
@@ -503,7 +508,7 @@ class AppHome extends Component {
           'devops-service.application.queryByAppId',
         ]}
       >
-        { isRefresh ? <LoadingBar display /> : <Fragment>
+        { isRefresh ? <LoadingBar display /> : (serviceData.length || app === 'owner' ? <Fragment>
           <Header title={<FormattedMessage id="app.head" />}>
             <Permission
               service={['devops-service.application.create']}
@@ -550,7 +555,7 @@ class AppHome extends Component {
               filters={paras.slice()}
             />
           </Content>
-        </Fragment>}
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="app.head" />} />)}
         <Modal
           confirmLoading={submitting}
           visible={openRemove}
