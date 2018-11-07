@@ -20,6 +20,7 @@ import './ContainerHome.scss';
 import './Term.scss';
 import EnvOverviewStore from '../../../../stores/project/envOverview';
 import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
+import ContainerStore from "../../../../stores/project/container";
 
 const Sidebar = Modal.Sidebar;
 const { Option, OptGroup } = Select;
@@ -52,9 +53,7 @@ class ContainerHome extends Component {
   }
 
   componentDidMount() {
-    const { selectProPage, selectPubPage } = this.state;
     this.loadInitData();
-    this.loadSelectData([selectProPage, selectPubPage], '');
   }
 
   componentWillUnmount() {
@@ -113,7 +112,7 @@ class ContainerHome extends Component {
       param: paras.toString(),
     };
     const envId = EnvOverviewStore.getTpEnvId;
-    const appId = ContainerStore.getappId;
+    const appId = ContainerStore.getAppId;
     ContainerStore.loadData(false, id, envId, appId, page, pagination.pageSize, sort, postData);
   };
 
@@ -632,7 +631,7 @@ class ContainerHome extends Component {
     EnvOverviewStore.setTpEnvId(value);
     const { ContainerStore } = this.props;
     ContainerStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
-    const appId = ContainerStore.getappId;
+    const appId = ContainerStore.getAppId;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     ContainerStore.loadAppDataByEnv(projectId, value)
       .then((data) => {
@@ -692,77 +691,83 @@ class ContainerHome extends Component {
   loadSelectData = (pageArr, filterValue) => {
     const { ContainerStore } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    let allItems = ContainerStore.getAppData;
+    const appId = ContainerStore.getAppId
+    const envId = EnvOverviewStore.getTpEnvId;
     const appPubDom = [];
     const appProDom = [];
     let pubLength = 0;
     let proLength = 0;
-    const proPageSize = (10 * pageArr[0]) + 3;
-    const pubPageSize = (10 * pageArr[1]) + 3;
-    if (filterValue) {
-      allItems = allItems.filter(item => item.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0);
-    }
-    if (allItems.length) {
-      _.map(allItems, (d) => {
-        if (d.projectId !== projectId) {
-          pubLength += 1;
-        } else {
-          proLength += 1;
+    envId && ContainerStore.loadAppDataByEnv(projectId, envId, appId).then((data) => {
+      if (data) {
+        const proPageSize = (10 * pageArr[0]) + 3;
+        const pubPageSize = (10 * pageArr[1]) + 3;
+        let allItems = [];
+        if (filterValue) {
+          allItems = data.filter(item => item.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0);
         }
-        if (d.projectId !== projectId && appPubDom.length < pubPageSize) {
-          appPubDom.push(<Option key={d.id} value={d.id}>
-            <Popover
-              placement="right"
-              content={<div>
-                <p>
-                  <FormattedMessage id="ist.name" />
-                  <span>{d.name}</span>
-                </p>
-                <p>
-                  <FormattedMessage id="ist.ctr" />
-                  <span>{d.contributor}</span>
-                </p>
-                <p>
-                  <FormattedMessage id="ist.des" />
-                  <span>{d.description}</span>
-                </p>
-              </div>}
-            >
-              <div className="c7n-container-option-popover">
-                <i className="icon icon-apps c7n-container-icon-publish" />
-                <MouserOverWrapper text={d.name} width={0.9}>{d.name}</MouserOverWrapper>
-              </div>
-            </Popover>
-          </Option>);
-        } else if (appProDom.length < proPageSize) {
-          appProDom.push(<Option key={d.id} value={d.id}>
-            <Popover
-              placement="right"
-              content={<div>
-                <p>
-                  <FormattedMessage id="ist.name" />
-                  <span>{d.name}</span>
-                </p>
-                <p>
-                  <FormattedMessage id="ist.code" />
-                  <span>{d.code}</span>
-                </p>
-              </div>}
-            >
-              <div className="c7n-container-option-popover">
-                <i className="icon icon-project c7n-container-icon-publish" />
-                <MouserOverWrapper text={d.name} width={0.9}>{d.name}</MouserOverWrapper>
-              </div>
-            </Popover>
-          </Option>);
+        if (data.length) {
+          _.map(data, (d) => {
+            if (d.projectId !== projectId) {
+              pubLength += 1;
+            } else {
+              proLength += 1;
+            }
+            if (d.projectId !== projectId && appPubDom.length < pubPageSize) {
+              appPubDom.push(<Option key={d.id} value={d.id}>
+                <Popover
+                  placement="right"
+                  content={<div>
+                    <p>
+                      <FormattedMessage id="ist.name" />
+                      <span>{d.name}</span>
+                    </p>
+                    <p>
+                      <FormattedMessage id="ist.ctr" />
+                      <span>{d.contributor}</span>
+                    </p>
+                    <p>
+                      <FormattedMessage id="ist.des" />
+                      <span>{d.description}</span>
+                    </p>
+                  </div>}
+                >
+                  <div className="c7n-container-option-popover">
+                    <i className="icon icon-apps c7n-container-icon-publish" />
+                    <MouserOverWrapper text={d.name} width={0.9}>{d.name}</MouserOverWrapper>
+                  </div>
+                </Popover>
+              </Option>);
+            } else if (appProDom.length < proPageSize) {
+              appProDom.push(<Option key={d.id} value={d.id}>
+                <Popover
+                  placement="right"
+                  content={<div>
+                    <p>
+                      <FormattedMessage id="ist.name" />
+                      <span>{d.name}</span>
+                    </p>
+                    <p>
+                      <FormattedMessage id="ist.code" />
+                      <span>{d.code}</span>
+                    </p>
+                  </div>}
+                >
+                  <div className="c7n-container-option-popover">
+                    <i className="icon icon-project c7n-container-icon-publish" />
+                    <MouserOverWrapper text={d.name} width={0.9}>{d.name}</MouserOverWrapper>
+                  </div>
+                </Popover>
+              </Option>);
+            }
+          });
         }
-      });
-    }
-    this.setState({
-      appPubDom,
-      appProDom,
-      appPubLength: pubLength,
-      appProLength: proLength,
+        this.setState({
+          appPubDom,
+          appProDom,
+          appPubLength: pubLength,
+          appProLength: proLength,
+        });
+      }
     });
   };
 
@@ -772,12 +777,13 @@ class ContainerHome extends Component {
       history: { location: { state } },
     } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
+    const { selectProPage, selectPubPage } = this.state;
     let appId = null;
     if (state) {
       appId = Number(state.appId);
     }
     ContainerStore.setAppId(appId);
-    EnvOverviewStore.loadActiveEnv(projectId, 'container');
+    EnvOverviewStore.loadActiveEnv(projectId, 'container').then(() => this.loadSelectData([selectProPage, selectPubPage], ''));
   };
 
   /**
@@ -863,6 +869,7 @@ class ContainerHome extends Component {
     const pubPageSize = (10 * selectPubPage) + 3;
     const serviceData = ContainerStore.getAllData && ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
+    const initApp = (envData && envData.length) && (appProDom.length || appPubDom.length) ? ContainerStore.getAppId : undefined;
     const contentDom = envId ? (<React.Fragment>
       <Header title={<FormattedMessage id="container.header.title" />}>
         <Select
@@ -895,7 +902,7 @@ class ContainerHome extends Component {
         <Select
           className="c7n-app-select_247"
           label={formatMessage({ id: 'chooseApp' })}
-          value={envData && envData.length ? ContainerStore.getappId : undefined}
+          value={initApp}
           optionFilterProp="children"
           onChange={this.handleAppSelect}
           filterOption={false}

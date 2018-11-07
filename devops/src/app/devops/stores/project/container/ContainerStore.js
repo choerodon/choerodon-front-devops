@@ -125,7 +125,7 @@ class ContainerStore {
     this.appId = id;
   }
 
-  @computed get getappId() {
+  @computed get getAppId() {
     return this.appId;
   }
 

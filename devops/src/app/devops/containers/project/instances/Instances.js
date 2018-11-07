@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Table, Select, Progress, Tooltip, Pagination, Button, Icon } from 'choerodon-ui';
+import { Table, Select, Tooltip, Pagination, Button, Icon } from 'choerodon-ui';
 import { Action, stores, Content, Header, Page } from 'choerodon-front-boot';
 import _ from 'lodash';
 import { handleProptError } from '../../../utils';
@@ -524,7 +524,7 @@ class Instances extends Component {
       <div>
         {appNameDom}
       </div>
-      {getAppNameByEnv.length ? <div className="c7n-store-pagination">
+      {getAppNameByEnv.length && (total >= pageSize) ? <div className="c7n-store-pagination">
         <Pagination
           tiny={false}
           showSizeChanger
