@@ -4,7 +4,7 @@
 
   .c7n-tag-empty {
     box-shadow: none;
-    padding-left: 28px;
+    padding-left: 30px;
     justify-content: flex-start;
     align-items: center;
 
@@ -24,7 +24,7 @@
   display: flex;
 
   i {
-    margin-right: 12px;
+    margin-right: 6px;
     font-size: 24px;
     line-height: 27px;
    }
@@ -35,23 +35,25 @@
 }
 
 .c7n-dc-app-code {
+  display: inline-block;
+  margin-top: 13px;
 
   .ant-btn-sm {
-    margin-left: 12px;
+    margin-left: 8px;
   }
 }
 
 .c7n-dc-url-wrap {
-  margin-bottom: 2px;
+  margin: 13px 0 0 40px;
+  display: inline-block;
 
   .ant-btn-sm {
-    margin-left: 12px;
+    margin-left: 8px;
   }
 }
 
 .c7n-dc-content_1 {
   display: flex;
-  margin-bottom: 24px;
 
   .c7n-tag-empty {
     box-shadow: none;
@@ -74,7 +76,7 @@
     color: rgba(0, 0, 0, 0.65);
 
     .commit-number {
-      margin: 10px 0 10px 30px;
+      margin: 10px 0 8px 30px;
       font-size: 24px;
 
       a {
@@ -123,6 +125,7 @@
 .c7n-dc-create-select {
   line-height: 58px;
   margin-right: 18px;
+  font-weight: 500 !important;
 
   a {
     height: 20px;
@@ -133,18 +136,19 @@
 }
 
 .c7n-dc-branch {
-  max-height: 350px;
+  max-height: 276px;
   overflow: scroll;
   padding-right: 1px;
 }
 
 .c7n-dc-branch-content {
-  padding: 18px 0 0 28px;
+  padding: 12px 0 0 30px;
 
   .branch-content-title {
     display: flex;
     width: 100%;
     height: 20px;
+    align-items: center;
 
     .branch-name {
       width: 30%;
@@ -174,12 +178,11 @@
   }
 
   .c7n-branch-action {
-    flex-grow: 1;
-    text-align: right;
+    margin-left: 40px;
   }
 
   .c7n-branch-commit {
-    margin: 10px 0 0 24px;
+    margin: 2px 0 0 24px;
     color: rgba(0,0,0,0.65);
     display: flex;
 
@@ -220,7 +223,7 @@
 
   .c7n-merge-branch {
     color: rgba(0,0,0,0.65);
-    margin-top: 10px;
+    margin-top: 2px;
     display: flex;
 
     .c7n-merge-icon {
@@ -237,5 +240,13 @@
 }
 
 .c7n-devCs-nomerge {
-  padding: 18px 0 0 36px;
+  padding: 18px 0 0 30px;
+}
+
+.mb25 {
+  margin-bottom: 25px;
+}
+
+.mb16 {
+  margin-bottom: 16px;
 }

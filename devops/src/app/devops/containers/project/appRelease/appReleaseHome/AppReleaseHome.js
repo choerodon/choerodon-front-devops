@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -7,6 +7,8 @@ import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot'
 import '../../../main.scss';
 import '../AppRelease.scss';
 import editReleaseStore from '../../../../stores/project/appRelease/editRelease';
+import AppVersionStore from '../../../../stores/project/applicationVersion';
+import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
 
 const TabPane = Tabs.TabPane;
 const { AppState } = stores;
@@ -31,7 +33,9 @@ class AppReleaseHome extends Component {
 
   componentDidMount() {
     const { AppReleaseStore } = this.props;
-    AppReleaseStore.loadData({ projectId: this.state.projectId, key: this.state.key });
+    const { projectId, key } = this.state;
+    AppVersionStore.queryAppData(projectId);
+    AppReleaseStore.loadData({ projectId, key });
   }
 
   getColumn = () => {
@@ -238,6 +242,7 @@ class AppReleaseHome extends Component {
     const { AppReleaseStore } = this.props;
     const { name } = AppState.currentMenuType;
     const data = AppReleaseStore.getReleaseData;
+    const appData = AppVersionStore.getAppData;
     const { paras } = this.state;
     return (
       <Page
@@ -249,35 +254,36 @@ class AppReleaseHome extends Component {
         ]}
         className="c7n-region app-release-wrapper"
       >
-        <Header title={<FormattedMessage id="release.home.header.title" />}>
-          <Button
-            onClick={this.handleRefresh}
-          >
-            <i className="icon-refresh icon" />
-            <FormattedMessage id="refresh" />
-          </Button>
-        </Header>
-        <Content code="release" values={{ name }}>
-          <Tabs defaultActiveKey={this.state.key} onChange={this.handleChangeTabs} animated={false}>
-            <TabPane tab={<FormattedMessage id="release.home.app.unpublish" />} key="1">
-              {this.showProjectTable()}
-            </TabPane>
-            <TabPane tab={<FormattedMessage id="release.home.app.publish" />} key="2">
-              <Table
-                filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
-                loading={AppReleaseStore.loading}
-                pagination={AppReleaseStore.getPageInfo}
-                columns={this.getColumn()}
-                dataSource={data}
-                filters={paras.slice()}
-                rowKey={record => record.id}
-                onChange={this.tableChange}
-              />
-            </TabPane>
-          </Tabs>
-        </Content>
+        {appData && appData.length ? <Fragment>
+          <Header title={<FormattedMessage id="release.home.header.title" />}>
+            <Button
+              onClick={this.handleRefresh}
+            >
+              <i className="icon-refresh icon" />
+              <FormattedMessage id="refresh" />
+            </Button>
+          </Header>
+          <Content code="release" values={{ name }}>
+            <Tabs defaultActiveKey={this.state.key} onChange={this.handleChangeTabs} animated={false}>
+              <TabPane tab={<FormattedMessage id="release.home.app.unpublish" />} key="1">
+                {this.showProjectTable()}
+              </TabPane>
+              <TabPane tab={<FormattedMessage id="release.home.app.publish" />} key="2">
+                <Table
+                  filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
+                  loading={AppReleaseStore.loading}
+                  pagination={AppReleaseStore.getPageInfo}
+                  columns={this.getColumn()}
+                  dataSource={data}
+                  filters={paras.slice()}
+                  rowKey={record => record.id}
+                  onChange={this.tableChange}
+                />
+              </TabPane>
+            </Tabs>
+          </Content>
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="release.home.header.title" />} />}
       </Page>
-
     );
   }
 }

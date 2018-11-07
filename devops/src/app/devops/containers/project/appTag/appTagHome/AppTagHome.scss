@@ -9,7 +9,7 @@
   .c7n-tag-panel {
     display: inline-flex;
     width: calc(100% - 24px);
-    padding-left: 18px;
+    padding-left: 16px;
     flex-wrap: nowrap;
     justify-content: space-between;
     .c7n-tag-panel-info {
@@ -37,6 +37,11 @@
         }
         .c7n-tag-msg {
           word-break: break-all;
+          max-width: 570px;
+          display: inline-block;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         .c7n-tag-panel-person {
           vertical-align: top;

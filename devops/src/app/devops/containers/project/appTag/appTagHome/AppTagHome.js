@@ -13,6 +13,7 @@ import EditTag from '../editTag';
 import '../../../main.scss';
 import './AppTagHome.scss';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
+import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -269,7 +270,7 @@ class AppTagHome extends Component {
           'devops-service.devops-git.deleteTag',
         ]}
       >
-        <Header
+        {appId ? <Fragment><Header
           title={<FormattedMessage id="apptag.head" />}
           backPath={backPath}
         >
@@ -382,7 +383,7 @@ class AppTagHome extends Component {
           release={editRelease}
           show={editDisplay}
           close={this.displayEditModal}
-        /> : null}
+        /> : null}</Fragment> : <DepPipelineEmpty title={<FormattedMessage id="apptag.head" />} />}
       </Page>
     );
   }

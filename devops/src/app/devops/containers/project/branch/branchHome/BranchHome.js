@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component, Fragment} from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Tooltip, Modal, Table, Popover, Select, Icon } from 'choerodon-ui';
@@ -14,6 +14,7 @@ import IssueDetail from '../issueDetail';
 import '../commom.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
+import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -443,7 +444,7 @@ class BranchHome extends Component {
           'agile-service.work-log.queryWorkLogListByIssueId',
         ]}
       >
-        <Header
+        {appId ? <Fragment><Header
           title={<FormattedMessage id="branch.head" />}
           backPath={backPath}
         >
@@ -525,7 +526,7 @@ class BranchHome extends Component {
           ]}
         >
           <p>{formatMessage({ id: 'branch.delete.tooltip' })}</p>
-        </Modal>
+        </Modal></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="branch.head" />} />}
       </Page>
     );
   }

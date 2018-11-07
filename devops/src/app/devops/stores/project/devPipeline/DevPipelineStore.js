@@ -9,6 +9,7 @@ import MergeRequestStore from '../mergeRequest';
 import CiPipelineStore from '../ciPipelineManage';
 import DevConsoleStore from '../devConsole';
 import ReportsStore from '../reports';
+import DeploymentPipelineStore from '../deploymentPipeline';
 
 const { AppState } = stores;
 const START = moment().subtract(6, 'days').format().split('T')[0].replace(/-/g, '/');
@@ -113,6 +114,7 @@ class DevPipelineStore {
     BranchStore.setBranchList([]);
     if (Number(this.preProId) !== Number(projectId)) {
       this.setAppData([]);
+      DeploymentPipelineStore.setProRole('app', '');
     }
     this.setPreProId(projectId);
     axios.get(`/devops/v1/projects/${projectId}/apps`)
@@ -162,6 +164,7 @@ class DevPipelineStore {
             CiPipelineStore.setLoading(false);
             MergeRequestStore.setLoading(false);
             DevConsoleStore.setBranchLoading(false);
+            DeploymentPipelineStore.judgeRole('app');
           }
         }
       }).catch(err => Choerodon.handleResponseError(err));

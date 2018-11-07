@@ -588,9 +588,12 @@ input::-webkit-contacts-auto-fill-button {
 
 .c7n-header-select {
   max-width: 105px;
-  min-width: 70px;
   margin-right: 28px;
   font-weight: 500;
+
+  .icon-arrow_drop_down {
+    font-size: 18px;
+  }
 
   .ant-select-selection__rendered {
     margin-bottom: 0;

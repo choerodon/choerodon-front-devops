@@ -986,8 +986,9 @@ const zhCN = {
   'depPl.noPermission': '暂无权限',
   'depPl.noPerDes': '您目前还没有任何环境的管理权限，无法查看部署流水线相关内容。',
   'depPl.addPermission': '若需查看某个环境相关内容，请联系项目所有者进行权限添加。',
+  'empty.owner.noApp': '当前项目下无应用，请创建应用。',
+  'empty.member.noApp': '当前项目下无应用，请联系项目所有者进行创建。',
   'depPl.more': '了解更多',
-  'depPl.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
 
   ...pageDetail,
 };
