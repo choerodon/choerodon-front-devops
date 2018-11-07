@@ -6,6 +6,10 @@
 
 .c7n-status-progress {
   margin-left: 5px;
+  circle {
+    stroke: #3f51b5;
+    stroke-width: 7px;
+  }
 }
 
 .c7n-status-text {

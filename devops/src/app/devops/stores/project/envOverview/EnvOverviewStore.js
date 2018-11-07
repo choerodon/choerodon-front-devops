@@ -171,8 +171,7 @@ class EnvOverviewStore {
           if (data.length && this.tpEnvId) {
             switch (type) {
               case 'container':
-                const appId = ContainerStore.getappId
-                ContainerStore.loadAppDataByEnv(projectId, this.tpEnvId, appId);
+                const appId = ContainerStore.getappId;
                 ContainerStore.loadData(false, projectId, this.tpEnvId, appId);
                 break;
               case 'certificate':

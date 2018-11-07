@@ -43,7 +43,7 @@ function ExpandRow(props) {
         strokeDasharray={`${correct}, 10000`}
       />
       <text x="50%" y="32.5" className="c7n-pod-circle-num">{sum}</text>
-      <text x="50%" y="50" className="c7n-pod-circle-text">pod</text>
+      <text x="50%" y="50" className="c7n-pod-circle-text">{sum > 1 ? 'pods' : 'pod'}</text>
     </svg>);
     return (<div key={name} className="c7n-deploy-expanded-item">
       <ul className="c7n-deploy-expanded-text">
