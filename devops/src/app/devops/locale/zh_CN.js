@@ -233,6 +233,14 @@ const pageDetail = {
 
   // 开发控制台
   'devCs.title': '应用"{name}"的开发控制台',
+
+  // 集群
+  'cluster.description': '集群相关描述。',
+  'cluster.title': '组织"{name}"的集群',
+  'cluster.link': `${docServer}/user-guide/cluster-management/cluster`,
+  'cluster.create.title': '在组织"{name}"中创建集群',
+  'cluster.create.description': '创建集群描述。',
+  'cluster.create.link': `${docServer}/user-guide/cluster-management/cluster`,
 };
 
 const zhCN = {
@@ -988,6 +996,10 @@ const zhCN = {
   'depPl.addPermission': '若需查看某个环境相关内容，请联系项目所有者进行权限添加。',
   'depPl.more': '了解更多',
   'depPl.link': `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
+
+  // 集群
+  'cluster.head': '集群',
+  'cluster.create': '创建集群',
 
   ...pageDetail,
 };

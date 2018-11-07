@@ -2,8 +2,8 @@ import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-@store('TemplateStore')
-class TemplateStore {
+@store('ClusterStore')
+class ClusterStore {
   @observable allData = [];
 
   @observable isRefresh = false;
@@ -100,70 +100,7 @@ class TemplateStore {
         }
       });
   };
-
-  handleData =(data) => {
-    this.setAllData(data.content);
-    const { number, size, totalElements } = data;
-    const page = { number, size, totalElements };
-    this.setPageInfo(page);
-  };
-
-  loadSelectData =orgId => axios.get(`/devops/v1/organizations/${orgId}/app_templates`)
-    .then((data) => {
-      const res = this.handleProptError(data);
-      if (res) {
-        this.setSelectData(data);
-      }
-    });
-
-  loadDataById =(orgId, id) => axios.get(`/devops/v1/organizations/${orgId}/app_templates/${id}`).then((data) => {
-    const res = this.handleProptError(data);
-    if (res) {
-      this.setSingleData(data);
-    }
-  });
-
-  checkCode =(orgId, code) => axios.get(`/devops/v1/organizations/${orgId}/app_templates/checkCode?code=${code}`)
-    .then((data) => {
-      const res = this.handleProptError(data);
-      return res;
-    });
-
-  checkName = (orgId, name) => axios.get(`/devops/v1/organizations/${orgId}/app_templates/checkName?name=${name}`)
-    .then((data) => {
-      const res = this.handleProptError(data);
-      return res;
-    });
-
-  updateData = (orgId, data) => axios.put(`/devops/v1/organizations/${orgId}/app_templates`, JSON.stringify(data))
-    .then((datas) => {
-      const res = this.handleProptError(datas);
-      return res;
-    });
-
-  addData = (orgId, data) => axios.post(`/devops/v1/organizations/${orgId}/app_templates`, JSON.stringify(data))
-    .then((datas) => {
-      const res = this.handleProptError(datas);
-      return res;
-    });;
-
-  deleteData =(orgId, id) => axios.delete(`/devops/v1/organizations/${orgId}/app_templates/${id}`)
-    .then((datas) => {
-      const res = this.handleProptError(datas);
-      return res;
-    });
-
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      this.changeLoading(false);
-      this.changeIsRefresh(false);
-      return false;
-    } else {
-      return error;
-    }
-  }
 }
 
-const templateStore = new TemplateStore();
-export default templateStore;
+const clusterStore = new ClusterStore();
+export default clusterStore;

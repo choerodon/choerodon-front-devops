@@ -33,6 +33,10 @@
 "platform-reports": "报表"
 "platform-reports.reports": "DevOps报表"
 
+# 集群管理
+"cluster-management": "集群管理"
+"cluster-management.cluster": "集群"
+
 # 0.8版本废弃项
 "application-market": "应用市场"
 "application-market.application-market": "应用市场"
