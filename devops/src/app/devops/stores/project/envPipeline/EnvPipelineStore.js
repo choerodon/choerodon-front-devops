@@ -38,7 +38,7 @@ class EnvPipelineStore {
 
   @observable ban = false;
 
-  @observable sideType = 'key';
+  @observable sideType = '';
 
   @observable shell = '';
 
@@ -363,6 +363,10 @@ class EnvPipelineStore {
 
   banEnvById(projectId, id, active) {
     return axios.put(`/devops/v1/projects/${projectId}/envs/${id}/active?active=${active}`);
+  }
+
+  deleteEnv(projectId, id) {
+    return axios.delete(`/devops/v1/projects/${projectId}/envs/${id}`);
   }
 
   delGroupById(projectId, id) {
