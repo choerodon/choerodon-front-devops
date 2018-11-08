@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component, Fragment} from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Tabs, Icon, Select, Table, Tooltip } from 'choerodon-ui';
@@ -10,6 +10,7 @@ import './MergeRequestHome.scss';
 import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
+import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -422,7 +423,7 @@ class MergeRequestHome extends Component {
           'devops-service.devops-git.getUrl',
         ]}
       >
-        <Header
+        {appId ? <Fragment><Header
           title={<FormattedMessage id="merge.head" />}
           backPath={backPath}
         >
@@ -534,7 +535,7 @@ class MergeRequestHome extends Component {
               />
             </TabPane> : null}
           </Tabs>
-        </Content>
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="merge.head" />} />}
       </Page>
     );
   }

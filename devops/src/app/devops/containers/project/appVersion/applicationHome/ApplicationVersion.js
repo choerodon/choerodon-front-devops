@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Table, Button, Select } from 'choerodon-ui';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
@@ -8,6 +8,7 @@ import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
 import './ApplicationVersion.scss';
 import '../../../main.scss';
+import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -145,38 +146,40 @@ class ApplicationVersion extends Component {
           'devops-service.application-version.pageByOptions',
         ]}
       >
-        <Header title={<FormattedMessage id="app.version" />}>
-          <Button
-            onClick={this.handleRefresh}
-          >
-            <i className="icon-refresh icon" />
-            <FormattedMessage id="refresh" />
-          </Button>
-        </Header>
-        <Content code="appVer" values={{ name }}>
-          <Select
-            className="c7n-select_512 c7n-appVersion-select"
-            value={appId}
-            label={this.props.intl.formatMessage({ id: 'chooseApp' })}
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            filter
-            onChange={this.handleAppSelect}
-          >
-            {
-              _.map(appData, app => <Option key={app.id} value={app.id}>{app.name}</Option>)
-            }
-          </Select>
-          <Table
-            filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
-            loading={AppVersionStore.loading}
-            pagination={AppVersionStore.pageInfo}
-            columns={columns}
-            filters={param || []}
-            dataSource={versionData}
-            rowKey={record => record.id}
-            onChange={this.tableChange}
-          />
-        </Content>
+        {appData && appData.length ? <Fragment>
+          <Header title={<FormattedMessage id="app.version" />}>
+            <Button
+              onClick={this.handleRefresh}
+            >
+              <i className="icon-refresh icon" />
+              <FormattedMessage id="refresh" />
+            </Button>
+          </Header>
+          <Content code="appVer" values={{ name }}>
+            <Select
+              className="c7n-select_512 c7n-appVersion-select"
+              value={appId}
+              label={this.props.intl.formatMessage({ id: 'chooseApp' })}
+              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              filter
+              onChange={this.handleAppSelect}
+            >
+              {
+                _.map(appData, app => <Option key={app.id} value={app.id}>{app.name}</Option>)
+              }
+            </Select>
+            <Table
+              filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
+              loading={AppVersionStore.loading}
+              pagination={AppVersionStore.pageInfo}
+              columns={columns}
+              filters={param || []}
+              dataSource={versionData}
+              rowKey={record => record.id}
+              onChange={this.tableChange}
+            />
+          </Content>
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="app.version" />} />}
       </Page>
     );
   }

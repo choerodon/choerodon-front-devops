@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component, Fragment} from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Table, Tooltip, Popover, Select } from 'choerodon-ui';
@@ -11,6 +11,7 @@ import './CiPipelineHome.scss';
 import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
+import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 
 const { Option, OptGroup } = Select;
 const ICONS = {
@@ -242,7 +243,7 @@ class CiPipelineHome extends Component {
           {
             record.pipelineUserUrl
               ? <img className="c7n-image-avatar m8" src={record.pipelineUserUrl} alt="avatar" />
-              : <span className="c7n-avatar m8 mt3">{record.pipelineUserName ? record.pipelineUserName.substring(0, 1) : ''}</span>
+              : <span className="c7n-avatar m8 mt3">{record.pipelineUserName ? record.pipelineUserName.substring(0, 1).toUpperCase() : ''}</span>
           }
         </Tooltip>
       </div>
@@ -305,7 +306,7 @@ class CiPipelineHome extends Component {
           {
             record.commitUserUrl
               ? <img className="c7n-image-avatar" src={record.commitUserUrl} alt="avatar" />
-              : <span className="c7n-avatar mr7">{ record.commitUserName ? record.commitUserName.substring(0, 1) : '' }</span>
+              : <span className="c7n-avatar mr7">{ record.commitUserName ? record.commitUserName.substring(0, 1).toUpperCase() : '' }</span>
           }
         </Tooltip>
         <MouserOverWrapper text={record.commitContent} width={0.2}>
@@ -424,7 +425,7 @@ class CiPipelineHome extends Component {
           'devops-service.devops-gitlab-pipeline.pagePipeline',
         ]}
       >
-        <Header title={<FormattedMessage id="ciPipeline.head" />}>
+        {appId ? <Fragment><Header title={<FormattedMessage id="ciPipeline.head" />}>
           <Select
             filter
             className="c7n-header-select"
@@ -460,7 +461,7 @@ class CiPipelineHome extends Component {
         </Header>
         <Content code={appData.length ? 'ciPipeline.app' : 'ciPipeline'} values={{ name: titleName }}>
           {this.tableCiPipeline}
-        </Content>
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ciPipeline.head" />} />}
       </Page>
     );
   }

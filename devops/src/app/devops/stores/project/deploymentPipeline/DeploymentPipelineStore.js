@@ -6,12 +6,12 @@ const { AppState } = stores;
 
 @store('DeploymentPipelineStore')
 class DeploymentPipelineStore {
-  @observable proRole = '';
+  @observable proRole = {app: '', env: ''};
 
   @observable envLine = [];
 
-  @action setProRole(data) {
-    this.proRole = data;
+  @action setProRole(flag, data) {
+    this.proRole[flag] = data;
   }
 
   @computed get getProRole() {
@@ -29,7 +29,7 @@ class DeploymentPipelineStore {
   /**
    * 判断该角色是否有权限创建环境
    */
-  judgeRole = () => {
+  judgeRole = (flag='env') => {
     const { projectId, organizationId, type } = AppState.currentMenuType;
     const datas = [{
       code: 'devops-service.devops-environment.create',
@@ -42,7 +42,7 @@ class DeploymentPipelineStore {
         const res = this.handleProptError(data);
         if (res && res.length) {
           const { approve } = res[0];
-          this.setProRole(approve ? 'owner' : 'member');
+          this.setProRole(flag, approve ? 'owner' : 'member');
         }
       });
   };

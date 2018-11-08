@@ -25,6 +25,7 @@ import CreateBranch from '../../branch/CreateBranch';
 import MergeRequestStore from '../../../../stores/project/mergeRequest';
 import StatusTags from '../../../../components/StatusTags';
 import ReportsStore from '../../../../stores/project/reports/ReportsStore';
+import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -678,7 +679,7 @@ class DevConsole extends Component {
           'devops-service.devops-git.getMergeRequestList',
         ]}
       >
-        <Header title={<FormattedMessage id="devCs.head" />}>
+        {appId ? <Fragment><Header title={<FormattedMessage id="devCs.head" />}>
           <Select
             filter
             className="c7n-header-select"
@@ -723,7 +724,7 @@ class DevConsole extends Component {
           </Button>
         </Header>
         <Content>
-          <div className="c7n-dc-content_1">
+          <div className="c7n-dc-content_1 mb25">
             <div className="page-content-header">
               <div className="title">{appData.length && appId ? `应用"${titleName}"的开发控制台` : `项目"${titleName}"的开发控制台`}</div>
               {appData && appData.length ? <Fragment>
@@ -792,11 +793,11 @@ class DevConsole extends Component {
               }
             </div>
           </div>
-          <div className="c7n-dc-content_1">
+          <div className="c7n-dc-content_1 mb16">
             <div className="c7n-dc-card-wrap c7n-dc-card-branch">
               <div className="c7n-dc-card-title">
                 <Icon type="branch" />
-                <FormattedMessage id="branch.branch" />
+                <FormattedMessage id="app.branchManage" />
               </div>
               {branchLoading ? <LoadingBar display /> : (this.getBranch())}
             </div>
@@ -898,7 +899,7 @@ class DevConsole extends Component {
           visible={editBranch}
           onClose={this.closeEditBranch}
           isDevConsole
-        /> : null}
+        /> : null}</Fragment> : <DepPipelineEmpty title={<FormattedMessage id="devCs.head" />} />}
       </Page>
     );
   }

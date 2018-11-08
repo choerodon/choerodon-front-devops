@@ -8,7 +8,7 @@
 .c7n-md-parse h1,.c7n-md-parse h2,.c7n-md-parse h3,.c7n-md-parse h4,.c7n-md-parse h5,.c7n-md-parse h6,.c7n-md-parse noframes,
 .c7n-md-parse ol,.c7n-md-parse p,.c7n-md-parse ul,.c7n-md-parse center,.c7n-md-parse dir,.c7n-md-parse hr,.c7n-md-parse menu,
 .c7n-md-parse pre { display: block }
-.c7n-md-parse li { display: list-item }
+.c7n-md-parse li { display: list-item; margin-bottom: 5px }
 .c7n-md-parse head { display: none }
 .c7n-md-parse table { display: table }
 .c7n-md-parse tr { display: table-row }
@@ -22,13 +22,13 @@
 .c7n-md-parse th { font-weight: bolder; text-align: center }
 .c7n-md-parse caption { text-align: center }
 .c7n-md-parse body { margin: 8px; line-height: 1.12 }
-.c7n-md-parse h1 { font-size: 2em; margin: .67em 0;line-height: 1.5em }
-.c7n-md-parse h2 { font-size: 1.5em; margin: .75em 0;line-height: 1.5em }
-.c7n-md-parse h3 { font-size: 1.17em; margin: .83em 0;line-height: 1.5em }
-.c7n-md-parse h4 { font-size: 1.09em; margin: 1.12em 0;line-height: 1.5em }
-.c7n-md-parse h4,.c7n-md-parse p,.c7n-md-parse blockquote,.c7n-md-parse ul,.c7n-md-parse fieldset, .c7n-md-parse form,.c7n-md-parse ol,.c7n-md-parse dl,.c7n-md-parse dir,.c7n-md-parse menu { margin: 1.12em 0 }
-.c7n-md-parse h5 { font-size: .83em; margin: 1.5em 0;line-height: 1.5em }
-.c7n-md-parse h6 { font-size: .75em; margin: 1.67em 0;line-height: 1.5em }
+.c7n-md-parse h1 { font-size: 2em; line-height: 1.5em }
+.c7n-md-parse h2 { font-size: 1.5em; line-height: 1.5em }
+.c7n-md-parse h3 { font-size: 1.17em; line-height: 1.5em }
+.c7n-md-parse h4 { font-size: 1.09em; line-height: 1.5em }
+.c7n-md-parse blockquote,.c7n-md-parse fieldset, .c7n-md-parse form,.c7n-md-parse dl,.c7n-md-parse dir,.c7n-md-parse menu { margin: 1.12em 0 }
+.c7n-md-parse h5 { font-size: .83em; line-height: 1.5em }
+.c7n-md-parse h6 { font-size: .75em; line-height: 1.5em }
 .c7n-md-parse h1, .c7n-md-parse h2, .c7n-md-parse h3, .c7n-md-parse h4, .c7n-md-parse h5, .c7n-md-parse h6, .c7n-md-parse b,.c7n-md-parse strong { font-weight: bolder }
 .c7n-md-parse blockquote { margin-left: 40px; margin-right: 40px }
 .c7n-md-parse i, .c7n-md-parse cite, .c7n-md-parse em,.c7n-md-parse var,.c7n-md-parse address { font-style: italic }
@@ -44,7 +44,7 @@
 .c7n-md-parse td, .c7n-md-parse th { vertical-align: inherit }
 .c7n-md-parse s, .c7n-md-parse strike,.c7n-md-parse  del { text-decoration: line-through }
 .c7n-md-parse hr { border: 1px inset }
-.c7n-md-parse ol, .c7n-md-parse ul,.c7n-md-parse  dir, .c7n-md-parse menu, .c7n-md-parse dd { margin-left: 40px }
+.c7n-md-parse ol, .c7n-md-parse ul,.c7n-md-parse  dir, .c7n-md-parse menu, .c7n-md-parse dd { margin-left: 16px }
 .c7n-md-parse ol { list-style-type: decimal }
 .c7n-md-parse ol ul,.c7n-md-parse ul ol, .c7n-md-parse ul ul, .c7n-md-parse ol ol { margin-top: 0; margin-bottom: 0 }
 .c7n-md-parse u,.c7n-md-parse ins { text-decoration: underline }
