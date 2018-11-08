@@ -414,6 +414,8 @@ class DeploymentAppHome extends Component {
     const { DeploymentAppStore, intl } = this.props;
     const { formatMessage } = intl;
     const envs = EnvOverviewStore.getEnvcard;
+    const envId = EnvOverviewStore.getTpEnvId;
+    const env = _.filter(envs, { 'connect': true, 'id': envId });
     const data = this.state.yaml || DeploymentAppStore.value;
     return (
       <div className="deployApp-env">
@@ -426,7 +428,7 @@ class DeploymentAppHome extends Component {
             <span className="section-title">{formatMessage({ id: 'deploy.step.two.env.title' })}</span>
           </div>
           <Select
-            value={this.state.envId}
+            value={env && env.length ? env[0].id : this.state.envId}
             label={<span className="deploy-text">{formatMessage({ id: 'deploy.step.two.env' })}</span>}
             className="section-text-margin"
             onSelect={this.handleSelectEnv}
@@ -626,12 +628,21 @@ class DeploymentAppHome extends Component {
     );
   }
 
+  /**
+   * 环境选择请求函数
+   * @param value
+   */
+  handleEnvSelect = (value) => {
+    EnvOverviewStore.setTpEnvId(value);
+  };
+
   render() {
     const { DeploymentAppStore, intl } = this.props;
     const { formatMessage } = intl;
     const data = DeploymentAppStore.value;
     const projectName = AppState.currentMenuType.name;
     const { appId, versionId, envId, instanceId, mode, value, current } = this.state;
+    const envData = EnvOverviewStore.getEnvcard;
     const { getTpEnvId } = EnvOverviewStore;
     return (
       <Page
@@ -649,7 +660,26 @@ class DeploymentAppHome extends Component {
         ]}
         className="c7n-region c7n-deployApp"
       >
-        {getTpEnvId ? <Fragment><Header title={<FormattedMessage id="deploy.header.title" />} />
+        {getTpEnvId ? <Fragment><Header title={<FormattedMessage id="deploy.header.title" />}>
+          <Select
+            className={`${getTpEnvId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
+            dropdownClassName="c7n-header-env_drop"
+            placeholder={formatMessage({ id: 'envoverview.noEnv' })}
+            value={envData && envData.length ? getTpEnvId : undefined}
+            disabled={envData && envData.length === 0}
+            onChange={this.handleEnvSelect}
+          >
+            {_.map(envData,  e => (
+              <Option key={e.id} value={e.id} disabled={!e.permission} title={e.name}>
+                <Tooltip placement="right" title={e.name}>
+                    <span className="c7n-ib-width_100">
+                      {e.connect ? <span className="c7n-ist-status_on" /> : <span className="c7n-ist-status_off" />}
+                      {e.name}
+                    </span>
+                </Tooltip>
+              </Option>))}
+          </Select>
+        </Header>
         <Content className="c7n-deployApp-wrapper" code="deploy" values={{ name: projectName }}>
           <div className="deployApp-card">
             <Steps current={this.state.current}>

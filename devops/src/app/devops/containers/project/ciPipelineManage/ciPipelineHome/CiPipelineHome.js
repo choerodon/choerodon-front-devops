@@ -243,7 +243,7 @@ class CiPipelineHome extends Component {
           {
             record.pipelineUserUrl
               ? <img className="c7n-image-avatar m8" src={record.pipelineUserUrl} alt="avatar" />
-              : <span className="c7n-avatar m8 mt3">{record.pipelineUserName ? record.pipelineUserName.substring(0, 1) : ''}</span>
+              : <span className="c7n-avatar m8 mt3">{record.pipelineUserName ? record.pipelineUserName.substring(0, 1).toUpperCase() : ''}</span>
           }
         </Tooltip>
       </div>
@@ -306,7 +306,7 @@ class CiPipelineHome extends Component {
           {
             record.commitUserUrl
               ? <img className="c7n-image-avatar" src={record.commitUserUrl} alt="avatar" />
-              : <span className="c7n-avatar mr7">{ record.commitUserName ? record.commitUserName.substring(0, 1) : '' }</span>
+              : <span className="c7n-avatar mr7">{ record.commitUserName ? record.commitUserName.substring(0, 1).toUpperCase() : '' }</span>
           }
         </Tooltip>
         <MouserOverWrapper text={record.commitContent} width={0.2}>

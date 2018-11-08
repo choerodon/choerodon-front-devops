@@ -146,7 +146,7 @@ class RepositoryHome extends Component {
     const { intl, RepositoryStore } = this.props;
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const { param, filters, sort: { columnKey, order } } = this.state;
-    const { getRepoData } = RepositoryStore;
+    const { getRepoData, getPageInfo, loading } = RepositoryStore;
     const columns = [{
       title: <FormattedMessage id="repository.repository" />,
       dataIndex: 'code',
@@ -201,9 +201,9 @@ class RepositoryHome extends Component {
           <Content code="repository" values={{ name }}>
             <Table
               filterBarPlaceholder={intl.formatMessage({ id: 'filter' })}
-              loading={RepositoryStore.loading}
+              loading={loading}
               onChange={this.tableChange}
-              pagination={RepositoryStore.getPageInfo}
+              pagination={getPageInfo}
               columns={columns}
               filters={param || []}
               dataSource={getRepoData}
