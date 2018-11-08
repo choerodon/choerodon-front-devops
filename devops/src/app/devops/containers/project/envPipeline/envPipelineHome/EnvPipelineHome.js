@@ -93,9 +93,9 @@ class EnvPipelineHome extends Component {
     super(props);
     this.state = {
       submitting: false,
-      token: null,
-      copyMsg: props.intl.formatMessage({ id: 'envPl.code.copy.tooltip' }),
       moveBan: false,
+      delEnvShow: false,
+      delEnv: null,
       moveRight: 300,
       createSelectedRowKeys: [],
     };
@@ -157,33 +157,12 @@ class EnvPipelineHome extends Component {
    * 关闭侧边栏
    */
   handleCancelFun = () => {
-    const { EnvPipelineStore } = this.props;
-    const sideType = EnvPipelineStore.getSideType;
-    if (sideType === 'token') {
-      this.loadEnvs();
-    }
+    const { EnvPipelineStore, form: { resetFields } } = this.props;
     this.setState({ createSelectedRowKeys: [], createSelected: [] });
     EnvPipelineStore.setShow(false);
     EnvPipelineStore.setEnvData(null);
     EnvPipelineStore.setSelectedRk([]);
-    this.props.form.resetFields();
-  };
-
-  /**
-   * 环境启用
-   * @param id 环境ID
-   */
-  actEnv = (id) => {
-    const { EnvPipelineStore } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    EnvPipelineStore.banEnvById(projectId, id, true)
-      .then((data) => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else if (data) {
-          this.loadEnvs();
-        }
-      });
+    resetFields();
   };
 
   /**
@@ -230,17 +209,59 @@ class EnvPipelineHome extends Component {
     }
   };
 
+
   /**
-   * 辅助函数
+   * 环境启用
+   * @param id 环境ID
    */
-  handleCopy =() => {
-    const { intl: { formatMessage } } = this.props;
-    this.setState({ copyMsg: formatMessage({ id: 'envPl.token.coped' }) });
+  actEnv = (id) => {
+    const { EnvPipelineStore } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    EnvPipelineStore.banEnvById(projectId, id, true)
+      .then((data) => {
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else if (data) {
+          this.loadEnvs();
+        }
+      });
   };
 
-  mouseEnter = () => {
-    const { intl: { formatMessage } } = this.props;
-    this.setState({ copyMsg: formatMessage({ id: 'envPl.code.copy.tooltip' }) });
+  /**
+   * 删除停用区的环境
+   */
+  deleteEnv = () => {
+    const { EnvPipelineStore } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    const { delEnv } = this.state;
+    this.setState({ submitting: true });
+    EnvPipelineStore.deleteEnv(projectId, delEnv)
+      .then((data) => {
+        this.setState({ submitting: false });
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          this.loadEnvs();
+          this.closeDelEnvModal();
+        }
+      })
+      .catch((error) => {
+        this.setState({ submitting: false });
+        Choerodon.handleResponseError(err);
+      });
+  };
+
+  showDelEnvModal = (id) => {
+    this.setState({
+      delEnvShow: true,
+      delEnv: id,
+    });
+  };
+
+  closeDelEnvModal = () => {
+    this.setState({
+      delEnvShow: false,
+    });
   };
 
   /**
@@ -269,8 +290,7 @@ class EnvPipelineHome extends Component {
                 Choerodon.prompt(res.message);
               } else {
                 this.loadEnvs();
-                EnvPipelineStore.setSideType('token');
-                this.setState({ token: res, submitting: false, createSelectedRowKeys: [], createSelected: [] });
+                this.setState({ submitting: false, createSelectedRowKeys: [], createSelected: [] });
               }
             }
           });
@@ -333,21 +353,17 @@ class EnvPipelineHome extends Component {
    * @param type
    * @returns {*}
    */
-  showTitle = (type) => {
+  showTitle = (type = 'default') => {
     const { intl: { formatMessage } } = this.props;
-    if (type === 'create') {
-      return formatMessage({ id: 'envPl.create' });
-    } else if (type === 'edit') {
-      return formatMessage({ id: 'envPl.edit' });
-    } else if (type === 'createGroup') {
-      return formatMessage({ id: 'envPl.group.create' });
-    } else if (type === 'editGroup') {
-      return formatMessage({ id: 'envPl.group.edit' });
-    } else if (type === 'permission') {
-      return formatMessage({ id: 'envPl.authority' });
-    } else {
-      return formatMessage({ id: 'envPl.token.copy.tooltip' });
-    }
+    const msg = {
+      create: 'create',
+      edit: 'edit',
+      createGroup: 'group.create',
+      editGroup: 'group.edit',
+      permission: 'authority',
+      default: '',
+    };
+    return formatMessage({ id: `envPl.${msg[type]}`});
   };
 
   /**
@@ -357,13 +373,21 @@ class EnvPipelineHome extends Component {
    */
   okText = (type) => {
     const { intl: { formatMessage } } = this.props;
-    if (type === 'create' || type === 'createGroup') {
-      return formatMessage({ id: 'create' });
-    } else if (type === 'edit' || type === 'editGroup' || type === 'permission') {
-      return formatMessage({ id: 'save' });
-    } else {
-      return formatMessage({ id: 'envPl.close' });
+    let text = '';
+    switch (type) {
+      case 'create':
+      case 'createGroup':
+        text = 'create';
+        break;
+      case 'edit':
+      case 'editGroup':
+      case 'permission':
+        text = 'save';
+        break;
+      default:
+        text = 'envPl.close';
     }
+    return formatMessage({ id: text });
   };
 
   /**
@@ -482,7 +506,7 @@ class EnvPipelineHome extends Component {
 
   render() {
     const { EnvPipelineStore, intl: { formatMessage }, form: { getFieldDecorator } } = this.props;
-    const { copyMsg, token, moveBan, submitting, createSelectedRowKeys, createSelected } = this.state;
+    const { moveBan, submitting, createSelectedRowKeys, createSelected, delEnvShow } = this.state;
     const { id: projectId, organizationId, type, name } = AppState.currentMenuType;
     const {
       getEnvcardPosition: envcardPosition,
@@ -529,9 +553,22 @@ class EnvPipelineHome extends Component {
                 <Button
                   shape="circle"
                   onClick={this.actEnv.bind(this, env.id)}
-                >
-                  <i className="icon icon-finished" />
-                </Button>
+                  icon="finished"
+                />
+              </Tooltip>
+            </Permission>
+            <Permission
+              service={['devops-service.devops-environment.enableOrDisableEnv']}
+              organizationId={organizationId}
+              projectId={projectId}
+              type={type}
+            >
+              <Tooltip title={<FormattedMessage id="envPl.delete" />}>
+                <Button
+                  shape="circle"
+                  onClick={this.showDelEnvModal.bind(this, env.id)}
+                  icon="delete_forever"
+                />
               </Tooltip>
             </Permission>
           </div>
@@ -547,14 +584,6 @@ class EnvPipelineHome extends Component {
         </div>
       </div>));
     }
-
-    const suffix = (<Tooltip placement="right" trigger="hover" title={copyMsg}>
-      <div onMouseEnter={this.mouseEnter}>
-        <CopyToBoard text={shell || token} onCopy={this.handleCopy}>
-          <i className="icon icon-library_books" />
-        </CopyToBoard>
-      </div>
-    </Tooltip>);
 
     const BoardDom = _.map(envcardPosition, e => <Board projectId={Number(projectId)} key={e.devopsEnvGroupId} groupId={e.devopsEnvGroupId} Title={e.devopsEnvGroupName} envcardPositionChild={e.devopsEnviromentRepDTOs || []} />);
 
@@ -699,36 +728,6 @@ class EnvPipelineHome extends Component {
           </div>
           <div className="c7n-env-tag-wrap">
             {tagCreateDom}
-          </div>
-        </div>);
-        break;
-      case 'token':
-        formContent = (<div className="c7n-env-token c7n-sidebar-form">
-          <div className="c7n-env-shell-wrap">
-            <TextArea
-              label={<FormattedMessage id="envPl.token" />}
-              className="c7n-input-readOnly"
-              autosize
-              copy="true"
-              readOnly
-              value={this.state.token || ''}
-            />
-            <span className="c7n-env-copy">{suffix}</span>
-          </div>
-        </div>);
-        break;
-      case 'key':
-        formContent = (<div className="c7n-env-token c7n-sidebar-form">
-          <div className="c7n-env-shell-wrap">
-            <TextArea
-              label={<FormattedMessage id="envPl.token" />}
-              className="c7n-input-readOnly"
-              autosize
-              copy="true"
-              readOnly
-              value={shell || ''}
-            />
-            <span className="c7n-env-copy">{suffix}</span>
           </div>
         </div>);
         break;
@@ -878,7 +877,7 @@ class EnvPipelineHome extends Component {
           <Sidebar
             title={this.showTitle(sideType)}
             visible={show}
-            onOk={(sideType === 'token' || sideType === 'key') ? this.handleCancelFun : this.handleSubmit}
+            onOk={this.handleSubmit}
             onCancel={this.handleCancelFun.bind(this)}
             confirmLoading={submitting}
             okCancel={showBtns}
@@ -906,6 +905,17 @@ class EnvPipelineHome extends Component {
               <span>{ist.length > 0 ? formatMessage({ id: 'envPl.confirm.content.hasInstance' })
                 : formatMessage({ id: 'envPl.confirm.content.noInstance' })}</span>
             </div>)}
+          </Modal>
+          <Modal
+            visible={delEnvShow}
+            width={400}
+            onOk={this.deleteEnv}
+            onCancel={this.closeDelEnvModal}
+            closable={false}
+            confirmLoading={submitting}
+            wrapClassName="vertical-center-modal remove"
+          >
+            {formatMessage({ id: 'envPl.delete.warn' })}
           </Modal>
           {showGroup ? <EnvGroup store={EnvPipelineStore} okText={this.okText} showTitle={this.showTitle} /> : null}
           {EnvPipelineStore.getIsLoading ? <LoadingBar display />

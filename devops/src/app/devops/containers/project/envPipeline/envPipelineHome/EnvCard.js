@@ -84,22 +84,6 @@ class EnvCard extends Component {
               ? (<React.Fragment>
                 <span>{cardData.name}</span>
                 <div className="c7n-env-card-action">
-                  {cardData.connect ? null : <Permission
-                    service={['devops-service.devops-environment.queryShell']}
-                    organizationId={organizationId}
-                    projectId={projectId}
-                    type={type}
-                  >
-                    <Tooltip title={<FormattedMessage id="envPl.active" />}>
-                      <Button
-                        funcType="flat"
-                        shape="circle"
-                        onClick={this.copyKey.bind(this, cardData.id, cardData.update)}
-                      >
-                        <Icon type="vpn_key" />
-                      </Button>
-                    </Tooltip>
-                  </Permission>}
                   <Permission
                     service={['devops-service.devops-environment.updateEnvUserPermission']}
                     organizationId={organizationId}

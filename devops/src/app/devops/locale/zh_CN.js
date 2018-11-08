@@ -480,6 +480,8 @@ const zhCN = {
   'envPl.group.create': '创建分组',
   'envPl.group.edit': '编辑分组',
   'envPl.group.del': '删除分组',
+  'envPl.delete': '删除环境',
+  'envPl.delete.warn':'删除该环境后，与该环境相关的所有对象均会被永久删除，不可恢复！确定要删除吗？',
   'envPl.edit': '修改环境',
   'envPl.update': '修改环境',
   'envPl.form.name': '环境名称',
