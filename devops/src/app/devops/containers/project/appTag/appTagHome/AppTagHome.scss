@@ -88,7 +88,7 @@
     }
   }
   .c7n-tag-release {
-    padding-left: 40px;
+    padding-left: 60px;
   }
   .c7n-tag-pagin {
     display: flex;
@@ -110,5 +110,9 @@
       color: #a9a9a9;
       font-size: 20px;
     }
+  }
+  .ant-collapse-content-box {
+    padding-top: 0 !important;
+    padding-bottom: 12px;
   }
 }
