@@ -161,6 +161,36 @@ class Cluster extends Component {
   };
 
   /**
+   * table 操作
+   * @param pagination
+   * @param filters
+   * @param sorter
+   * @param paras
+   */
+  tableChange =(pagination, filters, sorter, paras) => {
+    const { ClusterStore } = this.props;
+    const { organizationId } = AppState.currentMenuType;
+    ClusterStore.setInfo({ filters, sort: sorter, paras });
+    let sort = { field: '', order: 'desc' };
+    if (sorter.column) {
+      sort.field = sorter.field || sorter.columnKey;
+      if(sorter.order === 'ascend') {
+        sort.order = 'asc';
+      } else if(sorter.order === 'descend'){
+        sort.order = 'desc';
+      }
+    }
+    let page = pagination.current - 1;
+    const postData = [paras.toString()];
+    if (this.state.sideType === 'create') {
+      ClusterStore.loadPro(organizationId, null, page, pagination.pageSize, sort, postData);
+    } else {
+      const id = ClusterStore.getClsData.id;
+      ClusterStore.loadPro(organizationId, id, page, pagination.pageSize, sort, postData);
+    }
+  };
+
+  /**
    * 辅助函数
    */
   handleCopy = () => {
@@ -333,14 +363,10 @@ class Cluster extends Component {
     </Tooltip>);
     const columns = [{
       key: 'name',
-      filters: [],
-      filteredValue: filters.name || [],
       title: formatMessage({ id: 'cluster.project.name' }),
       dataIndex: 'name',
     }, {
       key: 'code',
-      filters: [],
-      filteredValue: filters.code || [],
       title: formatMessage({ id: 'cluster.project.code' }),
       dataIndex: 'code',
     }];
@@ -535,30 +561,6 @@ class Cluster extends Component {
           </Form>
         </div>);
         break;
-      case 'permission':
-        formContent = (<div>
-          <div className="c7n-sidebar-form">
-            <Table
-              className="c7n-env-noTotal"
-              rowSelection={rowSelection}
-              dataSource={prmMbr}
-              columns={columns}
-              filterBarPlaceholder={formatMessage({ id: 'filter' })}
-              pagination={getPageInfo}
-              loading={loading}
-              onChange={this.tableChange}
-              rowKey={record => record.iamUserId}
-              filters={paras.slice()}
-            />
-          </div>
-          <div className="c7n-env-tag-title">
-            <FormattedMessage id="envPl.authority.member" />
-          </div>
-          <div className="c7n-env-tag-wrap">
-            {tagDom}
-          </div>
-        </div>);
-        break;
       default:
         formContent = null;
     }
@@ -640,6 +642,9 @@ class Cluster extends Component {
     this.setState({ checked: true, show: false, createSelectedRowKeys: [], createSelected: [] });
     ClusterStore.setClsData(null);
     ClusterStore.setSelectedRk([]);
+    ClusterStore.setInfo({
+      filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+    });
     this.props.form.resetFields();
   };
 
@@ -653,7 +658,7 @@ class Cluster extends Component {
     const { organizationId } = AppState.currentMenuType;
     if (sideType === 'create') {
       this.setState({ checked: true });
-      ClusterStore.loadPro(organizationId);
+      ClusterStore.loadPro(organizationId, null, 0, HEIGHT <= 900 ? 10 : 15);
     } else if (sideType === 'edit') {
       ClusterStore.loadClsById(organizationId, id)
         .then((data) => {
@@ -663,7 +668,7 @@ class Cluster extends Component {
             this.setState({ checked: data.skipCheckProjectPermission });
           }
         });
-      ClusterStore.loadPro(organizationId, id);
+      ClusterStore.loadPro(organizationId, id, 0, HEIGHT <= 900 ? 10 : 15);
       ClusterStore.loadTagKeys(organizationId, id);
     } else if (sideType === 'key') {
       ClusterStore.loadShell(organizationId, id);
