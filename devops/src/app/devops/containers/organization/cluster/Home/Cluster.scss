@@ -143,3 +143,19 @@ $fal: #f44336;
 .c7n-cls-pagination {
   float: right;
 }
+
+.c7n-cls-del-modal {
+  width: 608px !important;
+}
+
+.c7n-cls-shell-input {
+  margin: 8px 0 24px 0;
+
+  input {
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .ant-input-underline {
+    border-bottom-style: dashed;
+  }
+}
