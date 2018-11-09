@@ -7,7 +7,7 @@ import { DragSource } from 'react-dnd';
 import { Button, Tooltip, Icon } from 'choerodon-ui';
 import { Permission } from 'choerodon-front-boot';
 import './EnvPipeLineHome.scss';
-import EnvPipelineStore from '../../../../stores/project/envPipeline';
+import EnvPipelineStore from '../../../stores/project/envPipeline';
 
 const ItemTypes = {
   ENVCARD: 'envCard',
@@ -49,13 +49,13 @@ class EnvCard extends Component {
     EnvPipelineStore.setShow(true);
   };
 
-  copyKey = (id, update) => {
-    const { projectId } = this.props;
-    EnvPipelineStore.setSideType('key');
-    EnvPipelineStore.loadEnvById(projectId, id);
-    EnvPipelineStore.loadShell(projectId, id, update);
-    EnvPipelineStore.setShow(true);
-  };
+  // copyKey = (id, update) => {
+  //   const { projectId } = this.props;
+  //   EnvPipelineStore.setSideType('key');
+  //   EnvPipelineStore.loadEnvById(projectId, id);
+  //   EnvPipelineStore.loadShell(projectId, id, update);
+  //   EnvPipelineStore.setShow(true);
+  // };
 
   banEnv = (id) => {
     const { projectId } = this.props;

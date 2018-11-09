@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { DropTarget } from 'react-dnd';
 import _ from 'lodash';
 import Square from './Square';
-import EnvPipelineStore from '../../../../stores/project/envPipeline';
+import EnvPipelineStore from '../../../stores/project/envPipeline/index';
 
 const ItemTypes = {
   ENVCARD: 'envCard',

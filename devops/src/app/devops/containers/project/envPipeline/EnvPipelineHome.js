@@ -9,9 +9,9 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import CopyToBoard from 'react-copy-to-clipboard';
 import Board from './Board';
-import LoadingBar from '../../../../components/loadingBar';
+import LoadingBar from '../../../components/loadingBar/index';
 import EnvGroup from './EnvGroup';
-import '../../../main.scss';
+import '../../main.scss';
 import './EnvPipeLineHome.scss';
 
 /**
@@ -46,19 +46,22 @@ class EnvPipelineHome extends Component {
    */
   checkCode = _.debounce((rule, value, callback) => {
     const { EnvPipelineStore, intl: { formatMessage } } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
-    if (value && pa.test(value)) {
-      EnvPipelineStore.loadCode(projectId, value)
-        .then((error) => {
-          if (error && error.failed) {
-            callback(formatMessage({ id: 'envPl.code.check.exist' }));
-          } else {
-            callback();
-          }
-        });
-    } else if (value && !pa.test(value)) {
-      callback(formatMessage({ id: 'envPl.code.check.failed' }));
+    const { cluster } = this.state;
+    if (cluster && value) {
+      const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
+      const { id: projectId } = AppState.currentMenuType;
+      if (pa.test(value)) {
+        EnvPipelineStore.checkEnvCode(projectId, cluster, value)
+          .then((data) => {
+            if (data && data.failed) {
+              callback(formatMessage({ id: 'envPl.code.check.exist' }));
+            } else {
+              callback();
+            }
+          });
+      } else {
+        callback(formatMessage({ id: 'envPl.code.check.failed' }));
+      }
     } else {
       callback();
     }
@@ -72,11 +75,12 @@ class EnvPipelineHome extends Component {
    */
   checkName = _.debounce((rule, value, callback) => {
     const { EnvPipelineStore, intl: { formatMessage } } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const { id: projectId } = AppState.currentMenuType;
+    const { cluster } = this.state;
     const envData = EnvPipelineStore.getEnvData;
     const flag = envData ? value !== envData.name : value;
-    if (flag) {
-      EnvPipelineStore.loadName(projectId, value)
+    if (cluster && flag) {
+      EnvPipelineStore.checkEnvName(projectId, cluster, value)
         .then((error) => {
           if (error && error.failed) {
             callback(formatMessage({ id: 'envPl.name.check.exist' }));
@@ -98,6 +102,7 @@ class EnvPipelineHome extends Component {
       delEnv: null,
       moveRight: 300,
       createSelectedRowKeys: [],
+      cluster: null,
     };
   }
 
@@ -142,6 +147,7 @@ class EnvPipelineHome extends Component {
     const projectId = AppState.currentMenuType.id;
     if (type === 'create') {
       EnvPipelineStore.loadPrm(projectId);
+      EnvPipelineStore.loadCluster(projectId);
     }
     EnvPipelineStore.setSideType(type);
     EnvPipelineStore.setShow(true);
@@ -209,7 +215,6 @@ class EnvPipelineHome extends Component {
     }
   };
 
-
   /**
    * 环境启用
    * @param id 环境ID
@@ -265,6 +270,16 @@ class EnvPipelineHome extends Component {
   };
 
   /**
+   * 选择集群
+   * @param id
+   */
+  handleCluster = (id) => {
+    this.setState({
+      cluster: id,
+    });
+  };
+
+  /**
    * 表单提交
    * @param e
    */
@@ -306,7 +321,7 @@ class EnvPipelineHome extends Component {
           if (!err) {
             EnvPipelineStore.setShow(false);
             const id = EnvPipelineStore.getEnvData.id;
-            EnvPipelineStore.setSideType('');
+            EnvPipelineStore.setSideType(null);
             EnvPipelineStore.updateEnv(projectId, { ...data, id })
               .then((res) => {
                 if (res && res.failed) {
@@ -353,7 +368,7 @@ class EnvPipelineHome extends Component {
    * @param type
    * @returns {*}
    */
-  showTitle = (type = 'default') => {
+  showTitle = (type) => {
     const { intl: { formatMessage } } = this.props;
     const msg = {
       create: 'create',
@@ -361,9 +376,8 @@ class EnvPipelineHome extends Component {
       createGroup: 'group.create',
       editGroup: 'group.edit',
       permission: 'authority',
-      default: '',
     };
-    return formatMessage({ id: `envPl.${msg[type]}`});
+    return type ? formatMessage({ id: `envPl.${msg[type]}`}) : '';
   };
 
   /**
@@ -505,7 +519,7 @@ class EnvPipelineHome extends Component {
   };
 
   render() {
-    const { EnvPipelineStore, intl: { formatMessage }, form: { getFieldDecorator } } = this.props;
+    const { EnvPipelineStore, intl: { formatMessage }, form: { getFieldDecorator, getFieldValue } } = this.props;
     const { moveBan, submitting, createSelectedRowKeys, createSelected, delEnvShow } = this.state;
     const { id: projectId, organizationId, type, name } = AppState.currentMenuType;
     const {
@@ -523,6 +537,7 @@ class EnvPipelineHome extends Component {
       getSideType: sideType,
       getBan: ban,
       getGroup: groupData,
+      getCluster,
       getPageInfo,
       loading,
       getInfo: { filters, sort: { columnKey, order }, paras },
@@ -639,6 +654,26 @@ class EnvPipelineHome extends Component {
             <FormItem
               {...formItemLayout}
             >
+              {getFieldDecorator('clusterId', {
+                rules: [{
+                  required: true,
+                  message: formatMessage({ id: 'required' }),
+                }],
+              })(
+                <Select
+                  allowClear={false}
+                  filter
+                  onSelect={this.handleCluster}
+                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  label={<FormattedMessage id="envPl.form.cluster" />}
+                >
+                  {getCluster.length ? _.map(getCluster, g => <Option key={g.id} value={g.id}>{g.name}</Option>) : null}
+                </Select>,
+              )}
+            </FormItem>
+            <FormItem
+              {...formItemLayout}
+            >
               {getFieldDecorator('code', {
                 rules: [{
                   required: true,
@@ -649,6 +684,7 @@ class EnvPipelineHome extends Component {
                 initialValue: envData ? envData.code : '',
               })(
                 <Input
+                  disabled={!getFieldValue('clusterId')}
                   maxLength={30}
                   label={<FormattedMessage id="envPl.form.code" />}
                 />,
@@ -667,6 +703,7 @@ class EnvPipelineHome extends Component {
                 initialValue: envData ? envData.name : '',
               })(
                 <Input
+                  disabled={!getFieldValue('clusterId')}
                   maxLength={10}
                   label={<FormattedMessage id="envPl.form.name" />}
                 />,

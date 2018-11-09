@@ -1,6 +1,7 @@
 import { observable, action, computed } from 'mobx';
 import _ from 'lodash';
 import { axios, store } from 'choerodon-front-boot';
+import { handleProptError } from '../../../utils';
 
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
@@ -38,11 +39,21 @@ class EnvPipelineStore {
 
   @observable ban = false;
 
-  @observable sideType = '';
+  @observable sideType = null;
 
   @observable shell = '';
 
   @observable loading = false;
+
+  @observable cluster = [];
+
+  @action setCluster(data) {
+    this.cluster = data;
+  }
+
+  @computed get getCluster() {
+    return this.cluster.slice();
+  }
 
   @observable pageInfo = {
     current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
@@ -221,14 +232,14 @@ class EnvPipelineStore {
     this.sideType = data;
   }
 
-  @action
-  setBtnLoading(data) {
-    this.btnLoading = data;
-  }
-
   @computed
   get getSideType() {
     return this.sideType;
+  }
+
+  @action
+  setBtnLoading(data) {
+    this.btnLoading = data;
   }
 
   @action
@@ -307,6 +318,15 @@ class EnvPipelineStore {
     }
   });
 
+  /**
+   * 分页查询项目下用户权限
+   * @param projectId
+   * @param page
+   * @param size
+   * @param envId
+   * @param sort
+   * @param postData
+   */
   loadPrm = (projectId, page = 0, size = 10, envId = null, sort = { field: '', order: 'desc' }, postData = { searchParam: {},
     param: '',
   }) => {
@@ -328,6 +348,19 @@ class EnvPipelineStore {
       }
       this.tableLoading(false);
     });
+  };
+
+  /**
+   * 环境下查询集群信息
+   * @param id 项目id
+   */
+  loadCluster = (id) => {
+    axios.get(`/devops/v1/projects/${id}/envs/permission`).then((data) => {
+      const res = handleProptError(data);
+      if (res) {
+        this.setCluster(res);
+      }
+    }).catch(error => Choerodon.handleResponseError(err));
   };
 
   loadShell = (projectId, id, update) => axios.get(`/devops/v1/projects/${projectId}/envs/${id}/shell?update=${update}`).then((data) => {
@@ -373,16 +406,16 @@ class EnvPipelineStore {
     return axios.delete(`/devops/v1/projects/${projectId}/env_groups/${id}`);
   }
 
-  loadName(projectId, name) {
-    return axios.get(`/devops/v1/projects/${projectId}/envs/checkName?name=${name}`);
-  }
-
   checkEnvGroup(projectId, name) {
     return axios.get(`/devops/v1/projects/${projectId}/env_groups/checkName?name=${name}`);
   }
 
-  loadCode(projectId, code) {
-    return axios.get(`/devops/v1/projects/${projectId}/envs/checkCode?code=${code}`);
+  checkEnvName(projectId, cluster, name) {
+    return axios.get(`/devops/v1/projects/${projectId}/envs/checkName?clusterId=${cluster}&name=${name}`);
+  }
+
+  checkEnvCode(projectId, cluster, code) {
+    return axios.get(`/devops/v1/projects/${projectId}/envs/checkCode?clusterId=${cluster}&code=${code}`);
   }
 
 

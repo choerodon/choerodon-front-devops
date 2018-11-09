@@ -465,7 +465,7 @@ class CreateDomain extends Component {
       </Option>));
       return (<div className="domain-network-wrap" key={`paths-${k}`}>
         <FormItem
-          className="domain-network-item c7n-select_160 c7ncd-domain-path"
+          className="domain-network-item c7ncd-domain-path"
           {...formItemLayout}
         >
           {getFieldDecorator(`path[${k}]`, {
@@ -477,7 +477,7 @@ class CreateDomain extends Component {
             <Input
               onChange={() => this.setState({ pathCountChange: true })}
               disabled={!(getFieldValue('domain'))}
-              maxLength={10}
+              maxLength={30}
               label={formatMessage({ id: 'domain.column.path' })}
               size="default"
             />,
@@ -518,7 +518,7 @@ class CreateDomain extends Component {
           )}
         </FormItem>
         <FormItem
-          className="domain-network-item c7n-select_160"
+          className="domain-network-item c7ncd-domain-port"
           {...formItemLayout}
         >
           {getFieldDecorator(`port[${k}]`, {
@@ -533,15 +533,11 @@ class CreateDomain extends Component {
           })(<Select
             getPopupContainer={triggerNode => triggerNode.parentNode}
             disabled={!getFieldValue(`network[${k}]`)}
-            filter
             label={formatMessage({ id: 'domain.column.port' })}
             showSearch
             dropdownMatchSelectWidth
             size="default"
-            optionFilterProp="children"
             optionLabelProp="children"
-            filterOption={(input, option) => option.props.children.toString()
-              .toLowerCase().indexOf(input.toString().toLowerCase()) >= 0}
           >
             {_.map(portOption, item => (<Option key={item} value={item}>{item}</Option>))}
           </Select>)}
