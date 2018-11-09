@@ -260,7 +260,7 @@
         Routes: /devops/cluster
         sort: 1
         permission:
-          - 'devops-service.application-template.listByOrgId'
+          - 'devops-service.devops-cluster.listCluster'
 
 # 要删除的菜单
 "application-market":

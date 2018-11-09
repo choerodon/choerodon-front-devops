@@ -1,23 +1,35 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
+import _ from 'lodash';
+import { handleProptError } from '../../../utils/index';
 
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 @store('ClusterStore')
 class ClusterStore {
-  @observable allData = [];
+  @observable clusterData = [];
 
-  @observable isRefresh = false;
-
-  // 页面的loading
   @observable loading = false;
 
-  // 打开tab的loading
-  @observable singleData = null;
+  @observable tLoading = false;
 
-  @observable selectData = [];
+  @observable proData = [];
+
+  @observable prmProData = [];
+
+  @observable shell = '';
+
+  @observable clsData = null;
+
+  @observable selectedRowKeys = [];
+
+  @observable tagKeys = [];
 
   @observable pageInfo = {
     current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
+  };
+
+  @observable clsPageInfo = {
+    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 12 : 18,
   };
 
   @observable Info = {
@@ -34,20 +46,22 @@ class ClusterStore {
     return this.pageInfo;
   }
 
-  @computed get getAllData() {
-    return this.allData.slice();
+  @action setClsPageInfo(page) {
+    this.clsPageInfo.current = page.number + 1;
+    this.clsPageInfo.total = page.totalElements;
+    this.clsPageInfo.pageSize = page.size;
   }
 
-  @action setAllData(data) {
-    this.allData = data;
+  @computed get getClsPageInfo() {
+    return this.clsPageInfo;
   }
 
-  @action changeIsRefresh(flag) {
-    this.isRefresh = flag;
+  @computed get getData() {
+    return this.clusterData.slice();
   }
 
-  @computed get getIsRefresh() {
-    return this.isRefresh;
+  @action setData(data) {
+    this.clusterData = data;
   }
 
   @action changeLoading(flag) {
@@ -58,20 +72,36 @@ class ClusterStore {
     return this.loading;
   }
 
-  @action setSingleData(data) {
-    this.singleData = data;
+  @action tableLoading(flag) {
+    this.tLoading = flag;
   }
 
-  @computed get getSingleData() {
-    return this.singleData;
+  @computed get getTableLoading() {
+    return this.tLoading;
   }
 
-  @computed get getSelectData() {
-    return this.selectData.slice();
+  @action setProData(data) {
+    this.proData = data;
   }
 
-  @action setSelectData(data) {
-    this.selectData = data;
+  @computed get getProData() {
+    return this.proData.slice();
+  }
+
+  @action setPrmPro(data) {
+    this.prmProData = data;
+  }
+
+  @computed get getPrmPro() {
+    return this.prmProData.slice();
+  }
+
+  @computed get getClsData() {
+    return this.clsData;
+  }
+
+  @action setClsData(data) {
+    this.clsData = data;
   }
 
   @action setInfo(Info) {
@@ -82,24 +112,129 @@ class ClusterStore {
     return this.Info;
   }
 
-  loadData = (isRefresh = false, orgId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
+  @action
+  setShell(shell) {
+    this.shell = shell;
+  }
+
+  @computed
+  get getShell() {
+    return this.shell;
+  }
+
+
+  @action
+  setSideType(data) {
+    this.sideType = data;
+  }
+
+  @computed
+  get getSideType() {
+    return this.sideType;
+  }
+
+  @action setSelectedRk(selectedRowKeys) {
+    this.selectedRowKeys = selectedRowKeys;
+  }
+
+  @computed get getSelectedRk() {
+    return this.selectedRowKeys.slice();
+  }
+
+  @action setTagKeys(tagKeys) {
+    this.tagKeys = tagKeys;
+  }
+
+  @computed get getTagKeys() {
+    return this.tagKeys.slice();
+  }
+
+  loadCluster = (orgId, page = this.clsPageInfo.current - 1, size = this.clsPageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = {
     searchParam: {},
     param: '',
   }) => {
-    if (isRefresh) {
-      this.changeIsRefresh(true);
-    }
     this.changeLoading(true);
-    return axios.post(`/devops/v1/organizations/${orgId}/app_templates/list_by_options?page=${page}&size=${size}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
+    return axios.post(`/devops/v1/organizations/${orgId}/clusters/page_cluster?page=${page}&size=${size}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(postData))
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
-          this.handleData(data);
+          this.setData(res.content);
+          const { number, size, totalElements } = data;
+          const page = { number, size, totalElements };
+          this.setClsPageInfo(page);
           this.changeLoading(false);
-          this.changeIsRefresh(false);
         }
       });
   };
+
+  loadPro = (orgId, clusterId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = []) => {
+    this.tableLoading(true);
+    const url = clusterId ? `/devops/v1/organizations/${orgId}/clusters/pageProjects?clusterId=${clusterId}&page=${page}&size=${size}&sort=${sort.field || 'id'},${sort.order}` : `/devops/v1/organizations/${orgId}/clusters/pageProjects?page=${page}&size=${size}&sort=${sort.field || 'id'},${sort.order}`;
+    return axios.post(url, JSON.stringify(postData)).then((data) => {
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else if(clusterId) {
+        this.setPrmPro(data.content);
+        this.setSelectedRk(_.map(_.filter(data.content, 'permission'), k => k.id));
+        const { number, size, totalElements } = data;
+        const page = { number, size, totalElements };
+        this.setPageInfo(page);
+      } else {
+        this.setProData(data.content);
+        const { number, size, totalElements } = data;
+        const page = { number, size, totalElements };
+        this.setPageInfo(page);
+      }
+      this.tableLoading(false);
+    });
+  };
+
+  loadClsById(orgId, id) {
+    return axios.get(`/devops/v1/organizations/${orgId}/clusters/${id}`)
+      .then((data) => {
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          this.setClsData(data);
+        }
+        return data;
+      });
+  }
+
+  loadTagKeys = (orgId, id) => axios.get(`/devops/v1/organizations/${orgId}/clusters/list_cluster_projects/${id}`).then((data) => {
+    if (data && data.failed) {
+      Choerodon.prompt(data.message);
+    } else {
+      this.setTagKeys(data);
+    }
+  });
+
+  createCluster(orgId, data) {
+    return axios.post(`/devops/v1/organizations/${orgId}/clusters`, JSON.stringify(data));
+  }
+
+  updateCluster(orgId, id, data) {
+    return axios.put(`/devops/v1/organizations/${orgId}/clusters?clusterId=${id}`, JSON.stringify(data));
+  }
+
+  delCluster(orgId, id) {
+    return axios.delete(`/devops/v1/organizations/${orgId}/clusters/${id}`);
+  }
+
+  loadShell = (orgId, id) => axios.get(`/devops/v1/organizations/${orgId}/clusters/query_shell/${id}`).then((data) => {
+    const res = handleProptError(data);
+    if (res) {
+      this.setShell(res);
+    }
+  });
+
+  checkCode(orgId, code) {
+   return axios.get(`/devops/v1/organizations/${orgId}/clusters/checkCode?code=${code}`);
+  }
+
+  checkName(orgId, name){
+    return axios.get(`/devops/v1/organizations/${orgId}/clusters/checkName?name=${name}`);
+  }
 }
 
 const clusterStore = new ClusterStore();
