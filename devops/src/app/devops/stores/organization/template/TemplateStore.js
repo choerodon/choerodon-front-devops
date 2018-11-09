@@ -1,7 +1,5 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
-// import { Observable } from 'rxjs';
-// import { formJS } from 'immutable';
 
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 @store('TemplateStore')

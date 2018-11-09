@@ -251,6 +251,16 @@
           - 'devops-service.application-instance.pageDeployFrequencyDetail'
           - 'devops-service.devops-gitlab-pipeline.listPipelineFrequency'
           - 'devops-service.devops-gitlab-pipeline.pagePipeline'
+"cluster-management":
+  icon: microservice
+  sort: 4
+  organization:
+    - "cluster":
+        icon: microservice
+        Routes: /devops/cluster
+        sort: 1
+        permission:
+          - 'devops-service.devops-cluster.listCluster'
 
 # 要删除的菜单
 "application-market":

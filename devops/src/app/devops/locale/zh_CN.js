@@ -233,6 +233,23 @@ const pageDetail = {
 
   // 开发控制台
   'devCs.title': '应用"{name}"的开发控制台',
+
+  // 集群
+  'cluster.description': 'Kubernetes集群是一个用于运行Kubernetes的托管群组。您可在下方对各个集群进行管理。',
+  'cluster.title': '组织"{name}"的Kubernetes集群',
+  'cluster.link': `${docServer}/user-guide/cluster-management/cluster`,
+  'cluster.create.title': '在组织"{name}"中创建集群',
+  'cluster.create.description': '请在下面输入集群编码、名称、描述，用以创建新集群。同时，您可以选择为所创集群配置公开范围，配置后，只有被勾选项目下的环境才能连接到该集群。',
+  'cluster.create.link': `${docServer}/user-guide/cluster-management/cluster`,
+  'cluster.key.title': '复制集群"{name}"的指令',
+  'cluster.key.description': '复制下文代码至Kubernetes运行，与平台建立链接。',
+  'cluster.key.link': `${docServer}/user-guide/cluster-management/cluster/`,
+  'cluster.token.title': '复制集群"{name}"的指令',
+  'cluster.token.description': '复制下文代码至Kubernetes运行，与平台建立链接。',
+  'cluster.token.link': `${docServer}/user-guide/cluster-management/cluster/`,
+  'cluster.edit.title': '对集群"{name}"进行修改',
+  'cluster.edit.description': '您可在此修改集群的名称、描述以及集群的公开范围。',
+  'cluster.edit.link': `${docServer}/user-guide/cluster-management/cluster/`,
 };
 
 const zhCN = {
@@ -991,6 +1008,26 @@ const zhCN = {
   'empty.owner.noApp': '当前项目下无应用，请创建应用。',
   'empty.member.noApp': '当前项目下无应用，请联系项目所有者进行创建。',
   'depPl.more': '了解更多',
+
+  // 集群
+  'cluster.head': '集群',
+  'cluster.create': '创建集群',
+  'cluster.edit': '编辑集群',
+  'cluster.name': '集群名称',
+  'cluster.code': '集群编码',
+  'cluster.des': '集群描述',
+  'cluster.active': '激活集群',
+  'cluster.del': '删除集群',
+  'cluster.delDes': '确定删除"{delName}"集群吗？',
+  'cluster.public': '集群公开范围',
+  'cluster.project.all': '组织下所有项目',
+  'cluster.project.part': '组织下特定项目',
+  'cluster.authority': '集群权限分配',
+  'cluster.authority.project': '已分配权限项目',
+  'cluster.authority.help': '此操作用于为此集群在该组织下配置公开范围。一般默认选择为组织下所有项目，即所有项目下的环境均能连接到此集群；若选择组织下特定项目，则只有被勾选项目下的环境才有权限连接到此集群。',
+  'cluster.project.name': '项目名称',
+  'cluster.project.code': '项目编码',
+  'cluster.status.update': '版本过低，请重新激活',
 
   ...pageDetail,
 };

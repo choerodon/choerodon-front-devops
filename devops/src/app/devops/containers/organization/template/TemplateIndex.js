@@ -1,6 +1,3 @@
-/**
- *create by mading on 2018/3/28
- */
 import React from 'react';
 import {
   Route,
@@ -10,11 +7,11 @@ import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
 const TemplateHome = asyncRouter(() => import('./templateHome'), () => import('../../../stores/organization/template'));
 
-const EnvironmentIndex = ({ match }) => (
+const TemplateIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={TemplateHome} />
     <Route path="*" component={nomatch} />
   </Switch>
 );
 
-export default EnvironmentIndex;
+export default TemplateIndex;
