@@ -219,7 +219,7 @@ class Cluster extends Component {
     const { organizationId, type } = AppState.currentMenuType;
     const clusters = ClusterStore.getData;
     return _.map(clusters, c => (
-      <Tooltip key={c.id} placement="bottom" title={c.update ? <FormattedMessage id="cluster.status.update" /> : null}>
+      <Tooltip key={c.id} placement="bottom" title={c.upgrade ? <FormattedMessage id="cluster.status.update" /> : null}>
         <div className={`c7n-cls-card ${c.connect ? 'c7n-cls-card-connect' : ''}`}>
           <div className="c7n-cls-card-head">
             <div>
@@ -229,7 +229,7 @@ class Cluster extends Component {
               <i className="c7n-cls-card-head-state_after" />
             </div>
             <div className="c7n-cls-card-head-action">
-              <Permission
+              {c.connect ? null : <Permission
                 service={['devops-service.devops-cluster.queryShell']}
                 type={type}
                 organizationId={organizationId}
@@ -243,7 +243,7 @@ class Cluster extends Component {
                     <Icon type="vpn_key" />
                   </Button>
                 </Tooltip>
-              </Permission>
+              </Permission>}
               <Permission
                 service={['devops-service.devops-cluster.update']}
                 type={type}
@@ -400,6 +400,7 @@ class Cluster extends Component {
           <div className="c7n-env-tag-title">
             <FormattedMessage id="cluster.authority" />
             <Popover
+              overlayStyle={{ maxWidth: '600px' }}
               content={formatMessage({ id: 'envPl.authority.help' })}
             >
               <Icon type="help" />
@@ -802,7 +803,8 @@ class Cluster extends Component {
           </React.Fragment>}
         </Content>
         <Modal
-          title={formatMessage({ id: 'cluster.del' })}
+          className="c7n-cls-del-modal"
+          title={<FormattedMessage id="cluster.del.title" values={{ delName }} />}
           visible={showDel}
           onOk={this.delCluster}
           closable={false}
@@ -814,13 +816,25 @@ class Cluster extends Component {
               <FormattedMessage id="cancel" />
             </Button>,
             <Button key="submit" type="danger" loading={btnLoading} onClick={this.delCluster}>
-              <FormattedMessage id="delete" />
+              <FormattedMessage id="cluster.del.confirm" />
             </Button>,
           ]}
         >
-          <p>
-            <FormattedMessage id="cluster.delDes" values={{ delName }} />
-          </p>
+          <div>
+            <FormattedMessage id="cluster.delDes_1" />
+            <div
+              className="c7n-cls-shell-input"
+            >
+              <Input
+                value="helm del choerodon-cluster-agent --purge&&kubectl delete namespace choerodon"
+                readOnly
+                copy
+              />
+            </div>
+            <div className="c7n-notice-wrap_error">
+              <Icon type="error" /><FormattedMessage id="cluster.delDes_2" />
+            </div>
+          </div>
         </Modal>
       </Page>
     );
