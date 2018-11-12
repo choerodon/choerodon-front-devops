@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component, Fragment} from 'react';
 import { observer, inject } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, stores } from 'choerodon-front-boot';
@@ -7,6 +7,7 @@ import _ from 'lodash';
 import MdEditor from '../../../../components/MdEditor';
 import '../../../main.scss';
 import './CreateTag.scss';
+import { getSelectTip } from "../../../../utils";
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -148,6 +149,7 @@ class CreateTag extends Component {
       cancelText={<FormattedMessage id="cancel" />}
       confirmLoading={submitting}
       onCancel={this.handleCancel}
+      className="c7n-create-sidebar-tooltip"
     >
       <Content code="apptag.create" values={{ name }} className="c7n-tag-create sidebar-content">
         <Form layout="vertical" className="c7n-sidebar-form">
@@ -184,7 +186,7 @@ class CreateTag extends Component {
                   message: formatMessage({ id: 'required' }),
                 }],
               })(
-                <Select
+                <Fragment><Select
                   onFilterChange={this.searchBranch}
                   allowClear
                   label={<FormattedMessage id="apptag.ref" />}
@@ -211,7 +213,9 @@ class CreateTag extends Component {
                       >{formatMessage({ id: 'ist.more' })}</div>
                     </Option> : null }
                   </OptGroup>
-                </Select>,
+                </Select>
+                  {getSelectTip('apptag.tip')}
+                </Fragment>,
               )}
             </FormItem>
           </div>

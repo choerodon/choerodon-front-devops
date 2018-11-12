@@ -3,6 +3,9 @@
 
 import moment from 'moment';
 import _ from 'lodash';
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import { Icon, Popover } from 'choerodon-ui';
 
 /**
  * 处理数据请求错误
@@ -188,7 +191,34 @@ export function pickEntries(obj) {
   };
 }
 
-//
-// function CountBy(collection, ite) {
-//
-// }
+/**
+ * 返回Table中带提示的title
+ * @param data
+ */
+export function  getTableTitle(data) {
+  return (<div className="c7n-table-title-tip">
+    <FormattedMessage id={data} />
+    <Popover
+      content={<FormattedMessage id={`${data}.tip`} />}
+      overlayStyle={{ maxWidth: '350px' }}
+      arrowPointAtCenter
+    >
+      <Icon type="help" />
+    </Popover>
+  </div>);
+}
+
+/**
+ * 返回Select或者Input的提示内容
+ * @param data
+ */
+export function  getSelectTip(data) {
+  return (<Popover
+    content={<FormattedMessage id={data} />}
+    overlayStyle={{ maxWidth: '350px' }}
+    placement="topRight"
+    arrowPointAtCenter
+  >
+    <Icon type="help c7n-select-tip" />
+  </Popover>);
+}
