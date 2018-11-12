@@ -1027,7 +1027,7 @@ const zhCN = {
   'cluster.project.part': '组织下特定项目',
   'cluster.authority': '集群权限分配',
   'cluster.authority.project': '已分配权限项目',
-  'cluster.authority.help': '此操作用于为此集群在该组织下配置公开范围。默认选择为组织下所有项目，即所有项目下的环境均能连接到此集群；若选择组织下特定项目，则只有被勾选项目下的环境才有权限连接此集群。',
+  'cluster.authority.help': '此操作用于为此集群在该组织下配置公开范围。一般默认选择为组织下所有项目，即所有项目下的环境均能连接到此集群；若选择组织下特定项目，则只有被勾选项目下的环境才有权限连接到此集群。',
   'cluster.project.name': '项目名称',
   'cluster.project.code': '项目编码',
   'cluster.status.update': '版本过低，请重新激活',
