@@ -574,7 +574,7 @@ class Cluster extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const { ClusterStore } = this.props;
-    const { organizationId, sideType, checked } = this.state;
+    const { organizationId, sideType, checked, createSelectedRowKeys } = this.state;
     const tagKeys = ClusterStore.getTagKeys;
     this.setState({
       submitting: true,
@@ -583,6 +583,7 @@ class Cluster extends Component {
       this.props.form.validateFieldsAndScroll((err, data) => {
         if (!err) {
           data.skipCheckProjectPermission = checked;
+          data.projects = createSelectedRowKeys;
           ClusterStore.createCluster(organizationId, data)
             .then((res) => {
               if (res) {
