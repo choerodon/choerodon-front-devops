@@ -369,11 +369,13 @@ class EnvPipelineHome extends Component {
             <div className="c7n-env-state c7n-env-state-ban">
               <FormattedMessage id="envPl.status.stopped" />
             </div>
-            <div className="c7n-env-des" title={env.description}>
+            <div className="c7n-env-des-wrap">
+              <div className="c7n-env-des" title={env.description}>
               <span className="c7n-env-des-head">
                 {formatMessage({ id: "envPl.description" })}
               </span>
-              {env.description}
+                {env.description}
+              </div>
             </div>
           </div>
         </div>

@@ -49,9 +49,9 @@ class EnvCard extends Component {
     EnvPipelineStore.setShow(true);
   };
 
-  handleDisable = (id, connect) => {
+  handleDisable = (id, connect, name) => {
     const { projectId, handleDisable } = this.props;
-    handleDisable(id, connect);
+    handleDisable(id, connect, name);
   };
 
   render() {
@@ -120,7 +120,7 @@ class EnvCard extends Component {
                         funcType="flat"
                         shape="circle"
                         icon="remove_circle_outline"
-                        onClick={this.handleDisable.bind(this, cardData.id, cardData.connect)}
+                        onClick={this.handleDisable.bind(this, cardData.id, cardData.connect, cardData.name)}
                       />
                     </Tooltip>
                   </Permission>
@@ -132,9 +132,11 @@ class EnvCard extends Component {
             <div className={envStatusStyle}>
               {cardData.connect ? formatMessage({ id: 'running' }) : formatMessage({ id: 'disconnect' })}
             </div>
-            <div className="c7n-env-des" title={cardData.description}>
-              <span className="c7n-env-des-head">{formatMessage({ id: 'envPl.description' })}</span>
-              {cardData.description}
+            <div className="c7n-env-des-wrap">
+              <div className="c7n-env-des" title={cardData.description}>
+                <span className="c7n-env-des-head">{formatMessage({ id: 'envPl.description' })}</span>
+                {cardData.description}
+              </div>
             </div>
           </div> : formatMessage({ id: 'envPl.add' }) }</Tooltip></div>,
     );
