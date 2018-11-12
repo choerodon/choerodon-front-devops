@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Table, Button, Input, Form, Modal, Tooltip, Select, Icon } from 'choerodon-ui';
+import { Table, Button, Input, Form, Modal, Tooltip, Select, Icon, Popover } from 'choerodon-ui';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
@@ -12,6 +12,7 @@ import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
 import DeploymentPipelineStore from '../../../../stores/project/deploymentPipeline';
+import { getSelectTip } from '../../../../utils';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -424,6 +425,7 @@ class AppHome extends Component {
             maxLength={30}
             label={<FormattedMessage id="app.code" />}
             size="default"
+            suffix={getSelectTip('app.code.tooltip')}
           />,
         )}
       </FormItem> }
@@ -461,7 +463,7 @@ class AppHome extends Component {
             },
           }],
         })(
-          <Select
+          <Fragment><Select
             key="service"
             allowClear
             label={<FormattedMessage id="app.chooseTem" />}
@@ -489,7 +491,9 @@ class AppHome extends Component {
                 </Tooltip>
               </Option>
             ))}
-          </Select>,
+          </Select>
+            {getSelectTip('app.chooseTem.tip')}
+          </Fragment>,
         )}
       </FormItem>}
     </Form>);
@@ -539,6 +543,7 @@ class AppHome extends Component {
               cancelText={<FormattedMessage id="cancel" />}
               confirmLoading={submitting}
               onCancel={this.hideSidebar}
+              className="c7n-create-sidebar-tooltip"
             >
               <Content code={`app.${modeType}`} values={{ name }} className="sidebar-content">
                 {formContent}

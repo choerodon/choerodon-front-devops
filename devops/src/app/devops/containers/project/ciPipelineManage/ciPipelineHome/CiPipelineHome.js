@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Table, Tooltip, Popover, Select } from 'choerodon-ui';
@@ -11,7 +11,8 @@ import './CiPipelineHome.scss';
 import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
-import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
+import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
+import { getTableTitle } from '../../../../utils';
 
 const { Option, OptGroup } = Select;
 const ICONS = {
@@ -107,17 +108,17 @@ class CiPipelineHome extends Component {
         render: (status, record) => this.renderStatus(status, record),
       },
       {
-        title: <FormattedMessage id="ciPipeline.sign" />,
+        title: getTableTitle('ciPipeline.sign'),
         dataIndex: 'pipelineId',
         render: (pipelineId, record) => this.renderSign(pipelineId, record),
       },
       {
-        title: <FormattedMessage id="ciPipeline.commit" />,
+        title: getTableTitle('ciPipeline.commit'),
         dataIndex: 'commit',
         render: (commit, record) => this.renderCommit(commit, record),
       },
       {
-        title: <FormattedMessage id="ciPipeline.jobs" />,
+        title: getTableTitle('ciPipeline.jobs'),
         dataIndex: 'stages',
         render: (stages, record) => this.renderstages(stages, record),
       },

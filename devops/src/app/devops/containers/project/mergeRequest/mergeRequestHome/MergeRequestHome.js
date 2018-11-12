@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Tabs, Icon, Select, Table, Tooltip } from 'choerodon-ui';
@@ -10,7 +10,8 @@ import './MergeRequestHome.scss';
 import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
-import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
+import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
+import { getTableTitle } from '../../../../utils';
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -136,7 +137,7 @@ class MergeRequestHome extends Component {
     const  backPath = state && state.backPath;
 
     const columnsAll = [{
-      title: <FormattedMessage id="app.code" />,
+      title: getTableTitle('app.code'),
       key: 'iid',
       render: record => (<span>!{record.iid}</span>),
     }, {
@@ -147,7 +148,7 @@ class MergeRequestHome extends Component {
         {record.title}
       </MouserOverWrapper>),
     }, {
-      title: <FormattedMessage id="app.branch" />,
+      title: getTableTitle('app.branch'),
       key: 'targetBranch',
       render: record => (
         <div className="c7n-merge-branches">
@@ -163,7 +164,7 @@ class MergeRequestHome extends Component {
       dataIndex: 'state',
       key: 'state',
     }, {
-      title: <FormattedMessage id="create" />,
+      title: getTableTitle('create'),
       key: 'createdAt',
       render: record => (
         <div>
@@ -183,7 +184,7 @@ class MergeRequestHome extends Component {
           </Tooltip>
         </div>),
     }, {
-      title: <FormattedMessage id="merge.commit" />,
+      title: getTableTitle('merge.commit'),
       key: 'commits',
       render: record => (
         <div>
@@ -227,7 +228,7 @@ class MergeRequestHome extends Component {
     }];
 
     const columns = [{
-      title: <FormattedMessage id="app.code" />,
+      title: getTableTitle('app.code'),
       key: 'iid',
       render: record => (<span>!{record.iid}</span>),
     }, {
@@ -238,7 +239,7 @@ class MergeRequestHome extends Component {
         {record.title}
       </MouserOverWrapper>),
     }, {
-      title: <FormattedMessage id="app.branch" />,
+      title: getTableTitle('app.branch'),
       key: 'targetBranch',
       render: record => (
         <div className="c7n-merge-branches">
@@ -250,7 +251,7 @@ class MergeRequestHome extends Component {
         </div>
       ),
     }, {
-      title: <FormattedMessage id="create" />,
+      title: getTableTitle('create'),
       key: 'createdAt',
       render: record => (
         <div>
@@ -268,7 +269,7 @@ class MergeRequestHome extends Component {
           </Tooltip>
         </div>),
     }, {
-      title: <FormattedMessage id="merge.commit" />,
+      title: getTableTitle('merge.commit'),
       key: 'commits',
       render: record => (
         <div>
@@ -314,7 +315,7 @@ class MergeRequestHome extends Component {
     }];
 
     const columnsOpen = [{
-      title: <FormattedMessage id="app.code" />,
+      title: getTableTitle('app.code'),
       key: 'iid',
       render: record => (<span>!{record.iid}</span>),
     }, {
@@ -325,7 +326,7 @@ class MergeRequestHome extends Component {
         {record.title}
       </MouserOverWrapper>),
     }, {
-      title: <FormattedMessage id="app.branch" />,
+      title: getTableTitle('app.branch'),
       key: 'targetBranch',
       render: record => (
         <div className="c7n-merge-branches">
@@ -337,7 +338,7 @@ class MergeRequestHome extends Component {
         </div>
       ),
     }, {
-      title: <FormattedMessage id="create" />,
+      title: getTableTitle('create'),
       key: 'createdAt',
       render: record => (
         <div>
@@ -355,7 +356,7 @@ class MergeRequestHome extends Component {
           </Tooltip>
         </div>),
     }, {
-      title: <FormattedMessage id="merge.commit" />,
+      title: getTableTitle('merge.commit'),
       key: 'commits',
       render: record => (
         <div>

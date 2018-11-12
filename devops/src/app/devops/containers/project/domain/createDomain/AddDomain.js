@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Form, Select, Input, Modal, Tooltip, Icon, Radio } from 'choerodon-ui';
+import { Button, Form, Select, Input, Modal, Tooltip, Icon, Radio, Popover } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { stores, Content } from 'choerodon-front-boot';
 import _ from 'lodash';
 import '../../../main.scss';
 import './CreateDomain.scss';
 import EnvOverviewStore from '../../../../stores/project/envOverview';
+import { getTableTitle } from '../../../../utils';
 
 const { Option } = Select;
 const { Item: FormItem } = Form;
@@ -622,6 +623,14 @@ class CreateDomain extends Component {
             <div className="c7n-creation-title">
               <Icon type="language" />
               <FormattedMessage id="domain.protocol" />
+              <Popover
+                content={formatMessage({ id: 'domain.protocol.tip' })}
+                overlayStyle={{ maxWidth: '350px' }}
+                placement="topRight"
+                arrowPointAtCenter
+              >
+                <Icon type="help c7n-tooltip-icon" />
+              </Popover>
             </div>
             <div className="c7n-creation-radio">
               <div className="creation-radio-label">

@@ -8,6 +8,7 @@ import { getTimeLeft } from '../../../../utils';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import StatusIcon from '../../../../components/StatusIcon';
 import './CertTable.scss';
+import { getTableTitle } from '../../../../utils';
 
 const { AppState } = stores;
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
@@ -262,7 +263,7 @@ class CertTable extends Component {
         {text}
       </React.Fragment>),
     }, {
-      title: <FormattedMessage id="validDate" />,
+      title: getTableTitle('validDate'),
       key: 'valid',
       render: this.validColumn,
     }, {

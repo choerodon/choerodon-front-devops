@@ -16,6 +16,7 @@ import './Instances.scss';
 import '../../main.scss';
 import EnvOverviewStore from '../../../stores/project/envOverview';
 import DepPipelineEmpty from "../../../components/DepPipelineEmpty/DepPipelineEmpty";
+import { getTableTitle } from '../../../utils';
 
 const Option = Select.Option;
 const { AppState } = stores;
@@ -469,7 +470,7 @@ class Instances extends Component {
       getAppPageInfo: { current, total, pageSize },
       getIsLoading,
       getIstParams: { filters, param },
-      getAppId
+      getAppId,
     } = InstancesStore;
     const {
       name,
@@ -506,11 +507,11 @@ class Instances extends Component {
       filteredValue: filters.code || [],
       render: this.renderStatus,
     }, {
-      title: <FormattedMessage id="deploy.ver" />,
+      title: getTableTitle('deploy.ver'),
       key: 'appVersion',
       filters: [],
       filteredValue: filters.appVersion || [],
-      render: this.renderVersion
+      render: this.renderVersion,
     }, {
       width: 56,
       className: 'c7n-operate-icon',

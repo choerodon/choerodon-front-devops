@@ -479,6 +479,12 @@ table {
     font-size: 13px;
     margin-left: 10px;
   }
+
+  .c7n-tooltip-icon {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.36);
+    margin-left: 2px;
+  }
 }
 
 .c7n-domain-create-status {
@@ -633,5 +639,41 @@ input::-webkit-contacts-auto-fill-button {
     color: #f44336;
     font-size: 20px;
     margin-right: 14px;
+  }
+}
+
+.c7n-table-title-tip {
+  display: flex;
+  align-items: center;
+
+  i {
+    color: rgba(0, 0, 0, 0.36);
+    margin-left: 2px;
+    font-size: 14px;
+  }
+}
+
+.c7n-create-sidebar-tooltip {
+
+  .ant-select-arrow {
+    position: absolute !important;
+    right: 20px;
+    bottom: 0;
+    margin: 0;
+    transition: opacity 0.15s ease;
+    cursor: pointer;
+  }
+
+  .c7n-select-tip {
+    position: absolute !important;
+    right: 1px;
+    top: 4px;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  .ant-input-rendered-wrapper {
+    .c7n-select-tip {
+      top: 2px;
+    }
   }
 }

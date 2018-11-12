@@ -551,6 +551,7 @@ const zhCN = {
   "deploy.sidebar.project": "项目应用",
   "deploy.sidebar.market": "应用市场",
   "deploy.sidebar.search": "搜索应用",
+  'deploy.ver.tip': '实例中对应的应用版本',
 
   // envPipeline
   "envPl.head": "环境流水线",
@@ -600,6 +601,10 @@ const zhCN = {
   "envPl.authority.member": "已分配权限成员",
   "envPl.authority.help":
     "此操作用于为环境配置特定的操作人员。配置后，只有被勾选的项目成员才有权限在该环境下进行部署操作。表中人员是该项目下所有的项目成员。",
+  "envPl.cluster.tip": "创建环境必须先选择集群，此处集群均是在组织下已经对本项目进行授权的集群。",
+  "envPl.envCode.tip": "环境的自定义编码，集群中产生的环境客户端的名称，限制60个字符。",
+  "envPl.envName.tip": "平台环境的显示名称。限制为10个字符。",
+  "envPl.group.tip": "若要使用环境分组，请先创建分组；此处只能从已创建的分组中进行选择，从而将此环境放入该分组中。",
 
   // app
   "app.head": "应用",
@@ -638,6 +643,8 @@ const zhCN = {
   "app.pipeline": "流水线",
   "app.status": "服务状态",
   "app.quality": "代码质量",
+  'app.code.tooltip': '应用的自定义编码，Gitlab仓库的地址将会使用应用编码作为仓库地址的一段路径，同时此编码在项目下唯一且不可修改。',
+  'app.chooseTem.tip': '可选择系统预定义模板或组织自定义的模板块。选择模板后，可快速创建初始代码库。目前系统存在三种预定义模板，也可以不选择应用模板。',
 
   // 应用版本
   "app.version": "应用版本",
@@ -766,6 +773,9 @@ const zhCN = {
   "ciPipeline.jobs": "阶段",
   "ciPipeline.time": "时长",
   "ciPipeline.createdAt": "创建时间",
+  'ciPipeline.sign.tip': '持续集成流水线的标识，以及持续集成流水线创建者',
+  'ciPipeline.commit.tip': '最新一次提交的提交编码及提交信息，以及触发的分支',
+  'ciPipeline.jobs.tip': '持续集成的阶段是在gitlab-ci文件里定义的。例如，可以分为单元测试和生成镜像两个阶段。单元测试阶段完成单元测试的运行并且对代码质量进行审查，生成镜像阶段通过 docker 把应用生成镜像。',
 
   // resource
   "resource.title": "资源",
@@ -831,6 +841,7 @@ const zhCN = {
   "domain.protocol.secret": "加密协议",
   "domain.cert.none": "未检索到证书",
   "domain.cert.delete": "证书已被删除",
+  'domain.protocol.tip': '为创建的域名选择网络协议，其中普通协议不需要选择域名证书，选择加密协议需要选择该项目下可用的域名证书。',
 
   // appstore
   "appstore.title": "应用市场",
@@ -924,6 +935,10 @@ const zhCN = {
   "merge.detail": "查看详情",
   "merge.createMerge": "创建合并请求",
   "merge.state": "合并状态",
+  "app.code.tip": "Gitlab返回的合并请求ID",
+  "app.branch.tip": "指的是合并源分支到目标分支的方向",
+  "create.tip": "包含创建该合并请求的人员以及创建时间",
+  "merge.commit.tip": "源分支对比目标分支新增的提交数",
 
   // app-tag
   "apptag.head": "标记",
@@ -949,6 +964,7 @@ const zhCN = {
     "当前项目下无应用，请使用项目所有者角色登录去创建一个应用。",
   "apptag.release.title": "发布日志",
   "apptag.release.empty": "暂无发布日志",
+  'apptag.tip': '此处标记来源可以是该应用下所有的分支',
 
   // repository
   "repository.head": "代码仓库",
@@ -1023,6 +1039,7 @@ const zhCN = {
   "ctf.certFile": "上传 Cert 文件",
   "ctf.key.required": "请上传Key格式的文件",
   "ctf.cert.required": "请上传Cert格式的文件",
+  'validDate.tip': '证书的可用期限',
 
   // 报表
   "report.head": "报告",

@@ -31,6 +31,7 @@ import EnvGroup from "./EnvGroup";
 import "../../main.scss";
 import "./EnvPipeLineHome.scss";
 import EnvPipelineStore from "../../../stores/project/envPipeline";
+import { getSelectTip } from "../../../utils";
 
 /**
  * 分页查询单页size
@@ -895,7 +896,7 @@ class EnvPipelineHome extends Component {
                     },
                   ],
                 })(
-                  <Select
+                  <Fragment><Select
                     allowClear={false}
                     filter
                     onSelect={this.handleCluster}
@@ -914,6 +915,8 @@ class EnvPipelineHome extends Component {
                         ))
                       : null}
                   </Select>
+                    {getSelectTip('envPl.cluster.tip')}
+                  </Fragment>
                 )}
               </FormItem>
               <FormItem {...formItemLayout}>
@@ -935,6 +938,7 @@ class EnvPipelineHome extends Component {
                     disabled={!getFieldValue("clusterId")}
                     maxLength={30}
                     label={<FormattedMessage id="envPl.form.code" />}
+                    suffix={getSelectTip('envPl.envCode.tip')}
                   />
                 )}
               </FormItem>
@@ -957,6 +961,7 @@ class EnvPipelineHome extends Component {
                     disabled={!getFieldValue("clusterId")}
                     maxLength={10}
                     label={<FormattedMessage id="envPl.form.name" />}
+                    suffix={getSelectTip('envPl.envName.tip')}
                   />
                 )}
               </FormItem>
@@ -973,12 +978,13 @@ class EnvPipelineHome extends Component {
                     }}
                     maxLength={60}
                     label={<FormattedMessage id="envPl.form.description" />}
+                    suffix={getSelectTip('envPl.chooseClu.tip')}
                   />
                 )}
               </FormItem>
               <FormItem {...formItemLayout}>
                 {getFieldDecorator("devopsEnvGroupId")(
-                  <Select
+                  <Fragment><Select
                     allowClear
                     filter
                     filterOption={(input, option) =>
@@ -996,6 +1002,8 @@ class EnvPipelineHome extends Component {
                         ))
                       : null}
                   </Select>
+                    {getSelectTip('envPl.group.tip')}
+                  </Fragment>
                 )}
               </FormItem>
             </Form>
@@ -1201,6 +1209,7 @@ class EnvPipelineHome extends Component {
             // okCancel={showBtns}
             cancelText={<FormattedMessage id="cancel" />}
             okText={this.okText(sideType)}
+            className="c7n-create-sidebar-tooltip"
           >
             <Content
               code={`env.${sideType}`}
