@@ -91,7 +91,7 @@ class AppStore {
     this.preProId = id;
   }
 
-  loadData = (isRefresh = false, projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: '', order: 'desc' }, postData = { searchParam: {},
+  loadData = (isRefresh = false, projectId, envId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: '', order: 'desc' }, postData = { searchParam: {},
     param: '',
   }) => {
     if (Number(this.preProId) !== Number(projectId)) {

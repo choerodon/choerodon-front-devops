@@ -1031,6 +1031,7 @@ const zhCN = {
   'cluster.project.name': '项目名称',
   'cluster.project.code': '项目编码',
   'cluster.status.update': '版本过低，请重新激活',
+  'cluster.noData': '当前组织下没有任何集群，请创建集群。',
 
   ...pageDetail,
 };

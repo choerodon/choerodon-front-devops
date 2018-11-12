@@ -585,7 +585,7 @@ class CreateDomain extends Component {
                 label={<FormattedMessage id="network.env" />}
                 placeholder={formatMessage({ id: 'network.env.placeholder' })}
                 optionFilterProp="children"
-                onSelect={this.handleEnvSelect}
+                onSelect={this.handleSelectEnv}
                 getPopupContainer={triggerNode => triggerNode.parentNode}
                 filterOption={(input, option) => option.props.children[1]
                   .toLowerCase().indexOf(input.toLowerCase()) >= 0}

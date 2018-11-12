@@ -53,7 +53,8 @@ class DomainHome extends Component {
     this.setState({ show: false, id: null });
     if (isload) {
       DomainStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
-      this.loadAllData();
+      const envId = EnvOverviewStore.getTpEnvId;
+      this.loadAllData(envId);
     }
   };
 
