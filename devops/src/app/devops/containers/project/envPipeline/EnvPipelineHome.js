@@ -145,6 +145,7 @@ class EnvPipelineHome extends Component {
       disEnvShow: false,
       delGroupShow: false,
       disEnvConnect: false,
+      envName: null,
       enableClick: false,
       delGroupName: null,
       delEnv: null,
@@ -206,6 +207,9 @@ class EnvPipelineHome extends Component {
       EnvPipelineStore.loadCluster(projectId);
     }
     EnvPipelineStore.setSideType(type);
+    this.setState({
+      submitting: false,
+    });
     EnvPipelineStore.setShow(true);
   };
 
@@ -256,7 +260,7 @@ class EnvPipelineHome extends Component {
     });
   };
 
-  showDisEnvModal = (id, connect) => {
+  showDisEnvModal = (id, connect, name) => {
     const { EnvPipelineStore } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     EnvPipelineStore.loadInstance(projectId, id).then(() => {
@@ -303,7 +307,7 @@ class EnvPipelineHome extends Component {
       this.setState({
         submitting: false,
       });
-      Choerodon.handleResponseError(err);
+      Choerodon.handleResponseError(error);
     });
   };
 
@@ -363,14 +367,15 @@ class EnvPipelineHome extends Component {
         this.setState({
           submitting: false,
         });
-        Choerodon.handleResponseError(err);
+        Choerodon.handleResponseError(error);
       });
   };
 
-  showDelEnvModal = id => {
+  showDelEnvModal = (id, name) => {
     this.setState({
       delEnvShow: true,
       delEnv: id,
+      envName: name,
     });
   };
 
@@ -466,16 +471,18 @@ class EnvPipelineHome extends Component {
       EnvPipelineStore.assignPrm(projectId, id, userIds).then(data => {
         if (data && data.failed) {
           Choerodon.prompt(data.message);
-          this.setState({
-            submitting: false,
-          });
-        } else if (data) {
-          this.setState({
-            submitting: false,
-          });
+        } else {
+          EnvPipelineStore.setShow(false);
         }
-      });
-      EnvPipelineStore.setShow(false);
+        this.setState({
+          submitting: false,
+        });
+      }).catch(error => {
+        this.setState({
+          submitting: false,
+        });
+        Choerodon.handleResponseError(error);
+      });;
       EnvPipelineStore.setSelectedRk([]);
       EnvPipelineStore.setTagKeys([]);
     }
@@ -690,6 +697,7 @@ class EnvPipelineHome extends Component {
       delGroupShow,
       disEnvConnect,
       enableClick,
+      envName,
     } = this.state;
     const {
       id: projectId,
@@ -772,7 +780,7 @@ class EnvPipelineHome extends Component {
                 <Tooltip title={<FormattedMessage id="envPl.delete" />}>
                   <Button
                     shape="circle"
-                    onClick={this.showDelEnvModal.bind(this, env.id)}
+                    onClick={this.showDelEnvModal.bind(this, env.id, env.name)}
                     icon="delete_forever"
                   />
                 </Tooltip>
@@ -783,13 +791,15 @@ class EnvPipelineHome extends Component {
             <div className="c7n-env-state c7n-env-state-ban">
               <FormattedMessage id="envPl.status.stopped" />
             </div>
-            <div className="c7n-env-des" title={env.description}>
+            <div className="c7n-env-des-wrap">
+              <div className="c7n-env-des" title={env.description}>
               <span className="c7n-env-des-head">
                 {formatMessage({
                   id: "envPl.description",
                 })}
               </span>
-              {env.description}
+                {env.description}
+              </div>
             </div>
           </div>
         </div>
@@ -932,7 +942,6 @@ class EnvPipelineHome extends Component {
                       validator: this.checkCode,
                     },
                   ],
-                  initialValue: envData ? envData.code : "",
                 })(
                   <Input
                     disabled={!getFieldValue("clusterId")}
@@ -955,7 +964,6 @@ class EnvPipelineHome extends Component {
                       validator: this.checkName,
                     },
                   ],
-                  initialValue: envData ? envData.name : "",
                 })(
                   <Input
                     disabled={!getFieldValue("clusterId")}
@@ -969,9 +977,7 @@ class EnvPipelineHome extends Component {
                 {...formItemLayout}
                 label={<FormattedMessage id="envPl.form.description" />}
               >
-                {getFieldDecorator("description", {
-                  initialValue: envData ? envData.description : "",
-                })(
+                {getFieldDecorator("description")(
                   <TextArea
                     autosize={{
                       minRows: 2,
@@ -1275,6 +1281,8 @@ class EnvPipelineHome extends Component {
             <div className="c7ncd-modal-title">
               {formatMessage({
                 id: "envPl.delete.confirm",
+              }, {
+                name: envName,
               })}
             </div>
             {formatMessage({

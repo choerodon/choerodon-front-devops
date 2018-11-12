@@ -199,9 +199,11 @@ class Board extends Component {
                 <div className="c7n-env-state c7n-env-state-ban">
                   {formatMessage({ id: 'envPl.no.add' })}
                 </div>
-                <div className="c7n-env-des">
-                  <span className="c7n-env-des-head">{formatMessage({ id: 'envPl.description' })}</span>
-                  {formatMessage({ id: 'envPl.add.description' })}
+                <div className="c7n-env-des-wrap">
+                  <div className="c7n-env-des">
+                    <span className="c7n-env-des-head">{formatMessage({ id: 'envPl.description' })}</span>
+                    {formatMessage({ id: 'envPl.add.description' })}
+                  </div>
                 </div>
               </div>
             </div>)}
