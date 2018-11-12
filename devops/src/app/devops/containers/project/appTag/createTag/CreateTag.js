@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, stores } from 'choerodon-front-boot';
@@ -7,7 +7,7 @@ import _ from 'lodash';
 import MdEditor from '../../../../components/MdEditor';
 import '../../../main.scss';
 import './CreateTag.scss';
-import { getSelectTip } from "../../../../utils";
+import { getSelectTip } from '../../../../utils';
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;

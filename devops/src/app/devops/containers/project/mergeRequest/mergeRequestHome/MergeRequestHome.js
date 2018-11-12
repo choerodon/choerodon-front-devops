@@ -1,7 +1,7 @@
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Tabs, Icon, Select, Table, Tooltip, Popover } from 'choerodon-ui';
+import { Button, Tabs, Icon, Select, Table, Tooltip } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import TimeAgo from 'timeago-react';
