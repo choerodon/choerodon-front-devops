@@ -90,6 +90,7 @@ export const commonComponent =(storeName) => {
     tableChange =(pagination, filters, sorter, paras) => {
       const store = this.props[storeName];
       const { id } = AppState.currentMenuType;
+      const envId = EnvOverviewStore.getTpEnvId;
       store.setInfo({ filters, sort: sorter, paras });
       let sort = { field: '', order: 'desc' };
       if (sorter.column) {
@@ -110,7 +111,7 @@ export const commonComponent =(storeName) => {
         param: paras.toString(),
       };
       store
-        .loadData(false, id, page, pagination.pageSize, sort, postData);
+        .loadData(false, id, envId, page, pagination.pageSize, sort, postData);
     };
 
     /**

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Button, Input, Form, Tooltip, Modal, Popover, Table, Tag, Icon, Radio, Pagination } from 'choerodon-ui';
+import React, {Component, Fragment} from 'react';
+import { Button, Input, Form, Tooltip, Modal, Popover, Table, Tag, Icon, Radio, Pagination, Card } from 'choerodon-ui';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
@@ -10,6 +10,7 @@ import LoadingBar from '../../../../components/loadingBar';
 import './Cluster.scss';
 import '../../../project/envPipeline/envPipelineHome/EnvPipeLineHome.scss';
 import '../../../main.scss';
+import '../../../../components/DepPipelineEmpty/DepPipelineEmpty.scss';
 
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
@@ -779,7 +780,7 @@ class Cluster extends Component {
             </Button>
           </Permission>
         </Header>
-        <Content code="cluster" values={{ name }}>
+        <Content code={clusters && clusters.length ? 'cluster' : ''} values={{ name }}>
           {show && <Sidebar
             title={this.showTitle(sideType)}
             visible={show}
@@ -794,7 +795,7 @@ class Cluster extends Component {
               {this.getFormContent()}
             </Content>
           </Sidebar>}
-          {loading ? <LoadingBar display /> : <React.Fragment>
+          {loading ? <LoadingBar display /> : (clusters && clusters.length ? <React.Fragment>
             <div className="c7n-cls-card-wrap">
               {this.getCluster()}
             </div>
@@ -810,7 +811,25 @@ class Cluster extends Component {
                 onShowSizeChange={this.onPageChange}
               />
             </div> : null}
-          </React.Fragment>}
+          </React.Fragment> : <Card title={formatMessage({ id: 'cluster.create' })} className="c7n-depPi-empty-card">
+            <div className="c7n-noEnv-content">
+              <FormattedMessage id="cluster.noData" />
+              <a
+                href={formatMessage({ id: 'cluster.link' })}
+                rel="nofollow me noopener noreferrer"
+                target="_blank"
+              >
+                <FormattedMessage id="depPl.more" /><Icon type="open_in_new" />
+              </a>
+            </div>
+            <Button
+              type="primary"
+              funcType="raised"
+              onClick={this.showSideBar.bind(this, 'create')}
+            >
+              <FormattedMessage id="cluster.create" />
+            </Button>
+          </Card>)}
         </Content>
         <Modal
           className="c7n-cls-del-modal"
