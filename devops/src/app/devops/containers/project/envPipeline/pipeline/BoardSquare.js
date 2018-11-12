@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { DropTarget } from 'react-dnd';
 import _ from 'lodash';
-import Square from './Square';
-import EnvPipelineStore from '../../../stores/project/envPipeline/index';
+import EnvPipelineStore from '../../../../stores/project/envPipeline/index';
 
 const ItemTypes = {
   ENVCARD: 'envCard',
@@ -40,9 +39,7 @@ class BoardSquare extends Component {
     const { x, y, connectDropTarget, isOver } = this.props;
     return connectDropTarget(
       <div className="c7n-env-boardsquare">
-        <Square>
-          {this.props.children}
-        </Square>
+        <div>{this.props.children}</div>
         {isOver
         && <div className="c7n-env-moveing" />
         }

@@ -6,8 +6,8 @@ import classNames from 'classnames';
 import { DragSource } from 'react-dnd';
 import { Button, Tooltip, Icon } from 'choerodon-ui';
 import { Permission } from 'choerodon-front-boot';
-import './EnvPipeLineHome.scss';
-import EnvPipelineStore from '../../../stores/project/envPipeline';
+import '../EnvPipeLineHome.scss';
+import EnvPipelineStore from '../../../../stores/project/envPipeline';
 
 const ItemTypes = {
   ENVCARD: 'envCard',
@@ -49,24 +49,19 @@ class EnvCard extends Component {
     EnvPipelineStore.setShow(true);
   };
 
-  // copyKey = (id, update) => {
-  //   const { projectId } = this.props;
-  //   EnvPipelineStore.setSideType('key');
-  //   EnvPipelineStore.loadEnvById(projectId, id);
-  //   EnvPipelineStore.loadShell(projectId, id, update);
-  //   EnvPipelineStore.setShow(true);
-  // };
-
-  banEnv = (id) => {
-    const { projectId } = this.props;
-    EnvPipelineStore.setSideType(null);
-    EnvPipelineStore.loadEnvById(projectId, id);
-    EnvPipelineStore.loadInstance(projectId, 0, 10, null, id);
-    EnvPipelineStore.setBan(true);
+  handleDisable = (id, connect) => {
+    const { projectId, handleDisable } = this.props;
+    handleDisable(id, connect);
   };
 
   render() {
-    const { AppState, connectDragSource, isDragging, cardData } = this.props;
+    const {
+      AppState,
+      connectDragSource,
+      isDragging,
+      cardData,
+      intl: { formatMessage },
+    } = this.props;
     const { id: projectId, organizationId, type } = AppState.currentMenuType;
     const envCardStyle = classNames({
       'c7n-env-card': !isDragging,
@@ -94,10 +89,9 @@ class EnvCard extends Component {
                       <Button
                         funcType="flat"
                         shape="circle"
+                        icon="authority"
                         onClick={this.editPrm.bind(this, cardData.id)}
-                      >
-                        <Icon type="authority" />
-                      </Button>
+                      />
                     </Tooltip>
                   </Permission>
                   <Permission
@@ -110,10 +104,9 @@ class EnvCard extends Component {
                       <Button
                         funcType="flat"
                         shape="circle"
+                        icon="mode_edit"
                         onClick={this.editEnv.bind(this, cardData.id)}
-                      >
-                        <Icon type="mode_edit" />
-                      </Button>
+                      />
                     </Tooltip>
                   </Permission>
                   <Permission
@@ -126,25 +119,24 @@ class EnvCard extends Component {
                       <Button
                         funcType="flat"
                         shape="circle"
-                        onClick={this.banEnv.bind(this, cardData.id)}
-                      >
-                        <Icon type="remove_circle_outline" />
-                      </Button>
+                        icon="remove_circle_outline"
+                        onClick={this.handleDisable.bind(this, cardData.id, cardData.connect)}
+                      />
                     </Tooltip>
                   </Permission>
                 </div>
               </React.Fragment>)
-              : this.props.intl.formatMessage({ id: 'envPl.add' })}
+              : formatMessage({ id: 'envPl.add' })}
           </div>
           {cardData ? <div className="c7n-env-card-content">
             <div className={envStatusStyle}>
-              {cardData.connect ? this.props.intl.formatMessage({ id: 'running' }) : this.props.intl.formatMessage({ id: 'disconnect' })}
+              {cardData.connect ? formatMessage({ id: 'running' }) : formatMessage({ id: 'disconnect' })}
             </div>
             <div className="c7n-env-des" title={cardData.description}>
-              <span className="c7n-env-des-head">{this.props.intl.formatMessage({ id: 'envPl.description' })}</span>
+              <span className="c7n-env-des-head">{formatMessage({ id: 'envPl.description' })}</span>
               {cardData.description}
             </div>
-          </div> : this.props.intl.formatMessage({ id: 'envPl.add' }) }</Tooltip></div>,
+          </div> : formatMessage({ id: 'envPl.add' }) }</Tooltip></div>,
     );
   }
 }

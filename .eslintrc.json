@@ -16,7 +16,6 @@
   "plugins": [
     "react"
   ],
-//  "extends": "airbnb",
   "rules": {
     "react/jsx-no-bind": ["error", {
       "ignoreRefs": true,
@@ -30,6 +29,7 @@
         "ignorePureComponents": true
       }
     ],
+    "comma-dangle": [2, "always-multiline"],
     "no-control-regex": "off",
     "no-param-reassign": "off",
     "import/no-duplicates": "off",
