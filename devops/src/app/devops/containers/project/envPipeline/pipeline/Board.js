@@ -9,7 +9,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
 import EnvCard from './EnvCard';
 import BoardSquare from './BoardSquare';
-import './EnvPipeLineHome.scss';
+import '../EnvPipeLineHome.scss';
 import EnvPipelineStore from '../../../../stores/project/envPipeline';
 import { scrollTo } from '../../../../utils';
 
@@ -19,9 +19,9 @@ const scrollLeft = {};
 @observer
 class Board extends Component {
   static propTypes = {
-    envcardPositionChild: PropTypes.arrayOf(
-      PropTypes.object.isRequired,
-    ).isRequired,
+    // envcardPositionChild: PropTypes.arrayOf(
+    //   PropTypes.object.isRequired,
+    // ).isRequired,
     projectId: PropTypes.number.isRequired,
     Title: PropTypes.string,
   };
@@ -46,9 +46,8 @@ class Board extends Component {
   };
 
   delGroup = (id, name) => {
-    EnvPipelineStore.setBan(true);
-    EnvPipelineStore.setSideType('delGroup');
-    EnvPipelineStore.setGroupOne({ id, name });
+    const { onDeleteGroup } = this.props;
+    onDeleteGroup(id, name);
   };
 
   pushScrollRight = (Title) => {
@@ -103,13 +102,23 @@ class Board extends Component {
   }
 
   renderPiece(x) {
-    const { projectId, envcardPositionChild } = this.props;
-    return (<EnvCard projectId={projectId} cardData={envcardPositionChild[x]} />);
+    const { projectId, envcardPositionChild, onDisable } = this.props;
+    return (<EnvCard
+      projectId={projectId}
+      cardData={envcardPositionChild[x]}
+      handleDisable={onDisable}
+    />);
   }
 
   render() {
     const squares = [];
-    const { AppState, envcardPositionChild, groupId, Title, intl } = this.props;
+    const {
+      AppState,
+      envcardPositionChild,
+      groupId,
+      Title,
+      intl: { formatMessage },
+    } = this.props;
     const { id: projectId, organizationId, type } = AppState.currentMenuType;
 
     for (let i = 0; i < envcardPositionChild.length; i += 1) {
@@ -158,9 +167,8 @@ class Board extends Component {
                 funcType="flat"
                 shape="circle"
                 onClick={this.editGroup.bind(this, groupId, Title)}
-              >
-                <Icon type="mode_edit" />
-              </Button>
+                icon="mode_edit"
+              />
             </Tooltip>
           </Permission>
           <Permission
@@ -174,9 +182,8 @@ class Board extends Component {
                 funcType="flat"
                 shape="circle"
                 onClick={this.delGroup.bind(this, groupId, Title)}
-              >
-                <Icon type="delete_forever" />
-              </Button>
+                icon="delete_forever"
+              />
             </Tooltip>
           </Permission>
         </div>) : null}
@@ -185,16 +192,16 @@ class Board extends Component {
             {squares.length ? squares : (<div className="c7n-env-card c7n-env-card-ban">
               <div className="c7n-env-card-header">
                 <div>
-                  {intl.formatMessage({ id: 'envPl.add' })}
+                  {formatMessage({ id: 'envPl.add' })}
                 </div>
               </div>
               <div className="c7n-env-card-content">
                 <div className="c7n-env-state c7n-env-state-ban">
-                  {intl.formatMessage({ id: 'envPl.no.add' })}
+                  {formatMessage({ id: 'envPl.no.add' })}
                 </div>
                 <div className="c7n-env-des">
-                  <span className="c7n-env-des-head">{intl.formatMessage({ id: 'envPl.description' })}</span>
-                  {intl.formatMessage({ id: 'envPl.add.description' })}
+                  <span className="c7n-env-des-head">{formatMessage({ id: 'envPl.description' })}</span>
+                  {formatMessage({ id: 'envPl.add.description' })}
                 </div>
               </div>
             </div>)}

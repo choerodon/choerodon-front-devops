@@ -53,7 +53,14 @@
     display: flex;
     width: 542px;
     .domain-network-item {
+      flex: 0 0 160px;
+      margin-right: 16px;
+      &:nth-last-child(2) {
+        margin-right: 0;
+      }
       &.c7ncd-domain-path {
+        flex: 0 0 220px;
+        width: 220px;
         .ant-input-content {
           padding-top: 19px;
           .ant-input-label {
@@ -61,10 +68,9 @@
           }
         }
       }
-      flex: 0 0 160px;
-      margin-right: 16px;
-      &:nth-last-child(2) {
-        margin-right: 0;
+      &.c7ncd-domain-port {
+        flex: 0 0 100px;
+        width: 100px;
       }
     }
     .c7n-domain-icon-delete {

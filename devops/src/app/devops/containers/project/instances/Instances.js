@@ -52,10 +52,11 @@ class Instances extends Component {
    */
   onPageChange = (page, size) => {
     const { InstancesStore } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
     const envId = EnvOverviewStore.getTpEnvId;
     InstancesStore.setAppPage(page);
     InstancesStore.setAppPageSize(size);
-    this.handleEnvChange(envId);
+    InstancesStore.loadAppNameByEnv(projectId, envId, page-1, size);
   };
 
   /**
@@ -523,6 +524,18 @@ class Instances extends Component {
       </div>
       <div>
         {appNameDom}
+      </div>
+      <div className="c7n-store-pagination">
+        <Pagination
+          tiny={false}
+          showSizeChanger
+          showSizeChangerLabel={false}
+          total={total || 0}
+          current={current || 0}
+          pageSize={pageSize || 0}
+          onChange={this.onPageChange}
+          onShowSizeChange={this.onPageChange}
+        />
       </div>
       {getAppNameByEnv.length && (total >= pageSize) ? <div className="c7n-store-pagination">
         <Pagination

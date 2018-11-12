@@ -5,7 +5,7 @@ import {
 } from 'react-router-dom';
 import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
-const AppHome = asyncRouter(() => import('./envPipelineHome'), () => import('../../../stores/project/envPipeline'));
+const AppHome = asyncRouter(() => import('./EnvPipelineHome'), () => import('../../../stores/project/envPipeline'));
 
 const EnvPipelineIndex = ({ match }) => (
   <Switch>
