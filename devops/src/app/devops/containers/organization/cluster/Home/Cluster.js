@@ -432,11 +432,13 @@ class Cluster extends Component {
               <Icon type="help" />
             </Popover>
           </div>
-          <RadioGroup className="c7n-cls-radio" label={<FormattedMessage id="cluster.public" />}
-                      onChange={this.cbChange} value={checked}>
-            <Radio value={true}><FormattedMessage id="cluster.project.all" /></Radio>
-            <Radio value={false}><FormattedMessage id="cluster.project.part" /></Radio>
-          </RadioGroup>
+          <div className="c7n-cls-radio">
+            <RadioGroup label={<FormattedMessage id="cluster.public" />}
+                        onChange={this.cbChange} value={checked}>
+              <Radio value={true}><FormattedMessage id="cluster.project.all" /></Radio>
+              <Radio value={false}><FormattedMessage id="cluster.project.part" /></Radio>
+            </RadioGroup>
+          </div>
           {checked ? null : <div>
             <div className="c7n-sidebar-form">
               <Table
@@ -532,11 +534,13 @@ class Cluster extends Component {
                 <Icon type="help" />
               </Popover>
             </div>
-            <RadioGroup className="c7n-cls-radio" label={<FormattedMessage id="cluster.public" />}
-                        onChange={this.cbChange} value={checked}>
-              <Radio value={true}><FormattedMessage id="cluster.project.all" /></Radio>
-              <Radio value={false}><FormattedMessage id="cluster.project.part" /></Radio>
-            </RadioGroup>
+            <div className="c7n-cls-radio">
+              <RadioGroup label={<FormattedMessage id="cluster.public" />}
+                          onChange={this.cbChange} value={checked}>
+                <Radio value={true}><FormattedMessage id="cluster.project.all" /></Radio>
+                <Radio value={false}><FormattedMessage id="cluster.project.part" /></Radio>
+              </RadioGroup>
+            </div>
             {checked ? null : <div>
               <div className="c7n-sidebar-form">
                 <Table
