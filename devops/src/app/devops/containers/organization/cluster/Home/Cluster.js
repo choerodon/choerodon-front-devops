@@ -494,8 +494,8 @@ class Cluster extends Component {
         </div>);
         break;
       case 'edit':
-        formContent = (<div className="c7n-sidebar-form">
-          <Form>
+        formContent = (<div>
+          <Form className="c7n-sidebar-form">
             <FormItem
               {...formItemLayout}
             >
@@ -527,43 +527,43 @@ class Cluster extends Component {
                 />,
               )}
             </FormItem>
-            <div className="c7n-env-tag-title">
-              <FormattedMessage id="cluster.authority" />
-              <Popover
-                content={formatMessage({ id: 'cluster.authority.help' })}
-              >
-                <Icon type="help" />
-              </Popover>
-            </div>
-            <div className="c7n-cls-radio">
-              <RadioGroup label={<FormattedMessage id="cluster.public" />}
-                          onChange={this.cbChange} value={checked}>
-                <Radio value={true}><FormattedMessage id="cluster.project.all" /></Radio>
-                <Radio value={false}><FormattedMessage id="cluster.project.part" /></Radio>
-              </RadioGroup>
-            </div>
-            {checked ? null : <div>
-              <div className="c7n-sidebar-form">
-                <Table
-                  rowSelection={rowSelection}
-                  columns={columns}
-                  dataSource={prmProData}
-                  filterBarPlaceholder={formatMessage({ id: 'filter' })}
-                  pagination={getPageInfo}
-                  loading={tableLoading}
-                  onChange={this.tableChange}
-                  rowKey={record => record.id}
-                  filters={paras.slice()}
-                />
-              </div>
-              <div className="c7n-env-tag-title">
-                <FormattedMessage id="cluster.authority.project" />
-              </div>
-              <div className="c7n-env-tag-wrap">
-                {tagDom}
-              </div>
-            </div>}
           </Form>
+          <div className="c7n-env-tag-title">
+            <FormattedMessage id="cluster.authority" />
+            <Popover
+              content={formatMessage({ id: 'cluster.authority.help' })}
+            >
+              <Icon type="help" />
+            </Popover>
+          </div>
+          <div className="c7n-cls-radio">
+            <RadioGroup label={<FormattedMessage id="cluster.public" />}
+                        onChange={this.cbChange} value={checked}>
+              <Radio value={true}><FormattedMessage id="cluster.project.all" /></Radio>
+              <Radio value={false}><FormattedMessage id="cluster.project.part" /></Radio>
+            </RadioGroup>
+          </div>
+          {checked ? null : <div>
+            <div className="c7n-sidebar-form">
+              <Table
+                rowSelection={rowSelection}
+                columns={columns}
+                dataSource={prmProData}
+                filterBarPlaceholder={formatMessage({ id: 'filter' })}
+                pagination={getPageInfo}
+                loading={tableLoading}
+                onChange={this.tableChange}
+                rowKey={record => record.id}
+                filters={paras.slice()}
+              />
+            </div>
+            <div className="c7n-env-tag-title">
+              <FormattedMessage id="cluster.authority.project" />
+            </div>
+            <div className="c7n-env-tag-wrap">
+              {tagDom}
+            </div>
+          </div>}
         </div>);
         break;
       default:

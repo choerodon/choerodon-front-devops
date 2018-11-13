@@ -16,12 +16,20 @@
   color: #3f51b5;
 }
 
+.c7n-step-section_input {
+  width: 512px;
+}
+
 .c7n-step-section-wrap {
   margin-top: 32px;
   margin-left: 36px;
 
+  .c7n-step-section_name {
+    margin: 10px 0;
+  }
+
   .c7n-step-section {
-    margin: 32px 0;
+    margin: 0 0 32px 0;
 
     p {
       margin-bottom: 16px !important;
