@@ -690,3 +690,27 @@ input::-webkit-contacts-auto-fill-button {
     }
   }
 }
+
+.c7n-tips-popover {
+  max-width: 350px;
+}
+
+.ant-select-dropdown.ant-select-dropdown--multiple .ant-select-dropdown-menu-item-selected,
+.ant-select-dropdown-menu-item, .ant-select-selection__choice__content {
+
+  .c7n-table-title-tip {
+    display: inline-block;
+    padding: 0 8px;
+
+    i {
+      display: none;
+    }
+  }
+}
+
+.ant-table-filter-select-dropdown, .ant-select-selection__choice__content {
+
+  .c7n-table-title-tip {
+    padding: 0;
+  }
+}
