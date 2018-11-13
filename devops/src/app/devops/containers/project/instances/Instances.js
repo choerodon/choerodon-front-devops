@@ -17,6 +17,7 @@ import '../../main.scss';
 import EnvOverviewStore from '../../../stores/project/envOverview';
 import DepPipelineEmpty from "../../../components/DepPipelineEmpty/DepPipelineEmpty";
 import { getTableTitle } from '../../../utils';
+import InstancesStore from "../../../stores/project/instances";
 
 const Option = Select.Option;
 const { AppState } = stores;
@@ -52,9 +53,13 @@ class Instances extends Component {
       InstancesStore.setAppNameByEnv([]);
       InstancesStore.setIstAll([]);
     }
+    this.clearTimer();
+  }
+
+  clearTimer = () => {
     clearInterval(this.timer);
     this.timer = null;
-  }
+  };
 
   /**
    * 页码改变的回调
@@ -143,7 +148,11 @@ class Instances extends Component {
       searchParam,
       param: param.toString(),
     };
-    InstancesStore.loadInstanceAll(true, projectId, { page: current - 1, size: pageSize, envId, appId, datas });
+    InstancesStore.loadInstanceAll(true, projectId, { page: current - 1, size: pageSize, envId, appId, datas }).catch((err) => {
+      InstancesStore.changeLoading(false);
+      this.clearTimer();
+      Choerodon.handleResponseError(err);
+    });
     InstancesStore.setIstTableFilter({ filters, param });
   };
 
@@ -191,7 +200,11 @@ class Instances extends Component {
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(true, projectId);
+          loadInstanceAll(true, projectId).catch((err) => {
+            InstancesStore.changeLoading(false);
+            this.clearTimer();
+            Choerodon.handleResponseError(err);
+          });
         }
       });
   };
@@ -272,7 +285,11 @@ class Instances extends Component {
   reloadData = (fresh, envId = false, appId = false, clear = true) => {
     const { id: projectId } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
-    InstancesStore.loadInstanceAll(fresh, projectId, { envId, appId });
+    InstancesStore.loadInstanceAll(fresh, projectId, { envId, appId }).catch((err) => {
+      InstancesStore.changeLoading(false);
+      this.clearTimer();
+      Choerodon.handleResponseError(err);
+    });
     clear && InstancesStore.setIstTableFilter(null);
   };
 
@@ -322,7 +339,11 @@ class Instances extends Component {
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(true, projectId, { envId, getAppId });
+          loadInstanceAll(true, projectId, { envId, getAppId }).catch((err) => {
+            InstancesStore.changeLoading(false);
+            this.clearTimer();
+            Choerodon.handleResponseError(err);
+          });
         }
         this.setState({
           openRemove: false,
@@ -353,7 +374,11 @@ class Instances extends Component {
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(true, projectId, { envId, getAppId });
+          loadInstanceAll(true, projectId, { envId, getAppId }).catch((err) => {
+            InstancesStore.changeLoading(false);
+            this.clearTimer();
+            Choerodon.handleResponseError(err);
+          });
         }
       });
   };

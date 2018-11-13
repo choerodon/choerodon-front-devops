@@ -180,16 +180,13 @@ class InstancesStore {
         search = search.concat(`&${key}=${value}`);
       }
     });
-    axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page || 0}&size=${size || this.pageInfo.pageSize}${search}`, JSON.stringify(datas || { searchParam: {}, param: '' })).then((data) => {
+    return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page || 0}&size=${size || this.pageInfo.pageSize}${search}`, JSON.stringify(datas || { searchParam: {}, param: '' })).then((data) => {
       const res = handleProptError(data);
       if (res) {
         this.handleData(data);
       } else {
         this.changeLoading(false);
       }
-    }).catch((err) => {
-      this.changeLoading(false);
-      Choerodon.handleResponseError(err);
     });
   };
 
