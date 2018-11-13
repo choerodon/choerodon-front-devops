@@ -625,8 +625,7 @@ class CreateDomain extends Component {
               <FormattedMessage id="domain.protocol" />
               <Popover
                 content={formatMessage({ id: 'domain.protocol.tip' })}
-                overlayStyle={{ maxWidth: '350px' }}
-                placement="topRight"
+                overlayClassName="c7n-tips-popover"
                 arrowPointAtCenter
               >
                 <Icon type="help c7n-tooltip-icon" />
