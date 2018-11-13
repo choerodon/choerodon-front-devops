@@ -189,7 +189,7 @@ class EnvOverviewStore {
                   const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
                   InstancesStore.setAppPageSize(appPageSize);
                   loadAppNameByEnv(projectId, this.tpEnvId, 0, appPageSize);
-                  loadInstanceAll(projectId, { envId: this.tpEnvId, appId: false });
+                  loadInstanceAll(true, projectId, { envId: this.tpEnvId, appId: false });
                 }
                 InstancesStore.setIsCache(false);
                 break;

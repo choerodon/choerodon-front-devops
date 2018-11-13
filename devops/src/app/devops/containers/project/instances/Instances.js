@@ -30,11 +30,19 @@ class Instances extends Component {
     };
     this.columnAction = this.columnAction.bind(this);
     this.renderVersion = this.renderVersion.bind(this);
+    this.timer = null;
   }
 
   componentDidMount() {
     const { id: projectId } = AppState.currentMenuType;
     EnvOverviewStore.loadActiveEnv(projectId, 'instance');
+    if (!this.timer) {
+      this.timer = setInterval(() => {
+        if (EnvOverviewStore.tpEnvId) {
+          this.timingLoad();
+        }
+      }, 1000 * 10);
+    }
   }
 
   componentWillUnmount() {
@@ -44,6 +52,8 @@ class Instances extends Component {
       InstancesStore.setAppNameByEnv([]);
       InstancesStore.setIstAll([]);
     }
+    clearInterval(this.timer);
+    this.timer = null;
   }
 
   /**
@@ -70,7 +80,7 @@ class Instances extends Component {
     const currentApp = InstancesStore.getAppId;
     const nextApp = (appId !== currentApp) && appId;
     InstancesStore.setAppId(nextApp);
-    this.reloadData(envId, nextApp);
+    this.reloadData(true, envId, nextApp);
   };
 
   /**
@@ -107,7 +117,7 @@ class Instances extends Component {
     EnvOverviewStore.setTpEnvId(id);
     InstancesStore.setAppId(false);
     loadAppNameByEnv(projectId, id, getAppPage - 1, getAppPageSize);
-    this.reloadData(id);
+    this.reloadData(true, id);
   };
 
   /**
@@ -133,7 +143,7 @@ class Instances extends Component {
       searchParam,
       param: param.toString(),
     };
-    InstancesStore.loadInstanceAll(projectId, { page: current - 1, size: pageSize, envId, appId, datas });
+    InstancesStore.loadInstanceAll(true, projectId, { page: current - 1, size: pageSize, envId, appId, datas });
     InstancesStore.setIstTableFilter({ filters, param });
   };
 
@@ -181,7 +191,7 @@ class Instances extends Component {
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(projectId);
+          loadInstanceAll(true, projectId);
         }
       });
   };
@@ -238,7 +248,7 @@ class Instances extends Component {
     this.setState({
       visible: false,
     });
-    res && this.reloadData(envId, appId);
+    res && this.reloadData(true, envId, appId);
   };
 
   /**
@@ -249,27 +259,27 @@ class Instances extends Component {
     this.setState({
       visibleUp: false,
     });
-    res && this.reloadData();
+    res && this.reloadData(true);
   };
 
   /**
    * 页面数据重载
    * @param envId
    * @param appId
+   * @param clear 是否清空筛选条件
+   * @param fresh 是否刷新列表
    */
-  reloadData = (envId = false, appId = false) => {
-    const {
-      id: projectId,
-    } = AppState.currentMenuType;
+  reloadData = (fresh, envId = false, appId = false, clear = true) => {
+    const { id: projectId } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
-    InstancesStore.loadInstanceAll(projectId, { envId, appId });
-    InstancesStore.setIstTableFilter(null);
+    InstancesStore.loadInstanceAll(fresh, projectId, { envId, appId });
+    clear && InstancesStore.setIstTableFilter(null);
   };
 
   /**
    * 刷新按钮
    */
-  reload = () => {
+  reload = (fresh = true, clear = false) => {
     const { id: projectId } = AppState.currentMenuType;
     const {
       InstancesStore: {
@@ -281,7 +291,14 @@ class Instances extends Component {
     } = this.props;
     const envId = EnvOverviewStore.getTpEnvId;
     loadAppNameByEnv(projectId, envId, getAppPage - 1, getAppPageSize);
-    this.reloadData(envId, getAppId);
+    this.reloadData(fresh, envId, getAppId, clear);
+  };
+
+  /**
+   * 定时加载
+   */
+  timingLoad = () => {
+    this.reload(false, true);
   };
 
   /**
@@ -305,7 +322,7 @@ class Instances extends Component {
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(projectId, { envId, getAppId });
+          loadInstanceAll(true, projectId, { envId, getAppId });
         }
         this.setState({
           openRemove: false,
@@ -336,7 +353,7 @@ class Instances extends Component {
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(projectId, { envId, getAppId });
+          loadInstanceAll(true, projectId, { envId, getAppId });
         }
       });
   };
@@ -605,7 +622,10 @@ class Instances extends Component {
           <Button
             icon="refresh"
             funcType="flat"
-            onClick={this.reload}
+            onClick={(e) => {
+              e.persist();
+              this.reload();
+            }}
           >
             <FormattedMessage id="refresh" />
           </Button>
