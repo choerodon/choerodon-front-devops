@@ -165,7 +165,7 @@ class AppOverview extends Component {
         if (error && error.failed) {
           Choerodon.prompt(error.message);
         } else {
-          InstancesStore.loadInstanceAll(projectId);
+          InstancesStore.loadInstanceAll(true, projectId);
         }
       });
   };
