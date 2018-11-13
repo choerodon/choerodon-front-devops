@@ -167,6 +167,7 @@ const pageDetail = {
 
   // appstore
   "appstore.description.label": "描述",
+  "appstore.exportName": "导出文件名称",
   "appstore.description":
     "应用市场是应用的集市。您可在此查看已发布至您项目的应用及其详细信息，并选择需要的应用版本进行部署。",
   "appstore.import.title": "应用导入",
@@ -178,7 +179,7 @@ const pageDetail = {
     "您可在此选择想要导出的应用，您可以一次选择多个应用。",
   "appstore.exportStep2": "您可在此选择想要导出的版本。",
   "appstore.exportStep3":
-    "您可在此确认应用发布的信息，如需修改请返回相应步骤。",
+    "您可以在下方为导出的应用文件重新命名，以便于您后续的辨识（导出文件名默认为chart）。最后您需在此确认应用发布的信息，如需修改请返回相应步骤。",
   "appstore.importStep1": "您可在此选择相应的文件，并进行上传。",
   "appstore.importStep2":
     "您可在此选择是否发布，如果发布还可以选择发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。",

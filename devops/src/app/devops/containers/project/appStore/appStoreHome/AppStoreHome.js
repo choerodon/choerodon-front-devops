@@ -262,6 +262,8 @@ class AppStoreHome extends Component {
           'devops-service.application-market.listAllApp',
           'devops-service.application-market.queryApp',
           'devops-service.application-market.queryAppVersionReadme',
+          'devops-service.application-market.exportFile',
+          'devops-service.application-market.importApps',
         ]}
       >
         <Header title={<FormattedMessage id="appstore.title" />}>
