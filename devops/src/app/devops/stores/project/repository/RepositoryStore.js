@@ -8,15 +8,12 @@ const orderMapping = {
   descend: 'desc',
 };
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-const { AppState } = stores;
 
 @store('RepositoryStore')
 class RepositoryStore {
   @observable repoData = [];
 
   @observable loading = true;
-
-  @observable preProId = AppState.currentMenuType.id;
 
   @observable pageInfo = {
     current: 1,
@@ -48,10 +45,6 @@ class RepositoryStore {
     return this.pageInfo;
   }
 
-  @action setPreProId(id) {
-    this.preProId = id;
-  }
-
   /**
    * 查询仓库数据
    * @param projectId
@@ -61,10 +54,6 @@ class RepositoryStore {
    * @param search
    */
   queryRepoData = (projectId, page, pageSize = this.pageInfo.pageSize, sorter, search) => {
-    if (Number(this.preProId) !== Number(projectId)) {
-      DeploymentPipelineStore.setProRole('app', '');
-    }
-    this.setPreProId(projectId);
     this.setLoading(true);
     const order = sorter.order ? orderMapping[sorter.order] : 'desc';
     axios.post(`/devops/v1/projects/${projectId}/apps/list_code_repository?page=${page}&size=${pageSize}&sort=${sorter.field || 'id'},${order}`, JSON.stringify(search))
@@ -78,9 +67,6 @@ class RepositoryStore {
             pageSize: res.size,
           };
           this.setPageInfo(pageInfo);
-          if (res.totalElements === 0) {
-            DeploymentPipelineStore.judgeRole('app');
-          }
         }
         this.setLoading(false);
       }).catch((err) => {
