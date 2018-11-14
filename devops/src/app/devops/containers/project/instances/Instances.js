@@ -676,7 +676,7 @@ class Instances extends Component {
             confirmLoading={loading}
             name={name}
           />
-        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ist.head" />} />}
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ist.head" />} type="env" />}
       </Page>
     );
   }

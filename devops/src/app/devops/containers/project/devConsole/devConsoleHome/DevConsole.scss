@@ -1,4 +1,5 @@
 .c7n-dc-card-wrap {
+  border-radius: 2px;
   padding: 20px 16px;
   box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 
@@ -63,8 +64,14 @@
 
   .c7n-dc-card-branch, .page-content-header {
     flex: 6;
-    margin-right: 20px;
+    margin-right: 16px;
     max-width: none;
+
+    &:hover {
+      .c7n-branch-action {
+        display: inline-block;
+      }
+    }
   }
 
   .c7n-dc-card-merge {
@@ -103,6 +110,10 @@
       i {
         margin: 0 2px 0 16px;
       }
+
+      .c7n-data-number_link {
+        text-align: right;
+      }
     }
   }
 }
@@ -132,6 +143,10 @@
     line-height: 20px;
     display: flex;
     align-items: center;
+
+    .icon-playlist_add {
+      margin-right: 2px;
+    }
   }
 }
 
@@ -142,7 +157,7 @@
 }
 
 .c7n-dc-branch-content {
-  padding: 12px 0 0 30px;
+  padding: 8px 30px;
 
   .branch-content-title {
     display: flex;
@@ -151,7 +166,7 @@
     align-items: center;
 
     .branch-name {
-      width: 30%;
+      max-width: 200px;
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
@@ -178,7 +193,12 @@
   }
 
   .c7n-branch-action {
+    display: none;
     margin-left: 40px;
+  }
+
+  .c7n-merge-action {
+    margin-left: 10px;
   }
 
   .c7n-branch-commit {

@@ -282,7 +282,7 @@ class AppReleaseHome extends Component {
               </TabPane>
             </Tabs>
           </Content>
-        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="release.home.header.title" />} />}
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="release.home.header.title" />} type="app" />}
       </Page>
     );
   }

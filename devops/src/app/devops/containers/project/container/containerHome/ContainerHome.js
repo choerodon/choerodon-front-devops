@@ -938,7 +938,7 @@ class ContainerHome extends Component {
           filters={paras.slice()}
         />
       </Content>
-    </React.Fragment>) : <DepPipelineEmpty title={<FormattedMessage id="container.header.title" />} />;
+    </React.Fragment>) : <DepPipelineEmpty title={<FormattedMessage id="container.header.title" />} type="env" />;
 
     const containerDom = containerArr.length && (_.map(containerArr, c => <Option key={c.logId} value={`${c.logId}+${c.containerName}`}>{c.containerName}</Option>));
 
