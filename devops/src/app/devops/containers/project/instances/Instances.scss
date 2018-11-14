@@ -128,6 +128,10 @@
     display: inline-block;
   }
 
+  .ant-table-body {
+    overflow-x: scroll !important;
+  }
+
   .ant-table-placeholder {
     margin-top: -38px;
   }
