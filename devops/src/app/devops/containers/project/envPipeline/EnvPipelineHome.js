@@ -12,6 +12,7 @@ import {
   Popover,
   Select,
   Table,
+  Spin,
   Tag,
   Icon,
 } from "choerodon-ui";
@@ -1020,6 +1021,7 @@ class EnvPipelineHome extends Component {
               <div className="c7n-env-tag-title">
                 <FormattedMessage id="envPl.authority" />
                 <Popover
+                  overlayStyle={{ width: 350 }}
                   content={formatMessage({
                     id: "envPl.authority.help",
                   })}
@@ -1087,30 +1089,33 @@ class EnvPipelineHome extends Component {
                   />
                 )}
               </FormItem>
-              <FormItem {...formItemLayout}>
-                {getFieldDecorator("devopsEnvGroupId", {
-                  initialValue: envData ? envData.devopsEnvGroupId : undefined,
-                })(
-                  <Select
-                    allowClear
-                    filter
-                    filterOption={(input, option) =>
-                      option.props.children
-                        .toLowerCase()
-                        .indexOf(input.toLowerCase()) >= 0
-                    }
-                    label={<FormattedMessage id="envPl.form.group" />}
-                  >
-                    {groupData.length
-                      ? _.map(groupData, g => (
+              <div className="c7ncd-sidebar-select">
+                <FormItem {...formItemLayout}>
+                  {getFieldDecorator("devopsEnvGroupId", {
+                    initialValue: envData ? envData.devopsEnvGroupId : undefined,
+                  })(
+                    <Select
+                      allowClear
+                      filter
+                      filterOption={(input, option) =>
+                        option.props.children
+                          .toLowerCase()
+                          .indexOf(input.toLowerCase()) >= 0
+                      }
+                      label={<FormattedMessage id="envPl.form.group" />}
+                    >
+                      {groupData.length
+                        ? _.map(groupData, g => (
                           <Option key={g.id} value={g.id}>
                             {g.name}
                           </Option>
                         ))
-                      : null}
-                  </Select>
-                )}
-              </FormItem>
+                        : null}
+                    </Select>
+                  )}
+                </FormItem>
+                {getSelectTip('envPl.group.tip')}
+              </div>
             </Form>
           </div>
         );
@@ -1232,13 +1237,12 @@ class EnvPipelineHome extends Component {
           <Modal
             visible={disEnvShow}
             width={400}
-            footer={[
+            footer={enableClick ? [
               <Button
                 key="back"
                 onClick={this.closeDisEnvModal}
               >{formatMessage({ id: 'return' })}</Button>,
               <Button
-                disabled={!enableClick}
                 key="submit"
                 type="primary"
                 loading={submitting}
@@ -1246,12 +1250,14 @@ class EnvPipelineHome extends Component {
               >
                 {formatMessage({ id: 'submit' })}
               </Button>,
-            ]}
+            ] : null}
             closable={false}
             wrapClassName="vertical-center-modal remove"
           >
-            <div className="c7ncd-modal-title">{formatMessage({ id: `envPl.${disableMsg}.disable` })}</div>
-            {formatMessage({ id: `envPl.disEnv.${disableMsg}` })}
+            {enableClick
+              ? [<div className="c7ncd-modal-title">{formatMessage({ id: `envPl.${disableMsg}.disable` })}</div>,
+                formatMessage({ id: `envPl.disEnv.${disableMsg}` })]
+              : <div className="c7ncd-env-spin"><Spin /></div>}
           </Modal>
           <Modal
             visible={delGroupShow}

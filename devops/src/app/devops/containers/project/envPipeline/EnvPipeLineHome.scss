@@ -172,7 +172,7 @@
   margin: 12px;
   .c7n-env-des {
     position: relative;
-    max-height: 6em;
+    height: 6em;
     font-size: 13px;
     line-height: 20px;
     overflow: hidden;
@@ -185,9 +185,9 @@
       z-index: 1;
       bottom: 0;
       right: 0;
-      padding-left: 6px;
+      padding-left: 8px;
       width: 1.5em;
-      background-color: #fff;
+      background: linear-gradient(to right, rgba(255, 255, 255, .5), rgba(255, 255, 255, .8), #fff);
     }
     &::after {
       content: '';
@@ -471,4 +471,10 @@
   .ant-pagination-total-text {
     display: none;
   }
+}
+
+.c7ncd-env-spin {
+  min-height: 98px;
+  text-align: center;
+  padding: 30px 50px;
 }
