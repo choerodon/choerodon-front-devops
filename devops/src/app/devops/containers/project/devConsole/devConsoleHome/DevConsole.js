@@ -899,7 +899,7 @@ class DevConsole extends Component {
           visible={editBranch}
           onClose={this.closeEditBranch}
           isDevConsole
-        /> : null}</Fragment> : <DepPipelineEmpty title={<FormattedMessage id="devCs.head" />} />}
+        /> : null}</Fragment> : <DepPipelineEmpty title={<FormattedMessage id="devCs.head" />} type="app" />}
       </Page>
     );
   }

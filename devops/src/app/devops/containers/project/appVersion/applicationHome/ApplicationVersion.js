@@ -179,7 +179,7 @@ class ApplicationVersion extends Component {
               onChange={this.tableChange}
             />
           </Content>
-        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="app.version" />} />}
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="app.version" />} type="app" />}
       </Page>
     );
   }

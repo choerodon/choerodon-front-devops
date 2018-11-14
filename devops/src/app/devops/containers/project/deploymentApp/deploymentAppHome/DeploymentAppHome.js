@@ -734,7 +734,7 @@ class DeploymentAppHome extends Component {
             handleCancel={this.handleCancel}
             handleOk={this.handleOk}
           />}
-        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="deploy.header.title" />} />}
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="deploy.header.title" />} type="env" />}
       </Page>
     );
   }

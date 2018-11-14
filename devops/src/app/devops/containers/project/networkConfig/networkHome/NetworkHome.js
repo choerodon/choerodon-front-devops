@@ -386,7 +386,7 @@ class NetworkHome extends Component {
               rowKey={record => record.id}
             />
           </Content>
-        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="network.header.title" />} />)
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="network.header.title" />} type="env" />)
         }
 
         {show && <CreateNetwork
