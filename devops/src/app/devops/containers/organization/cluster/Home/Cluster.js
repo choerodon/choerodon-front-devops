@@ -362,6 +362,13 @@ class Cluster extends Component {
         </CopyToBoard>
       </div>
     </Tooltip>);
+    const suffix_key = (<Tooltip placement="right" trigger="hover" title={copyMsg}>
+      <div onMouseEnter={this.mouseEnter}>
+        <CopyToBoard text={shell} onCopy={this.handleCopy}>
+          <i className="icon icon-library_books" />
+        </CopyToBoard>
+      </div>
+    </Tooltip>);
     const columns = [{
       key: 'name',
       title: formatMessage({ id: 'cluster.project.name' }),
@@ -489,7 +496,7 @@ class Cluster extends Component {
               readOnly
               value={shell || ''}
             />
-            <span className="c7n-env-copy">{suffix}</span>
+            <span className="c7n-env-copy">{suffix_key}</span>
           </div>
         </div>);
         break;
