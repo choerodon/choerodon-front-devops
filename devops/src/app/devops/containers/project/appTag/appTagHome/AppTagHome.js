@@ -328,7 +328,7 @@ class AppTagHome extends Component {
           </Button>
         </Header>
         <Content code={appData.length ? 'apptag.app' : 'apptag'} values={{ name: titleName }}>
-          <h4 className="c7n-tag-table"><FormattedMessage id="apptag.table" /></h4>
+          <div className="c7n-tag-table"><FormattedMessage id="apptag.table" /></div>
           {loading || _.isNull(loading) ? <LoadingBar display /> : <Fragment>
             {tagList.length ? <Fragment>
               <Collapse bordered={false}>{tagList}</Collapse>

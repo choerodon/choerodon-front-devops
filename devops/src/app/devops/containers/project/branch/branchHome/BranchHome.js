@@ -94,13 +94,17 @@ class BranchHome extends Component {
 
   /**
    * 获取列表的icon
-   * @param name 分支类型
+   * @param name 分支名称
    * @returns {*}
    */
   getIcon =(name) => {
     let type = '';
-    if (name) {
+    if (name.includes('-')) {
       type = name.split('-')[0];
+    } else if (name === 'master') {
+      type = name;
+    } else {
+      type = 'custom';
     }
     return <span className={`c7n-branch-icon icon-${type}`}>{type.slice(0, 1).toUpperCase()}</span>;
   };
