@@ -58,10 +58,8 @@ class DepPipelineEmpty extends Component {
             </Button>
           </Card>)}
           {type === 'env'&& env === 'member' && (<Card title={formatMessage({ id: 'depPl.noPermission' })}>
-            <div className="c7n-noPer-text">
-              <FormattedMessage id="depPl.noPerDes" /><br />
-              <FormattedMessage id="depPl.addPermission" />
-            </div>
+            <FormattedMessage id="depPl.noPerDes" /><br />
+            <FormattedMessage id="depPl.addPermission" />
             <a
               href={formatMessage({ id: 'env.link' })}
               rel="nofollow me noopener noreferrer"
@@ -89,7 +87,7 @@ class DepPipelineEmpty extends Component {
               <FormattedMessage id="app.create" />
             </Button>
           </Card>)}
-          {type === 'app' && app === 'member' && (<Card title={formatMessage({ id: 'ist.noApp' })} className="c7n-noApp-content">
+          {type === 'app' && app === 'member' && (<Card title={formatMessage({ id: 'ist.noApp' })}>
             <FormattedMessage id="empty.member.noApp" />
             <a
               href={formatMessage({ id: 'app.link' })}

@@ -102,7 +102,7 @@ class DeploymentAppHome extends Component {
     this.setState({ current: index, disabled: false });
     this.loadReview();
     if (index === 2 && appId && versionId && envId) {
-      this.setState({ envId, envDto: env[0], value: null, yaml: null, changeYaml: false, mode: 'new', markers: [] });
+      this.setState({ envId, envDto: env[0] });
       DeploymentAppStore.setValue(null);
       DeploymentAppStore.loadValue(appId, versionId, envId)
         .then((data) => {
