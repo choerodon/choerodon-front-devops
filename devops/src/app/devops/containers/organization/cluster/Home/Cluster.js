@@ -99,7 +99,7 @@ class Cluster extends Component {
       createSelected: [],
       token: null,
       delId: null,
-      delName: '',
+      clsName: '',
       page: 0,
       size: HEIGHT <= 900 ? 12 : 18,
     };
@@ -208,7 +208,7 @@ class Cluster extends Component {
     this.setState({
       showDel: true,
       delId: id,
-      delName: name,
+      clsName: name,
     })
   };
 
@@ -269,7 +269,7 @@ class Cluster extends Component {
                   <Button
                     funcType="flat"
                     shape="circle"
-                    onClick={this.showSideBar.bind(this, 'key', c.id)}
+                    onClick={this.showSideBar.bind(this, 'key', c.id, c.name)}
                   >
                     <Icon type="vpn_key" />
                   </Button>
@@ -284,7 +284,7 @@ class Cluster extends Component {
                   <Button
                     funcType="flat"
                     shape="circle"
-                    onClick={this.showSideBar.bind(this, 'edit', c.id)}
+                    onClick={this.showSideBar.bind(this, 'edit', c.id, c.name)}
                   >
                     <Icon type="mode_edit" />
                   </Button>
@@ -594,6 +594,7 @@ class Cluster extends Component {
     if (sideType === 'create') {
       this.props.form.validateFieldsAndScroll((err, data) => {
         if (!err) {
+          this.setState({ clsName: data.name });
           data.skipCheckProjectPermission = checked;
           data.projects = createSelectedRowKeys;
           ClusterStore.createCluster(organizationId, data)
@@ -665,8 +666,9 @@ class Cluster extends Component {
    * 弹出侧边栏
    * @param sideType
    * @param id
+   * @param name
    */
-  showSideBar = (sideType, id) => {
+  showSideBar = (sideType, id, name) => {
     const { ClusterStore } = this.props;
     const { organizationId } = AppState.currentMenuType;
     if (sideType === 'create') {
@@ -686,7 +688,7 @@ class Cluster extends Component {
     } else if (sideType === 'key') {
       ClusterStore.loadShell(organizationId, id);
     }
-    this.setState({ sideType, show: true });
+    this.setState({ sideType, show: true, clsName: name });
   };
 
   /**
@@ -733,7 +735,7 @@ class Cluster extends Component {
 
   render() {
     const { type, organizationId, name } = AppState.currentMenuType;
-    const { show, sideType, submitting, showDel, btnLoading, delName } = this.state;
+    const { show, sideType, submitting, showDel, btnLoading, clsName } = this.state;
     const {
       ClusterStore,
       intl: { formatMessage },
@@ -744,6 +746,7 @@ class Cluster extends Component {
       getData: clusters,
     } = ClusterStore;
     const showBtns = (sideType === 'create' || sideType === 'edit' || sideType === 'permission');
+    const titleName = sideType === 'create' ? name : clsName;
 
     return (
       <Page
@@ -798,7 +801,7 @@ class Cluster extends Component {
             cancelText={<FormattedMessage id="cancel" />}
             okText={this.okText(sideType)}
           >
-            <Content code={`cluster.${sideType}`} values={{ name }} className="sidebar-content">
+            <Content code={`cluster.${sideType}`} values={{ clsName: titleName }} className="sidebar-content">
               {this.getFormContent()}
             </Content>
           </Sidebar>}
@@ -820,7 +823,9 @@ class Cluster extends Component {
             </div> : null}
           </React.Fragment> : <Card title={formatMessage({ id: 'cluster.create' })} className="c7n-depPi-empty-card">
             <div className="c7n-noEnv-content">
-              <FormattedMessage id="cluster.noData" />
+              <FormattedMessage id="cluster.noData.text1" /><br/>
+              <FormattedMessage id="cluster.noData.text2" /><br/>
+              <FormattedMessage id="cluster.noData.text3" />
               <a
                 href={formatMessage({ id: 'cluster.link' })}
                 rel="nofollow me noopener noreferrer"
@@ -828,6 +833,10 @@ class Cluster extends Component {
               >
                 <FormattedMessage id="depPl.more" /><Icon type="open_in_new" />
               </a>
+              <div className="c7n-cluster-notice">
+                <Icon type="error" />
+                <FormattedMessage id="cluster.notice" />
+              </div>
             </div>
             <Button
               type="primary"
@@ -840,7 +849,7 @@ class Cluster extends Component {
         </Content>
         <Modal
           className="c7n-cls-del-modal"
-          title={<FormattedMessage id="cluster.del.title" values={{ delName }} />}
+          title={<FormattedMessage id="cluster.del.title" values={{ clsName }} />}
           visible={showDel}
           onOk={this.delCluster}
           closable={false}
