@@ -19,4 +19,11 @@
     margin-bottom: 12px;
     color: rgba(0, 0, 0, 0.65);
   }
+
+  .c7n-noApp-content {
+
+    &:first-child {
+      color: rgba(0, 0, 0, 0.65);
+    }
+  }
 }

@@ -210,7 +210,7 @@ class RepositoryHome extends Component {
               rowKey={record => record.id}
             />
           </Content>
-        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="repository.head" />} />}
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="repository.head" />} type="app" />}
       </Page>
     );
   }

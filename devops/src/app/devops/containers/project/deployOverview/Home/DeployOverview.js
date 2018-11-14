@@ -237,7 +237,7 @@ class DeployOverview extends Component {
               {this.renderTable()}
             </div>
           </Content>
-        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="dpOverview.head" />} />}
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="dpOverview.head" />} type="env" />}
       </Page>
     );
   }

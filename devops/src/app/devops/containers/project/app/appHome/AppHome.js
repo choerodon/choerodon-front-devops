@@ -560,7 +560,7 @@ class AppHome extends Component {
               filters={paras.slice()}
             />
           </Content>
-        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="app.head" />} />)}
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="app.head" />} type="app" />)}
         <Modal
           confirmLoading={submitting}
           visible={openRemove}

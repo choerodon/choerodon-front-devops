@@ -667,7 +667,7 @@ class EnvOverviewHome extends Component {
               </TabPane>);
             })}
           </Tabs>
-        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="envoverview.head" />} />}
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="envoverview.head" />} type="env" />}
         {this.showNetwork && <CreateNetwork
           visible={this.showNetwork}
           store={NetworkConfigStore}
