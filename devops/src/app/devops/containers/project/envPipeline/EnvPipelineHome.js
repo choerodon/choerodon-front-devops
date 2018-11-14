@@ -698,6 +698,7 @@ class EnvPipelineHome extends Component {
       disEnvConnect,
       enableClick,
       envName,
+      delGroupName,
     } = this.state;
     const {
       id: projectId,
@@ -1214,7 +1215,6 @@ class EnvPipelineHome extends Component {
             onOk={this.handleSubmit}
             onCancel={this.handleCancelFun.bind(this)}
             confirmLoading={submitting}
-            // okCancel={showBtns}
             cancelText={<FormattedMessage id="cancel" />}
             okText={this.okText(sideType)}
             className="c7n-create-sidebar-tooltip"
@@ -1255,41 +1255,31 @@ class EnvPipelineHome extends Component {
           </Modal>
           <Modal
             visible={delGroupShow}
-            width={400}
-            onOk={this.deleteGroup}
-            onCancel={this.closeDelGroupModal}
             closable={false}
             confirmLoading={submitting}
-            wrapClassName="vertical-center-modal remove"
+            title={`${formatMessage({ id: 'envPl.group.del' })}“${delGroupName}”`}
+            footer={[
+              <Button key="back" onClick={this.closeDelGroupModal} disabled={submitting}>{<FormattedMessage id="cancel" />}</Button>,
+              <Button key="submit" type="danger" onClick={this.deleteGroup} loading={submitting}>
+                {formatMessage({ id: 'delete' })}
+              </Button>,
+            ]}
           >
-            <div className="c7ncd-modal-title">
-              {formatMessage({
-                id: "envPl.group.del",
-              })}
-            </div>
-            {formatMessage({
-              id: "envPl.confirm.group.del",
-            })}
+            {formatMessage({ id: "envPl.confirm.group.del" })}
           </Modal>
           <Modal
             visible={delEnvShow}
-            width={400}
-            onOk={this.deleteEnv}
-            onCancel={this.closeDelEnvModal}
             closable={false}
             confirmLoading={submitting}
-            wrapClassName="vertical-center-modal remove"
+            title={`${formatMessage({ id: "envPl.delete.confirm" }, { name: envName })}`}
+            footer={[
+              <Button key="back" onClick={this.closeDelEnvModal} disabled={submitting}>{<FormattedMessage id="cancel" />}</Button>,
+              <Button key="submit" type="danger" onClick={this.deleteEnv} loading={submitting}>
+                {formatMessage({ id: 'delete' })}
+              </Button>,
+            ]}
           >
-            <div className="c7ncd-modal-title">
-              {formatMessage({
-                id: "envPl.delete.confirm",
-              }, {
-                name: envName,
-              })}
-            </div>
-            {formatMessage({
-              id: "envPl.delete.warn",
-            })}
+            {formatMessage({ id: "envPl.delete.warn" })}
           </Modal>
           {showGroup ? (
             <EnvGroup

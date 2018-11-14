@@ -570,18 +570,6 @@ class Instances extends Component {
       <div>
         {appNameDom}
       </div>
-      <div className="c7n-store-pagination">
-        <Pagination
-          tiny={false}
-          showSizeChanger
-          showSizeChangerLabel={false}
-          total={total || 0}
-          current={current || 0}
-          pageSize={pageSize || 0}
-          onChange={this.onPageChange}
-          onShowSizeChange={this.onPageChange}
-        />
-      </div>
       {getAppNameByEnv.length && (total >= pageSize) ? <div className="c7n-store-pagination">
         <Pagination
           tiny={false}
