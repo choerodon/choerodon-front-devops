@@ -310,7 +310,7 @@ class Cluster extends Component {
           <div className="c7n-cls-card-content">
             <div className="c7n-cls-card-state">
               <div className="c7n-cls-icon-wrap">
-                {c.connect ? <Icon type="link2" /> : <Icon type="baseline-link_off" />}
+                {c.connect ? <Icon type="running" /> : <Icon type="disconnect" />}
               </div>
             </div>
             <div className="c7n-cls-card-des">
@@ -339,7 +339,7 @@ class Cluster extends Component {
       getTableLoading: tableLoading,
       getSelectedRk: selectedRowKeys,
     } = ClusterStore;
-    const { copyMsg, token, sideType, checked, loading, createSelectedRowKeys, createSelected } = this.state;
+    const { copyMsg, token, sideType, checked, createSelectedRowKeys, createSelected } = this.state;
     const rowCreateSelection = {
       selectedRowKeys: createSelectedRowKeys,
       onChange: this.onCreateSelectChange,

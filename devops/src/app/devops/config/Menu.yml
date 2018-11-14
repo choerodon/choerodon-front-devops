@@ -252,11 +252,11 @@
           - 'devops-service.devops-gitlab-pipeline.listPipelineFrequency'
           - 'devops-service.devops-gitlab-pipeline.pagePipeline'
 "cluster-management":
-  icon: microservice
+  icon: cluster
   sort: 4
   organization:
     - "cluster":
-        icon: microservice
+        icon: kubernetes_cluster
         Routes: /devops/cluster
         sort: 1
         permission:
