@@ -212,12 +212,17 @@ class DevConsole extends Component {
 
   /**
    * 获取列表的icon
-   * @param name 分支类型
+   * @param name 分支名称
+   * @returns {*}
    */
   getIcon =(name) => {
     let type = '';
-    if (name) {
+    if (name.includes('-')) {
       type = name.split('-')[0];
+    } else if (name === 'master') {
+      type = name;
+    } else {
+      type = 'custom';
     }
     return <span className={`c7n-branch-icon icon-${type}`}>{type.slice(0, 1).toUpperCase()}</span>;
   };
@@ -271,7 +276,7 @@ class DevConsole extends Component {
 
   /**
    * 修改相关联问题
-   * @param name
+   * @param branchName
    */
   openEditBranch = (branchName) => {
     const { projectId } = AppState.currentMenuType;
@@ -446,7 +451,7 @@ class DevConsole extends Component {
             <span><Icon type="keyboard_backspace" className="c7n-merge-icon-arrow" /></span>
             <Icon type="branch" className="c7n-merge-icon" />
             <MouserOverWrapper text={targetBranch} width={0.12}>{targetBranch}</MouserOverWrapper>
-            <div className="c7n-branch-action">
+            <div className="c7n-merge-action">
               <Permission
                 service={['devops-service.devops-git.getMergeRequestList']}
                 organizationId={orgId}
@@ -777,19 +782,23 @@ class DevConsole extends Component {
             </div>
             <div className="c7n-dc-data-wrap">
               {
-                _.map(numberData, item => (<div className="c7n-data-number" key={item.name}>
-                  <Link
-                    to={{
-                      pathname: `/devops/${item.name}`,
-                      search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${orgId}`,
-                      state: { backPath: `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}` },
-                    }}
-                  >
-                    {item.number}
-                  </Link>
-                  <Icon type={item.icon} />
-                  <span><FormattedMessage id={item.message} /></span>
-                </div>))
+                _.map(numberData, item => (<tr className="c7n-data-number" key={item.name}>
+                  <td className="c7n-data-number_link">
+                    <Link
+                      to={{
+                        pathname: `/devops/${item.name}`,
+                        search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${orgId}`,
+                        state: { backPath: `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}` },
+                      }}
+                    >
+                      {item.number}
+                    </Link>
+                  </td>
+                  <td>
+                    <Icon type={item.icon} />
+                    <span><FormattedMessage id={item.message} /></span>
+                  </td>
+                </tr>))
               }
             </div>
           </div>
