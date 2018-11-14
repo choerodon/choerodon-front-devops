@@ -57,8 +57,10 @@ class Instances extends Component {
   }
 
   clearTimer = () => {
-    clearInterval(this.timer);
-    this.timer = null;
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
   };
 
   /**
