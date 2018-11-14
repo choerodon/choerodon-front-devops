@@ -204,7 +204,7 @@ class EnvPipelineHome extends Component {
     const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     if (type === "create") {
-      EnvPipelineStore.loadPrm(projectId);
+      EnvPipelineStore.loadPrm(projectId );
       EnvPipelineStore.loadCluster(projectId);
     }
     EnvPipelineStore.setSideType(type);
@@ -664,18 +664,18 @@ class EnvPipelineHome extends Component {
     if (sideType === "create") {
       EnvPipelineStore.loadPrm(
         id,
+        null,
         page,
         pagination.pageSize,
-        null,
         sort,
         postData
       );
     } else {
       EnvPipelineStore.loadPrm(
         id,
+        envId,
         page,
         pagination.pageSize,
-        envId,
         sort,
         postData
       );

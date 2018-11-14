@@ -162,17 +162,17 @@ class Instances extends Component {
    * 修改配置实例信息
    */
   updateConfig = (record) => {
-    const { code, id, envId, appVersionId, appId } = record;
+    const { code, id, envId, commandVersionId, appId } = record;
     const {
       id: projectId,
     } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
     this.setState({
-      idArr: [envId, appVersionId, appId],
+      idArr: [envId, commandVersionId, appId],
       name: code,
     });
     InstancesStore.setAlertType('valueConfig');
-    InstancesStore.loadValue(projectId, id, appVersionId)
+    InstancesStore.loadValue(projectId, id, commandVersionId)
       .then((data) => {
         const res = handleProptError(data);
         if (res) {

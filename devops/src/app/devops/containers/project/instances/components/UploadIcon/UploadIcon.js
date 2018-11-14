@@ -34,7 +34,7 @@ function UploadIcon (props) {
     case 'failed':
       dom = (<Fragment>
         <span className="c7n-instance-upload-text">{text || formatMessage({ id: 'ist.deploy.failed' })}</span>
-        <Tooltip title={formatMessage({ id: `ist.version.${text ? 'deploy.' : ''}failed` }, { text: prevText })}>
+        <Tooltip title={formatMessage({ id: `ist.version.${text ? '' : 'deploy.'}failed` }, { text: prevText })}>
           <Icon type="error" className="c7n-instance-upload-failed" />
         </Tooltip>
       </Fragment>);

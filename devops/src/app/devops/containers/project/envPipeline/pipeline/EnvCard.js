@@ -43,7 +43,7 @@ class EnvCard extends Component {
   editPrm = (id) => {
     const { projectId } = this.props;
     EnvPipelineStore.setSideType('permission');
-    EnvPipelineStore.loadPrm(projectId, 0, 10, id);
+    EnvPipelineStore.loadPrm(projectId, id, 0, 10);
     EnvPipelineStore.loadTags(projectId, id);
     EnvPipelineStore.loadEnvById(projectId, id);
     EnvPipelineStore.setShow(true);

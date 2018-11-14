@@ -178,9 +178,9 @@ class AppOverview extends Component {
    */
   @action
   updateConfig = (record) => {
-    const { code, id, envId, appVersionId, appId } = record;
+    const { code, id, envId, commandVersionId, appId } = record;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    InstancesStore.loadValue(projectId, id, appVersionId)
+    InstancesStore.loadValue(projectId, id, commandVersionId)
       .then((res) => {
         if (res && res.failed) {
           Choerodon.prompt(res.message);
@@ -188,7 +188,7 @@ class AppOverview extends Component {
           this.visible = true;
           this.id = id;
           this.name = code;
-          this.idArr = [envId, appVersionId, appId];
+          this.idArr = [envId, commandVersionId, appId];
         }
       });
   };
