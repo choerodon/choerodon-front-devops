@@ -162,8 +162,14 @@ class InstancesStore {
     this.alertType = data;
   }
 
-  loadInstanceAll = (projectId, info = {}) => {
-    this.changeLoading(true);
+  /**
+   * 查询实例
+   * @param fresh 请求是否刷新
+   * @param projectId
+   * @param info
+   */
+  loadInstanceAll = (fresh = true, projectId, info = {}) => {
+    this.changeLoading(fresh);
     const { page, size, datas } = info;
     const normal = ['page', 'size', 'datas'];
     // 除了normal中的字段必有，其他字段不确定
@@ -174,22 +180,21 @@ class InstancesStore {
         search = search.concat(`&${key}=${value}`);
       }
     });
-    axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page || 0}&size=${size || this.pageInfo.pageSize}${search}`, JSON.stringify(datas || { searchParam: {}, param: '' })).then((data) => {
+    return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page || 0}&size=${size || this.pageInfo.pageSize}${search}`, JSON.stringify(datas || { searchParam: {}, param: '' })).then((data) => {
       const res = handleProptError(data);
       if (res) {
         this.handleData(data);
       } else {
         this.changeLoading(false);
       }
-    }).catch((err) => {
-      this.changeLoading(false);
-      Choerodon.handleResponseError(err);
     });
   };
 
   handleData =(data) => {
     const { number, size, totalElements, content } = data;
-    this.setIstAll(content);
+    if (!_.isEqual(content, this.istAll)) {
+      this.setIstAll(content);
+    }
     const page = { number, size, totalElements };
     this.setPageInfo(page);
     this.changeLoading(false);

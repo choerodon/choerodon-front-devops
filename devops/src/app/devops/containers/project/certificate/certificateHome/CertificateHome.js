@@ -129,7 +129,7 @@ class CertificateHome extends Component {
           values={{ name }}
         >
           <CertTable store={CertificateStore} envId={envId} />
-        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ctf.head" />} />}
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ctf.head" />} type="env" />}
         {createDisplay && <CreateCert
           visible={createDisplay}
           store={CertificateStore}

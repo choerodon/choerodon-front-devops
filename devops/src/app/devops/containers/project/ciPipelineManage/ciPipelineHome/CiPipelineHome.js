@@ -462,7 +462,7 @@ class CiPipelineHome extends Component {
         </Header>
         <Content code={appData.length ? 'ciPipeline.app' : 'ciPipeline'} values={{ name: titleName }}>
           {this.tableCiPipeline}
-        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ciPipeline.head" />} />}
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ciPipeline.head" />} type="app" />}
       </Page>
     );
   }

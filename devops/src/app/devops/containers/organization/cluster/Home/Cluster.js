@@ -823,7 +823,9 @@ class Cluster extends Component {
             </div> : null}
           </React.Fragment> : <Card title={formatMessage({ id: 'cluster.create' })} className="c7n-depPi-empty-card">
             <div className="c7n-noEnv-content">
-              <FormattedMessage id="cluster.noData" />
+              <FormattedMessage id="cluster.noData.text1" /><br/>
+              <FormattedMessage id="cluster.noData.text2" /><br/>
+              <FormattedMessage id="cluster.noData.text3" />
               <a
                 href={formatMessage({ id: 'cluster.link' })}
                 rel="nofollow me noopener noreferrer"
@@ -831,6 +833,10 @@ class Cluster extends Component {
               >
                 <FormattedMessage id="depPl.more" /><Icon type="open_in_new" />
               </a>
+              <div className="c7n-cluster-notice">
+                <Icon type="error" />
+                <FormattedMessage id="cluster.notice" />
+              </div>
             </div>
             <Button
               type="primary"

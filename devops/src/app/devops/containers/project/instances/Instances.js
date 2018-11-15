@@ -17,6 +17,7 @@ import '../../main.scss';
 import EnvOverviewStore from '../../../stores/project/envOverview';
 import DepPipelineEmpty from "../../../components/DepPipelineEmpty/DepPipelineEmpty";
 import { getTableTitle } from '../../../utils';
+import InstancesStore from "../../../stores/project/instances";
 
 const Option = Select.Option;
 const { AppState } = stores;
@@ -30,11 +31,19 @@ class Instances extends Component {
     };
     this.columnAction = this.columnAction.bind(this);
     this.renderVersion = this.renderVersion.bind(this);
+    this.timer = null;
   }
 
   componentDidMount() {
     const { id: projectId } = AppState.currentMenuType;
     EnvOverviewStore.loadActiveEnv(projectId, 'instance');
+    if (!this.timer) {
+      this.timer = setInterval(() => {
+        if (EnvOverviewStore.tpEnvId) {
+          this.timingLoad();
+        }
+      }, 1000 * 10);
+    }
   }
 
   componentWillUnmount() {
@@ -44,7 +53,15 @@ class Instances extends Component {
       InstancesStore.setAppNameByEnv([]);
       InstancesStore.setIstAll([]);
     }
+    this.clearTimer();
   }
+
+  clearTimer = () => {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+  };
 
   /**
    * 页码改变的回调
@@ -70,7 +87,7 @@ class Instances extends Component {
     const currentApp = InstancesStore.getAppId;
     const nextApp = (appId !== currentApp) && appId;
     InstancesStore.setAppId(nextApp);
-    this.reloadData(envId, nextApp);
+    this.reloadData(true, envId, nextApp);
   };
 
   /**
@@ -107,7 +124,7 @@ class Instances extends Component {
     EnvOverviewStore.setTpEnvId(id);
     InstancesStore.setAppId(false);
     loadAppNameByEnv(projectId, id, getAppPage - 1, getAppPageSize);
-    this.reloadData(id);
+    this.reloadData(true, id);
   };
 
   /**
@@ -133,7 +150,11 @@ class Instances extends Component {
       searchParam,
       param: param.toString(),
     };
-    InstancesStore.loadInstanceAll(projectId, { page: current - 1, size: pageSize, envId, appId, datas });
+    InstancesStore.loadInstanceAll(true, projectId, { page: current - 1, size: pageSize, envId, appId, datas }).catch((err) => {
+      InstancesStore.changeLoading(false);
+      this.clearTimer();
+      Choerodon.handleResponseError(err);
+    });
     InstancesStore.setIstTableFilter({ filters, param });
   };
 
@@ -141,17 +162,17 @@ class Instances extends Component {
    * 修改配置实例信息
    */
   updateConfig = (record) => {
-    const { code, id, envId, appVersionId, appId } = record;
+    const { code, id, envId, commandVersionId, appId } = record;
     const {
       id: projectId,
     } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
     this.setState({
-      idArr: [envId, appVersionId, appId],
+      idArr: [envId, commandVersionId, appId],
       name: code,
     });
     InstancesStore.setAlertType('valueConfig');
-    InstancesStore.loadValue(projectId, id, appVersionId)
+    InstancesStore.loadValue(projectId, id, commandVersionId)
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
@@ -181,7 +202,11 @@ class Instances extends Component {
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(projectId);
+          loadInstanceAll(true, projectId).catch((err) => {
+            InstancesStore.changeLoading(false);
+            this.clearTimer();
+            Choerodon.handleResponseError(err);
+          });
         }
       });
   };
@@ -238,7 +263,7 @@ class Instances extends Component {
     this.setState({
       visible: false,
     });
-    res && this.reloadData(envId, appId);
+    res && this.reloadData(true, envId, appId);
   };
 
   /**
@@ -249,27 +274,31 @@ class Instances extends Component {
     this.setState({
       visibleUp: false,
     });
-    res && this.reloadData();
+    res && this.reloadData(true);
   };
 
   /**
    * 页面数据重载
    * @param envId
    * @param appId
+   * @param clear 是否清空筛选条件
+   * @param fresh 是否刷新列表
    */
-  reloadData = (envId = false, appId = false) => {
-    const {
-      id: projectId,
-    } = AppState.currentMenuType;
+  reloadData = (fresh, envId = false, appId = false, clear = true) => {
+    const { id: projectId } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
-    InstancesStore.loadInstanceAll(projectId, { envId, appId });
-    InstancesStore.setIstTableFilter(null);
+    InstancesStore.loadInstanceAll(fresh, projectId, { envId, appId }).catch((err) => {
+      InstancesStore.changeLoading(false);
+      this.clearTimer();
+      Choerodon.handleResponseError(err);
+    });
+    clear && InstancesStore.setIstTableFilter(null);
   };
 
   /**
    * 刷新按钮
    */
-  reload = () => {
+  reload = (fresh = true, clear = false) => {
     const { id: projectId } = AppState.currentMenuType;
     const {
       InstancesStore: {
@@ -281,7 +310,14 @@ class Instances extends Component {
     } = this.props;
     const envId = EnvOverviewStore.getTpEnvId;
     loadAppNameByEnv(projectId, envId, getAppPage - 1, getAppPageSize);
-    this.reloadData(envId, getAppId);
+    this.reloadData(fresh, envId, getAppId, clear);
+  };
+
+  /**
+   * 定时加载
+   */
+  timingLoad = () => {
+    this.reload(false, true);
   };
 
   /**
@@ -305,7 +341,11 @@ class Instances extends Component {
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(projectId, { envId, getAppId });
+          loadInstanceAll(true, projectId, { envId, getAppId }).catch((err) => {
+            InstancesStore.changeLoading(false);
+            this.clearTimer();
+            Choerodon.handleResponseError(err);
+          });
         }
         this.setState({
           openRemove: false,
@@ -336,7 +376,11 @@ class Instances extends Component {
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(projectId, { envId, getAppId });
+          loadInstanceAll(true, projectId, { envId, getAppId }).catch((err) => {
+            InstancesStore.changeLoading(false);
+            this.clearTimer();
+            Choerodon.handleResponseError(err);
+          });
         }
       });
   };
@@ -526,18 +570,6 @@ class Instances extends Component {
       <div>
         {appNameDom}
       </div>
-      <div className="c7n-store-pagination">
-        <Pagination
-          tiny={false}
-          showSizeChanger
-          showSizeChangerLabel={false}
-          total={total || 0}
-          current={current || 0}
-          pageSize={pageSize || 0}
-          onChange={this.onPageChange}
-          onShowSizeChange={this.onPageChange}
-        />
-      </div>
       {getAppNameByEnv.length && (total >= pageSize) ? <div className="c7n-store-pagination">
         <Pagination
           tiny={false}
@@ -605,7 +637,10 @@ class Instances extends Component {
           <Button
             icon="refresh"
             funcType="flat"
-            onClick={this.reload}
+            onClick={(e) => {
+              e.persist();
+              this.reload();
+            }}
           >
             <FormattedMessage id="refresh" />
           </Button>
@@ -641,7 +676,7 @@ class Instances extends Component {
             confirmLoading={loading}
             name={name}
           />
-        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ist.head" />} />}
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ist.head" />} type="env" />}
       </Page>
     );
   }

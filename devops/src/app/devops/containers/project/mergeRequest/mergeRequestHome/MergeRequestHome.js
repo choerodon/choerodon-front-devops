@@ -536,7 +536,7 @@ class MergeRequestHome extends Component {
               />
             </TabPane> : null}
           </Tabs>
-        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="merge.head" />} />}
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="merge.head" />} type="app" />}
       </Page>
     );
   }
