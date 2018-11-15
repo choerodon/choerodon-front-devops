@@ -530,7 +530,6 @@ class DevConsole extends Component {
             organizationId={orgId}
           >
             <Button
-              type="primary"
               funcType="flat"
               onClick={this.openCreateBranch.bind(this, branchName)}
             >
@@ -550,7 +549,6 @@ class DevConsole extends Component {
             organizationId={orgId}
           >
             <Button
-              type="primary"
               funcType="flat"
               onClick={() => this.displayCreateModal(true)}
             >
@@ -562,7 +560,6 @@ class DevConsole extends Component {
           key="2"
         >
           <Button
-            type="primary"
             funcType="flat"
             onClick={this.linkToMerge.bind(this, false)}
           >
