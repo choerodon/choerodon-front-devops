@@ -224,7 +224,7 @@ class ExportChart extends Component {
       .then((res) => {
         const blob = new Blob([res], { 'Content-Type': 'application/zip;charset=utf-8' });
         const fileDownload = require('react-file-download');
-        fileDownload(blob, 'chart.zip', 'application/zip');
+        fileDownload(blob, this.state.exportName, 'application/zip');
         this.setState({ submitting: false });
         Choerodon.prompt(intl.formatMessage({ id: 'appstore.exportSucc' }));
         this.handleBack();

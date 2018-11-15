@@ -434,7 +434,7 @@ class Cluster extends Component {
           <div className="c7n-env-tag-title">
             <FormattedMessage id="cluster.authority" />
             <Popover
-              overlayStyle={{ maxWidth: '600px' }}
+              overlayStyle={{ maxWidth: '350px' }}
               content={formatMessage({ id: 'envPl.authority.help' })}
             >
               <Icon type="help" />
