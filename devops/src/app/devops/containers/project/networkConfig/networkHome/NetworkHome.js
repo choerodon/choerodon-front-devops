@@ -194,7 +194,7 @@ class NetworkHome extends Component {
     let editDom = null;
     let deleteDom = null;
     if (envStatus) {
-      if (status === 'running') {
+      if (status !== 'operating') {
         editDom = (<Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="edit" />}>
           <Button shape="circle" size="small" funcType="flat" onClick={this.editNetwork.bind(this, id)}>
             <i className="icon icon-mode_edit" />
@@ -323,7 +323,7 @@ class NetworkHome extends Component {
         ]}
         className="c7n-region c7n-network-wrapper"
       >
-        {NetworkConfigStore.isRefresh ? <LoadingBar display /> : (envData && envData.length  ? <Fragment>
+        {NetworkConfigStore.isRefresh ? <LoadingBar display /> : (envData && envData.length && envId  ? <Fragment>
           <Header title={<FormattedMessage id="network.header.title" />}>
             <Select
               className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
