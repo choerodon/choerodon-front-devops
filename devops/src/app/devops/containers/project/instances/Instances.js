@@ -623,7 +623,7 @@ class Instances extends Component {
           'devops-service.application-instance.delete',
         ]}
       >
-        {envData && envData.length  ? <Fragment><Header title={<FormattedMessage id="ist.head" />}>
+        {envData && envData.length && envId  ? <Fragment><Header title={<FormattedMessage id="ist.head" />}>
           <Select
             className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
             dropdownClassName="c7n-header-env_drop"

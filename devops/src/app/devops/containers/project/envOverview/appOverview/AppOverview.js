@@ -448,36 +448,36 @@ class AppOverview extends Component {
                   <div className="c7n-envow-contaners-wrap">
                     <div className="c7n-envow-contaners-left">
                       <div className="c7n-envow-network-title">
-                        <FormattedMessage id="network.header.title" />
+                        <FormattedMessage id="network.header.title" />：
                       </div>
                       {serviceDTOS.length ? _.map(serviceDTOS, s => (<div className="c7n-envow-ls-wrap" key={s.name}>
                         <div className="c7n-envow-ls">
-                          <Tooltip title={<FormattedMessage id="network.form.name" />}>
-                            <Icon type="router" />
-                          </Tooltip>
-                          {s.name}
+                          <span className="c7n-envow-expanded-keys">
+                            <FormattedMessage id="network.form.name" />：
+                          </span>
+                          <span className="c7n-envow-expanded-values">
+                            {s.name}
+                          </span>
                         </div>
                         <div className="c7n-envow-ls">
-                          <Tooltip title={<FormattedMessage id="network.form.ip" />}>
-                            <Icon type="IP_out" />
-                          </Tooltip>
-                          {s.clusterIp}
+                          <span className="c7n-envow-expanded-keys">
+                            <FormattedMessage id="network.form.ip" />：
+                          </span>
+                          <span className="c7n-envow-expanded-values">
+                            {s.clusterIp}
+                          </span>
                         </div>
                         <div className="c7n-envow-ls">
                           <div className="c7n-envow-ls-arrow-wrap">
-                            <span>
-                              <Tooltip title={<FormattedMessage id="network.form.port" />}>
-                                <Icon type="port" />
-                              </Tooltip>
+                            <FormattedMessage id="network.form.port" />：
+                            <span className="c7n-envow-expanded-values">
                               {s.port}
                             </span>
                             <span className="c7n-envow-ls-arrow">
                                 →
                             </span>
-                            <span>
-                              <Tooltip title={<FormattedMessage id="network.form.targetPort" />}>
-                                <Icon type="aim_port" />
-                              </Tooltip>
+                            <FormattedMessage id="network.form.targetPort" />：
+                            <span className="c7n-envow-expanded-values">
                               {s.targetPort}
                             </span>
                           </div>

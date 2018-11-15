@@ -167,6 +167,11 @@ class EnvOverviewStore {
           } else if (!this.tpEnvId && flag.length) {
             const envId = flag[0].id;
             this.setTpEnvId(envId);
+          } else if (flag.length && _.filter(flag, ['id', this.tpEnvId]).length === 0) {
+            const envId = flag[0].id;
+            this.setTpEnvId(envId);
+          } else if (flag.length === 0) {
+            this.setTpEnvId(null);
           }
           if (data.length && this.tpEnvId) {
             switch (type) {

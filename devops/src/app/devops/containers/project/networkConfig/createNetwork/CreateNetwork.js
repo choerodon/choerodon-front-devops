@@ -203,6 +203,7 @@ class CreateNetwork extends Component {
    * @param value
    */
   handleEnvSelect = (value) => {
+    const envId = EnvOverviewStore.getTpEnvId;
     if (!value) {
       return;
     }
@@ -210,6 +211,10 @@ class CreateNetwork extends Component {
     const { store } = this.props;
     const { id } = AppState.currentMenuType;
     store.loadApp(id, Number(value));
+    if (envId !== value) {
+      const { resetFields } = this.props.form;
+      resetFields(['appId', 'appInstance']);
+    }
   };
 
   /**
