@@ -1,4 +1,4 @@
-image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cifront:0.6.0
+image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cifront:0.7.0
 
 stages:
   - node_build
@@ -17,7 +17,7 @@ node_build:
     - cp -r devops-structure /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/devops-structure
 
 docker_build:
-  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.6.0
+  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.7.0
   stage: docker_build
   script:
     - docker_build
@@ -34,9 +34,9 @@ docker_build:
     function node_module(){
         cd ${1} && npm install -registry https://nexus.choerodon.com.cn/repository/choerodon-npm/ --sass-binary-site=http://npm.taobao.org/mirrors/node-sass && cd ..
         mkdir -p /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
-        python ./${1}/node_modules/choerodon-front-boot/structure/configAuto.py ${1}
-        cp -r config.yml /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/
-        python ./${1}/node_modules/choerodon-front-boot/structure/dashboard.py -o yml -m ${1}
+        python ./${1}/node_modules/choerodon-front-boot/structure/menu/__init__.py -o yml -m  ${1}
+        cp -r menu.yml /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/
+        python ./${1}/node_modules/choerodon-front-boot/structure/dashboard/__init__.py -o yml -m ${1}
         cp -r dashboard.yml /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/
         cd ${1}
     }
