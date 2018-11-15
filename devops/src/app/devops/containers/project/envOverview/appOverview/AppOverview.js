@@ -442,25 +442,29 @@ class AppOverview extends Component {
                           <span className="c7n-envow-expanded-keys">
                             <FormattedMessage id="network.form.name" />：
                           </span>
-                          {s.name}
+                          <span className="c7n-envow-expanded-values">
+                            {s.name}
+                          </span>
                         </div>
                         <div className="c7n-envow-ls">
                           <span className="c7n-envow-expanded-keys">
                             <FormattedMessage id="network.form.ip" />：
                           </span>
-                          {s.clusterIp}
+                          <span className="c7n-envow-expanded-values">
+                            {s.clusterIp}
+                          </span>
                         </div>
                         <div className="c7n-envow-ls">
                           <div className="c7n-envow-ls-arrow-wrap">
                             <FormattedMessage id="network.form.port" />：
-                            <span>
+                            <span className="c7n-envow-expanded-values">
                               {s.port}
                             </span>
                             <span className="c7n-envow-ls-arrow">
                                 →
                             </span>
                             <FormattedMessage id="network.form.targetPort" />：
-                            <span>
+                            <span className="c7n-envow-expanded-values">
                               {s.targetPort}
                             </span>
                           </div>
