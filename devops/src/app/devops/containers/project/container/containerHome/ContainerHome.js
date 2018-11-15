@@ -872,7 +872,7 @@ class ContainerHome extends Component {
     const serviceData = ContainerStore.getAllData && ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const initApp = (envData && envData.length) && (appProDom.length || appPubDom.length) ? ContainerStore.getAppId : undefined;
-    const contentDom = envData && envData.length  ? (<React.Fragment>
+    const contentDom = envData && envData.length && envId  ? (<React.Fragment>
       <Header title={<FormattedMessage id="container.header.title" />}>
         <Select
           className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
