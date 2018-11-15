@@ -338,10 +338,15 @@
     width: 120px;
   }
 
+  .c7n-envow-expanded-values {
+    color: rgba(0, 0, 0, 0.65);
+  }
+
   .c7n-envow-ls-arrow-wrap {
     display: inline-block;
     line-height: 17px;
   }
+
   .c7n-envow-ls-arrow {
     font-size: 20px;
     color: rgba(0, 0, 0, 0.64);
@@ -387,15 +392,18 @@
 
 .c7n-envow-sync-popover {
   width: 300px;
+
   .envow-popover-describe,
   .envow-popover-desc {
     font-size: 12px;
     margin-bottom: 10px;
     color: rgba(0, 0, 0, 0.65);
   }
+
   .envow-popover-describe {
     margin-bottom: 14px;
   }
+
   .envow-popover-title {
     font-size: 12px;
     color: #000;
@@ -403,7 +411,6 @@
 }
 
 .c7n-envow-sync-wrap {
-
   .c7n-envow-sync-line {
     display: flex;
     margin-bottom: 32px;
