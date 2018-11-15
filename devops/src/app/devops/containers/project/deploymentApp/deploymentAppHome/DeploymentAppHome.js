@@ -670,7 +670,7 @@ class DeploymentAppHome extends Component {
         ]}
         className="c7n-region c7n-deployApp"
       >
-        {getTpEnvId ? <Fragment><Header title={<FormattedMessage id="deploy.header.title" />}>
+        {envData && envData.length  ? <Fragment><Header title={<FormattedMessage id="deploy.header.title" />}>
           <Select
             className={`${getTpEnvId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
             dropdownClassName="c7n-header-env_drop"

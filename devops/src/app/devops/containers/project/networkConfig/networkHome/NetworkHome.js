@@ -323,7 +323,7 @@ class NetworkHome extends Component {
         ]}
         className="c7n-region c7n-network-wrapper"
       >
-        {NetworkConfigStore.isRefresh ? <LoadingBar display /> : (envId ? <Fragment>
+        {NetworkConfigStore.isRefresh ? <LoadingBar display /> : (envData && envData.length  ? <Fragment>
           <Header title={<FormattedMessage id="network.header.title" />}>
             <Select
               className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
