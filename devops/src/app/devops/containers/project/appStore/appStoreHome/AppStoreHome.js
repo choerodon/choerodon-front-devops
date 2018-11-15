@@ -27,6 +27,12 @@ class AppStoreHome extends Component {
     this.loadAppCards();
   }
 
+  componentWillUnmount() {
+    const { AppStoreStore } = this.props;
+    AppStoreStore.setAppCards([]);
+    AppStoreStore.setApp([]);
+  }
+
   /**
    * pageSize 变化的回调
    * @param current 当前页码

@@ -28,6 +28,7 @@ class Instances extends Component {
     super(props);
     this.state = {
       visibleUp: false,
+      deleteIst: {},
     };
     this.columnAction = this.columnAction.bind(this);
     this.renderVersion = this.renderVersion.bind(this);
@@ -324,20 +325,21 @@ class Instances extends Component {
    * 删除数据
    */
   handleDelete = (id) => {
-    const {
-      id: projectId,
-    } = AppState.currentMenuType;
+    const { id: projectId } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
     const {
       loadInstanceAll,
-      deleteIst,
+      deleteInstance,
       getAppId,
     } = InstancesStore;
     const envId = EnvOverviewStore.getTpEnvId;
+    const { deleteIst } = this.state;
+    deleteIst[id] = true;
     this.setState({
       loading: true,
+      deleteIst,
     });
-    deleteIst(projectId, id)
+    deleteInstance(projectId, id)
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
@@ -347,12 +349,32 @@ class Instances extends Component {
             Choerodon.handleResponseError(err);
           });
         }
+        this.state.deleteIst[id] = false;
         this.setState({
           openRemove: false,
           loading: false,
+          deleteIst: this.state.deleteIst,
         });
+      }).catch((error) => {
+      this.state.deleteIst[id] = false;
+      this.setState({
+        loading: false,
+        deleteIst: this.state.deleteIst,
       });
+      Choerodon.handleResponseError(err);
+    });
     InstancesStore.setIstTableFilter(null);
+  };
+
+  /**
+   * 关闭删除数据的模态框
+   */
+  handleClose(id) {
+    this.state.deleteIst[id] = false;
+    this.setState({
+      openRemove: false,
+      deleteIst: this.state.deleteIst,
+    });
   };
 
   /**
@@ -383,13 +405,6 @@ class Instances extends Component {
           });
         }
       });
-  };
-
-  /**
-   * 关闭删除数据的模态框
-   */
-  handleClose = () => {
-    this.setState({ openRemove: false });
   };
 
   /**
@@ -472,7 +487,8 @@ class Instances extends Component {
 
   renderVersion(record) {
     const { intl: { formatMessage } } = this.props;
-    const { appVersion, commandVersion, status } = record;
+    const { id, appVersion, commandVersion, status } = record;
+    const { deleteIst } = this.state;
     let uploadIcon = null;
     if (appVersion !== commandVersion) {
       if (status !== 'failed') {
@@ -484,6 +500,8 @@ class Instances extends Component {
       uploadIcon = 'text'
     }
     return(<UploadIcon
+      istId={id}
+      isDelete={deleteIst}
       status={uploadIcon}
       text={appVersion}
       prevText={commandVersion}
@@ -671,7 +689,7 @@ class Instances extends Component {
           /> }
           <DelIst
             open={openRemove}
-            handleCancel={this.handleClose}
+            handleCancel={this.handleClose.bind(this, id)}
             handleConfirm={this.handleDelete.bind(this, id)}
             confirmLoading={loading}
             name={name}

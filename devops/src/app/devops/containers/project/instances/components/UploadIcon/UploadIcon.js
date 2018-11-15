@@ -5,7 +5,14 @@ import { Tooltip, Icon } from 'choerodon-ui';
 import "./index.scss";
 
 function UploadIcon (props) {
-  const { text, status, prevText, intl: { formatMessage } } = props;
+  const {
+    istId,
+    text,
+    status,
+    prevText,
+    intl: { formatMessage },
+    isDelete,
+} = props;
   let dom = text;
   switch (status) {
     case 'upload':
@@ -42,6 +49,9 @@ function UploadIcon (props) {
     default:
       dom = <span className="c7n-instance-upload-text">{text}</span>;
   }
+  if (isDelete[istId]) {
+    dom = <span className="c7n-instance-upload-text">{formatMessage({ id: 'ist.deploy.delete' })}</span>
+  }
   return(dom);
 }
 
@@ -54,6 +64,7 @@ UploadIcon.propTypes = {
   status: PropTypes.string,
   prevText: PropTypes.string,
   text: PropTypes.string,
+  istId: PropTypes.number.isRequired,
 };
 
 export default injectIntl(UploadIcon);

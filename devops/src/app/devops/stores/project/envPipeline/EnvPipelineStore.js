@@ -42,8 +42,6 @@ class EnvPipelineStore {
 
   @observable sideType = null;
 
-  @observable shell = "";
-
   @observable loading = false;
 
   @observable cluster = [];
@@ -157,11 +155,6 @@ class EnvPipelineStore {
   @action
   setGroupOne(groupOne) {
     this.groupOne = groupOne;
-  }
-
-  @action
-  setShell(shell) {
-    this.shell = shell;
   }
 
   @action
@@ -391,17 +384,6 @@ class EnvPipelineStore {
       })
       .catch(error => Choerodon.handleResponseError(err));
   };
-
-  loadShell = (projectId, id, update) =>
-    axios
-      .get(`/devops/v1/projects/${projectId}/envs/${id}/shell?update=${update}`)
-      .then(data => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else {
-          this.setShell(data);
-        }
-      });
 
   loadGroup = projectId =>
     axios.get(`/devops/v1/projects/${projectId}/env_groups`).then(data => {

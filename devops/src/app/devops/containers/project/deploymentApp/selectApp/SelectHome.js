@@ -34,6 +34,11 @@ class DeployAppHome extends Component {
     this.handleSelectData();
   }
 
+  componentWillUnmount() {
+    SelectAppStore.setAllData([]);
+    SelectAppStore.setStoreData([]);
+  }
+
   /**
    * 切换分页
    * @param page

@@ -77,6 +77,8 @@ class AppOverview extends Component {
 
   @observable istName = '';
 
+  @observable isDelete = {};
+
   componentDidMount() {
     const { store } = this.props;
     const refresh = store.getRefresh;
@@ -177,7 +179,8 @@ class AppOverview extends Component {
    * 修改配置实例信息
    */
   @action
-  updateConfig = (record) => {
+  updateConfig = (record, e) => {
+    // e.stopPropagation();
     const { code, id, envId, commandVersionId, appId } = record;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     InstancesStore.loadValue(projectId, id, commandVersionId)
@@ -285,7 +288,11 @@ class AppOverview extends Component {
   @action
   handleCancelUp = () => {
     this.visibleUp = false;
+  };
+
+  closeDeleteModal(id) {
     this.openRemove = false;
+    this.isDelete[id] = false;
   };
 
   /**
@@ -306,7 +313,8 @@ class AppOverview extends Component {
   handleDelete = (id) => {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.loading = true;
-    InstancesStore.deleteIst(projectId, id)
+    this.isDelete[id] = true;
+    InstancesStore.deleteInstance(projectId, id)
       .then((res) => {
         if (res && res.failed) {
           Choerodon.prompt(res.message);
@@ -316,7 +324,12 @@ class AppOverview extends Component {
           this.loading = false;
           this.loadIstOverview();
         }
-      });
+        this.isDelete[id] = false;
+      }).catch((error) => {
+      this.loading = false;
+      this.isDelete[id] = false;
+      Choerodon.handleResponseError(error);
+    });
   };
 
   /**
@@ -379,7 +392,7 @@ class AppOverview extends Component {
             onChange={this.onChange}
           >
             {_.map(i.applicationInstanceDTOS, c => {
-              const { status, code, error, appVersion, id, serviceDTOS, ingressDTOS, commandVersion, appId } = c;
+              const { id: istId, status, code, error, appVersion, id, serviceDTOS, ingressDTOS, commandVersion, appId } = c;
               let uploadIcon = null;
               if (appVersion !== commandVersion) {
                 if (status !== 'failed') {
@@ -416,9 +429,11 @@ class AppOverview extends Component {
                   <span className="c7n-envow-ist-version">
                     <span className="c7n-envow-version-text"><FormattedMessage id="app.appVersion" />:&nbsp;&nbsp;</span>
                     <UploadIcon
+                      istId={istId}
                       status={uploadIcon}
                       text={appVersion}
                       prevText={commandVersion}
+                      isDelete={this.isDelete}
                     />
                   </span>
                   <div className="c7n-envow-ist-action">
@@ -665,7 +680,7 @@ class AppOverview extends Component {
         /> }
         <DelIst
           open={this.openRemove}
-          handleCancel={this.handleCancelUp}
+          handleCancel={this.closeDeleteModal.bind(this, this.id)}
           handleConfirm={this.handleDelete.bind(this, this.id)}
           confirmLoading={this.loading}
           name={this.istName}

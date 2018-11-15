@@ -237,7 +237,7 @@ class InstancesStore {
 
   reDeploy = (projectId, data) => axios.post(`devops/v1/projects/${projectId}/app_instances`, JSON.stringify(data));
 
-  deleteIst = (projectId, istId) => axios.delete(`devops/v1/projects/${projectId}/app_instances/${istId}/delete`);
+  deleteInstance = (projectId, istId) => axios.delete(`devops/v1/projects/${projectId}/app_instances/${istId}/delete`);
 
   reStarts = (projectId, id) => axios.put(`devops/v1/projects/${projectId}/app_instances/${id}/restart`);
 

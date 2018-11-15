@@ -492,7 +492,7 @@ class EnvOverviewHome extends Component {
         </div>
       </div>);
     } else if ((sync && (sync.devopsSyncCommit !== sync.sagaSyncCommit
-      || sync.sagaSyncCommit !== sync.agentSyncCommit)) && envState.connect) {
+      || sync.sagaSyncCommit !== sync.agentSyncCommit)) && envState && envState.connect) {
       syncDom = (<div className="c7n-envow-sync-wrap">
         <div className="c7n-envow-status-text"><FormattedMessage id="envoverview.sync" /></div>
         <div className="c7n-envow-sync-icon"><Icon type="autorenew" /></div>
