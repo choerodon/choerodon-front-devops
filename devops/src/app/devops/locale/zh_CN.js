@@ -561,7 +561,7 @@ const zhCN = {
   "envPl.group.edit": "编辑分组",
   "envPl.group.del": "删除分组",
   "envPl.delete": "删除环境",
-  "envPl.delete.confirm": "确认删除环境 “{name}”",
+  "envPl.delete.confirm": "确认删除环境“{name}”",
   "envPl.delete.warn":
     "删除该环境后，与该环境相关的所有对象均会被永久删除，不可恢复！确定要删除吗？",
   "envPl.edit": "修改环境",
@@ -1144,7 +1144,10 @@ const zhCN = {
   'cluster.project.name': '项目名称',
   'cluster.project.code': '项目编码',
   'cluster.status.update': '版本过低，请重新激活',
-  'cluster.noData': '当前组织下没有任何集群，请创建集群。',
+  'cluster.notice': '请勿在操作过程中删除任何与之前环境相关的agent，否则会造成数据丢失！',
+  'cluster.noData.text1': '若您是第一次使用该集群模块，需要在集群页面创建与之前数量相同的集群，具体步骤如下：',
+  'cluster.noData.text2': '1. 点击下方按钮进入创建集群页面，填写相关信息；',
+  'cluster.noData.text3': '2. 点击创建后，会生成创建agent的脚本，复制至对应的k8s平台运行，即可成功激活此集群，进而激活此集群关联项目下的环境。',
 
   ...pageDetail,
 };

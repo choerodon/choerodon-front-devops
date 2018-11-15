@@ -185,8 +185,7 @@ class CreateTag extends Component {
                   required: true,
                   message: formatMessage({ id: 'required' }),
                 }],
-              })(
-                <Fragment><Select
+              })(<Select
                   onFilterChange={this.searchBranch}
                   allowClear
                   label={<FormattedMessage id="apptag.ref" />}
@@ -214,10 +213,9 @@ class CreateTag extends Component {
                     </Option> : null }
                   </OptGroup>
                 </Select>
-                  {getSelectTip('apptag.tip')}
-                </Fragment>,
               )}
             </FormItem>
+            {getSelectTip('apptag.tip')}
           </div>
         </Form>
         <div className="c7n-apptag-release-title">{formatMessage({ id: 'apptag.release.title' })}</div>

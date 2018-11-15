@@ -200,7 +200,7 @@ export function  getTableTitle(data) {
     <FormattedMessage id={data} />
     <Popover
       content={<FormattedMessage id={`${data}.tip`} />}
-      overlayStyle={{ maxWidth: '350px' }}
+      overlayClassName="c7n-tips-popover"
       arrowPointAtCenter
     >
       <Icon type="help" />
@@ -215,7 +215,7 @@ export function  getTableTitle(data) {
 export function  getSelectTip(data) {
   return (<Popover
     content={<FormattedMessage id={data} />}
-    overlayStyle={{ maxWidth: '350px' }}
+    overlayClassName="c7n-tips-popover"
     placement="topRight"
     arrowPointAtCenter
   >

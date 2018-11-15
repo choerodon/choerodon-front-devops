@@ -175,7 +175,7 @@ class ContainerHome extends Component {
     const { namespace, envId, logId, podName, containerName, clusterId } = this.state;
     const authToken = document.cookie.split('=')[1];
     try {
-      this.conn = new WebSocket(`POD_WEBSOCKET_URL/ws/exec?key=cluster:${clusterId}.exec:${logId}&env:${namespace}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
+      this.conn = new WebSocket(`POD_WEBSOCKET_URL/ws/exec?key=cluster:${clusterId}.exec:${logId}&env=${namespace}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
       this.conn.onopen = this.onConnectionOpen.bind(this);
       this.conn.onmessage = this.onConnectionMessage.bind(this);
       this.conn.onclose = this.onConnectionClose.bind(this);
@@ -468,7 +468,7 @@ class ContainerHome extends Component {
     if (this.editorLog) {
       editor = this.editorLog.getCodeMirror();
       try {
-        const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=cluster:${clusterId}.log:${logId}&env:${namespace}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
+        const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=cluster:${clusterId}.log:${logId}&env=${namespace}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
         this.setState({ ws, following: true });
         if (!followingOK) {
           editor.setValue('Loading...');
@@ -940,7 +940,7 @@ class ContainerHome extends Component {
           filters={paras.slice()}
         />
       </Content>
-    </React.Fragment>) : <DepPipelineEmpty title={<FormattedMessage id="container.header.title" />} />;
+    </React.Fragment>) : <DepPipelineEmpty title={<FormattedMessage id="container.header.title" />} type="env" />;
 
     const containerDom = containerArr.length && (_.map(containerArr, c => <Option key={c.logId} value={`${c.logId}+${c.containerName}`}>{c.containerName}</Option>));
 

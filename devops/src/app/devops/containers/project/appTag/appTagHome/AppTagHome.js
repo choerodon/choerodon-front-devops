@@ -383,7 +383,7 @@ class AppTagHome extends Component {
           release={editRelease}
           show={editDisplay}
           close={this.displayEditModal}
-        /> : null}</Fragment> : <DepPipelineEmpty title={<FormattedMessage id="apptag.head" />} />}
+        /> : null}</Fragment> : <DepPipelineEmpty title={<FormattedMessage id="apptag.head" />} type="app" />}
       </Page>
     );
   }

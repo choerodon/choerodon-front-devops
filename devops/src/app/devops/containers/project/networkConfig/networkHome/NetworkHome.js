@@ -54,7 +54,8 @@ class NetworkHome extends Component {
     this.setState({ show: false, showEdit: false });
     if (isload) {
       NetworkConfigStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
-      this.loadAllData();
+      const envId = EnvOverviewStore.getTpEnvId;
+      this.loadAllData(envId);
     }
   };
 
@@ -385,7 +386,7 @@ class NetworkHome extends Component {
               rowKey={record => record.id}
             />
           </Content>
-        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="network.header.title" />} />)
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="network.header.title" />} type="env" />)
         }
 
         {show && <CreateNetwork

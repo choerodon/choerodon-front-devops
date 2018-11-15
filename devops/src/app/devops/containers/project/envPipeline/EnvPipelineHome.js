@@ -12,6 +12,7 @@ import {
   Popover,
   Select,
   Table,
+  Spin,
   Tag,
   Icon,
 } from "choerodon-ui";
@@ -203,7 +204,7 @@ class EnvPipelineHome extends Component {
     const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     if (type === "create") {
-      EnvPipelineStore.loadPrm(projectId);
+      EnvPipelineStore.loadPrm(projectId );
       EnvPipelineStore.loadCluster(projectId);
     }
     EnvPipelineStore.setSideType(type);
@@ -663,18 +664,18 @@ class EnvPipelineHome extends Component {
     if (sideType === "create") {
       EnvPipelineStore.loadPrm(
         id,
+        null,
         page,
         pagination.pageSize,
-        null,
         sort,
         postData
       );
     } else {
       EnvPipelineStore.loadPrm(
         id,
+        envId,
         page,
         pagination.pageSize,
-        envId,
         sort,
         postData
       );
@@ -698,6 +699,7 @@ class EnvPipelineHome extends Component {
       disEnvConnect,
       enableClick,
       envName,
+      delGroupName,
     } = this.state;
     const {
       id: projectId,
@@ -895,40 +897,41 @@ class EnvPipelineHome extends Component {
         formContent = (
           <div>
             <Form className="c7n-sidebar-form" layout="vertical">
-              <FormItem {...formItemLayout}>
-                {getFieldDecorator("clusterId", {
-                  rules: [
-                    {
-                      required: true,
-                      message: formatMessage({
-                        id: "required",
-                      }),
-                    },
-                  ],
-                })(
-                  <Fragment><Select
-                    allowClear={false}
-                    filter
-                    onSelect={this.handleCluster}
-                    filterOption={(input, option) =>
-                      option.props.children
-                        .toLowerCase()
-                        .indexOf(input.toLowerCase()) >= 0
-                    }
-                    label={<FormattedMessage id="envPl.form.cluster" />}
-                  >
-                    {getCluster.length
-                      ? _.map(getCluster, g => (
-                          <Option key={g.id} value={g.id}>
-                            {g.name}
+              <div className="c7ncd-sidebar-select">
+                <FormItem {...formItemLayout}>
+                  {getFieldDecorator("clusterId", {
+                    rules: [
+                      {
+                        required: true,
+                        message: formatMessage({
+                          id: "required",
+                        }),
+                      },
+                    ],
+                  })(
+                    <Select
+                      allowClear={false}
+                      filter
+                      onSelect={this.handleCluster}
+                      filterOption={(input, option) =>
+                        option.props.children
+                          .toLowerCase()
+                          .indexOf(input.toLowerCase()) >= 0
+                      }
+                      label={<FormattedMessage id="envPl.form.cluster" />}
+                    >
+                      {getCluster.length
+                        ? _.map(getCluster, c => (
+                          <Option key={c.id} value={c.id}>
+                            {c.name}
                           </Option>
                         ))
-                      : null}
-                  </Select>
-                    {getSelectTip('envPl.cluster.tip')}
-                  </Fragment>
-                )}
-              </FormItem>
+                        : null}
+                    </Select>
+                  )}
+                </FormItem>
+                {getSelectTip('envPl.cluster.tip')}
+              </div>
               <FormItem {...formItemLayout}>
                 {getFieldDecorator("code", {
                   rules: [
@@ -988,35 +991,37 @@ class EnvPipelineHome extends Component {
                   />
                 )}
               </FormItem>
-              <FormItem {...formItemLayout}>
-                {getFieldDecorator("devopsEnvGroupId")(
-                  <Fragment><Select
-                    allowClear
-                    filter
-                    filterOption={(input, option) =>
-                      option.props.children
-                        .toLowerCase()
-                        .indexOf(input.toLowerCase()) >= 0
-                    }
-                    label={<FormattedMessage id="envPl.form.group" />}
-                  >
-                    {groupData.length
-                      ? _.map(groupData, g => (
+              <div className="c7ncd-sidebar-select">
+                <FormItem {...formItemLayout}>
+                  {getFieldDecorator("devopsEnvGroupId")(
+                    <Select
+                      allowClear
+                      filter
+                      filterOption={(input, option) =>
+                        option.props.children
+                          .toLowerCase()
+                          .indexOf(input.toLowerCase()) >= 0
+                      }
+                      label={<FormattedMessage id="envPl.form.group" />}
+                    >
+                      {groupData.length
+                        ? _.map(groupData, g => (
                           <Option key={g.id} value={g.id}>
                             {g.name}
                           </Option>
                         ))
-                      : null}
-                  </Select>
-                    {getSelectTip('envPl.group.tip')}
-                  </Fragment>
-                )}
-              </FormItem>
+                        : null}
+                    </Select>
+                  )}
+                </FormItem>
+                {getSelectTip('envPl.group.tip')}
+              </div>
             </Form>
             <div className="c7n-sidebar-form">
               <div className="c7n-env-tag-title">
                 <FormattedMessage id="envPl.authority" />
                 <Popover
+                  overlayStyle={{ width: 350 }}
                   content={formatMessage({
                     id: "envPl.authority.help",
                   })}
@@ -1084,30 +1089,33 @@ class EnvPipelineHome extends Component {
                   />
                 )}
               </FormItem>
-              <FormItem {...formItemLayout}>
-                {getFieldDecorator("devopsEnvGroupId", {
-                  initialValue: envData ? envData.devopsEnvGroupId : undefined,
-                })(
-                  <Select
-                    allowClear
-                    filter
-                    filterOption={(input, option) =>
-                      option.props.children
-                        .toLowerCase()
-                        .indexOf(input.toLowerCase()) >= 0
-                    }
-                    label={<FormattedMessage id="envPl.form.group" />}
-                  >
-                    {groupData.length
-                      ? _.map(groupData, g => (
+              <div className="c7ncd-sidebar-select">
+                <FormItem {...formItemLayout}>
+                  {getFieldDecorator("devopsEnvGroupId", {
+                    initialValue: envData ? envData.devopsEnvGroupId : undefined,
+                  })(
+                    <Select
+                      allowClear
+                      filter
+                      filterOption={(input, option) =>
+                        option.props.children
+                          .toLowerCase()
+                          .indexOf(input.toLowerCase()) >= 0
+                      }
+                      label={<FormattedMessage id="envPl.form.group" />}
+                    >
+                      {groupData.length
+                        ? _.map(groupData, g => (
                           <Option key={g.id} value={g.id}>
                             {g.name}
                           </Option>
                         ))
-                      : null}
-                  </Select>
-                )}
-              </FormItem>
+                        : null}
+                    </Select>
+                  )}
+                </FormItem>
+                {getSelectTip('envPl.group.tip')}
+              </div>
             </Form>
           </div>
         );
@@ -1212,7 +1220,6 @@ class EnvPipelineHome extends Component {
             onOk={this.handleSubmit}
             onCancel={this.handleCancelFun.bind(this)}
             confirmLoading={submitting}
-            // okCancel={showBtns}
             cancelText={<FormattedMessage id="cancel" />}
             okText={this.okText(sideType)}
             className="c7n-create-sidebar-tooltip"
@@ -1230,13 +1237,12 @@ class EnvPipelineHome extends Component {
           <Modal
             visible={disEnvShow}
             width={400}
-            footer={[
+            footer={enableClick ? [
               <Button
                 key="back"
                 onClick={this.closeDisEnvModal}
               >{formatMessage({ id: 'return' })}</Button>,
               <Button
-                disabled={!enableClick}
                 key="submit"
                 type="primary"
                 loading={submitting}
@@ -1244,50 +1250,42 @@ class EnvPipelineHome extends Component {
               >
                 {formatMessage({ id: 'submit' })}
               </Button>,
-            ]}
+            ] : null}
             closable={false}
             wrapClassName="vertical-center-modal remove"
           >
-            <div className="c7ncd-modal-title">{formatMessage({ id: `envPl.${disableMsg}.disable` })}</div>
-            {formatMessage({ id: `envPl.disEnv.${disableMsg}` })}
+            {enableClick
+              ? [<div className="c7ncd-modal-title">{formatMessage({ id: `envPl.${disableMsg}.disable` })}</div>,
+                formatMessage({ id: `envPl.disEnv.${disableMsg}` })]
+              : <div className="c7ncd-env-spin"><Spin /></div>}
           </Modal>
           <Modal
             visible={delGroupShow}
-            width={400}
-            onOk={this.deleteGroup}
-            onCancel={this.closeDelGroupModal}
             closable={false}
             confirmLoading={submitting}
-            wrapClassName="vertical-center-modal remove"
+            title={`${formatMessage({ id: 'envPl.group.del' })}“${delGroupName}”`}
+            footer={[
+              <Button key="back" onClick={this.closeDelGroupModal} disabled={submitting}>{<FormattedMessage id="cancel" />}</Button>,
+              <Button key="submit" type="danger" onClick={this.deleteGroup} loading={submitting}>
+                {formatMessage({ id: 'delete' })}
+              </Button>,
+            ]}
           >
-            <div className="c7ncd-modal-title">
-              {formatMessage({
-                id: "envPl.group.del",
-              })}
-            </div>
-            {formatMessage({
-              id: "envPl.confirm.group.del",
-            })}
+            {formatMessage({ id: "envPl.confirm.group.del" })}
           </Modal>
           <Modal
             visible={delEnvShow}
-            width={400}
-            onOk={this.deleteEnv}
-            onCancel={this.closeDelEnvModal}
             closable={false}
             confirmLoading={submitting}
-            wrapClassName="vertical-center-modal remove"
+            title={`${formatMessage({ id: "envPl.delete.confirm" }, { name: envName })}`}
+            footer={[
+              <Button key="back" onClick={this.closeDelEnvModal} disabled={submitting}>{<FormattedMessage id="cancel" />}</Button>,
+              <Button key="submit" type="danger" onClick={this.deleteEnv} loading={submitting}>
+                {formatMessage({ id: 'delete' })}
+              </Button>,
+            ]}
           >
-            <div className="c7ncd-modal-title">
-              {formatMessage({
-                id: "envPl.delete.confirm",
-              }, {
-                name: envName,
-              })}
-            </div>
-            {formatMessage({
-              id: "envPl.delete.warn",
-            })}
+            {formatMessage({ id: "envPl.delete.warn" })}
           </Modal>
           {showGroup ? (
             <EnvGroup

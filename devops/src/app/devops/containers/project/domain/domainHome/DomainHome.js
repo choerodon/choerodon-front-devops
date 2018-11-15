@@ -294,7 +294,7 @@ class DomainHome extends Component {
             />
 
           </Content>
-        </React.Fragment> : <DepPipelineEmpty title={formatMessage({ id: 'domain.header.title' })} />)}
+        </React.Fragment> : <DepPipelineEmpty title={formatMessage({ id: 'domain.header.title' })} type="env" />)}
 
         {this.state.show && <CreateDomain
           id={this.state.id}

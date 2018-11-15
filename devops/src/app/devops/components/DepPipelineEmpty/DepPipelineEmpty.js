@@ -27,18 +27,18 @@ class DepPipelineEmpty extends Component {
     history.push({
       pathname: `/devops/app`,
       search: `?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}`,
-      state: { show: true, modeType: 'create' }
+      state: { show: true, modeType: 'create' },
     });
   };
 
   render() {
-    const { intl: { formatMessage }, title } = this.props;
+    const { intl: { formatMessage }, title, type } = this.props;
     const { app, env } = DeploymentPipelineStore.getProRole;
     return (<Fragment>
       <Header title={title} />
       <Content>
         <div className="c7n-depPi-empty-card">
-          {env === 'owner' && (<Card title={formatMessage({ id: 'envPl.create' })}>
+          {type === 'env' && env === 'owner' && (<Card title={formatMessage({ id: 'envPl.create' })}>
             <div className="c7n-noEnv-content">
               <FormattedMessage id="depPl.noEnv" />
               <a
@@ -57,11 +57,9 @@ class DepPipelineEmpty extends Component {
               <FormattedMessage id="envPl.create" />
             </Button>
           </Card>)}
-          {env === 'member' && (<Card title={formatMessage({ id: 'depPl.noPermission' })}>
-            <div className="c7n-noPer-text">
-              <FormattedMessage id="depPl.noPerDes" /><br />
-              <FormattedMessage id="depPl.addPermission" />
-            </div>
+          {type === 'env'&& env === 'member' && (<Card title={formatMessage({ id: 'depPl.noPermission' })}>
+            <FormattedMessage id="depPl.noPerDes" /><br />
+            <FormattedMessage id="depPl.addPermission" />
             <a
               href={formatMessage({ id: 'env.link' })}
               rel="nofollow me noopener noreferrer"
@@ -70,7 +68,7 @@ class DepPipelineEmpty extends Component {
               <FormattedMessage id="depPl.more" /><Icon type="open_in_new" />
             </a>
           </Card>)}
-          {app === 'owner' && (<Card title={formatMessage({ id: 'app.create' })}>
+          {type === 'app' && app === 'owner' && (<Card title={formatMessage({ id: 'app.create' })}>
             <div className="c7n-noEnv-content">
               <FormattedMessage id="empty.owner.noApp" />
               <a
@@ -89,7 +87,7 @@ class DepPipelineEmpty extends Component {
               <FormattedMessage id="app.create" />
             </Button>
           </Card>)}
-          {app === 'member' && (<Card title={formatMessage({ id: 'ist.noApp' })}>
+          {type === 'app' && app === 'member' && (<Card title={formatMessage({ id: 'ist.noApp' })}>
             <FormattedMessage id="empty.member.noApp" />
             <a
               href={formatMessage({ id: 'app.link' })}
