@@ -223,7 +223,7 @@ class ExportChart extends Component {
     ExportChartStore.exportChart(this.state.projectId, this.state.exportName, data)
       .then((res) => {
         const blob = new Blob([res], { 'Content-Type': 'application/zip;charset=utf-8' });
-        const fileDownload = require('react-file-download');
+        const fileDownload = require('js-file-download');
         fileDownload(blob, this.state.exportName, 'application/zip');
         this.setState({ submitting: false });
         Choerodon.prompt(intl.formatMessage({ id: 'appstore.exportSucc' }));
