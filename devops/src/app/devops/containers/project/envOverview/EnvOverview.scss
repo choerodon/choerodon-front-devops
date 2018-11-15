@@ -326,6 +326,12 @@
   height: 20px;
   margin-bottom: 10px;
 
+  .c7n-envow-expanded-keys {
+    margin-right: 20px;
+    display: inline-block;
+    width: 120px;
+  }
+
   .c7n-envow-ls-arrow-wrap {
     display: inline-block;
     line-height: 17px;
@@ -368,7 +374,7 @@
     margin-right: 8px;
   }
   .c7n-envow-sync-icon {
-    font-size: 13px;
+    font-size: 16px;
     color: rgba(0, 0, 0, 0.36);
   }
 }
