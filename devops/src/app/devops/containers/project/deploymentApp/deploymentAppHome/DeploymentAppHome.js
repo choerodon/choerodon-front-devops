@@ -39,6 +39,7 @@ class DeploymentAppHome extends Component {
 
   componentDidMount() {
     const { DeploymentAppStore } = this.props;
+    const { projectId, current, appId, versionId, envId: id } = this.state;
     DeploymentAppStore.setValue(null);
     if (this.state.appId) {
       DeploymentAppStore.loadApps(this.state.appId)
@@ -66,7 +67,20 @@ class DeploymentAppHome extends Component {
     } else {
       DeploymentAppStore.setVersions([]);
     }
-    EnvOverviewStore.loadActiveEnv(this.state.projectId);
+    if (current === 2) {
+      const envs = EnvOverviewStore.getEnvcard;
+      const envID = EnvOverviewStore.getTpEnvId;
+      const env = _.filter(envs, { 'connect': true, 'id': envID });
+      const envId = env && env.length ? env[0].id : id;
+      this.setState({ envId, envDto: env[0] });
+      DeploymentAppStore.setValue(null);
+      DeploymentAppStore.loadValue(appId, versionId, envId)
+        .then((data) => {
+          this.setState({ errorLine: data.errorLines });
+        });
+      DeploymentAppStore.loadInstances(appId, envId);
+    }
+    EnvOverviewStore.loadActiveEnv(projectId);
   }
 
 
@@ -670,7 +684,7 @@ class DeploymentAppHome extends Component {
         ]}
         className="c7n-region c7n-deployApp"
       >
-        {getTpEnvId ? <Fragment><Header title={<FormattedMessage id="deploy.header.title" />}>
+        {envData && envData.length  ? <Fragment><Header title={<FormattedMessage id="deploy.header.title" />}>
           <Select
             className={`${getTpEnvId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
             dropdownClassName="c7n-header-env_drop"

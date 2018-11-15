@@ -538,7 +538,7 @@ class EnvOverviewHome extends Component {
           'devops-service.certification.delete',
         ]}
       >
-        {envId ? <Fragment><Header title={<FormattedMessage id="envoverview.head" />}>
+        {envData && envData.length  ? <Fragment><Header title={<FormattedMessage id="envoverview.head" />}>
           <Select
             className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
             dropdownClassName="c7n-header-env_drop"

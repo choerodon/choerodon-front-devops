@@ -2,6 +2,8 @@ import { observable, action, computed } from "mobx";
 import _ from "lodash";
 import { axios, store } from "choerodon-front-boot";
 import { handleProptError } from "../../../utils";
+import EnvOverviewStore from "../envOverview";
+import DeploymentPipelineStore from "../deploymentPipeline";
 
 const HEIGHT =
   window.innerHeight ||
@@ -254,6 +256,11 @@ class EnvPipelineStore {
           Choerodon.prompt(data.message);
         } else if (data && active) {
           this.setEnvcardPosition(data);
+          DeploymentPipelineStore.setProRole('env', '');
+          if (data.length === 0) {
+            EnvOverviewStore.setEnvcard(data);
+            DeploymentPipelineStore.setEnvLine(data);
+          }
         } else {
           this.setDisEnvcardPosition(data);
         }

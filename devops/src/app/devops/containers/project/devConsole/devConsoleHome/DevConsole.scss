@@ -96,7 +96,7 @@
     }
 
     .c7n-data-number {
-      margin-bottom: 10px;
+      height: 33px;
 
       &:last-child {
         margin: 0;
@@ -143,6 +143,7 @@
     line-height: 20px;
     display: flex;
     align-items: center;
+    text-decoration: none;
 
     .icon-playlist_add {
       margin-right: 2px;
