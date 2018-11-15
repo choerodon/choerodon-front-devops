@@ -149,7 +149,7 @@ class RepositoryHome extends Component {
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const { param, filters, sort: { columnKey, order } } = this.state;
     const { getRepoData, getPageInfo, loading } = RepositoryStore;
-    const appId = DevPipelineStore.getSelectApp;
+    const appData = DevPipelineStore.getAppData;
     const columns = [{
       title: <FormattedMessage id="repository.repository" />,
       dataIndex: 'code',
@@ -192,7 +192,7 @@ class RepositoryHome extends Component {
           'devops-service.application.listCodeRepository',
         ]}
       >
-        {appId ? <Fragment>
+        {appData && appData.length ? <Fragment>
           <Header title={<FormattedMessage id="repository.head" />}>
             <Button
               onClick={this.handleRefresh}

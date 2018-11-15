@@ -684,7 +684,7 @@ class DevConsole extends Component {
           'devops-service.devops-git.getMergeRequestList',
         ]}
       >
-        {appId ? <Fragment><Header title={<FormattedMessage id="devCs.head" />}>
+        {appData && appData.length ? <Fragment><Header title={<FormattedMessage id="devCs.head" />}>
           <Select
             filter
             className="c7n-header-select"

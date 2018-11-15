@@ -12,6 +12,7 @@ import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
 import DeploymentPipelineStore from '../../../../stores/project/deploymentPipeline';
+import AppVersionStore from  '../../../../stores/project/applicationVersion';
 import { getSelectTip } from '../../../../utils';
 
 const { AppState } = stores;
@@ -82,6 +83,8 @@ class AppHome extends Component {
   }
 
   componentDidMount() {
+    const { projectId } = AppState.currentMenuType;
+    AppVersionStore.queryAppData(projectId);
     this.loadAllData(this.state.page);
   }
 
@@ -406,6 +409,7 @@ class AppHome extends Component {
     } = this.props;
     const { type: modeType, show, submitting, openRemove, name: appName, id } = this.state;
     const { app } = DeploymentPipelineStore.getProRole;
+    const appData = AppVersionStore.getAppData;
     const formContent = (<Form layout="vertical" className="c7n-sidebar-form">
       {modeType === 'create' && <FormItem
         {...formItemLayout}
@@ -512,7 +516,7 @@ class AppHome extends Component {
           'devops-service.application.queryByAppId',
         ]}
       >
-        { isRefresh ? <LoadingBar display /> : (serviceData.length || app === 'owner' ? <Fragment>
+        { isRefresh ? <LoadingBar display /> : ((appData && appData.length) || app === 'owner' ? <Fragment>
           <Header title={<FormattedMessage id="app.head" />}>
             <Permission
               service={['devops-service.application.create']}
