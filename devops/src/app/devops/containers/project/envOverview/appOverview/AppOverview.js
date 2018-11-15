@@ -23,6 +23,7 @@ import NetworkConfigStore from '../../../../stores/project/networkConfig';
 import LoadingBar from '../../../../components/loadingBar';
 import ExpandRow from '../../instances/components/ExpandRow';
 import UploadIcon from "../../instances/components/UploadIcon";
+import EnvOverviewStore from "../../../../stores/project/envOverview";
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -167,10 +168,7 @@ class AppOverview extends Component {
         if (error && error.failed) {
           Choerodon.prompt(error.message);
         } else {
-          InstancesStore.loadInstanceAll(true, projectId).catch((err) => {
-            InstancesStore.changeLoading(false);
-            Choerodon.handleResponseError(err);
-          });
+          this.loadIstOverview();
         }
       });
   };
@@ -202,9 +200,9 @@ class AppOverview extends Component {
   @action
   upgradeIst = (record) => {
     const { intl } = this.props;
-    const { code, id, envId, appVersionId, appId } = record;
+    const { code, id, envId, appVersionId, commandVersionId, appId } = record;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    InstancesStore.loadUpVersion(projectId, appVersionId)
+    InstancesStore.loadUpVersion(projectId, appVersionId || commandVersionId)
       .then((val) => {
         if (val && val.failed) {
           Choerodon.prompt(val.message);
