@@ -216,8 +216,9 @@ class DevConsole extends Component {
    * @returns {*}
    */
   getIcon =(name) => {
+    const nameArr = ['feature', 'release', 'bugfix', 'hotfix'];
     let type = '';
-    if (name.includes('-')) {
+    if (name.includes('-') && nameArr.includes(name.split('-')[0])) {
       type = name.split('-')[0];
     } else if (name === 'master') {
       type = name;

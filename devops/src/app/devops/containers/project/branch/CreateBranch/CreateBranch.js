@@ -92,12 +92,8 @@ class CreateBranch extends Component {
    * @param type 分支类型
    * @returns {*}
    */
-  getIcon =(name) => {
+  getIcon =(type) => {
     let icon;
-    let type;
-    if (name) {
-      type = name.split('-')[0];
-    }
     switch (type) {
       case 'feature':
         icon = <span className="c7n-branch-icon icon-feature">F</span>;
@@ -214,7 +210,10 @@ class CreateBranch extends Component {
         type = 'custom';
         break;
       case 'sub_task':
-        type = 'custom';
+        type = 'feature';
+        break;
+      case 'task':
+        type = 'feature';
         break;
       default:
         type = 'custom';
@@ -377,7 +376,6 @@ class CreateBranch extends Component {
                 <Select
                   onChange={this.changeType}
                   key="service"
-                  allowClear
                   label={<FormattedMessage id="branch.type" />}
                   filter
                   dropdownMatchSelectWidth
