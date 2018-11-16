@@ -11,7 +11,7 @@ image:
 preJob:
   timeout: 300
   preConfig:
-    enable: false
+    enable: true
     mysql:
       host: localhost
       port: 3306

@@ -87,11 +87,11 @@ class DevOpsBranch extends Component {
               </div>
               <div className="c7n-report-history-date">
                 <span>{commitUserName} </span>
-                <FormattedMessage id="report.commit.by" /> <TimePopover style={{ display: 'inline-block' }} content={commitDate} />
+                <FormattedMessage id="dashboard.commit.by" /> <TimePopover style={{ display: 'inline-block' }} content={commitDate} />
               </div>
             </div>
             <Tooltip
-              title={<FormattedMessage id="branch.request" />}
+              title={<FormattedMessage id="dashboard.branch.request" />}
             >
               <a
                 href={commitUrl && `${commitUrl.split('/commit')[0]}/merge_requests/new?change_branches=true&merge_request[source_branch]=${branchName}&merge_request[target_branch]=master`}

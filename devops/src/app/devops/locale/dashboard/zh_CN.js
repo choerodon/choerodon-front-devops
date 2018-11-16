@@ -14,7 +14,7 @@ const zh_CN = {
 
   // 构建详情
   'dashboard.build': '查看构建详情',
-  'report.build-number.build': '构建',
+  'dashboard.build-number.build': '构建',
 
   // 部署情况
   'dashboard.deployment': '查看部署详情',
@@ -22,26 +22,26 @@ const zh_CN = {
   'dashboard.noEnv': '无环境',
   'dashboard.env': '选择环境',
   'dashboard.allApp': '全部应用',
-  'report.build-number.success': '成功次数',
-  'report.build-number.fail': '失败次数',
-  'report.build-number.total': '总次数',
-  'report.build-number.success.rate': '成功率',
-  'report.build-number.yAxis': '次数',
-  'branch.issue.date': '日期',
-  'appstore.deploy': '部署',
+  'dashboard.build-number.success': '成功次数',
+  'dashboard.build-number.fail': '失败次数',
+  'dashboard.build-number.total': '总次数',
+  'dashboard.build-number.success.rate': '成功率',
+  'dashboard.build-number.yAxis': '次数',
+  'dashboard.issue.date': '日期',
+  'dashboard.deploy': '部署',
 
   //
   'dashboard.branch': '转到分支管理详情',
-  'report.commit.by': '提交于 ',
-  'branch.request': '创建合并请求',
+  'dashboard.commit.by': '提交于 ',
+  'dashboard.branch.request': '创建合并请求',
   'dashboard.nobranch': '暂无分支',
 
   //
-  'dashboard.deploy': '转到部署总览界面',
+  'dashboard.deployOverview': '转到部署总览界面',
   'dashboard.noDeploy': '暂无应用部署',
   'dashboard.latestVersion': '最新版本',
   'dashboard.ist': '实例个数：',
-  'dpOverview.update': '可升级',
+  'dashboard.update': '可升级',
 
 };
 /* eslint-disable-next-line */

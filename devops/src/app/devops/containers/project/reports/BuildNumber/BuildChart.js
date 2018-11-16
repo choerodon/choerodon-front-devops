@@ -16,9 +16,9 @@ class BuildTable extends Component {
   }
 
   getOption() {
-    const { intl: { formatMessage }, top, bottom } = this.props;
+    const { intl: { formatMessage }, top, bottom, languageType } = this.props;
     const { createDates, pipelineFrequencys, pipelineSuccessFrequency, pipelineFailFrequency } = ReportsStore.getBuildNumber;
-    const val = [{ name: `${formatMessage({ id: 'report.build-number.fail' })}` }, { name: `${formatMessage({ id: 'report.build-number.success' })}` }, { name: `${formatMessage({ id: 'report.build-number.total' })}` }];
+    const val = [{ name: `${formatMessage({ id: `${languageType}.build-number.fail` })}` }, { name: `${formatMessage({ id: `${languageType}.build-number.success` })}` }, { name: `${formatMessage({ id: `${languageType}.build-number.total` })}` }];
     val[0].value = _.reduce(pipelineFailFrequency, (sum, n) => sum + n, 0);
     val[1].value = _.reduce(pipelineSuccessFrequency, (sum, n) => sum + n, 0);
     val[2].value = _.reduce(pipelineFrequencys, (sum, n) => sum + n, 0);
@@ -44,11 +44,11 @@ class BuildTable extends Component {
           if (params[0].value || params[1].value) {
             const total = params[0].value + params[1].value;
             return `<div>
-              <div>${formatMessage({ id: 'branch.issue.date' })}：${params[1].name}</div>
-              <div><span class="c7n-echarts-tooltip" style="background-color:${params[1].color};"></span>${formatMessage({ id: 'report.build-number.build' })}${params[1].seriesName}：${params[1].value}</div>
-              <div><span class="c7n-echarts-tooltip" style="background-color:${params[0].color};"></span>${formatMessage({ id: 'report.build-number.build' })}${params[0].seriesName}：${params[0].value}</div>
-              <div>${formatMessage({ id: 'report.build-number.build' })}${formatMessage({ id: 'report.build-number.total' })}：${total}</div>
-              <div>${formatMessage({ id: 'report.build-number.build' })}${formatMessage({ id: 'report.build-number.success.rate' })}：${((params[0].value / total) * 100).toFixed(2)}%</div>
+              <div>${formatMessage({ id: `${languageType === 'report' ? 'branch' : 'dashboard'}.issue.date` })}：${params[1].name}</div>
+              <div><span class="c7n-echarts-tooltip" style="background-color:${params[1].color};"></span>${formatMessage({ id: `${languageType}.build-number.build` })}${params[1].seriesName}：${params[1].value}</div>
+              <div><span class="c7n-echarts-tooltip" style="background-color:${params[0].color};"></span>${formatMessage({ id: `${languageType}.build-number.build` })}${params[0].seriesName}：${params[0].value}</div>
+              <div>${formatMessage({ id: `${languageType}.build-number.build` })}${formatMessage({ id: `${languageType}.build-number.total` })}：${total}</div>
+              <div>${formatMessage({ id: `${languageType}.build-number.build` })}${formatMessage({ id: `${languageType}.build-number.success.rate` })}：${((params[0].value / total) * 100).toFixed(2)}%</div>
             <div>`;
           }
         },
@@ -107,7 +107,7 @@ class BuildTable extends Component {
         data: xAxis,
       },
       yAxis: {
-        name: `${formatMessage({ id: 'report.build-number.yAxis' })}`,
+        name: `${formatMessage({ id: `${languageType}.build-number.yAxis` })}`,
         type: 'value',
 
         nameTextStyle: {
@@ -142,7 +142,7 @@ class BuildTable extends Component {
       },
       series: [
         {
-          name: `${formatMessage({ id: 'report.build-number.success' })}`,
+          name: `${formatMessage({ id: `${languageType}.build-number.success` })}`,
           type: 'bar',
           barWidth: '40%',
           itemStyle: {
@@ -156,7 +156,7 @@ class BuildTable extends Component {
           data: yAxis.pipelineSuccessFrequency,
         },
         {
-          name: `${formatMessage({ id: 'report.build-number.fail' })}`,
+          name: `${formatMessage({ id: `${languageType}.build-number.fail` })}`,
           type: 'bar',
           barWidth: '40%',
           itemStyle: {
@@ -170,7 +170,7 @@ class BuildTable extends Component {
           data: yAxis.pipelineFailFrequency,
         },
         {
-          name: `${formatMessage({ id: 'report.build-number.total' })}`,
+          name: `${formatMessage({ id: `${languageType}.build-number.total` })}`,
           type: 'bar',
           color: '#FFF',
           stack: 'total',
