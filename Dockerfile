@@ -17,7 +17,6 @@ COPY menu.yml /usr/share/nginx/html/menu.yml
 COPY dashboard.yml /usr/share/nginx/html/dashboard.yml
 COPY structure/menu /usr/share/nginx/html/menu
 COPY structure/dashboard /usr/share/nginx/html/dashboard
-COPY devops-structure/deleteMenu.py /usr/share/nginx/html
 RUN chmod 777 /usr/share/nginx/html/devops-enterpoint.sh
 ENTRYPOINT ["/usr/share/nginx/html/devops-enterpoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
