@@ -70,6 +70,12 @@
     &:hover {
       .c7n-branch-action {
         display: inline-block;
+
+        button {
+          width: 20px;
+          height: 20px;
+          line-height: 20px;
+        }
       }
     }
   }
@@ -175,6 +181,8 @@
   }
 
   .c7n-branch-issue {
+    margin-right: 40px;
+
     .c7n-issue-type {
       display: inline-block;
       text-align: center;
@@ -189,7 +197,6 @@
 
   .c7n-branch-action {
     display: none;
-    margin-left: 40px;
   }
 
   .c7n-merge-action {
