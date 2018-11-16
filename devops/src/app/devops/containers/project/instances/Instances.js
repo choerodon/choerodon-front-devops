@@ -560,9 +560,9 @@ class Instances extends Component {
       render: this.renderStatus,
     }, {
       title: getTableTitle('deploy.ver'),
-      key: 'appVersion',
+      key: 'version',
       filters: [],
-      filteredValue: filters.appVersion || [],
+      filteredValue: filters.version || [],
       render: this.renderVersion,
     }, {
       width: 56,
