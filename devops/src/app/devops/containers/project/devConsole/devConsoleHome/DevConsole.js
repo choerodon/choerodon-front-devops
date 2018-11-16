@@ -241,32 +241,32 @@ class DevConsole extends Component {
     switch (typeCode) {
       case 'story':
         mes = formatMessage({ id: 'branch.issue.story' });
-        icon = 'turned_in';
+        icon = 'agile_story';
         color = '#00bfa5';
         break;
       case 'bug':
         mes = formatMessage({ id: 'branch.issue.bug' });
-        icon = 'bug_report';
+        icon = 'agile_fault';
         color = '#f44336';
         break;
       case 'issue_epic':
         mes = formatMessage({ id: 'branch.issue.epic' });
-        icon = 'priority';
+        icon = 'agile_epic';
         color = '#743be7';
         break;
       case 'sub_task':
         mes = formatMessage({ id: 'branch.issue.subtask' });
-        icon = 'relation';
+        icon = 'agile_subtask';
         color = '#4d90fe';
         break;
       default:
         mes = formatMessage({ id: 'branch.issue.task' });
-        icon = 'assignment';
+        icon = 'agile_task';
         color = '#4d90fe';
     }
     return (<span className="c7n-branch-issue">
       <Tooltip title={mes}>
-        <div style={{ background: color }} className="c7n-issue-type"><i className={`icon icon-${icon}`} /></div>
+        <div style={{ color }} className="c7n-issue-type"><i className={`icon icon-${icon}`} /></div>
       </Tooltip>
       <Tooltip title={issueName}>
         <span className="branch-issue-content"><span>{issueCode}</span></span>
@@ -359,7 +359,7 @@ class DevConsole extends Component {
         return (<div className="c7n-dc-branch-content" key={branchName}>
           <div className="branch-content-title">
             {this.getIcon(branchName)}
-            <div className="branch-name">{branchName}</div>
+            <div className="branch-name" title={branchName}>{branchName}</div>
             {typeCode ? this.getIssue(typeCode, issueCode, issueName) : null}
             {branchName !== 'master' ? <div className="c7n-branch-action">
               <Permission

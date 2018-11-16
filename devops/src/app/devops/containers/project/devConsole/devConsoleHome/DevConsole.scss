@@ -21,7 +21,7 @@
 
 .c7n-dc-card-title {
   font-size: 18px;
-  color: rgba(0,0,0,0.87);
+  color: rgba(0, 0, 0, 0.87);
   display: flex;
 
   i {
@@ -87,7 +87,7 @@
       font-size: 24px;
 
       a {
-        color: #303F9F;
+        color: #303f9f;
       }
     }
 
@@ -104,7 +104,7 @@
 
       a {
         font-size: 14px;
-        color: #303F9F;
+        color: #303f9f;
       }
 
       i {
@@ -152,7 +152,7 @@
 }
 
 .c7n-dc-branch {
-  max-height: 276px;
+  max-height: 300px;
   overflow: scroll;
   padding-right: 1px;
 }
@@ -167,7 +167,7 @@
     align-items: center;
 
     .branch-name {
-      max-width: 200px;
+      width: 183px;
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
@@ -175,20 +175,14 @@
   }
 
   .c7n-branch-issue {
-    margin-left: 19px;
-
     .c7n-issue-type {
       display: inline-block;
       text-align: center;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      color: white;
       line-height: 14px;
-      margin-right: 10px;
+      margin-right: 8px;
 
       i {
-        font-size: 12px;
+        font-size: 20px;
       }
     }
   }
@@ -204,11 +198,11 @@
 
   .c7n-branch-commit {
     margin: 2px 0 0 24px;
-    color: rgba(0,0,0,0.65);
+    color: rgba(0, 0, 0, 0.65);
     display: flex;
 
     .branch-column-icon {
-      color: rgba(0,0,0,0.54);
+      color: rgba(0, 0, 0, 0.54);
       line-height: 20px;
       padding-right: 6px;
     }
@@ -243,7 +237,7 @@
   }
 
   .c7n-merge-branch {
-    color: rgba(0,0,0,0.65);
+    color: rgba(0, 0, 0, 0.65);
     margin-top: 2px;
     display: flex;
 
@@ -255,7 +249,7 @@
     .c7n-merge-icon-arrow {
       line-height: 20px;
       margin: 0 10px;
-      transform: rotate(180deg)
+      transform: rotate(180deg);
     }
   }
 }
