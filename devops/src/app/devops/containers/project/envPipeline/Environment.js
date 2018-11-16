@@ -65,7 +65,7 @@ const formItemLayout = {
 };
 
 @observer
-class EnvPipelineHome extends Component {
+class Environment extends Component {
   /**
    * 环境编码校验
    * @param rule 校验规则
@@ -263,6 +263,9 @@ class EnvPipelineHome extends Component {
       this.setState({
         submitting: false,
       });
+    }).catch(error => {
+      this.setState({ submitting: false });
+      Choerodon.handleResponseError(error);
     });
   };
 
@@ -1356,4 +1359,4 @@ class EnvPipelineHome extends Component {
   }
 }
 
-export default Form.create({})(withRouter(injectIntl(EnvPipelineHome)));
+export default Form.create({})(withRouter(injectIntl(Environment)));

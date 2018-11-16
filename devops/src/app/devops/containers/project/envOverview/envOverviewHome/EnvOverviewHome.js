@@ -492,7 +492,7 @@ class EnvOverviewHome extends Component {
         </div>
       </div>);
     } else if ((sync && (sync.devopsSyncCommit !== sync.sagaSyncCommit
-      || sync.sagaSyncCommit !== sync.agentSyncCommit)) && envState.connect) {
+      || sync.sagaSyncCommit !== sync.agentSyncCommit)) && envState && envState.connect) {
       syncDom = (<div className="c7n-envow-sync-wrap">
         <div className="c7n-envow-status-text"><FormattedMessage id="envoverview.sync" /></div>
         <div className="c7n-envow-sync-icon"><Icon type="autorenew" /></div>
@@ -538,7 +538,7 @@ class EnvOverviewHome extends Component {
           'devops-service.certification.delete',
         ]}
       >
-        {envId ? <Fragment><Header title={<FormattedMessage id="envoverview.head" />}>
+        {envData && envData.length && envId  ? <Fragment><Header title={<FormattedMessage id="envoverview.head" />}>
           <Select
             className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
             dropdownClassName="c7n-header-env_drop"

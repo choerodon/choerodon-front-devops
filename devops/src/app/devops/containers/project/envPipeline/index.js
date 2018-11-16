@@ -1,3 +1,3 @@
-import EnvPipelineIndex from './EnvPipelineIndex';
+import EnvironmentIndex from './EnvironmentIndex';
 
-export default EnvPipelineIndex;
+export default EnvironmentIndex;

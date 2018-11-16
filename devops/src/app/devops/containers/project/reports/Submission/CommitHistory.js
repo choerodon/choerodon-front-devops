@@ -11,7 +11,7 @@ export default function CommitHistory(props) {
     list = content.map((item) => {
       const { userName, url, commitContent, commitDate, imgUrl, appName, commitSHA } = item;
       return (
-        <div className="c7n-report-history-item" key={commitSHA}>
+        <div className="c7n-report-history-item" key={`${commitSHA}-${commitDate}`}>
           {imgUrl
             ? <Avatar size="small" src={imgUrl} />
             : <Avatar size="small">{userName ? userName.toString().slice(0, 1).toUpperCase() : '?'}</Avatar>}
@@ -33,7 +33,7 @@ export default function CommitHistory(props) {
       );
     });
   } else {
-    list = [<span className="c7n-report-history-list-none"><FormattedMessage key="no.commits" id="report.commit.none" /></span>];
+    list = [<span key="no.commits" className="c7n-report-history-list-none"><FormattedMessage id="report.commit.none" /></span>];
   }
   return (<Fragment>
     <h3 className="c7n-report-history-title"><FormattedMessage id="report.commit.history" /></h3>

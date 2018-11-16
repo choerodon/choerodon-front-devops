@@ -439,6 +439,7 @@ const zhCN = {
   "ist.version.deploy.failed": "部署版本 “{text}” 失败",
   "ist.deploy.failed": "部署失败",
   "ist.deploy.upload": "部署中",
+  "ist.deploy.delete": "处理中",
 
   // network
   network_delete: "网络删除中，请耐心等待",
@@ -566,7 +567,7 @@ const zhCN = {
     "删除该环境后，与该环境相关的所有对象均会被永久删除，不可恢复！确定要删除吗？",
   "envPl.edit": "修改环境",
   "envPl.update": "修改环境",
-  "envPl.form.cluster": "集群",
+  "envPl.form.cluster": "选择集群",
   "envPl.form.name": "环境名称",
   "envPl.form.code": "环境编码",
   "envPl.form.description": "环境描述",
@@ -575,7 +576,7 @@ const zhCN = {
   "envPl.noInstance.disable": "确认停用",
   "envPl.forbidden.disable": "不可停用",
   "envPl.disEnv.noInstance": "当你点击确认后，该环境将被停用！",
-  "envPl.disEnv.forbidden": "该环境下已有实例，且此环境正在运行中，无法强制停用！",
+  "envPl.disEnv.forbidden": "该环境下已有实例，且此环境正在运行中，无法停用！",
   "envPl.confirm.group.del":
     "当你点击确认后，该分组下的环境将追加至默认流水线末尾!",
   "envPl.code.copy.tooltip": "复制下文代码至Kubernetes运行，与平台建立链接",
@@ -1044,6 +1045,8 @@ const zhCN = {
 
   // 报表
   "report.head": "报告",
+  "report.devops.total": "总次数",
+  "report.devops.more": "...",
   "report.submission.head": "代码提交图",
   "report.code-quality.head": "代码质量报表",
   "report.deploy-duration.head": "部署时长图",

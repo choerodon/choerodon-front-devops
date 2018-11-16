@@ -164,12 +164,11 @@ class InstancesStore {
 
   /**
    * 查询实例
-   * @param fresh 请求是否刷新
    * @param projectId
    * @param info
    */
-  loadInstanceAll = (fresh = true, projectId, info = {}) => {
-    this.changeLoading(fresh);
+  loadInstanceAll = (projectId, info = {}) => {
+    this.changeLoading(true);
     const { page, size, datas } = info;
     const normal = ['page', 'size', 'datas'];
     // 除了normal中的字段必有，其他字段不确定
@@ -180,7 +179,13 @@ class InstancesStore {
         search = search.concat(`&${key}=${value}`);
       }
     });
-    return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page || 0}&size=${size || this.pageInfo.pageSize}${search}`, JSON.stringify(datas || { searchParam: {}, param: '' })).then((data) => {
+    let searchParam = {};
+    let param = '';
+    if (datas) {
+      param = String(datas.param);
+      searchParam = datas.searchParam;
+    }
+    return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page || 0}&size=${size || this.pageInfo.pageSize}${search}`, JSON.stringify({ searchParam, param })).then((data) => {
       const res = handleProptError(data);
       if (res) {
         this.handleData(data);
@@ -237,7 +242,7 @@ class InstancesStore {
 
   reDeploy = (projectId, data) => axios.post(`devops/v1/projects/${projectId}/app_instances`, JSON.stringify(data));
 
-  deleteIst = (projectId, istId) => axios.delete(`devops/v1/projects/${projectId}/app_instances/${istId}/delete`);
+  deleteInstance = (projectId, istId) => axios.delete(`devops/v1/projects/${projectId}/app_instances/${istId}/delete`);
 
   reStarts = (projectId, id) => axios.put(`devops/v1/projects/${projectId}/app_instances/${id}/restart`);
 

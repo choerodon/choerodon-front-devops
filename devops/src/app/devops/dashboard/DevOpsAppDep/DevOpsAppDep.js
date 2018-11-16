@@ -109,7 +109,7 @@ class DevOpsAppDep extends Component {
         <div className="c7n-appDep-ver">
           {t.deployVersion}
         </div>
-        {t.update ? <Tooltip title={<FormattedMessage id="dpOverview.update" />}><span className="c7n-ist-status_update_top" /></Tooltip> : null}
+        {t.update ? <Tooltip title={<FormattedMessage id="dashboard.update" />}><span className="c7n-ist-status_update_top" /></Tooltip> : null}
       </div>))}
 
     </Fragment>));
@@ -137,7 +137,7 @@ class DevOpsAppDep extends Component {
         <Select
           dropdownMatchSelectWidth
           notFoundContent={formatMessage({ id: 'dashboard.noApp' })}
-          placeholder={formatMessage({ id: 'env.select' })}
+          placeholder={formatMessage({ id: 'dashboard.environment.select' })}
           value={appDom ? appId : null}
           className={`c7n-select_100 ${noSelect ? 'c7n-select-noSelect' : ''}`}
           onChange={this.handleAppSelect}
@@ -150,7 +150,7 @@ class DevOpsAppDep extends Component {
         <Link
           to={`/devops/deploy-overview?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`}
         >
-          <FormattedMessage id="dashboard.deploy" />
+          <FormattedMessage id="dashboard.deployOverview" />
         </Link>
       </DashBoardNavBar>
     </Fragment>);

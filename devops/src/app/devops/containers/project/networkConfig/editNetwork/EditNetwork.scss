@@ -1,9 +1,9 @@
 @import "../createNetwork/CreateNetwork.scss";
 
 .instance-status-disable {
-  color: white !important;
-  background-color: #d50000 !important;
+  color: #d50000 !important;
+  background: rgba(244, 67, 54, 0.3) !important;
   .icon-cancel {
-    color: #fff;
+    color: #d50000;
   }
 }

@@ -537,7 +537,7 @@ class Cluster extends Component {
               })(
                 <Input
                   maxLength={10}
-                  label={<FormattedMessage id="envPl.form.name" />}
+                  label={<FormattedMessage id="cluster.name" />}
                 />,
               )}
             </FormItem>
@@ -550,7 +550,7 @@ class Cluster extends Component {
                 <TextArea
                   autosize={{ minRows: 2 }}
                   maxLength={30}
-                  label={<FormattedMessage id="envPl.form.description" />}
+                  label={<FormattedMessage id="cluster.des" />}
                 />,
               )}
             </FormItem>
@@ -558,6 +558,7 @@ class Cluster extends Component {
           <div className="c7n-env-tag-title">
             <FormattedMessage id="cluster.authority" />
             <Popover
+              overlayStyle={{ maxWidth: '350px' }}
               content={formatMessage({ id: 'cluster.authority.help' })}
             >
               <Icon type="help" />

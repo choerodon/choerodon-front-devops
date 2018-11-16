@@ -449,7 +449,7 @@ class BranchHome extends Component {
           'agile-service.work-log.queryWorkLogListByIssueId',
         ]}
       >
-        {appId ? <Fragment><Header
+        {apps && apps.length ? <Fragment><Header
           title={<FormattedMessage id="branch.head" />}
           backPath={backPath}
         >

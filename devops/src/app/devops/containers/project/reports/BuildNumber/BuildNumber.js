@@ -147,7 +147,7 @@ class BuildNumber extends Component {
           store={ReportsStore}
         />
       </div>
-      <BuildChart echartsLoading={echartsLoading} height="400px" top="15%" />
+      <BuildChart echartsLoading={echartsLoading} height="400px" top="15%" languageType="report" />
       <BuildTable loading={loading} dataSource={allData} pagination={pageInfo} loadDatas={this.loadDatas} />
     </React.Fragment> : <NoChart title={formatMessage({ id: 'report.no-app' })} des={formatMessage({ id: 'report.no-app-des' })} />);
 

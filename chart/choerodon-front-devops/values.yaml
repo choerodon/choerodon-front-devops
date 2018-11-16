@@ -9,7 +9,9 @@ image:
   pullPolicy: Always
 
 preJob:
+  timeout: 300
   preConfig:
+    enable: true
     mysql:
       host: localhost
       port: 3306

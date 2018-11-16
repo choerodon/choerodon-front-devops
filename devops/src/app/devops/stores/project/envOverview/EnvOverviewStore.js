@@ -167,6 +167,11 @@ class EnvOverviewStore {
           } else if (!this.tpEnvId && flag.length) {
             const envId = flag[0].id;
             this.setTpEnvId(envId);
+          } else if (flag.length && _.filter(flag, ['id', this.tpEnvId]).length === 0) {
+            const envId = flag[0].id;
+            this.setTpEnvId(envId);
+          } else if (flag.length === 0) {
+            this.setTpEnvId(null);
           }
           if (data.length && this.tpEnvId) {
             switch (type) {
@@ -189,7 +194,7 @@ class EnvOverviewStore {
                   const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
                   InstancesStore.setAppPageSize(appPageSize);
                   loadAppNameByEnv(projectId, this.tpEnvId, 0, appPageSize);
-                  loadInstanceAll(true, projectId, { envId: this.tpEnvId, appId: false }).catch((err) => {
+                  loadInstanceAll(projectId, { envId: this.tpEnvId, appId: false }).catch((err) => {
                     InstancesStore.changeLoading(false);
                   });
                 }

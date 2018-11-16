@@ -13,11 +13,10 @@ ENV PRO_FILE_SERVER choerodon.com.cn
 RUN echo "Asia/shanghai" > /etc/timezone;
 ADD dist /usr/share/nginx/html
 COPY devops-structure/devops-enterpoint.sh /usr/share/nginx/html
-COPY config.yml /usr/share/nginx/html
-COPY dashboard.yml /usr/share/nginx/html
-COPY structure/sql.py /usr/share/nginx/html
-COPY structure/dashboard.py /usr/share/nginx/html
-COPY devops-structure/deleteMenu.py /usr/share/nginx/html
+COPY menu.yml /usr/share/nginx/html/menu.yml
+COPY dashboard.yml /usr/share/nginx/html/dashboard.yml
+COPY structure/menu /usr/share/nginx/html/menu
+COPY structure/dashboard /usr/share/nginx/html/dashboard
 RUN chmod 777 /usr/share/nginx/html/devops-enterpoint.sh
 ENTRYPOINT ["/usr/share/nginx/html/devops-enterpoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

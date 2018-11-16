@@ -424,7 +424,7 @@ class MergeRequestHome extends Component {
           'devops-service.devops-git.getUrl',
         ]}
       >
-        {appId ? <Fragment><Header
+        {appData && appData.length ? <Fragment><Header
           title={<FormattedMessage id="merge.head" />}
           backPath={backPath}
         >

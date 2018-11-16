@@ -270,7 +270,7 @@ class AppTagHome extends Component {
           'devops-service.devops-git.deleteTag',
         ]}
       >
-        {appId ? <Fragment><Header
+        {appData && appData.length ? <Fragment><Header
           title={<FormattedMessage id="apptag.head" />}
           backPath={backPath}
         >

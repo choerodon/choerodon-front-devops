@@ -583,6 +583,7 @@ class CreateDomain extends Component {
                 placeholder={formatMessage({ id: 'network.env.placeholder' })}
                 optionFilterProp="children"
                 onSelect={this.handleSelectEnv}
+                disabled={type === 'edit'}
                 getPopupContainer={triggerNode => triggerNode.parentNode}
                 filterOption={(input, option) => option.props.children[1]
                   .toLowerCase().indexOf(input.toLowerCase()) >= 0}

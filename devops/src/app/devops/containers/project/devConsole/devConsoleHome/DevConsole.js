@@ -531,7 +531,6 @@ class DevConsole extends Component {
             organizationId={orgId}
           >
             <Button
-              type="primary"
               funcType="flat"
               onClick={this.openCreateBranch.bind(this, branchName)}
             >
@@ -551,7 +550,6 @@ class DevConsole extends Component {
             organizationId={orgId}
           >
             <Button
-              type="primary"
               funcType="flat"
               onClick={() => this.displayCreateModal(true)}
             >
@@ -563,7 +561,6 @@ class DevConsole extends Component {
           key="2"
         >
           <Button
-            type="primary"
             funcType="flat"
             onClick={this.linkToMerge.bind(this, false)}
           >
@@ -685,7 +682,7 @@ class DevConsole extends Component {
           'devops-service.devops-git.getMergeRequestList',
         ]}
       >
-        {appId ? <Fragment><Header title={<FormattedMessage id="devCs.head" />}>
+        {appData && appData.length ? <Fragment><Header title={<FormattedMessage id="devCs.head" />}>
           <Select
             filter
             className="c7n-header-select"

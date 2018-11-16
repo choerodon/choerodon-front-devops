@@ -206,6 +206,12 @@
 
   .c7n-envow-ist-fail {
     display: inline-block;
+    .ant-progress {
+      circle {
+        stroke: #3f51b5 !important;
+        stroke-width: 7px;
+      }
+    }
   }
 
   .c7n-envow-ist-name {
