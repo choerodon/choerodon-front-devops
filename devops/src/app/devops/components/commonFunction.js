@@ -38,13 +38,14 @@ export const commonComponent =(storeName) => {
       const page = store.getPageInfo.current;
       const totalPage = Math.ceil(store.getPageInfo.total / store.getPageInfo.pageSize);
       this.setState({ submitting: true });
+      const envId = EnvOverviewStore.getTpEnvId;
       store.deleteData(projectId, id).then((data) => {
         this.setState({ submitting: false });
         if (data) {
           if (lastDatas === 1 && page === totalPage) {
-            this.loadAllData(false, store.getPageInfo.current - 2);
+            this.loadAllData(envId, false, store.getPageInfo.current - 2);
           } else {
-            this.loadAllData(false, store.getPageInfo.current - 1);
+            this.loadAllData(envId, false, store.getPageInfo.current - 1);
           }
         }
         this.closeRemove();

@@ -1,6 +1,6 @@
 default: &default
   docker:
-  - image: choerodon/cifront:0.6.0
+  - image: choerodon/cifront:0.7.0
 
 version: 2
 jobs:
@@ -13,7 +13,8 @@ jobs:
       - checkout
       - run: | 
             cd devops && npm install -registry https://nexus.choerodon.com.cn/repository/choerodon-npm/ && cd ..
-            python ./devops/node_modules/choerodon-front-boot/structure/configAuto.py devops
+            python ./devops/node_modules/choerodon-front-boot/structure/menu/__init__.py -o yml -m devops
+            python ./devops/node_modules/choerodon-front-boot/structure/dashboard/__init__.py -o yml -m devops
             cd devops
             chmod -R 777 node_modules
             npm run build
@@ -21,8 +22,8 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - config.yml
-            - devops/dist
+            - menu.yml
+            - dashboard.yml
             - devops/node_modules/choerodon-front-boot/structure
   docker_build:
     machine: true
@@ -40,7 +41,7 @@ jobs:
           docker push ${DOCKER_GROUP_NAME}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}
   helm_chart_build:
     docker:
-    - image: choerodon/cibase:0.6.0
+    - image: choerodon/cibase:0.7.0
     steps:
       - checkout
       - run: |

@@ -426,7 +426,7 @@ class CiPipelineHome extends Component {
           'devops-service.devops-gitlab-pipeline.pagePipeline',
         ]}
       >
-        {appId ? <Fragment><Header title={<FormattedMessage id="ciPipeline.head" />}>
+        {appData && appData.length ? <Fragment><Header title={<FormattedMessage id="ciPipeline.head" />}>
           <Select
             filter
             className="c7n-header-select"
@@ -462,7 +462,7 @@ class CiPipelineHome extends Component {
         </Header>
         <Content code={appData.length ? 'ciPipeline.app' : 'ciPipeline'} values={{ name: titleName }}>
           {this.tableCiPipeline}
-        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ciPipeline.head" />} />}
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ciPipeline.head" />} type="app" />}
       </Page>
     );
   }

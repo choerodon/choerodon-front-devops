@@ -9,6 +9,7 @@ import MouserOverWrapper from '../../../../components/MouseOverWrapper/index';
 import '../../../main.scss';
 import './RepositoryHome.scss';
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
+import DevPipelineStore from "../../../../stores/project/devPipeline";
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -38,6 +39,7 @@ class RepositoryHome extends Component {
   }
 
   componentDidMount() {
+    DevPipelineStore.queryAppData(AppState.currentMenuType.id);
     this.loadRepoData();
   }
 
@@ -147,6 +149,7 @@ class RepositoryHome extends Component {
     const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
     const { param, filters, sort: { columnKey, order } } = this.state;
     const { getRepoData, getPageInfo, loading } = RepositoryStore;
+    const appData = DevPipelineStore.getAppData;
     const columns = [{
       title: <FormattedMessage id="repository.repository" />,
       dataIndex: 'code',
@@ -189,7 +192,7 @@ class RepositoryHome extends Component {
           'devops-service.application.listCodeRepository',
         ]}
       >
-        {getRepoData && getRepoData.length ? <Fragment>
+        {appData && appData.length ? <Fragment>
           <Header title={<FormattedMessage id="repository.head" />}>
             <Button
               onClick={this.handleRefresh}
@@ -210,7 +213,7 @@ class RepositoryHome extends Component {
               rowKey={record => record.id}
             />
           </Content>
-        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="repository.head" />} />}
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="repository.head" />} type="app" />}
       </Page>
     );
   }

@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+import React, { Component, Fragment } from "react";
 import { observer } from "mobx-react";
 import { withRouter } from "react-router-dom";
 import { injectIntl, FormattedMessage } from "react-intl";
@@ -11,6 +12,7 @@ import {
   Popover,
   Select,
   Table,
+  Spin,
   Tag,
   Icon,
 } from "choerodon-ui";
@@ -23,12 +25,19 @@ import {
 } from "choerodon-front-boot";
 import _ from "lodash";
 import classNames from "classnames";
+import CopyToBoard from "react-copy-to-clipboard";
 import Board from "./pipeline/Board";
 import LoadingBar from "../../../components/loadingBar/index";
 import EnvGroup from "./EnvGroup";
 import "../../main.scss";
 import "./EnvPipeLineHome.scss";
+import EnvPipelineStore from "../../../stores/project/envPipeline";
+import { getSelectTip } from "../../../utils";
 
+/**
+ * 分页查询单页size
+ * @type {number}
+ */
 let scrollLeft = 0;
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -38,26 +47,117 @@ const { AppState } = stores;
 
 const formItemLayout = {
   labelCol: {
-    xs: { span: 24 },
-    sm: { span: 8 },
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 8,
+    },
   },
   wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 16 },
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 16,
+    },
   },
 };
 
 @observer
-class EnvPipelineHome extends Component {
+class Environment extends Component {
+  /**
+   * 环境编码校验
+   * @param rule 校验规则
+   * @param value code值
+   * @param callback 回调提示
+   */
+  checkCode = _.debounce((rule, value, callback) => {
+    const {
+      EnvPipelineStore,
+      intl: { formatMessage },
+    } = this.props;
+    const { cluster } = this.state;
+    if (cluster && value) {
+      const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
+      const { id: projectId } = AppState.currentMenuType;
+      if (pa.test(value)) {
+        EnvPipelineStore.checkEnvCode(projectId, cluster, value).then(data => {
+          if (data && data.failed) {
+            callback(
+              formatMessage({
+                id: "envPl.code.check.exist",
+              })
+            );
+          } else {
+            callback();
+          }
+        });
+      } else {
+        callback(
+          formatMessage({
+            id: "envPl.code.check.failed",
+          })
+        );
+      }
+    } else {
+      callback();
+    }
+  }, 1000);
+
+  /**
+   * 环境名称校验
+   * @param rule 校验规则
+   * @param value name值
+   * @param callback 回调提示
+   */
+  checkName = _.debounce((rule, value, callback) => {
+    const {
+      EnvPipelineStore,
+      intl: { formatMessage },
+    } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    const { cluster } = this.state;
+    const envData = EnvPipelineStore.getEnvData;
+    const flag = envData ? value !== envData.name : value;
+    if (cluster && flag) {
+      EnvPipelineStore.checkEnvName(projectId, cluster, value).then(error => {
+        if (error && error.failed) {
+          callback(
+            formatMessage({
+              id: "envPl.name.check.exist",
+            })
+          );
+        } else {
+          callback();
+        }
+      });
+    } else {
+      callback();
+    }
+  }, 1000);
+
   constructor(props) {
     super(props);
     this.state = {
       submitting: false,
       moveBan: false,
       delEnvShow: false,
+      disEnvShow: false,
+      delGroupShow: false,
+      disEnvConnect: false,
+      envName: null,
+      enableClick: false,
+      delGroupName: null,
       delEnv: null,
+      disEnv: null,
+      delGroup: null,
       moveRight: 300,
       createSelectedRowKeys: [],
+      createSelected: [],
+      selectedRowKeys: false,
+      selected: [],
+      createSelectedTemp: [],
       cluster: null,
     };
   }
@@ -65,6 +165,12 @@ class EnvPipelineHome extends Component {
   componentDidMount() {
     this.loadEnvs();
     this.loadEnvGroups();
+  }
+
+  componentWillUnmount() {
+    const { EnvPipelineStore } = this.props;
+    EnvPipelineStore.setEnvcardPosition([]);
+    EnvPipelineStore.setDisEnvcardPosition([]);
   }
 
   /**
@@ -102,11 +208,20 @@ class EnvPipelineHome extends Component {
     const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     if (type === "create") {
-      EnvPipelineStore.loadPrm(projectId);
+      EnvPipelineStore.loadPrm(projectId );
       EnvPipelineStore.loadCluster(projectId);
     }
     EnvPipelineStore.setSideType(type);
+    this.setState({
+      submitting: false,
+    });
     EnvPipelineStore.setShow(true);
+  };
+
+  showGroup = type => {
+    const { EnvPipelineStore } = this.props;
+    EnvPipelineStore.setSideType(type);
+    EnvPipelineStore.setShowGroup(true);
   };
 
   /**
@@ -117,59 +232,106 @@ class EnvPipelineHome extends Component {
       EnvPipelineStore,
       form: { resetFields },
     } = this.props;
-    this.setState({ createSelectedRowKeys: [], createSelected: [] });
+    this.setState({
+      createSelectedRowKeys: [],
+      createSelected: [],
+      selectedRowKeys: false,
+    });
     EnvPipelineStore.setShow(false);
     EnvPipelineStore.setEnvData(null);
     EnvPipelineStore.setSelectedRk([]);
     resetFields();
   };
 
-  showGroup = type => {
+  /**
+   * 禁用环境
+   */
+  disableEnv = () => {
     const { EnvPipelineStore } = this.props;
-    EnvPipelineStore.setSideType(type);
-    EnvPipelineStore.setShowGroup(true);
+    const { id: projectId } = AppState.currentMenuType
+    const { disEnv } = this.state;
+    this.setState({
+      submitting: true,
+    });
+    EnvPipelineStore.banEnvById(projectId, disEnv, false).then(data => {
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else if (data) {
+        this.loadEnvs();
+        this.closeDisEnvModal();
+      }
+      this.setState({
+        submitting: false,
+      });
+    }).catch(error => {
+      this.setState({ submitting: false });
+      Choerodon.handleResponseError(error);
+    });
+  };
+
+  showDisEnvModal = (id, connect, name) => {
+    const { EnvPipelineStore } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    EnvPipelineStore.loadInstance(projectId, id).then(() => {
+      // 确保查询完实例后才可以点击确认
+      this.setState({ enableClick: true });
+    }).catch(() => {
+      this.setState({ enableClick: true });
+    });
+    this.setState({
+      disEnvShow: true,
+      disEnv: id,
+      disEnvConnect: connect,
+    });
+  };
+
+  closeDisEnvModal = () => {
+    this.setState({
+      disEnvShow: false,
+      enableClick: false,
+    });
   };
 
   /**
-   * 关闭禁用框
+   * 删除环境组
    */
-  banCancel = () => {
-    const { EnvPipelineStore } = this.props;
-    EnvPipelineStore.setBan(false);
-  };
-
-  /**
-   * 环境禁用/删除组
-   */
-  banEnv = () => {
+  deleteGroup = () => {
     const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
-    const sideType = EnvPipelineStore.getSideType;
-    const groupOne = EnvPipelineStore.getGroupOne;
-    this.setState({ submitting: true });
-    if (sideType === "delGroup") {
-      EnvPipelineStore.delGroupById(projectId, groupOne.id).then(data => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else if (data) {
-          EnvPipelineStore.setGroupOne([]);
-          this.reload();
-        }
-        this.setState({ submitting: false });
-        EnvPipelineStore.setBan(false);
+    const { delGroup } = this.state;
+    this.setState({
+      submitting: true,
+    });
+    EnvPipelineStore.delGroupById(projectId, delGroup).then(data => {
+      if (data && data.failed) {
+        Choerodon.prompt(data.message);
+      } else if (data) {
+        this.reload();
+        this.closeDelGroupModal();
+      }
+      this.setState({
+        submitting: false,
       });
-    } else {
-      const envId = EnvPipelineStore.getEnvData.id;
-      EnvPipelineStore.banEnvById(projectId, envId, false).then(data => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else if (data) {
-          this.loadEnvs();
-        }
-        this.setState({ submitting: false });
-        EnvPipelineStore.setBan(false);
+    }).catch(error => {
+      this.setState({
+        submitting: false,
       });
-    }
+      Choerodon.handleResponseError(error);
+    });
+  };
+
+  showDelGroupModal = (id, name) => {
+    this.setState({
+      delGroupShow: true,
+      delGroup: id,
+      delGroupName: name,
+    });
+  };
+
+  closeDelGroupModal = () => {
+    this.setState({
+      delGroupShow: false,
+    });
   };
 
   /**
@@ -195,10 +357,14 @@ class EnvPipelineHome extends Component {
     const { EnvPipelineStore } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     const { delEnv } = this.state;
-    this.setState({ submitting: true });
+    this.setState({
+      submitting: true,
+    });
     EnvPipelineStore.deleteEnv(projectId, delEnv)
       .then(data => {
-        this.setState({ submitting: false });
+        this.setState({
+          submitting: false,
+        });
         if (data && data.failed) {
           Choerodon.prompt(data.message);
         } else {
@@ -207,21 +373,179 @@ class EnvPipelineHome extends Component {
         }
       })
       .catch(error => {
-        this.setState({ submitting: false });
-        Choerodon.handleResponseError(err);
+        this.setState({
+          submitting: false,
+        });
+        Choerodon.handleResponseError(error);
       });
   };
 
-  showDelEnvModal = id => {
+  showDelEnvModal = (id, name) => {
     this.setState({
       delEnvShow: true,
       delEnv: id,
+      envName: name,
     });
   };
 
   closeDelEnvModal = () => {
     this.setState({
       delEnvShow: false,
+    });
+  };
+
+  /**
+   * 选择集群
+   * @param id
+   */
+  handleCluster = id => {
+    this.setState({
+      cluster: id,
+    });
+  };
+
+  /**
+   * 表单提交
+   * @param e
+   */
+  handleSubmit = e => {
+    e.preventDefault();
+    const { EnvPipelineStore } = this.props;
+    const projectId = AppState.currentMenuType.id;
+    const sideType = EnvPipelineStore.getSideType;
+    const tagKeys = EnvPipelineStore.getTagKeys;
+    this.setState({
+      submitting: true,
+    });
+    if (sideType === "create") {
+      this.props.form.validateFieldsAndScroll((err, data) => {
+        if (!err) {
+          data.userIds = this.state.createSelectedRowKeys;
+          EnvPipelineStore.createEnv(projectId, data).then(res => {
+            if (res && res.failed) {
+              this.setState({
+                submitting: false,
+              });
+              Choerodon.prompt(res.message);
+            } else {
+              this.loadEnvs();
+              EnvPipelineStore.setShow(false);
+              this.setState({
+                submitting: false,
+                createSelectedRowKeys: [],
+                createSelected: [],
+              });
+            }
+          });
+        } else {
+          this.setState({
+            submitting: false,
+          });
+        }
+      });
+    } else if (sideType === "edit") {
+      this.props.form.validateFieldsAndScroll((err, data, modify) => {
+        if (modify) {
+          if (!err) {
+            EnvPipelineStore.setShow(false);
+            const id = EnvPipelineStore.getEnvData.id;
+            EnvPipelineStore.setSideType(null);
+            EnvPipelineStore.updateEnv(projectId, { ...data, id }).then(res => {
+              if (res && res.failed) {
+                this.setState({
+                  submitting: false,
+                });
+                Choerodon.prompt(res.message);
+              } else if (res) {
+                this.loadEnvs();
+                EnvPipelineStore.setShow(false);
+                this.props.form.resetFields();
+                this.setState({
+                  submitting: false,
+                });
+              }
+            });
+          }
+        } else {
+          this.setState({
+            submitting: false,
+          });
+          EnvPipelineStore.setShow(false);
+        }
+        this.props.form.resetFields();
+      });
+    } else {
+      const id = EnvPipelineStore.getEnvData.id;
+      const userIds = _.map(tagKeys, t => t.iamUserId);
+      EnvPipelineStore.assignPrm(projectId, id, userIds).then(data => {
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          EnvPipelineStore.setShow(false);
+        }
+        this.setState({
+          selectedRowKeys: false,
+          submitting: false,
+        });
+        EnvPipelineStore.setSelectedRk([]);
+        EnvPipelineStore.setTagKeys([]);
+      }).catch(error => {
+        this.setState({
+          submitting: false,
+        });
+        Choerodon.handleResponseError(error);
+      });
+    }
+  };
+
+  /**
+   * 根据type显示右侧框标题
+   * @param type
+   * @returns {*}
+   */
+  showTitle = type => {
+    const {
+      intl: { formatMessage },
+    } = this.props;
+    const msg = {
+      create: "create",
+      edit: "edit",
+      createGroup: "group.create",
+      editGroup: "group.edit",
+      permission: "authority",
+    };
+    return type
+      ? formatMessage({
+          id: `envPl.${msg[type]}`,
+        })
+      : "";
+  };
+
+  /**
+   * 根据type显示footer text
+   * @param type
+   * @returns {*}
+   */
+  okText = type => {
+    const {
+      intl: { formatMessage },
+    } = this.props;
+    let text = "";
+    switch (type) {
+      case "create":
+      case "createGroup":
+        text = "create";
+        break;
+      case "edit":
+      case "editGroup":
+      case "permission":
+        text = "save";
+        break;
+      default:
+        text = "envPl.close";
+    }
+    return formatMessage({
+      id: text,
     });
   };
 
@@ -238,9 +562,10 @@ class EnvPipelineHome extends Component {
       moveBan: false,
       moveRight: moveRight - 300,
     });
-    document
-      .getElementsByClassName("c7n-inner-container-ban")[0]
-      .scroll({ left: scrollLeft, behavior: "smooth" });
+    document.getElementsByClassName("c7n-inner-container-ban")[0].scroll({
+      left: scrollLeft,
+      behavior: "smooth",
+    });
   };
 
   /**
@@ -263,10 +588,125 @@ class EnvPipelineHome extends Component {
         moveBan: false,
       });
     }
-    document
-      .getElementsByClassName("c7n-inner-container-ban")[0]
-      .scroll({ left: scrollLeft + 300, behavior: "smooth" });
+    document.getElementsByClassName("c7n-inner-container-ban")[0].scroll({
+      left: scrollLeft + 300,
+      behavior: "smooth",
+    });
     scrollLeft += 300;
+  };
+
+  /**
+   * 分配权限
+   * @param keys
+   * @param selected
+   */
+  onSelectChange = (keys, selected) => {
+    const { EnvPipelineStore } = this.props;
+    const { getTagKeys: tagKeys, getPrmMbr } = EnvPipelineStore;
+    let s = [];
+    const a = tagKeys.length ? tagKeys.concat(selected) : this.state.selected.concat(selected);
+    // const tagKs = tagKeys.length ? _.map(tagKeys, p => p.iamUserId).concat(keys) : keys;
+    this.setState({ selected: a });
+    _.map(keys, o => {
+      if (_.filter(a, ['iamUserId', o]).length) {
+        s.push(_.filter(a, ['iamUserId', o])[0])
+      }
+    });
+    const ids = _.map(getPrmMbr, p => p.iamUserId);
+    const delIds = _.difference(ids, keys);
+    let selectIds = tagKeys;
+    _.map(delIds, d => {
+      _.map(selectIds, t => {
+        if (d === t.iamUserId) {
+          selectIds = _.reject(selectIds, s => s.iamUserId === d);
+        }
+      });
+    });
+    const temp = _.map(selectIds, s => s.iamUserId);
+    _.map(selected, k => {
+      if (!_.includes(temp, k.iamUserId)) {
+        selectIds.push(k);
+      }
+    });
+    EnvPipelineStore.setSelectedRk(keys);
+    EnvPipelineStore.setTagKeys(s);
+    this.setState({ selectedRowKeys: keys });
+  };
+
+  onCreateSelectChange = (keys, selected) => {
+    let s = [];
+    const a = this.state.createSelectedTemp.concat(selected);
+    this.setState({ createSelectedTemp: a });
+    _.map(keys, o => {
+      if (_.filter(a, ['iamUserId', o]).length) {
+        s.push(_.filter(a, ['iamUserId', o])[0])
+      }
+    });
+    this.setState({
+      createSelectedRowKeys: keys,
+      createSelected: s,
+    });
+  };
+
+  /**
+   * table 操作
+   * @param pagination
+   * @param filters
+   * @param sorter
+   * @param paras
+   */
+  tableChange = (pagination, filters, sorter, paras) => {
+    const { EnvPipelineStore } = this.props;
+    const { id } = AppState.currentMenuType;
+    const envId = EnvPipelineStore.getEnvData
+      ? EnvPipelineStore.getEnvData.id
+      : null;
+    const sideType = EnvPipelineStore.getSideType;
+    EnvPipelineStore.setInfo({
+      filters,
+      sort: sorter,
+      paras,
+    });
+    let sort = {
+      field: "",
+      order: "desc",
+    };
+    if (sorter.column) {
+      sort.field = sorter.field || sorter.columnKey;
+      if (sorter.order === "ascend") {
+        sort.order = "asc";
+      } else if (sorter.order === "descend") {
+        sort.order = "desc";
+      }
+    }
+    let searchParam = {};
+    let page = pagination.current - 1;
+    if (Object.keys(filters).length) {
+      searchParam = filters;
+    }
+    const postData = {
+      searchParam,
+      param: paras.toString(),
+    };
+    if (sideType === "create") {
+      EnvPipelineStore.loadPrm(
+        id,
+        null,
+        page,
+        pagination.pageSize,
+        sort,
+        postData
+      );
+    } else {
+      EnvPipelineStore.loadPrm(
+        id,
+        envId,
+        page,
+        pagination.pageSize,
+        sort,
+        postData
+      );
+    }
   };
 
   render() {
@@ -280,7 +720,14 @@ class EnvPipelineHome extends Component {
       submitting,
       createSelectedRowKeys,
       createSelected,
+      selectedRowKeys,
       delEnvShow,
+      disEnvShow,
+      delGroupShow,
+      disEnvConnect,
+      enableClick,
+      envName,
+      delGroupName,
     } = this.state;
     const {
       id: projectId,
@@ -289,39 +736,44 @@ class EnvPipelineHome extends Component {
       name,
     } = AppState.currentMenuType;
     const {
-      getEnvcardPosition: envcardPosition,
-      getDisEnvcardPosition: disEnvcardPosition,
-      getPrmMbr: prmMbr,
-      getMbr: mbr,
+      getEnvcardPosition: envCard,
+      getDisEnvcardPosition: disEnvCard,
+      getPrmMbr,
+      getMbr,
       getTagKeys: tagKeys,
-      getSelectedRk: selectedRowKeys,
+      getSelectedRk,
       getEnvData: envData,
-      getIst: ist,
-      shell,
-      getShow: show,
+      getIst,
+      getShow,
       getShowGroup: showGroup,
       getSideType: sideType,
-      getBan: ban,
       getGroup: groupData,
       getCluster,
       getPageInfo,
       loading,
       getInfo: {
         filters,
-        sort: { columnKey, order },
         paras,
       },
     } = EnvPipelineStore;
 
+    // 禁用环境的Modal信息
+    let disableMsg = 'noInstance';
+    if (getIst.length && disEnvConnect) {
+      disableMsg = 'forbidden';
+    }
+
     let DisEnvDom = (
       <span className="c7n-none-des">
-        {formatMessage({ id: "envPl.status.stop" })}
+        {formatMessage({
+          id: "envPl.status.stop",
+        })}
       </span>
     );
 
-    if (disEnvcardPosition.length) {
+    if (disEnvCard.length) {
       const disData = [];
-      _.map(disEnvcardPosition, d => {
+      _.map(disEnvCard, d => {
         if (d.devopsEnviromentRepDTOs.length) {
           disData.push(d.devopsEnviromentRepDTOs);
         }
@@ -358,7 +810,7 @@ class EnvPipelineHome extends Component {
                 <Tooltip title={<FormattedMessage id="envPl.delete" />}>
                   <Button
                     shape="circle"
-                    onClick={this.showDelEnvModal.bind(this, env.id)}
+                    onClick={this.showDelEnvModal.bind(this, env.id, env.name)}
                     icon="delete_forever"
                   />
                 </Tooltip>
@@ -372,7 +824,9 @@ class EnvPipelineHome extends Component {
             <div className="c7n-env-des-wrap">
               <div className="c7n-env-des" title={env.description}>
               <span className="c7n-env-des-head">
-                {formatMessage({ id: "envPl.description" })}
+                {formatMessage({
+                  id: "envPl.description",
+                })}
               </span>
                 {env.description}
               </div>
@@ -382,12 +836,14 @@ class EnvPipelineHome extends Component {
       ));
     }
 
-    const BoardDom = _.map(envcardPosition, e => (
+    const BoardDom = _.map(envCard, e => (
       <Board
         projectId={Number(projectId)}
         key={e.devopsEnvGroupId}
         groupId={e.devopsEnvGroupId}
         Title={e.devopsEnvGroupName}
+        onDisable={this.showDisEnvModal}
+        onDeleteGroup={this.showDelGroupModal}
         envcardPositionChild={e.devopsEnviromentRepDTOs || []}
       />
     ));
@@ -405,15 +861,322 @@ class EnvPipelineHome extends Component {
       "c7n-push-right-ban icon icon-navigate_next":
         (window.innerWidth >= 1680 &&
           window.innerWidth < 1920 &&
-          disEnvcardPosition.length >= 5) ||
-        (window.innerWidth >= 1920 && disEnvcardPosition.length >= 6) ||
-        (window.innerWidth < 1680 && disEnvcardPosition.length >= 4),
-      "c7n-push-none": disEnvcardPosition.length <= 4,
+          disEnvCard.length >= 5) ||
+        (window.innerWidth >= 1920 && disEnvCard.length >= 6) ||
+        (window.innerWidth < 1680 && disEnvCard.length >= 4),
+      "c7n-push-none": disEnvCard.length <= 4,
     });
 
     const rightDom = moveBan ? null : (
       <div role="none" className={rightStyle} onClick={this.pushScrollLeft} />
     );
+
+    const rowSelection = {
+      selectedRowKeys: _.map(tagKeys, s => s.iamUserId),
+      onChange: this.onSelectChange,
+    };
+
+    const rowCreateSelection = {
+      selectedRowKeys: createSelectedRowKeys,
+      onChange: this.onCreateSelectChange,
+    };
+
+    const tagDom = _.map(tagKeys, t => {
+      if (t) {
+        return (
+          <Tag className="c7n-env-tag" key={t.iamUserId}>
+            {t.loginName} {t.realName}
+          </Tag>
+        );
+      }
+      return null;
+    });
+
+    const tagCreateDom = _.map(createSelected, t => (
+      <Tag className="c7n-env-tag" key={t.iamUserId}>
+        {t.loginName} {t.realName}
+      </Tag>
+    ));
+
+    const columns = [
+      {
+        key: "loginName",
+        filters: [],
+        filteredValue: filters.loginName || [],
+        title: formatMessage({
+          id: "envPl.loginName",
+        }),
+        dataIndex: "loginName",
+      },
+      {
+        key: "realName",
+        filters: [],
+        filteredValue: filters.realName || [],
+        title: formatMessage({
+          id: "envPl.userName",
+        }),
+        dataIndex: "realName",
+      },
+    ];
+
+    let formContent = null;
+    switch (sideType) {
+      case "create":
+        formContent = (
+          <div>
+            <Form className="c7n-sidebar-form" layout="vertical">
+              <div className="c7ncd-sidebar-select">
+                <FormItem {...formItemLayout}>
+                  {getFieldDecorator("clusterId", {
+                    rules: [
+                      {
+                        required: true,
+                        message: formatMessage({
+                          id: "required",
+                        }),
+                      },
+                    ],
+                  })(
+                    <Select
+                      allowClear={false}
+                      filter
+                      onSelect={this.handleCluster}
+                      filterOption={(input, option) =>
+                        option.props.children
+                          .toLowerCase()
+                          .indexOf(input.toLowerCase()) >= 0
+                      }
+                      label={<FormattedMessage id="envPl.form.cluster" />}
+                    >
+                      {getCluster.length
+                        ? _.map(getCluster, c => (
+                          <Option key={c.id} value={c.id}>
+                            {c.name}
+                          </Option>
+                        ))
+                        : null}
+                    </Select>
+                  )}
+                </FormItem>
+                {getSelectTip('envPl.cluster.tip')}
+              </div>
+              <FormItem {...formItemLayout}>
+                {getFieldDecorator("code", {
+                  rules: [
+                    {
+                      required: true,
+                      message: formatMessage({
+                        id: "required",
+                      }),
+                    },
+                    {
+                      validator: this.checkCode,
+                    },
+                  ],
+                })(
+                  <Input
+                    disabled={!getFieldValue("clusterId")}
+                    maxLength={30}
+                    label={<FormattedMessage id="envPl.form.code" />}
+                    suffix={getSelectTip('envPl.envCode.tip')}
+                  />
+                )}
+              </FormItem>
+              <FormItem {...formItemLayout}>
+                {getFieldDecorator("name", {
+                  rules: [
+                    {
+                      required: true,
+                      message: formatMessage({
+                        id: "required",
+                      }),
+                    },
+                    {
+                      validator: this.checkName,
+                    },
+                  ],
+                })(
+                  <Input
+                    disabled={!getFieldValue("clusterId")}
+                    maxLength={10}
+                    label={<FormattedMessage id="envPl.form.name" />}
+                    suffix={getSelectTip('envPl.envName.tip')}
+                  />
+                )}
+              </FormItem>
+              <FormItem
+                {...formItemLayout}
+                label={<FormattedMessage id="envPl.form.description" />}
+              >
+                {getFieldDecorator("description")(
+                  <TextArea
+                    autosize={{
+                      minRows: 2,
+                    }}
+                    maxLength={60}
+                    label={<FormattedMessage id="envPl.form.description" />}
+                    suffix={getSelectTip('envPl.chooseClu.tip')}
+                  />
+                )}
+              </FormItem>
+              <div className="c7ncd-sidebar-select">
+                <FormItem {...formItemLayout}>
+                  {getFieldDecorator("devopsEnvGroupId")(
+                    <Select
+                      allowClear
+                      filter
+                      filterOption={(input, option) =>
+                        option.props.children
+                          .toLowerCase()
+                          .indexOf(input.toLowerCase()) >= 0
+                      }
+                      label={<FormattedMessage id="envPl.form.group" />}
+                    >
+                      {groupData.length
+                        ? _.map(groupData, g => (
+                          <Option key={g.id} value={g.id}>
+                            {g.name}
+                          </Option>
+                        ))
+                        : null}
+                    </Select>
+                  )}
+                </FormItem>
+                {getSelectTip('envPl.group.tip')}
+              </div>
+            </Form>
+            <div className="c7n-sidebar-form">
+              <div className="c7n-env-tag-title">
+                <FormattedMessage id="envPl.authority" />
+                <Popover
+                  overlayStyle={{ width: 350 }}
+                  content={formatMessage({
+                    id: "envPl.authority.help",
+                  })}
+                >
+                  <Icon type="help" />
+                </Popover>
+              </div>
+              <Table
+                className="c7n-env-noTotal"
+                rowSelection={rowCreateSelection}
+                columns={columns}
+                dataSource={getMbr}
+                filterBarPlaceholder={formatMessage({
+                  id: "filter",
+                })}
+                pagination={getPageInfo}
+                loading={loading}
+                onChange={this.tableChange}
+                rowKey={record => record.iamUserId}
+                filters={paras.slice()}
+              />
+            </div>
+            <div className="c7n-env-tag-title">
+              <FormattedMessage id="envPl.authority.member" />
+            </div>
+            <div className="c7n-env-tag-wrap"> {tagCreateDom} </div>
+          </div>
+        );
+        break;
+      case "edit":
+        formContent = (
+          <div className="c7n-sidebar-form">
+            <Form>
+              <FormItem {...formItemLayout}>
+                {getFieldDecorator("name", {
+                  rules: [
+                    {
+                      required: true,
+                      message: formatMessage({
+                        id: "required",
+                      }),
+                    },
+                    {
+                      validator: this.checkName,
+                    },
+                  ],
+                  initialValue: envData ? envData.name : "",
+                })(
+                  <Input
+                    maxLength={10}
+                    label={<FormattedMessage id="envPl.form.name" />}
+                  />
+                )}
+              </FormItem>
+              <FormItem {...formItemLayout}>
+                {getFieldDecorator("description", {
+                  initialValue: envData ? envData.description : "",
+                })(
+                  <TextArea
+                    autosize={{
+                      minRows: 2,
+                    }}
+                    maxLength={60}
+                    label={<FormattedMessage id="envPl.form.description" />}
+                  />
+                )}
+              </FormItem>
+              <div className="c7ncd-sidebar-select">
+                <FormItem {...formItemLayout}>
+                  {getFieldDecorator("devopsEnvGroupId", {
+                    initialValue: envData ? envData.devopsEnvGroupId : undefined,
+                  })(
+                    <Select
+                      allowClear
+                      filter
+                      filterOption={(input, option) =>
+                        option.props.children
+                          .toLowerCase()
+                          .indexOf(input.toLowerCase()) >= 0
+                      }
+                      label={<FormattedMessage id="envPl.form.group" />}
+                    >
+                      {groupData.length
+                        ? _.map(groupData, g => (
+                          <Option key={g.id} value={g.id}>
+                            {g.name}
+                          </Option>
+                        ))
+                        : null}
+                    </Select>
+                  )}
+                </FormItem>
+                {getSelectTip('envPl.group.tip')}
+              </div>
+            </Form>
+          </div>
+        );
+        break;
+      case "permission":
+        formContent = (
+          <div>
+            <div className="c7n-sidebar-form">
+              <Table
+                className="c7n-env-noTotal"
+                rowSelection={rowSelection}
+                dataSource={getPrmMbr}
+                columns={columns}
+                filterBarPlaceholder={formatMessage({
+                  id: "filter",
+                })}
+                pagination={getPageInfo}
+                loading={loading}
+                onChange={this.tableChange}
+                rowKey={record => record.iamUserId}
+                filters={paras.slice()}
+              />
+            </div>
+            <div className="c7n-env-tag-title">
+              <FormattedMessage id="envPl.authority.member" />
+            </div>
+            <div className="c7n-env-tag-wrap"> {tagDom} </div>
+          </div>
+        );
+        break;
+      default:
+        formContent = null;
+    }
 
     return (
       <Page
@@ -448,9 +1211,9 @@ class EnvPipelineHome extends Component {
           >
             <Button
               funcType="flat"
-              icon="playlist_add"
               onClick={this.showSideBar.bind(this, "create")}
             >
+              <i className="icon-playlist_add icon" />
               <FormattedMessage id="envPl.create" />
             </Button>
           </Permission>
@@ -462,17 +1225,96 @@ class EnvPipelineHome extends Component {
           >
             <Button
               funcType="flat"
-              icon="playlist_add"
               onClick={this.showGroup.bind(this, "createGroup")}
             >
+              <i className="icon-playlist_add icon" />
               <FormattedMessage id="envPl.group.create" />
             </Button>
           </Permission>
-          <Button funcType="flat" onClick={this.reload} icon="refresh">
+          <Button funcType="flat" onClick={this.reload}>
+            <i className="icon-refresh icon" />
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="env" values={{ name }}>
+        <Content
+          code="env"
+          values={{
+            name,
+          }}
+        >
+          <Sidebar
+            title={this.showTitle(sideType)}
+            visible={getShow}
+            onOk={this.handleSubmit}
+            onCancel={this.handleCancelFun.bind(this)}
+            confirmLoading={submitting}
+            cancelText={<FormattedMessage id="cancel" />}
+            okText={this.okText(sideType)}
+            className="c7n-create-sidebar-tooltip"
+          >
+            <Content
+              code={`env.${sideType}`}
+              values={{
+                name: envData ? envData.name : name,
+              }}
+              className="sidebar-content"
+            >
+              {formContent}
+            </Content>
+          </Sidebar>
+          <Modal
+            visible={disEnvShow}
+            width={400}
+            footer={enableClick ? [
+              <Button
+                key="back"
+                onClick={this.closeDisEnvModal}
+              >{formatMessage({ id: 'return' })}</Button>,
+              <Button
+                key="submit"
+                type="primary"
+                loading={submitting}
+                onClick={(getIst.length && disEnvConnect) ? this.closeDisEnvModal : this.disableEnv }
+              >
+                {formatMessage({ id: 'submit' })}
+              </Button>,
+            ] : null}
+            closable={false}
+            wrapClassName="vertical-center-modal remove"
+          >
+            {enableClick
+              ? [<div className="c7ncd-modal-title">{formatMessage({ id: `envPl.${disableMsg}.disable` })}</div>,
+                formatMessage({ id: `envPl.disEnv.${disableMsg}` })]
+              : <div className="c7ncd-env-spin"><Spin /></div>}
+          </Modal>
+          <Modal
+            visible={delGroupShow}
+            closable={false}
+            confirmLoading={submitting}
+            title={`${formatMessage({ id: 'envPl.group.del' })}“${delGroupName}”`}
+            footer={[
+              <Button key="back" onClick={this.closeDelGroupModal} disabled={submitting}>{<FormattedMessage id="cancel" />}</Button>,
+              <Button key="submit" type="danger" onClick={this.deleteGroup} loading={submitting}>
+                {formatMessage({ id: 'delete' })}
+              </Button>,
+            ]}
+          >
+            {formatMessage({ id: "envPl.confirm.group.del" })}
+          </Modal>
+          <Modal
+            visible={delEnvShow}
+            closable={false}
+            confirmLoading={submitting}
+            title={`${formatMessage({ id: "envPl.delete.confirm" }, { name: envName })}`}
+            footer={[
+              <Button key="back" onClick={this.closeDelEnvModal} disabled={submitting}>{<FormattedMessage id="cancel" />}</Button>,
+              <Button key="submit" type="danger" onClick={this.deleteEnv} loading={submitting}>
+                {formatMessage({ id: 'delete' })}
+              </Button>,
+            ]}
+          >
+            {formatMessage({ id: "envPl.delete.warn" })}
+          </Modal>
           {showGroup ? (
             <EnvGroup
               store={EnvPipelineStore}
@@ -483,7 +1325,7 @@ class EnvPipelineHome extends Component {
           {EnvPipelineStore.getIsLoading ? (
             <LoadingBar display />
           ) : (
-            <React.Fragment>
+            <Fragment>
               {BoardDom.length ? (
                 BoardDom
               ) : (
@@ -494,17 +1336,22 @@ class EnvPipelineHome extends Component {
                 />
               )}
               <div className="no-content-padding">
-                <Content code="env.stop" values={{ name }}>
+                <Content
+                  code="env.stop"
+                  values={{
+                    name,
+                  }}
+                >
                   <div className="c7n-outer-container">
                     {leftDom}
                     <div className="c7n-inner-container-ban">
-                      <div className="c7n-env-board-ban">{DisEnvDom}</div>
+                      <div className="c7n-env-board-ban"> {DisEnvDom} </div>
                     </div>
                     {rightDom}
                   </div>
                 </Content>
               </div>
-            </React.Fragment>
+            </Fragment>
           )}
         </Content>
       </Page>
@@ -512,4 +1359,4 @@ class EnvPipelineHome extends Component {
   }
 }
 
-export default Form.create({})(withRouter(injectIntl(EnvPipelineHome)));
+export default Form.create({})(withRouter(injectIntl(Environment)));

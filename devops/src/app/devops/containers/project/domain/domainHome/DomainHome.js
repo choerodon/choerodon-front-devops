@@ -230,7 +230,7 @@ class DomainHome extends Component {
           'devops-service.devops-environment.listByProjectIdAndActive',
         ]}
       >
-        { DomainStore.isRefresh ? <LoadingBar display /> : (envId ? <React.Fragment>
+        { DomainStore.isRefresh ? <LoadingBar display /> : (envData && envData.length && envId ? <React.Fragment>
           <Header title={formatMessage({ id: 'domain.header.title' })}>
             <Select
               className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
@@ -294,7 +294,7 @@ class DomainHome extends Component {
             />
 
           </Content>
-        </React.Fragment> : <DepPipelineEmpty title={formatMessage({ id: 'domain.header.title' })} />)}
+        </React.Fragment> : <DepPipelineEmpty title={formatMessage({ id: 'domain.header.title' })} type="env" />)}
 
         {this.state.show && <CreateDomain
           id={this.state.id}

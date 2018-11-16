@@ -583,6 +583,7 @@ class CreateDomain extends Component {
                 placeholder={formatMessage({ id: 'network.env.placeholder' })}
                 optionFilterProp="children"
                 onSelect={this.handleSelectEnv}
+                disabled={type === 'edit'}
                 getPopupContainer={triggerNode => triggerNode.parentNode}
                 filterOption={(input, option) => option.props.children[1]
                   .toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -625,8 +626,7 @@ class CreateDomain extends Component {
               <FormattedMessage id="domain.protocol" />
               <Popover
                 content={formatMessage({ id: 'domain.protocol.tip' })}
-                overlayStyle={{ maxWidth: '350px' }}
-                placement="topRight"
+                overlayClassName="c7n-tips-popover"
                 arrowPointAtCenter
               >
                 <Icon type="help c7n-tooltip-icon" />

@@ -5,13 +5,20 @@ import { Tooltip, Icon } from 'choerodon-ui';
 import "./index.scss";
 
 function UploadIcon (props) {
-  const { text, status, prevText, intl: { formatMessage } } = props;
+  const {
+    istId,
+    text,
+    status,
+    prevText,
+    intl: { formatMessage },
+    isDelete,
+} = props;
   let dom = text;
   switch (status) {
     case 'upload':
       dom = (<Fragment>
         <span className="c7n-instance-upload-text">{text || formatMessage({ id: 'ist.deploy.upload' })}</span>
-        <Tooltip title={formatMessage({ id: `ist.version.${text ? 'upload' : 'deploy'}` }, { text: prevText })}>
+        {prevText ? <Tooltip title={formatMessage({ id: `ist.version.${text ? 'upload' : 'deploy'}` }, { text: prevText })}>
           <div className="c7n-instance-upload">
             <svg width="16" height="14">
               <path className="c7n-instance-upload-arrow" d="
@@ -28,19 +35,22 @@ function UploadIcon (props) {
               <line  className="c7n-instance-upload-line2" x1="3" y1="12.5" x2="13" y2="12.5" />
             </svg>
           </div>
-        </Tooltip>
+        </Tooltip> : null}
       </Fragment>)
       break;
     case 'failed':
       dom = (<Fragment>
-        <span className="c7n-instance-upload-text">{text ||  formatMessage({ id: 'ist.deploy.failed' })}</span>
-        <Tooltip title={formatMessage({ id: `ist.version.${text || 'deploy.'}failed` }, { text: prevText })}>
+        <span className="c7n-instance-upload-text">{text || formatMessage({ id: 'ist.deploy.failed' })}</span>
+        {prevText ? <Tooltip title={formatMessage({ id: `ist.version.${text ? '' : 'deploy.'}failed` }, { text: prevText })}>
           <Icon type="error" className="c7n-instance-upload-failed" />
-        </Tooltip>
+        </Tooltip> : null}
       </Fragment>);
       break;
     default:
       dom = <span className="c7n-instance-upload-text">{text}</span>;
+  }
+  if (isDelete[istId]) {
+    dom = <span className="c7n-instance-upload-text">{formatMessage({ id: 'ist.deploy.delete' })}</span>
   }
   return(dom);
 }
@@ -54,6 +64,7 @@ UploadIcon.propTypes = {
   status: PropTypes.string,
   prevText: PropTypes.string,
   text: PropTypes.string,
+  istId: PropTypes.number.isRequired,
 };
 
 export default injectIntl(UploadIcon);

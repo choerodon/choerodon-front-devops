@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Select, Steps, Table } from 'choerodon-ui';
+import { Button, Select, Steps, Table, Input } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, message, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
@@ -11,6 +11,8 @@ import '../../../main.scss';
 
 const Option = Select.Option;
 const Step = Steps.Step;
+
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 const { AppState } = stores;
 
@@ -24,6 +26,7 @@ class ExportChart extends Component {
       0: { versions: [] },
       upDown: [],
       selectedRows: [],
+      exportName: 'chart',
     };
   }
 
@@ -217,11 +220,11 @@ class ExportChart extends Component {
       return data;
     });
     this.setState({ submitting: true });
-    ExportChartStore.exportChart(this.state.projectId, data)
+    ExportChartStore.exportChart(this.state.projectId, this.state.exportName, data)
       .then((res) => {
         const blob = new Blob([res], { 'Content-Type': 'application/zip;charset=utf-8' });
-        const fileDownload = require('react-file-download');
-        fileDownload(blob, 'chart.zip', 'application/zip');
+        const fileDownload = require('js-file-download');
+        fileDownload(blob, this.state.exportName, 'application/zip');
         this.setState({ submitting: false });
         Choerodon.prompt(intl.formatMessage({ id: 'appstore.exportSucc' }));
         this.handleBack();
@@ -343,7 +346,7 @@ class ExportChart extends Component {
    */
   renderStepTwo = () => {
     const { selectedRows } = this.state;
-    const { ExportChartStore, intl: { formatMessage } } = this.props;
+    const { intl: { formatMessage } } = this.props;
     return (
       <div className="c7n-step-section-wrap">
         <p>
@@ -351,7 +354,7 @@ class ExportChart extends Component {
         </p>
         {selectedRows.map((app, index) => (
           <React.Fragment key={app.id}>
-            <div className="c7n-step-section">
+            <div className="c7n-step-section_name">
               <div className="c7n-step-label"><FormattedMessage id="app.name" /></div>
               <span>{app.name}</span>
             </div>
@@ -407,7 +410,12 @@ class ExportChart extends Component {
         </div>
       </div>
     );
-  }
+  };
+
+
+  onChange = (e) => {
+     this.setState({ exportName: e.target.value })
+  };
 
   /**
    * 渲染第三步
@@ -418,20 +426,22 @@ class ExportChart extends Component {
     const { upDown } = this.state;
     const column = [{
       title: <FormattedMessage id="app.name" />,
-      dataIndex: 'name',
       key: 'name',
-      width: 150,
+      render: (test, record) => (<MouserOverWrapper text={record.name} width={0.15}>
+        {record.name}
+      </MouserOverWrapper>),
     }, {
       title: <FormattedMessage id="app.code" />,
-      dataIndex: 'code',
       key: 'code',
+      render: (test, record) => (<MouserOverWrapper text={record.code} width={0.15}>
+        {record.code}
+      </MouserOverWrapper>),
     }, {
       title: formatMessage({ id: 'network.column.version' }),
       key: 'version',
       render: record => (<div>
-        <div role="none" className={`c7n-step-table-column col-${record.id}`} onClick={this.handleChangeStatus.bind(this, record.id, record.versions.length)}>
-          {record.versions && document.getElementsByClassName(`${record.id}-col-parents`)[0] && parseInt(window.getComputedStyle(document.getElementsByClassName(`${record.id}-col-parents`)[0]).height, 10) > 31
-          && <span className={_.indexOf(upDown, record.id) !== -1
+        <div className={`c7n-step-table-column col-${record.id}`} onClick={this.handleChangeStatus.bind(this, record.id, record.versions.length)}>
+          {((HEIGHT <= 900 && record.versions.length > 2) || (HEIGHT > 900 && record.versions.length > 4)) && <span className={_.indexOf(upDown, record.id) !== -1
             ? 'icon icon-keyboard_arrow_up c7n-step-table-icon' : 'icon icon-keyboard_arrow_down c7n-step-table-icon'}
           />
           }
@@ -446,6 +456,15 @@ class ExportChart extends Component {
         <p>
           <FormattedMessage id="appstore.exportStep3" />
         </p>
+        <div className="c7n-step-section c7n-step-section_input">
+          <Input
+            onChange={this.onChange}
+            value={this.state.exportName}
+            maxLength={30}
+            label={formatMessage({ id: 'appstore.exportName' })}
+            size="default"
+          />
+        </div>
         <div className="c7n-step-section">
           <Table
             filterBar={false}
@@ -477,7 +496,7 @@ class ExportChart extends Component {
       </div>
     );
   }
-  
+
 
   render() {
     const { type, organizationId, name, id: projectId } = AppState.currentMenuType;

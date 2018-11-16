@@ -17,6 +17,7 @@ import '../../main.scss';
 import EnvOverviewStore from '../../../stores/project/envOverview';
 import DepPipelineEmpty from "../../../components/DepPipelineEmpty/DepPipelineEmpty";
 import { getTableTitle } from '../../../utils';
+import InstancesStore from "../../../stores/project/instances";
 
 const Option = Select.Option;
 const { AppState } = stores;
@@ -27,6 +28,7 @@ class Instances extends Component {
     super(props);
     this.state = {
       visibleUp: false,
+      deleteIst: {},
     };
     this.columnAction = this.columnAction.bind(this);
     this.renderVersion = this.renderVersion.bind(this);
@@ -70,7 +72,7 @@ class Instances extends Component {
     const currentApp = InstancesStore.getAppId;
     const nextApp = (appId !== currentApp) && appId;
     InstancesStore.setAppId(nextApp);
-    this.reloadData(envId, nextApp);
+    this.reloadData();
   };
 
   /**
@@ -107,7 +109,8 @@ class Instances extends Component {
     EnvOverviewStore.setTpEnvId(id);
     InstancesStore.setAppId(false);
     loadAppNameByEnv(projectId, id, getAppPage - 1, getAppPageSize);
-    this.reloadData(id);
+    InstancesStore.setIstTableFilter(null);
+    this.reloadData();
   };
 
   /**
@@ -133,7 +136,10 @@ class Instances extends Component {
       searchParam,
       param: param.toString(),
     };
-    InstancesStore.loadInstanceAll(projectId, { page: current - 1, size: pageSize, envId, appId, datas });
+    InstancesStore.loadInstanceAll(projectId, { page: current - 1, size: pageSize, envId, appId, datas }).catch((err) => {
+      InstancesStore.changeLoading(false);
+      Choerodon.handleResponseError(err);
+    });
     InstancesStore.setIstTableFilter({ filters, param });
   };
 
@@ -141,17 +147,17 @@ class Instances extends Component {
    * 修改配置实例信息
    */
   updateConfig = (record) => {
-    const { code, id, envId, appVersionId, appId } = record;
+    const { code, id, envId, commandVersionId, appId } = record;
     const {
       id: projectId,
     } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
     this.setState({
-      idArr: [envId, appVersionId, appId],
+      idArr: [envId, commandVersionId, appId],
       name: code,
     });
     InstancesStore.setAlertType('valueConfig');
-    InstancesStore.loadValue(projectId, id, appVersionId)
+    InstancesStore.loadValue(projectId, id, commandVersionId)
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
@@ -171,6 +177,7 @@ class Instances extends Component {
     const {
       id: projectId,
     } = AppState.currentMenuType;
+    const envId = EnvOverviewStore.getTpEnvId;
     const {
       InstancesStore: {
         reStarts,
@@ -181,16 +188,22 @@ class Instances extends Component {
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(projectId);
+          loadInstanceAll(projectId, { envId }).catch((err) => {
+            InstancesStore.changeLoading(false);
+            Choerodon.handleResponseError(err);
+          });
         }
-      });
+      }).catch((err) => {
+      InstancesStore.changeLoading(false);
+      Choerodon.handleResponseError(err);
+    });
   };
 
   /**
    * 升级配置实例信息
    */
   upgradeIst = (record) => {
-    const { code, id, envId, appVersionId, appId } = record;
+    const { code, id, envId, appVersionId, commandVersionId, appId } = record;
     const {
       id: projectId,
     } = AppState.currentMenuType;
@@ -201,7 +214,7 @@ class Instances extends Component {
       },
       intl,
     } = this.props;
-    loadUpVersion(projectId, appVersionId)
+    loadUpVersion(projectId, appVersionId || commandVersionId)
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
@@ -224,7 +237,10 @@ class Instances extends Component {
               });
           }
         }
-      });
+      }).catch((err) => {
+      InstancesStore.changeLoading(false);
+      Choerodon.handleResponseError(err);
+    });
   };
 
   /**
@@ -233,12 +249,10 @@ class Instances extends Component {
    */
   handleCancel =(res) => {
     const { InstancesStore } = this.props;
-    const appId = InstancesStore.getAppId;
-    const envId = EnvOverviewStore.getTpEnvId;
     this.setState({
       visible: false,
     });
-    res && this.reloadData(envId, appId);
+    res && this.reloadData();
   };
 
   /**
@@ -257,13 +271,29 @@ class Instances extends Component {
    * @param envId
    * @param appId
    */
-  reloadData = (envId = false, appId = false) => {
-    const {
-      id: projectId,
-    } = AppState.currentMenuType;
+  reloadData = () => {
+    const { id: projectId } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
-    InstancesStore.loadInstanceAll(projectId, { envId, appId });
-    InstancesStore.setIstTableFilter(null);
+    const appId = InstancesStore.getAppId;
+    const envId = EnvOverviewStore.getTpEnvId;
+    const { current, pageSize } = InstancesStore.getPageInfo;
+    const { filters, param } = InstancesStore.getIstParams;
+    const info = {
+      envId,
+      appId,
+      page: current - 1,
+      size: pageSize,
+      datas: {
+        param,
+        searchParam: filters,
+      },
+    };
+    InstancesStore.loadInstanceAll(projectId, info)
+      .catch((err) => {
+        InstancesStore.changeLoading(false);
+        Choerodon.handleResponseError(err);
+      });
+    // InstancesStore.setIstTableFilter(null);
   };
 
   /**
@@ -281,38 +311,62 @@ class Instances extends Component {
     } = this.props;
     const envId = EnvOverviewStore.getTpEnvId;
     loadAppNameByEnv(projectId, envId, getAppPage - 1, getAppPageSize);
-    this.reloadData(envId, getAppId);
+    this.reloadData();
   };
 
   /**
    * 删除数据
    */
   handleDelete = (id) => {
-    const {
-      id: projectId,
-    } = AppState.currentMenuType;
+    const { id: projectId } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
     const {
       loadInstanceAll,
-      deleteIst,
+      deleteInstance,
       getAppId,
     } = InstancesStore;
     const envId = EnvOverviewStore.getTpEnvId;
+    const { deleteIst } = this.state;
+    deleteIst[id] = true;
     this.setState({
       loading: true,
+      deleteIst,
     });
-    deleteIst(projectId, id)
+    deleteInstance(projectId, id)
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(projectId, { envId, getAppId });
+          loadInstanceAll(projectId, { envId, getAppId }).catch((err) => {
+            InstancesStore.changeLoading(false);
+            Choerodon.handleResponseError(err);
+          });
         }
+        this.state.deleteIst[id] = false;
         this.setState({
           openRemove: false,
           loading: false,
+          deleteIst: this.state.deleteIst,
         });
+      }).catch((error) => {
+      this.state.deleteIst[id] = false;
+      this.setState({
+        loading: false,
+        deleteIst: this.state.deleteIst,
       });
+      Choerodon.handleResponseError(err);
+    });
     InstancesStore.setIstTableFilter(null);
+  };
+
+  /**
+   * 关闭删除数据的模态框
+   */
+  handleClose(id) {
+    this.state.deleteIst[id] = false;
+    this.setState({
+      openRemove: false,
+      deleteIst: this.state.deleteIst,
+    });
   };
 
   /**
@@ -336,16 +390,12 @@ class Instances extends Component {
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(projectId, { envId, getAppId });
+          loadInstanceAll(projectId, { envId, getAppId }).catch((err) => {
+            InstancesStore.changeLoading(false);
+            Choerodon.handleResponseError(err);
+          });
         }
       });
-  };
-
-  /**
-   * 关闭删除数据的模态框
-   */
-  handleClose = () => {
-    this.setState({ openRemove: false });
   };
 
   /**
@@ -428,7 +478,8 @@ class Instances extends Component {
 
   renderVersion(record) {
     const { intl: { formatMessage } } = this.props;
-    const { appVersion, commandVersion, status } = record;
+    const { id, appVersion, commandVersion, status } = record;
+    const { deleteIst } = this.state;
     let uploadIcon = null;
     if (appVersion !== commandVersion) {
       if (status !== 'failed') {
@@ -440,6 +491,8 @@ class Instances extends Component {
       uploadIcon = 'text'
     }
     return(<UploadIcon
+      istId={id}
+      isDelete={deleteIst}
       status={uploadIcon}
       text={appVersion}
       prevText={commandVersion}
@@ -508,9 +561,9 @@ class Instances extends Component {
       render: this.renderStatus,
     }, {
       title: getTableTitle('deploy.ver'),
-      key: 'appVersion',
+      key: 'version',
       filters: [],
-      filteredValue: filters.appVersion || [],
+      filteredValue: filters.version || [],
       render: this.renderVersion,
     }, {
       width: 56,
@@ -525,18 +578,6 @@ class Instances extends Component {
       </div>
       <div>
         {appNameDom}
-      </div>
-      <div className="c7n-store-pagination">
-        <Pagination
-          tiny={false}
-          showSizeChanger
-          showSizeChangerLabel={false}
-          total={total || 0}
-          current={current || 0}
-          pageSize={pageSize || 0}
-          onChange={this.onPageChange}
-          onShowSizeChange={this.onPageChange}
-        />
       </div>
       {getAppNameByEnv.length && (total >= pageSize) ? <div className="c7n-store-pagination">
         <Pagination
@@ -583,7 +624,7 @@ class Instances extends Component {
           'devops-service.application-instance.delete',
         ]}
       >
-        {envId ? <Fragment><Header title={<FormattedMessage id="ist.head" />}>
+        {envData && envData.length && envId  ? <Fragment><Header title={<FormattedMessage id="ist.head" />}>
           <Select
             className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
             dropdownClassName="c7n-header-env_drop"
@@ -605,7 +646,10 @@ class Instances extends Component {
           <Button
             icon="refresh"
             funcType="flat"
-            onClick={this.reload}
+            onClick={(e) => {
+              e.persist();
+              this.reload();
+            }}
           >
             <FormattedMessage id="refresh" />
           </Button>
@@ -636,12 +680,12 @@ class Instances extends Component {
           /> }
           <DelIst
             open={openRemove}
-            handleCancel={this.handleClose}
+            handleCancel={this.handleClose.bind(this, id)}
             handleConfirm={this.handleDelete.bind(this, id)}
             confirmLoading={loading}
             name={name}
           />
-        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ist.head" />} />}
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ist.head" />} type="env" />}
       </Page>
     );
   }

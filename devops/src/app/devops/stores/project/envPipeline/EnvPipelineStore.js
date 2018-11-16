@@ -2,6 +2,8 @@ import { observable, action, computed } from "mobx";
 import _ from "lodash";
 import { axios, store } from "choerodon-front-boot";
 import { handleProptError } from "../../../utils";
+import EnvOverviewStore from "../envOverview";
+import DeploymentPipelineStore from "../deploymentPipeline";
 
 const HEIGHT =
   window.innerHeight ||
@@ -40,11 +42,7 @@ class EnvPipelineStore {
 
   @observable showGroup = false;
 
-  @observable ban = false;
-
   @observable sideType = null;
-
-  @observable shell = "";
 
   @observable loading = false;
 
@@ -162,16 +160,6 @@ class EnvPipelineStore {
   }
 
   @action
-  setBan(ban) {
-    this.ban = ban;
-  }
-
-  @action
-  setShell(shell) {
-    this.shell = shell;
-  }
-
-  @action
   setDisEnvcardPosition(disEnvcardPosition) {
     this.disEnvcardPosition = disEnvcardPosition;
   }
@@ -212,11 +200,6 @@ class EnvPipelineStore {
   @computed
   get getGroupOne() {
     return this.groupOne;
-  }
-
-  @computed
-  get getBan() {
-    return this.ban;
   }
 
   @computed
@@ -273,6 +256,11 @@ class EnvPipelineStore {
           Choerodon.prompt(data.message);
         } else if (data && active) {
           this.setEnvcardPosition(data);
+          DeploymentPipelineStore.setProRole('env', '');
+          if (data.length === 0) {
+            EnvOverviewStore.setEnvcard(data);
+            DeploymentPipelineStore.setEnvLine(data);
+          }
         } else {
           this.setDisEnvcardPosition(data);
         }
@@ -354,18 +342,17 @@ class EnvPipelineStore {
    * @param sort
    * @param postData
    */
-  loadPrm = (
-    projectId,
-    page = 0,
-    size = 10,
-    envId = null,
-    sort = { field: "", order: "desc" },
-    postData = { searchParam: {}, param: "" }
-  ) => {
+  loadPrm = (projectId,
+             envId = null,
+             page = 0,
+             size = 10,
+             sort = { field: "", order: "desc" },
+             postData = { searchParam: {}, param: "" }) => {
     this.tableLoading(true);
+    let url = envId ? `env_id=${envId}&` : '';
     return axios
       .post(
-        `/devops/v1/projects/${projectId}/envs/list?env_id=${envId}&page=${page}&size=${size}`,
+        `/devops/v1/projects/${projectId}/envs/list?${url}page=${page}&size=${size}`,
         JSON.stringify(postData)
       )
       .then(data => {
@@ -404,17 +391,6 @@ class EnvPipelineStore {
       })
       .catch(error => Choerodon.handleResponseError(err));
   };
-
-  loadShell = (projectId, id, update) =>
-    axios
-      .get(`/devops/v1/projects/${projectId}/envs/${id}/shell?update=${update}`)
-      .then(data => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else {
-          this.setShell(data);
-        }
-      });
 
   loadGroup = projectId =>
     axios.get(`/devops/v1/projects/${projectId}/env_groups`).then(data => {

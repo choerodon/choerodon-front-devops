@@ -172,10 +172,10 @@ class ContainerHome extends Component {
    */
   @action
   onTerminalResponseReceived() {
-    const { namespace, envId, logId, podName, containerName } = this.state;
+    const { namespace, envId, logId, podName, containerName, clusterId } = this.state;
     const authToken = document.cookie.split('=')[1];
     try {
-      this.conn = new WebSocket(`POD_WEBSOCKET_URL/ws/exec?key=env:${namespace}.envId:${envId}.exec:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
+      this.conn = new WebSocket(`POD_WEBSOCKET_URL/ws/exec?key=cluster:${clusterId}.exec:${logId}&env=${namespace}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
       this.conn.onopen = this.onConnectionOpen.bind(this);
       this.conn.onmessage = this.onConnectionMessage.bind(this);
       this.conn.onclose = this.onConnectionClose.bind(this);
@@ -460,7 +460,7 @@ class ContainerHome extends Component {
    */
   @action
   loadLog = (followingOK) => {
-    const { namespace, envId, logId, podName, containerName, following } = this.state;
+    const { namespace, envId, logId, podName, containerName, following, clusterId } = this.state;
     const authToken = document.cookie.split('=')[1];
     const logs = [];
     let oldLogs = [];
@@ -468,7 +468,7 @@ class ContainerHome extends Component {
     if (this.editorLog) {
       editor = this.editorLog.getCodeMirror();
       try {
-        const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=env:${namespace}.envId:${envId}.log:${logId}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
+        const ws = new WebSocket(`POD_WEBSOCKET_URL/ws/log?key=cluster:${clusterId}.log:${logId}&env=${namespace}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`);
         this.setState({ ws, following: true });
         if (!followingOK) {
           editor.setValue('Loading...');
@@ -551,6 +551,7 @@ class ContainerHome extends Component {
         if (data && data.length) {
           this.setState({
             envId: record.envId,
+            clusterId: record.clusterId,
             namespace: record.namespace,
             containerArr: data,
             podName: data[0].podName,
@@ -609,6 +610,7 @@ class ContainerHome extends Component {
     ContainerStore.loadPodParam(projectId, record.id, 'shell')
       .then((data) => {
         this.setState({
+          clusterId: record.clusterId,
           envId: record.envId,
           namespace: record.namespace,
           containerArr: data,
@@ -870,7 +872,7 @@ class ContainerHome extends Component {
     const serviceData = ContainerStore.getAllData && ContainerStore.getAllData.slice();
     const projectName = AppState.currentMenuType.name;
     const initApp = (envData && envData.length) && (appProDom.length || appPubDom.length) ? ContainerStore.getAppId : undefined;
-    const contentDom = envId ? (<React.Fragment>
+    const contentDom = envData && envData.length && envId  ? (<React.Fragment>
       <Header title={<FormattedMessage id="container.header.title" />}>
         <Select
           className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
@@ -938,7 +940,7 @@ class ContainerHome extends Component {
           filters={paras.slice()}
         />
       </Content>
-    </React.Fragment>) : <DepPipelineEmpty title={<FormattedMessage id="container.header.title" />} />;
+    </React.Fragment>) : <DepPipelineEmpty title={<FormattedMessage id="container.header.title" />} type="env" />;
 
     const containerDom = containerArr.length && (_.map(containerArr, c => <Option key={c.logId} value={`${c.logId}+${c.containerName}`}>{c.containerName}</Option>));
 

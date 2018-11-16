@@ -19,8 +19,6 @@ class AppStore {
 
   @observable selectData = [];
 
-  @observable preProId = AppState.currentMenuType.id;
-
   @observable pageInfo = {
     current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
   };
@@ -87,17 +85,9 @@ class AppStore {
     return this.Info;
   }
 
-  @action setPreProId(id) {
-    this.preProId = id;
-  }
-
   loadData = (isRefresh = false, projectId, envId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: '', order: 'desc' }, postData = { searchParam: {},
     param: '',
   }) => {
-    if (Number(this.preProId) !== Number(projectId)) {
-      DeploymentPipelineStore.setProRole('app', '');
-    }
-    this.setPreProId(projectId);
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
@@ -111,9 +101,6 @@ class AppStore {
         const res = this.handleProptError(data);
         if (res) {
           this.handleData(data);
-          if (res.totalElements === 0) {
-            DeploymentPipelineStore.judgeRole('app');
-          }
         }
         this.changeLoading(false);
         this.changeIsRefresh(false);

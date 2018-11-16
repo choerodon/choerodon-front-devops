@@ -59,32 +59,32 @@ class BranchHome extends Component {
     switch (s.typeCode) {
       case 'story':
         mes = formatMessage({ id: 'branch.issue.story' });
-        icon = 'turned_in';
+        icon = 'agile_story';
         color = '#00bfa5';
         break;
       case 'bug':
         mes = formatMessage({ id: 'branch.issue.bug' });
-        icon = 'bug_report';
+        icon = 'agile_fault';
         color = '#f44336';
         break;
       case 'issue_epic':
         mes = formatMessage({ id: 'branch.issue.epic' });
-        icon = 'priority';
+        icon = 'agile_epic';
         color = '#743be7';
         break;
       case 'sub_task':
         mes = formatMessage({ id: 'branch.issue.subtask' });
-        icon = 'relation';
+        icon = 'agile_subtask';
         color = '#4d90fe';
         break;
       default:
         mes = formatMessage({ id: 'branch.issue.task' });
-        icon = 'assignment';
+        icon = 'agile_task';
         color = '#4d90fe';
     }
     return (<span>
       <Tooltip title={mes}>
-        <div style={{ background: color }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
+        <div style={{ color }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
       </Tooltip>
       <Tooltip title={s.summary}>
         <span className="branch-issue-content"><span>{s.issueNum}</span></span>
@@ -94,13 +94,18 @@ class BranchHome extends Component {
 
   /**
    * 获取列表的icon
-   * @param name 分支类型
+   * @param name 分支名称
    * @returns {*}
    */
   getIcon =(name) => {
+    const nameArr = ['feature', 'release', 'bugfix', 'hotfix'];
     let type = '';
-    if (name) {
+    if (name.includes('-') && nameArr.includes(name.split('-')[0])) {
       type = name.split('-')[0];
+    } else if (name === 'master') {
+      type = name;
+    } else {
+      type = 'custom';
     }
     return <span className={`c7n-branch-icon icon-${type}`}>{type.slice(0, 1).toUpperCase()}</span>;
   };
@@ -444,7 +449,7 @@ class BranchHome extends Component {
           'agile-service.work-log.queryWorkLogListByIssueId',
         ]}
       >
-        {appId ? <Fragment><Header
+        {apps && apps.length ? <Fragment><Header
           title={<FormattedMessage id="branch.head" />}
           backPath={backPath}
         >
@@ -526,7 +531,7 @@ class BranchHome extends Component {
           ]}
         >
           <p>{formatMessage({ id: 'branch.delete.tooltip' })}</p>
-        </Modal></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="branch.head" />} />}
+        </Modal></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="branch.head" />} type="app" />}
       </Page>
     );
   }

@@ -1,4 +1,5 @@
 .c7n-dc-card-wrap {
+  border-radius: 2px;
   padding: 20px 16px;
   box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 
@@ -20,7 +21,7 @@
 
 .c7n-dc-card-title {
   font-size: 18px;
-  color: rgba(0,0,0,0.87);
+  color: rgba(0, 0, 0, 0.87);
   display: flex;
 
   i {
@@ -63,8 +64,20 @@
 
   .c7n-dc-card-branch, .page-content-header {
     flex: 6;
-    margin-right: 20px;
+    margin-right: 16px;
     max-width: none;
+
+    &:hover {
+      .c7n-branch-action {
+        display: inline-block;
+
+        button {
+          width: 20px;
+          height: 20px;
+          line-height: 20px;
+        }
+      }
+    }
   }
 
   .c7n-dc-card-merge {
@@ -80,7 +93,7 @@
       font-size: 24px;
 
       a {
-        color: #303F9F;
+        color: #303f9f;
       }
     }
 
@@ -89,7 +102,7 @@
     }
 
     .c7n-data-number {
-      margin-bottom: 10px;
+      height: 33px;
 
       &:last-child {
         margin: 0;
@@ -97,11 +110,15 @@
 
       a {
         font-size: 14px;
-        color: #303F9F;
+        color: #303f9f;
       }
 
       i {
         margin: 0 2px 0 16px;
+      }
+
+      .c7n-data-number_link {
+        text-align: right;
       }
     }
   }
@@ -132,17 +149,22 @@
     line-height: 20px;
     display: flex;
     align-items: center;
+    text-decoration: none;
+
+    .icon-playlist_add {
+      margin-right: 2px;
+    }
   }
 }
 
 .c7n-dc-branch {
-  max-height: 276px;
+  max-height: 300px;
   overflow: scroll;
   padding-right: 1px;
 }
 
 .c7n-dc-branch-content {
-  padding: 12px 0 0 30px;
+  padding: 8px 30px;
 
   .branch-content-title {
     display: flex;
@@ -151,7 +173,7 @@
     align-items: center;
 
     .branch-name {
-      width: 30%;
+      width: 183px;
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
@@ -159,35 +181,35 @@
   }
 
   .c7n-branch-issue {
-    margin-left: 19px;
+    margin-right: 40px;
 
     .c7n-issue-type {
       display: inline-block;
       text-align: center;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      color: white;
       line-height: 14px;
-      margin-right: 10px;
+      margin-right: 8px;
 
       i {
-        font-size: 12px;
+        font-size: 20px;
       }
     }
   }
 
   .c7n-branch-action {
-    margin-left: 40px;
+    display: none;
+  }
+
+  .c7n-merge-action {
+    margin-left: 10px;
   }
 
   .c7n-branch-commit {
     margin: 2px 0 0 24px;
-    color: rgba(0,0,0,0.65);
+    color: rgba(0, 0, 0, 0.65);
     display: flex;
 
     .branch-column-icon {
-      color: rgba(0,0,0,0.54);
+      color: rgba(0, 0, 0, 0.54);
       line-height: 20px;
       padding-right: 6px;
     }
@@ -222,7 +244,7 @@
   }
 
   .c7n-merge-branch {
-    color: rgba(0,0,0,0.65);
+    color: rgba(0, 0, 0, 0.65);
     margin-top: 2px;
     display: flex;
 
@@ -234,7 +256,7 @@
     .c7n-merge-icon-arrow {
       line-height: 20px;
       margin: 0 10px;
-      transform: rotate(180deg)
+      transform: rotate(180deg);
     }
   }
 }

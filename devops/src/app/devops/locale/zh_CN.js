@@ -167,6 +167,7 @@ const pageDetail = {
 
   // appstore
   "appstore.description.label": "描述",
+  "appstore.exportName": "导出文件名称",
   "appstore.description":
     "应用市场是应用的集市。您可在此查看已发布至您项目的应用及其详细信息，并选择需要的应用版本进行部署。",
   "appstore.import.title": "应用导入",
@@ -178,7 +179,7 @@ const pageDetail = {
     "您可在此选择想要导出的应用，您可以一次选择多个应用。",
   "appstore.exportStep2": "您可在此选择想要导出的版本。",
   "appstore.exportStep3":
-    "您可在此确认应用发布的信息，如需修改请返回相应步骤。",
+    "您可以在下方为导出的应用文件重新命名，以便于您后续的辨识（导出文件名默认为chart）。最后您需在此确认应用发布的信息，如需修改请返回相应步骤。",
   "appstore.importStep1": "您可在此选择相应的文件，并进行上传。",
   "appstore.importStep2":
     "您可在此选择是否发布，如果发布还可以选择发布的范围。若本组织内所有项目均可使用，则选择本组织；若全平台下的所有项目均可使用，则选择全平台。",
@@ -288,16 +289,16 @@ const pageDetail = {
   'cluster.description': 'Kubernetes集群是一个用于运行Kubernetes的托管群组。您可在下方对各个集群进行管理。',
   'cluster.title': '组织"{name}"的Kubernetes集群',
   'cluster.link': `${docServer}/user-guide/cluster-management/cluster`,
-  'cluster.create.title': '在组织"{name}"中创建集群',
+  'cluster.create.title': '在组织"{clsName}"中创建集群',
   'cluster.create.description': '请在下面输入集群编码、名称、描述，用以创建新集群。同时，您可以选择为所创集群配置公开范围，配置后，只有被勾选项目下的环境才能连接到该集群。',
   'cluster.create.link': `${docServer}/user-guide/cluster-management/cluster`,
-  'cluster.key.title': '复制集群"{name}"的指令',
+  'cluster.key.title': '复制集群"{clsName}"的指令',
   'cluster.key.description': '复制下文代码至Kubernetes运行，与平台建立链接。',
   'cluster.key.link': `${docServer}/user-guide/cluster-management/cluster/`,
-  'cluster.token.title': '复制集群"{name}"的指令',
+  'cluster.token.title': '复制集群"{clsName}"的指令',
   'cluster.token.description': '复制下文代码至Kubernetes运行，与平台建立链接。',
   'cluster.token.link': `${docServer}/user-guide/cluster-management/cluster/`,
-  'cluster.edit.title': '对集群"{name}"进行修改',
+  'cluster.edit.title': '对集群"{clsName}"进行修改',
   'cluster.edit.description': '您可在此修改集群的名称、描述以及集群的公开范围。',
   'cluster.edit.link': `${docServer}/user-guide/cluster-management/cluster/`,
 };
@@ -438,6 +439,7 @@ const zhCN = {
   "ist.version.deploy.failed": "部署版本 “{text}” 失败",
   "ist.deploy.failed": "部署失败",
   "ist.deploy.upload": "部署中",
+  "ist.deploy.delete": "处理中",
 
   // network
   network_delete: "网络删除中，请耐心等待",
@@ -560,12 +562,12 @@ const zhCN = {
   "envPl.group.edit": "编辑分组",
   "envPl.group.del": "删除分组",
   "envPl.delete": "删除环境",
-  "envPl.delete.confirm": "确认删除环境 “{name}”",
+  "envPl.delete.confirm": "确认删除环境“{name}”",
   "envPl.delete.warn":
     "删除该环境后，与该环境相关的所有对象均会被永久删除，不可恢复！确定要删除吗？",
   "envPl.edit": "修改环境",
   "envPl.update": "修改环境",
-  "envPl.form.cluster": "集群",
+  "envPl.form.cluster": "选择集群",
   "envPl.form.name": "环境名称",
   "envPl.form.code": "环境编码",
   "envPl.form.description": "环境描述",
@@ -574,7 +576,7 @@ const zhCN = {
   "envPl.noInstance.disable": "确认停用",
   "envPl.forbidden.disable": "不可停用",
   "envPl.disEnv.noInstance": "当你点击确认后，该环境将被停用！",
-  "envPl.disEnv.forbidden": "该环境下已有实例，且此环境正在运行中，无法强制停用！",
+  "envPl.disEnv.forbidden": "该环境下已有实例，且此环境正在运行中，无法停用！",
   "envPl.confirm.group.del":
     "当你点击确认后，该分组下的环境将追加至默认流水线末尾!",
   "envPl.code.copy.tooltip": "复制下文代码至Kubernetes运行，与平台建立链接",
@@ -1043,6 +1045,8 @@ const zhCN = {
 
   // 报表
   "report.head": "报告",
+  "report.devops.total": "总次数",
+  "report.devops.more": "...",
   "report.submission.head": "代码提交图",
   "report.code-quality.head": "代码质量报表",
   "report.deploy-duration.head": "部署时长图",
@@ -1131,7 +1135,7 @@ const zhCN = {
   'cluster.active': '激活集群',
   'cluster.del': '删除集群',
   'cluster.del.confirm': '已执行，删除',
-  'cluster.del.title': '删除集群"{delName}"',
+  'cluster.del.title': '删除集群"{clsName}"',
   'cluster.delDes_1': '复制以下代码至Kubernetes运行，来删除该集群的agent',
   'cluster.delDes_2': '请确保您已在Kubernetes运行以上指令，否则会导致集群删除不彻底！',
   'cluster.public': '集群公开范围',
@@ -1143,7 +1147,10 @@ const zhCN = {
   'cluster.project.name': '项目名称',
   'cluster.project.code': '项目编码',
   'cluster.status.update': '版本过低，请重新激活',
-  'cluster.noData': '当前组织下没有任何集群，请创建集群。',
+  'cluster.notice': '请勿在操作过程中删除任何与之前环境相关的agent，否则会造成数据丢失！',
+  'cluster.noData.text1': '若您是第一次使用该集群模块，需要在集群页面创建与之前数量相同的集群，具体步骤如下：',
+  'cluster.noData.text2': '1. 点击下方按钮进入创建集群页面，填写相关信息；',
+  'cluster.noData.text3': '2. 点击创建后，会生成创建agent的脚本，复制至对应的k8s平台运行，即可成功激活此集群，进而激活此集群关联项目下的环境。',
 
   ...pageDetail,
 };

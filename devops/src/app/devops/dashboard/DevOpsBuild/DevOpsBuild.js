@@ -67,7 +67,15 @@ class DevOpsBuild extends Component {
     if (loading) {
       return (<div className="c7ncd-dashboard-loading"><Spin /></div>);
     }
-    return (<div className="c7n-buildNumber-content"><BuildChart height="300px" echartsLoading={echartsLoading} top="10%" bottom="4%" /></div>);
+    return (<div className="c7n-buildNumber-content">
+      <BuildChart
+        height="300px"
+        echartsLoading={echartsLoading}
+        top="10%"
+        bottom="4%"
+        languageType="dashboard"
+      />
+    </div>);
   };
 
   render() {
@@ -79,7 +87,7 @@ class DevOpsBuild extends Component {
       <Select
         className={`c7ncd-dashboard-select ${noSelect ? 'c7n-dashboard-build-select' : ''}`}
         notFoundContent={formatMessage({ id: 'dashboard.noApp' })}
-        placeholder={formatMessage({ id: 'env.select' })}
+        placeholder={formatMessage({ id: 'dashboard.environment.select' })}
         onChange={this.handleChange}
         defaultValue={appId}
         value={appId}

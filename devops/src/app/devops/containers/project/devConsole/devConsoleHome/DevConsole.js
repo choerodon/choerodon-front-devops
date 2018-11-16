@@ -212,12 +212,18 @@ class DevConsole extends Component {
 
   /**
    * 获取列表的icon
-   * @param name 分支类型
+   * @param name 分支名称
+   * @returns {*}
    */
   getIcon =(name) => {
+    const nameArr = ['feature', 'release', 'bugfix', 'hotfix'];
     let type = '';
-    if (name) {
+    if (name.includes('-') && nameArr.includes(name.split('-')[0])) {
       type = name.split('-')[0];
+    } else if (name === 'master') {
+      type = name;
+    } else {
+      type = 'custom';
     }
     return <span className={`c7n-branch-icon icon-${type}`}>{type.slice(0, 1).toUpperCase()}</span>;
   };
@@ -236,32 +242,32 @@ class DevConsole extends Component {
     switch (typeCode) {
       case 'story':
         mes = formatMessage({ id: 'branch.issue.story' });
-        icon = 'turned_in';
+        icon = 'agile_story';
         color = '#00bfa5';
         break;
       case 'bug':
         mes = formatMessage({ id: 'branch.issue.bug' });
-        icon = 'bug_report';
+        icon = 'agile_fault';
         color = '#f44336';
         break;
       case 'issue_epic':
         mes = formatMessage({ id: 'branch.issue.epic' });
-        icon = 'priority';
+        icon = 'agile_epic';
         color = '#743be7';
         break;
       case 'sub_task':
         mes = formatMessage({ id: 'branch.issue.subtask' });
-        icon = 'relation';
+        icon = 'agile_subtask';
         color = '#4d90fe';
         break;
       default:
         mes = formatMessage({ id: 'branch.issue.task' });
-        icon = 'assignment';
+        icon = 'agile_task';
         color = '#4d90fe';
     }
     return (<span className="c7n-branch-issue">
       <Tooltip title={mes}>
-        <div style={{ background: color }} className="c7n-issue-type"><i className={`icon icon-${icon}`} /></div>
+        <div style={{ color }} className="c7n-issue-type"><i className={`icon icon-${icon}`} /></div>
       </Tooltip>
       <Tooltip title={issueName}>
         <span className="branch-issue-content"><span>{issueCode}</span></span>
@@ -271,7 +277,7 @@ class DevConsole extends Component {
 
   /**
    * 修改相关联问题
-   * @param name
+   * @param branchName
    */
   openEditBranch = (branchName) => {
     const { projectId } = AppState.currentMenuType;
@@ -354,7 +360,7 @@ class DevConsole extends Component {
         return (<div className="c7n-dc-branch-content" key={branchName}>
           <div className="branch-content-title">
             {this.getIcon(branchName)}
-            <div className="branch-name">{branchName}</div>
+            <div className="branch-name" title={branchName}>{branchName}</div>
             {typeCode ? this.getIssue(typeCode, issueCode, issueName) : null}
             {branchName !== 'master' ? <div className="c7n-branch-action">
               <Permission
@@ -446,7 +452,7 @@ class DevConsole extends Component {
             <span><Icon type="keyboard_backspace" className="c7n-merge-icon-arrow" /></span>
             <Icon type="branch" className="c7n-merge-icon" />
             <MouserOverWrapper text={targetBranch} width={0.12}>{targetBranch}</MouserOverWrapper>
-            <div className="c7n-branch-action">
+            <div className="c7n-merge-action">
               <Permission
                 service={['devops-service.devops-git.getMergeRequestList']}
                 organizationId={orgId}
@@ -525,7 +531,6 @@ class DevConsole extends Component {
             organizationId={orgId}
           >
             <Button
-              type="primary"
               funcType="flat"
               onClick={this.openCreateBranch.bind(this, branchName)}
             >
@@ -545,7 +550,6 @@ class DevConsole extends Component {
             organizationId={orgId}
           >
             <Button
-              type="primary"
               funcType="flat"
               onClick={() => this.displayCreateModal(true)}
             >
@@ -557,7 +561,6 @@ class DevConsole extends Component {
           key="2"
         >
           <Button
-            type="primary"
             funcType="flat"
             onClick={this.linkToMerge.bind(this, false)}
           >
@@ -679,7 +682,7 @@ class DevConsole extends Component {
           'devops-service.devops-git.getMergeRequestList',
         ]}
       >
-        {appId ? <Fragment><Header title={<FormattedMessage id="devCs.head" />}>
+        {appData && appData.length ? <Fragment><Header title={<FormattedMessage id="devCs.head" />}>
           <Select
             filter
             className="c7n-header-select"
@@ -777,19 +780,23 @@ class DevConsole extends Component {
             </div>
             <div className="c7n-dc-data-wrap">
               {
-                _.map(numberData, item => (<div className="c7n-data-number" key={item.name}>
-                  <Link
-                    to={{
-                      pathname: `/devops/${item.name}`,
-                      search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${orgId}`,
-                      state: { backPath: `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}` },
-                    }}
-                  >
-                    {item.number}
-                  </Link>
-                  <Icon type={item.icon} />
-                  <span><FormattedMessage id={item.message} /></span>
-                </div>))
+                _.map(numberData, item => (<tr className="c7n-data-number" key={item.name}>
+                  <td className="c7n-data-number_link">
+                    <Link
+                      to={{
+                        pathname: `/devops/${item.name}`,
+                        search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${orgId}`,
+                        state: { backPath: `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}` },
+                      }}
+                    >
+                      {item.number}
+                    </Link>
+                  </td>
+                  <td>
+                    <Icon type={item.icon} />
+                    <span><FormattedMessage id={item.message} /></span>
+                  </td>
+                </tr>))
               }
             </div>
           </div>
@@ -899,7 +906,7 @@ class DevConsole extends Component {
           visible={editBranch}
           onClose={this.closeEditBranch}
           isDevConsole
-        /> : null}</Fragment> : <DepPipelineEmpty title={<FormattedMessage id="devCs.head" />} />}
+        /> : null}</Fragment> : <DepPipelineEmpty title={<FormattedMessage id="devCs.head" />} type="app" />}
       </Page>
     );
   }

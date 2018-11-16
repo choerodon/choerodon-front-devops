@@ -42,7 +42,7 @@ class CreateBranch extends Component {
   }
 
   /**
-   * 获取issue正文
+   * 获取issue的options
    * @param s
    * @returns {*}
    */
@@ -54,37 +54,36 @@ class CreateBranch extends Component {
     switch (s.typeCode) {
       case 'story':
         mes = formatMessage({ id: 'branch.issue.story' });
-        icon = 'turned_in';
+        icon = 'agile_story';
         color = '#00bfa5';
         break;
       case 'bug':
         mes = formatMessage({ id: 'branch.issue.bug' });
-        icon = 'bug_report';
+        icon = 'agile_fault';
         color = '#f44336';
         break;
       case 'issue_epic':
         mes = formatMessage({ id: 'branch.issue.epic' });
-        icon = 'priority';
+        icon = 'agile_epic';
         color = '#743be7';
         break;
       case 'sub_task':
         mes = formatMessage({ id: 'branch.issue.subtask' });
-        icon = 'relation';
+        icon = 'agile_subtask';
         color = '#4d90fe';
         break;
       default:
         mes = formatMessage({ id: 'branch.issue.task' });
-        icon = 'assignment';
+        icon = 'agile_task';
         color = '#4d90fe';
     }
     return (<span>
       <Tooltip title={mes}>
-        <div style={{ background: color, marginRight: 5 }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
+        <div style={{ color }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
       </Tooltip>
-      <span className="branch-issue-content">
-        <span style={{ color: 'rgb(0,0,0,0.65)' }}>{s.issueNum}</span>
-        <MouserOverWrapper style={{ display: 'inline-block', verticalAlign: 'sub' }} width={0.3} text={s.summary}>{s.summary}</MouserOverWrapper>
-      </span>
+      <Tooltip title={s.summary}>
+        <span className="branch-issue-content"><span>{s.issueNum}</span></span>
+      </Tooltip>
     </span>);
   };
 
@@ -93,12 +92,8 @@ class CreateBranch extends Component {
    * @param type 分支类型
    * @returns {*}
    */
-  getIcon =(name) => {
+  getIcon =(type) => {
     let icon;
-    let type;
-    if (name) {
-      type = name.split('-')[0];
-    }
     switch (type) {
       case 'feature':
         icon = <span className="c7n-branch-icon icon-feature">F</span>;
@@ -215,7 +210,10 @@ class CreateBranch extends Component {
         type = 'custom';
         break;
       case 'sub_task':
-        type = 'custom';
+        type = 'feature';
+        break;
+      case 'task':
+        type = 'feature';
         break;
       default:
         type = 'custom';
@@ -378,7 +376,6 @@ class CreateBranch extends Component {
                 <Select
                   onChange={this.changeType}
                   key="service"
-                  allowClear
                   label={<FormattedMessage id="branch.type" />}
                   filter
                   dropdownMatchSelectWidth

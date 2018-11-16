@@ -23,6 +23,7 @@ import NetworkConfigStore from '../../../../stores/project/networkConfig';
 import LoadingBar from '../../../../components/loadingBar';
 import ExpandRow from '../../instances/components/ExpandRow';
 import UploadIcon from "../../instances/components/UploadIcon";
+import EnvOverviewStore from "../../../../stores/project/envOverview";
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -76,6 +77,8 @@ class AppOverview extends Component {
   @observable domainTitle = '';
 
   @observable istName = '';
+
+  @observable isDelete = {};
 
   componentDidMount() {
     const { store } = this.props;
@@ -165,7 +168,7 @@ class AppOverview extends Component {
         if (error && error.failed) {
           Choerodon.prompt(error.message);
         } else {
-          InstancesStore.loadInstanceAll(projectId);
+          this.loadIstOverview();
         }
       });
   };
@@ -174,10 +177,11 @@ class AppOverview extends Component {
    * 修改配置实例信息
    */
   @action
-  updateConfig = (record) => {
-    const { code, id, envId, appVersionId, appId } = record;
+  updateConfig = (record, e) => {
+    // e.stopPropagation();
+    const { code, id, envId, commandVersionId, appId } = record;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    InstancesStore.loadValue(projectId, id, appVersionId)
+    InstancesStore.loadValue(projectId, id, commandVersionId)
       .then((res) => {
         if (res && res.failed) {
           Choerodon.prompt(res.message);
@@ -185,7 +189,7 @@ class AppOverview extends Component {
           this.visible = true;
           this.id = id;
           this.name = code;
-          this.idArr = [envId, appVersionId, appId];
+          this.idArr = [envId, commandVersionId, appId];
         }
       });
   };
@@ -196,9 +200,9 @@ class AppOverview extends Component {
   @action
   upgradeIst = (record) => {
     const { intl } = this.props;
-    const { code, id, envId, appVersionId, appId } = record;
+    const { code, id, envId, appVersionId, commandVersionId, appId } = record;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    InstancesStore.loadUpVersion(projectId, appVersionId)
+    InstancesStore.loadUpVersion(projectId, appVersionId || commandVersionId)
       .then((val) => {
         if (val && val.failed) {
           Choerodon.prompt(val.message);
@@ -282,7 +286,11 @@ class AppOverview extends Component {
   @action
   handleCancelUp = () => {
     this.visibleUp = false;
+  };
+
+  closeDeleteModal(id) {
     this.openRemove = false;
+    this.isDelete[id] = false;
   };
 
   /**
@@ -303,7 +311,8 @@ class AppOverview extends Component {
   handleDelete = (id) => {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.loading = true;
-    InstancesStore.deleteIst(projectId, id)
+    this.isDelete[id] = true;
+    InstancesStore.deleteInstance(projectId, id)
       .then((res) => {
         if (res && res.failed) {
           Choerodon.prompt(res.message);
@@ -313,7 +322,12 @@ class AppOverview extends Component {
           this.loading = false;
           this.loadIstOverview();
         }
-      });
+        this.isDelete[id] = false;
+      }).catch((error) => {
+      this.loading = false;
+      this.isDelete[id] = false;
+      Choerodon.handleResponseError(error);
+    });
   };
 
   /**
@@ -376,7 +390,7 @@ class AppOverview extends Component {
             onChange={this.onChange}
           >
             {_.map(i.applicationInstanceDTOS, c => {
-              const { status, code, error, appVersion, id, serviceDTOS, ingressDTOS, commandVersion, appId } = c;
+              const { id: istId, status, code, error, appVersion, id, serviceDTOS, ingressDTOS, commandVersion, appId } = c;
               let uploadIcon = null;
               if (appVersion !== commandVersion) {
                 if (status !== 'failed') {
@@ -413,9 +427,11 @@ class AppOverview extends Component {
                   <span className="c7n-envow-ist-version">
                     <span className="c7n-envow-version-text"><FormattedMessage id="app.appVersion" />:&nbsp;&nbsp;</span>
                     <UploadIcon
+                      istId={istId}
                       status={uploadIcon}
                       text={appVersion}
                       prevText={commandVersion}
+                      isDelete={this.isDelete}
                     />
                   </span>
                   <div className="c7n-envow-ist-action">
@@ -432,36 +448,36 @@ class AppOverview extends Component {
                   <div className="c7n-envow-contaners-wrap">
                     <div className="c7n-envow-contaners-left">
                       <div className="c7n-envow-network-title">
-                        <FormattedMessage id="network.header.title" />
+                        <FormattedMessage id="network.header.title" />：
                       </div>
                       {serviceDTOS.length ? _.map(serviceDTOS, s => (<div className="c7n-envow-ls-wrap" key={s.name}>
                         <div className="c7n-envow-ls">
-                          <Tooltip title={<FormattedMessage id="network.form.name" />}>
-                            <Icon type="router" />
-                          </Tooltip>
-                          {s.name}
+                          <span className="c7n-envow-expanded-keys">
+                            <FormattedMessage id="network.form.name" />：
+                          </span>
+                          <span className="c7n-envow-expanded-values">
+                            {s.name}
+                          </span>
                         </div>
                         <div className="c7n-envow-ls">
-                          <Tooltip title={<FormattedMessage id="network.form.ip" />}>
-                            <Icon type="IP_out" />
-                          </Tooltip>
-                          {s.clusterIp}
+                          <span className="c7n-envow-expanded-keys">
+                            <FormattedMessage id="network.form.ip" />：
+                          </span>
+                          <span className="c7n-envow-expanded-values">
+                            {s.clusterIp}
+                          </span>
                         </div>
                         <div className="c7n-envow-ls">
                           <div className="c7n-envow-ls-arrow-wrap">
-                            <span>
-                              <Tooltip title={<FormattedMessage id="network.form.port" />}>
-                                <Icon type="port" />
-                              </Tooltip>
+                            <FormattedMessage id="network.form.port" />：
+                            <span className="c7n-envow-expanded-values">
                               {s.port}
                             </span>
                             <span className="c7n-envow-ls-arrow">
                                 →
                             </span>
-                            <span>
-                              <Tooltip title={<FormattedMessage id="network.form.targetPort" />}>
-                                <Icon type="aim_port" />
-                              </Tooltip>
+                            <FormattedMessage id="network.form.targetPort" />：
+                            <span className="c7n-envow-expanded-values">
                               {s.targetPort}
                             </span>
                           </div>
@@ -662,7 +678,7 @@ class AppOverview extends Component {
         /> }
         <DelIst
           open={this.openRemove}
-          handleCancel={this.handleCancelUp}
+          handleCancel={this.closeDeleteModal.bind(this, this.id)}
           handleConfirm={this.handleDelete.bind(this, this.id)}
           confirmLoading={this.loading}
           name={this.istName}

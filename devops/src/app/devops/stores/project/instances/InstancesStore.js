@@ -162,6 +162,11 @@ class InstancesStore {
     this.alertType = data;
   }
 
+  /**
+   * 查询实例
+   * @param projectId
+   * @param info
+   */
   loadInstanceAll = (projectId, info = {}) => {
     this.changeLoading(true);
     const { page, size, datas } = info;
@@ -174,22 +179,27 @@ class InstancesStore {
         search = search.concat(`&${key}=${value}`);
       }
     });
-    axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page || 0}&size=${size || this.pageInfo.pageSize}${search}`, JSON.stringify(datas || { searchParam: {}, param: '' })).then((data) => {
+    let searchParam = {};
+    let param = '';
+    if (datas) {
+      param = String(datas.param);
+      searchParam = datas.searchParam;
+    }
+    return axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page || 0}&size=${size || this.pageInfo.pageSize}${search}`, JSON.stringify({ searchParam, param })).then((data) => {
       const res = handleProptError(data);
       if (res) {
         this.handleData(data);
       } else {
         this.changeLoading(false);
       }
-    }).catch((err) => {
-      this.changeLoading(false);
-      Choerodon.handleResponseError(err);
     });
   };
 
   handleData =(data) => {
     const { number, size, totalElements, content } = data;
-    this.setIstAll(content);
+    if (!_.isEqual(content, this.istAll)) {
+      this.setIstAll(content);
+    }
     const page = { number, size, totalElements };
     this.setPageInfo(page);
     this.changeLoading(false);
@@ -232,7 +242,7 @@ class InstancesStore {
 
   reDeploy = (projectId, data) => axios.post(`devops/v1/projects/${projectId}/app_instances`, JSON.stringify(data));
 
-  deleteIst = (projectId, istId) => axios.delete(`devops/v1/projects/${projectId}/app_instances/${istId}/delete`);
+  deleteInstance = (projectId, istId) => axios.delete(`devops/v1/projects/${projectId}/app_instances/${istId}/delete`);
 
   reStarts = (projectId, id) => axios.put(`devops/v1/projects/${projectId}/app_instances/${id}/restart`);
 

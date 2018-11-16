@@ -19,7 +19,7 @@ export default function MaxTagPopover(props) {
       content={<div className="c7n-report-maxPlace" style={{ width }}>{moreOption}</div>}
     >
       <div className="c7n-report-maxPlace-inner" title="">
-        <FormattedMessage id="more" />
+        <FormattedMessage id="dashboard.devops.more" />
       </div>
     </Popover>
   );

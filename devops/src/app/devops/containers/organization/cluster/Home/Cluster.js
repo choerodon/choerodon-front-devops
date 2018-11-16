@@ -97,9 +97,12 @@ class Cluster extends Component {
       sideType: '',
       createSelectedRowKeys: [],
       createSelected: [],
+      selected: [],
+      createSelectedTemp: [],
+      selectedRowKeys: false,
       token: null,
       delId: null,
-      delName: '',
+      clsName: '',
       page: 0,
       size: HEIGHT <= 900 ? 12 : 18,
     };
@@ -120,9 +123,17 @@ class Cluster extends Component {
   };
 
   onCreateSelectChange = (keys, selected) => {
+    let s = [];
+    const a = this.state.createSelectedTemp.concat(selected);
+    this.setState({ createSelectedTemp: a });
+    _.map(keys, o => {
+      if (_.filter(a, ['id', o]).length) {
+        s.push(_.filter(a, ['id', o])[0])
+      }
+    });
     this.setState({
       createSelectedRowKeys: keys,
-      createSelected: selected,
+      createSelected: s,
     });
   };
 
@@ -137,6 +148,14 @@ class Cluster extends Component {
       getTagKeys: tagKeys,
       getPrmPro: prmPro,
     } = ClusterStore;
+    let s = [];
+    const a = tagKeys.length ? tagKeys.concat(selected) : this.state.selected.concat(selected);
+    this.setState({ selected: a });
+    _.map(keys, o => {
+      if (_.filter(a, ['id', o]).length) {
+        s.push(_.filter(a, ['id', o])[0])
+      }
+    });
     const ids = _.map(prmPro, p => p.id);
     const delIds = _.difference(ids, keys);
     let selectIds = tagKeys;
@@ -154,7 +173,8 @@ class Cluster extends Component {
       }
     });
     ClusterStore.setSelectedRk(keys);
-    ClusterStore.setTagKeys(selectIds);
+    ClusterStore.setTagKeys(s);
+    this.setState({ selectedRowKeys: keys });
   };
 
   cbChange = (e) => {
@@ -208,7 +228,7 @@ class Cluster extends Component {
     this.setState({
       showDel: true,
       delId: id,
-      delName: name,
+      clsName: name,
     })
   };
 
@@ -221,8 +241,8 @@ class Cluster extends Component {
     });
     ClusterStore.delCluster(organizationId, this.state.delId)
       .then((data) => {
-        if (data && data.error) {
-          Choerodon.prompt(res.message);
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
           this.setState({
             btnLoading: false,
           })
@@ -269,7 +289,7 @@ class Cluster extends Component {
                   <Button
                     funcType="flat"
                     shape="circle"
-                    onClick={this.showSideBar.bind(this, 'key', c.id)}
+                    onClick={this.showSideBar.bind(this, 'key', c.id, c.name)}
                   >
                     <Icon type="vpn_key" />
                   </Button>
@@ -284,7 +304,7 @@ class Cluster extends Component {
                   <Button
                     funcType="flat"
                     shape="circle"
-                    onClick={this.showSideBar.bind(this, 'edit', c.id)}
+                    onClick={this.showSideBar.bind(this, 'edit', c.id, c.name)}
                   >
                     <Icon type="mode_edit" />
                   </Button>
@@ -310,7 +330,7 @@ class Cluster extends Component {
           <div className="c7n-cls-card-content">
             <div className="c7n-cls-card-state">
               <div className="c7n-cls-icon-wrap">
-                {c.connect ? <Icon type="link2" /> : <Icon type="baseline-link_off" />}
+                {c.connect ? <Icon type="running" /> : <Icon type="disconnect" />}
               </div>
             </div>
             <div className="c7n-cls-card-des">
@@ -337,15 +357,15 @@ class Cluster extends Component {
       getShell: shell,
       getTagKeys: tagKeys,
       getTableLoading: tableLoading,
-      getSelectedRk: selectedRowKeys,
+      getSelectedRk,
     } = ClusterStore;
-    const { copyMsg, token, sideType, checked, loading, createSelectedRowKeys, createSelected } = this.state;
+    const { copyMsg, token, sideType, checked, createSelectedRowKeys, createSelected, selectedRowKeys } = this.state;
     const rowCreateSelection = {
       selectedRowKeys: createSelectedRowKeys,
       onChange: this.onCreateSelectChange,
     };
     const rowSelection = {
-      selectedRowKeys,
+      selectedRowKeys: _.map(tagKeys, s => s.id),
       onChange: this.onSelectChange,
     };
     const tagCreateDom = _.map(createSelected, t => <Tag className="c7n-env-tag" key={t.id}>{t.name} {t.code}</Tag>);
@@ -358,6 +378,13 @@ class Cluster extends Component {
     const suffix = (<Tooltip placement="right" trigger="hover" title={copyMsg}>
       <div onMouseEnter={this.mouseEnter}>
         <CopyToBoard text={token} onCopy={this.handleCopy}>
+          <i className="icon icon-library_books" />
+        </CopyToBoard>
+      </div>
+    </Tooltip>);
+    const suffix_key = (<Tooltip placement="right" trigger="hover" title={copyMsg}>
+      <div onMouseEnter={this.mouseEnter}>
+        <CopyToBoard text={shell} onCopy={this.handleCopy}>
           <i className="icon icon-library_books" />
         </CopyToBoard>
       </div>
@@ -427,7 +454,7 @@ class Cluster extends Component {
           <div className="c7n-env-tag-title">
             <FormattedMessage id="cluster.authority" />
             <Popover
-              overlayStyle={{ maxWidth: '600px' }}
+              overlayStyle={{ maxWidth: '350px' }}
               content={formatMessage({ id: 'envPl.authority.help' })}
             >
               <Icon type="help" />
@@ -489,13 +516,13 @@ class Cluster extends Component {
               readOnly
               value={shell || ''}
             />
-            <span className="c7n-env-copy">{suffix}</span>
+            <span className="c7n-env-copy">{suffix_key}</span>
           </div>
         </div>);
         break;
       case 'edit':
-        formContent = (<div className="c7n-sidebar-form">
-          <Form>
+        formContent = (<div>
+          <Form className="c7n-sidebar-form">
             <FormItem
               {...formItemLayout}
             >
@@ -510,7 +537,7 @@ class Cluster extends Component {
               })(
                 <Input
                   maxLength={10}
-                  label={<FormattedMessage id="envPl.form.name" />}
+                  label={<FormattedMessage id="cluster.name" />}
                 />,
               )}
             </FormItem>
@@ -523,47 +550,48 @@ class Cluster extends Component {
                 <TextArea
                   autosize={{ minRows: 2 }}
                   maxLength={30}
-                  label={<FormattedMessage id="envPl.form.description" />}
+                  label={<FormattedMessage id="cluster.des" />}
                 />,
               )}
             </FormItem>
-            <div className="c7n-env-tag-title">
-              <FormattedMessage id="cluster.authority" />
-              <Popover
-                content={formatMessage({ id: 'cluster.authority.help' })}
-              >
-                <Icon type="help" />
-              </Popover>
-            </div>
-            <div className="c7n-cls-radio">
-              <RadioGroup label={<FormattedMessage id="cluster.public" />}
-                          onChange={this.cbChange} value={checked}>
-                <Radio value={true}><FormattedMessage id="cluster.project.all" /></Radio>
-                <Radio value={false}><FormattedMessage id="cluster.project.part" /></Radio>
-              </RadioGroup>
-            </div>
-            {checked ? null : <div>
-              <div className="c7n-sidebar-form">
-                <Table
-                  rowSelection={rowSelection}
-                  columns={columns}
-                  dataSource={prmProData}
-                  filterBarPlaceholder={formatMessage({ id: 'filter' })}
-                  pagination={getPageInfo}
-                  loading={tableLoading}
-                  onChange={this.tableChange}
-                  rowKey={record => record.id}
-                  filters={paras.slice()}
-                />
-              </div>
-              <div className="c7n-env-tag-title">
-                <FormattedMessage id="cluster.authority.project" />
-              </div>
-              <div className="c7n-env-tag-wrap">
-                {tagDom}
-              </div>
-            </div>}
           </Form>
+          <div className="c7n-env-tag-title">
+            <FormattedMessage id="cluster.authority" />
+            <Popover
+              overlayStyle={{ maxWidth: '350px' }}
+              content={formatMessage({ id: 'cluster.authority.help' })}
+            >
+              <Icon type="help" />
+            </Popover>
+          </div>
+          <div className="c7n-cls-radio">
+            <RadioGroup label={<FormattedMessage id="cluster.public" />}
+                        onChange={this.cbChange} value={checked}>
+              <Radio value={true}><FormattedMessage id="cluster.project.all" /></Radio>
+              <Radio value={false}><FormattedMessage id="cluster.project.part" /></Radio>
+            </RadioGroup>
+          </div>
+          {checked ? null : <div>
+            <div className="c7n-sidebar-form">
+              <Table
+                rowSelection={rowSelection}
+                columns={columns}
+                dataSource={prmProData}
+                filterBarPlaceholder={formatMessage({ id: 'filter' })}
+                pagination={getPageInfo}
+                loading={tableLoading}
+                onChange={this.tableChange}
+                rowKey={record => record.id}
+                filters={paras.slice()}
+              />
+            </div>
+            <div className="c7n-env-tag-title">
+              <FormattedMessage id="cluster.authority.project" />
+            </div>
+            <div className="c7n-env-tag-wrap">
+              {tagDom}
+            </div>
+          </div>}
         </div>);
         break;
       default:
@@ -587,6 +615,7 @@ class Cluster extends Component {
     if (sideType === 'create') {
       this.props.form.validateFieldsAndScroll((err, data) => {
         if (!err) {
+          this.setState({ clsName: data.name });
           data.skipCheckProjectPermission = checked;
           data.projects = createSelectedRowKeys;
           ClusterStore.createCluster(organizationId, data)
@@ -629,7 +658,7 @@ class Cluster extends Component {
                 ClusterStore.setSelectedRk([]);
                 ClusterStore.setTagKeys([]);
                 this.loadCluster();
-                this.setState({ show: false, submitting: false });
+                this.setState({ show: false, submitting: false, selectedRowKeys: false });
               }
             });
         }
@@ -645,7 +674,7 @@ class Cluster extends Component {
     if (this.state.sideType === 'token') {
       this.loadCluster();
     }
-    this.setState({ checked: true, show: false, createSelectedRowKeys: [], createSelected: [] });
+    this.setState({ checked: true, show: false, createSelectedRowKeys: [], createSelected: [], selectedRowKeys: false });
     ClusterStore.setClsData(null);
     ClusterStore.setSelectedRk([]);
     ClusterStore.setInfo({
@@ -658,8 +687,9 @@ class Cluster extends Component {
    * 弹出侧边栏
    * @param sideType
    * @param id
+   * @param name
    */
-  showSideBar = (sideType, id) => {
+  showSideBar = (sideType, id, name) => {
     const { ClusterStore } = this.props;
     const { organizationId } = AppState.currentMenuType;
     if (sideType === 'create') {
@@ -679,7 +709,7 @@ class Cluster extends Component {
     } else if (sideType === 'key') {
       ClusterStore.loadShell(organizationId, id);
     }
-    this.setState({ sideType, show: true });
+    this.setState({ sideType, show: true, clsName: name });
   };
 
   /**
@@ -726,7 +756,7 @@ class Cluster extends Component {
 
   render() {
     const { type, organizationId, name } = AppState.currentMenuType;
-    const { show, sideType, submitting, showDel, btnLoading, delName } = this.state;
+    const { show, sideType, submitting, showDel, btnLoading, clsName } = this.state;
     const {
       ClusterStore,
       intl: { formatMessage },
@@ -737,6 +767,7 @@ class Cluster extends Component {
       getData: clusters,
     } = ClusterStore;
     const showBtns = (sideType === 'create' || sideType === 'edit' || sideType === 'permission');
+    const titleName = sideType === 'create' ? name : clsName;
 
     return (
       <Page
@@ -791,7 +822,7 @@ class Cluster extends Component {
             cancelText={<FormattedMessage id="cancel" />}
             okText={this.okText(sideType)}
           >
-            <Content code={`cluster.${sideType}`} values={{ name }} className="sidebar-content">
+            <Content code={`cluster.${sideType}`} values={{ clsName: titleName }} className="sidebar-content">
               {this.getFormContent()}
             </Content>
           </Sidebar>}
@@ -813,7 +844,9 @@ class Cluster extends Component {
             </div> : null}
           </React.Fragment> : <Card title={formatMessage({ id: 'cluster.create' })} className="c7n-depPi-empty-card">
             <div className="c7n-noEnv-content">
-              <FormattedMessage id="cluster.noData" />
+              <FormattedMessage id="cluster.noData.text1" /><br/>
+              <FormattedMessage id="cluster.noData.text2" /><br/>
+              <FormattedMessage id="cluster.noData.text3" />
               <a
                 href={formatMessage({ id: 'cluster.link' })}
                 rel="nofollow me noopener noreferrer"
@@ -821,6 +854,10 @@ class Cluster extends Component {
               >
                 <FormattedMessage id="depPl.more" /><Icon type="open_in_new" />
               </a>
+              <div className="c7n-cluster-notice">
+                <Icon type="error" />
+                <FormattedMessage id="cluster.notice" />
+              </div>
             </div>
             <Button
               type="primary"
@@ -833,7 +870,7 @@ class Cluster extends Component {
         </Content>
         <Modal
           className="c7n-cls-del-modal"
-          title={<FormattedMessage id="cluster.del.title" values={{ delName }} />}
+          title={<FormattedMessage id="cluster.del.title" values={{ clsName }} />}
           visible={showDel}
           onOk={this.delCluster}
           closable={false}

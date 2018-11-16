@@ -29,3 +29,10 @@ dashboard:
     description: "应用部署"
     level: project
     sort: 5
+  - code: "DevopsDoc"
+    icon: devops
+    title: "持续交付文档"
+    description: "持续交付文档"
+    level: project
+    sort: 1
+    delete: true

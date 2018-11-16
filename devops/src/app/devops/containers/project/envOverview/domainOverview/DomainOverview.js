@@ -150,7 +150,7 @@ class DomainOverview extends Component {
   };
 
   render() {
-    const { intl, store } = this.props;
+    const { intl, store, envId } = this.props;
     const data = store.getDomain;
     const { filters, sort: { columnKey, order }, paras } = store.getInfo;
     const menu = AppState.currentMenuType;
@@ -275,6 +275,7 @@ class DomainOverview extends Component {
       {this.showDomain && <CreateDomain
         id={this.domainId}
         title={this.domainTitle}
+        envId={envId}
         visible={this.showDomain}
         type={this.domainType}
         store={DomainStore}

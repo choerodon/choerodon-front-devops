@@ -33,11 +33,13 @@ class DeploymentAppHome extends Component {
       projectId: AppState.currentMenuType.id,
       loading: false,
       changeYaml: false,
+      disabled: false,
     };
   }
 
   componentDidMount() {
     const { DeploymentAppStore } = this.props;
+    const { projectId, current, appId, versionId, envId: id } = this.state;
     DeploymentAppStore.setValue(null);
     if (this.state.appId) {
       DeploymentAppStore.loadApps(this.state.appId)
@@ -65,7 +67,20 @@ class DeploymentAppHome extends Component {
     } else {
       DeploymentAppStore.setVersions([]);
     }
-    EnvOverviewStore.loadActiveEnv(this.state.projectId);
+    if (current === 2) {
+      const envs = EnvOverviewStore.getEnvcard;
+      const envID = EnvOverviewStore.getTpEnvId;
+      const env = _.filter(envs, { 'connect': true, 'id': envID });
+      const envId = env && env.length ? env[0].id : id;
+      this.setState({ envId, envDto: env[0] });
+      DeploymentAppStore.setValue(null);
+      DeploymentAppStore.loadValue(appId, versionId, envId)
+        .then((data) => {
+          this.setState({ errorLine: data.errorLines });
+        });
+      DeploymentAppStore.loadInstances(appId, envId);
+    }
+    EnvOverviewStore.loadActiveEnv(projectId);
   }
 
 
@@ -93,15 +108,24 @@ class DeploymentAppHome extends Component {
    */
   changeStep = (index) => {
     const { DeploymentAppStore } = this.props;
-    const { appId, versionId, envId, mode } = this.state;
-    this.setState({ current: index });
+    const { appId, versionId, envId: id, mode } = this.state;
+    const envs = EnvOverviewStore.getEnvcard;
+    const envID = EnvOverviewStore.getTpEnvId;
+    const env = _.filter(envs, { 'connect': true, 'id': envID });
+    const envId = env && env.length ? env[0].id : id;
+    this.setState({ current: index, disabled: false });
     this.loadReview();
     if (index === 2 && appId && versionId && envId) {
+      this.setState({ envId, envDto: env[0] });
       DeploymentAppStore.setValue(null);
       DeploymentAppStore.loadValue(appId, versionId, envId)
         .then((data) => {
           this.setState({ errorLine: data.errorLines });
         });
+      DeploymentAppStore.loadInstances(appId, envId);
+    }
+    if (index === 3 || index === 4) {
+      this.setState({ disabled: true });
     }
     document.getElementsByClassName('page-content')[0].scrollTop = 0;
   };
@@ -641,7 +665,7 @@ class DeploymentAppHome extends Component {
     const { formatMessage } = intl;
     const data = DeploymentAppStore.value;
     const projectName = AppState.currentMenuType.name;
-    const { appId, versionId, envId, instanceId, mode, value, current } = this.state;
+    const { appId, versionId, envId, instanceId, mode, value, current, disabled } = this.state;
     const envData = EnvOverviewStore.getEnvcard;
     const { getTpEnvId } = EnvOverviewStore;
     return (
@@ -660,13 +684,13 @@ class DeploymentAppHome extends Component {
         ]}
         className="c7n-region c7n-deployApp"
       >
-        {getTpEnvId ? <Fragment><Header title={<FormattedMessage id="deploy.header.title" />}>
+        {envData && envData.length && getTpEnvId  ? <Fragment><Header title={<FormattedMessage id="deploy.header.title" />}>
           <Select
             className={`${getTpEnvId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
             dropdownClassName="c7n-header-env_drop"
             placeholder={formatMessage({ id: 'envoverview.noEnv' })}
             value={envData && envData.length ? getTpEnvId : undefined}
-            disabled={envData && envData.length === 0}
+            disabled={ disabled || (envData && envData.length === 0)}
             onChange={this.handleEnvSelect}
           >
             {_.map(envData,  e => (
@@ -724,7 +748,7 @@ class DeploymentAppHome extends Component {
             handleCancel={this.handleCancel}
             handleOk={this.handleOk}
           />}
-        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="deploy.header.title" />} />}
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="deploy.header.title" />} type="env" />}
       </Page>
     );
   }

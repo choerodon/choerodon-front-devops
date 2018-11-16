@@ -82,7 +82,7 @@ class CertificateHome extends Component {
           'devops-service.certification.delete',
         ]}
       >
-        {envId ? <Fragment><Header title={<FormattedMessage id="ctf.head" />}>
+        {envData && envData.length && envId  ? <Fragment><Header title={<FormattedMessage id="ctf.head" />}>
           <Select
             className={`${envId? 'c7n-header-select' : 'c7n-header-select c7n-select_min100'}`}
             dropdownClassName="c7n-header-env_drop"
@@ -129,7 +129,7 @@ class CertificateHome extends Component {
           values={{ name }}
         >
           <CertTable store={CertificateStore} envId={envId} />
-        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ctf.head" />} />}
+        </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ctf.head" />} type="env" />}
         {createDisplay && <CreateCert
           visible={createDisplay}
           store={CertificateStore}

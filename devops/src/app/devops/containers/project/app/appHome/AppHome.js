@@ -12,6 +12,7 @@ import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
 import DeploymentPipelineStore from '../../../../stores/project/deploymentPipeline';
+import AppVersionStore from  '../../../../stores/project/applicationVersion';
 import { getSelectTip } from '../../../../utils';
 
 const { AppState } = stores;
@@ -82,6 +83,8 @@ class AppHome extends Component {
   }
 
   componentDidMount() {
+    const { projectId } = AppState.currentMenuType;
+    AppVersionStore.queryAppData(projectId);
     this.loadAllData(this.state.page);
   }
 
@@ -406,6 +409,7 @@ class AppHome extends Component {
     } = this.props;
     const { type: modeType, show, submitting, openRemove, name: appName, id } = this.state;
     const { app } = DeploymentPipelineStore.getProRole;
+    const appData = AppVersionStore.getAppData;
     const formContent = (<Form layout="vertical" className="c7n-sidebar-form">
       {modeType === 'create' && <FormItem
         {...formItemLayout}
@@ -449,53 +453,53 @@ class AppHome extends Component {
           />,
         )}
       </FormItem>
-      {modeType === 'create' && <FormItem
-        {...formItemLayout}
-      >
-        {getFieldDecorator('applictionTemplateId', {
-          rules: [{
-            message: formatMessage({ id: 'required' }),
-            transform: (value) => {
-              if (value) {
-                return value.toString();
+      {modeType === 'create' && <div className="c7ncd-sidebar-select">
+        <FormItem
+          {...formItemLayout}
+        >
+          {getFieldDecorator('applictionTemplateId', {
+            rules: [{
+              message: formatMessage({ id: 'required' }),
+              transform: (value) => {
+                if (value) {
+                  return value.toString();
+                }
+                return value;
+              },
+            }],
+          })(<Select
+              key="service"
+              allowClear
+              label={<FormattedMessage id="app.chooseTem" />}
+              filter
+              dropdownMatchSelectWidth
+              onSelect={this.selectTemplate}
+              size="default"
+              optionFilterProp="children"
+              filterOption={
+                (input, option) => option.props.children.props.children.props.children
+                  .toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
-              return value;
-            },
-          }],
-        })(
-          <Fragment><Select
-            key="service"
-            allowClear
-            label={<FormattedMessage id="app.chooseTem" />}
-            filter
-            dropdownMatchSelectWidth
-            onSelect={this.selectTemplate}
-            size="default"
-            optionFilterProp="children"
-            filterOption={
-              (input, option) => option.props.children.props.children.props.children
-                .toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
-          >
-            {selectData && selectData.length > 0 && selectData.map(s => (
-              <Option
-                value={s.id}
-                key={s.id}
-              >
-                <Tooltip
-                  placement="right"
-                  trigger="hover"
-                  title={<p>{s.description}</p>}
+            >
+              {selectData && selectData.length > 0 && selectData.map(s => (
+                <Option
+                  value={s.id}
+                  key={s.id}
                 >
-                  <span style={{ display: 'inline-block', width: '100%' }}>{s.name}</span>
-                </Tooltip>
-              </Option>
-            ))}
-          </Select>
-            {getSelectTip('app.chooseTem.tip')}
-          </Fragment>,
-        )}
-      </FormItem>}
+                  <Tooltip
+                    placement="right"
+                    trigger="hover"
+                    title={<p>{s.description}</p>}
+                  >
+                    <span style={{ display: 'inline-block', width: '100%' }}>{s.name}</span>
+                  </Tooltip>
+                </Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
+        {getSelectTip('app.chooseTem.tip')}
+      </div>}
     </Form>);
 
     return (
@@ -512,7 +516,7 @@ class AppHome extends Component {
           'devops-service.application.queryByAppId',
         ]}
       >
-        { isRefresh ? <LoadingBar display /> : (serviceData.length || app === 'owner' ? <Fragment>
+        { isRefresh ? <LoadingBar display /> : ((appData && appData.length) || app === 'owner' ? <Fragment>
           <Header title={<FormattedMessage id="app.head" />}>
             <Permission
               service={['devops-service.application.create']}
@@ -560,7 +564,7 @@ class AppHome extends Component {
               filters={paras.slice()}
             />
           </Content>
-        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="app.head" />} />)}
+        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="app.head" />} type="app" />)}
         <Modal
           confirmLoading={submitting}
           visible={openRemove}
