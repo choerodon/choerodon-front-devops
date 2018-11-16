@@ -258,6 +258,9 @@ class Environment extends Component {
       this.setState({
         submitting: false,
       });
+    }).catch(error => {
+      this.setState({ submitting: false });
+      Choerodon.handleResponseError(error);
     });
   };
 

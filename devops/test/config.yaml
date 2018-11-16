@@ -1,8 +1,0 @@
-gateway: http://api.staging.saas.hand-china.com
-login:
-  username: test
-  password: test
-id:
-  organization: 645
-  project: 356
-  env: 94

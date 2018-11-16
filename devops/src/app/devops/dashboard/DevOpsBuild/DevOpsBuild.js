@@ -67,7 +67,15 @@ class DevOpsBuild extends Component {
     if (loading) {
       return (<div className="c7ncd-dashboard-loading"><Spin /></div>);
     }
-    return (<div className="c7n-buildNumber-content"><BuildChart height="300px" echartsLoading={echartsLoading} top="10%" bottom="4%" /></div>);
+    return (<div className="c7n-buildNumber-content">
+      <BuildChart
+        height="300px"
+        echartsLoading={echartsLoading}
+        top="10%"
+        bottom="4%"
+        languageType="dashboard"
+      />
+    </div>);
   };
 
   render() {
