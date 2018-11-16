@@ -137,7 +137,7 @@ class DevOpsAppDep extends Component {
         <Select
           dropdownMatchSelectWidth
           notFoundContent={formatMessage({ id: 'dashboard.noApp' })}
-          placeholder={formatMessage({ id: 'env.select' })}
+          placeholder={formatMessage({ id: 'dashboard.environment.select' })}
           value={appDom ? appId : null}
           className={`c7n-select_100 ${noSelect ? 'c7n-select-noSelect' : ''}`}
           onChange={this.handleAppSelect}

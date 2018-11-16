@@ -19,6 +19,7 @@ class LineChart extends PureComponent {
     name: PropTypes.string.isRequired,
     loading: PropTypes.bool.isRequired,
     hasAvatar: PropTypes.bool.isRequired,
+    languageType: PropTypes.string,
     tooltip: PropTypes.bool,
     legend: PropTypes.bool,
     /* eslint-disable-next-line */
@@ -29,10 +30,12 @@ class LineChart extends PureComponent {
     grid: [42, 14, 20, 0],
     tooltip: true,
     legend: false,
+    languageType: 'report',
   };
 
   getOption = () => {
     const {
+      languageType,
       color,
       data: { items, count },
       intl: { formatMessage },
@@ -55,7 +58,7 @@ class LineChart extends PureComponent {
           color: '#000',
         },
         formatter(obj) {
-          return `${formatMessage({ id: 'report.commit.date' })}${obj.name}<br/>${formatMessage({ id: 'report.commit.count' })}${obj.value}`;
+          return `${formatMessage({ id: `${languageType}.commit.date` })}${obj.name}<br/>${formatMessage({ id: `${languageType}.commit.count` })}${obj.value}`;
         },
       },
       legend: {
@@ -104,7 +107,7 @@ class LineChart extends PureComponent {
         data: xAxis,
       },
       yAxis: {
-        name: formatMessage({ id: 'report.commit.num' }),
+        name: formatMessage({ id: `${languageType}.commit.num` }),
         min: Math.max(...yAxis) > 3 ? null : 0,
         max: Math.max(...yAxis) > 3 ? null : 4,
         minInterval: 1,
@@ -150,7 +153,7 @@ class LineChart extends PureComponent {
           color,
         },
       }, {
-        name: `${formatMessage({ id: 'total' })}`,
+        name: `${formatMessage({ id: `${languageType}.devops.total` })}`,
         type: 'line',
         color: '#fff',
       }],
@@ -174,7 +177,7 @@ class LineChart extends PureComponent {
             ? <Avatar size="small" src={avatar} />
             : <Avatar size="small">{name && userName ? name.toString().slice(0, 1).toUpperCase() : '?'}</Avatar>}
         </span>) : null}
-        {(id === 0) ? (<Tooltip placement="top" title={formatMessage({ id: 'report.commits.unknown' })}>{name}</Tooltip>) : name}
+        {(id === 0) ? (<Tooltip placement="top" title={formatMessage({ id: `${languageType}.commits.unknown` })}>{name}</Tooltip>) : name}
         {count ? <span className="c7n-report-commits-text">{count} commits</span> : null}
       </div>) : null}
       <ReactEchartsCore

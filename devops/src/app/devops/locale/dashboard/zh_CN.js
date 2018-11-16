@@ -1,15 +1,16 @@
 /* eslint-disable-next-line */
 const zh_CN = {
-  'env.none': '无应用',
-  'env.select': '选择应用',
-  more: '···',
-  total: '总次数',
+  'dashboard.environment.none': '无应用',
+  'dashboard.environment.select': '选择应用',
+  'dashboard.devops.more': '···',
+  'dashboard.devops.total': '总次数',
 
   // 代码提交
   'dashboard.commits': '查看代码提交详情',
-  'report.commit.num': '次数      ',
-  'report.commit.date': '日期：',
-  'report.commit.count': '提交次数：',
+  'dashboard.commit.num': '次数      ',
+  'dashboard.commit.date': '日期：',
+  'dashboard.commit.count': '提交次数：',
+  'dashboard.commits.unknown': '非平台用户提交汇总',
 
   // 构建详情
   'dashboard.build': '查看构建详情',

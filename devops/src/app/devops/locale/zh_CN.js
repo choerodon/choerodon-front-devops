@@ -1045,6 +1045,8 @@ const zhCN = {
 
   // 报表
   "report.head": "报告",
+  "report.devops.total": "总次数",
+  "report.devops.more": "...",
   "report.submission.head": "代码提交图",
   "report.code-quality.head": "代码质量报表",
   "report.deploy-duration.head": "部署时长图",

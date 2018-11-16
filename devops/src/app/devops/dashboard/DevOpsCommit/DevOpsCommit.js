@@ -64,6 +64,7 @@ class DevOpsCommit extends Component {
     const commits = ReportsStore.getCommits;
     const total = formatData(commits);
     return (<LineChart
+      languageType="dashboard"
       loading={ReportsStore.getCommitLoading}
       tooltip={false}
       hasAvatar={false}
@@ -129,13 +130,13 @@ class DevOpsCommit extends Component {
         className="c7ncd-db-select c7n-report-select"
         mode="multiple"
         value={appId}
-        placeholder={formatMessage({ id: 'env.select' })}
+        placeholder={formatMessage({ id: 'dashboard.environment.select' })}
         style={{ maxWidth: selectWidth, minWidth: 100 }}
         maxTagCount={2}
         choiceRender={this.choiceRender}
         maxTagPlaceholder={this.maxTagNode.bind(this, apps)}
         onChange={this.handleChange}
-        notFoundContent={formatMessage({ id: 'env.none' })}
+        notFoundContent={formatMessage({ id: 'dashboard.environment.none' })}
         choiceRemove={false}
       >
         {options}

@@ -79,7 +79,7 @@ class DevOpsBuild extends Component {
       <Select
         className={`c7ncd-dashboard-select ${noSelect ? 'c7n-dashboard-build-select' : ''}`}
         notFoundContent={formatMessage({ id: 'dashboard.noApp' })}
-        placeholder={formatMessage({ id: 'env.select' })}
+        placeholder={formatMessage({ id: 'dashboard.environment.select' })}
         onChange={this.handleChange}
         defaultValue={appId}
         value={appId}
