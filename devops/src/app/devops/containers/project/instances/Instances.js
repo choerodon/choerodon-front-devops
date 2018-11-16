@@ -109,6 +109,7 @@ class Instances extends Component {
     EnvOverviewStore.setTpEnvId(id);
     InstancesStore.setAppId(false);
     loadAppNameByEnv(projectId, id, getAppPage - 1, getAppPageSize);
+    InstancesStore.setIstTableFilter(null);
     this.reloadData();
   };
 
