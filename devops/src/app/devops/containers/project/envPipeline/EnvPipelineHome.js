@@ -154,7 +154,10 @@ class EnvPipelineHome extends Component {
       delGroup: null,
       moveRight: 300,
       createSelectedRowKeys: [],
+      createSelected: [],
       selectedRowKeys: false,
+      selected: [],
+      createSelectedTemp: [],
       cluster: null,
     };
   }
@@ -481,14 +484,14 @@ class EnvPipelineHome extends Component {
           selectedRowKeys: false,
           submitting: false,
         });
+        EnvPipelineStore.setSelectedRk([]);
+        EnvPipelineStore.setTagKeys([]);
       }).catch(error => {
         this.setState({
           submitting: false,
         });
         Choerodon.handleResponseError(error);
       });
-      EnvPipelineStore.setSelectedRk([]);
-      EnvPipelineStore.setTagKeys([]);
     }
   };
 
@@ -597,31 +600,48 @@ class EnvPipelineHome extends Component {
   onSelectChange = (keys, selected) => {
     const { EnvPipelineStore } = this.props;
     const { getTagKeys: tagKeys, getPrmMbr } = EnvPipelineStore;
-    const ids = _.map(getPrmMbr, p => p.id);
+    let s = [];
+    const a = tagKeys.length ? tagKeys.concat(selected) : this.state.selected.concat(selected);
+    // const tagKs = tagKeys.length ? _.map(tagKeys, p => p.iamUserId).concat(keys) : keys;
+    this.setState({ selected: a });
+    _.map(keys, o => {
+      if (_.filter(a, ['iamUserId', o]).length) {
+        s.push(_.filter(a, ['iamUserId', o])[0])
+      }
+    });
+    const ids = _.map(getPrmMbr, p => p.iamUserId);
     const delIds = _.difference(ids, keys);
     let selectIds = tagKeys;
     _.map(delIds, d => {
       _.map(selectIds, t => {
-        if (d === t.id) {
-          selectIds = _.reject(selectIds, s => s.id === d);
+        if (d === t.iamUserId) {
+          selectIds = _.reject(selectIds, s => s.iamUserId === d);
         }
       });
     });
-    const temp = _.map(selectIds, s => s.id);
+    const temp = _.map(selectIds, s => s.iamUserId);
     _.map(selected, k => {
-      if (!_.includes(temp, k.id)) {
+      if (!_.includes(temp, k.iamUserId)) {
         selectIds.push(k);
       }
     });
     EnvPipelineStore.setSelectedRk(keys);
-    EnvPipelineStore.setTagKeys(selectIds);
+    EnvPipelineStore.setTagKeys(s);
     this.setState({ selectedRowKeys: keys });
   };
 
   onCreateSelectChange = (keys, selected) => {
+    let s = [];
+    const a = this.state.createSelectedTemp.concat(selected);
+    this.setState({ createSelectedTemp: a });
+    _.map(keys, o => {
+      if (_.filter(a, ['iamUserId', o]).length) {
+        s.push(_.filter(a, ['iamUserId', o])[0])
+      }
+    });
     this.setState({
       createSelectedRowKeys: keys,
-      createSelected: selected,
+      createSelected: s,
     });
   };
 
@@ -849,7 +869,7 @@ class EnvPipelineHome extends Component {
     );
 
     const rowSelection = {
-      selectedRowKeys: selectedRowKeys || getSelectedRk,
+      selectedRowKeys: _.map(tagKeys, s => s.iamUserId),
       onChange: this.onSelectChange,
     };
 
