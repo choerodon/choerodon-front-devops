@@ -154,6 +154,7 @@ class Environment extends Component {
       delGroup: null,
       moveRight: 300,
       createSelectedRowKeys: [],
+      selectedRowKeys: false,
       cluster: null,
     };
   }
@@ -231,6 +232,7 @@ class Environment extends Component {
     this.setState({
       createSelectedRowKeys: [],
       createSelected: [],
+      selectedRowKeys: false,
     });
     EnvPipelineStore.setShow(false);
     EnvPipelineStore.setEnvData(null);
@@ -476,6 +478,7 @@ class Environment extends Component {
           EnvPipelineStore.setShow(false);
         }
         this.setState({
+          selectedRowKeys: false,
           submitting: false,
         });
       }).catch(error => {
@@ -483,7 +486,7 @@ class Environment extends Component {
           submitting: false,
         });
         Choerodon.handleResponseError(error);
-      });;
+      });
       EnvPipelineStore.setSelectedRk([]);
       EnvPipelineStore.setTagKeys([]);
     }
@@ -612,6 +615,7 @@ class Environment extends Component {
     });
     EnvPipelineStore.setSelectedRk(keys);
     EnvPipelineStore.setTagKeys(selectIds);
+    this.setState({ selectedRowKeys: keys });
   };
 
   onCreateSelectChange = (keys, selected) => {
@@ -693,6 +697,7 @@ class Environment extends Component {
       submitting,
       createSelectedRowKeys,
       createSelected,
+      selectedRowKeys,
       delEnvShow,
       disEnvShow,
       delGroupShow,
@@ -713,7 +718,7 @@ class Environment extends Component {
       getPrmMbr,
       getMbr,
       getTagKeys: tagKeys,
-      getSelectedRk: selectedRowKeys,
+      getSelectedRk,
       getEnvData: envData,
       getIst,
       getShow,
@@ -844,7 +849,7 @@ class Environment extends Component {
     );
 
     const rowSelection = {
-      selectedRowKeys,
+      selectedRowKeys: selectedRowKeys || getSelectedRk,
       onChange: this.onSelectChange,
     };
 
