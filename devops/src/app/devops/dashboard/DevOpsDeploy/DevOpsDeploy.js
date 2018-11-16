@@ -120,7 +120,7 @@ class DevOpsDeploy extends Component {
     const startTime = moment().subtract(6, 'days');
     const endTime = moment();
     const { dateArr, successArr, failArr, allArr } = this.state;
-    const val = [{ name: `${formatMessage({ id: 'report.build-number.fail' })}` }, { name: `${formatMessage({ id: 'report.build-number.success' })}` }, { name: `${formatMessage({ id: 'report.build-number.total' })}` }];
+    const val = [{ name: `${formatMessage({ id: 'dashboard.build-number.fail' })}` }, { name: `${formatMessage({ id: 'dashboard.build-number.success' })}` }, { name: `${formatMessage({ id: 'dashboard.build-number.total' })}` }];
     val[0].value = _.reduce(failArr, (sum, n) => sum + n, 0);
     val[1].value = _.reduce(successArr, (sum, n) => sum + n, 0);
     val[2].value = _.reduce(allArr, (sum, n) => sum + n, 0);
@@ -144,11 +144,11 @@ class DevOpsDeploy extends Component {
           if (params[1].value || params[0].value) {
             const total = params[0].value + params[1].value;
             return `<div>
-                <div>${formatMessage({ id: 'branch.issue.date' })}：${params[1].name}</div>
-                <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params[1].color};"></span>${formatMessage({ id: 'appstore.deploy' })}${params[1].seriesName}：${params[1].value}</div>
-                <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params[0].color};"></span>${formatMessage({ id: 'appstore.deploy' })}${params[0].seriesName}：${params[0].value}</div>
-                <div>${formatMessage({ id: 'appstore.deploy' })}${formatMessage({ id: 'report.build-number.total' })}：${total}</div>
-                <div>${formatMessage({ id: 'appstore.deploy' })}${formatMessage({ id: 'report.build-number.success.rate' })}：${((params[0].value / total) * 100).toFixed(2)}%</div>
+                <div>${formatMessage({ id: 'dashboard.issue.date' })}：${params[1].name}</div>
+                <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params[1].color};"></span>${formatMessage({ id: 'dashboard.deploy' })}${params[1].seriesName}：${params[1].value}</div>
+                <div><span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${params[0].color};"></span>${formatMessage({ id: 'dashboard.deploy' })}${params[0].seriesName}：${params[0].value}</div>
+                <div>${formatMessage({ id: 'dashboard.deploy' })}${formatMessage({ id: 'dashboard.build-number.total' })}：${total}</div>
+                <div>${formatMessage({ id: 'dashboard.deploy' })}${formatMessage({ id: 'dashboard.build-number.success.rate' })}：${((params[0].value / total) * 100).toFixed(2)}%</div>
               <div>`;
           }
         },
@@ -205,7 +205,7 @@ class DevOpsDeploy extends Component {
         },
       },
       yAxis: {
-        name: `${formatMessage({ id: 'report.build-number.yAxis' })}`,
+        name: `${formatMessage({ id: 'dashboard.build-number.yAxis' })}`,
         min: yAxis.allArr.length ? null : 0,
         max: yAxis.allArr.length ? null : 4,
         type: 'value',
@@ -239,7 +239,7 @@ class DevOpsDeploy extends Component {
       },
       series: [
         {
-          name: `${formatMessage({ id: 'report.build-number.success' })}`,
+          name: `${formatMessage({ id: 'dashboard.build-number.success' })}`,
           type: 'bar',
           itemStyle: {
             color: '#00BFA5',
@@ -253,7 +253,7 @@ class DevOpsDeploy extends Component {
           data: yAxis.successArr,
         },
         {
-          name: `${formatMessage({ id: 'report.build-number.fail' })}`,
+          name: `${formatMessage({ id: 'dashboard.build-number.fail' })}`,
           type: 'bar',
           itemStyle: {
             color: '#F44336',
@@ -267,7 +267,7 @@ class DevOpsDeploy extends Component {
           data: yAxis.failArr,
         },
         {
-          name: `${formatMessage({ id: 'report.build-number.total' })}`,
+          name: `${formatMessage({ id: 'dashboard.build-number.total' })}`,
           type: 'bar',
           color: 'transparent',
           stack: 'total',
