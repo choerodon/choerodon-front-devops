@@ -241,7 +241,7 @@ class Cluster extends Component {
     });
     ClusterStore.delCluster(organizationId, this.state.delId)
       .then((data) => {
-        if (data && data.error) {
+        if (data && data.failed) {
           Choerodon.prompt(data.message);
           this.setState({
             btnLoading: false,
