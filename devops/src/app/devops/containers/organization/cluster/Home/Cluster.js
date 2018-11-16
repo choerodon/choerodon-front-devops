@@ -97,6 +97,8 @@ class Cluster extends Component {
       sideType: '',
       createSelectedRowKeys: [],
       createSelected: [],
+      selected: [],
+      createSelectedTemp: [],
       selectedRowKeys: false,
       token: null,
       delId: null,
@@ -121,9 +123,17 @@ class Cluster extends Component {
   };
 
   onCreateSelectChange = (keys, selected) => {
+    let s = [];
+    const a = this.state.createSelectedTemp.concat(selected);
+    this.setState({ createSelectedTemp: a });
+    _.map(keys, o => {
+      if (_.filter(a, ['id', o]).length) {
+        s.push(_.filter(a, ['id', o])[0])
+      }
+    });
     this.setState({
       createSelectedRowKeys: keys,
-      createSelected: selected,
+      createSelected: s,
     });
   };
 
@@ -138,6 +148,14 @@ class Cluster extends Component {
       getTagKeys: tagKeys,
       getPrmPro: prmPro,
     } = ClusterStore;
+    let s = [];
+    const a = tagKeys.length ? tagKeys.concat(selected) : this.state.selected.concat(selected);
+    this.setState({ selected: a });
+    _.map(keys, o => {
+      if (_.filter(a, ['id', o]).length) {
+        s.push(_.filter(a, ['id', o])[0])
+      }
+    });
     const ids = _.map(prmPro, p => p.id);
     const delIds = _.difference(ids, keys);
     let selectIds = tagKeys;
@@ -155,7 +173,7 @@ class Cluster extends Component {
       }
     });
     ClusterStore.setSelectedRk(keys);
-    ClusterStore.setTagKeys(selectIds);
+    ClusterStore.setTagKeys(s);
     this.setState({ selectedRowKeys: keys });
   };
 
@@ -223,8 +241,8 @@ class Cluster extends Component {
     });
     ClusterStore.delCluster(organizationId, this.state.delId)
       .then((data) => {
-        if (data && data.failed) {
-          Choerodon.prompt(res.message);
+        if (data && data.error) {
+          Choerodon.prompt(data.message);
           this.setState({
             btnLoading: false,
           })
@@ -347,7 +365,7 @@ class Cluster extends Component {
       onChange: this.onCreateSelectChange,
     };
     const rowSelection = {
-      selectedRowKeys: selectedRowKeys || getSelectedRk,
+      selectedRowKeys: _.map(tagKeys, s => s.id),
       onChange: this.onSelectChange,
     };
     const tagCreateDom = _.map(createSelected, t => <Tag className="c7n-env-tag" key={t.id}>{t.name} {t.code}</Tag>);
