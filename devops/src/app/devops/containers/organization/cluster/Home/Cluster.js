@@ -97,6 +97,7 @@ class Cluster extends Component {
       sideType: '',
       createSelectedRowKeys: [],
       createSelected: [],
+      selectedRowKeys: false,
       token: null,
       delId: null,
       clsName: '',
@@ -155,6 +156,7 @@ class Cluster extends Component {
     });
     ClusterStore.setSelectedRk(keys);
     ClusterStore.setTagKeys(selectIds);
+    this.setState({ selectedRowKeys: keys });
   };
 
   cbChange = (e) => {
@@ -337,15 +339,15 @@ class Cluster extends Component {
       getShell: shell,
       getTagKeys: tagKeys,
       getTableLoading: tableLoading,
-      getSelectedRk: selectedRowKeys,
+      getSelectedRk,
     } = ClusterStore;
-    const { copyMsg, token, sideType, checked, createSelectedRowKeys, createSelected } = this.state;
+    const { copyMsg, token, sideType, checked, createSelectedRowKeys, createSelected, selectedRowKeys } = this.state;
     const rowCreateSelection = {
       selectedRowKeys: createSelectedRowKeys,
       onChange: this.onCreateSelectChange,
     };
     const rowSelection = {
-      selectedRowKeys,
+      selectedRowKeys: selectedRowKeys || getSelectedRk,
       onChange: this.onSelectChange,
     };
     const tagCreateDom = _.map(createSelected, t => <Tag className="c7n-env-tag" key={t.id}>{t.name} {t.code}</Tag>);
@@ -637,7 +639,7 @@ class Cluster extends Component {
                 ClusterStore.setSelectedRk([]);
                 ClusterStore.setTagKeys([]);
                 this.loadCluster();
-                this.setState({ show: false, submitting: false });
+                this.setState({ show: false, submitting: false, selectedRowKeys: false });
               }
             });
         }
@@ -653,7 +655,7 @@ class Cluster extends Component {
     if (this.state.sideType === 'token') {
       this.loadCluster();
     }
-    this.setState({ checked: true, show: false, createSelectedRowKeys: [], createSelected: [] });
+    this.setState({ checked: true, show: false, createSelectedRowKeys: [], createSelected: [], selectedRowKeys: false });
     ClusterStore.setClsData(null);
     ClusterStore.setSelectedRk([]);
     ClusterStore.setInfo({
