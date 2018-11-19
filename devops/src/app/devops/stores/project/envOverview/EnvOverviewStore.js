@@ -194,7 +194,7 @@ class EnvOverviewStore {
                   const appPageSize = Math.floor((window.innerWidth - 350) / 200) * 3;
                   InstancesStore.setAppPageSize(appPageSize);
                   loadAppNameByEnv(projectId, this.tpEnvId, 0, appPageSize);
-                  loadInstanceAll(projectId, { envId: this.tpEnvId, appId: false }).catch((err) => {
+                  loadInstanceAll(projectId, { envId: this.tpEnvId, appId: getAppId }).catch((err) => {
                     InstancesStore.changeLoading(false);
                   });
                 }

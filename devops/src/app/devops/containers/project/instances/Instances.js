@@ -614,7 +614,9 @@ class Instances extends Component {
         service={[
           'devops-service.application-instance.pageByOptions',
           'devops-service.application.pageByEnvIdAndStatus',
+          'devops-service.application-instance.listResources',
           'devops-service.devops-environment.listByProjectIdAndActive',
+          'devops-service.application-version.getUpgradeAppVersion',
           'devops-service.application-instance.listByAppId',
           'devops-service.application-instance.queryValues',
           'devops-service.application-instance.formatValue',
@@ -622,6 +624,7 @@ class Instances extends Component {
           'devops-service.application-instance.start',
           'devops-service.application-instance.deploy',
           'devops-service.application-instance.delete',
+          'devops-service.application-instance.restart',
         ]}
       >
         {envData && envData.length && envId  ? <Fragment><Header title={<FormattedMessage id="ist.head" />}>

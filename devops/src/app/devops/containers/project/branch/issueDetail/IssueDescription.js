@@ -1,5 +1,6 @@
 /* eslint-disable react/no-danger */
 import React, { Component } from 'react';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import Lightbox from 'react-image-lightbox';
 import './IssueDescription.scss';
 
@@ -16,16 +17,6 @@ class IssueDescription extends Component {
   }
 
   componentDidMount() {
-    // const imgs = document.querySelector('img');
-    // document.querySelector('img').addEventListener('click', (e) => {
-    //   window.console.info(e.target.nodeName);
-    //   this.setState({
-    //     open: true,
-    //     src: e.target.src,
-    //   });
-    //   e.stopPropagation();
-    // });
-    const that = this;
     window.addEventListener('click', (e) => {
       if (e.target.nodeName === 'IMG' && this.props.data && this.props.data.search(e.target.src) > -1) {
         e.stopPropagation();
@@ -44,6 +35,7 @@ class IssueDescription extends Component {
 
   getSubject = (data) => {
     const replyContents = [];
+    const { intl: { formattedMessage }} = this.props;
     if (data) {
       JSON.parse(data).forEach((item, index) => {
         if (item.insert && item.insert.image) {
@@ -53,8 +45,7 @@ class IssueDescription extends Component {
                 role="none"
                 src={item.insert.image}
                 style={{ display: 'block', maxWidth: '600px' }}
-                alt={Choerodon.getMessage('图片加载中...', 'Image Loading...')}
-                // onClick={() => this.onOpenLightboxChange(`${index}`)}
+                alt={formattedMessage({id: 'branch.issue.img' })}
               />
               {this.state.isOpen[`${index}`] ? (
                 <Lightbox
@@ -88,7 +79,7 @@ class IssueDescription extends Component {
       open: true,
       src,
     });
-  }
+  };
 
   escape = str => str.replace(/<\/script/g, '<\\/script').replace(/<!--/g, '<\\!--');
 
@@ -110,4 +101,4 @@ class IssueDescription extends Component {
   }
 }
 
-export default IssueDescription;
+export default injectIntl(IssueDescription);
