@@ -135,10 +135,10 @@ class BranchStore {
   };
 
 
-  loadIssueById =(proId, id) => {
+  loadIssueById = (proId, id, orgId = AppState.currentMenuType.organizationId) => {
     this.setIssueDto(null);
     this.changeLoading(true);
-    return axios.get(`/agile/v1/projects/${proId}/issues/${id}`)
+    return axios.get(`/agile/v1/projects/${proId}/issues/${id}?organizationId=${orgId}`)
       .then((datas) => {
         this.changeLoading(false);
         const res = handleProptError(datas);

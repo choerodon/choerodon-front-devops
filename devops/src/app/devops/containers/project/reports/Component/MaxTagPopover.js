@@ -10,7 +10,7 @@ export default function MaxTagPopover(props) {
   const moreOption = [];
   _.forEach(value, (item, index) => {
     const appName = _.find(dataSource, ['id', item]);
-    moreOption.push(<span key={item}>{appName.name}{index < value.length - 1 ? '，' : ''}</span>);
+    appName && moreOption.push(<span key={item}>{appName.name}{index < value.length - 1 ? '，' : ''}</span>);
   });
   return (
     <Popover

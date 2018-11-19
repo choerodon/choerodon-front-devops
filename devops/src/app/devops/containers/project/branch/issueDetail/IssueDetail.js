@@ -1,16 +1,35 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import { Modal, Form, Progress } from 'choerodon-ui';
+import { Modal, Form, Progress, Icon } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import './Issue.scss';
 import '../commom.scss';
 import IssueDescription from './IssueDescription';
 import LoadingBar from '../../../../components/loadingBar';
+import TimePopover from '../../../../components/timePopover';
 
 const Sidebar = Modal.Sidebar;
 const QuillDeltaToHtmlConverter = require('quill-delta-to-html');
+
+const STATUS_ICON = {
+  done: {
+    icon: 'check_circle',
+    color: '#1bb06e',
+    bgColor: '',
+  },
+  todo: {
+    icon: 'watch_later',
+    color: '#ffae02',
+    bgColor: '',
+  },
+  doing: {
+    icon: 'timelapse',
+    color: '#4a93fc',
+    bgColor: '',
+  },
+};
 
 @observer
 class IssueDetail extends Component {
@@ -145,7 +164,7 @@ class IssueDetail extends Component {
       return JSON.parse(description);
     }
     return description || '';
-  }
+  };
 
   render() {
     const { visible, intl, store } = this.props;
@@ -174,11 +193,31 @@ class IssueDetail extends Component {
           <section className="branch-issue-status">
             <div className="issue-status">
               <span className="issue-status-icon-large">
-                <i className={`icon icon-${this.getStatusIcon(issue.statusCode)}`} style={{ color: issue.statusColor }} />
+                <span
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: '50%',
+                    background: STATUS_ICON[issue.statusMapDTO.type] ? `${STATUS_ICON[issue.statusMapDTO.type].color}33` : '#ffae0233',
+                    marginRight: 12,
+                    flexShrink: 0,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Icon
+                    type={STATUS_ICON[issue.statusMapDTO.type] ? STATUS_ICON[issue.statusMapDTO.type].icon : 'timelapse'}
+                    style={{
+                      fontSize: '24px',
+                      color: STATUS_ICON[issue.statusMapDTO.type] ? STATUS_ICON[issue.statusMapDTO.type].color : '#ffae02',
+                    }}
+                  />
+                </span>
               </span>
               <div>
                 <div className="issue-status-title">{<FormattedMessage id="network.column.status" />}</div>
-                <div className="issue-status-text" style={{ color: issue.statusColor }}>{issue.statusName}</div>
+                <div className="issue-status-text" style={{ color: issue.statusColor }}>{issue.statusMapDTO.name}</div>
               </div>
             </div>
             <div className="issue-status">
@@ -187,7 +226,7 @@ class IssueDetail extends Component {
               </span>
               <div>
                 <div className="issue-status-title">{<FormattedMessage id="branch.issue.priority" />}</div>
-                <div className="issue-status-text" style={{ color: this.getAssigeColor(issue.priorityCode) }}>{issue.priorityName}</div>
+                <div className="issue-status-text" style={{ color: issue.priorityDTO.colour }}>{issue.priorityDTO.name}</div>
               </div>
             </div>
             <div className="issue-status">
@@ -199,6 +238,15 @@ class IssueDetail extends Component {
                 <div className="issue-status-text">{issue.activeSprint ? issue.activeSprint.sprintName : formatMessage({ id: 'branch.issue.no' })}</div>
               </div>
             </div>
+            {issue.storyPoints ? <div className="issue-status">
+              <span className="issue-status-icon-small" style={{ backgroundColor: 'rgb(216, 216, 216)' }}>
+                <i className="icon icon-date_range" />
+              </span>
+              <div>
+                <div className="issue-status-title">{this.props.intl.formatMessage({ id: 'branch.issue.story.point' })}</div>
+                <div className="issue-status-text">{issue.storyPoints}{this.props.intl.formatMessage({ id: 'branch.issue.story.point_p' })}</div>
+              </div>
+            </div> : null}
             <div className="issue-status">
               <span className="issue-status-icon-small" style={{ backgroundColor: 'rgb(216, 216, 216)' }}>
                 <i className="icon icon-event_note" />
@@ -227,10 +275,6 @@ class IssueDetail extends Component {
                   <span className="issue-detail-content-title">{formatMessage({ id: 'branch.issue.label' })}:</span>
                   {issue.labelIssueRelDTOList.length
                     ? issue.labelIssueRelDTOList.map(label => <span key={label.labelName} className="issue-detail-label-value">{label.labelName}</span>) : formatMessage({ id: 'branch.issue.no' })}
-                </div>
-                <div>
-                  <span className="issue-detail-content-title">{formatMessage({ id: 'branch.issue.influenceVer' })}:</span>
-                  {issue.typeCode === 'bug' && issue.versionIssueRelDTOList.length ? issue.versionIssueRelDTOList.map(label => (label.relationType === 'influence' ? <span key={label.name} className="issue-detail-module-value">{label.name}</span> : '无')) : '无' }
                 </div>
                 <div>
                   <span className="issue-detail-content-title">{formatMessage({ id: 'branch.issue.fixVer' })}:</span>
@@ -270,11 +314,15 @@ class IssueDetail extends Component {
                   <p className="issue-detail-title-bold">{formatMessage({ id: 'branch.issue.date' })}</p>
                   <div>
                     <span className="issue-detail-content-title" style={{ marginLeft: 0 }}>{formatMessage({ id: 'branch.issue.createTime' })}：</span>
-                    <span>{this.formatDate(issue.creationDate)}</span>
+                    <div style={{ display: 'inline-block' }}>
+                      <TimePopover content={issue.creationDate} />
+                    </div>
                   </div>
                   <div>
                     <span className="issue-detail-content-title" style={{ marginLeft: 0 }}>{formatMessage({ id: 'branch.issue.updateTime' })}:</span>
-                    <span>{this.formatDate(issue.lastUpdateDate)}</span>
+                    <div style={{ display: 'inline-block' }}>
+                      <TimePopover content={issue.lastUpdateDate} />
+                    </div>
                   </div>
                 </div>
               </div>

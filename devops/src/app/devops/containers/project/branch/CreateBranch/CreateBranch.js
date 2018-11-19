@@ -82,7 +82,10 @@ class CreateBranch extends Component {
         <div style={{ color }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
       </Tooltip>
       <Tooltip title={s.summary}>
-        <span className="branch-issue-content"><span>{s.issueNum}</span></span>
+        <span className="branch-issue-content">
+          <span style={{ color: 'rgb(0,0,0,0.65)' }}>{s.issueNum}</span>
+          <MouserOverWrapper style={{ display: 'inline-block', verticalAlign: 'sub' }} width="350px" text={s.summary}>{s.summary}</MouserOverWrapper>
+        </span>
       </Tooltip>
     </span>);
   };
