@@ -1,17 +1,17 @@
-import React, { PureComponent, Fragment } from 'react';
-import ReactEchartsCore from 'echarts-for-react/lib/core';
-import PropTypes from 'prop-types';
-import { Spin, Avatar, Tooltip } from 'choerodon-ui';
-import echarts from 'echarts/lib/echarts';
-import { injectIntl } from 'react-intl';
-import { getNear7Day, dateSplitAndPad, pickEntries } from '../../../../utils';
+import React, { PureComponent, Fragment } from "react";
+import ReactEchartsCore from "echarts-for-react/lib/core";
+import PropTypes from "prop-types";
+import { Spin, Avatar, Tooltip } from "choerodon-ui";
+import echarts from "echarts/lib/echarts";
+import { injectIntl } from "react-intl";
+import { getNear7Day, dateSplitAndPad, pickEntries } from "../../../../utils";
 
-import 'echarts/lib/chart/line';
-import 'echarts/lib/component/tooltip';
-import 'echarts/lib/component/title';
-import 'echarts/lib/component/grid';
-import 'echarts/lib/component/legend';
-import './Submission.scss';
+import "echarts/lib/chart/line";
+import "echarts/lib/component/tooltip";
+import "echarts/lib/component/title";
+import "echarts/lib/component/grid";
+import "echarts/lib/component/legend";
+import "./Submission.scss";
 
 class LineChart extends PureComponent {
   static propTypes = {
@@ -30,7 +30,7 @@ class LineChart extends PureComponent {
     grid: [42, 14, 20, 0],
     tooltip: true,
     legend: false,
-    languageType: 'report',
+    languageType: "report",
   };
 
   getOption = () => {
@@ -52,18 +52,22 @@ class LineChart extends PureComponent {
         show: false,
       },
       tooltip: {
-        trigger: 'item',
-        backgroundColor: '#fff',
+        trigger: "item",
+        backgroundColor: "#fff",
         textStyle: {
-          color: '#000',
+          color: "#000",
         },
         formatter(obj) {
-          return `${formatMessage({ id: `${languageType}.commit.date` })}${obj.name}<br/>${formatMessage({ id: `${languageType}.commit.count` })}${obj.value}`;
+          return `${formatMessage({ id: `${languageType}.commit.date` })}${
+            obj.name
+          }<br/>${formatMessage({ id: `${languageType}.commit.count` })}${
+            obj.value
+          }`;
         },
       },
       legend: {
         show: legend,
-        left: 'right',
+        left: "right",
         itemWidth: 14,
         itemGap: 20,
         formatter(name) {
@@ -88,20 +92,23 @@ class LineChart extends PureComponent {
         axisLine: {
           show: true,
           lineStyle: {
-            color: '#eee',
+            color: "#eee",
           },
           onZero: true,
         },
         splitLine: {
           show: true,
           lineStyle: {
-            color: ['#eee'],
+            color: ["#eee"],
           },
         },
         axisLabel: {
-          color: 'rgba(0,0,0,0.65)',
+          color: "rgba(0,0,0,0.65)",
           formatter(item, idx) {
-            return item.split('-').slice(1).join('/');
+            return item
+              .split("-")
+              .slice(1)
+              .join("/");
           },
         },
         data: xAxis,
@@ -112,12 +119,12 @@ class LineChart extends PureComponent {
         max: Math.max(...yAxis) > 3 ? null : 4,
         minInterval: 1,
         nameTextStyle: {
-          color: '#000',
+          color: "#000",
         },
         axisLine: {
           show: true,
           lineStyle: {
-            color: '#eee',
+            color: "#eee",
           },
         },
         axisTick: {
@@ -126,37 +133,40 @@ class LineChart extends PureComponent {
         splitLine: {
           show: true,
           lineStyle: {
-            color: ['#eee'],
+            color: ["#eee"],
           },
         },
         axisLabel: {
-          color: 'rgba(0,0,0,0.65)',
+          color: "rgba(0,0,0,0.65)",
         },
-        type: 'value',
+        type: "value",
       },
-      series: [{
-        data: yAxis,
-        type: 'line',
-        smooth: true,
-        smoothMonotone: 'x',
-        symbol: 'circle',
-        itemStyle: {
-          normal: {
+      series: [
+        {
+          data: yAxis,
+          type: "line",
+          smooth: true,
+          smoothMonotone: "x",
+          symbol: "circle",
+          itemStyle: {
+            normal: {
+              color,
+            },
+          },
+          areaStyle: {
+            color,
+            opacity: "0.5",
+          },
+          lineStyle: {
             color,
           },
         },
-        areaStyle: {
-          color,
-          opacity: '0.5',
+        {
+          name: `${formatMessage({ id: `${languageType}.devops.total` })}`,
+          type: "line",
+          color: "#fff",
         },
-        lineStyle: {
-          color,
-        },
-      }, {
-        name: `${formatMessage({ id: `${languageType}.devops.total` })}`,
-        type: 'line',
-        color: '#fff',
-      }],
+      ],
     };
   };
 
@@ -169,25 +179,52 @@ class LineChart extends PureComponent {
       hasAvatar,
       intl: { formatMessage },
       tooltip,
+      languageType,
     } = this.props;
-    return (<Spin spinning={loading}>
-      {tooltip ? (<div className="c7n-report-commits-title">
-        {hasAvatar ? (<span className="c7n-report-commits-avatar">
-          {avatar
-            ? <Avatar size="small" src={avatar} />
-            : <Avatar size="small">{name && userName ? name.toString().slice(0, 1).toUpperCase() : '?'}</Avatar>}
-        </span>) : null}
-        {(id === 0) ? (<Tooltip placement="top" title={formatMessage({ id: `${languageType}.commits.unknown` })}>{name}</Tooltip>) : name}
-        {count ? <span className="c7n-report-commits-text">{count} commits</span> : null}
-      </div>) : null}
-      <ReactEchartsCore
-        echarts={echarts}
-        option={this.getOption()}
-        style={style}
-        notMerge
-        lazyUpdate
-      />
-    </Spin>);
+    return (
+      <Spin spinning={loading}>
+        {tooltip ? (
+          <div className="c7n-report-commits-title">
+            {hasAvatar ? (
+              <span className="c7n-report-commits-avatar">
+                {avatar ? (
+                  <Avatar size="small" src={avatar} />
+                ) : (
+                  <Avatar size="small">
+                    {name && userName
+                      ? name
+                          .toString()
+                          .slice(0, 1)
+                          .toUpperCase()
+                      : "?"}
+                  </Avatar>
+                )}
+              </span>
+            ) : null}
+            {id === 0 ? (
+              <Tooltip
+                placement="top"
+                title={formatMessage({ id: `${languageType}.commits.unknown` })}
+              >
+                {name}
+              </Tooltip>
+            ) : (
+              name
+            )}
+            {count ? (
+              <span className="c7n-report-commits-text">{count} commits</span>
+            ) : null}
+          </div>
+        ) : null}
+        <ReactEchartsCore
+          echarts={echarts}
+          option={this.getOption()}
+          style={style}
+          notMerge
+          lazyUpdate
+        />
+      </Spin>
+    );
   }
 }
 

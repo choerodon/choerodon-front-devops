@@ -1,20 +1,20 @@
-import React, { Component, Fragment } from 'react';
-import { withRouter } from 'react-router-dom';
-import { observer } from 'mobx-react';
-import { injectIntl, FormattedMessage } from 'react-intl';
-import { Page, Header, Content, stores } from 'choerodon-front-boot';
-import { Select, Button, Popover } from 'choerodon-ui';
-import _ from 'lodash';
-import moment from 'moment';
-import ChartSwitch from '../Component/ChartSwitch';
-import LineChart from './LineChart';
-import CommitHistory from './CommitHistory';
-import TimePicker from '../Component/TimePicker';
-import NoChart from '../Component/NoChart';
-import MaxTagPopover from '../Component/MaxTagPopover';
-import './Submission.scss';
-import '../../../main.scss';
-import LoadingBar from '../../../../components/loadingBar/LoadingBar';
+import React, { Component, Fragment } from "react";
+import { withRouter } from "react-router-dom";
+import { observer } from "mobx-react";
+import { injectIntl, FormattedMessage } from "react-intl";
+import { Page, Header, Content, stores } from "choerodon-front-boot";
+import { Select, Button, Popover } from "choerodon-ui";
+import _ from "lodash";
+import moment from "moment";
+import ChartSwitch from "../Component/ChartSwitch";
+import LineChart from "./LineChart";
+import CommitHistory from "./CommitHistory";
+import TimePicker from "../Component/TimePicker";
+import NoChart from "../Component/NoChart";
+import MaxTagPopover from "../Component/MaxTagPopover";
+import "./Submission.scss";
+import "../../../main.scss";
+import LoadingBar from "../../../../components/loadingBar/LoadingBar";
 
 /**
  * 将数据转为图表可用格式
@@ -29,7 +29,7 @@ function formatData(data) {
     // total.items = _.countBy(totalCommitsDate, item => item.slice(0, 10));
     total.items = totalCommitsDate.slice();
     total.count = totalCommitsDate.length;
-    _.forEach(commitFormUserDTOList, (item) => {
+    _.forEach(commitFormUserDTOList, item => {
       const { name, imgUrl, commitDates, id } = item;
       const userTotal = {
         name,
@@ -59,7 +59,7 @@ class Submission extends Component {
     this.state = {
       appId: null,
       page: 0,
-      dateType: 'seven',
+      dateType: "seven",
     };
   }
 
@@ -74,7 +74,7 @@ class Submission extends Component {
     ReportsStore.setAllApps([]);
     ReportsStore.setCommits({});
     ReportsStore.setCommitsRecord([]);
-    ReportsStore.setStartTime(moment().subtract(6, 'days'));
+    ReportsStore.setStartTime(moment().subtract(6, "days"));
     ReportsStore.setEndTime(moment());
     ReportsStore.setStartDate(null);
     ReportsStore.setEndDate(null);
@@ -86,22 +86,43 @@ class Submission extends Component {
    * 应用选择
    * @param e
    */
-  handleSelect = (e) => {
-    const { ReportsStore: { loadCommits, loadCommitsRecord, getStartTime, getEndTime } } = this.props;
+  handleSelect = e => {
+    const {
+      ReportsStore: {
+        loadCommits,
+        loadCommitsRecord,
+        getStartTime,
+        getEndTime,
+      },
+    } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    const startTime = getStartTime.format().split('T')[0].replace(/-/g, '/');
-    const endTime = getEndTime.format().split('T')[0].replace(/-/g, '/');
+    const startTime = getStartTime
+      .format()
+      .split("T")[0]
+      .replace(/-/g, "/");
+    const endTime = getEndTime
+      .format()
+      .split("T")[0]
+      .replace(/-/g, "/");
     this.setState({ appId: e });
     loadCommits(projectId, startTime, endTime, e);
     loadCommitsRecord(projectId, startTime, endTime, e, 0);
   };
 
-  handlePageChange = (page) => {
-    const { ReportsStore: { loadCommitsRecord, getStartTime, getEndTime } } = this.props;
+  handlePageChange = page => {
+    const {
+      ReportsStore: { loadCommitsRecord, getStartTime, getEndTime },
+    } = this.props;
     const { appId } = this.state;
     const { id: projectId } = AppState.currentMenuType;
-    const startTime = getStartTime.format().split('T')[0].replace(/-/g, '/');
-    const endTime = getEndTime.format().split('T')[0].replace(/-/g, '/');
+    const startTime = getStartTime
+      .format()
+      .split("T")[0]
+      .replace(/-/g, "/");
+    const endTime = getEndTime
+      .format()
+      .split("T")[0]
+      .replace(/-/g, "/");
     this.setState({ page: page - 1 });
     loadCommitsRecord(projectId, startTime, endTime, appId, page - 1);
   };
@@ -115,7 +136,9 @@ class Submission extends Component {
         getStartTime,
         getEndTime,
       },
-      history: { location: { state } },
+      history: {
+        location: { state },
+      },
     } = this.props;
     let repoAppId = [];
     if (state && state.appId) {
@@ -123,9 +146,15 @@ class Submission extends Component {
     }
     const { id: projectId } = AppState.currentMenuType;
     const { page, appId, dateType } = this.state;
-    const startTime = getStartTime.format().split('T')[0].replace(/-/g, '/');
-    const endTime = getEndTime.format().split('T')[0].replace(/-/g, '/');
-    loadAllApps(projectId).then((data) => {
+    const startTime = getStartTime
+      .format()
+      .split("T")[0]
+      .replace(/-/g, "/");
+    const endTime = getEndTime
+      .format()
+      .split("T")[0]
+      .replace(/-/g, "/");
+    loadAllApps(projectId).then(data => {
       if (data && data.length) {
         let selectApp = appId || _.map(data, item => item.id);
         if (!appId) {
@@ -146,7 +175,9 @@ class Submission extends Component {
    */
   handleDateChoose = type => this.setState({ dateType: type });
 
-  maxTagNode = (data, value) => <MaxTagPopover dataSource={data} value={value} />;
+  maxTagNode = (data, value) => (
+    <MaxTagPopover dataSource={data} value={value} />
+  );
 
   render() {
     const {
@@ -154,8 +185,10 @@ class Submission extends Component {
       history,
       ReportsStore,
     } = this.props;
-    const { location: { state } } = history;
-    const  backPath = state && state.backPath;
+    const {
+      location: { state },
+    } = history;
+    const backPath = state && state.backPath;
     const {
       getCommits,
       getStartTime,
@@ -171,28 +204,35 @@ class Submission extends Component {
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const { appId, dateType } = this.state;
     const { total, user } = formatData(getCommits);
-    const options = _.map(getAllApps, item => (<Option key={item.id} value={item.id}>{item.name}</Option>));
-    const personChart = _.map(user, item => (<div key={item.id} className="c7n-report-submission-item">
-      <LineChart
-        loading={getCommitLoading}
-        name={item.name || 'Unknown'}
-        color="#ff9915"
-        style={{ width: '100%', height: 176 }}
-        data={item}
-        start={getStartTime}
-        end={getEndTime}
-        hasAvatar
-      />
-    </div>));
+    const options = _.map(getAllApps, item => (
+      <Option key={item.id} value={item.id}>
+        {item.name}
+      </Option>
+    ));
+    const personChart = _.map(user, item => (
+      <div key={item.id} className="c7n-report-submission-item">
+        <LineChart
+          languageType="report"
+          loading={getCommitLoading}
+          name={item.name || "Unknown"}
+          color="#ff9915"
+          style={{ width: "100%", height: 176 }}
+          data={item}
+          start={getStartTime}
+          end={getEndTime}
+          hasAvatar
+        />
+      </div>
+    ));
 
-    const content = (getAllApps.length
-      ? (<Fragment>
+    const content = getAllApps.length ? (
+      <Fragment>
         <div className="c7n-report-control c7n-report-select">
           <Select
             className=" c7n-report-control-select"
             mode="multiple"
-            label={formatMessage({ id: 'chooseApp' })}
-            placeholder={formatMessage({ id: 'report.app.noselect' })}
+            label={formatMessage({ id: "chooseApp" })}
+            placeholder={formatMessage({ id: "report.app.noselect" })}
             maxTagCount={3}
             value={appId || []}
             maxTagPlaceholder={this.maxTagNode.bind(this, getAllApps)}
@@ -215,10 +255,11 @@ class Submission extends Component {
         <div className="c7n-report-submission clearfix">
           <div className="c7n-report-submission-overview">
             <LineChart
+              languageType="report"
               loading={getCommitLoading}
               name="提交情况"
               color="#4677dd"
-              style={{ width: '100%', height: 276 }}
+              style={{ width: "100%", height: 276 }}
               data={total}
               hasAvatar={false}
               start={getStartTime}
@@ -234,36 +275,40 @@ class Submission extends Component {
           </div>
         </div>
         <div className="c7n-report-submission-wrap clearfix">{personChart}</div>
-      </Fragment>)
-      : <NoChart title={formatMessage({ id: 'report.no-app' })} des={formatMessage({ id: 'report.no-app-des' })} />);
+      </Fragment>
+    ) : (
+      <NoChart
+        title={formatMessage({ id: "report.no-app" })}
+        des={formatMessage({ id: "report.no-app-des" })}
+      />
+    );
 
-    return (<Page
-      className="c7n-region"
-      service={[
-        'devops-service.application.listByActive',
-        'devops-service.devops-gitlab-commit.getCommits',
-        'devops-service.devops-gitlab-commit.getRecordCommits',
-      ]}
-    >
-      <Header
-        title={formatMessage({ id: 'report.submission.head' })}
-        backPath={backPath || `/devops/reports?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`}
+    return (
+      <Page
+        className="c7n-region"
+        service={[
+          "devops-service.application.listByActive",
+          "devops-service.devops-gitlab-commit.getCommits",
+          "devops-service.devops-gitlab-commit.getRecordCommits",
+        ]}
       >
-        <ChartSwitch
-          history={history}
-          current="submission"
-        />
-        <Button
-          icon="refresh"
-          onClick={this.handleRefresh}
+        <Header
+          title={formatMessage({ id: "report.submission.head" })}
+          backPath={
+            backPath ||
+            `/devops/reports?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`
+          }
         >
-          <FormattedMessage id="refresh" />
-        </Button>
-      </Header>
-      <Content code="report.submission" values={{ name }}>
-        {getIsRefresh ? <LoadingBar /> : content}
-      </Content>
-    </Page>);
+          <ChartSwitch history={history} current="submission" />
+          <Button icon="refresh" onClick={this.handleRefresh}>
+            <FormattedMessage id="refresh" />
+          </Button>
+        </Header>
+        <Content code="report.submission" values={{ name }}>
+          {getIsRefresh ? <LoadingBar /> : content}
+        </Content>
+      </Page>
+    );
   }
 }
 
