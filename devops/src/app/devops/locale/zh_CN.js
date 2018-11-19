@@ -283,24 +283,27 @@ const pageDetail = {
   "report.link": `${docServer}/user-guide/report/devops-report/`,
 
   // 开发控制台
-  'devCs.title': '应用"{name}"的开发控制台',
+  "devCs.title": '应用"{name}"的开发控制台',
 
   // 集群
-  'cluster.description': 'Kubernetes集群是一个用于运行Kubernetes的托管群组。您可在下方对各个集群进行管理。',
-  'cluster.title': '组织"{name}"的Kubernetes集群',
-  'cluster.link': `${docServer}/user-guide/cluster-management/cluster`,
-  'cluster.create.title': '在组织"{clsName}"中创建集群',
-  'cluster.create.description': '请在下面输入集群编码、名称、描述，用以创建新集群。同时，您可以选择为所创集群配置公开范围，配置后，只有被勾选项目下的环境才能连接到该集群。',
-  'cluster.create.link': `${docServer}/user-guide/cluster-management/cluster`,
-  'cluster.key.title': '复制集群"{clsName}"的指令',
-  'cluster.key.description': '复制下文代码至Kubernetes运行，与平台建立链接。',
-  'cluster.key.link': `${docServer}/user-guide/cluster-management/cluster/`,
-  'cluster.token.title': '复制集群"{clsName}"的指令',
-  'cluster.token.description': '复制下文代码至Kubernetes运行，与平台建立链接。',
-  'cluster.token.link': `${docServer}/user-guide/cluster-management/cluster/`,
-  'cluster.edit.title': '对集群"{clsName}"进行修改',
-  'cluster.edit.description': '您可在此修改集群的名称、描述以及集群的公开范围。',
-  'cluster.edit.link': `${docServer}/user-guide/cluster-management/cluster/`,
+  "cluster.description":
+    "Kubernetes集群是一个用于运行Kubernetes的托管群组。您可在下方对各个集群进行管理。",
+  "cluster.title": '组织"{name}"的Kubernetes集群',
+  "cluster.link": `${docServer}/user-guide/cluster-management/cluster`,
+  "cluster.create.title": '在组织"{clsName}"中创建集群',
+  "cluster.create.description":
+    "请在下面输入集群编码、名称、描述，用以创建新集群。同时，您可以选择为所创集群配置公开范围，配置后，只有被勾选项目下的环境才能连接到该集群。",
+  "cluster.create.link": `${docServer}/user-guide/cluster-management/cluster`,
+  "cluster.key.title": '复制集群"{clsName}"的指令',
+  "cluster.key.description": "复制下文代码至Kubernetes运行，与平台建立链接。",
+  "cluster.key.link": `${docServer}/user-guide/cluster-management/cluster/`,
+  "cluster.token.title": '复制集群"{clsName}"的指令',
+  "cluster.token.description": "复制下文代码至Kubernetes运行，与平台建立链接。",
+  "cluster.token.link": `${docServer}/user-guide/cluster-management/cluster/`,
+  "cluster.edit.title": '对集群"{clsName}"进行修改',
+  "cluster.edit.description":
+    "您可在此修改集群的名称、描述以及集群的公开范围。",
+  "cluster.edit.link": `${docServer}/user-guide/cluster-management/cluster/`,
 };
 
 const zhCN = {
@@ -373,8 +376,8 @@ const zhCN = {
   more: "更多",
   total: "总次数",
   recent: "最近",
-  return: '返回',
-  submit: '确认',
+  return: "返回",
+  submit: "确认",
 
   "chart.change": "切换报表",
   "confirm.delete": "确认删除吗？",
@@ -553,7 +556,7 @@ const zhCN = {
   "deploy.sidebar.project": "项目应用",
   "deploy.sidebar.market": "应用市场",
   "deploy.sidebar.search": "搜索应用",
-  'deploy.ver.tip': '实例中对应的应用版本',
+  "deploy.ver.tip": "实例中对应的应用版本",
 
   // envPipeline
   "envPl.head": "环境流水线",
@@ -603,10 +606,13 @@ const zhCN = {
   "envPl.authority.member": "已分配权限成员",
   "envPl.authority.help":
     "此操作用于为环境配置特定的操作人员。配置后，只有被勾选的项目成员才有权限在该环境下进行部署操作。表中人员是该项目下所有的项目成员。",
-  "envPl.cluster.tip": "创建环境必须先选择集群，此处集群均是在组织下已经对本项目进行授权的集群。",
-  "envPl.envCode.tip": "环境的自定义编码，集群中产生的环境客户端的名称，限制60个字符。",
+  "envPl.cluster.tip":
+    "创建环境必须先选择集群，此处集群均是在组织下已经对本项目进行授权的集群。",
+  "envPl.envCode.tip":
+    "环境的自定义编码，集群中产生的环境客户端的名称，限制60个字符。",
   "envPl.envName.tip": "平台环境的显示名称。限制为10个字符。",
-  "envPl.group.tip": "若要使用环境分组，请先创建分组；此处只能从已创建的分组中进行选择，从而将此环境放入该分组中。",
+  "envPl.group.tip":
+    "若要使用环境分组，请先创建分组；此处只能从已创建的分组中进行选择，从而将此环境放入该分组中。",
 
   // app
   "app.head": "应用",
@@ -645,8 +651,10 @@ const zhCN = {
   "app.pipeline": "流水线",
   "app.status": "服务状态",
   "app.quality": "代码质量",
-  'app.code.tooltip': '应用的自定义编码，Gitlab仓库的地址将会使用应用编码作为仓库地址的一段路径，同时此编码在项目下唯一且不可修改。',
-  'app.chooseTem.tip': '可选择系统预定义模板或组织自定义的模板块。选择模板后，可快速创建初始代码库。目前系统存在三种预定义模板，也可以不选择应用模板。',
+  "app.code.tooltip":
+    "应用的自定义编码，Gitlab仓库的地址将会使用应用编码作为仓库地址的一段路径，同时此编码在项目下唯一且不可修改。",
+  "app.chooseTem.tip":
+    "可选择系统预定义模板或组织自定义的模板块。选择模板后，可快速创建初始代码库。目前系统存在三种预定义模板，也可以不选择应用模板。",
 
   // 应用版本
   "app.version": "应用版本",
@@ -778,9 +786,10 @@ const zhCN = {
   "ciPipeline.jobs": "阶段",
   "ciPipeline.time": "时长",
   "ciPipeline.createdAt": "创建时间",
-  'ciPipeline.sign.tip': '持续集成流水线的标识，以及持续集成流水线创建者',
-  'ciPipeline.commit.tip': '最新一次提交的提交编码及提交信息，以及触发的分支',
-  'ciPipeline.jobs.tip': '持续集成的阶段是在gitlab-ci文件里定义的。例如，可以分为单元测试和生成镜像两个阶段。单元测试阶段完成单元测试的运行并且对代码质量进行审查，生成镜像阶段通过 docker 把应用生成镜像。',
+  "ciPipeline.sign.tip": "持续集成流水线的标识，以及持续集成流水线创建者",
+  "ciPipeline.commit.tip": "最新一次提交的提交编码及提交信息，以及触发的分支",
+  "ciPipeline.jobs.tip":
+    "持续集成的阶段是在gitlab-ci文件里定义的。例如，可以分为单元测试和生成镜像两个阶段。单元测试阶段完成单元测试的运行并且对代码质量进行审查，生成镜像阶段通过 docker 把应用生成镜像。",
 
   // resource
   "resource.title": "资源",
@@ -846,7 +855,8 @@ const zhCN = {
   "domain.protocol.secret": "加密协议",
   "domain.cert.none": "未检索到证书",
   "domain.cert.delete": "证书已被删除",
-  'domain.protocol.tip': '为创建的域名选择网络协议，其中普通协议不需要选择域名证书，选择加密协议需要选择该项目下可用的域名证书。',
+  "domain.protocol.tip":
+    "为创建的域名选择网络协议，其中普通协议不需要选择域名证书，选择加密协议需要选择该项目下可用的域名证书。",
 
   // appstore
   "appstore.title": "应用市场",
@@ -969,7 +979,7 @@ const zhCN = {
     "当前项目下无应用，请使用项目所有者角色登录去创建一个应用。",
   "apptag.release.title": "发布日志",
   "apptag.release.empty": "暂无发布日志",
-  'apptag.tip': '此处标记来源可以是该应用下所有的分支',
+  "apptag.tip": "此处标记来源可以是该应用下所有的分支",
 
   // repository
   "repository.head": "代码仓库",
@@ -1044,12 +1054,12 @@ const zhCN = {
   "ctf.certFile": "上传 Cert 文件",
   "ctf.key.required": "请上传Key格式的文件",
   "ctf.cert.required": "请上传Cert格式的文件",
-  'validDate.tip': '证书的可用期限',
+  "validDate.tip": "证书的可用期限",
 
   // 报表
   "report.head": "报告",
   "report.devops.total": "总次数",
-  "report.devops.more": "...",
+  "dashboard.devops.more": "...",
   "report.submission.head": "代码提交图",
   "report.code-quality.head": "代码质量报表",
   "report.deploy-duration.head": "部署时长图",
@@ -1129,31 +1139,36 @@ const zhCN = {
   "depPl.more": "了解更多",
 
   // 集群
-  'cluster.head': '集群',
-  'cluster.create': '创建集群',
-  'cluster.edit': '编辑集群',
-  'cluster.name': '集群名称',
-  'cluster.code': '集群编码',
-  'cluster.des': '集群描述',
-  'cluster.active': '激活集群',
-  'cluster.del': '删除集群',
-  'cluster.del.confirm': '已执行，删除',
-  'cluster.del.title': '删除集群"{clsName}"',
-  'cluster.delDes_1': '复制以下代码至Kubernetes运行，来删除该集群的agent',
-  'cluster.delDes_2': '请确保您已在Kubernetes运行以上指令，否则会导致集群删除不彻底！',
-  'cluster.public': '集群公开范围',
-  'cluster.project.all': '组织下所有项目',
-  'cluster.project.part': '组织下特定项目',
-  'cluster.authority': '集群权限分配',
-  'cluster.authority.project': '已分配权限项目',
-  'cluster.authority.help': '此操作用于为此集群在该组织下配置公开范围。一般默认选择为组织下所有项目，即所有项目下的环境均能连接到此集群；若选择组织下特定项目，则只有被勾选项目下的环境才有权限连接到此集群。',
-  'cluster.project.name': '项目名称',
-  'cluster.project.code': '项目编码',
-  'cluster.status.update': '版本过低，请重新激活',
-  'cluster.notice': '请勿在操作过程中删除任何与之前环境相关的agent，否则会造成数据丢失！',
-  'cluster.noData.text1': '若您是第一次使用该集群模块，需要在集群页面创建与之前数量相同的集群，具体步骤如下：',
-  'cluster.noData.text2': '1. 点击下方按钮进入创建集群页面，填写相关信息；',
-  'cluster.noData.text3': '2. 点击创建后，会生成创建agent的脚本，复制至对应的k8s平台运行，即可成功激活此集群，进而激活此集群关联项目下的环境。',
+  "cluster.head": "集群",
+  "cluster.create": "创建集群",
+  "cluster.edit": "编辑集群",
+  "cluster.name": "集群名称",
+  "cluster.code": "集群编码",
+  "cluster.des": "集群描述",
+  "cluster.active": "激活集群",
+  "cluster.del": "删除集群",
+  "cluster.del.confirm": "已执行，删除",
+  "cluster.del.title": '删除集群"{clsName}"',
+  "cluster.delDes_1": "复制以下代码至Kubernetes运行，来删除该集群的agent",
+  "cluster.delDes_2":
+    "请确保您已在Kubernetes运行以上指令，否则会导致集群删除不彻底！",
+  "cluster.public": "集群公开范围",
+  "cluster.project.all": "组织下所有项目",
+  "cluster.project.part": "组织下特定项目",
+  "cluster.authority": "集群权限分配",
+  "cluster.authority.project": "已分配权限项目",
+  "cluster.authority.help":
+    "此操作用于为此集群在该组织下配置公开范围。一般默认选择为组织下所有项目，即所有项目下的环境均能连接到此集群；若选择组织下特定项目，则只有被勾选项目下的环境才有权限连接到此集群。",
+  "cluster.project.name": "项目名称",
+  "cluster.project.code": "项目编码",
+  "cluster.status.update": "版本过低，请重新激活",
+  "cluster.notice":
+    "请勿在操作过程中删除任何与之前环境相关的agent，否则会造成数据丢失！",
+  "cluster.noData.text1":
+    "若您是第一次使用该集群模块，需要在集群页面创建与之前数量相同的集群，具体步骤如下：",
+  "cluster.noData.text2": "1. 点击下方按钮进入创建集群页面，填写相关信息；",
+  "cluster.noData.text3":
+    "2. 点击创建后，会生成创建agent的脚本，复制至对应的k8s平台运行，即可成功激活此集群，进而激活此集群关联项目下的环境。",
 
   ...pageDetail,
 };
