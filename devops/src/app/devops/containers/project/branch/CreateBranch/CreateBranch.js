@@ -152,12 +152,23 @@ class CreateBranch extends Component {
   };
 
   /**
+   * 触发分支名称检查
+   */
+  triggerNameCheck = () => {
+    const { getFieldValue, validateFields } = this.props.form;
+    const value = getFieldValue('branchName');
+    if (value) {
+      validateFields(['branchName'], { force: true });
+    }
+  };
+
+  /**
    * 验证分支名的正则
    * @param rule
    * @param value
    * @param callback
    */
-  checkName =(rule, value, callback) => {
+  checkName = _.debounce((rule, value, callback) => {
     const endWith = /(\/|\.|\.lock)$/;
     const contain = /(\s|~|\^|:|\?|\*|\[|\\|\.\.|@\{|\/{2,}){1}/;
     const single = /^@+$/;
@@ -167,9 +178,19 @@ class CreateBranch extends Component {
     } else if (contain.test(value) || single.test(value)) {
       callback(intl.formatMessage({ id: 'branch.check' }));
     } else {
-      callback();
+      const { appId, store } = this.props;
+      const { projectId, type } = this.state;
+      const name = `${type === 'custom' ? '' : `${type}-`}${value}`;
+      store.checkName(projectId, appId, name)
+        .then((data) => {
+          if (data && !data.failed) {
+            callback();
+          } else {
+            callback(intl.formatMessage({ id: 'branch.check.existence' }));
+          }
+        });
     }
-  };
+  }, 600);
 
   /**
    * 关闭弹框
@@ -184,11 +205,7 @@ class CreateBranch extends Component {
    * @param value
    */
   changeType =(value) => {
-    let type = '';
-    if (value !== 'custom') {
-      type = `${value}`;
-    }
-    this.setState({ type });
+    this.setState({ type: value }, () => this.triggerNameCheck());
   };
 
   /**
