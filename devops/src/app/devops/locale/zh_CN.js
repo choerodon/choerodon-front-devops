@@ -716,6 +716,7 @@ const zhCN = {
   "branch.checkName": '名称只能包含数字和".",并且以数字开头和结尾',
   "branch.checkNameEnd": '不能以"/"、"."、".lock"结尾',
   "branch.check": "只能包含字母、数字、'——'、'_'",
+  "branch.check.existence": "分支名称已存在",
   "branch.master": "Master",
   "branch.bugfix": "Bugfix",
   "branch.feature": "Feature",
