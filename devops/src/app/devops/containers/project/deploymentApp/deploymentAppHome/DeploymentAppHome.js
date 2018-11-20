@@ -2,7 +2,16 @@ import React, { Component, Fragment } from "react";
 import { observer, inject } from "mobx-react";
 import { injectIntl, FormattedMessage } from "react-intl";
 import { withRouter } from "react-router-dom";
-import { Select, Button, Radio, Steps, Icon, Tooltip } from "choerodon-ui";
+import {
+  Select,
+  Button,
+  Radio,
+  Steps,
+  Icon,
+  Tooltip,
+  Input,
+  Form,
+} from "choerodon-ui";
 import {
   Content,
   Header,
@@ -25,6 +34,19 @@ const RadioGroup = Radio.Group;
 const Step = Steps.Step;
 const { AppState } = stores;
 const Option = Select.Option;
+const { Item: FormItem } = Form;
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 100 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 26 },
+  },
+};
+
+const uuidv1 = require("uuid/v1");
 
 @observer
 class DeploymentAppHome extends Component {
@@ -55,6 +77,7 @@ class DeploymentAppHome extends Component {
       loading: false,
       changeYaml: false,
       disabled: false,
+      istName: "",
     };
   }
 
@@ -192,6 +215,7 @@ class DeploymentAppHome extends Component {
         DeploymentAppStore.loadVersion(app.id, this.state.projectId, "");
         this.setState({
           app,
+          istName: `${app.code}-${uuidv1().substring(0, 5)}`,
           appId: app.id,
           show: false,
           is_project: true,
@@ -267,7 +291,11 @@ class DeploymentAppHome extends Component {
     const { DeploymentAppStore } = this.props;
     const instance = DeploymentAppStore.currentInstance;
     const instanceDto = _.filter(instance, v => v.id === value)[0];
-    this.setState({ instanceId: value, instanceDto });
+    this.setState({
+      instanceId: value,
+      instanceDto,
+      istName: instanceDto.code,
+    });
   };
 
   /**
@@ -298,10 +326,20 @@ class DeploymentAppHome extends Component {
 
   /**
    * 修改实例模式
-   * @param value
+   * @param e
    */
-  handleChangeMode = value => {
-    this.setState({ mode: value.target.value });
+  handleChangeMode = e => {
+    const { DeploymentAppStore } = this.props;
+    const { app, instanceDto } = this.state;
+    const instances = DeploymentAppStore.currentInstance;
+    if (e.target.value === "new") {
+      this.setState({ istName: `${app.code}-${uuidv1().substring(0, 5)}` });
+    } else if (instanceDto) {
+      this.setState({ istName: instanceDto.code });
+    } else {
+      this.setState({ istName: instances[0].code });
+    }
+    this.setState({ mode: e.target.value });
   };
 
   /**
@@ -371,6 +409,7 @@ class DeploymentAppHome extends Component {
     const value = this.state.value || DeploymentAppStore.value.yaml;
     const applicationDeployDTO = {
       isNotChange,
+      instanceName: this.state.istName,
       appId: this.state.appId,
       appVerisonId: this.state.versionId,
       environmentId: this.state.envId,
@@ -622,12 +661,42 @@ class DeploymentAppHome extends Component {
     );
   };
 
+  onChange = e => {
+    this.setState({ istName: e.target.value });
+  };
+
+  /**
+   * 检查名字的唯一性
+   * @param rule
+   * @param value
+   * @param callback
+   */
+  checkName = _.debounce((rule, value, callback) => {
+    const { intl, DeploymentAppStore } = this.props;
+    const { id } = AppState.currentMenuType;
+    const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
+    if (value && !pattern.test(value)) {
+      callback(intl.formatMessage({ id: "network.name.check.failed" }));
+    } else if (value && pattern.test(value)) {
+      DeploymentAppStore.checkIstName(id, value).then(data => {
+        if (data) {
+          callback();
+        } else {
+          callback(intl.formatMessage({ id: "network.name.check.exist" }));
+        }
+      });
+    } else {
+      callback();
+    }
+  }, 1000);
+
   /**
    * 渲染第三步
    * @returns {*}
    */
   handleRenderMode = () => {
-    const { DeploymentAppStore, intl } = this.props;
+    const { DeploymentAppStore, intl, form } = this.props;
+    const { getFieldDecorator } = form;
     const { formatMessage } = intl;
     const instances = DeploymentAppStore.currentInstance;
     return (
@@ -695,6 +764,36 @@ class DeploymentAppHome extends Component {
           </div>
         </section>
         <section className="deployApp-section">
+          <div className="deploy-title">
+            <i className="icon icon-instance_outline section-title-icon " />
+            <span className="section-title">
+              {formatMessage({ id: "deploy.step.three.ist.title" })}
+            </span>
+          </div>
+          <div className="section-text-margin section-instance-input">
+            <Form layout="vertical">
+              <FormItem className="deploy-select" {...formItemLayout}>
+                {getFieldDecorator("name", {
+                  initialValue: this.state.istName,
+                  rules: [
+                    {
+                      validator: this.checkName,
+                    },
+                  ],
+                })(
+                  <Input
+                    onChange={this.onChange}
+                    disabled={this.state.mode !== "new"}
+                    maxLength={30}
+                    label={formatMessage({ id: "deploy.instance" })}
+                    size="default"
+                  />
+                )}
+              </FormItem>
+            </Form>
+          </div>
+        </section>
+        <section className="deployApp-section">
           <Button
             type="primary"
             funcType="raised"
@@ -743,6 +842,7 @@ class DeploymentAppHome extends Component {
       mode,
       instanceDto,
       instanceId,
+      istName,
     } = this.state;
     const instanceID =
       instanceId || (instances && instances.length === 1 && instances[0].id);
@@ -761,6 +861,15 @@ class DeploymentAppHome extends Component {
     return (
       <section className="deployApp-review">
         <section>
+          <div>
+            <div className="deployApp-title">
+              <Icon type="instance_outline" />
+              <span className="deployApp-title-text">
+                {formatMessage({ id: "deploy.instance" })}：
+              </span>
+            </div>
+            <div className="deployApp-text">{istName}</div>
+          </div>
           <div>
             <div className="deployApp-title">
               <Icon type="widgets" />
@@ -1080,4 +1189,4 @@ class DeploymentAppHome extends Component {
   }
 }
 
-export default withRouter(injectIntl(DeploymentAppHome));
+export default Form.create({})(withRouter(injectIntl(DeploymentAppHome)));

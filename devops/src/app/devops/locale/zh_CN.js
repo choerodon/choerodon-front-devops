@@ -542,8 +542,9 @@ const zhCN = {
   "deploy.step.two.config": "配置信息",
   "deploy.step.three.title": "选择部署模式",
   "deploy.step.three.description":
-    "平台支持两种部署模式：新建实例和替换实例。新建实例是部署生成新的实例；替换实例是等待新部署生成的副本集通过健康检查后再删除原副本集，但实例不变，只替换其相关参数。",
+    "平台支持两种部署模式：新建实例和替换实例。新建实例是部署生成新的实例；替换实例是等待新部署生成的副本集通过健康检查后再删除原副本集，但实例不变，只替换其相关参数。当您新建实例时，可以在下方自定义该实例的名称，或者直接使用默认名称；替换实例时则无法更改名称。",
   "deploy.step.three.mode.title": "选择部署模式",
+  "deploy.step.three.ist.title": "编辑实例名称",
   "deploy.step.three.mode": "部署模式",
   "deploy.step.three.mode.new": "新建实例",
   "deploy.step.three.mode.replace": "替换实例",
@@ -715,6 +716,7 @@ const zhCN = {
   "branch.checkName": '名称只能包含数字和".",并且以数字开头和结尾',
   "branch.checkNameEnd": '不能以"/"、"."、".lock"结尾',
   "branch.check": "只能包含字母、数字、'——'、'_'",
+  "branch.check.existence": "分支名称已存在",
   "branch.master": "Master",
   "branch.bugfix": "Bugfix",
   "branch.feature": "Feature",
