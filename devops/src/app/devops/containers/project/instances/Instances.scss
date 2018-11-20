@@ -34,7 +34,7 @@
   vertical-align: sub;
   margin-right: 2px;
 
-  & + div {
+  &+div {
     display: inline-block;
     vertical-align: middle;
   }
@@ -92,7 +92,7 @@
     flex-shrink: 0;
   }
 
-  button + div {
+  button+div {
     width: 100%;
   }
 }
@@ -139,20 +139,21 @@
 
 .c7n-multi-table {
   .ant-table-fixed-left {
-    .ant-table-thead > tr > th,
-    .ant-table-tbody > tr > td {
+
+    .ant-table-thead>tr>th,
+    .ant-table-tbody>tr>td {
       padding: 5px 12px !important;
     }
   }
 
-  .ant-table-thead > tr > th,
-  .ant-table-tbody > tr > td {
+  .ant-table-thead>tr>th,
+  .ant-table-tbody>tr>td {
     vertical-align: baseline;
     padding: 5px 12px;
   }
 
-  .ant-table-thead > tr > th:last-child,
-  .ant-table-tbody > tr > td:last-child {
+  .ant-table-thead>tr>th:last-child,
+  .ant-table-tbody>tr>td:last-child {
     padding: 0;
   }
 
@@ -784,6 +785,7 @@
   letter-spacing: .005em;
   line-height: 28px;
   margin-bottom: 8px;
+
   &.c7n-deploy-env-ist {
     margin-top: 32px;
   }
@@ -800,14 +802,17 @@
 
 // 修改实例管理中列表的展开箭头
 .c7n-devops-instance-table {
+
   tr.ant-table-expanded-row,
   tr.ant-table-expanded-row:hover {
     background: #fff;
   }
+
   .ant-table-row-expand-icon-cell {
     position: relative;
     padding: 5px 9px;
     text-align: left;
+
     &:after {
       content: ' ';
       position: absolute;
@@ -817,9 +822,11 @@
       height: 60%;
       border-right: 1px solid rgba(0, 0, 0, .12);
     }
+
     .ant-table-row-expand-icon {
       width: 18px;
       font-size: 18px;
+
       &:before {
         content: '\E5CF';
       }
@@ -830,20 +837,24 @@
 .c7n-instance-header {
   display: block;
   max-width: 512px;
+
   .c7n-instance-title {
     font-size: 20px;
     font-weight: 500;
     line-height: 28px;
     margin-bottom: 10px;
   }
+
   .c7n-instance-describe {
     font-size: 13px;
     line-height: 20px;
     margin-bottom: 24px;
+
     a {
       text-decoration: underline;
       color: #3f51b5;
       cursor: pointer;
+
       .icon {
         font-size: 13px;
       }

@@ -14,10 +14,12 @@
   .network-radio-wrap {
     position: relative;
     padding-left: 73px;
+
     .network-radio-label {
       &_disabled {
         color: rgba(0, 0, 0, .36);
       }
+
       position: absolute;
       left: 0;
       top: 0;
@@ -25,6 +27,7 @@
       line-height: 20px;
       color: #000;
     }
+
     .network-radio-form {
       margin-bottom: 8px;
     }
@@ -34,7 +37,9 @@
     &_disabled {
       color: rgba(0, 0, 0, .36);
     }
+
     margin-bottom: 16px;
+
     span {
       display: inline-block;
       vertical-align: middle;
@@ -42,6 +47,7 @@
       margin-left: 10px;
     }
   }
+
   .network-panel {
     margin-bottom: 32px;
     padding: 16px;
@@ -49,50 +55,64 @@
     min-height: 150px;
     box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.20), 0 0 0 1px rgba(0, 0, 0, 0.12), 0 2px 2px -1px rgba(0, 0, 0, 0.12);
     border-radius: 2px;
+
     .network-panel-form {
       margin-bottom: 12px;
-      .network-app-name {
-        margin-left: 8px;
-      }
     }
+
     .network-port-wrap {
       display: flex;
       justify-content: space-between;
+
       .c7n-select {
         &_entryS {
           width: 200px;
         }
+
         &_entryL {
           width: 209px;
         }
+
         &_portL {
           width: 219px;
         }
+
         &_portS {
           width: 140px;
         }
+
         &_240 {
           width: 232px;
         }
+
         &_150 {
           width: 149px;
         }
       }
+
       .network-port-form {
         flex: 0 1 auto;
       }
+
       .network-group-icon {
         position: relative;
         top: 20px;
         width: 18px;
         height: 18px;
         font-size: 18px;
+
         &.icon-delete {
           cursor: pointer;
         }
       }
     }
+
+    .c7ncd-net-app {
+      display: inline-block;
+      max-width: 475px;
+    }
   }
+
   .network-form-name {
     margin-bottom: 0;
   }
@@ -106,12 +126,14 @@
           border: none;
           color: #fff;
         }
+
         .ant-select-selection__choice__remove {
           color: #fff;
         }
       }
     }
   }
+
   .ip-check-error {
     background-color: #d50000 !important;
   }

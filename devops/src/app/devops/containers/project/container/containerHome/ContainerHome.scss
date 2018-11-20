@@ -1,10 +1,7 @@
 .c7n-container-wrapper {
-  .c7n-container-col-inside {
-    margin-bottom: 6px;
-    display: flex;
-  }
 
-  .c7n-deploy-col-inside {
+  .c7n-deploy-col-inside,
+  .c7n-container-col-inside {
     margin-bottom: 6px;
   }
 
@@ -111,7 +108,8 @@
     display: none;
   }
 
-  .ant-select-selection-selected-value, .ant-select-arrow > i {
+  .ant-select-selection-selected-value,
+  .ant-select-arrow>i {
     font-size: 14px;
     font-weight: 400;
     line-height: 1.5;

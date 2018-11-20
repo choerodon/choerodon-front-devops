@@ -10,6 +10,7 @@ $WIDTH512: 512px;
     clear: both;
     height: 0;
   }
+
   zoom: 1;
 }
 
@@ -31,7 +32,7 @@ $WIDTH512: 512px;
   margin-bottom: 0;
 }
 
-.c7n-region p + p {
+.c7n-region p+p {
   margin-top: 0;
 }
 
@@ -234,7 +235,7 @@ ul {
   text-decoration: underline;
 }
 
-.c7n-region a .c7n-external-link-content + span {
+.c7n-region a .c7n-external-link-content+span {
   font-size: 13px;
 }
 
@@ -349,7 +350,7 @@ table {
   color: rgba(0, 0, 0, 0.26);
 }
 
-.c7n-input-readOnly + .ant-input-border-wrapper {
+.c7n-input-readOnly+.ant-input-border-wrapper {
   .ant-input-border {
     height: 0;
     background: none;
@@ -375,13 +376,6 @@ table {
   display: inline-block;
 }
 
-.c7n-text-ellipsis {
-  text-overflow: ellipsis;
-  width: 90%;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
 //form
 .c7n-sidebar-form {
   width: 512px;
@@ -392,9 +386,11 @@ table {
   &_512 {
     width: $WIDTH512;
   }
+
   &_480 {
     width: $WIDTH512 - 32px;
   }
+
   &_160 {
     width: ($WIDTH512 - 32px) /3;
   }
@@ -439,6 +435,7 @@ table {
       }
     }
   }
+
   .ant-input-disabled {
     .ant-input-label {
       &::after {
@@ -451,10 +448,12 @@ table {
 .c7n-creation-radio {
   position: relative;
   padding-left: 73px;
+
   .creation-radio-label {
     &_disabled {
       color: rgba(0, 0, 0, .36);
     }
+
     position: absolute;
     left: 0;
     top: 0;
@@ -462,6 +461,7 @@ table {
     line-height: 20px;
     color: #000;
   }
+
   .creation-radio-form {
     margin-bottom: 8px;
   }
@@ -472,7 +472,9 @@ table {
   &_disabled {
     color: rgba(0, 0, 0, .36);
   }
+
   margin-bottom: 16px;
+
   span {
     display: inline-block;
     vertical-align: middle;
@@ -527,10 +529,12 @@ table {
   min-height: 150px;
   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.20), 0 0 0 1px rgba(0, 0, 0, 0.12), 0 2px 2px -1px rgba(0, 0, 0, 0.12);
   border-radius: 2px;
+
   .creation-panel-button {
     margin-bottom: 0;
     padding-bottom: 0;
   }
+
   .creation-form-name {
     margin-bottom: 0;
   }
@@ -542,6 +546,7 @@ table {
   .creation-panel-group {
     display: flex;
     justify-content: space-between;
+
     .c7n-select_454 {
       width: 454px;
     }
@@ -554,6 +559,7 @@ table {
     width: 18px;
     height: 18px;
     font-size: 18px;
+
     &.icon-delete {
       cursor: pointer;
     }
@@ -563,6 +569,7 @@ table {
 // 覆盖禁用输入的底边样式
 .ant-input-disabled,
 .ant-select-disabled {
+
   .ant-select-underline,
   .ant-input-underline {
     border-bottom-style: dashed;
@@ -617,6 +624,7 @@ input::-webkit-contacts-auto-fill-button {
 
 .c7n-header-env_drop {
   width: 100px !important;
+
   .ant-select-dropdown-menu-item {
     padding: 4px 6px !important;
   }
@@ -696,7 +704,8 @@ input::-webkit-contacts-auto-fill-button {
 }
 
 .ant-select-dropdown.ant-select-dropdown--multiple .ant-select-dropdown-menu-item-selected,
-.ant-select-dropdown-menu-item, .ant-select-selection__choice__content {
+.ant-select-dropdown-menu-item,
+.ant-select-selection__choice__content {
 
   .c7n-table-title-tip {
     display: inline-block;
@@ -708,7 +717,8 @@ input::-webkit-contacts-auto-fill-button {
   }
 }
 
-.ant-table-filter-select-dropdown, .ant-select-selection__choice__content {
+.ant-table-filter-select-dropdown,
+.ant-select-selection__choice__content {
 
   .c7n-table-title-tip {
     padding: 0;

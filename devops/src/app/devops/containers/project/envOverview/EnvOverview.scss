@@ -74,6 +74,7 @@
   .ant-select-selection__rendered {
     margin-bottom: 0;
   }
+
   .ant-select-selection {
     color: #3f51b5;
   }
@@ -154,15 +155,13 @@
   }
 }
 
-.c7n-envow-app-name {
-  font-size: 14px;
+.c7n-envow-app {
   margin-bottom: 10px;
-  font-weight: 500;
 
-  span {
-    font-size: 20px;
-    margin-right: 6px;
-    padding-bottom: 2px;
+  .c7n-envow-app-name {
+    font-size: 14px;
+    margin-left: 6px;
+    font-weight: 500;
   }
 }
 
@@ -174,8 +173,9 @@
     border-right: 0;
   }
 
-  .ant-collapse-item-active > .ant-collapse-header {
+  .ant-collapse-item-active>.ant-collapse-header {
     background-color: rgba(0, 0, 0, 0.004) !important;
+
     .c7n-deploy-status {
       display: none;
     }
@@ -185,7 +185,7 @@
     }
   }
 
-  .ant-collapse > .ant-collapse-item > .ant-collapse-header {
+  .ant-collapse>.ant-collapse-item>.ant-collapse-header {
     background-color: white;
     padding: 5px 9px;
 
@@ -206,6 +206,7 @@
 
   .c7n-envow-ist-fail {
     display: inline-block;
+
     .ant-progress {
       circle {
         stroke: #3f51b5 !important;
@@ -224,6 +225,7 @@
   .c7n-envow-ist-version {
     line-height: 30px;
     width: 35%;
+
     .c7n-envow-version-text {
       display: inline-block;
       vertical-align: middle;
@@ -384,6 +386,7 @@
     vertical-align: middle;
     margin-right: 8px;
   }
+
   .c7n-envow-sync-icon {
     font-size: 16px;
     color: rgba(0, 0, 0, 0.36);
