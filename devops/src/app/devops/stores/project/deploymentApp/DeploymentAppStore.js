@@ -1,5 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
+import { handleProptError } from "../../../utils";
 
 const { AppState } = stores;
 
@@ -26,16 +27,14 @@ class DeploymentAppStore {
   @observable currentInstance = {};
 
   loadApps(id, projectId = AppState.currentMenuType.id) {
-    return axios.get(`/devops/v1/projects/${projectId}/apps/${id}/detail`).then((data) => {
-      const res = this.handleProptError(data);
-      return res;
-    });
+    return axios.get(`/devops/v1/projects/${projectId}/apps/${id}/detail`)
+      .then(data => handleProptError(data));
   }
 
   loadVersion(appId, projectId, flag = '') {
     return axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version/list?is_publish=${flag}`)
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           this.setVersions(res);
         }
@@ -46,7 +45,7 @@ class DeploymentAppStore {
   loadEnv(projectId = AppState.currentMenuType.id) {
     return axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           this.setEnvs(res);
         }
@@ -57,7 +56,7 @@ class DeploymentAppStore {
   loadValue(appId, verId, envId, projectId = AppState.currentMenuType.id) {
     return axios.get(`/devops/v1/projects/${projectId}/app_instances/value?appId=${appId}&appVersionId=${verId}&envId=${envId}`)
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           this.setValue(res);
         }
@@ -70,7 +69,7 @@ class DeploymentAppStore {
   loadInstances(appId, envId, projectId = AppState.currentMenuType.id) {
     return axios.get(`/devops/v1/projects/${projectId}/app_instances/listByAppIdAndEnvId?envId=${envId}&appId=${appId}`)
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           this.setCurrentInstance(res);
         }
@@ -80,11 +79,11 @@ class DeploymentAppStore {
 
   deploymentApp(applicationDeployDTO, projectId = AppState.currentMenuType.id) {
     return axios.post(`/devops/v1/projects/${projectId}/app_instances`, applicationDeployDTO)
-      .then((data) => {
-        const res = this.handleProptError(data);
-        return res;
-      });
+      .then(data => handleProptError(data));
   }
+
+  checkIstName = (projectId, value) => axios.get(`/devops/v1/projects/${projectId}/app_instances/check_name?instance_name=${value}`)
+    .then(data => handleProptError(data));
 
   @action setApps(data) {
     this.apps = data;
@@ -140,15 +139,6 @@ class DeploymentAppStore {
 
   @computed get getValue() {
     return this.value;
-  }
-
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
   }
 }
 const deploymentAppStore = new DeploymentAppStore();
