@@ -208,7 +208,7 @@ class Environment extends Component {
     const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     if (type === "create") {
-      EnvPipelineStore.loadPrm(projectId );
+      EnvPipelineStore.loadPrm(projectId);
       EnvPipelineStore.loadCluster(projectId);
     }
     EnvPipelineStore.setSideType(type);
@@ -248,36 +248,40 @@ class Environment extends Component {
    */
   disableEnv = () => {
     const { EnvPipelineStore } = this.props;
-    const { id: projectId } = AppState.currentMenuType
+    const { id: projectId } = AppState.currentMenuType;
     const { disEnv } = this.state;
     this.setState({
       submitting: true,
     });
-    EnvPipelineStore.banEnvById(projectId, disEnv, false).then(data => {
-      if (data && data.failed) {
-        Choerodon.prompt(data.message);
-      } else if (data) {
-        this.loadEnvs();
-        this.closeDisEnvModal();
-      }
-      this.setState({
-        submitting: false,
+    EnvPipelineStore.banEnvById(projectId, disEnv, false)
+      .then(data => {
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else if (data) {
+          this.loadEnvs();
+          this.closeDisEnvModal();
+        }
+        this.setState({
+          submitting: false,
+        });
+      })
+      .catch(error => {
+        this.setState({ submitting: false });
+        Choerodon.handleResponseError(error);
       });
-    }).catch(error => {
-      this.setState({ submitting: false });
-      Choerodon.handleResponseError(error);
-    });
   };
 
   showDisEnvModal = (id, connect, name) => {
     const { EnvPipelineStore } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    EnvPipelineStore.loadInstance(projectId, id).then(() => {
-      // 确保查询完实例后才可以点击确认
-      this.setState({ enableClick: true });
-    }).catch(() => {
-      this.setState({ enableClick: true });
-    });
+    EnvPipelineStore.loadInstance(projectId, id)
+      .then(() => {
+        // 确保查询完实例后才可以点击确认
+        this.setState({ enableClick: true });
+      })
+      .catch(() => {
+        this.setState({ enableClick: true });
+      });
     this.setState({
       disEnvShow: true,
       disEnv: id,
@@ -302,22 +306,24 @@ class Environment extends Component {
     this.setState({
       submitting: true,
     });
-    EnvPipelineStore.delGroupById(projectId, delGroup).then(data => {
-      if (data && data.failed) {
-        Choerodon.prompt(data.message);
-      } else if (data) {
-        this.reload();
-        this.closeDelGroupModal();
-      }
-      this.setState({
-        submitting: false,
+    EnvPipelineStore.delGroupById(projectId, delGroup)
+      .then(data => {
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else if (data) {
+          this.reload();
+          this.closeDelGroupModal();
+        }
+        this.setState({
+          submitting: false,
+        });
+      })
+      .catch(error => {
+        this.setState({
+          submitting: false,
+        });
+        Choerodon.handleResponseError(error);
       });
-    }).catch(error => {
-      this.setState({
-        submitting: false,
-      });
-      Choerodon.handleResponseError(error);
-    });
   };
 
   showDelGroupModal = (id, name) => {
@@ -477,24 +483,26 @@ class Environment extends Component {
     } else {
       const id = EnvPipelineStore.getEnvData.id;
       const userIds = _.map(tagKeys, t => t.iamUserId);
-      EnvPipelineStore.assignPrm(projectId, id, userIds).then(data => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else {
-          EnvPipelineStore.setShow(false);
-        }
-        this.setState({
-          selectedRowKeys: false,
-          submitting: false,
+      EnvPipelineStore.assignPrm(projectId, id, userIds)
+        .then(data => {
+          if (data && data.failed) {
+            Choerodon.prompt(data.message);
+          } else {
+            EnvPipelineStore.setShow(false);
+          }
+          this.setState({
+            selectedRowKeys: false,
+            submitting: false,
+          });
+          EnvPipelineStore.setSelectedRk([]);
+          EnvPipelineStore.setTagKeys([]);
+        })
+        .catch(error => {
+          this.setState({
+            submitting: false,
+          });
+          Choerodon.handleResponseError(error);
         });
-        EnvPipelineStore.setSelectedRk([]);
-        EnvPipelineStore.setTagKeys([]);
-      }).catch(error => {
-        this.setState({
-          submitting: false,
-        });
-        Choerodon.handleResponseError(error);
-      });
     }
   };
 
@@ -604,12 +612,14 @@ class Environment extends Component {
     const { EnvPipelineStore } = this.props;
     const { getTagKeys: tagKeys, getPrmMbr } = EnvPipelineStore;
     let s = [];
-    const a = tagKeys.length ? tagKeys.concat(selected) : this.state.selected.concat(selected);
+    const a = tagKeys.length
+      ? tagKeys.concat(selected)
+      : this.state.selected.concat(selected);
     // const tagKs = tagKeys.length ? _.map(tagKeys, p => p.iamUserId).concat(keys) : keys;
     this.setState({ selected: a });
     _.map(keys, o => {
-      if (_.filter(a, ['iamUserId', o]).length) {
-        s.push(_.filter(a, ['iamUserId', o])[0])
+      if (_.filter(a, ["iamUserId", o]).length) {
+        s.push(_.filter(a, ["iamUserId", o])[0]);
       }
     });
     const ids = _.map(getPrmMbr, p => p.iamUserId);
@@ -638,8 +648,8 @@ class Environment extends Component {
     const a = this.state.createSelectedTemp.concat(selected);
     this.setState({ createSelectedTemp: a });
     _.map(keys, o => {
-      if (_.filter(a, ['iamUserId', o]).length) {
-        s.push(_.filter(a, ['iamUserId', o])[0])
+      if (_.filter(a, ["iamUserId", o]).length) {
+        s.push(_.filter(a, ["iamUserId", o])[0]);
       }
     });
     this.setState({
@@ -751,16 +761,13 @@ class Environment extends Component {
       getCluster,
       getPageInfo,
       loading,
-      getInfo: {
-        filters,
-        paras,
-      },
+      getInfo: { filters, paras },
     } = EnvPipelineStore;
 
     // 禁用环境的Modal信息
-    let disableMsg = 'noInstance';
+    let disableMsg = "noInstance";
     if (getIst.length && disEnvConnect) {
-      disableMsg = 'forbidden';
+      disableMsg = "forbidden";
     }
 
     let DisEnvDom = (
@@ -770,6 +777,26 @@ class Environment extends Component {
         })}
       </span>
     );
+
+    const clusterOptions = _.map(getCluster, c => {
+      const { id, connect, name } = c;
+      let text = null;
+      let status = null;
+      if (!_.isNull(connect)) {
+        text = connect ? "connect" : "disconnect";
+        status = connect ? "success" : "error";
+      }
+      return (
+        <Option key={id} value={id}>
+          {!_.isNull(connect) ? (
+            <Tooltip title={<FormattedMessage id={text} />}>
+              <span className={`env-status-${status}`} />
+            </Tooltip>
+          ) : null}
+          {name}
+        </Option>
+      );
+    });
 
     if (disEnvCard.length) {
       const disData = [];
@@ -823,11 +850,11 @@ class Environment extends Component {
             </div>
             <div className="c7n-env-des-wrap">
               <div className="c7n-env-des" title={env.description}>
-              <span className="c7n-env-des-head">
-                {formatMessage({
-                  id: "envPl.description",
-                })}
-              </span>
+                <span className="c7n-env-des-head">
+                  {formatMessage({
+                    id: "envPl.description",
+                  })}
+                </span>
                 {env.description}
               </div>
             </div>
@@ -948,17 +975,11 @@ class Environment extends Component {
                       }
                       label={<FormattedMessage id="envPl.form.cluster" />}
                     >
-                      {getCluster.length
-                        ? _.map(getCluster, c => (
-                          <Option key={c.id} value={c.id}>
-                            {c.name}
-                          </Option>
-                        ))
-                        : null}
+                      {getCluster.length ? clusterOptions : null}
                     </Select>
                   )}
                 </FormItem>
-                {getSelectTip('envPl.cluster.tip')}
+                {getSelectTip("envPl.cluster.tip")}
               </div>
               <FormItem {...formItemLayout}>
                 {getFieldDecorator("code", {
@@ -978,7 +999,7 @@ class Environment extends Component {
                     disabled={!getFieldValue("clusterId")}
                     maxLength={30}
                     label={<FormattedMessage id="envPl.form.code" />}
-                    suffix={getSelectTip('envPl.envCode.tip')}
+                    suffix={getSelectTip("envPl.envCode.tip")}
                   />
                 )}
               </FormItem>
@@ -1000,7 +1021,7 @@ class Environment extends Component {
                     disabled={!getFieldValue("clusterId")}
                     maxLength={10}
                     label={<FormattedMessage id="envPl.form.name" />}
-                    suffix={getSelectTip('envPl.envName.tip')}
+                    suffix={getSelectTip("envPl.envName.tip")}
                   />
                 )}
               </FormItem>
@@ -1015,7 +1036,7 @@ class Environment extends Component {
                     }}
                     maxLength={60}
                     label={<FormattedMessage id="envPl.form.description" />}
-                    suffix={getSelectTip('envPl.chooseClu.tip')}
+                    suffix={getSelectTip("envPl.chooseClu.tip")}
                   />
                 )}
               </FormItem>
@@ -1034,15 +1055,15 @@ class Environment extends Component {
                     >
                       {groupData.length
                         ? _.map(groupData, g => (
-                          <Option key={g.id} value={g.id}>
-                            {g.name}
-                          </Option>
-                        ))
+                            <Option key={g.id} value={g.id}>
+                              {g.name}
+                            </Option>
+                          ))
                         : null}
                     </Select>
                   )}
                 </FormItem>
-                {getSelectTip('envPl.group.tip')}
+                {getSelectTip("envPl.group.tip")}
               </div>
             </Form>
             <div className="c7n-sidebar-form">
@@ -1120,7 +1141,9 @@ class Environment extends Component {
               <div className="c7ncd-sidebar-select">
                 <FormItem {...formItemLayout}>
                   {getFieldDecorator("devopsEnvGroupId", {
-                    initialValue: envData ? envData.devopsEnvGroupId : undefined,
+                    initialValue: envData
+                      ? envData.devopsEnvGroupId
+                      : undefined,
                   })(
                     <Select
                       allowClear
@@ -1134,15 +1157,15 @@ class Environment extends Component {
                     >
                       {groupData.length
                         ? _.map(groupData, g => (
-                          <Option key={g.id} value={g.id}>
-                            {g.name}
-                          </Option>
-                        ))
+                            <Option key={g.id} value={g.id}>
+                              {g.name}
+                            </Option>
+                          ))
                         : null}
                     </Select>
                   )}
                 </FormItem>
-                {getSelectTip('envPl.group.tip')}
+                {getSelectTip("envPl.group.tip")}
               </div>
             </Form>
           </div>
@@ -1265,37 +1288,65 @@ class Environment extends Component {
           <Modal
             visible={disEnvShow}
             width={400}
-            footer={enableClick ? [
-              <Button
-                key="back"
-                onClick={this.closeDisEnvModal}
-              >{formatMessage({ id: 'return' })}</Button>,
-              <Button
-                key="submit"
-                type="primary"
-                loading={submitting}
-                onClick={(getIst.length && disEnvConnect) ? this.closeDisEnvModal : this.disableEnv }
-              >
-                {formatMessage({ id: 'submit' })}
-              </Button>,
-            ] : null}
+            footer={
+              enableClick
+                ? [
+                    <Button key="back" onClick={this.closeDisEnvModal}>
+                      {formatMessage({ id: "return" })}
+                    </Button>,
+                    <Button
+                      key="submit"
+                      type="primary"
+                      loading={submitting}
+                      onClick={
+                        getIst.length && disEnvConnect
+                          ? this.closeDisEnvModal
+                          : this.disableEnv
+                      }
+                    >
+                      {formatMessage({ id: "submit" })}
+                    </Button>,
+                  ]
+                : null
+            }
             closable={false}
             wrapClassName="vertical-center-modal remove"
           >
-            {enableClick
-              ? [<div className="c7ncd-modal-title">{formatMessage({ id: `envPl.${disableMsg}.disable` })}</div>,
-                formatMessage({ id: `envPl.disEnv.${disableMsg}` })]
-              : <div className="c7ncd-env-spin"><Spin /></div>}
+            {enableClick ? (
+              [
+                <div className="c7ncd-modal-title">
+                  {formatMessage({ id: `envPl.${disableMsg}.disable` })}
+                </div>,
+                formatMessage({ id: `envPl.disEnv.${disableMsg}` }),
+              ]
+            ) : (
+              <div className="c7ncd-env-spin">
+                <Spin />
+              </div>
+            )}
           </Modal>
           <Modal
             visible={delGroupShow}
             closable={false}
             confirmLoading={submitting}
-            title={`${formatMessage({ id: 'envPl.group.del' })}“${delGroupName}”`}
+            title={`${formatMessage({
+              id: "envPl.group.del",
+            })}“${delGroupName}”`}
             footer={[
-              <Button key="back" onClick={this.closeDelGroupModal} disabled={submitting}>{<FormattedMessage id="cancel" />}</Button>,
-              <Button key="submit" type="danger" onClick={this.deleteGroup} loading={submitting}>
-                {formatMessage({ id: 'delete' })}
+              <Button
+                key="back"
+                onClick={this.closeDelGroupModal}
+                disabled={submitting}
+              >
+                {<FormattedMessage id="cancel" />}
+              </Button>,
+              <Button
+                key="submit"
+                type="danger"
+                onClick={this.deleteGroup}
+                loading={submitting}
+              >
+                {formatMessage({ id: "delete" })}
               </Button>,
             ]}
           >
@@ -1305,11 +1356,25 @@ class Environment extends Component {
             visible={delEnvShow}
             closable={false}
             confirmLoading={submitting}
-            title={`${formatMessage({ id: "envPl.delete.confirm" }, { name: envName })}`}
+            title={`${formatMessage(
+              { id: "envPl.delete.confirm" },
+              { name: envName }
+            )}`}
             footer={[
-              <Button key="back" onClick={this.closeDelEnvModal} disabled={submitting}>{<FormattedMessage id="cancel" />}</Button>,
-              <Button key="submit" type="danger" onClick={this.deleteEnv} loading={submitting}>
-                {formatMessage({ id: 'delete' })}
+              <Button
+                key="back"
+                onClick={this.closeDelEnvModal}
+                disabled={submitting}
+              >
+                {<FormattedMessage id="cancel" />}
+              </Button>,
+              <Button
+                key="submit"
+                type="danger"
+                onClick={this.deleteEnv}
+                loading={submitting}
+              >
+                {formatMessage({ id: "delete" })}
               </Button>,
             ]}
           >
