@@ -1,15 +1,22 @@
-import React, { Component, Fragment } from 'react';
-import { observer } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
-import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-import { Button, Popover, Tooltip, Table } from 'choerodon-ui';
-import { injectIntl, FormattedMessage } from 'react-intl';
-import _ from 'lodash';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
-import '../../instances/Instances.scss';
-import '../../../main.scss';
+import React, { Component, Fragment } from "react";
+import { observer } from "mobx-react";
+import { withRouter } from "react-router-dom";
+import {
+  Content,
+  Header,
+  Page,
+  Permission,
+  stores,
+} from "choerodon-front-boot";
+import { Button, Popover, Tooltip, Table } from "choerodon-ui";
+import { injectIntl, FormattedMessage } from "react-intl";
+import _ from "lodash";
+import MouserOverWrapper from "../../../../components/MouseOverWrapper";
+import AppName from "../../../../components/appName";
+import "../../instances/Instances.scss";
+import "../../../main.scss";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
-import DeploymentPipelineStore from  '../../../../stores/project/deploymentPipeline';
+import DeploymentPipelineStore from "../../../../stores/project/deploymentPipeline";
 
 const { AppState } = stores;
 
@@ -17,8 +24,7 @@ const { AppState } = stores;
 class DeployOverview extends Component {
   constructor(props, context) {
     super(props, context);
-    this.state = {
-    };
+    this.state = {};
   }
 
   componentDidMount() {
@@ -62,12 +68,21 @@ class DeployOverview extends Component {
    * @param proId
    */
   quickDeploy = (appId, verId, proId) => {
-    const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
+    const {
+      id: projectId,
+      name: projectName,
+      organizationId,
+      type,
+    } = AppState.currentMenuType;
     const isProject = proId === Number(projectId);
     if (isProject) {
-      this.linkToChange(`/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}&appId=${appId}&verId=${verId}`);
+      this.linkToChange(
+        `/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}&appId=${appId}&verId=${verId}`
+      );
     } else {
-      this.linkToChange(`/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}&isProject&appId=${appId}&verId=${verId}`);
+      this.linkToChange(
+        `/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}&isProject&appId=${appId}&verId=${verId}`
+      );
     }
   };
 
@@ -75,7 +90,7 @@ class DeployOverview extends Component {
    * 处理页面跳转
    * @param url 跳转地址
    */
-  linkToChange = (url) => {
+  linkToChange = url => {
     const { history } = this.props;
     history.push(url);
   };
@@ -85,81 +100,109 @@ class DeployOverview extends Component {
    * @returns {*}
    */
   renderTable() {
-    const { InstancesStore, intl: { formatMessage } } = this.props;
+    const {
+      InstancesStore,
+      intl: { formatMessage },
+    } = this.props;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const appList = InstancesStore.getMutiData;
-    const envNames = _.filter(DeploymentPipelineStore.getEnvLine, ['permission', true]);
+    const envNames = _.filter(DeploymentPipelineStore.getEnvLine, [
+      "permission",
+      true,
+    ]);
     const { type, organizationId: orgId } = AppState.currentMenuType;
 
     const columns = [
       {
-        title: formatMessage({ id: 'deploy.app' }),
+        title: formatMessage({ id: "deploy.app" }),
         width: 150,
-        key: 'apps',
-        fixed: 'left',
-        render: record => (<React.Fragment>
-          {record.projectId === projectId ? <Tooltip title={<FormattedMessage id="project" />}><i className="icon icon-project c7n-icon-publish" /></Tooltip> : <Tooltip title={<FormattedMessage id="market" />}><i className="icon icon-apps c7n-icon-publish" /></Tooltip>}
-          <MouserOverWrapper text={record.applicationName} width="108px">
-            {record.applicationName}
-          </MouserOverWrapper>
-        </React.Fragment>),
+        key: "apps",
+        fixed: "left",
+        render: record => (
+          <AppName
+            name={record.applicationName}
+            showIcon={!!record.projectId}
+            self={record.projectId === projectId}
+            width="108px"
+          />
+        ),
       },
       {
-        title: formatMessage({ id: 'ist.lastVer' }),
+        title: formatMessage({ id: "ist.lastVer" }),
         width: 227,
-        key: 'latestVersion',
-        fixed: 'left',
-        render: record => (<div className="c7n-deploy-last">
-          <div className="c7n-deploy-muti_card last_177">
-            <MouserOverWrapper text={record.latestVersion} width="161px">
-              {record.latestVersion}
-            </MouserOverWrapper>
+        key: "latestVersion",
+        fixed: "left",
+        render: record => (
+          <div className="c7n-deploy-last">
+            <div className="c7n-deploy-muti_card last_177">
+              <MouserOverWrapper text={record.latestVersion} width="161px">
+                {record.latestVersion}
+              </MouserOverWrapper>
+            </div>
+            <Permission
+              service={["devops-service.application-instance.deploy"]}
+              type={type}
+              projectId={projectId}
+              organizationId={orgId}
+            >
+              <Tooltip title={<FormattedMessage id="dpOverview.deploy" />}>
+                <Button
+                  shape="circle"
+                  icon="jsfiddle"
+                  onClick={this.quickDeploy.bind(
+                    this,
+                    record.applicationId,
+                    record.latestVersionId,
+                    record.projectId
+                  )}
+                />
+              </Tooltip>
+            </Permission>
           </div>
-          <Permission
-            service={[
-              'devops-service.application-instance.deploy',
-            ]}
-            type={type}
-            projectId={projectId}
-            organizationId={orgId}
-          >
-            <Tooltip title={<FormattedMessage id="dpOverview.deploy" />}>
-              <Button
-                shape="circle"
-                icon="jsfiddle"
-                onClick={this.quickDeploy.bind(this, record.applicationId, record.latestVersionId, record.projectId)}
-              />
-            </Tooltip>
-          </Permission>
-        </div>),
+        ),
       },
     ];
 
     _.map(envNames, (e, index) => {
       columns.push({
-        title: <div>{e.connect ? <Tooltip title={<FormattedMessage id="connect" />}><span className="c7n-ist-status_on" /></Tooltip> : <Tooltip title={<FormattedMessage id="disconnect" />}><span className="c7n-ist-status_off" /></Tooltip>}{e.name}</div>,
+        title: (
+          <div>
+            {e.connect ? (
+              <Tooltip title={<FormattedMessage id="connect" />}>
+                <span className="c7n-ist-status_on" />
+              </Tooltip>
+            ) : (
+              <Tooltip title={<FormattedMessage id="disconnect" />}>
+                <span className="c7n-ist-status_off" />
+              </Tooltip>
+            )}
+            {e.name}
+          </div>
+        ),
         width: 230,
         key: `${e.name}${index}`,
-        render: record => (<span>{this.renderEc(e.id, record)}</span>),
+        render: record => <span>{this.renderEc(e.id, record)}</span>,
       });
     });
     /**
      * 处理环境列变换时fixed列自适应宽度问题
      */
     columns.push({
-      key: 'blank',
+      key: "blank",
     });
 
-    return <Table
-      className={`${!appList.length && 'no-value'} c7n-multi-table`}
-      pagination={false}
-      filterBar={false}
-      loading={InstancesStore.getIsLoading}
-      columns={columns}
-      dataSource={appList}
-      rowKey={record => record.applicationId}
-      scroll={{ x: 377 + envNames.length * 230 }}
-    />;
+    return (
+      <Table
+        className={`${!appList.length && "no-value"} c7n-multi-table`}
+        pagination={false}
+        filterBar={false}
+        loading={InstancesStore.getIsLoading}
+        columns={columns}
+        dataSource={appList}
+        rowKey={record => record.applicationId}
+        scroll={{ x: 377 + envNames.length * 230 }}
+      />
+    );
   }
 
   /**
@@ -171,73 +214,96 @@ class DeployOverview extends Component {
   renderEc = (id, record) => {
     const { intl } = this.props;
     let dom = [];
-    _.map(record.envInstances, (i) => {
+    _.map(record.envInstances, i => {
       if (id === i.envId) {
         dom = i.envVersions;
       }
     });
-    return dom.map(version => (<div className="c7n-deploy-muti-row" key={version.versionId}>
-      <div className="c7n-deploy-muti_card">
-        <Popover
-          placement="bottom"
-          title={<FormattedMessage id="ist.head" />}
-          content={version.instances.length ? version.instances.map(ist => (
-            <div key={ist.instanceId}>
-              <div className={`c7n-ist-status c7n-ist-status_${ist.instanceStatus}`}>
-                <div>{intl.formatMessage({ id: ist.instanceStatus || 'null' })}</div>
-              </div>
-              <span>{ist.instanceName}</span>
-            </div>
-          )) : <FormattedMessage id="ist.noIst" />}
-          trigger="hover"
-        >
-          <Button
-            className="c7n-multi-ist"
-            funcType="flat"
-            shape="circle"
+    return dom.map(version => (
+      <div className="c7n-deploy-muti-row" key={version.versionId}>
+        <div className="c7n-deploy-muti_card">
+          <Popover
+            placement="bottom"
+            title={<FormattedMessage id="ist.head" />}
+            content={
+              version.instances.length ? (
+                version.instances.map(ist => (
+                  <div key={ist.instanceId}>
+                    <div
+                      className={`c7n-ist-status c7n-ist-status_${
+                        ist.instanceStatus
+                      }`}
+                    >
+                      <div>
+                        {intl.formatMessage({
+                          id: ist.instanceStatus || "null",
+                        })}
+                      </div>
+                    </div>
+                    <span>{ist.instanceName}</span>
+                  </div>
+                ))
+              ) : (
+                <FormattedMessage id="ist.noIst" />
+              )
+            }
+            trigger="hover"
           >
-            <div>
-              {version.instances.length}
-            </div>
-          </Button>
-        </Popover>
-        <MouserOverWrapper text={version.version} width="161px">
-          {version.version}
-        </MouserOverWrapper>
-        {version.latest ? null : <Tooltip title={<FormattedMessage id="dpOverview.update" />}><span className="c7n-ist-status_update" /></Tooltip>}
+            <Button className="c7n-multi-ist" funcType="flat" shape="circle">
+              <div>{version.instances.length}</div>
+            </Button>
+          </Popover>
+          <MouserOverWrapper text={version.version} width="161px">
+            {version.version}
+          </MouserOverWrapper>
+          {version.latest ? null : (
+            <Tooltip title={<FormattedMessage id="dpOverview.update" />}>
+              <span className="c7n-ist-status_update" />
+            </Tooltip>
+          )}
+        </div>
       </div>
-    </div>));
+    ));
   };
 
   render() {
     const { name } = AppState.currentMenuType;
-    const envNames = _.filter(DeploymentPipelineStore.getEnvLine, ['permission', true]);
+    const envNames = _.filter(DeploymentPipelineStore.getEnvLine, [
+      "permission",
+      true,
+    ]);
 
     return (
       <Page
         className="c7n-region"
         service={[
-          'devops-service.application.listAll',
-          'devops-service.devops-environment.listByProjectIdAndActive',
-          'devops-service.application-instance.deploy',
+          "devops-service.application.listAll",
+          "devops-service.devops-environment.listByProjectIdAndActive",
+          "devops-service.application-instance.deploy",
         ]}
       >
-        {envNames && envNames.length ? <Fragment>
-          <Header title={<FormattedMessage id="dpOverview.head" />}>
-            <Button
-              funcType="flat"
-              onClick={this.reload}
+        {envNames && envNames.length ? (
+          <Fragment>
+            <Header title={<FormattedMessage id="dpOverview.head" />}>
+              <Button funcType="flat" onClick={this.reload}>
+                <i className="icon-refresh icon" />
+                <FormattedMessage id="refresh" />
+              </Button>
+            </Header>
+            <Content
+              code="dpOverview"
+              values={{ name }}
+              className="page-content"
             >
-              <i className="icon-refresh icon" />
-              <FormattedMessage id="refresh" />
-            </Button>
-          </Header>
-          <Content code="dpOverview" values={{ name }} className="page-content">
-            <div className="c7n-multi-wrap">
-              {this.renderTable()}
-            </div>
-          </Content>
-        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="dpOverview.head" />} type="env" />}
+              <div className="c7n-multi-wrap">{this.renderTable()}</div>
+            </Content>
+          </Fragment>
+        ) : (
+          <DepPipelineEmpty
+            title={<FormattedMessage id="dpOverview.head" />}
+            type="env"
+          />
+        )}
       </Page>
     );
   }

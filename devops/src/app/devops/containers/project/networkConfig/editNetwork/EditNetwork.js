@@ -1,17 +1,26 @@
 /* eslint-disable no-useless-return */
-import React, { Component, Fragment } from 'react';
-import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
-import classnames from 'classnames';
-import _ from 'lodash';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import React, { Component, Fragment } from "react";
+import { observer, inject } from "mobx-react";
+import { withRouter } from "react-router-dom";
+import classnames from "classnames";
+import _ from "lodash";
+import { injectIntl, FormattedMessage } from "react-intl";
 import {
-  Button, Form, Select, Input, Modal, Popover, Icon, Radio, Tooltip,
-} from 'choerodon-ui';
-import { stores, Content } from 'choerodon-front-boot';
-import '../../../main.scss';
-import '../createNetwork/CreateNetwork.scss';
-import './EditNetwork.scss';
+  Button,
+  Form,
+  Select,
+  Input,
+  Modal,
+  Popover,
+  Icon,
+  Radio,
+  Tooltip,
+} from "choerodon-ui";
+import { stores, Content } from "choerodon-front-boot";
+import AppName from "../../../../components/appName";
+import "../../../main.scss";
+import "../createNetwork/CreateNetwork.scss";
+import "./EditNetwork.scss";
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -40,11 +49,11 @@ class EditNetwork extends Component {
      ************** */
     this.state = {
       submitting: false,
-      targetKeys: 'instance',
-      portKeys: 'ClusterIP',
+      targetKeys: "instance",
+      portKeys: "ClusterIP",
       validIp: {},
-      initName: '',
-      initApp: '',
+      initName: "",
+      initApp: "",
       labels: {},
       config: {},
       initIst: [],
@@ -67,24 +76,26 @@ class EditNetwork extends Component {
    * 将值放入 externalIp 表单项
    * @param value
    */
-  setIpInSelect = (value) => {
-    const { form: { getFieldValue, validateFields, setFieldsValue } } = this.props;
-    const ip = getFieldValue('externalIp') || [];
+  setIpInSelect = value => {
+    const {
+      form: { getFieldValue, validateFields, setFieldsValue },
+    } = this.props;
+    const ip = getFieldValue("externalIp") || [];
     if (!ip.includes(value)) {
       ip.push(value);
       setFieldsValue({
         externalIp: ip,
       });
     }
-    validateFields(['externalIp']);
+    validateFields(["externalIp"]);
     if (this.ipSelect) {
       this.ipSelect.setState({
-        inputValue: '',
+        inputValue: "",
       });
     }
   };
 
-  handleSubmit = (e) => {
+  handleSubmit = e => {
     e.preventDefault();
     const { form, store, netId } = this.props;
     const { network } = this.state;
@@ -107,11 +118,13 @@ class EditNetwork extends Component {
           config,
           values,
         } = data;
-        const appIst = appInstance ? _.map(appInstance, item => Number(item)) : null;
+        const appIst = appInstance
+          ? _.map(appInstance, item => Number(item))
+          : null;
         const ports = [];
         const label = {};
         if (portKeys) {
-          _.forEach(portKeys, (item) => {
+          _.forEach(portKeys, item => {
             if (item || item === 0) {
               const node = {
                 port: Number(port[item]),
@@ -123,7 +136,7 @@ class EditNetwork extends Component {
           });
         }
         if (targetKeys) {
-          _.forEach(targetKeys, (item) => {
+          _.forEach(targetKeys, item => {
             if (item || item === 0) {
               const key = keywords[item];
               label[key] = values[item];
@@ -133,15 +146,9 @@ class EditNetwork extends Component {
         const {
           name: oldName,
           appId: oldAppId,
-          target: {
-            appInstance: oldAppInstance,
-            labels: oldLabel,
-          },
+          target: { appInstance: oldAppInstance, labels: oldLabel },
           envId: oldEnvId,
-          config: {
-            externalIps,
-            ports: oldPorts,
-          },
+          config: { externalIps, ports: oldPorts },
           type,
         } = network;
         const oldIst = _.map(oldAppInstance, item => _.toNumber(item.id));
@@ -165,7 +172,7 @@ class EditNetwork extends Component {
           appId: appId || null,
           appInstance: appIst,
           envId,
-          externalIp: externalIp ? externalIp.join(',') : null,
+          externalIp: externalIp ? externalIp.join(",") : null,
           ports,
           label: !_.isEmpty(label) ? label : null,
           type: config,
@@ -174,15 +181,18 @@ class EditNetwork extends Component {
           this.setState({ submitting: false });
           this.handleClose();
         } else {
-          store.updateData(id, netId, newNetwork).then((res) => {
-            this.setState({ submitting: false });
-            if (res) {
-              this.handleClose();
-            }
-          }).catch((error) => {
-            this.setState({ submitting: false });
-            Choerodon.handleResponseError(error);
-          });
+          store
+            .updateData(id, netId, newNetwork)
+            .then(res => {
+              this.setState({ submitting: false });
+              if (res) {
+                this.handleClose();
+              }
+            })
+            .catch(error => {
+              this.setState({ submitting: false });
+              Choerodon.handleResponseError(error);
+            });
         }
       } else {
         this.setState({ submitting: false });
@@ -197,13 +207,21 @@ class EditNetwork extends Component {
   };
 
   loadNetworkById = () => {
-    const { store, netId, form: { setFieldsValue } } = this.props;
+    const {
+      store,
+      netId,
+      form: { setFieldsValue },
+    } = this.props;
     const { id } = AppState.currentMenuType;
     store.loadEnv(id);
-    store.loadDataById(id, netId).then((data) => {
+    store.loadDataById(id, netId).then(data => {
       if (data) {
         const { name, type, appId, target, config, envId, envName } = data;
-        const targetKeys = (appId && target && target.appInstance.length) || target.labels === null ? 'instance' : 'param';
+        const targetKeys =
+          (appId && target && target.appInstance.length) ||
+          target.labels === null
+            ? "instance"
+            : "param";
         let appInstance = [];
         let labels = {};
         target && ({ appInstance, labels } = target);
@@ -212,15 +230,26 @@ class EditNetwork extends Component {
         const initIstOption = [];
         const deletedInstance = [];
         if (appInstance && appInstance.length) {
-          _.forEach(appInstance, (item) => {
+          _.forEach(appInstance, item => {
             const { id: istId, code, instanceStatus } = item;
             initIst.push(istId);
             initIstOption.push(
               <Option key={istId} value={istId}>
-                <Tooltip title={instanceStatus ? <FormattedMessage id={instanceStatus} /> : <FormattedMessage id="network.ist.deleted" />} placement="right">{code}</Tooltip>
-              </Option>,
+                <Tooltip
+                  title={
+                    instanceStatus ? (
+                      <FormattedMessage id={instanceStatus} />
+                    ) : (
+                      <FormattedMessage id="network.ist.deleted" />
+                    )
+                  }
+                  placement="right"
+                >
+                  {code}
+                </Tooltip>
+              </Option>
             );
-            if (instanceStatus !== 'running') {
+            if (instanceStatus !== "running") {
               deletedInstance.push(istId);
             }
           });
@@ -251,41 +280,41 @@ class EditNetwork extends Component {
    */
   handleTypeChange = (e, key) => {
     const {
-      form: {
-        getFieldValue,
-        getFieldDecorator,
-        resetFields,
-        setFieldsValue,
-      },
+      form: { getFieldValue, getFieldDecorator, resetFields, setFieldsValue },
       store,
     } = this.props;
     const { envId } = this.state;
     const { id } = AppState.currentMenuType;
     const keys = getFieldValue(key);
-    if (key === 'portKeys') {
+    if (key === "portKeys") {
       // 清除多组port映射
       this.portKeys = 1;
       // 清空表单项
-      resetFields(['port', 'tport', 'nport']);
+      resetFields(["port", "tport", "nport"]);
       setFieldsValue({
         [key]: [0],
       });
       this.setState({ config: {} });
-    } else if (e.target.value === 'param') {
+    } else if (e.target.value === "param") {
       // 切换到“填写参数”时，生成表单项
       // 切换到“选择实例”时，清空生成的表单项
-      getFieldDecorator('targetKeys', { initialValue: [0] });
+      getFieldDecorator("targetKeys", { initialValue: [0] });
       this.targetKeys = 1;
       setFieldsValue({
         [key]: [0],
       });
-      this.setState({ initApp: '', initIstOption: [], initIst: [], deletedInstance: [] });
-      resetFields(['appInstance']);
+      this.setState({
+        initApp: "",
+        initIstOption: [],
+        initIst: [],
+        deletedInstance: [],
+      });
+      resetFields(["appInstance"]);
       store.setIst([]);
     } else {
       this.targetKeys = 0;
-      getFieldDecorator('targetKeys', { initialValue: [] });
-      resetFields(['keywords', 'values']);
+      getFieldDecorator("targetKeys", { initialValue: [] });
+      resetFields(["keywords", "values"]);
       setFieldsValue({
         [key]: [],
       });
@@ -304,7 +333,9 @@ class EditNetwork extends Component {
    * @param type
    */
   removeGroup = (k, type) => {
-    const { form: { getFieldValue, setFieldsValue } } = this.props;
+    const {
+      form: { getFieldValue, setFieldsValue },
+    } = this.props;
     const keys = getFieldValue(type);
     if (keys.length === 1) {
       return;
@@ -318,10 +349,12 @@ class EditNetwork extends Component {
    * 动态生成一组表单项
    * @param type
    */
-  addGroup = (type) => {
-    const { form: { getFieldValue, setFieldsValue } } = this.props;
+  addGroup = type => {
+    const {
+      form: { getFieldValue, setFieldsValue },
+    } = this.props;
     const keys = getFieldValue(type);
-    const uuid = type === 'portKeys' ? this.portKeys : this.targetKeys;
+    const uuid = type === "portKeys" ? this.portKeys : this.targetKeys;
     const nextKeys = _.concat(keys, uuid);
     this[type] = uuid + 1;
     setFieldsValue({
@@ -337,7 +370,7 @@ class EditNetwork extends Component {
   handleAppSelect = (value, options) => {
     const { store, form } = this.props;
     const { id } = AppState.currentMenuType;
-    const envId = form.getFieldValue('envId');
+    const envId = form.getFieldValue("envId");
     this.setState({
       initIst: [],
       initIstOption: [],
@@ -350,29 +383,32 @@ class EditNetwork extends Component {
    * @param node
    * @returns {*}
    */
-  makeAppGroup = (node) => {
-    const { id, name, code } = node;
+  makeAppGroup = node => {
+    const { id, name, code, projectId } = node;
+    const { id: currentProject } = AppState.currentMenuType;
     return (
       <Option value={id} key={code}>
         <Popover
           placement="right"
-          content={(
+          content={
             <Fragment>
               <p>
-                <FormattedMessage id="app.name" />
-:
-                <span>{name}</span>
+                <FormattedMessage id="app.name" />:<span>{name}</span>
               </p>
               <p>
-                <FormattedMessage id="app.code" />
-:
-                <span>{code}</span>
+                <FormattedMessage id="app.code" />:<span>{code}</span>
               </p>
             </Fragment>
-          )}
+          }
         >
-          <i className="icon icon-project" />
-          <span className="network-app-name">{name}</span>
+          <div className="c7ncd-net-app">
+            <AppName
+              name={name}
+              showIcon
+              self={projectId === Number(currentProject)}
+              width="460px"
+            />
+          </div>
         </Popover>
       </Option>
     );
@@ -388,18 +424,17 @@ class EditNetwork extends Component {
     const { intl, store, form } = this.props;
     const { id } = AppState.currentMenuType;
     const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
-    const envId = form.getFieldValue('envId');
+    const envId = form.getFieldValue("envId");
     if (value && !pattern.test(value)) {
-      callback(intl.formatMessage({ id: 'network.name.check.failed' }));
+      callback(intl.formatMessage({ id: "network.name.check.failed" }));
     } else if (value && pattern.test(value)) {
-      store.checkNetWorkName(id, envId, value)
-        .then((data) => {
-          if (data) {
-            callback();
-          } else {
-            callback(intl.formatMessage({ id: 'network.name.check.exist' }));
-          }
-        });
+      store.checkNetWorkName(id, envId, value).then(data => {
+        if (data) {
+          callback();
+        } else {
+          callback(intl.formatMessage({ id: "network.name.check.exist" }));
+        }
+      });
     } else {
       callback();
     }
@@ -415,9 +450,9 @@ class EditNetwork extends Component {
     const { intl } = this.props;
     const { deletedInstance } = this.state;
     let msg;
-    _.forEach(value, (item) => {
+    _.forEach(value, item => {
       if (_.includes(deletedInstance, item) && !msg) {
-        msg = intl.formatMessage({ id: 'network.instance.check.failed' });
+        msg = intl.formatMessage({ id: "network.instance.check.failed" });
       }
     });
     if (msg) {
@@ -433,7 +468,7 @@ class EditNetwork extends Component {
    * @param value
    * @param callback
    */
-  checkIP =(rule, value, callback) => {
+  checkIP = (rule, value, callback) => {
     const { intl } = this.props;
     const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
     const validIp = {};
@@ -441,7 +476,7 @@ class EditNetwork extends Component {
     if (value && value.length) {
       _.forEach(value, (item, index) => {
         if (!p.test(item)) {
-          errorMsg = intl.formatMessage({ id: 'network.ip.check.failed' });
+          errorMsg = intl.formatMessage({ id: "network.ip.check.failed" });
           validIp[item] = true;
         }
       });
@@ -461,29 +496,35 @@ class EditNetwork extends Component {
    */
   checkPort = (rule, value, callback, type) => {
     const { intl } = this.props;
-    const { form: { getFieldValue } } = this.props;
+    const {
+      form: { getFieldValue },
+    } = this.props;
     const p = /^[1-9]\d*$/;
     const count = _.countBy(getFieldValue(type));
-    let typeMsg = '';
+    let typeMsg = "";
     switch (type) {
-      case 'tport':
-        typeMsg = 'network.tport.check.repeat';
+      case "tport":
+        typeMsg = "network.tport.check.repeat";
         break;
-      case 'nport':
-        typeMsg = 'network.nport.check.repeat';
+      case "nport":
+        typeMsg = "network.nport.check.repeat";
         break;
       default:
-        typeMsg = 'network.port.check.repeat';
+        typeMsg = "network.port.check.repeat";
     }
     if (value) {
-      if (p.test(value) && parseInt(value, 10) >= 1 && parseInt(value, 10) <= 65535) {
+      if (
+        p.test(value) &&
+        parseInt(value, 10) >= 1 &&
+        parseInt(value, 10) <= 65535
+      ) {
         if (count[value] < 2) {
           callback();
         } else {
           callback(intl.formatMessage({ id: typeMsg }));
         }
       } else {
-        callback(intl.formatMessage({ id: 'network.port.check.failed' }));
+        callback(intl.formatMessage({ id: "network.port.check.failed" }));
       }
     } else {
       callback();
@@ -498,18 +539,20 @@ class EditNetwork extends Component {
    */
   checkKeywords = (rule, value, callback) => {
     const { intl } = this.props;
-    const { form: { getFieldValue } } = this.props;
+    const {
+      form: { getFieldValue },
+    } = this.props;
     const p = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
-    const keyCount = _.countBy(getFieldValue('keywords'));
+    const keyCount = _.countBy(getFieldValue("keywords"));
     if (value) {
       if (p.test(value)) {
         if (keyCount[value] < 2) {
           callback();
         } else {
-          callback(intl.formatMessage({ id: 'network.key.check.repeat' }));
+          callback(intl.formatMessage({ id: "network.key.check.repeat" }));
         }
       } else {
-        callback(intl.formatMessage({ id: 'network.key.check.failed' }));
+        callback(intl.formatMessage({ id: "network.key.check.failed" }));
       }
     } else {
       callback();
@@ -523,7 +566,7 @@ class EditNetwork extends Component {
       if (p.test(value)) {
         callback();
       } else {
-        callback(intl.formatMessage({ id: 'network.value.check.failed' }));
+        callback(intl.formatMessage({ id: "network.value.check.failed" }));
       }
     } else {
       callback();
@@ -540,10 +583,10 @@ class EditNetwork extends Component {
     const { deletedInstance } = this.state;
     return React.cloneElement(liNode, {
       className: classnames(liNode.props.className, {
-        'instance-status-disable': _.includes(deletedInstance, value),
+        "instance-status-disable": _.includes(deletedInstance, value),
       }),
       // 防止Tooltip组件的title属性被放到默认属性中
-      title: '',
+      title: "",
     });
   };
 
@@ -553,48 +596,49 @@ class EditNetwork extends Component {
    * @param value
    * @returns {*}
    */
-  handleChoiceRender = (liNode, value) => React.cloneElement(liNode, {
-    className: classnames(liNode.props.className, {
-      /* eslint-disable react/destructuring-assignment */
-      'ip-check-error': this.state.validIp[value],
-    }),
-  });
+  handleChoiceRender = (liNode, value) =>
+    React.cloneElement(liNode, {
+      className: classnames(liNode.props.className, {
+        /* eslint-disable react/destructuring-assignment */
+        "ip-check-error": this.state.validIp[value],
+      }),
+    });
 
   /**
    * 删除ip选择框中的标签校验标识
    * @param value
    */
-  handleChoiceRemove = (value) => {
-    const { form: { validateFields } } = this.props;
+  handleChoiceRemove = value => {
+    const {
+      form: { validateFields },
+    } = this.props;
     const { validIp } = this.state;
     // 直接删除
     if (value in validIp) {
       delete validIp[value];
     }
-    validateFields(['externalIp']);
+    validateFields(["externalIp"]);
   };
 
   /**
    * ip选择框监听键盘按下事件
    * @param e
    */
-  handleInputKeyDown = (e) => {
+  handleInputKeyDown = e => {
     const { value } = e.target;
     if (e.keyCode === 13 && !e.isDefaultPrevented() && value) {
       this.setIpInSelect(value);
     }
   };
 
-  ipSelectRef = (node) => {
+  ipSelectRef = node => {
     if (node) {
       this.ipSelect = node.rcSelect;
     }
   };
 
   render() {
-    const {
-      visible, form, intl, store, 
-    } = this.props;
+    const { visible, form, intl, store } = this.props;
     const {
       submitting,
       targetKeys: targetType,
@@ -611,18 +655,24 @@ class EditNetwork extends Component {
     const { name: menuName, id: projectId } = AppState.currentMenuType;
     const { getFieldDecorator, getFieldValue } = form;
     // const { envId, envName } = store.getSingleData;
-    const localApp = _.filter(store.getApp, item => item.projectId === Number(projectId));
-    const storeApp = _.filter(store.getApp, item => item.projectId !== Number(projectId));
-    let portWidthSingle = '240';
-    let portWidthMut = 'portL';
-    if (configType === 'NodePort') {
-      portWidthSingle = '150';
-      portWidthMut = 'portS';
+    const localApp = _.filter(
+      store.getApp,
+      item => item.projectId === Number(projectId)
+    );
+    const storeApp = _.filter(
+      store.getApp,
+      item => item.projectId !== Number(projectId)
+    );
+    let portWidthSingle = "240";
+    let portWidthMut = "portL";
+    if (configType === "NodePort") {
+      portWidthSingle = "150";
+      portWidthMut = "portS";
     }
 
     // 生成多组 port
     const { ports, externalIp } = config;
-    const initIp = externalIp ? externalIp.split(',') : undefined;
+    const initIp = externalIp ? externalIp.split(",") : undefined;
     const initPort = [0];
     const nPort = [];
     const pPort = [];
@@ -640,75 +690,99 @@ class EditNetwork extends Component {
         this.portKeys = ports.length;
       }
     }
-    getFieldDecorator('portKeys', { initialValue: initPort });
-    const portKeys = getFieldValue('portKeys');
+    getFieldDecorator("portKeys", { initialValue: initPort });
+    const portKeys = getFieldValue("portKeys");
     const portItems = _.map(portKeys, (k, index) => (
       <div key={`port-${k}`} className="network-port-wrap">
-        {configType === 'NodePort' ? (
+        {configType === "NodePort" ? (
           <FormItem
-            className={`c7n-select_${portKeys.length > 1 ? 'portS' : '150'} network-panel-form network-port-form`}
+            className={`c7n-select_${
+              portKeys.length > 1 ? "portS" : "150"
+            } network-panel-form network-port-form`}
             {...formItemLayout}
           >
             {getFieldDecorator(`nport[${k}]`, {
               initialValue: nPort[k],
-              rules: [{
-                required: true,
-                message: intl.formatMessage({ id: 'required' }),
-              }, {
-                validator: (rule, value, callback) => this.checkPort(rule, value, callback, 'nport'),
-              }],
+              rules: [
+                {
+                  required: true,
+                  message: intl.formatMessage({ id: "required" }),
+                },
+                {
+                  validator: (rule, value, callback) =>
+                    this.checkPort(rule, value, callback, "nport"),
+                },
+              ],
             })(
               <Input
                 type="text"
                 maxLength={5}
                 label={<FormattedMessage id="network.config.nodePort" />}
-              />,
+              />
             )}
           </FormItem>
         ) : null}
         <FormItem
-          className={`c7n-select_${portKeys.length > 1 ? portWidthMut : portWidthSingle} network-panel-form network-port-form`}
+          className={`c7n-select_${
+            portKeys.length > 1 ? portWidthMut : portWidthSingle
+          } network-panel-form network-port-form`}
           {...formItemLayout}
         >
           {getFieldDecorator(`port[${k}]`, {
             initialValue: pPort[k],
-            rules: [{
-              required: true,
-              message: intl.formatMessage({ id: 'required' }),
-            }, {
-              validator: (rule, value, callback) => this.checkPort(rule, value, callback, 'port'),
-            }],
+            rules: [
+              {
+                required: true,
+                message: intl.formatMessage({ id: "required" }),
+              },
+              {
+                validator: (rule, value, callback) =>
+                  this.checkPort(rule, value, callback, "port"),
+              },
+            ],
           })(
             <Input
               type="text"
               maxLength={5}
-              disabled={!getFieldValue('envId')}
+              disabled={!getFieldValue("envId")}
               label={<FormattedMessage id="network.config.port" />}
-            />,
+            />
           )}
         </FormItem>
         <FormItem
-          className={`c7n-select_${portKeys.length > 1 ? portWidthMut : portWidthSingle} network-panel-form network-port-form`}
+          className={`c7n-select_${
+            portKeys.length > 1 ? portWidthMut : portWidthSingle
+          } network-panel-form network-port-form`}
           {...formItemLayout}
         >
           {getFieldDecorator(`tport[${k}]`, {
             initialValue: tPort[k],
-            rules: [{
-              required: true,
-              message: intl.formatMessage({ id: 'required' }),
-            }, {
-              validator: (rule, value, callback) => this.checkPort(rule, value, callback, 'tport'),
-            }],
+            rules: [
+              {
+                required: true,
+                message: intl.formatMessage({ id: "required" }),
+              },
+              {
+                validator: (rule, value, callback) =>
+                  this.checkPort(rule, value, callback, "tport"),
+              },
+            ],
           })(
             <Input
               type="text"
               maxLength={5}
-              disabled={!getFieldValue('envId')}
+              disabled={!getFieldValue("envId")}
               label={<FormattedMessage id="network.config.targetPort" />}
-            />,
+            />
           )}
         </FormItem>
-        {portKeys.length > 1 ? (<Icon className="network-group-icon" type="delete" onClick={() => this.removeGroup(k, 'portKeys')} />) : null}
+        {portKeys.length > 1 ? (
+          <Icon
+            className="network-group-icon"
+            type="delete"
+            onClick={() => this.removeGroup(k, "portKeys")}
+          />
+        ) : null}
       </div>
     ));
 
@@ -720,66 +794,90 @@ class EditNetwork extends Component {
     if (this.targetKeys === 0) {
       this.targetKeys = initKeys.length;
     }
-    getFieldDecorator('targetKeys', { initialValue: initLabels });
-    const targetKeys = getFieldValue('targetKeys');
+    getFieldDecorator("targetKeys", { initialValue: initLabels });
+    const targetKeys = getFieldValue("targetKeys");
     const targetItems = _.map(targetKeys, k => (
       <div key={`target-${k}`} className="network-port-wrap">
         <FormItem
-          className={`c7n-select_${targetKeys.length > 1 ? 'entryS' : 'entryL'} network-panel-form network-port-form`}
+          className={`c7n-select_${
+            targetKeys.length > 1 ? "entryS" : "entryL"
+          } network-panel-form network-port-form`}
           {...formItemLayout}
         >
           {getFieldDecorator(`keywords[${k}]`, {
             initialValue: initKeys[k],
-            rules: [{
-              required: true,
-              message: intl.formatMessage({ id: 'required' }),
-            }, {
-              validator: this.checkKeywords,
-            }],
+            rules: [
+              {
+                required: true,
+                message: intl.formatMessage({ id: "required" }),
+              },
+              {
+                validator: this.checkKeywords,
+              },
+            ],
           })(
             <Input
               type="text"
-              disabled={!getFieldValue('envId')}
+              disabled={!getFieldValue("envId")}
               label={<FormattedMessage id="network.config.keyword" />}
-            />,
+            />
           )}
         </FormItem>
         <Icon className="network-group-icon" type="drag_handle" />
         <FormItem
-          className={`c7n-select_${targetKeys.length > 1 ? 'entryS' : 'entryL'} network-panel-form network-port-form`}
+          className={`c7n-select_${
+            targetKeys.length > 1 ? "entryS" : "entryL"
+          } network-panel-form network-port-form`}
           {...formItemLayout}
         >
           {getFieldDecorator(`values[${k}]`, {
             initialValue: initValues[k],
-            rules: [{
-              required: true,
-              message: intl.formatMessage({ id: 'required' }),
-            }, {
-              validator: this.checkValue,
-            }],
+            rules: [
+              {
+                required: true,
+                message: intl.formatMessage({ id: "required" }),
+              },
+              {
+                validator: this.checkValue,
+              },
+            ],
           })(
             <Input
               type="text"
-              disabled={!getFieldValue('envId')}
+              disabled={!getFieldValue("envId")}
               label={<FormattedMessage id="network.config.value" />}
-            />,
+            />
           )}
         </FormItem>
-        {targetKeys.length > 1 ? (<Icon className="network-group-icon" type="delete" onClick={() => this.removeGroup(k, 'targetKeys')} />) : null}
+        {targetKeys.length > 1 ? (
+          <Icon
+            className="network-group-icon"
+            type="delete"
+            onClick={() => this.removeGroup(k, "targetKeys")}
+          />
+        ) : null}
       </div>
     ));
 
     // 初始化实例
     const ist = store.getIst;
     // 将默认的选项过滤
-    const istOption = _.map(_.filter(ist, item => !_.includes(initIst, item.id)), (item) => {
-      const { id, code } = item;
-      return (
-        <Option key={id} value={id}>
-          <Tooltip title={<FormattedMessage id="running" />} placement="right">{code}</Tooltip>
-        </Option>
-      );
-    });
+    const istOption = _.map(
+      _.filter(ist, item => !_.includes(initIst, item.id)),
+      item => {
+        const { id, code } = item;
+        return (
+          <Option key={id} value={id}>
+            <Tooltip
+              title={<FormattedMessage id="running" />}
+              placement="right"
+            >
+              {code}
+            </Tooltip>
+          </Option>
+        );
+      }
+    );
 
     const localAppOptions = _.map(localApp, node => this.makeAppGroup(node));
 
@@ -797,37 +895,42 @@ class EditNetwork extends Component {
           onCancel={this.handleClose.bind(this, false)}
           confirmLoading={submitting}
         >
-          <Content code="network.update" values={{ name: menuName }} className="c7n-network-create sidebar-content">
+          <Content
+            code="network.update"
+            values={{ name: menuName }}
+            className="c7n-network-create sidebar-content"
+          >
             <Form layout="vertical">
               <FormItem
                 className="c7n-select_512 network-form-name"
                 {...formItemLayout}
               >
-                {getFieldDecorator('name', {
+                {getFieldDecorator("name", {
                   initialValue: initName,
-                  rules: [{
-                    required: true,
-                    message: intl.formatMessage({ id: 'required' }),
-                  }],
+                  rules: [
+                    {
+                      required: true,
+                      message: intl.formatMessage({ id: "required" }),
+                    },
+                  ],
                 })(
                   <Input
                     disabled
                     maxLength={30}
                     type="text"
                     label={<FormattedMessage id="network.form.name" />}
-                  />,
+                  />
                 )}
               </FormItem>
-              <FormItem
-                className="c7n-select_512"
-                {...formItemLayout}
-              >
-                {getFieldDecorator('envId', {
+              <FormItem className="c7n-select_512" {...formItemLayout}>
+                {getFieldDecorator("envId", {
                   initialValue: envId,
-                  rules: [{
-                    required: true,
-                    message: intl.formatMessage({ id: 'required' }),
-                  }],
+                  rules: [
+                    {
+                      required: true,
+                      message: intl.formatMessage({ id: "required" }),
+                    },
+                  ],
                 })(
                   <Select
                     disabled
@@ -837,7 +940,7 @@ class EditNetwork extends Component {
                     optionFilterProp="children"
                   >
                     <Option value={envId}>{envName}</Option>
-                  </Select>,
+                  </Select>
                 )}
               </FormItem>
               <div className="network-panel-title">
@@ -853,68 +956,91 @@ class EditNetwork extends Component {
                   label={<FormattedMessage id="chooseType" />}
                   {...formItemLayout}
                 >
-                  {getFieldDecorator('target', {
+                  {getFieldDecorator("target", {
                     initialValue: targetType,
                   })(
                     <RadioGroup
                       name="target"
-                      disabled={!getFieldValue('envId')}
-                      onChange={e => this.handleTypeChange(e, 'targetKeys')}
+                      disabled={!getFieldValue("envId")}
+                      onChange={e => this.handleTypeChange(e, "targetKeys")}
                     >
-                      <Radio value="instance"><FormattedMessage id="network.target.instance" /></Radio>
-                      <Radio value="param"><FormattedMessage id="network.target.param" /></Radio>
-                    </RadioGroup>,
+                      <Radio value="instance">
+                        <FormattedMessage id="network.target.instance" />
+                      </Radio>
+                      <Radio value="param">
+                        <FormattedMessage id="network.target.param" />
+                      </Radio>
+                    </RadioGroup>
                   )}
                 </FormItem>
               </div>
               <div className="network-panel">
-                {targetType === 'instance' ? (
+                {targetType === "instance" ? (
                   <Fragment>
                     <FormItem
                       className="c7n-select_480 network-panel-form"
                       {...formItemLayout}
                     >
-                      {getFieldDecorator('appId', {
-                        initialValue: (localAppOptions.length || storeAppOptions.length) ? initApp : undefined,
-                        rules: [{
-                          required: true,
-                          message: intl.formatMessage({ id: 'required' }),
-                        }],
+                      {getFieldDecorator("appId", {
+                        initialValue:
+                          localAppOptions.length || storeAppOptions.length
+                            ? initApp
+                            : undefined,
+                        rules: [
+                          {
+                            required: true,
+                            message: intl.formatMessage({ id: "required" }),
+                          },
+                        ],
                       })(
                         <Select
                           filter
                           showSearch
                           className="c7n-select_480"
                           optionFilterProp="children"
-                          disabled={!getFieldValue('envId')}
+                          disabled={!getFieldValue("envId")}
                           onSelect={this.handleAppSelect}
                           label={<FormattedMessage id="network.form.app" />}
-                          getPopupContainer={triggerNode => triggerNode.parentNode}
-                          filterOption={(input, option) => option.props.children.props.children[1]
-                            .props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                          getPopupContainer={triggerNode =>
+                            triggerNode.parentNode
+                          }
+                          filterOption={(input, option) =>
+                            option.props.children.props.children[1].props.children
+                              .toLowerCase()
+                              .indexOf(input.toLowerCase()) >= 0
+                          }
                         >
-                          <OptGroup label={<FormattedMessage id="project" />} key="project">
+                          <OptGroup
+                            label={<FormattedMessage id="project" />}
+                            key="project"
+                          >
                             {localAppOptions}
                           </OptGroup>
-                          <OptGroup label={<FormattedMessage id="market" />} key="markert">
+                          <OptGroup
+                            label={<FormattedMessage id="market" />}
+                            key="markert"
+                          >
                             {storeAppOptions}
                           </OptGroup>
-                        </Select>,
+                        </Select>
                       )}
                     </FormItem>
                     <FormItem
                       className="c7n-select_480 network-panel-form"
                       {...formItemLayout}
                     >
-                      {getFieldDecorator('appInstance', {
+                      {getFieldDecorator("appInstance", {
                         initialValue: initIst.length ? initIst : undefined,
-                        trigger: ['onChange', 'onSubmit'],
-                        rules: [{
-                          required: true,
-                          message: intl.formatMessage({ id: 'required' }),
-                        }, {
-                          validator: this.checkInstance,
-                        }],
+                        trigger: ["onChange", "onSubmit"],
+                        rules: [
+                          {
+                            required: true,
+                            message: intl.formatMessage({ id: "required" }),
+                          },
+                          {
+                            validator: this.checkInstance,
+                          },
+                        ],
                       })(
                         <Select
                           filter
@@ -922,17 +1048,26 @@ class EditNetwork extends Component {
                           className="c7n-select_480 network-select-instance"
                           optionFilterProp="children"
                           optionLabelProp="children"
-                          disabled={!getFieldValue('envId')}
-                          label={<FormattedMessage id="network.target.instance" />}
-                          notFoundContent={intl.formatMessage({ id: 'network.form.instance.disable' })}
-                          getPopupContainer={triggerNode => triggerNode.parentNode}
+                          disabled={!getFieldValue("envId")}
+                          label={
+                            <FormattedMessage id="network.target.instance" />
+                          }
+                          notFoundContent={intl.formatMessage({
+                            id: "network.form.instance.disable",
+                          })}
+                          getPopupContainer={triggerNode =>
+                            triggerNode.parentNode
+                          }
                           choiceRender={this.handleRenderInstance}
-                          filterOption={(input, option) => option.props.children.props.children
-                            .toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                          filterOption={(input, option) =>
+                            option.props.children.props.children
+                              .toLowerCase()
+                              .indexOf(input.toLowerCase()) >= 0
+                          }
                         >
                           {initIstOption}
                           {istOption}
-                        </Select>,
+                        </Select>
                       )}
                     </FormItem>
                   </Fragment>
@@ -940,10 +1075,10 @@ class EditNetwork extends Component {
                   <Fragment>
                     {targetItems}
                     <Button
-                      disabled={!getFieldValue('envId')}
+                      disabled={!getFieldValue("envId")}
                       type="primary"
                       funcType="flat"
-                      onClick={() => this.addGroup('targetKeys')}
+                      onClick={() => this.addGroup("targetKeys")}
                       icon="add"
                     >
                       <FormattedMessage id="network.config.addtarget" />
@@ -951,49 +1086,61 @@ class EditNetwork extends Component {
                   </Fragment>
                 )}
               </div>
-              <div className={`network-panel-title ${!getFieldValue('envId') ? 'network-panel-title_disabled' : ''}`}>
+              <div
+                className={`network-panel-title ${
+                  !getFieldValue("envId") ? "network-panel-title_disabled" : ""
+                }`}
+              >
                 <Icon type="router" />
                 <FormattedMessage id="network.config" />
               </div>
               <div className="network-radio-wrap">
-                <div className={`network-radio-label ${!getFieldValue('envId') ? 'network-radio-label_disabled' : ''}`}>
+                <div
+                  className={`network-radio-label ${
+                    !getFieldValue("envId")
+                      ? "network-radio-label_disabled"
+                      : ""
+                  }`}
+                >
                   <FormattedMessage id="chooseType" />
                 </div>
                 <FormItem
                   className="c7n-select_512 network-radio-form"
                   {...formItemLayout}
                 >
-                  {getFieldDecorator('config', {
+                  {getFieldDecorator("config", {
                     initialValue: configType,
                   })(
                     <RadioGroup
                       name="config"
-                      disabled={!getFieldValue('envId')}
-                      onChange={e => this.handleTypeChange(e, 'portKeys')}
+                      disabled={!getFieldValue("envId")}
+                      onChange={e => this.handleTypeChange(e, "portKeys")}
                     >
                       <Radio value="ClusterIP">ClusterIP</Radio>
                       <Radio value="NodePort">NodePort</Radio>
-                    </RadioGroup>,
+                    </RadioGroup>
                   )}
                 </FormItem>
               </div>
               <div className="network-panel">
-                {configType === 'ClusterIP' ? (
+                {configType === "ClusterIP" ? (
                   <Fragment>
                     <FormItem
                       className="c7n-select_480 network-panel-form"
                       {...formItemLayout}
                     >
-                      {getFieldDecorator('externalIp', {
+                      {getFieldDecorator("externalIp", {
                         initialValue: initIp,
-                        rules: [{
-                          validator: this.checkIP,
-                        }],
+                        rules: [
+                          {
+                            validator: this.checkIP,
+                          },
+                        ],
                       })(
                         <Select
                           mode="tags"
                           ref={this.ipSelectRef}
-                          disabled={!getFieldValue('envId')}
+                          disabled={!getFieldValue("envId")}
                           className="c7n-select_512"
                           label={<FormattedMessage id="network.config.ip" />}
                           onInputKeyDown={this.handleInputKeyDown}
@@ -1004,17 +1151,19 @@ class EditNetwork extends Component {
                           showNotFindInputItem={false}
                           showNotFindSelectedItem={false}
                           allowClear
-                        />,
+                        />
                       )}
                     </FormItem>
                     {portItems}
                   </Fragment>
-                ) : portItems}
+                ) : (
+                  portItems
+                )}
                 <Button
-                  disabled={!getFieldValue('envId')}
+                  disabled={!getFieldValue("envId")}
                   type="primary"
                   funcType="flat"
-                  onClick={() => this.addGroup('portKeys')}
+                  onClick={() => this.addGroup("portKeys")}
                   icon="add"
                 >
                   <FormattedMessage id="network.config.addport" />
