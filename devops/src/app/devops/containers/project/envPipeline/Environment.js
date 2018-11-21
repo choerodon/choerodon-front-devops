@@ -405,9 +405,18 @@ class Environment extends Component {
    * @param id
    */
   handleCluster = id => {
-    this.setState({
-      cluster: id,
-    });
+    const {
+      form: { validateFields, getFieldValue },
+    } = this.props;
+    this.setState(
+      {
+        cluster: id,
+      },
+      () => {
+        getFieldValue("code") && validateFields(["code"], { force: true });
+        getFieldValue("name") && validateFields(["name"], { force: true });
+      }
+    );
   };
 
   /**

@@ -805,15 +805,15 @@ class ContainerHome extends Component {
         if (data) {
           const proPageSize = 10 * pageArr[0] + 3;
           const pubPageSize = 10 * pageArr[1] + 3;
-          let allItems = [];
+          let allItems = data;
           if (filterValue) {
             allItems = data.filter(
               item =>
                 item.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0
             );
           }
-          if (data.length) {
-            _.map(data, d => {
+          if (allItems.length) {
+            _.map(allItems, d => {
               if (d.projectId !== projectId) {
                 pubLength += 1;
               } else {
