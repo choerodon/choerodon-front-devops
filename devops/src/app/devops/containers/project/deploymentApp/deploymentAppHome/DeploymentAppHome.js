@@ -431,7 +431,7 @@ class DeploymentAppHome extends Component {
         });
       })
       .catch(error => {
-        Choerodon.prompt(error.response.data.message);
+        Choerodon.handleResponseError(error);
         this.setState({
           loading: false,
         });
@@ -984,13 +984,17 @@ class DeploymentAppHome extends Component {
    * 返回到上一级
    */
   openAppDeployment() {
-    const projectName = AppState.currentMenuType.name;
-    const projectId = AppState.currentMenuType.id;
-    const type = AppState.currentMenuType.type;
-    this.props.history.push(
-      `/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${
-        AppState.currentMenuType.organizationId
-      }`
+    const { history } = this.props;
+    const { location } = history;
+    const { name, id, type, organizationId } = AppState.currentMenuType;
+    let url = "instance";
+    if (location.search.indexOf("envId") !== -1) {
+      url = "env-overview";
+    } else if (location.search.indexOf("appId") !== -1) {
+      url = "deploy-overview";
+    }
+    history.push(
+      `/devops/${url}?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`
     );
   }
 
