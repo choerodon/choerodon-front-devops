@@ -360,7 +360,7 @@ const zhCN = {
   write: "编辑",
   preview: "预览",
   expand: "展开",
-  shrink: "收缩",
+  shrink: "收起",
   validDate: "有效期",
   noContent: "没有内容",
   notActive: "未生效",
@@ -558,6 +558,8 @@ const zhCN = {
   "deploy.sidebar.market": "应用市场",
   "deploy.sidebar.search": "搜索应用",
   "deploy.ver.tip": "实例中对应的应用版本",
+  "deploy.ist.event": "实例事件",
+  "deploy.ist.event.empty": "暂无实例事件",
 
   // envPipeline
   "envPl.head": "环境流水线",

@@ -11,6 +11,8 @@ class DeployDetailStore {
 
   @observable stage = [];
 
+  @observable istEvent = [];
+
   @observable resource = null;
 
   @action changeLogVisible(flag) {
@@ -53,6 +55,16 @@ class DeployDetailStore {
     return this.value;
   }
 
+  @action
+  setIstEvent(value) {
+    this.istEvent = value;
+  }
+
+  @computed
+  get getIstEvent() {
+    return this.istEvent;
+  }
+
   getStageData = (proId, instanceId) => {
     this.changeLoading(true);
     return axios.get(`/devops/v1/projects/${proId}/app_instances/${instanceId}/stages`)
@@ -73,6 +85,14 @@ class DeployDetailStore {
       const res = this.handleProptError(stage);
       if (res) {
         this.setValue(stage);
+      }
+    });
+
+  loadIstEvent = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/app_instances/${id}/events`)
+    .then((event) => {
+      const res = this.handleProptError(event);
+      if (res) {
+        this.setIstEvent(event);
       }
     });
 
