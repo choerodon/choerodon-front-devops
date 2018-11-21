@@ -509,7 +509,7 @@ class CreateDomain extends Component {
               optionFilterProp="children"
               optionLabelProp="children"
               filterOption={
-                (input, option) => option.props.children[1]
+                (input, option) => option.props.children[1].props.children
                   .toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
             >

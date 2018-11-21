@@ -23,6 +23,12 @@
   .c7n-formItem_281 {
     width: 312px;
     display: inline-block;
+
+    .ant-input-has-label {
+      .ant-input-content {
+        padding-top: 18px;
+      }
+    }
   }
 
   .ant-input-group-addon {
@@ -54,4 +60,3 @@
   color: #3f51b5;
   padding-left: 20px;
 }
-
