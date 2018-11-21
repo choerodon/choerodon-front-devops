@@ -6,6 +6,7 @@ import { Content, Header, Page, stores } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import CodeMirror from 'react-codemirror';
+import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
 import LoadingBar from '../../../../components/loadingBar';
 import Ace from '../../../../components/yamlAce';
@@ -33,6 +34,8 @@ class InstancesDetail extends Component {
       status: props.match.params.status,
       overview: props.location.search.indexOf('overview') > 0,
       expand: false,
+      eName: '',
+      more: -1,
       current: 1,
     };
   }
@@ -109,6 +112,7 @@ class InstancesDetail extends Component {
         this.setState({ expand: true });
       }
     });
+    DeployDetailStore.loadIstEvent(projectId, id);
   };
 
   loadAllData =() => {
@@ -136,6 +140,14 @@ class InstancesDetail extends Component {
     DeployDetailStore.changeLogVisible(false);
   };
 
+  showMore = (more, eName) => {
+    if (eName === this.state.eName) {
+      this.setState({ more: more * -1, eName });
+    } else {
+      this.setState({ more: 1, eName });
+    }
+  };
+
   render() {
     const { name: projectName, organizationId, id: projectId, type } = AppState.currentMenuType;
     const {
@@ -143,12 +155,13 @@ class InstancesDetail extends Component {
       intl,
       history: { location: { state } },
     } = this.props;
-    const { expand, log, overview, current } = this.state;
+    const { expand, log, overview, current, more, eName } = this.state;
     const valueStyle = classnames({
       'c7n-deployDetail-show': expand,
       'c7n-deployDetail-hidden': !expand,
     });
     const resource = DeployDetailStore.getResource;
+    const event = DeployDetailStore.getIstEvent;
     let serviceDTO = [];
     let podDTO = [];
     let depDTO = [];
@@ -184,6 +197,18 @@ class InstancesDetail extends Component {
         return dom;
       });
     }
+
+    const istEventDom = _.map(event, e => <Step
+      key={e.name}
+      title={e.name}
+      description={<React.Fragment>
+        <pre className={`${more > 0 && eName === e.name ? '' : 'c7n-event-hidden'}`}>{e.event}</pre>
+        {e.event.split('\n').length > 4 && <a onClick={this.showMore.bind(this, more, e.name)}>
+          {more > 0 && eName === e.name ? intl.formatMessage({ id: 'shrink' }) : intl.formatMessage({ id: 'expand' })}
+        </a>}
+      </React.Fragment>}
+      icon={<Icon type="wait_circle" />}
+    />);
     const options = {
       theme: 'neat',
       mode: 'yaml',
@@ -350,7 +375,19 @@ class InstancesDetail extends Component {
                 </div> }
               </div>
             </TabPane> }
-            <TabPane tab={intl.formatMessage({ id: 'deploy.detail' })} key="2">
+            <TabPane tab={intl.formatMessage({ id: 'deploy.ist.event' })} key="2">
+              {event.length ? <div className="c7n-deployDetail-card c7n-deployDetail-card-content ">
+                <Steps direction="vertical" size="small" className="c7n-deployDetail-ist-step">
+                  {istEventDom}
+                </Steps>
+              </div> : <div className="c7n-event-empty">
+                  <div>
+                    <Icon type="info" className="c7n-tag-empty-icon" />
+                    <span className="c7n-tag-empty-text">{intl.formatMessage({ id: 'deploy.ist.event.empty' })}</span>
+                  </div>
+                </div>}
+            </TabPane>
+            <TabPane tab={intl.formatMessage({ id: 'deploy.detail' })} key="3">
               <div className="c7n-deployDetail-card c7n-deployDetail-card-content ">
                 <div className="c7n-space-first c7n-h2-inline c7n-deployDetail-title">{intl.formatMessage({ id: 'deploy.info' })}</div>
                 <div role="none" className="c7n-deployDetail-expand" onClick={this.changeStatus}>

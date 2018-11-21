@@ -440,13 +440,13 @@ class EnvPipelineStore {
 
   checkEnvName(projectId, cluster, name) {
     return axios.get(
-      `/devops/v1/projects/${projectId}/envs/checkName?clusterId=${cluster}&name=${name}`
+      `/devops/v1/projects/${projectId}/envs/check_name?clusterId=${cluster}&name=${name}`
     );
   }
 
   checkEnvCode(projectId, cluster, code) {
     return axios.get(
-      `/devops/v1/projects/${projectId}/envs/checkCode?clusterId=${cluster}&code=${code}`
+      `/devops/v1/projects/${projectId}/envs/check_code?clusterId=${cluster}&code=${code}`
     );
   }
 }
