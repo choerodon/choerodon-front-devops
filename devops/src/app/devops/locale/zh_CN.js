@@ -869,7 +869,7 @@ const zhCN = {
   "appstore.contributor": "贡献者",
   "appstore.desc": "描述",
   "appstore.noReleaseApp": "暂无已发布应用",
-  "appstore.noVer": "该应用下没有版本生成",
+  "appstore.noVer": "无匹配结果",
   "appstore.import": "应用导入",
   "appstore.importDesTitle": "单击或拖动文件到此区域进行上传",
   "appstore.importDesTip": "上传文件格式为zip，且文件大小不超过1M",
