@@ -369,7 +369,7 @@ class AppTagHome extends Component {
               {formatMessage({ id: 'delete' })}
             </Button>,
           ]}
-        ><p>{formatMessage({ id: 'apptag.delete.tooltip' })}</p></Modal>
+        ><div className="c7n-padding-top_8">{formatMessage({ id: 'apptag.delete.tooltip' })}</div></Modal>
         {creationDisplay ? <CreateTag
           app={titleName}
           store={AppTagStore}

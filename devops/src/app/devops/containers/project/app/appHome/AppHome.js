@@ -778,7 +778,7 @@ class AppHome extends Component {
             </Button>,
           ]}
         >
-          <p>{formatMessage({ id: 'app.delete.tooltip' })}</p>
+          <div className="c7n-padding-top_8">{formatMessage({ id: 'app.delete.tooltip' })}</div>
         </Modal>
       </Page>
     );

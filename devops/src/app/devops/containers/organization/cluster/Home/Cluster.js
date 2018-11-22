@@ -865,7 +865,7 @@ class Cluster extends Component {
             </Button>,
           ]}
         >
-          <div>
+          <div className="c7n-padding-top_8">
             <FormattedMessage id="cluster.delDes_1" />
             <div
               className="c7n-cls-shell-input"

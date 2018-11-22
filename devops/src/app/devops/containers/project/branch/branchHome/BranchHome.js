@@ -530,7 +530,7 @@ class BranchHome extends Component {
             </Button>,
           ]}
         >
-          <p>{formatMessage({ id: 'branch.delete.tooltip' })}</p>
+          <div className="c7n-padding-top_8">{formatMessage({ id: 'branch.delete.tooltip' })}</div>
         </Modal></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="branch.head" />} type="app" />}
       </Page>
     );

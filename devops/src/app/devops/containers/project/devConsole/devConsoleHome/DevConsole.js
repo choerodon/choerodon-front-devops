@@ -862,7 +862,7 @@ class DevConsole extends Component {
               {formatMessage({ id: 'delete' })}
             </Button>,
           ]}
-        ><p>{formatMessage({ id: 'apptag.delete.tooltip' })}</p></Modal>
+        ><div className="c7n-padding-top_8">{formatMessage({ id: 'apptag.delete.tooltip' })}</div></Modal>
         <Modal
           confirmLoading={deleteLoading}
           visible={visibleBranch}
@@ -875,7 +875,7 @@ class DevConsole extends Component {
             </Button>,
           ]}
         >
-          <p>{formatMessage({ id: 'branch.delete.tooltip' })}</p>
+          <div className="c7n-padding-top_8">{formatMessage({ id: 'branch.delete.tooltip' })}</div>
         </Modal>
         {creationDisplay ? <CreateTag
           app={titleName}

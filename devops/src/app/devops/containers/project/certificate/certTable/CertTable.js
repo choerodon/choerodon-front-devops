@@ -280,6 +280,7 @@ class CertTable extends Component {
       organizationId: orgId,
       name,
     } = AppState.currentMenuType;
+
     const columns = [
       {
         title: <FormattedMessage id="ctf.column.name" />,
@@ -377,9 +378,9 @@ class CertTable extends Component {
             </Button>,
           ]}
         >
-          <p>
+          <div className="c7n-padding-top_8">
             <FormattedMessage id="ctf.delete.tooltip" />
-          </p>
+          </div>
         </Modal>
       </Fragment>
     );

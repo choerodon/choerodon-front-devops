@@ -1335,7 +1335,9 @@ class Environment extends Component {
               </Button>,
             ]}
           >
-            {formatMessage({ id: "envPl.confirm.group.del" })}
+            <div className="c7n-padding-top_8">
+              {formatMessage({ id: "envPl.confirm.group.del" })}
+            </div>
           </Modal>
           <Modal
             visible={delEnvShow}
@@ -1363,7 +1365,9 @@ class Environment extends Component {
               </Button>,
             ]}
           >
-            {formatMessage({ id: "envPl.delete.warn" })}
+            <div className="c7n-padding-top_8">
+              {formatMessage({ id: "envPl.delete.warn" })}
+            </div>
           </Modal>
           {showGroup ? (
             <EnvGroup
