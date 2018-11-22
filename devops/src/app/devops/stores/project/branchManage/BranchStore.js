@@ -257,10 +257,6 @@ class BranchStore {
     });
 
   checkName = (projectId = AppState.currentMenuType.projectId, appId, name) => axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/git/check_name?branch_name=${name}`)
-    .then((data) => {
-      const res = handleProptError(data);
-      return res;
-    });
 }
 
 const branchStore = new BranchStore();

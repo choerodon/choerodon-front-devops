@@ -59,10 +59,10 @@ class AppHome extends Component {
     if (value && pa.test(value)) {
       AppStore.checkCode(this.state.projectId, value)
         .then((data) => {
-          if (data) {
-            callback();
-          } else {
+          if (data && data.failed) {
             callback(formatMessage({ id: 'template.checkCode' }));
+          } else {
+            callback();
           }
         });
     } else {
