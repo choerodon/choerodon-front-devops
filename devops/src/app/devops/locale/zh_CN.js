@@ -116,12 +116,12 @@ const pageDetail = {
   // app
   "app.title": '项目"{name}"的应用',
   "app.description":
-    "应用是满足用户某些需求的程序代码的集合，可以是某个解耦的微服务或是某个单体应用。您可在此创建应用、修改应用名称、停用应用、启用应用及分支管理。",
+    "应用是满足用户某些需求的程序代码的集合。您可在此创建应用、停用应用、启用应用、配置应用权限以及修改应用名称。",
   "app.create.title": '在项目"{name}"中创建应用',
   "app.create.description":
-    "请在下面输入应用编码及名称，也可以选择某个应用模板，快速创建应用。平台会为您自动创建对应的git库以便管理该应用代码。",
+    "请在下面输入应用编码及名称，也可以选择某个应用模板，快速创建应用。平台会为您自动创建对应的git库以便管理该应用代码。同时，您可为所创应用分配特定的开发操作人员。",
   "app.edit.title": '对应用"{name}"进行修改',
-  "app.edit.description": "您可在此修改应用名称。",
+  "app.edit.description": "您可在此修改应用名称，同时也可对此应用的权限进行管理。",
   "app.link": `${docServer}/user-guide/application-management/application/`,
   "app.create.link": `${docServer}/user-guide/application-management/application/`,
   "app.edit.link": `${docServer}/user-guide/application-management/application/`,
@@ -619,7 +619,12 @@ const zhCN = {
 
   // app
   "app.head": "应用",
+  "app.authority": "应用权限分配",
+  "app.authority.help": "此操作用于为此应用配置特定的开发操作人员。一般默认选择为项目下所有成员，即该项目下的所有成员均能对此应用进行开发操作；若选择项目下特定成员，则只有被勾选的项目成员才有权限对此应用进行开发。",
   "app.appDetail": "应用详情",
+  "app.authority.label": "设置该应用的开发操作人员",
+  "app.mbr.all": "项目下所有成员",
+  "app.mbr.part": "项目下特定成员",
   "app.id": "标识",
   "app.name": "名称",
   "app.type": "应用类型",

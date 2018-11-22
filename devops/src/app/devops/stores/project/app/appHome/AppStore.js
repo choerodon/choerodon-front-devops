@@ -1,6 +1,5 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
-import DeploymentPipelineStore from '../../deploymentPipeline';
 
 const { AppState } = stores;
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
@@ -14,16 +13,30 @@ class AppStore {
   // 页面的loading
   @observable loading = false;
 
+  @observable tableLoading = false;
+
   // 打开tab的loading
   @observable singleData = null;
 
   @observable selectData = [];
 
+  @observable mbr = [];
+
+  @observable tagKeys = [];
+
   @observable pageInfo = {
     current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
+  @observable mbrPageInfo = {
+    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
+  };
+
   @observable Info = {
+    filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+  };
+
+  @observable mbrInfo = {
     filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
   };
 
@@ -35,6 +48,16 @@ class AppStore {
 
   @computed get getPageInfo() {
     return this.pageInfo;
+  }
+
+  @action setMbrPageInfo(page) {
+    this.mbrPageInfo.current = page.number + 1;
+    this.mbrPageInfo.total = page.totalElements;
+    this.mbrPageInfo.pageSize = page.size;
+  }
+
+  @computed get getMbrPageInfo() {
+    return this.mbrPageInfo;
   }
 
   @computed get getAllData() {
@@ -69,6 +92,14 @@ class AppStore {
     return this.loading;
   }
 
+  @action setTableLoading(flag) {
+    this.tableLoading = flag;
+  }
+
+  @computed get getTableLoading() {
+    return this.tableLoading;
+  }
+
   @action setSingleData(data) {
     this.singleData = data;
   }
@@ -83,6 +114,30 @@ class AppStore {
 
   @computed get getInfo() {
     return this.Info;
+  }
+
+  @action setMbrInfo(Info) {
+    this.mbrInfo = Info;
+  }
+
+  @computed get getMbrInfo() {
+    return this.mbrInfo;
+  }
+
+  @action setMbr(mbr) {
+    this.mbr = mbr;
+  }
+
+  @computed get getMbr() {
+    return this.mbr.slice();
+  }
+
+  @action setTagKeys(tagKeys) {
+    this.tagKeys = tagKeys;
+  }
+
+  @computed get getTagKeys() {
+    return this.tagKeys.slice();
   }
 
   loadData = (isRefresh = false, projectId, envId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: '', order: 'desc' }, postData = { searchParam: {},
@@ -122,24 +177,18 @@ class AppStore {
       }
     });
 
-  loadDataById =(projectId, id) => axios.get(`/devops/v1/projects/${projectId}/apps/${id}/detail`).then((data) => {
-    const res = this.handleProptError(data);
-    if (res) {
-      this.setSingleData(data);
-    }
-  });
-
-  checkCode =(projectId, code) => axios.get(`/devops/v1/projects/${projectId}/apps/checkCode?code=${code}`)
-    .then((data) => {
+  loadDataById(projectId, id) {
+    return axios.get(`/devops/v1/projects/${projectId}/apps/${id}/detail`).then((data) => {
       const res = this.handleProptError(data);
-      return res;
+      if (res) {
+        this.setSingleData(data);
+      }
     });
+  }
 
-  checkName = (projectId, name) => axios.get(`/devops/v1/projects/${projectId}/apps/checkName?name=${name}`)
-    .then((data) => {
-      const res = this.handleProptError(data);
-      return res;
-    });
+  checkCode =(projectId, code) => axios.get(`/devops/v1/projects/${projectId}/apps/check_code?code=${code}`);
+
+  checkName = (projectId, name) => axios.get(`/devops/v1/projects/${projectId}/apps/check_name?name=${name}`);
 
   updateData = (projectId, data) => axios.put(`/devops/v1/projects/${projectId}/apps`, JSON.stringify(data))
     .then((datas) => {
@@ -164,6 +213,42 @@ class AppStore {
       const res = this.handleProptError(datas);
       return res;
     });
+
+  /**
+   * 分页查询项目下用户权限
+   * @param projectId
+   * @param page
+   * @param size
+   * @param sort
+   * @param postData
+   */
+  loadPrm = (projectId,
+             page = 0,
+             size = 10,
+             sort = { field: "", order: "desc" },
+             postData = { searchParam: {}, param: "" }) => {
+    this.setTableLoading(true);
+    return axios.post(`/devops/v1/projects/${projectId}/envs/list?page=${page}&size=${size}`, JSON.stringify(postData))
+      .then(data => {
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          this.setMbr(data.content);
+          const { number, size, totalElements } = data;
+          const page = { number, size, totalElements };
+          this.setMbrPageInfo(page);
+        }
+        this.setTableLoading(false);
+      });
+  };
+
+  loadTagKeys = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/apps/${id}/list_all`).then((data) => {
+    if (data && data.failed) {
+      Choerodon.prompt(data.message);
+    } else {
+      this.setTagKeys(data);
+    }
+  });
 
   handleProptError =(error) => {
     if (error && error.failed) {

@@ -14,13 +14,9 @@ class ClusterStore {
 
   @observable proData = [];
 
-  @observable prmProData = [];
-
   @observable shell = '';
 
   @observable clsData = null;
-
-  @observable selectedRowKeys = [];
 
   @observable tagKeys = [];
 
@@ -88,14 +84,6 @@ class ClusterStore {
     return this.proData.slice();
   }
 
-  @action setPrmPro(data) {
-    this.prmProData = data;
-  }
-
-  @computed get getPrmPro() {
-    return this.prmProData.slice();
-  }
-
   @computed get getClsData() {
     return this.clsData;
   }
@@ -133,14 +121,6 @@ class ClusterStore {
     return this.sideType;
   }
 
-  @action setSelectedRk(selectedRowKeys) {
-    this.selectedRowKeys = selectedRowKeys;
-  }
-
-  @computed get getSelectedRk() {
-    return this.selectedRowKeys.slice();
-  }
-
   @action setTagKeys(tagKeys) {
     this.tagKeys = tagKeys;
   }
@@ -173,12 +153,6 @@ class ClusterStore {
     return axios.post(url, JSON.stringify(postData)).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
-      } else if(clusterId) {
-        this.setPrmPro(data.content);
-        this.setSelectedRk(_.map(_.filter(data.content, 'permission'), k => k.id));
-        const { number, size, totalElements } = data;
-        const page = { number, size, totalElements };
-        this.setPageInfo(page);
       } else {
         this.setProData(data.content);
         const { number, size, totalElements } = data;
@@ -229,11 +203,11 @@ class ClusterStore {
   });
 
   checkCode(orgId, code) {
-   return axios.get(`/devops/v1/organizations/${orgId}/clusters/checkCode?code=${code}`);
+   return axios.get(`/devops/v1/organizations/${orgId}/clusters/check_code?code=${code}`);
   }
 
   checkName(orgId, name){
-    return axios.get(`/devops/v1/organizations/${orgId}/clusters/checkName?name=${name}`);
+    return axios.get(`/devops/v1/organizations/${orgId}/clusters/check_name?name=${name}`);
   }
 }
 

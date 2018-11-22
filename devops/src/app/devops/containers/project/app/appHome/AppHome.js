@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Table, Button, Input, Form, Modal, Tooltip, Select, Icon, Popover } from 'choerodon-ui';
+import { Table, Button, Input, Form, Modal, Tooltip, Select, Icon, Popover, Radio, Tag } from 'choerodon-ui';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
@@ -12,12 +12,14 @@ import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
 import DeploymentPipelineStore from '../../../../stores/project/deploymentPipeline';
-import AppVersionStore from  '../../../../stores/project/applicationVersion';
+import AppVersionStore from '../../../../stores/project/applicationVersion';
 import { getSelectTip } from '../../../../utils';
+import '../../envPipeline/EnvPipeLineHome.scss';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
 const { Option } = Select;
+const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
 const formItemLayout = {
   labelCol: {
@@ -33,14 +35,14 @@ const formItemLayout = {
 @commonComponent('AppStore')
 @observer
 class AppHome extends Component {
-  postName =_.debounce((projectId, value, callback) => {
+  postName = _.debounce((projectId, value, callback) => {
     const { AppStore, intl } = this.props;
     AppStore.checkName(projectId, value)
       .then((data) => {
-        if (data) {
-          callback();
-        } else {
+        if (data && data.failed) {
           callback(intl.formatMessage({ id: 'template.checkName' }));
+        } else {
+          callback();
         }
       });
   }, 600);
@@ -51,7 +53,7 @@ class AppHome extends Component {
    * @param value
    * @param callback
    */
-  checkCode =_.debounce((rule, value, callback) => {
+  checkCode = _.debounce((rule, value, callback) => {
     const { AppStore, intl: { formatMessage } } = this.props;
     const pa = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     if (value && pa.test(value)) {
@@ -79,6 +81,11 @@ class AppHome extends Component {
       show: state && state.show,
       type: state && state.modeType,
       submitting: false,
+      checked: true,
+      selected: [],
+      createSelectedRowKeys: [],
+      createSelected: [],
+      createSelectedTemp: [],
     };
   }
 
@@ -150,52 +157,54 @@ class AppHome extends Component {
             <a href={record.sonarUrl} rel="nofollow me noopener noreferrer" target="_blank">
               <Button icon="quality" shape="circle" size="small" />
             </a>
-          </Tooltip> : null }
+          </Tooltip> : null}
           {!record.fail ? <Fragment><Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.update']}>
-            <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> : <Fragment>{record.active ? <FormattedMessage id="edit" /> : <FormattedMessage id="app.start" />}</Fragment>}</div>}>
-              {record.active && record.synchro
-                ? <Button
-                  icon="mode_edit"
+              <Tooltip placement="bottom" title={<div>{!record.synchro ? <FormattedMessage id="app.synch" /> :
+                <Fragment>{record.active ? <FormattedMessage id="edit" /> :
+                  <FormattedMessage id="app.start" />}</Fragment>}</div>}>
+                {record.active && record.synchro
+                  ? <Button
+                      icon="mode_edit"
+                      shape="circle"
+                      size="small"
+                      onClick={this.showSideBar.bind(this, 'edit', record.id)}
+                    /> : <Icon type="mode_edit" className="c7n-app-icon-disabled" />}
+              </Tooltip>
+            </Permission>
+              <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']}>
+                <Tooltip
+                  placement="bottom"
+                  title={!record.synchro
+                    ? <FormattedMessage id="app.synch" />
+                    : <Fragment>{record.active ? <FormattedMessage id="app.stop" /> :
+                      <FormattedMessage id="app.run" />}</Fragment>}
+                >
+                  {record.synchro
+                    ? <Button shape="circle" size="small" onClick={this.changeAppStatus.bind(this, record.id, record.active)}>
+                      {record.active
+                        ? <Icon type="remove_circle_outline" />
+                        : <Icon type="finished" />}
+                    </Button>
+                    : <Fragment>
+                      {record.active
+                        ? <Icon type="remove_circle_outline" className="c7n-app-icon-disabled" />
+                        : <Icon type="finished" className="c7n-app-icon-disabled" />}
+                    </Fragment>}
+                </Tooltip>
+              </Permission></Fragment>
+            : <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.deleteByAppId']}>
+              <Tooltip
+                placement="bottom"
+                title={<FormattedMessage id="delete" />}
+              >
+                <Button
+                  icon="delete_forever"
                   shape="circle"
                   size="small"
-                  onClick={this.showSideBar.bind(this, 'edit', record.id)}
+                  onClick={this.openRemove.bind(this, record.id, record.name)}
                 />
-                : <Icon type="mode_edit" className="c7n-app-icon-disabled" /> }
-            </Tooltip>
-          </Permission>
-          <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']}>
-            <Tooltip
-              placement="bottom"
-              title={!record.synchro
-                ? <FormattedMessage id="app.synch" />
-                : <Fragment>{record.active ? <FormattedMessage id="app.stop" /> : <FormattedMessage id="app.run" />}</Fragment>}
-            >
-              {record.synchro
-                ? <Button shape="circle" size="small" onClick={this.changeAppStatus.bind(this, record.id, record.active)}>
-                  {record.active
-                    ? <Icon type="remove_circle_outline" />
-                    : <Icon type="finished" />}
-                </Button>
-                : <Fragment>
-                  {record.active
-                    ? <Icon type="remove_circle_outline" className="c7n-app-icon-disabled" />
-                    : <Icon type="finished" className="c7n-app-icon-disabled" />}
-                </Fragment> }
-            </Tooltip>
-          </Permission></Fragment>
-          : <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.deleteByAppId']}>
-            <Tooltip
-              placement="bottom"
-              title={<FormattedMessage id="delete" />}
-            >
-              <Button
-                icon="delete_forever"
-                shape="circle"
-                size="small"
-                onClick={this.openRemove.bind(this, record.id, record.name)}
-              />
-            </Tooltip>
-          </Permission>}
+              </Tooltip>
+            </Permission>}
         </Fragment>
       ),
     }];
@@ -233,16 +242,6 @@ class AppHome extends Component {
       color = '#d3d3d3';
     }
     return (<span><Icon style={{ color, ...style }} type={icon} /><FormattedMessage id={`app.${msg}`} /></span>);
-  };
-
-  /**
-   * 打开分支
-   * @param id 应用id
-   * @param name
-   */
-  linkToBranch =(id, name) => {
-    const { id: projectId, name: menuName, organizationId } = AppState.currentMenuType;
-    this.linkToChange(`/devops/app/${name}/${id}/branch?type=project&id=${projectId}&name=${menuName}&organizationId=${organizationId}`);
   };
 
   /**
@@ -302,58 +301,66 @@ class AppHome extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const { AppStore } = this.props;
-    const { projectId, id, type, page, copyFrom } = this.state;
+    const { projectId, id, type, page, checked, createSelectedRowKeys } = this.state;
+    const tagKeys = AppStore.getTagKeys;
     AppStore.setInfo({ filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [] });
     if (type === 'create') {
       this.props.form.validateFieldsAndScroll((err, data) => {
         if (!err) {
           const postData = data;
           postData.projectId = projectId;
+          postData.skipCheckProjectPermission = checked;
+          postData.projects = createSelectedRowKeys;
           this.setState({
             submitting: true,
           });
           AppStore.addData(projectId, postData)
             .then((res) => {
-              if (res) {
+              if (res && res.failed) {
+                Choerodon.prompt(res.message);
+                this.setState({
+                  submitting: false,
+                });
+              } else {
                 this.loadAllData(page);
-                this.setState({ type: false, show: false });
+                this.setState({
+                  type: false,
+                  show: false,
+                  submitting: false,
+                  createSelectedRowKeys: [],
+                  createSelected: [],
+                });
               }
-              this.setState({
-                submitting: false,
-              });
-            }).catch((error) => {
-              Choerodon.prompt(error.response.data.message);
-              this.setState({
-                submitting: false,
-              });
-            });
+          });
         }
       });
     } else if (type === 'edit') {
-      this.props.form.validateFieldsAndScroll((err, data, modify) => {
-        if (!err && modify) {
+      this.props.form.validateFieldsAndScroll((err, data) => {
+        if (!err) {
           const formData = data;
+          const userIds = _.map(tagKeys, t => t.iamUserId);
+          formData.skipCheckProjectPermission = checked;
           formData.id = id;
+          formData.userIds = userIds;
           this.setState({
             submitting: true,
           });
           AppStore.updateData(projectId, formData)
             .then((res) => {
-              if (res) {
+              if (res && res.failed) {
+                Choerodon.prompt(res.message);
+                this.setState({
+                  submitting: false,
+                });
+              } else {
                 this.loadAllData(this.state.page);
-                this.setState({ show: false });
+                this.setState({
+                  show: false,
+                  submitting: false,
+                });
               }
-              this.setState({
-                submitting: false,
-              });
-            }).catch((error) => {
-              Choerodon.prompt(error.response.data.message);
-              this.setState({
-                submitting: false,
-              });
             });
-        } else if (!modify) {
-          this.setState({ show: false });
+          AppStore.setTagKeys([]);
         }
       });
     }
@@ -365,7 +372,12 @@ class AppHome extends Component {
   hideSidebar = () => {
     const { AppStore } = this.props;
     AppStore.setSingleData(null);
-    this.setState({ show: false });
+    this.setState({
+      createSelectedRowKeys: [],
+      createSelected: [],
+      show: false,
+      checked: true,
+    });
     this.props.form.resetFields();
   };
 
@@ -374,7 +386,7 @@ class AppHome extends Component {
    * @param type 操作类型
    * @param id 操作应用
    */
-  showSideBar =(type, id = '') => {
+  showSideBar = (type, id = '') => {
     this.props.form.resetFields();
     const { AppStore } = this.props;
     const { projectId } = this.state;
@@ -383,13 +395,107 @@ class AppHome extends Component {
       AppStore.loadSelectData(projectId);
       this.setState({ show: true, type });
     } else {
-      AppStore.loadDataById(projectId, id);
+      AppStore.loadDataById(projectId, id)
+        .then((data) => {
+          if (data && data.failed) {
+            Choerodon.prompt(data.message);
+          } else {
+            this.setState({ checked: data.skipCheckProjectPermission });
+          }
+        });
+      AppStore.loadTagKeys(projectId, id);
       this.setState({ show: true, type, id });
     }
+    AppStore.loadPrm(projectId);
   };
 
-  selectTemplate =(value, option) => {
+  selectTemplate = (value, option) => {
     this.setState({ copyFrom: option.key });
+  };
+
+  cbChange = (e) => {
+    this.setState({ checked: e.target.value });
+  };
+
+  /**
+   * table 操作
+   * @param pagination
+   * @param filters
+   * @param sorter
+   * @param paras
+   */
+  mbrTableChange = (pagination, filters, sorter, paras) => {
+    const { AppStore } = this.props;
+    const { id } = AppState.currentMenuType;
+    AppStore.setMbrInfo({
+      filters,
+      sort: sorter,
+      paras,
+    });
+    let sort = {
+      field: "",
+      order: "desc",
+    };
+    if (sorter.column) {
+      sort.field = sorter.field || sorter.columnKey;
+      if (sorter.order === "ascend") {
+        sort.order = "asc";
+      } else if (sorter.order === "descend") {
+        sort.order = "desc";
+      }
+    }
+    let searchParam = {};
+    let page = pagination.current - 1;
+    if (Object.keys(filters).length) {
+      searchParam = filters;
+    }
+    const postData = {
+      searchParam,
+      param: paras.toString(),
+    };
+    AppStore.loadPrm(
+      id,
+      page,
+      pagination.pageSize,
+      sort,
+      postData
+    );
+  };
+
+  onCreateSelectChange = (keys, selected) => {
+    let s = [];
+    const a = this.state.createSelectedTemp.concat(selected);
+    this.setState({ createSelectedTemp: a });
+    _.map(keys, o => {
+      if (_.filter(a, ["iamUserId", o]).length) {
+        s.push(_.filter(a, ["iamUserId", o])[0]);
+      }
+    });
+    this.setState({
+      createSelectedRowKeys: keys,
+      createSelected: s,
+    });
+  };
+
+  /**
+   * 分配权限
+   * @param keys
+   * @param selected
+   */
+  onSelectChange = (keys, selected) => {
+    const { AppStore } = this.props;
+    const { getTagKeys: tagKeys } = AppStore;
+    let s = [];
+    const a = tagKeys.length
+      ? tagKeys.concat(selected)
+      : this.state.selected.concat(selected);
+    this.setState({ selected: a });
+    _.map(keys, o => {
+      if (_.filter(a, ["iamUserId", o]).length) {
+        s.push(_.filter(a, ["iamUserId", o])[0]);
+      }
+    });
+    AppStore.setTagKeys(s);
   };
 
   render() {
@@ -399,108 +505,202 @@ class AppHome extends Component {
         singleData,
         selectData,
         getAllData: serviceData,
-        getInfo: { paras },
         isRefresh,
         loading,
         getPageInfo,
+        getMbrPageInfo,
+        getTableLoading: tableLoading,
+        getTagKeys: tagKeys,
+        getMbr,
+        getInfo: { paras },
+        getMbrInfo: { filters, paras: mbrParas },
       },
       intl: { formatMessage },
       form: { getFieldDecorator },
     } = this.props;
-    const { type: modeType, show, submitting, openRemove, name: appName, id } = this.state;
+    const { type: modeType, show, submitting, openRemove, name: appName, id, checked, createSelectedRowKeys, createSelected } = this.state;
     const { app } = DeploymentPipelineStore.getProRole;
     const appData = AppVersionStore.getAppData;
-    const formContent = (<Form layout="vertical" className="c7n-sidebar-form">
-      {modeType === 'create' && <FormItem
-        {...formItemLayout}
-      >
-        {getFieldDecorator('code', {
-          rules: [{
-            required: true,
-            whitespace: true,
-            max: 47,
-            message: formatMessage({ id: 'required' }),
-          }, {
-            validator: this.checkCode,
-          }],
-        })(
-          <Input
-            autoFocus
-            maxLength={30}
-            label={<FormattedMessage id="app.code" />}
-            size="default"
-            suffix={getSelectTip('app.code.tooltip')}
-          />,
-        )}
-      </FormItem> }
-      <FormItem
-        {...formItemLayout}
-      >
-        {getFieldDecorator('name', {
-          rules: [{
-            required: true,
-            whitespace: true,
-            message: formatMessage({ id: 'required' }),
-          }, {
-            validator: this.checkName,
-          }],
-          initialValue: singleData ? singleData.name : '',
-        })(
-          <Input
-            maxLength={20}
-            label={<FormattedMessage id="app.name" />}
-            size="default"
-          />,
-        )}
-      </FormItem>
-      {modeType === 'create' && <div className="c7ncd-sidebar-select">
+
+    const rowCreateSelection = {
+      selectedRowKeys: createSelectedRowKeys,
+      onChange: this.onCreateSelectChange,
+    };
+
+    const rowSelection = {
+      selectedRowKeys: _.map(tagKeys, s => s.iamUserId),
+      onChange: this.onSelectChange,
+    };
+
+    const tagCreateDom = _.map(createSelected, t => (
+      <Tag className="c7n-env-tag" key={t.iamUserId}>
+        {t.loginName} {t.realName}
+      </Tag>
+    ));
+
+    const tagDom = _.map(tagKeys, t => {
+      if (t) {
+        return (
+          <Tag className="c7n-env-tag" key={t.iamUserId}>
+            {t.loginName} {t.realName}
+          </Tag>
+        );
+      }
+      return null;
+    });
+
+    const columns = [
+      {
+        key: "loginName",
+        filters: [],
+        filteredValue: filters.loginName || [],
+        title: formatMessage({
+          id: "envPl.loginName",
+        }),
+        dataIndex: "loginName",
+      },
+      {
+        key: "realName",
+        filters: [],
+        filteredValue: filters.realName || [],
+        title: formatMessage({
+          id: "envPl.userName",
+        }),
+        dataIndex: "realName",
+      },
+    ];
+
+    const formContent = (<React.Fragment>
+      <Form layout="vertical" className="c7n-sidebar-form">
+        {modeType === 'create' && <FormItem
+          {...formItemLayout}
+        >
+          {getFieldDecorator('code', {
+            rules: [{
+              required: true,
+              whitespace: true,
+              max: 47,
+              message: formatMessage({ id: 'required' }),
+            }, {
+              validator: modeType === 'create' ? this.checkCode : null,
+            }],
+          })(
+            <Input
+              autoFocus
+              maxLength={30}
+              label={<FormattedMessage id="app.code" />}
+              size="default"
+              suffix={getSelectTip('app.code.tooltip')}
+            />,
+          )}
+        </FormItem>}
         <FormItem
           {...formItemLayout}
         >
-          {getFieldDecorator('applictionTemplateId', {
+          {getFieldDecorator('name', {
             rules: [{
+              required: true,
+              whitespace: true,
               message: formatMessage({ id: 'required' }),
-              transform: (value) => {
-                if (value) {
-                  return value.toString();
-                }
-                return value;
-              },
+            }, {
+              validator: this.checkName,
             }],
-          })(<Select
-              key="service"
-              allowClear
-              label={<FormattedMessage id="app.chooseTem" />}
-              filter
-              dropdownMatchSelectWidth
-              onSelect={this.selectTemplate}
+            initialValue: singleData ? singleData.name : '',
+          })(
+            <Input
+              maxLength={20}
+              label={<FormattedMessage id="app.name" />}
               size="default"
-              optionFilterProp="children"
-              filterOption={
-                (input, option) => option.props.children.props.children.props.children
-                  .toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {selectData && selectData.length > 0 && selectData.map(s => (
-                <Option
-                  value={s.id}
-                  key={s.id}
-                >
-                  <Tooltip
-                    placement="right"
-                    trigger="hover"
-                    title={<p>{s.description}</p>}
-                  >
-                    <span style={{ display: 'inline-block', width: '100%' }}>{s.name}</span>
-                  </Tooltip>
-                </Option>
-              ))}
-            </Select>
+            />,
           )}
         </FormItem>
-        {getSelectTip('app.chooseTem.tip')}
-      </div>}
-    </Form>);
+        {modeType === 'create' && <div className="c7ncd-sidebar-select">
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('applictionTemplateId', {
+              rules: [{
+                message: formatMessage({ id: 'required' }),
+                transform: (value) => {
+                  if (value) {
+                    return value.toString();
+                  }
+                  return value;
+                },
+              }],
+            })(<Select
+                key="service"
+                allowClear
+                label={<FormattedMessage id="app.chooseTem" />}
+                filter
+                dropdownMatchSelectWidth
+                onSelect={this.selectTemplate}
+                size="default"
+                optionFilterProp="children"
+                filterOption={
+                  (input, option) => option.props.children.props.children.props.children
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                {selectData && selectData.length > 0 && selectData.map(s => (
+                  <Option
+                    value={s.id}
+                    key={s.id}
+                  >
+                    <Tooltip
+                      placement="right"
+                      trigger="hover"
+                      title={<p>{s.description}</p>}
+                    >
+                      <span style={{ display: 'inline-block', width: '100%' }}>{s.name}</span>
+                    </Tooltip>
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </FormItem>
+          {getSelectTip('app.chooseTem.tip')}
+        </div>}
+      </Form>
+      <div className="c7n-env-tag-title">
+        <FormattedMessage id="app.authority" />
+        <Popover
+          overlayStyle={{ maxWidth: '350px' }}
+          content={formatMessage({ id: 'app.authority.help' })}
+        >
+          <Icon type="help" />
+        </Popover>
+      </div>
+      <div className="c7n-app-authority-radio">
+        <RadioGroup label={<FormattedMessage id="app.authority.label" />}
+                    onChange={this.cbChange} value={checked}>
+          <Radio value={true}><FormattedMessage id="app.mbr.all" /></Radio>
+          <Radio value={false}><FormattedMessage id="app.mbr.part" /></Radio>
+        </RadioGroup>
+      </div>
+      {checked ? null : <div>
+          <div className="c7n-sidebar-form">
+            <Table
+              className="c7n-env-noTotal"
+              rowSelection={modeType === 'create' ? rowCreateSelection : rowSelection}
+              columns={columns}
+              dataSource={getMbr}
+              filterBarPlaceholder={formatMessage({ id: "filter" })}
+              pagination={getMbrPageInfo}
+              loading={tableLoading}
+              onChange={this.mbrTableChange}
+              rowKey={record => record.iamUserId}
+              filters={mbrParas.slice()}
+            />
+          </div>
+          <div className="c7n-env-tag-title">
+            <FormattedMessage id="cluster.authority.project" />
+          </div>
+          <div className="c7n-env-tag-wrap">
+            {modeType === 'create' ? tagCreateDom : tagDom}
+          </div>
+        </div>}
+    </React.Fragment>);
 
     return (
       <Page
@@ -516,7 +716,7 @@ class AppHome extends Component {
           'devops-service.application.queryByAppId',
         ]}
       >
-        { isRefresh ? <LoadingBar display /> : ((appData && appData.length) || app === 'owner' ? <Fragment>
+        {isRefresh ? <LoadingBar display /> : ((appData && appData.length) || app === 'owner' ? <Fragment>
           <Header title={<FormattedMessage id="app.head" />}>
             <Permission
               service={['devops-service.application.create']}
@@ -571,7 +771,8 @@ class AppHome extends Component {
           title={`${formatMessage({ id: 'app.delete' })}“${appName}”`}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove} disabled={submitting}>{<FormattedMessage id="cancel" />}</Button>,
+            <Button key="back" onClick={this.closeRemove} disabled={submitting}>{<FormattedMessage
+              id="cancel" />}</Button>,
             <Button key="submit" type="danger" onClick={this.deleteApp.bind(this, id)} loading={submitting}>
               {formatMessage({ id: 'delete' })}
             </Button>,
