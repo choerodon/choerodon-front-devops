@@ -155,7 +155,6 @@ class Environment extends Component {
       moveRight: 300,
       createSelectedRowKeys: [],
       createSelected: [],
-      selectedRowKeys: false,
       selected: [],
       createSelectedTemp: [],
       cluster: null,
@@ -235,7 +234,6 @@ class Environment extends Component {
     this.setState({
       createSelectedRowKeys: [],
       createSelected: [],
-      selectedRowKeys: false,
     });
     EnvPipelineStore.setShow(false);
     EnvPipelineStore.setEnvData(null);
@@ -500,10 +498,8 @@ class Environment extends Component {
             EnvPipelineStore.setShow(false);
           }
           this.setState({
-            selectedRowKeys: false,
             submitting: false,
           });
-          EnvPipelineStore.setSelectedRk([]);
           EnvPipelineStore.setTagKeys([]);
         })
         .catch(error => {
@@ -619,37 +615,19 @@ class Environment extends Component {
    */
   onSelectChange = (keys, selected) => {
     const { EnvPipelineStore } = this.props;
-    const { getTagKeys: tagKeys, getPrmMbr } = EnvPipelineStore;
+    const { getTagKeys: tagKeys } = EnvPipelineStore;
     let s = [];
     const a = tagKeys.length
       ? tagKeys.concat(selected)
       : this.state.selected.concat(selected);
-    // const tagKs = tagKeys.length ? _.map(tagKeys, p => p.iamUserId).concat(keys) : keys;
     this.setState({ selected: a });
     _.map(keys, o => {
       if (_.filter(a, ["iamUserId", o]).length) {
         s.push(_.filter(a, ["iamUserId", o])[0]);
       }
     });
-    const ids = _.map(getPrmMbr, p => p.iamUserId);
-    const delIds = _.difference(ids, keys);
-    let selectIds = tagKeys;
-    _.map(delIds, d => {
-      _.map(selectIds, t => {
-        if (d === t.iamUserId) {
-          selectIds = _.reject(selectIds, s => s.iamUserId === d);
-        }
-      });
-    });
-    const temp = _.map(selectIds, s => s.iamUserId);
-    _.map(selected, k => {
-      if (!_.includes(temp, k.iamUserId)) {
-        selectIds.push(k);
-      }
-    });
     EnvPipelineStore.setSelectedRk(keys);
     EnvPipelineStore.setTagKeys(s);
-    this.setState({ selectedRowKeys: keys });
   };
 
   onCreateSelectChange = (keys, selected) => {
@@ -739,7 +717,6 @@ class Environment extends Component {
       submitting,
       createSelectedRowKeys,
       createSelected,
-      selectedRowKeys,
       delEnvShow,
       disEnvShow,
       delGroupShow,
@@ -757,10 +734,8 @@ class Environment extends Component {
     const {
       getEnvcardPosition: envCard,
       getDisEnvcardPosition: disEnvCard,
-      getPrmMbr,
       getMbr,
       getTagKeys: tagKeys,
-      getSelectedRk,
       getEnvData: envData,
       getIst,
       getShow,
@@ -1187,7 +1162,7 @@ class Environment extends Component {
               <Table
                 className="c7n-env-noTotal"
                 rowSelection={rowSelection}
-                dataSource={getPrmMbr}
+                dataSource={getMbr}
                 columns={columns}
                 filterBarPlaceholder={formatMessage({
                   id: "filter",

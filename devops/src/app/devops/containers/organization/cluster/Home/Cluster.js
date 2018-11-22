@@ -99,7 +99,6 @@ class Cluster extends Component {
       createSelected: [],
       selected: [],
       createSelectedTemp: [],
-      selectedRowKeys: false,
       token: null,
       delId: null,
       clsName: '',
@@ -146,7 +145,6 @@ class Cluster extends Component {
     const { ClusterStore } = this.props;
     const {
       getTagKeys: tagKeys,
-      getPrmPro: prmPro,
     } = ClusterStore;
     let s = [];
     const a = tagKeys.length ? tagKeys.concat(selected) : this.state.selected.concat(selected);
@@ -156,25 +154,8 @@ class Cluster extends Component {
         s.push(_.filter(a, ['id', o])[0])
       }
     });
-    const ids = _.map(prmPro, p => p.id);
-    const delIds = _.difference(ids, keys);
-    let selectIds = tagKeys;
-    _.map(delIds, d => {
-      _.map(selectIds, t => {
-        if (d === t.id) {
-          selectIds = _.reject(selectIds, s => s.id === d);
-        }
-      })
-    });
-    const temp = _.map(selectIds, s => s.id);
-    _.map(selected, k => {
-      if (!_.includes(temp, k.id)) {
-        selectIds.push(k);
-      }
-    });
     ClusterStore.setSelectedRk(keys);
     ClusterStore.setTagKeys(s);
-    this.setState({ selectedRowKeys: keys });
   };
 
   cbChange = (e) => {
@@ -352,14 +333,12 @@ class Cluster extends Component {
       getInfo: { filters, sort: { columnKey, order }, paras },
       getPageInfo,
       getProData: proData,
-      getPrmPro: prmProData,
       getClsData: clsData,
       getShell: shell,
       getTagKeys: tagKeys,
       getTableLoading: tableLoading,
-      getSelectedRk,
     } = ClusterStore;
-    const { copyMsg, token, sideType, checked, createSelectedRowKeys, createSelected, selectedRowKeys } = this.state;
+    const { copyMsg, token, sideType, checked, createSelectedRowKeys, createSelected } = this.state;
     const rowCreateSelection = {
       selectedRowKeys: createSelectedRowKeys,
       onChange: this.onCreateSelectChange,
@@ -576,7 +555,7 @@ class Cluster extends Component {
               <Table
                 rowSelection={rowSelection}
                 columns={columns}
-                dataSource={prmProData}
+                dataSource={proData}
                 filterBarPlaceholder={formatMessage({ id: 'filter' })}
                 pagination={getPageInfo}
                 loading={tableLoading}
@@ -658,7 +637,7 @@ class Cluster extends Component {
                 ClusterStore.setSelectedRk([]);
                 ClusterStore.setTagKeys([]);
                 this.loadCluster();
-                this.setState({ show: false, submitting: false, selectedRowKeys: false });
+                this.setState({ show: false, submitting: false });
               }
             });
         }
@@ -674,7 +653,7 @@ class Cluster extends Component {
     if (this.state.sideType === 'token') {
       this.loadCluster();
     }
-    this.setState({ checked: true, show: false, createSelectedRowKeys: [], createSelected: [], selectedRowKeys: false });
+    this.setState({ checked: true, show: false, createSelectedRowKeys: [], createSelected: [] });
     ClusterStore.setClsData(null);
     ClusterStore.setSelectedRk([]);
     ClusterStore.setInfo({

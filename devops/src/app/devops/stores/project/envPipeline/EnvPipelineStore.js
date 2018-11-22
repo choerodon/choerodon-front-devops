@@ -20,11 +20,7 @@ class EnvPipelineStore {
 
   @observable disEnvcardPosition = [];
 
-  @observable prmMbr = [];
-
   @observable mbr = [];
-
-  @observable selectedRowKeys = [];
 
   @observable tagKeys = [];
 
@@ -102,28 +98,12 @@ class EnvPipelineStore {
     return this.ist;
   }
 
-  @action setPrmMbr(prmMbr) {
-    this.prmMbr = prmMbr;
-  }
-
-  @computed get getPrmMbr() {
-    return this.prmMbr.slice();
-  }
-
   @action setMbr(mbr) {
     this.mbr = mbr;
   }
 
   @computed get getMbr() {
     return this.mbr.slice();
-  }
-
-  @action setSelectedRk(selectedRowKeys) {
-    this.selectedRowKeys = selectedRowKeys;
-  }
-
-  @computed get getSelectedRk() {
-    return this.selectedRowKeys.slice();
   }
 
   @action setTagKeys(tagKeys) {
@@ -358,14 +338,6 @@ class EnvPipelineStore {
       .then(data => {
         if (data && data.failed) {
           Choerodon.prompt(data.message);
-        } else if (envId) {
-          this.setPrmMbr(data.content);
-          this.setSelectedRk(
-            _.map(_.filter(data.content, "permitted"), k => k.iamUserId)
-          );
-          const { number, size, totalElements } = data;
-          const page = { number, size, totalElements };
-          this.setPageInfo(page);
         } else {
           this.setMbr(data.content);
           const { number, size, totalElements } = data;
