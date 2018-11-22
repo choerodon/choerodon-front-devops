@@ -197,10 +197,10 @@ class CreateBranch extends Component {
       const name = `${type === 'custom' ? '' : `${type}-`}${value}`;
       store.checkName(projectId, appId, name)
         .then((data) => {
-          if (data && !data.failed) {
-            callback();
-          } else {
+          if (data && data.failed) {
             callback(intl.formatMessage({ id: 'branch.check.existence' }));
+          } else {
+            callback();
           }
         });
     }
