@@ -19,9 +19,9 @@ class DelIst extends React.Component {
           </Button>,
         ]}
       >
-        <p>
+        <div className="c7n-padding-top_8">
           <FormattedMessage id="ist.delDes" />
-        </p>
+        </div>
       </Modal>);
   }
 }

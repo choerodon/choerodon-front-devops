@@ -413,7 +413,7 @@ class NetworkHome extends Component {
             </Button>,
           ]}
         >
-          <p><FormattedMessage id="network.delete.tooltip" /></p>
+          <div className="c7n-padding-top_8"><FormattedMessage id="network.delete.tooltip" /></div>
         </Modal>
       </Page>
     );

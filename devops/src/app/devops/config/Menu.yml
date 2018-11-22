@@ -16,10 +16,7 @@
         Routes: /devops/app
         sort: 1
         permission:
-          - 'devops-service.application.pageByOptions'
-          - 'devops-service.application.update'
-          - 'devops-service.application.queryByAppId'
-          - 'devops-service.application.queryByAppIdAndActive'
+          - 'devops-service.application.create'
     - "application-version":
         icon: version
         Routes: /devops/app-version

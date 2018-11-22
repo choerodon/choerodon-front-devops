@@ -292,7 +292,7 @@ class DomainOverview extends Component {
           </Button>,
         ]}
       >
-        <p>{intl.formatMessage({ id: 'confirm.delete' })}</p>
+        <div className="c7n-padding-top_8">{intl.formatMessage({ id: 'confirm.delete' })}</div>
       </Modal>
     </div>);
   }

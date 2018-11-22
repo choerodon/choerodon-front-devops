@@ -316,7 +316,7 @@ class DomainHome extends Component {
             </Button>,
           ]}
         >
-          <p>{formatMessage({ id: 'domain.delete.des' })}</p>
+          <div className="c7n-padding-top_8">{formatMessage({ id: 'domain.delete.des' })}</div>
         </Modal>
       </Page>
     );

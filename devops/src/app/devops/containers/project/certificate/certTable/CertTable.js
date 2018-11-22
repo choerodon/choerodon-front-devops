@@ -295,7 +295,7 @@ class CertTable extends Component {
           </Button>,
         ]}
       >
-        <p><FormattedMessage id="ctf.delete.tooltip" /></p>
+        <div className="c7n-padding-top_8"><FormattedMessage id="ctf.delete.tooltip" /></div>
       </Modal>
     </Fragment>);
   }

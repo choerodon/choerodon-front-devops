@@ -16,7 +16,7 @@ const START = moment().subtract(6, 'days').format().split('T')[0].replace(/-/g, 
 const END = moment().format().split('T')[0].replace(/-/g, '/');
 
 function findDataIndex(collection, value) {
-  return collection ? collection.findIndex(
+  return collection && value ? collection.findIndex(
     ({ id, projectId }) => id === value.id && (
       (!projectId && !value.projectId)
       || projectId === value.projectId

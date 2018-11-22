@@ -487,9 +487,9 @@ class TemplateHome extends Component {
             </Button>,
           ]}
         >
-          <p>
+          <div className="c7n-padding-top_8">
             <FormattedMessage id="template.delDescription" />
-          </p>
+          </div>
         </Modal>
       </Page>
     );
