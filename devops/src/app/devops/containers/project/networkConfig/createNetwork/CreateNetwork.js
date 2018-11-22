@@ -829,9 +829,9 @@ class CreateNetwork extends Component {
                           disabled={!connect || !permission}
                         >
                           {connect ? (
-                            <span className="env-status-success" />
+                            <span className="c7ncd-status c7ncd-status-success" />
                           ) : (
-                            <span className="env-status-error" />
+                            <span className="c7ncd-status c7ncd-status-disconnect" />
                           )}
                           {name}
                         </Option>
