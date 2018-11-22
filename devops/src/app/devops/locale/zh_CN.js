@@ -970,13 +970,14 @@ const zhCN = {
   "apptag.time": "提交时间",
   "apptag.tag": "标记",
   "apptag.name": "标记名称",
+  "apptag.name.tip": "标记名称建议使用x.x.x格式，其中x只能为非负整数；同时也支持标记名称的语义化，只需在原有格式后面加上-，便可在后面添加自定义内容。例如：x.x.x-alpha.1。",
   "apptag.ref": "标记来源",
   "apptag.checkName": "标记名称已存在",
   "apptag.branch": "分支",
   "apptag.action.delete": "删除标记",
   "apptag.delete.tooltip": "确定要删除该标记吗？",
   "apptag.checkNameReg":
-    "由数字和 . 组成，必须以数字开头且不能以 . 结尾，例如：0.0.1",
+    "支持x.x.x格式，其中x只能为非负整数；若使用语义化标记，建议格式：x.x.x-alpha.1",
   "apptag.noRefBranch": "该应用还没有分支，请先创建分支",
   "apptag.tag.empty": "暂无任何标记，您可在此页面基于某一分支创建标记。",
   "apptag.app.empty":

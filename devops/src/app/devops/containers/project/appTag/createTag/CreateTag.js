@@ -34,7 +34,8 @@ class CreateTag extends Component {
     const { store, intl: { formatMessage } } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     const pa = /^\d+(\.\d+){2}$/;
-    if (value && pa.test(value)) {
+    const SemanticVersion = /^\d+(\.\d+){2}-([a-zA-Z0-9]|\.)+$/;
+    if (value && (pa.test(value) || SemanticVersion.test(value))) {
       store.checkTagName(projectId, value)
         .then((data) => {
           if (data) {
@@ -171,6 +172,8 @@ class CreateTag extends Component {
                   autoFocus
                   label={<FormattedMessage id="apptag.name" />}
                   size="default"
+                  suffix={getSelectTip('apptag.name.tip')}
+                  maxLength="20"
                 />,
               )}
             </FormItem>
