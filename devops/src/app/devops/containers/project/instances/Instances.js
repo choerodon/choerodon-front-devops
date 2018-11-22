@@ -685,9 +685,9 @@ class Instances extends Component {
                     <Tooltip placement="right" title={e.name}>
                       <span className="c7n-ib-width_100">
                         {e.connect ? (
-                          <span className="c7n-ist-status_on" />
+                          <span className="c7ncd-status c7ncd-status-success" />
                         ) : (
-                          <span className="c7n-ist-status_off" />
+                          <span className="c7ncd-status c7ncd-status-disconnect" />
                         )}
                         {e.name}
                       </span>

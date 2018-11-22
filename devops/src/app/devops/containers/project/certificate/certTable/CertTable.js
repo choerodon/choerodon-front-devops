@@ -1,17 +1,20 @@
-import React, { Component, Fragment } from 'react';
-import { observer } from 'mobx-react';
-import { injectIntl, FormattedMessage } from 'react-intl';
-import { Table, Icon, Button, Popover, Tooltip, Modal } from 'choerodon-ui';
-import { Permission, stores } from 'choerodon-front-boot';
-import _ from 'lodash';
-import { getTimeLeft } from '../../../../utils';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
-import StatusIcon from '../../../../components/StatusIcon';
-import './CertTable.scss';
-import { getTableTitle } from '../../../../utils';
+import React, { Component, Fragment } from "react";
+import { observer } from "mobx-react";
+import { injectIntl, FormattedMessage } from "react-intl";
+import { Table, Icon, Button, Popover, Tooltip, Modal } from "choerodon-ui";
+import { Permission, stores } from "choerodon-front-boot";
+import _ from "lodash";
+import { getTimeLeft } from "../../../../utils";
+import MouserOverWrapper from "../../../../components/MouseOverWrapper";
+import StatusIcon from "../../../../components/StatusIcon";
+import "./CertTable.scss";
+import { getTableTitle } from "../../../../utils";
 
 const { AppState } = stores;
-const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+const HEIGHT =
+  window.innerHeight ||
+  document.documentElement.clientHeight ||
+  document.body.clientHeight;
 
 @observer
 class CertTable extends Component {
@@ -37,11 +40,11 @@ class CertTable extends Component {
       pageSize: HEIGHT <= 900 ? 10 : 15,
       param: [],
       filters: {},
-      postData: { searchParam: {}, param: '' },
+      postData: { searchParam: {}, param: "" },
       sorter: {
-        field: 'id',
-        columnKey: 'id',
-        order: 'descend',
+        field: "id",
+        columnKey: "id",
+        order: "descend",
       },
     });
   }
@@ -54,18 +57,28 @@ class CertTable extends Component {
     const { id: projectId } = AppState.currentMenuType;
     const { deleteCert } = this.state;
     this.setState({ deleteStatus: true });
-    store.deleteCertById(projectId, deleteCert).then((data) => {
-      const { page, pageSize, sorter, postData } = store.getTableFilter;
-      this.setState({ deleteStatus: false, removeDisplay: false });
-      if (data && data.failed) {
-        Choerodon.prompt(data.message);
-      } else {
-        store.loadCertData(projectId, page, pageSize, sorter, postData, envId);
-      }
-    }).catch((err) => {
-      this.setState({ deleteStatus: false });
-      Choerodon.handleResponseError(err);
-    });
+    store
+      .deleteCertById(projectId, deleteCert)
+      .then(data => {
+        const { page, pageSize, sorter, postData } = store.getTableFilter;
+        this.setState({ deleteStatus: false, removeDisplay: false });
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          store.loadCertData(
+            projectId,
+            page,
+            pageSize,
+            sorter,
+            postData,
+            envId
+          );
+        }
+      })
+      .catch(err => {
+        this.setState({ deleteStatus: false });
+        Choerodon.handleResponseError(err);
+      });
   };
 
   /**
@@ -80,13 +93,15 @@ class CertTable extends Component {
     const { id: projectId } = AppState.currentMenuType;
     const { current, pageSize } = pagination;
     const page = current - 1;
-    const sort = _.isEmpty(sorter) ? {
-      field: 'id',
-      columnKey: 'id',
-      order: 'descend',
-    } : sorter;
+    const sort = _.isEmpty(sorter)
+      ? {
+          field: "id",
+          columnKey: "id",
+          order: "descend",
+        }
+      : sorter;
     const searchParam = {};
-    let param = '';
+    let param = "";
     if (!_.isEmpty(filters)) {
       _.forEach(filters, (value, key) => {
         if (!_.isEmpty(value)) {
@@ -101,7 +116,14 @@ class CertTable extends Component {
       searchParam,
       param,
     };
-    store.setTableFilter({ page, pageSize, filters, postData, sorter: sort, param: paras });
+    store.setTableFilter({
+      page,
+      pageSize,
+      filters,
+      postData,
+      sorter: sort,
+      param: paras,
+    });
     store.loadCertData(projectId, page, pageSize, sort, postData, envId);
   };
 
@@ -109,11 +131,12 @@ class CertTable extends Component {
    * 显示删除确认框
    * @param id
    */
-  openRemoveModal = (id, certName) => this.setState({
-    removeDisplay: true,
-    deleteCert: id,
-    certName,
-  });
+  openRemoveModal = (id, certName) =>
+    this.setState({
+      removeDisplay: true,
+      deleteCert: id,
+      certName,
+    });
 
   closeRemoveModal = () => this.setState({ removeDisplay: false });
 
@@ -122,18 +145,26 @@ class CertTable extends Component {
    * @param record
    * @returns {null}
    */
-  validColumn = (record) => {
+  validColumn = record => {
     const { validFrom, validUntil, commandStatus } = record;
-    const { intl: { formatMessage } } = this.props;
+    const {
+      intl: { formatMessage },
+    } = this.props;
     let msg = null;
     let content = null;
-    if (validFrom && validUntil && commandStatus === 'success') {
-      content = <div>
-        <div><FormattedMessage id="timeFrom" />：{validFrom}</div>
-        <div><FormattedMessage id="timeUntil" />：{validUntil}</div>
-      </div>;
-      const start = new Date(validFrom.replace(/-/g, '/')).getTime();
-      const end = new Date(validUntil.replace(/-/g, '/')).getTime();
+    if (validFrom && validUntil && commandStatus === "success") {
+      content = (
+        <div>
+          <div>
+            <FormattedMessage id="timeFrom" />：{validFrom}
+          </div>
+          <div>
+            <FormattedMessage id="timeUntil" />：{validUntil}
+          </div>
+        </div>
+      );
+      const start = new Date(validFrom.replace(/-/g, "/")).getTime();
+      const end = new Date(validUntil.replace(/-/g, "/")).getTime();
       const now = Date.now();
       if (now < start) {
         msg = <FormattedMessage id="notActive" />;
@@ -142,12 +173,16 @@ class CertTable extends Component {
       } else {
         msg = getTimeLeft(now, end);
       }
-      return <Popover
-        content={content}
-        getPopupContainer={triggerNode => triggerNode.parentNode}
-        trigger="hover"
-        placement="top"
-      ><span>{msg}</span></Popover>;
+      return (
+        <Popover
+          content={content}
+          getPopupContainer={triggerNode => triggerNode.parentNode}
+          trigger="hover"
+          placement="top"
+        >
+          <span>{msg}</span>
+        </Popover>
+      );
     }
     return null;
   };
@@ -161,64 +196,82 @@ class CertTable extends Component {
    */
   opColumn = (record, type, projectId, orgId) => {
     const { id, domains, certName } = record;
-    const { intl: { formatMessage } } = this.props;
+    const {
+      intl: { formatMessage },
+    } = this.props;
     const detail = {
       CommonName: [domains[0]],
       DNSNames: domains.slice(1),
     };
-    const content = (<Fragment>
-      {_.map(detail, (value, key) => {
-        if (value.length) {
-          return (<div className="c7n-overlay-content" key={value}>
-            <div className="c7n-overlay-item">
-              <p className="c7n-overlay-title">{key}</p>
-            </div>
-            <div className="c7n-overlay-item">{_.map(value, item => <p key={item} className="c7n-overlay-detail">{item}</p>)}</div>
-          </div>);
-        }
-        return null;
-      })}
-    </Fragment>);
-    return (<Fragment>
-      <Popover
-        overlayClassName="c7n-ctf-overlay"
-        arrowPointAtCenter
-        title={formatMessage({ id: 'ctf.cert.detail' })}
-        content={content}
-        getPopupContainer={triggerNode => triggerNode.parentNode}
-        trigger="hover"
-        placement="bottomRight"
-      >
-        <Icon type="find_in_page" className="c7n-ctf-detail-icon" />
-      </Popover>
-      <Permission
-        service={['devops-service.certification.delete']}
-        type={type}
-        projectId={projectId}
-        organizationId={orgId}
-      >
-        <Tooltip trigger="hover" placement="bottom" title={<FormattedMessage id="delete" />}>
-          <Button
-            icon="delete_forever"
-            shape="circle"
-            size="small"
-            funcType="flat"
-            onClick={this.openRemoveModal.bind(this, id, certName)}
-          />
-        </Tooltip>
-      </Permission>
-    </Fragment>);
+    const content = (
+      <Fragment>
+        {_.map(detail, (value, key) => {
+          if (value.length) {
+            return (
+              <div className="c7n-overlay-content" key={value}>
+                <div className="c7n-overlay-item">
+                  <p className="c7n-overlay-title">{key}</p>
+                </div>
+                <div className="c7n-overlay-item">
+                  {_.map(value, item => (
+                    <p key={item} className="c7n-overlay-detail">
+                      {item}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+          return null;
+        })}
+      </Fragment>
+    );
+    return (
+      <Fragment>
+        <Popover
+          overlayClassName="c7n-ctf-overlay"
+          arrowPointAtCenter
+          title={formatMessage({ id: "ctf.cert.detail" })}
+          content={content}
+          getPopupContainer={triggerNode => triggerNode.parentNode}
+          trigger="hover"
+          placement="bottomRight"
+        >
+          <Icon type="find_in_page" className="c7n-ctf-detail-icon" />
+        </Popover>
+        <Permission
+          service={["devops-service.certification.delete"]}
+          type={type}
+          projectId={projectId}
+          organizationId={orgId}
+        >
+          <Tooltip
+            trigger="hover"
+            placement="bottom"
+            title={<FormattedMessage id="delete" />}
+          >
+            <Button
+              icon="delete_forever"
+              shape="circle"
+              size="small"
+              funcType="flat"
+              onClick={this.openRemoveModal.bind(this, id, certName)}
+            />
+          </Tooltip>
+        </Permission>
+      </Fragment>
+    );
   };
 
   render() {
-    const { intl: { formatMessage }, store } = this.props;
+    const {
+      intl: { formatMessage },
+      store,
+    } = this.props;
     const { removeDisplay, deleteStatus, certName } = this.state;
     const {
       filters,
-      sorter: {
-        columnKey,
-        order,
-      },
+      sorter: { columnKey, order },
       param,
     } = store.getTableFilter;
     const {
@@ -227,77 +280,109 @@ class CertTable extends Component {
       organizationId: orgId,
       name,
     } = AppState.currentMenuType;
-    const columns = [{
-      title: <FormattedMessage id="ctf.column.name" />,
-      key: 'certName',
-      dataIndex: 'certName',
-      filters: [],
-      filteredValue: filters.certName || [],
-      render: (text, record) => <StatusIcon
-        name={text}
-        status={record.commandStatus || ''}
-        error={record.error || ''}
-      />,
-    }, {
-      title: <FormattedMessage id="ctf.column.ingress" />,
-      key: 'domains',
-      dataIndex: 'domains',
-      filters: [],
-      filteredValue: filters.domains || [],
-      render: (text, record) => (<MouserOverWrapper text={text[0] || ''} width={0.25}>
-        {text[0]}</MouserOverWrapper>),
-    }, {
-      title: <FormattedMessage id="ctf.column.env" />,
-      key: 'envName',
-      dataIndex: 'envName',
-      sorter: true,
-      filters: [],
-      sortOrder: columnKey === 'envName' && order,
-      filteredValue: filters.envName || [],
-      render: (text, record) => (<React.Fragment>
-        {record.envConnected ? <Tooltip title={<FormattedMessage id="connect" />}>
-          <span className="env-status-success" />
-        </Tooltip> : <Tooltip title={<FormattedMessage id="disconnect" />}>
-          <span className="env-status-error" />
-        </Tooltip>}
-        {text}
-      </React.Fragment>),
-    }, {
-      title: getTableTitle('validDate'),
-      key: 'valid',
-      render: this.validColumn,
-    }, {
-      align: 'right',
-      width: 100,
-      key: 'action',
-      render: record => this.opColumn(record, type, projectId, orgId),
-    }];
-    return (<Fragment>
-      <Table
-        filterBarPlaceholder={formatMessage({ id: 'filter' })}
-        onChange={this.tableChange}
-        loading={store.getCertLoading}
-        pagination={store.getPageInfo}
-        dataSource={store.getCertData}
-        filters={param.slice()}
-        columns={columns}
-        rowKey={record => record.id}
-      />
-      <Modal
-        confirmLoading={deleteStatus}
-        visible={removeDisplay}
-        title={`${formatMessage({ id: 'ctf.delete' })}“${certName}”`}
-        closable={false}
-        footer={[
-          <Button key="back" onClick={this.closeRemoveModal} disabled={deleteStatus}><FormattedMessage id="cancel" /></Button>,
-          <Button key="submit" loading={deleteStatus} type="danger" onClick={this.handleDelete}>
-            <FormattedMessage id="delete" />
-          </Button>,
-        ]}
-      >
-        <p><FormattedMessage id="ctf.delete.tooltip" /></p>
-      </Modal>
-    </Fragment>);
+    const columns = [
+      {
+        title: <FormattedMessage id="ctf.column.name" />,
+        key: "certName",
+        dataIndex: "certName",
+        filters: [],
+        filteredValue: filters.certName || [],
+        render: (text, record) => (
+          <StatusIcon
+            name={text}
+            status={record.commandStatus || ""}
+            error={record.error || ""}
+          />
+        ),
+      },
+      {
+        title: <FormattedMessage id="ctf.column.ingress" />,
+        key: "domains",
+        dataIndex: "domains",
+        filters: [],
+        filteredValue: filters.domains || [],
+        render: (text, record) => (
+          <MouserOverWrapper text={text[0] || ""} width={0.25}>
+            {text[0]}
+          </MouserOverWrapper>
+        ),
+      },
+      {
+        title: <FormattedMessage id="ctf.column.env" />,
+        key: "envName",
+        dataIndex: "envName",
+        sorter: true,
+        filters: [],
+        sortOrder: columnKey === "envName" && order,
+        filteredValue: filters.envName || [],
+        render: (text, record) => (
+          <React.Fragment>
+            {record.envConnected ? (
+              <Tooltip title={<FormattedMessage id="connect" />}>
+                <span className="c7ncd-status c7ncd-status-success" />
+              </Tooltip>
+            ) : (
+              <Tooltip title={<FormattedMessage id="disconnect" />}>
+                <span className="c7ncd-status c7ncd-status-disconnect" />
+              </Tooltip>
+            )}
+            {text}
+          </React.Fragment>
+        ),
+      },
+      {
+        title: getTableTitle("validDate"),
+        key: "valid",
+        render: this.validColumn,
+      },
+      {
+        align: "right",
+        width: 100,
+        key: "action",
+        render: record => this.opColumn(record, type, projectId, orgId),
+      },
+    ];
+    return (
+      <Fragment>
+        <Table
+          filterBarPlaceholder={formatMessage({ id: "filter" })}
+          onChange={this.tableChange}
+          loading={store.getCertLoading}
+          pagination={store.getPageInfo}
+          dataSource={store.getCertData}
+          filters={param.slice()}
+          columns={columns}
+          rowKey={record => record.id}
+        />
+        <Modal
+          confirmLoading={deleteStatus}
+          visible={removeDisplay}
+          title={`${formatMessage({ id: "ctf.delete" })}“${certName}”`}
+          closable={false}
+          footer={[
+            <Button
+              key="back"
+              onClick={this.closeRemoveModal}
+              disabled={deleteStatus}
+            >
+              <FormattedMessage id="cancel" />
+            </Button>,
+            <Button
+              key="submit"
+              loading={deleteStatus}
+              type="danger"
+              onClick={this.handleDelete}
+            >
+              <FormattedMessage id="delete" />
+            </Button>,
+          ]}
+        >
+          <p>
+            <FormattedMessage id="ctf.delete.tooltip" />
+          </p>
+        </Modal>
+      </Fragment>
+    );
   }
 }
 

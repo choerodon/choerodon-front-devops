@@ -1,18 +1,19 @@
-import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
-import { injectIntl, FormattedMessage } from 'react-intl';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import { DragSource } from 'react-dnd';
-import { Button, Tooltip, Icon } from 'choerodon-ui';
-import { Permission } from 'choerodon-front-boot';
-import '../EnvPipeLineHome.scss';
-import EnvPipelineStore from '../../../../stores/project/envPipeline';
+import React, { Component, Fragment } from "react";
+import { observer, inject } from "mobx-react";
+import { injectIntl, FormattedMessage } from "react-intl";
+import PropTypes from "prop-types";
+import classNames from "classnames";
+import { DragSource } from "react-dnd";
+import { Button, Tooltip, Icon } from "choerodon-ui";
+import { Permission, stores } from "choerodon-front-boot";
+import "../EnvPipeLineHome.scss";
+import EnvPipelineStore from "../../../../stores/project/envPipeline";
+
+const { AppState } = stores;
 
 const ItemTypes = {
-  ENVCARD: 'envCard',
+  ENVCARD: "envCard",
 };
-
 
 const envCardSource = {
   beginDrag(props) {
@@ -30,19 +31,18 @@ function collect(connect, monitor) {
   };
 }
 
-@inject('AppState')
 @observer
 class EnvCard extends Component {
-  editEnv = (id) => {
+  editEnv = id => {
     const { projectId } = this.props;
-    EnvPipelineStore.setSideType('edit');
+    EnvPipelineStore.setSideType("edit");
     EnvPipelineStore.loadEnvById(projectId, id);
     EnvPipelineStore.setShow(true);
   };
 
-  editPrm = (id) => {
+  editPrm = id => {
     const { projectId } = this.props;
-    EnvPipelineStore.setSideType('permission');
+    EnvPipelineStore.setSideType("permission");
     EnvPipelineStore.loadPrm(projectId, id, 0, 10);
     EnvPipelineStore.loadTags(projectId, id);
     EnvPipelineStore.loadEnvById(projectId, id);
@@ -54,6 +54,112 @@ class EnvCard extends Component {
     handleDisable(id, connect, name);
   };
 
+  getCardTitle(data) {
+    if (!data) {
+      return formatMessage({ id: "envPl.add" });
+    }
+    const { id: projectId, organizationId, type } = AppState.currentMenuType;
+    const { failed, name, id, connect, synchro } = data;
+    return (
+      <Fragment>
+        <span>{name}</span>
+        <div className="c7n-env-card-action">
+          {!failed && synchro ? (
+            <Fragment>
+              <Permission
+                service={[
+                  "devops-service.devops-environment.updateEnvUserPermission",
+                ]}
+                organizationId={organizationId}
+                projectId={projectId}
+                type={type}
+              >
+                <Tooltip title={<FormattedMessage id="envPl.authority" />}>
+                  <Button
+                    funcType="flat"
+                    shape="circle"
+                    icon="authority"
+                    onClick={this.editPrm.bind(this, id)}
+                  />
+                </Tooltip>
+              </Permission>
+              <Permission
+                service={["devops-service.devops-environment.update"]}
+                organizationId={organizationId}
+                projectId={projectId}
+                type={type}
+              >
+                <Tooltip title={<FormattedMessage id="envPl.edit" />}>
+                  <Button
+                    funcType="flat"
+                    shape="circle"
+                    icon="mode_edit"
+                    onClick={this.editEnv.bind(this, id)}
+                  />
+                </Tooltip>
+              </Permission>
+            </Fragment>
+          ) : null}
+          <Permission
+            service={["devops-service.devops-environment.enableOrDisableEnv"]}
+            organizationId={organizationId}
+            projectId={projectId}
+            type={type}
+          >
+            <Tooltip title={<FormattedMessage id="envPl.stop" />}>
+              <Button
+                funcType="flat"
+                shape="circle"
+                icon="remove_circle_outline"
+                onClick={this.handleDisable.bind(this, id, connect, name)}
+              />
+            </Tooltip>
+          </Permission>
+        </div>
+      </Fragment>
+    );
+  }
+
+  getCardContent(data) {
+    if (!data) {
+      return formatMessage({ id: "envPl.add" });
+    }
+    const {
+      intl: { formatMessage },
+    } = this.props;
+    const { connect, description, failed, synchro } = data;
+    let status = "";
+    let styles = "";
+    if (failed) {
+      styles = "c7n-env-state-failed";
+      status = "failed";
+    } else if (!synchro) {
+      styles = "c7n-env-state-creating";
+      status = "operating";
+    } else if (connect) {
+      styles = "c7n-env-state-running";
+      status = "running";
+    } else {
+      styles = "c7n-env-state-disconnect";
+      status = "disconnect";
+    }
+    return (
+      <div className="c7n-env-card-content">
+        <div className={classNames("c7n-env-state", styles)}>
+          {formatMessage({ id: status })}
+        </div>
+        <div className="c7n-env-des-wrap">
+          <div className="c7n-env-des" title={description}>
+            <span className="c7n-env-des-head">
+              {formatMessage({ id: "envPl.description" })}
+            </span>
+            {description}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     const {
       AppState,
@@ -62,83 +168,16 @@ class EnvCard extends Component {
       cardData,
       intl: { formatMessage },
     } = this.props;
-    const { id: projectId, organizationId, type } = AppState.currentMenuType;
     const envCardStyle = classNames({
-      'c7n-env-card': !isDragging,
-      'c7n-env-card-dragging': isDragging,
+      "c7n-env-card": !isDragging,
+      "c7n-env-card-dragging": isDragging,
     });
-    const envStatusStyle = classNames({
-      'c7n-env-state': cardData.connect,
-      'c7n-env-state-pending': !cardData.connect,
-    });
+
     return connectDragSource(
       <div className={envCardStyle}>
-        <Tooltip placement="bottom" title={cardData.update ? <FormattedMessage id="envPl.status.update" /> : null}>
-          <div className="c7n-env-card-header">
-            {cardData
-              ? (<React.Fragment>
-                <span>{cardData.name}</span>
-                <div className="c7n-env-card-action">
-                  <Permission
-                    service={['devops-service.devops-environment.updateEnvUserPermission']}
-                    organizationId={organizationId}
-                    projectId={projectId}
-                    type={type}
-                  >
-                    <Tooltip title={<FormattedMessage id="envPl.authority" />}>
-                      <Button
-                        funcType="flat"
-                        shape="circle"
-                        icon="authority"
-                        onClick={this.editPrm.bind(this, cardData.id)}
-                      />
-                    </Tooltip>
-                  </Permission>
-                  <Permission
-                    service={['devops-service.devops-environment.update']}
-                    organizationId={organizationId}
-                    projectId={projectId}
-                    type={type}
-                  >
-                    <Tooltip title={<FormattedMessage id="envPl.edit" />}>
-                      <Button
-                        funcType="flat"
-                        shape="circle"
-                        icon="mode_edit"
-                        onClick={this.editEnv.bind(this, cardData.id)}
-                      />
-                    </Tooltip>
-                  </Permission>
-                  <Permission
-                    service={['devops-service.devops-environment.enableOrDisableEnv']}
-                    organizationId={organizationId}
-                    projectId={projectId}
-                    type={type}
-                  >
-                    <Tooltip title={<FormattedMessage id="envPl.stop" />}>
-                      <Button
-                        funcType="flat"
-                        shape="circle"
-                        icon="remove_circle_outline"
-                        onClick={this.handleDisable.bind(this, cardData.id, cardData.connect, cardData.name)}
-                      />
-                    </Tooltip>
-                  </Permission>
-                </div>
-              </React.Fragment>)
-              : formatMessage({ id: 'envPl.add' })}
-          </div>
-          {cardData ? <div className="c7n-env-card-content">
-            <div className={envStatusStyle}>
-              {cardData.connect ? formatMessage({ id: 'running' }) : formatMessage({ id: 'disconnect' })}
-            </div>
-            <div className="c7n-env-des-wrap">
-              <div className="c7n-env-des" title={cardData.description}>
-                <span className="c7n-env-des-head">{formatMessage({ id: 'envPl.description' })}</span>
-                {cardData.description}
-              </div>
-            </div>
-          </div> : formatMessage({ id: 'envPl.add' }) }</Tooltip></div>,
+        <div className="c7n-env-card-header">{this.getCardTitle(cardData)}</div>
+        {this.getCardContent(cardData)}
+      </div>
     );
   }
 }
@@ -149,4 +188,6 @@ EnvCard.propTypes = {
   projectId: PropTypes.number.isRequired,
 };
 
-export default DragSource(ItemTypes.ENVCARD, envCardSource, collect)(injectIntl(EnvCard));
+export default DragSource(ItemTypes.ENVCARD, envCardSource, collect)(
+  injectIntl(EnvCard)
+);

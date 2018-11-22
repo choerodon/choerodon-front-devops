@@ -169,11 +169,11 @@ class DeployOverview extends Component {
           <div>
             {e.connect ? (
               <Tooltip title={<FormattedMessage id="connect" />}>
-                <span className="c7n-ist-status_on" />
+                <span className="c7ncd-status c7ncd-status-success" />
               </Tooltip>
             ) : (
               <Tooltip title={<FormattedMessage id="disconnect" />}>
-                <span className="c7n-ist-status_off" />
+                <span className="c7ncd-status c7ncd-status-disconnect" />
               </Tooltip>
             )}
             {e.name}
@@ -258,7 +258,7 @@ class DeployOverview extends Component {
           </MouserOverWrapper>
           {version.latest ? null : (
             <Tooltip title={<FormattedMessage id="dpOverview.update" />}>
-              <span className="c7n-ist-status_update" />
+              <span className="c7ncd-status c7ncd-status-update" />
             </Tooltip>
           )}
         </div>

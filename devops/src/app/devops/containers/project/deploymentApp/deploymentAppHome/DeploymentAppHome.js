@@ -594,9 +594,9 @@ class DeploymentAppHome extends Component {
                 disabled={!v.connect || !v.permission}
               >
                 {v.connect ? (
-                  <span className="c7n-ist-status_on" />
+                  <span className="c7ncd-status c7ncd-status-success" />
                 ) : (
-                  <span className="c7n-ist-status_off" />
+                    <span className="c7ncd-status c7ncd-status-disconnect" />
                 )}
                 {v.name}
               </Option>
@@ -919,7 +919,7 @@ class DeploymentAppHome extends Component {
             <div className="deployApp-text">
               {this.state.mode === "new"
                 ? formatMessage({ id: "deploy.step.three.mode.new" })
-                : formatMessage({ id: "deploy.step.three.mode.replace" })}{" "}
+                : formatMessage({ id: "deploy.step.three.mode.replace" })}
               {this.state.mode === "replace" && (
                 <span className="deployApp-value">
                   (
@@ -1064,9 +1064,9 @@ class DeploymentAppHome extends Component {
                     <Tooltip placement="right" title={e.name}>
                       <span className="c7n-ib-width_100">
                         {e.connect ? (
-                          <span className="c7n-ist-status_on" />
+                          <span className="c7ncd-status c7ncd-status-success" />
                         ) : (
-                          <span className="c7n-ist-status_off" />
+                            <span className="c7ncd-status c7ncd-status-disconnect" />
                         )}
                         {e.name}
                       </span>

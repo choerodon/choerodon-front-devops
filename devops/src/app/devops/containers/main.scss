@@ -396,34 +396,31 @@ table {
   }
 }
 
-// 环境连接状态
-.c7n-ist-status_on,
-.env-status-success {
-  width: 8px;
-  height: 8px;
-  border-radius: 8px;
+// 环境、实例连接状态
+.c7ncd-status {
   display: inline-block;
-  background-color: #00bf96;
   margin-right: 5px;
-}
-
-.c7n-ist-status_off,
-.env-status-error {
   width: 8px;
   height: 8px;
   border-radius: 8px;
-  display: inline-block;
-  background-color: #d50000;
-  margin-right: 5px;
-}
 
-.c7n-ist-status_update {
-  width: 8px;
-  height: 8px;
-  border-radius: 8px;
-  display: inline-block;
-  background: #ffb100;
-  flex-shrink: 0;
+  &-success {
+    background-color: #00bf96;
+  }
+
+  &-error {
+    background-color: #d50000;
+  }
+
+  &-disconnect {
+    background-color: #ff9915;
+  }
+
+  &-update {
+    background-color: #4d90fe;
+    margin: 0;
+    flex-shrink: 0;
+  }
 }
 
 /* 修改UI组件默认样式 */
@@ -503,22 +500,22 @@ table {
     transform: scale(0.83333);
     white-space: nowrap;
   }
-}
 
-.c7n-domain-create-status_running {
-  background: #00bf96;
-}
+  &_running {
+    background: #00bf96;
+  }
 
-.c7n-domain-create-status_failed {
-  background: #f44336;
-}
+  &_failed {
+    background: #f44336;
+  }
 
-.c7n-domain-create-status_operating {
-  background: #4d90fe;
-}
+  &_operating {
+    background: #4d90fe;
+  }
 
-.c7n-domain-create-status_deleted {
-  background: rgba(0, 0, 0, 0.36);
+  &_deleted {
+    background: rgba(0, 0, 0, 0.36);
+  }
 }
 
 // 创建侧边栏中的卡片区域

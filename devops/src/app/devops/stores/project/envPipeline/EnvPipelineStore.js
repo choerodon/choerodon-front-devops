@@ -148,7 +148,8 @@ class EnvPipelineStore {
   switchData(a, b, id) {
     let data = {};
     if (id) {
-      data = _.filter(this.envcardPosition, { devopsEnvGroupId: id })[0].devopsEnviromentRepDTOs;
+      data = _.filter(this.envcardPosition, { devopsEnvGroupId: id })[0]
+        .devopsEnviromentRepDTOs;
     } else {
       data = this.envcardPosition[0].devopsEnviromentRepDTOs;
     }
@@ -236,7 +237,7 @@ class EnvPipelineStore {
           Choerodon.prompt(data.message);
         } else if (data && active) {
           this.setEnvcardPosition(data);
-          DeploymentPipelineStore.setProRole('env', '');
+          DeploymentPipelineStore.setProRole("env", "");
           if (data.length === 0) {
             EnvOverviewStore.setEnvcard(data);
             DeploymentPipelineStore.setEnvLine(data);
@@ -269,11 +270,14 @@ class EnvPipelineStore {
         if (data && data.failed) {
           Choerodon.prompt(data.message);
         } else {
-          _.map(this.envcardPosition, e => {
-            if (e.devopsEnvGroupId === groupId) {
-              e.devopsEnviromentRepDTOs = data;
-            }
-          });
+          _.map(
+            this.envcardPosition,
+            action(e => {
+              if (e.devopsEnvGroupId === groupId) {
+                e.devopsEnviromentRepDTOs = data.devopsEnviromentRepDTOs;
+              }
+            })
+          );
           this.setEnvcardPosition(this.envcardPosition);
           Choerodon.prompt("更新成功");
         }
@@ -322,14 +326,16 @@ class EnvPipelineStore {
    * @param sort
    * @param postData
    */
-  loadPrm = (projectId,
-             envId = null,
-             page = 0,
-             size = 10,
-             sort = { field: "", order: "desc" },
-             postData = { searchParam: {}, param: "" }) => {
+  loadPrm = (
+    projectId,
+    envId = null,
+    page = 0,
+    size = 10,
+    sort = { field: "", order: "desc" },
+    postData = { searchParam: {}, param: "" }
+  ) => {
     this.tableLoading(true);
-    let url = envId ? `env_id=${envId}&` : '';
+    let url = envId ? `env_id=${envId}&` : "";
     return axios
       .post(
         `/devops/v1/projects/${projectId}/envs/list?${url}page=${page}&size=${size}`,
@@ -373,8 +379,18 @@ class EnvPipelineStore {
       }
     });
 
-  loadInstance = (projectId, envId, page = 0, size = 10, datas = { searchParam: {}, param: "" }) =>
-    axios.post(`devops/v1/projects/${projectId}/app_instances/list_by_options?envId=${envId}&page=${page}&size=${size}`, JSON.stringify(datas))
+  loadInstance = (
+    projectId,
+    envId,
+    page = 0,
+    size = 10,
+    datas = { searchParam: {}, param: "" }
+  ) =>
+    axios
+      .post(
+        `devops/v1/projects/${projectId}/app_instances/list_by_options?envId=${envId}&page=${page}&size=${size}`,
+        JSON.stringify(datas)
+      )
       .then(data => {
         if (data && data.failed) {
           Choerodon.prompt(data.message);
@@ -412,13 +428,13 @@ class EnvPipelineStore {
 
   checkEnvName(projectId, cluster, name) {
     return axios.get(
-      `/devops/v1/projects/${projectId}/envs/check_name?clusterId=${cluster}&name=${name}`
+      `/devops/v1/projects/${projectId}/envs/check_name?cluster_id=${cluster}&name=${name}`
     );
   }
 
   checkEnvCode(projectId, cluster, code) {
     return axios.get(
-      `/devops/v1/projects/${projectId}/envs/check_code?clusterId=${cluster}&code=${code}`
+      `/devops/v1/projects/${projectId}/envs/check_code?cluster_id=${cluster}&code=${code}`
     );
   }
 }

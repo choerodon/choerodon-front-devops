@@ -368,11 +368,11 @@ class ContainerHome extends Component {
             <div className="c7n-deploy-col-inside">
               {record.connect ? (
                 <Tooltip title={<FormattedMessage id="connect" />}>
-                  <span className="c7n-ist-status_on" />
+                  <span className="c7ncd-status c7ncd-status-success" />
                 </Tooltip>
               ) : (
                 <Tooltip title={<FormattedMessage id="disconnect" />}>
-                  <span className="c7n-ist-status_off" />
+                  <span className="c7ncd-status c7ncd-status-disconnect" />
                 </Tooltip>
               )}
               <span>{record.envName}</span>
@@ -1027,9 +1027,9 @@ class ContainerHome extends Component {
                   <Tooltip placement="right" title={e.name}>
                     <span className="c7n-ib-width_100">
                       {e.connect ? (
-                        <span className="c7n-ist-status_on" />
+                        <span className="c7ncd-status c7ncd-status-success" />
                       ) : (
-                        <span className="c7n-ist-status_off" />
+                        <span className="c7ncd-status c7ncd-status-disconnect" />
                       )}
                       {e.name}
                     </span>

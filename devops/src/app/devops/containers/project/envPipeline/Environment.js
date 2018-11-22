@@ -423,7 +423,7 @@ class Environment extends Component {
    */
   handleSubmit = e => {
     e.preventDefault();
-    const { EnvPipelineStore } = this.props;
+    const { EnvPipelineStore, form } = this.props;
     const projectId = AppState.currentMenuType.id;
     const sideType = EnvPipelineStore.getSideType;
     const tagKeys = EnvPipelineStore.getTagKeys;
@@ -431,7 +431,7 @@ class Environment extends Component {
       submitting: true,
     });
     if (sideType === "create") {
-      this.props.form.validateFieldsAndScroll((err, data) => {
+      form.validateFieldsAndScroll((err, data) => {
         if (!err) {
           data.userIds = this.state.createSelectedRowKeys;
           EnvPipelineStore.createEnv(projectId, data).then(res => {
@@ -448,6 +448,7 @@ class Environment extends Component {
                 createSelectedRowKeys: [],
                 createSelected: [],
               });
+              form.resetFields();
             }
           });
         } else {
@@ -457,7 +458,7 @@ class Environment extends Component {
         }
       });
     } else if (sideType === "edit") {
-      this.props.form.validateFieldsAndScroll((err, data, modify) => {
+      form.validateFieldsAndScroll((err, data, modify) => {
         if (modify) {
           if (!err) {
             EnvPipelineStore.setShow(false);
@@ -472,7 +473,7 @@ class Environment extends Component {
               } else if (res) {
                 this.loadEnvs();
                 EnvPipelineStore.setShow(false);
-                this.props.form.resetFields();
+                form.resetFields();
                 this.setState({
                   submitting: false,
                 });
@@ -485,7 +486,7 @@ class Environment extends Component {
           });
           EnvPipelineStore.setShow(false);
         }
-        this.props.form.resetFields();
+        form.resetFields();
       });
     } else {
       const id = EnvPipelineStore.getEnvData.id;
@@ -768,13 +769,13 @@ class Environment extends Component {
       let status = null;
       if (!_.isNull(connect)) {
         text = connect ? "connect" : "disconnect";
-        status = connect ? "success" : "error";
+        status = connect ? "success" : "disconnect";
       }
       return (
         <Option key={id} value={id}>
           {!_.isNull(connect) ? (
             <Tooltip title={<FormattedMessage id={text} />}>
-              <span className={`env-status-${status}`} />
+              <span className={`c7ncd-status c7ncd-status-${status}`} />
             </Tooltip>
           ) : null}
           {name}

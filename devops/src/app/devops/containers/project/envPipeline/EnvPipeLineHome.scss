@@ -170,6 +170,7 @@
 
 .c7n-env-des-wrap {
   margin: 12px;
+
   .c7n-env-des {
     position: relative;
     height: 6em;
@@ -179,6 +180,7 @@
     width: 116px;
     word-break: break-all;
     white-space: normal;
+
     .c7n-env-des-head {
       color: rgba(0, 0, 0, .54);
     }
@@ -192,21 +194,24 @@
   font-size: 14px;
   height: 68px;
   width: 68px;
-  border: 6px solid #00bfa5;
+  border: 6px solid;
   border-radius: 50%;
-  color: #00bfa5;
-}
 
-.c7n-env-state-pending {
-  margin: 16px;
-  line-height: 60px;
-  text-align: center;
-  font-size: 14px;
-  height: 68px;
-  width: 68px;
-  border: 6px solid #f44336;
-  border-radius: 50%;
-  color: #f44336;
+  &-running {
+    color: #00bfa5;
+  }
+
+  &-failed {
+    color: #f44336;
+  }
+
+  &-disconnect {
+    color: #ff9915;
+  }
+
+  &-creating {
+    color: #4d90fe;
+  }
 }
 
 .c7n-env-state-ban {
