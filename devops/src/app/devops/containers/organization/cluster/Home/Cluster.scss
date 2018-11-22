@@ -1,5 +1,6 @@
 $suc: #00bfa5;
-$fal: #f44336;
+$fal: #ff9915;
+$FAL_ICON: #f86300;
 
 .c7n-cls-radio {
   margin: 20px 0 10px 0;
@@ -27,7 +28,7 @@ $fal: #f44336;
   .c7n-cls-card-head {
     display: flex;
     height: 24px;
-    background-color: rgba(244, 67, 54, 0.08);
+    background-color: rgba(255, 153, 21, .08);
 
     .c7n-cls-card-head-state {
       font-weight: 500;
@@ -109,11 +110,11 @@ $fal: #f44336;
         margin-right: 4px;
 
         &:hover {
-          background-color: rgba(244, 67, 54, 0.08);
+          background-color: rgba(248, 99, 0, 0.2);
         }
 
         i {
-          color: #d50000;
+          color: $FAL_ICON;
         }
       }
     }
@@ -138,7 +139,7 @@ $fal: #f44336;
   .c7n-cls-card-head-action {
     button {
       &:hover {
-        background-color: rgba(0, 191, 165, 0.08);
+        background-color: rgba(0, 140, 121, 0.2) !important;
       }
 
       i {

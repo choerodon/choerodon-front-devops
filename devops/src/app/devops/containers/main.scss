@@ -500,22 +500,22 @@ table {
     transform: scale(0.83333);
     white-space: nowrap;
   }
-}
 
-.c7n-domain-create-status_running {
-  background: #00bf96;
-}
+  &_running {
+    background: #00bf96;
+  }
 
-.c7n-domain-create-status_failed {
-  background: #f44336;
-}
+  &_failed {
+    background: #f44336;
+  }
 
-.c7n-domain-create-status_operating {
-  background: #4d90fe;
-}
+  &_operating {
+    background: #4d90fe;
+  }
 
-.c7n-domain-create-status_deleted {
-  background: rgba(0, 0, 0, 0.36);
+  &_deleted {
+    background: rgba(0, 0, 0, 0.36);
+  }
 }
 
 // 创建侧边栏中的卡片区域
