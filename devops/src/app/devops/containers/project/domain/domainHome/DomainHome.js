@@ -222,7 +222,7 @@ class DomainHome extends Component {
           'devops-service.devops-ingress.create',
           'devops-service.devops-ingress.checkDomain',
           'devops-service.devops-ingress.checkName',
-          'devops-service.devops-ingress.pageByOptions',
+          'devops-service.devops-ingress.listByEnv',
           'devops-service.devops-ingress.queryDomainId',
           'devops-service.devops-ingress.update',
           'devops-service.devops-ingress.delete',
@@ -268,7 +268,7 @@ class DomainHome extends Component {
               </Tooltip>
             </Permission>
             <Permission
-              service={['devops-service.devops-ingress.pageByOptions']}
+              service={['devops-service.devops-ingress.listByEnv']}
               type={type}
               projectId={projectId}
               organizationId={orgId}

@@ -238,7 +238,7 @@ class BuildTable extends Component {
           <Tooltip
             title={(stages[i].name === 'sonarqube' && stages[i].status === 'failed') ? `${stages[i].name} : ${stages[i].description}` : `${stages[i].name} : ${stages[i].status}`}
           >
-            {stages[i].stage === 'sonarqube' ? <i
+            {stages[i].name === 'sonarqube' ? <i
               className={`icon ${ICONS[stages[i].status || 'skipped'].icon || ''}
                 c7n-icon-${stages[i].status} c7n-icon-lg`}
             /> : <a

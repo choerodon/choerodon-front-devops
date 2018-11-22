@@ -311,7 +311,7 @@ class NetworkHome extends Component {
         service={[
           'devops-service.devops-service.create',
           'devops-service.devops-service.checkName',
-          'devops-service.devops-service.pageByOptions',
+          'devops-service.devops-service.listByEnv',
           'devops-service.devops-service.query',
           'devops-service.devops-service.update',
           'devops-service.devops-service.delete',
@@ -361,7 +361,7 @@ class NetworkHome extends Component {
               </Tooltip>
             </Permission>
             <Permission
-              service={['devops-service.devops-service.pageByOptions']}
+              service={['devops-service.devops-service.listByEnv']}
               type={type}
               projectId={projectId}
               organizationId={orgId}
