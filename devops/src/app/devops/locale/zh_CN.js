@@ -628,6 +628,10 @@ const zhCN = {
   "app.id": "标识",
   "app.name": "名称",
   "app.type": "应用类型",
+  "app.chooseType": "选择应用类型",
+  "app.type.normal": "普通应用",
+  "app.type.test": "测试应用",
+  'app.chooseType.tip': '测试应用是用于实现自动化测试的载体，不能将此类应用发布至应用市场，同时，也不能将此类应用部署到任何环境；仅支持在开发流水线对测试应用进行开发操作。而普通应用则支持正常的开发、部署与发布操作。  ',
   "app.url": "仓库地址",
   "app.active": "状态",
   "app.delete.tip": "这将会删除gitlab代码库，请确认是否删除？",
@@ -1145,7 +1149,7 @@ const zhCN = {
   "depPl.addPermission":
     "若需查看某个环境相关内容，请联系项目所有者进行权限添加。",
   "empty.owner.noApp": "当前项目下无应用，请创建应用。",
-  "empty.member.noApp": "当前项目下无应用，请联系项目所有者进行创建。",
+  "empty.member.noApp": "您当前暂无此项目下任何应用的权限，若需查看某个应用下相关内容，请联系项目所有者添加权限。",
   "depPl.more": "了解更多",
 
   // 集群
