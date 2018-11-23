@@ -116,7 +116,7 @@ class SelectAppStore {
     },
   ) => {
     this.changeLoading(true);
-    return axios.post(`/devops/v1/projects/${projectId}/apps/list_by_options?active=true&page=${page}&size=${size}&sort=${sort.field},${sort.order}&has_version=true`, JSON.stringify(postData))
+    return axios.post(`/devops/v1/projects/${projectId}/apps/list_by_options?active=true&page=${page}&size=${size}&sort=${sort.field},${sort.order}&has_version=true&type=normal`, JSON.stringify(postData))
       .then((data) => {
         const res = this.handleProptError(data);
         if (res) {

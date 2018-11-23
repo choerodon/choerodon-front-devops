@@ -100,6 +100,19 @@ class AppHome extends Component {
     const { type, id: projectId, organizationId: orgId } = AppState.currentMenuType;
     const { filters, sort: { columnKey, order } } = AppStore.getInfo;
     return [{
+      title: <FormattedMessage id="app.type" />,
+      dataIndex: 'type',
+      key: 'type',
+      // filters: [{
+      //   text: formatMessage({ id: 'app.type.normal' }),
+      //   value: 0,
+      // }, {
+      //   text: formatMessage({ id: 'app.type.test' }),
+      //   value: 1,
+      // }],
+      // filteredValue: filters.type || [],
+      render: text => (<FormattedMessage id={`app.type.${text}`} />),
+    },{
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
       key: 'name',
@@ -572,6 +585,31 @@ class AppHome extends Component {
 
     const formContent = (<React.Fragment>
       <Form layout="vertical" className="c7n-sidebar-form">
+        <div className="c7ncd-sidebar-select">
+          <FormItem
+            {...formItemLayout}
+          >
+            {getFieldDecorator('type', {
+              initialValue: 'normal',
+            })(<Select
+                key="service"
+                label={<FormattedMessage id="app.chooseType" />}
+                dropdownMatchSelectWidth
+                disabled={modeType !== 'create'}
+                size="default"
+              >
+                {
+                  ["normal", "test"].map(s => (
+                    <Option value={s} key={s}>
+                      <FormattedMessage id={`app.type.${s}`} />
+                    </Option>
+                  ))
+                }
+              </Select>
+            )}
+          </FormItem>
+          {getSelectTip('app.chooseType.tip')}
+        </div>
         {modeType === 'create' && <FormItem
           {...formItemLayout}
         >
