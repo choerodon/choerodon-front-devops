@@ -61,9 +61,9 @@ class CreateDomain extends Component {
           .checkName(this.state.projectId, value, envId)
           .then(data => {
             if (data) {
-              callback();
-            } else {
               callback(intl.formatMessage({ id: "domain.name.check.exist" }));
+            } else {
+              callback();
             }
           })
           .catch(() => callback());

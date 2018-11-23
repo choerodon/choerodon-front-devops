@@ -159,35 +159,44 @@ class Environment extends Component {
       createSelectedTemp: [],
       cluster: null,
     };
+    // this.timer = null;
   }
 
   componentDidMount() {
-    this.loadEnvs();
-    this.loadEnvGroups();
+    this.reload();
+    this.timer = setInterval(() => {
+      this.reload(false);
+    }, 1000 * 10);
   }
 
   componentWillUnmount() {
     const { EnvPipelineStore } = this.props;
     EnvPipelineStore.setEnvcardPosition([]);
     EnvPipelineStore.setDisEnvcardPosition([]);
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
   }
 
   /**
    * 刷新函数
    */
-  reload = () => {
-    this.loadEnvs();
+  reload = (fresh = true) => {
+    this.loadEnvs(fresh);
     this.loadEnvGroups();
   };
 
   /**
    * 加载环境数据
+   * @param fresh 是否刷新
+   * @memberof Environment
    */
-  loadEnvs = () => {
+  loadEnvs = fresh => {
     const { EnvPipelineStore } = this.props;
     const projectId = AppState.currentMenuType.id;
-    EnvPipelineStore.loadEnv(projectId, true);
-    EnvPipelineStore.loadEnv(projectId, false);
+    EnvPipelineStore.loadEnv(projectId, true, fresh);
+    EnvPipelineStore.loadEnv(projectId, false, fresh);
   };
 
   /**

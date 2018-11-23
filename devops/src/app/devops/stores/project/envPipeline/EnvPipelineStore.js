@@ -228,8 +228,8 @@ class EnvPipelineStore {
     return this.btnLoading;
   }
 
-  loadEnv = (projectId, active) => {
-    this.changeLoading(true);
+  loadEnv = (projectId, active, fresh = true) => {
+    fresh && this.changeLoading(true);
     return axios
       .get(`devops/v1/projects/${projectId}/envs/groups?active=${active}`)
       .then(data => {
@@ -245,7 +245,7 @@ class EnvPipelineStore {
         } else {
           this.setDisEnvcardPosition(data);
         }
-        this.changeLoading(false);
+        fresh && this.changeLoading(false);
       });
   };
 

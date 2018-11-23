@@ -1,6 +1,6 @@
 // zh_CN.js
 // 文档地址前缀
-const docServer = "http://v0-10.choerodon.io/zh/docs";
+const docServer = "http://v0-11.choerodon.io/zh/docs";
 // 界面标题描述统一管理
 const pageDetail = {
   // network
@@ -121,7 +121,8 @@ const pageDetail = {
   "app.create.description":
     "请在下面输入应用编码及名称，也可以选择某个应用模板，快速创建应用。平台会为您自动创建对应的git库以便管理该应用代码。同时，您可为所创应用分配特定的开发操作人员。",
   "app.edit.title": '对应用"{name}"进行修改',
-  "app.edit.description": "您可在此修改应用名称，同时也可对此应用的权限进行管理。",
+  "app.edit.description":
+    "您可在此修改应用名称，同时也可对此应用的权限进行管理。",
   "app.link": `${docServer}/user-guide/application-management/application/`,
   "app.create.link": `${docServer}/user-guide/application-management/application/`,
   "app.edit.link": `${docServer}/user-guide/application-management/application/`,
@@ -620,7 +621,8 @@ const zhCN = {
   // app
   "app.head": "应用",
   "app.authority": "应用权限分配",
-  "app.authority.help": "此操作用于为此应用配置特定的开发操作人员。一般默认选择为项目下所有成员，即该项目下的所有成员均能对此应用进行开发操作；若选择项目下特定成员，则只有被勾选的项目成员才有权限对此应用进行开发。",
+  "app.authority.help":
+    "此操作用于为此应用配置特定的开发操作人员。一般默认选择为项目下所有成员，即该项目下的所有成员均能对此应用进行开发操作；若选择项目下特定成员，则只有被勾选的项目成员才有权限对此应用进行开发。",
   "app.appDetail": "应用详情",
   "app.authority.label": "设置该应用的开发操作人员",
   "app.mbr.all": "项目下所有成员",
@@ -979,7 +981,8 @@ const zhCN = {
   "apptag.time": "提交时间",
   "apptag.tag": "标记",
   "apptag.name": "标记名称",
-  "apptag.name.tip": "标记名称建议使用x.x.x格式，其中x只能为非负整数；同时也支持标记名称的语义化，只需在原有格式后面加上-，便可在后面添加自定义内容。例如：x.x.x-alpha.1。",
+  "apptag.name.tip":
+    "标记名称建议使用x.x.x格式，其中x只能为非负整数；同时也支持标记名称的语义化，只需在原有格式后面加上-，便可在后面添加自定义内容。例如：x.x.x-alpha.1。",
   "apptag.ref": "标记来源",
   "apptag.checkName": "标记名称已存在",
   "apptag.branch": "分支",
