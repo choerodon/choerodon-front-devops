@@ -16,14 +16,17 @@ class InstancesStore {
 
   @observable mutiData = [];
 
-  @observable alertType = "";
-
   @observable value = null;
 
   @observable pageInfo = {
     current: 1,
     total: 0,
     pageSize: height <= 900 ? 10 : 15,
+  };
+
+  @observable istPage = {
+    pageSize: height <= 900 ? 10 : 15,
+    page: 0,
   };
 
   @observable appPageInfo = {};
@@ -88,6 +91,17 @@ class InstancesStore {
 
   @computed get getPageInfo() {
     return this.pageInfo;
+  }
+
+  @action setIstPage(page) {
+    if (page) {
+      this.istPage = page;
+    } else {
+      this.istPage = {
+        pageSize: height <= 900 ? 10 : 15,
+        page: 0,
+      };
+    }
   }
 
   @action setAppPageInfo(page) {
@@ -168,38 +182,27 @@ class InstancesStore {
     this.appPageSize = appPageSize;
   }
 
-  @action setAlertType(data) {
-    this.alertType = data;
-  }
-
   /**
    * 查询实例
+   * @param fresh 刷新图案显示
    * @param projectId
-   * @param info
+   * @param info { 环境id， 应用id }
    */
-  loadInstanceAll = (projectId, info = {}) => {
-    this.changeLoading(true);
-    const { page, size, datas } = info;
-    const normal = ["page", "size", "datas"];
-    // 除了normal中的字段必有，其他字段不确定
-    // 循环拼接url
+  loadInstanceAll = (fresh = true, projectId, info = {}) => {
+    this.changeLoading(fresh);
+    // 拼接url
     let search = "";
     _.forEach(info, (value, key) => {
-      if (value && !normal.includes(key)) {
+      if (value) {
         search = search.concat(`&${key}=${value}`);
       }
     });
-    let searchParam = {};
-    let param = "";
-    if (datas) {
-      param = String(datas.param);
-      searchParam = datas.searchParam;
-    }
+    const { param, filters } = this.istParams;
+    const { pageSize, page } = this.istPage;
     return axios
       .post(
-        `devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page ||
-          0}&size=${size || this.pageInfo.pageSize}${search}`,
-        JSON.stringify({ searchParam, param })
+        `devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page}&size=${pageSize}${search}`,
+        JSON.stringify({ searchParam: filters, param: String(param) })
       )
       .then(data => {
         const res = handleProptError(data);
@@ -230,6 +233,9 @@ class InstancesStore {
         const res = handleProptError(data);
         if (res) {
           this.setAppNameByEnv(data.content);
+          if (this.appId && !_.find(data.content, ["id", this.appId])) {
+            this.setAppId(null);
+          }
           const { number, size, totalElements } = data;
           const pageInfo = { number, size, totalElements };
           this.setAppPageInfo(pageInfo);
@@ -290,7 +296,9 @@ class InstancesStore {
 
   loadUpVersion = (projectId, verId) =>
     axios
-      .get(`devops/v1/projects/${projectId}/version/${verId}/upgrade_version`)
+      .get(
+        `devops/v1/projects/${projectId}/app_versions/version/${verId}/upgrade_version`
+      )
       .then(data => {
         if (data) {
           this.setVerValue(data);

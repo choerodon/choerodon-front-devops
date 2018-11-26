@@ -737,6 +737,9 @@ class AppOverview extends Component {
       default:
         actionItem = ["detail"];
     }
+    if (!connect) {
+      actionItem = ["detail", "delete"];
+    }
     const actionData = _.map(actionItem, item => ({
       projectId,
       type,
