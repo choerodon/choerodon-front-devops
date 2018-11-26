@@ -32,7 +32,7 @@ class DeploymentAppStore {
   }
 
   loadVersion(appId, projectId, flag = '') {
-    return axios.get(`/devops/v1/projects/${projectId}/apps/${appId}/version/list?is_publish=${flag}`)
+    return axios.get(`/devops/v1/projects/${projectId}/app_versions/list_by_app/${appId}?is_publish=${flag}`)
       .then((data) => {
         const res = handleProptError(data);
         if (res) {

@@ -68,7 +68,7 @@ class DevOpsAppDep extends Component {
     this.setState({
       loading: true,
     });
-    axios.get(`devops/v1/projects/${projectId}/deployVersions?app_id=${id}`)
+    axios.get(`devops/v1/projects/${projectId}/app_versions/app/${id}/deployVersions`)
       .then((ist) => {
         const istRes = handleProptError(ist);
         if (istRes) {
