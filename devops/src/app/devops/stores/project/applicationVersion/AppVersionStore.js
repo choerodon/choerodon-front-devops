@@ -92,8 +92,8 @@ class AppVersionStore {
   loadData = (proId, app, page, pageSize, sort, filter) => {
     this.changeLoading(true);
     const url = app
-      ? `/devops/v1/projects/${proId}/app_version/list_by_options?appId=${app}&page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${ORDER[sort.order]}`
-      : `/devops/v1/projects/${proId}/app_version/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${ORDER[sort.order]}`;
+      ? `/devops/v1/projects/${proId}/app_versions/list_by_options?appId=${app}&page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${ORDER[sort.order]}`
+      : `/devops/v1/projects/${proId}/app_versions/list_by_options?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${ORDER[sort.order]}`;
     axios.post(url, JSON.stringify(filter))
       .then((data) => {
         const res = handleProptError(data);

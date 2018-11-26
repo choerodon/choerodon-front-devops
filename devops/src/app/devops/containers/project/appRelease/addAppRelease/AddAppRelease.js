@@ -314,7 +314,7 @@ class AddAppRelease extends Component {
           {this.props.intl.formatMessage({ id: 'release.add.step.two.description' })}
         </p>
         <section className="deployAddApp-section">
-          <Permission service={['devops-service.application-version.pageByApp']}>
+          <Permission service={['devops-service.application-version.pageByOptions']}>
             <Button style={{ color: 'rgb(63, 81, 181)' }} funcType="raised" onClick={this.handleAddVersion}><i className="icon icon-add" />{this.props.intl.formatMessage({ id: 'release.add.step.two.btn.add' })}</Button>
           </Permission>
         </section>

@@ -161,7 +161,7 @@ class EditReleaseStore {
     }
     this.changeLoading(true);
     if (key === '1') {
-      return axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/version/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+      return axios.post(`/devops/v1/projects/${projectId}/app_versions/list_by_options?appId=${appId}&page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
         .then((data) => {
           const res = this.handleProptError(data);
           if (res) {
@@ -171,7 +171,7 @@ class EditReleaseStore {
           this.changeIsRefresh(false);
         });
     } else {
-      return axios.post(`/devops/v1/projects/${projectId}/apps/${appId}/version/list_by_options?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
+      return axios.post(`/devops/v1/projects/${projectId}/app_versions/list_by_options?appId=${appId}&page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
         .then((data) => {
           const res = this.handleProptError(data);
           if (res) {
