@@ -449,7 +449,7 @@ class BranchHome extends Component {
           'agile-service.work-log.queryWorkLogListByIssueId',
         ]}
       >
-        {apps && apps.length ? <Fragment><Header
+        {apps && apps.length && appId ? <Fragment><Header
           title={<FormattedMessage id="branch.head" />}
           backPath={backPath}
         >
@@ -465,14 +465,25 @@ class BranchHome extends Component {
             onChange={this.loadData}
           >
             <OptGroup label={formatMessage({ id: 'recent' })} key="recent">
-              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
-                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
-              </Option>)}
+              {
+                _.map(DevPipelineStore.getRecentApp, app => (
+                  <Option
+                    key={`recent-${app.id}`}
+                    value={app.id}
+                    disabled={!app.permission}
+                  >
+                    <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+                  </Option>))
+              }
             </OptGroup>
             <OptGroup label={formatMessage({ id: 'deploy.app' })} key="app">
               {
                 _.map(apps, (app, index) => (
-                  <Option value={app.id} key={index}>
+                  <Option
+                    value={app.id}
+                    key={index}
+                    disabled={!app.permission}
+                  >
                     <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
                   </Option>))
               }

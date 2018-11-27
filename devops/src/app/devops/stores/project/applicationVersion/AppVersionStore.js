@@ -1,5 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
+import _ from 'lodash';
 import { handleProptError } from '../../../utils';
 import DeploymentPipelineStore from "../deploymentPipeline";
 
@@ -80,8 +81,10 @@ class AppVersionStore {
       .then((data) => {
         const result = handleProptError(data);
         if (result) {
-          this.setAppDate(result);
-          if (!result.length) {
+          const appSort = _.concat(_.filter(result, ['permission', true]), _.filter(result, ['permission', false]));
+          const flag = _.filter(result, ['permission', true]);
+          this.setAppDate(appSort);
+          if (flag && flag.length === 0) {
             DeploymentPipelineStore.judgeRole('app');
           }
         }

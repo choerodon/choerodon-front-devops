@@ -682,7 +682,7 @@ class DevConsole extends Component {
           'devops-service.devops-git.getMergeRequestList',
         ]}
       >
-        {appData && appData.length ? <Fragment><Header title={<FormattedMessage id="devCs.head" />}>
+        {appData && appData.length && appId ? <Fragment><Header title={<FormattedMessage id="devCs.head" />}>
           <Select
             filter
             className="c7n-header-select"
@@ -695,14 +695,27 @@ class DevConsole extends Component {
             onChange={(value, option) => this.handleSelect(value, option)}
           >
             <OptGroup label={formatMessage({ id: 'recent' })} key="recent">
-              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id} title={app.name}>
-                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
-              </Option>)}
+              {
+                _.map(DevPipelineStore.getRecentApp, app => (
+                  <Option
+                    key={`recent-${app.id}`}
+                    value={app.id}
+                    title={app.name}
+                    disabled={!app.permission}
+                  >
+                    <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+                  </Option>))
+              }
             </OptGroup>
             <OptGroup label={formatMessage({ id: 'deploy.app' })} key="app">
               {
                 _.map(appData, (app, index) => (
-                  <Option value={app.id} key={index} title={app.name}>
+                  <Option
+                    value={app.id}
+                    key={index}
+                    title={app.name}
+                    disabled={!app.permission}
+                  >
                     <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
                   </Option>))
               }

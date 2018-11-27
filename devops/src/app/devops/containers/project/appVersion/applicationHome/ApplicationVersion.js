@@ -98,6 +98,7 @@ class ApplicationVersion extends Component {
     const { AppVersionStore, intl } = this.props;
     const versionData = AppVersionStore.getAllData;
     const appData = AppVersionStore.getAppData;
+    const flag = _.filter(appData, ['permission', true]);
     const { name } = AppState.currentMenuType;
     const {
       param,
@@ -146,7 +147,7 @@ class ApplicationVersion extends Component {
           'devops-service.application-version.pageByOptions',
         ]}
       >
-        {appData && appData.length ? <Fragment>
+        {flag && flag.length ? <Fragment>
           <Header title={<FormattedMessage id="app.version" />}>
             <Button
               onClick={this.handleRefresh}
@@ -165,7 +166,14 @@ class ApplicationVersion extends Component {
               onChange={this.handleAppSelect}
             >
               {
-                _.map(appData, app => <Option key={app.id} value={app.id}>{app.name}</Option>)
+                _.map(appData, app =>
+                  <Option
+                    key={app.id}
+                    value={app.id}
+                    disabled={!app.permission}
+                  >
+                    {app.name}
+                  </Option>)
               }
             </Select>
             <Table
@@ -174,7 +182,7 @@ class ApplicationVersion extends Component {
               pagination={AppVersionStore.pageInfo}
               columns={columns}
               filters={param || []}
-              dataSource={versionData}
+              dataSource={_.filter(versionData, ['permission', true]) || []}
               rowKey={record => record.id}
               onChange={this.tableChange}
             />

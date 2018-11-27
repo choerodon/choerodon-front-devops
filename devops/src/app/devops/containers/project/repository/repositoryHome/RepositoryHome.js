@@ -5,6 +5,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { Select, Icon, Button, Table, Tooltip } from 'choerodon-ui';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import _ from 'lodash';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper/index';
 import '../../../main.scss';
 import './RepositoryHome.scss';
@@ -150,6 +151,7 @@ class RepositoryHome extends Component {
     const { param, filters, sort: { columnKey, order } } = this.state;
     const { getRepoData, getPageInfo, loading } = RepositoryStore;
     const appData = DevPipelineStore.getAppData;
+    const flag = _.filter(appData, ['permission', true]);
     const columns = [{
       title: <FormattedMessage id="repository.repository" />,
       dataIndex: 'code',
@@ -192,7 +194,7 @@ class RepositoryHome extends Component {
           'devops-service.application.listCodeRepository',
         ]}
       >
-        {appData && appData.length ? <Fragment>
+        {flag && flag.length ? <Fragment>
           <Header title={<FormattedMessage id="repository.head" />}>
             <Button
               onClick={this.handleRefresh}
@@ -209,7 +211,7 @@ class RepositoryHome extends Component {
               pagination={getPageInfo}
               columns={columns}
               filters={param || []}
-              dataSource={getRepoData}
+              dataSource={_.filter(getRepoData, ['permission', true]) || []}
               rowKey={record => record.id}
             />
           </Content>

@@ -119,10 +119,12 @@ class DevPipelineStore {
     this.setPreProId(projectId);
     axios.get(`/devops/v1/projects/${projectId}/apps`)
       .then((data) => {
-        const result = handleProptError(data);
-        if (result) {
-          this.setAppData(result);
-          if (result.length) {
+        const res = handleProptError(data);
+        if (res) {
+          const appSort = _.concat(_.filter(res, ['permission', true]), _.filter(res, ['permission', false]));
+          const result = _.filter(appSort, ['permission', true]);
+          this.setAppData(appSort);
+          if (result && result.length) {
             if (apps) {
               this.setSelectApp(apps);
             } else if (this.selectedApp) {

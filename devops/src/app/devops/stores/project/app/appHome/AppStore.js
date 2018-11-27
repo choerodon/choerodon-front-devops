@@ -177,14 +177,14 @@ class AppStore {
       }
     });
 
-  loadDataById(projectId, id) {
-    return axios.get(`/devops/v1/projects/${projectId}/apps/${id}/detail`).then((data) => {
+  loadDataById = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/apps/${id}/detail`)
+    .then((data) => {
       const res = this.handleProptError(data);
       if (res) {
         this.setSingleData(data);
       }
+      return res;
     });
-  }
 
   checkCode =(projectId, code) => axios.get(`/devops/v1/projects/${projectId}/apps/check_code?code=${code}`);
 
