@@ -9,22 +9,12 @@ class DeployDetailStore {
 
   @observable value = '';
 
-  @observable stage = [];
-
   @observable istEvent = [];
 
   @observable resource = null;
 
   @action changeLogVisible(flag) {
     this.logVisible = flag;
-  }
-
-  @action setStage(deployData) {
-    this.stage = deployData;
-  }
-
-  @computed get getStage() {
-    return this.stage.slice();
   }
 
   @action setResource(deployData) {
@@ -62,23 +52,8 @@ class DeployDetailStore {
 
   @computed
   get getIstEvent() {
-    return this.istEvent;
+    return this.istEvent.slice();
   }
-
-  getStageData = (proId, instanceId) => {
-    this.changeLoading(true);
-    return axios.get(`/devops/v1/projects/${proId}/app_instances/${instanceId}/stages`)
-      .then((stage) => {
-        const res = this.handleProptError(stage);
-        if (res) {
-          this.setStage(stage);
-          this.changeLoading(false);
-          return res;
-        }
-        this.changeLoading(false);
-        return false;
-      });
-  };
 
   getInstanceValue = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/app_instances/${id}/value`)
     .then((stage) => {
@@ -108,11 +83,11 @@ class DeployDetailStore {
   loadAllData = (projectId, id) => {
     this.changeLoading(true);
     axios.all([this.getInstanceValue(projectId, id), this.getResourceData(projectId, id),
-      this.getStageData(projectId, id)])
-      .then(axios.spread((value, resource, stage) => {
-        if (!(value.failed && resource.failed && stage.failed)) {
+      this.loadIstEvent(projectId, id)])
+      .then(axios.spread((value, resource, event) => {
+        if (!(value.failed && resource.failed && event.failed)) {
           this.setResource(resource);
-          this.setStage(stage);
+          this.setIstEvent(event);
           this.setValue(value);
         }
         this.changeLoading(false);

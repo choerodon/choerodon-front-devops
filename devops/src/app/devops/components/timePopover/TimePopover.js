@@ -27,7 +27,16 @@ function TimePopover({ content, title, style }) {
           locale={Choerodon.getMessage('zh_CN', 'en')}
         />
       </Tooltip>
-    </div>) : null}
+    </div>) : <div style={style}>
+      <Tooltip
+        title={formatDate(content)}
+      >
+        <TimeAgo
+          datetime={content}
+          locale={Choerodon.getMessage('zh_CN', 'en')}
+        />
+      </Tooltip>
+    </div>}
   </React.Fragment>);
 }
 

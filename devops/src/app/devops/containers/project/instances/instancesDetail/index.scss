@@ -148,12 +148,36 @@
   .CodeMirror-selected {
     background-color: rgba(255, 255, 255, .25) !important;
   }
+
+  .CodeMirror {
+    height: 100%;
+    min-height: 500px;
+  }
 }
 
 .c7n-deployDetail-ist-step {
   .ant-steps-icon {
     left: 6px;
     top: -3px;
+  }
+
+  .ant-progress-inner {
+    left: -2px;
+    top: -2px;
+  }
+
+  .ant-steps-item-content {
+    .icon-find_in_page {
+      display: none;
+    }
+
+    &:hover {
+      .icon-find_in_page {
+        display: inline-block;
+        font-size: 18px;
+        color: #000;
+      }
+    }
   }
 
   .ant-steps-item-title {
@@ -214,4 +238,98 @@
 .c7n-event-hidden {
   height: 54px;
   overflow: hidden;
+}
+
+.c7n-deployDetail-versions-wrap {
+  margin: 4px 0 12px 0;
+  display: flex;
+  align-items: center;
+
+  span {
+    line-height: 20px;
+    margin-right: 20px;
+  }
+
+  .c7n-event-deploy-info {
+    cursor: pointer;
+    margin-left: auto;
+    font-weight: 500;
+    color: #3f51b5;
+    display: flex;
+    align-items: center;
+
+    i {
+      font-size: 18px;
+      margin-right: 2px;
+    }
+  }
+}
+
+.c7n-event-ist-card {
+  cursor: pointer;
+  width: 174px;
+  height: 32px;
+  background: #f8f8f8;
+  border-radius: 2px;
+  color: #000;
+  line-height: 20px;
+  padding: 0 12px;
+  display: flex;
+  margin-right: 14px;
+  align-items: center;
+
+  i {
+    font-size: 18px;
+    margin-right: 6px;
+  }
+}
+
+.c7n-ist-checked {
+  color: white !important;
+  background-color: #3f51b5 !important;
+
+  i {
+    color: white !important;
+  }
+}
+
+.c7n-event-ist-popover {
+  tr {
+    display: flex;
+    margin-bottom: 10px;
+
+    td {
+      line-height: 20px;
+      display: inline-flex;
+      align-items: center;
+
+      i {
+        font-size: 18px;
+        margin-right: 5px;
+      }
+    }
+  }
+
+  tr:last-child {
+    margin-bottom: 0;
+  }
+
+  img {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+
+  .c7n-event-avatar {
+    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+    line-height: 18px;
+    border-radius: 50%;
+    font-size: 12px;
+    text-align: center;
+    background-color: rgba(63, 81, 181, .44);
+    color: rgba(63, 81, 181, 1);
+  }
 }

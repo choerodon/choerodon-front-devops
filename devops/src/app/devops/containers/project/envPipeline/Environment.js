@@ -31,7 +31,6 @@ import LoadingBar from "../../../components/loadingBar/index";
 import EnvGroup from "./EnvGroup";
 import "../../main.scss";
 import "./EnvPipeLineHome.scss";
-import EnvPipelineStore from "../../../stores/project/envPipeline";
 import { getSelectTip } from "../../../utils";
 
 /**
@@ -246,7 +245,6 @@ class Environment extends Component {
     });
     EnvPipelineStore.setShow(false);
     EnvPipelineStore.setEnvData(null);
-    EnvPipelineStore.setSelectedRk([]);
     resetFields();
   };
 
