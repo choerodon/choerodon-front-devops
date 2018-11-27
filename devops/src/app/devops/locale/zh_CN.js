@@ -643,6 +643,7 @@ const zhCN = {
   "app.mbr.part": "项目下特定成员",
   "app.id": "标识",
   "app.name": "名称",
+  "app.checkName": "应用名称不能包含空格",
   "app.type": "应用类型",
   "app.chooseType": "选择应用类型",
   "app.type.normal": "普通应用",

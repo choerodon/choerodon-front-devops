@@ -424,7 +424,7 @@ class MergeRequestHome extends Component {
           'devops-service.devops-git.getUrl',
         ]}
       >
-        {appData && appData.length ? <Fragment><Header
+        {appData && appData.length && appId ? <Fragment><Header
           title={<FormattedMessage id="merge.head" />}
           backPath={backPath}
         >
@@ -440,14 +440,25 @@ class MergeRequestHome extends Component {
             onChange={this.handleChange.bind(this)}
           >
             <OptGroup label={intl.formatMessage({ id: 'recent' })} key="recent">
-              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
-                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
-              </Option>)}
+              {
+                _.map(DevPipelineStore.getRecentApp, app => (
+                  <Option
+                    key={`recent-${app.id}`}
+                    value={app.id}
+                    disabled={!app.permission}
+                  >
+                    <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+                  </Option>))
+              }
             </OptGroup>
             <OptGroup label={intl.formatMessage({ id: 'deploy.app' })} key="app">
               {
                 _.map(appData, (app, index) => (
-                  <Option value={app.id} key={index}>
+                  <Option
+                    value={app.id}
+                    key={index}
+                    disabled={!app.permission}
+                  >
                     <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
                   </Option>))
               }

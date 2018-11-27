@@ -90,8 +90,6 @@ class AppHome extends Component {
   }
 
   componentDidMount() {
-    const { projectId } = AppState.currentMenuType;
-    AppVersionStore.queryAppData(projectId);
     this.loadAllData(this.state.page);
   }
 
@@ -103,14 +101,14 @@ class AppHome extends Component {
       title: <FormattedMessage id="app.type" />,
       dataIndex: 'type',
       key: 'type',
-      // filters: [{
-      //   text: formatMessage({ id: 'app.type.normal' }),
-      //   value: 0,
-      // }, {
-      //   text: formatMessage({ id: 'app.type.test' }),
-      //   value: 1,
-      // }],
-      // filteredValue: filters.type || [],
+      filters: [{
+        text: formatMessage({ id: 'app.type.normal' }),
+        value: 0,
+      }, {
+        text: formatMessage({ id: 'app.type.test' }),
+        value: 1,
+      }],
+      filteredValue: filters.type || [],
       render: text => (<FormattedMessage id={`app.type.${text}`} />),
     },{
       title: <FormattedMessage id="app.name" />,
@@ -298,12 +296,17 @@ class AppHome extends Component {
    * @param callback
    */
   checkName = (rule, value, callback) => {
-    const { AppStore } = this.props;
+    const { AppStore, intl } = this.props;
     const singleData = AppStore.singleData;
-    if ((singleData && value !== singleData.name) || !singleData) {
-      this.postName(this.state.projectId, value, callback);
+    const pa = /^\S+$/;
+    if (value && pa.test(value)) {
+      if ((singleData && value !== singleData.name) || !singleData) {
+        this.postName(this.state.projectId, value, callback);
+      } else {
+        callback();
+      }
     } else {
-      callback();
+      callback(intl.formatMessage({ id: 'app.checkName' }));
     }
   };
 
@@ -322,8 +325,8 @@ class AppHome extends Component {
         if (!err) {
           const postData = data;
           postData.projectId = projectId;
-          postData.skipCheckProjectPermission = checked;
-          postData.projects = createSelectedRowKeys;
+          postData.isSkipCheckPermission = checked;
+          postData.userIds = createSelectedRowKeys;
           this.setState({
             submitting: true,
           });
@@ -352,7 +355,7 @@ class AppHome extends Component {
         if (!err) {
           const formData = data;
           const userIds = _.map(tagKeys, t => t.iamUserId);
-          formData.skipCheckProjectPermission = checked;
+          formData.isSkipCheckPermission = checked;
           formData.id = id;
           formData.userIds = userIds;
           this.setState({
@@ -413,7 +416,7 @@ class AppHome extends Component {
           if (data && data.failed) {
             Choerodon.prompt(data.message);
           } else {
-            this.setState({ checked: data.skipCheckProjectPermission });
+            this.setState({ checked: data.permission });
           }
         });
       AppStore.loadTagKeys(projectId, id);
@@ -532,8 +535,6 @@ class AppHome extends Component {
       form: { getFieldDecorator },
     } = this.props;
     const { type: modeType, show, submitting, openRemove, name: appName, id, checked, createSelectedRowKeys, createSelected } = this.state;
-    const { app } = DeploymentPipelineStore.getProRole;
-    const appData = AppVersionStore.getAppData;
 
     const rowCreateSelection = {
       selectedRowKeys: createSelectedRowKeys,
@@ -656,7 +657,7 @@ class AppHome extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('applictionTemplateId', {
+            {getFieldDecorator('applicationTemplateId', {
               rules: [{
                 message: formatMessage({ id: 'required' }),
                 transform: (value) => {
@@ -754,7 +755,7 @@ class AppHome extends Component {
           'devops-service.application.queryByAppId',
         ]}
       >
-        {isRefresh ? <LoadingBar display /> : ((appData && appData.length) || app === 'owner' ? <Fragment>
+        {isRefresh ? <LoadingBar display /> : <Fragment>
           <Header title={<FormattedMessage id="app.head" />}>
             <Permission
               service={['devops-service.application.create']}
@@ -802,7 +803,7 @@ class AppHome extends Component {
               filters={paras.slice()}
             />
           </Content>
-        </Fragment> : <DepPipelineEmpty title={<FormattedMessage id="app.head" />} type="app" />)}
+        </Fragment>}
         <Modal
           confirmLoading={submitting}
           visible={openRemove}

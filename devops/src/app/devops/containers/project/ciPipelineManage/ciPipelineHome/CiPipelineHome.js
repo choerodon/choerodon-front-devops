@@ -426,7 +426,7 @@ class CiPipelineHome extends Component {
           'devops-service.devops-gitlab-pipeline.pagePipeline',
         ]}
       >
-        {appData && appData.length ? <Fragment><Header title={<FormattedMessage id="ciPipeline.head" />}>
+        {appData && appData.length && appId ? <Fragment><Header title={<FormattedMessage id="ciPipeline.head" />}>
           <Select
             filter
             className="c7n-header-select"
@@ -439,14 +439,25 @@ class CiPipelineHome extends Component {
             onChange={this.handleChange.bind(this)}
           >
             <OptGroup label={formatMessage({ id: 'recent' })} key="recent">
-              {_.map(DevPipelineStore.getRecentApp, app => <Option key={`recent-${app.id}`} value={app.id}>
-                <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
-              </Option>)}
+              {
+                _.map(DevPipelineStore.getRecentApp, app => (
+                  <Option
+                    key={`recent-${app.id}`}
+                    value={app.id}
+                    disabled={!app.permission}
+                  >
+                    <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
+                  </Option>))
+              }
             </OptGroup>
             <OptGroup label={formatMessage({ id: 'deploy.app' })} key="app">
               {
                 _.map(appData, (app, index) => (
-                  <Option value={app.id} key={index}>
+                  <Option
+                    value={app.id}
+                    key={index}
+                    disabled={!app.permission}
+                  >
                     <Tooltip title={app.code}><span className="c7n-ib-width_100">{app.name}</span></Tooltip>
                   </Option>))
               }
