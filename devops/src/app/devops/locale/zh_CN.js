@@ -305,6 +305,16 @@ const pageDetail = {
   "cluster.edit.description":
     "您可在此修改集群的名称、描述以及集群的公开范围。",
   "cluster.edit.link": `${docServer}/user-guide/cluster-management/cluster/`,
+
+  // 日志右侧弹窗
+  "log.title": '查看"{sidebarName}"的日志',
+  "log.description": '您可在此查看该job的日志进行错误定位和状态监控。',
+  "log.link": `${docServer}/user-guide/deployment-pipeline/application-deployment/`,
+
+  // 部署详情右侧弹窗
+  "deployInfo.title": '查看实例"{sidebarName}"的部署配置信息',
+  "deployInfo.description": '您可在此查看该实例详细的配置信息。',
+  "deployInfo.link": `${docServer}/user-guide/deployment-pipeline/application-deployment/`,
 };
 
 const zhCN = {
@@ -444,6 +454,10 @@ const zhCN = {
   "ist.deploy.failed": "部署失败",
   "ist.deploy.upload": "部署中",
   "ist.deploy.delete": "处理中",
+  "ist.deploy.result": "部署结果",
+  "ist.deploy.mbr": "操作人员",
+  "ist.log": "查看日志详情",
+  "ist.deployInfo": "查看部署配置信息",
 
   // network
   network_delete: "网络删除中，请耐心等待",

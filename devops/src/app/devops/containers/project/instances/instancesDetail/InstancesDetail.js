@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
-import { Button, Steps, Tabs, Tooltip, Icon } from 'choerodon-ui';
+import { Button, Steps, Tabs, Tooltip, Icon, Popover, Modal, Progress } from 'choerodon-ui';
 import { Content, Header, Page, stores } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -16,6 +16,7 @@ import '../../container/containerHome/ContainerHome.scss';
 
 const Step = Steps.Step;
 const TabPane = Tabs.TabPane;
+const Sidebar = Modal.Sidebar;
 
 const { AppState } = stores;
 
@@ -24,6 +25,32 @@ require('codemirror/mode/yaml/yaml');
 require('codemirror/mode/textile/textile');
 require('codemirror/theme/base16-light.css');
 require('codemirror/theme/base16-dark.css');
+
+const ICONS_TYPE = {
+  fail: {
+    icon: 'cancel',
+    color: '#f44336',
+    mes: 'failed',
+  },
+  running: {
+    icon: 'timelapse',
+    color: '#4d90fe',
+    mes: 'operating',
+  },
+  pod_running: {
+    color: '#3f51b5',
+  },
+  success: {
+    icon: 'check_circle',
+    color: '#00bfa5',
+    mes: 'success',
+  },
+  '': {
+    icon: 'check-circle',
+    color: '#00bfa5',
+    mes: 'success',
+  },
+};
 
 @observer
 class InstancesDetail extends Component {
@@ -34,105 +61,26 @@ class InstancesDetail extends Component {
       status: props.match.params.status,
       overview: props.location.search.indexOf('overview') > 0,
       expand: false,
+      visible: false,
       eName: '',
+      time: '',
+      sideType: 'log',
+      podEvent: [],
       more: -1,
-      current: 1,
+      log: null,
+      current: false,
     };
   }
 
   componentDidMount() {
-    this.loadInitData();
+    this.loadAllData();
   }
-
-  /**
-   * 获取pipe的icon
-   * @param status 数据状态
-   * @param index 遍历的索引
-   */
-  getIcon =(status, index) => {
-    const { current } = this.state;
-    let icon = (current === index) ? 'album' : 'cancle_a';
-    let iconStyle = 'stage-icon';
-    const indexArr = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];// icon的类名设计
-    switch (status) {
-      case 'Created':
-        icon = (current === index) ? `icon-wait_${indexArr[index]}_b` : `icon-wait_${indexArr[index]}_a`;
-        break;
-      case 'success':
-        icon = (current === index) ? 'check_circle' : 'finished';
-        iconStyle = 'stage-icon icon-success';
-        break;
-      case 'Failed':
-        icon = (current === index) ? 'icon-cancel' : 'icon-highlight_off';
-        break;
-      case 'Running':
-        icon = (current === index) ? 'watch_later' : 'schedule';
-        break;
-      case 'Skipped':
-        icon = (current === index) ? 'icon-skipped_b ' : 'icon-skipped_a';
-        break;
-      default:
-        icon = (current === index) ? 'error' : 'error_outline';
-        iconStyle = 'stage-icon icon-error';
-    }
-    return <Icon type={icon} className={iconStyle} />;
-  };
-
-  /**
-   * 拼接返回的时间
-   * @param time
-   * @returns {*}
-   */
-
-  getTime =(time) => {
-    const { intl } = this.props;
-    let times;
-    if (time && time.length) {
-      if (time[3]) {
-        times = `${time[3]}${intl.formatMessage({ id: 'ist.sec' })}`;
-      } else if (time[2]) {
-        times = `${time[2]}${intl.formatMessage({ id: 'ist.min' })}${time[3]}${intl.formatMessage({ id: 'ist.sec' })}`;
-      } else if (time[1]) {
-        times = `${time[1]}${intl.formatMessage({ id: 'ist.hour' })}${time[2]}${intl.formatMessage({ id: 'ist.min' })}${time[3]}${intl.formatMessage({ id: 'ist.sec' })}`;
-      } else if (time[0]) {
-        times = `${time[0]}${intl.formatMessage({ id: 'ist.day' })}${time[1]}${intl.formatMessage({ id: 'ist.hour' })}${time[2]}${intl.formatMessage({ id: 'ist.min' })}${time[3]}${intl.formatMessage({ id: 'ist.sec' })}`;
-      }
-    }
-    return times;
-  };
-
-  loadInitData = () => {
-    const { DeployDetailStore } = this.props;
-    const { id } = this.state;
-    const projectId = AppState.currentMenuType.id;
-    DeployDetailStore.getInstanceValue(projectId, id);
-    DeployDetailStore.getResourceData(projectId, id);
-    DeployDetailStore.getStageData(projectId, id).then((data) => {
-      if (!data || (data && !data.length)) {
-        this.setState({ expand: true });
-      }
-    });
-    DeployDetailStore.loadIstEvent(projectId, id);
-  };
 
   loadAllData =() => {
     const { DeployDetailStore } = this.props;
     const { id } = this.state;
     const projectId = AppState.currentMenuType.id;
     DeployDetailStore.loadAllData(projectId, id);
-  };
-
-  changeStage =(index) => {
-    const { DeployDetailStore, intl } = this.props;
-    const data = DeployDetailStore.getStage;
-    const editor = this.editorLog.getCodeMirror();
-    editor.setValue(data[index].log || intl.formatMessage({ id: 'ist.nolog' }));
-    this.setState({ current: index + 1, log: data[index].log || intl.formatMessage({ id: 'ist.nolog' }) });
-  };
-
-  changeStatus =() => {
-    const { expand } = this.state;
-    this.setState({ expand: !expand });
   };
 
   handleClose =() => {
@@ -148,6 +96,102 @@ class InstancesDetail extends Component {
     }
   };
 
+  loadEvent = (e) => {
+    this.setState({ time: e.createTime, podEvent: e.podEventDTO });
+  };
+
+  handleCancelFun = () => {
+    this.setState({
+      visible: false,
+    })
+  };
+
+  /**
+   * 根据type显示右侧框标题
+   * @returns {*}
+   */
+  showTitle = (sideType) => {
+    if (sideType === 'log') {
+      return <FormattedMessage id="ist.log" />;
+    } else if (sideType === 'deployInfo') {
+      return <FormattedMessage id="ist.deployInfo" />;
+    }
+  };
+
+  /**
+   * 弹出侧边栏
+   * @param sideType
+   * @param name
+   * @param log
+   */
+  showSideBar = (sideType, name, log) => {
+    const { intl } = this.props;
+    if (sideType === 'log') {
+      this.setState({ visible: true, sidebarName: name, log }, () => {
+        if (this.editorLog) {
+          const editor = this.editorLog.getCodeMirror();
+          editor.setValue(log || intl.formatMessage({ id: 'ist.nolog' }));
+        }
+      });
+    } else if (sideType === 'deployInfo') {
+      this.setState({ sidebarName: `${name.split('-')[0]}-${name.split('-')[1]}` });
+    }
+    this.setState({ sideType, visible: true });
+  };
+
+  istTimeDom = () => {
+    const { DeployDetailStore } = this.props;
+    const event = DeployDetailStore.getIstEvent;
+    let istDom = [];
+    let time = event[0].createTime;
+    if (this.state.time !== '') {
+      time = this.state.time;
+    }
+    _.map(event, e => {
+      const content = <table className="c7n-event-ist-popover">
+        <tbody>
+          <tr>
+            <td>
+              <FormattedMessage id="ist.deploy.result" />：&nbsp;
+            </td>
+            <td>
+              <Icon style={{ color: ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].color : '#00bfa5' }} type={ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].icon : 'check-circle'} />
+              <FormattedMessage id={ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].mes : ''} />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <FormattedMessage id="report.deploy-duration.time" />：&nbsp;
+            </td>
+            <td>
+              {e.createTime}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <FormattedMessage id="ist.deploy.mbr" />：&nbsp;
+            </td>
+            <td>
+              {e.userImage ? <img src={e.userImage} alt={e.realName} /> : <span className="c7n-event-avatar">{e.realName ? e.realName.slice(0, 1) : '无'}</span>}
+              {e.loginName}&nbsp;{e.realName}
+            </td>
+          </tr>
+        </tbody>
+      </table>;
+      istDom.push(<Popover content={content} placement="bottomRight">
+        <div className={`c7n-event-ist-card ${e.createTime === time ? 'c7n-ist-checked' : ''}`} onClick={this.loadEvent.bind(this, e)}>
+          <Icon style={{ color: ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].color : '#00bfa5' }} type={ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].icon : 'check-circle'} />
+          {e.createTime}
+        </div>
+      </Popover>);
+    });
+    return istDom;
+  };
+
+  currentChange = (key) => {
+    this.setState({ current: key });
+  };
+
   render() {
     const { name: projectName, organizationId, id: projectId, type } = AppState.currentMenuType;
     const {
@@ -155,7 +199,7 @@ class InstancesDetail extends Component {
       intl,
       history: { location: { state } },
     } = this.props;
-    const { expand, log, overview, current, more, eName } = this.state;
+    const { expand, log, overview, more, eName, sideType, visible, sidebarName, podEvent, current } = this.state;
     const valueStyle = classnames({
       'c7n-deployDetail-show': expand,
       'c7n-deployDetail-hidden': !expand,
@@ -175,40 +219,23 @@ class InstancesDetail extends Component {
       ingressDTO = resource.ingressDTOS;
     }
 
-    const stageData = DeployDetailStore.getStage || [];
-    const logger = (stageData.length && stageData[0].log) ? stageData[0].log : intl.formatMessage({ id: 'ist.nolog' });
-    const logValues = log || logger;
-
-    const dom = [];
-    if (stageData.length) {
-      stageData.map((step, index) => {
-        const title = (<div>
-          <div className={`${index}-stage-title stage-title-text ${(index + 1) !== current ? 'stage-title-text-grey' : ''}`}>{step.stageName}</div>
-          {step.stageTime && <span className={`${index}-stage-title stage-title-text c7n-stage-time ${(index + 1) !== current ? 'stage-title-text-grey' : ''}`}>{intl.formatMessage({ id: 'ist.time' })}:{this.getTime(step.stageTime)}</span>}
-        </div>);
-        dom.push(<Step
-          key={step.weight}
-          icon={step.status ? <Tooltip trigger="hover" placement="top" title={step.status}>
-            {this.getIcon(step.status, index + 1)}
-          </Tooltip> : <span>{this.getIcon(step.status, index + 1)}</span>}
-          onClick={this.changeStage.bind(this, index)}
-          title={title}
-        />);
-        return dom;
-      });
-    }
-
-    const istEventDom = _.map(event, e => <Step
+    const istEventDom = event.length ? _.map(podEvent.length ? podEvent : event[0].podEventDTO, e => <Step
       key={e.name}
-      title={e.name}
+      title={<React.Fragment>
+        {e.name} &nbsp;&nbsp;
+        {e.log ? <Tooltip title={intl.formatMessage({ id: 'ist.log' })} placement="bottom">
+          <Icon onClick={this.showSideBar.bind(this, 'log', e.name, e.log)} type="find_in_page" />
+        </Tooltip> : null}
+      </React.Fragment> }
       description={<React.Fragment>
         <pre className={`${more > 0 && eName === e.name ? '' : 'c7n-event-hidden'}`}>{e.event}</pre>
         {e.event.split('\n').length > 4 && <a onClick={this.showMore.bind(this, more, e.name)}>
           {more > 0 && eName === e.name ? intl.formatMessage({ id: 'shrink' }) : intl.formatMessage({ id: 'expand' })}
         </a>}
       </React.Fragment>}
-      icon={<Icon type="wait_circle" />}
-    />);
+      icon={e.jobPodStatus === 'running' ? <Progress strokeWidth={10} width={10} type="loading" /> : <Icon style={{ color: ICONS_TYPE[`pod_${e.jobPodStatus}`] ? ICONS_TYPE[`pod_${e.jobPodStatus}`].color : '#3f51b5' }} type="wait_circle" />}
+    />) : null;
+
     const options = {
       theme: 'neat',
       mode: 'yaml',
@@ -221,6 +248,21 @@ class InstancesDetail extends Component {
       readOnly: true,
       lineNumbers: true,
     };
+
+    const currentKey =  current || (this.state.status === 'running' ? '1' : '2');
+
+    const sidebarContent = sideType === 'deployInfo' ? <div className={valueStyle}>
+      {DeployDetailStore.getValue && <Ace
+        options={options}
+        ref={(instance) => { this.codeEditor = instance; }}
+        value={DeployDetailStore.getValue.yaml}
+      />}
+    </div> : <CodeMirror
+      className="c7n-deployDetail-pre1"
+      value={log}
+      options={logOptions}
+      ref={(editor) => { this.editorLog = editor; }}
+    />;
 
     return (
       <Page
@@ -243,7 +285,8 @@ class InstancesDetail extends Component {
         <Content code="ist.detail" values={{ name: state ? state.appName : projectName }} className="page-content">
           {DeployDetailStore.isLoading ? <LoadingBar display /> : <Tabs
             className="c7n-deployDetail-tab"
-            defaultActiveKey={this.state.status === 'running' ? '1' : '2'}
+            onChange={this.currentChange}
+            activeKey={currentKey}
           >
             {this.state.status === 'running' && <TabPane tab={intl.formatMessage({ id: 'ist.runDetial' })} key="1">
               <div className="c7n-deployDetail-card c7n-deployDetail-card-content ">
@@ -376,6 +419,14 @@ class InstancesDetail extends Component {
               </div>
             </TabPane> }
             <TabPane tab={intl.formatMessage({ id: 'deploy.ist.event' })} key="2">
+              <div className="c7n-deployDetail-versions-wrap">
+                <FormattedMessage id="report.deploy-duration.time" />
+                {this.istTimeDom()}
+                <div className="c7n-event-deploy-info" onClick={this.showSideBar.bind(this, 'deployInfo', event[0].podEventDTO[0].name)}>
+                  <Icon type="find_in_page"/>
+                  {intl.formatMessage({ id: 'deploy.detail' })}
+                </div>
+              </div>
               {event.length ? <div className="c7n-deployDetail-card c7n-deployDetail-card-content ">
                 <Steps direction="vertical" size="small" className="c7n-deployDetail-ist-step">
                   {istEventDom}
@@ -387,41 +438,22 @@ class InstancesDetail extends Component {
                   </div>
                 </div>}
             </TabPane>
-            <TabPane tab={intl.formatMessage({ id: 'deploy.detail' })} key="3">
-              <div className="c7n-deployDetail-card c7n-deployDetail-card-content ">
-                <div className="c7n-space-first c7n-h2-inline c7n-deployDetail-title">{intl.formatMessage({ id: 'deploy.info' })}</div>
-                <div role="none" className="c7n-deployDetail-expand" onClick={this.changeStatus}>
-                  <Button shape="circle">
-                    {this.state.expand
-                      ? <i className="icon icon-expand_more" />
-                      : <i className="icon icon-expand_less" />
-                    }
-                  </Button>
-                </div>
-                <div className={valueStyle}>
-                  {DeployDetailStore.getValue && this.state.expand
-                  && <Ace
-                    options={options}
-                    ref={(instance) => { this.codeEditor = instance; }}
-                    value={DeployDetailStore.getValue.yaml}
-                  />}
-                </div>
-              </div>
-              {stageData.length >= 1 && <div className="c7n-deployDetail-card-content">
-                <h2 className="c7n-space-first c7n-deployDetail-title">{intl.formatMessage({ id: 'deploy.stage' })}</h2>
-                <Steps current={this.state.current} className="c7n-deployDetail-steps">
-                  {dom}
-                </Steps>
-                <CodeMirror
-                  className="c7n-deployDetail-pre1"
-                  value={logValues}
-                  options={logOptions}
-                  ref={(editor) => { this.editorLog = editor; }}
-                />
-              </div>
-              }
-            </TabPane>
           </Tabs>}
+          <Sidebar
+            title={this.showTitle(sideType)}
+            visible={visible}
+            onOk={this.handleCancelFun.bind(this)}
+            okText={<FormattedMessage id="close" />}
+            okCancel={false}
+          >
+            <Content
+              code={sideType}
+              values={{ sidebarName }}
+              className="sidebar-content"
+            >
+              {sidebarContent}
+            </Content>
+          </Sidebar>
         </Content>
       </Page>);
   }
