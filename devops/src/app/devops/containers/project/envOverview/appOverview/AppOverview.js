@@ -151,7 +151,7 @@ class AppOverview extends Component {
    * 查看部署详情
    */
   linkDeployDetail = record => {
-    const { id, status, appName } = record;
+    const { id, status, code } = record;
     const { history } = this.props;
     const {
       id: projectId,
@@ -164,7 +164,7 @@ class AppOverview extends Component {
       search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(
         projectName
       )}&organizationId=${organizationId}&overview`,
-      state: { appName },
+      state: { code },
     });
   };
 

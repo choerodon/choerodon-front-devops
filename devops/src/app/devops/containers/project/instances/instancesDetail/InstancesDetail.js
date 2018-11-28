@@ -27,7 +27,7 @@ require('codemirror/theme/base16-light.css');
 require('codemirror/theme/base16-dark.css');
 
 const ICONS_TYPE = {
-  fail: {
+  failed: {
     icon: 'cancel',
     color: '#f44336',
     mes: 'failed',
@@ -39,6 +39,12 @@ const ICONS_TYPE = {
   },
   pod_running: {
     color: '#3f51b5',
+  },
+  pod_fail: {
+    color: '#f44336',
+  },
+  pod_success: {
+    color: '#00bfa5',
   },
   success: {
     icon: 'check_circle',
@@ -125,7 +131,10 @@ class InstancesDetail extends Component {
    * @param log
    */
   showSideBar = (sideType, name, log) => {
-    const { intl } = this.props;
+    const {
+      intl,
+      history: { location: { state } },
+    } = this.props;
     if (sideType === 'log') {
       this.setState({ visible: true, sidebarName: name, log }, () => {
         if (this.editorLog) {
@@ -134,7 +143,7 @@ class InstancesDetail extends Component {
         }
       });
     } else if (sideType === 'deployInfo') {
-      this.setState({ sidebarName: `${name.split('-')[0]}-${name.split('-')[1]}` });
+      this.setState({ sidebarName: state ? state.code : `${name.split('-')[0]}-${name.split('-')[1]}` });
     }
     this.setState({ sideType, visible: true });
   };
@@ -156,7 +165,7 @@ class InstancesDetail extends Component {
             </td>
             <td>
               <Icon style={{ color: ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].color : '#00bfa5' }} type={ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].icon : 'check-circle'} />
-              <FormattedMessage id={ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].mes : ''} />
+              <FormattedMessage id={ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].mes : 'success'} />
             </td>
           </tr>
           <tr>
@@ -178,7 +187,7 @@ class InstancesDetail extends Component {
           </tr>
         </tbody>
       </table>;
-      istDom.push(<Popover content={content} placement="bottomRight">
+      istDom.push(<Popover content={content} key={e.createTime} placement="bottomRight">
         <div className={`c7n-event-ist-card ${e.createTime === time ? 'c7n-ist-checked' : ''}`} onClick={this.loadEvent.bind(this, e)}>
           <Icon style={{ color: ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].color : '#00bfa5' }} type={ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].icon : 'check-circle'} />
           {e.createTime}
@@ -268,7 +277,7 @@ class InstancesDetail extends Component {
       <Page
         className="c7n-region c7n-deployDetail-wrapper"
         service={[
-          'devops-service.application-instance.listStages',
+          'devops-service.application-instance.listEvents',
           'devops-service.application-instance.queryValues',
           'devops-service.application-instance.listResources',
         ]}
@@ -282,7 +291,7 @@ class InstancesDetail extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content code="ist.detail" values={{ name: state ? state.appName : projectName }} className="page-content">
+        <Content code="ist.detail" values={{ name: state ? state.code : projectName }} className="page-content">
           {DeployDetailStore.isLoading ? <LoadingBar display /> : <Tabs
             className="c7n-deployDetail-tab"
             onChange={this.currentChange}
