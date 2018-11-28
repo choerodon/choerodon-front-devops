@@ -182,7 +182,7 @@ class ApplicationVersion extends Component {
               pagination={AppVersionStore.pageInfo}
               columns={columns}
               filters={param || []}
-              dataSource={_.filter(versionData, ['permission', true]) || []}
+              dataSource={versionData}
               rowKey={record => record.id}
               onChange={this.tableChange}
             />

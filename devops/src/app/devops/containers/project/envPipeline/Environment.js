@@ -634,7 +634,6 @@ class Environment extends Component {
         s.push(_.filter(a, ["iamUserId", o])[0]);
       }
     });
-    EnvPipelineStore.setSelectedRk(keys);
     EnvPipelineStore.setTagKeys(s);
   };
 
