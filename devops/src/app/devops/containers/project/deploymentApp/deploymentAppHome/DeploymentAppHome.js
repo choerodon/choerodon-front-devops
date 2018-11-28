@@ -687,10 +687,10 @@ class DeploymentAppHome extends Component {
       callback(intl.formatMessage({ id: "network.name.check.failed" }));
     } else if (value && pattern.test(value)) {
       DeploymentAppStore.checkIstName(id, value).then(data => {
-        if (data) {
-          callback();
-        } else {
+        if (data && data.failed) {
           callback(intl.formatMessage({ id: "network.name.check.exist" }));
+        } else {
+          callback();
         }
       });
     } else {

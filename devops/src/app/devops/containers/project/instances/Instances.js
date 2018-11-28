@@ -99,7 +99,7 @@ class Instances extends Component {
    * 查看部署详情
    */
   linkDeployDetail = record => {
-    const { id, status, appName } = record;
+    const { id, status, code } = record;
     const { InstancesStore } = this.props;
     InstancesStore.setIsCache(true);
     const { history } = this.props;
@@ -114,7 +114,7 @@ class Instances extends Component {
       search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(
         projectName
       )}&organizationId=${organizationId}`,
-      state: { appName },
+      state: { code },
     });
   };
 
@@ -129,7 +129,7 @@ class Instances extends Component {
     EnvOverviewStore.setTpEnvId(id);
     InstancesStore.setAppId(false);
     loadAppNameByEnv(projectId, id, getAppPage - 1, getAppPageSize);
-    this.reloadData(true, true, id);
+    this.reloadData(true, true);
   };
 
   /**

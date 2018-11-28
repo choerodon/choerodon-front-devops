@@ -153,7 +153,7 @@ const pageDetail = {
   "ist.edit.description": "对实例配置信息进行修改后重新部署。",
   "ist.upgrade.title": '对"{name}"进行修改',
   "ist.upgrade.description": "选择新版本，并对实例配置信息进行修改后升级实例。",
-  "ist.detail.title": '查看应用"{name}"的实例详情',
+  "ist.detail.title": '查看实例"{name}"的详情',
   "ist.detail.description":
     "您可在此查看该实例的运行详情及部署详情。运行详情包括各资源对象的基本信息；部署详情包括配置信息及部署阶段及日志。",
   "ist.link": `${docServer}/user-guide/deployment-pipeline/instance/`,
