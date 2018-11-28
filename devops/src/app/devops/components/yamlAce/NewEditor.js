@@ -21,7 +21,6 @@ class NewEditor extends Component {
     errorLines: PropTypes.array,
     highlightMarkers: PropTypes.array,
     isFileError: PropTypes.bool,
-    // highlightMarkers: PropTypes.array,
   };
   static defaultProps = {
     options: {
@@ -30,8 +29,6 @@ class NewEditor extends Component {
       readOnly: false,
       lineNumbers: true,
       lineWrapping: true,
-      // foldGutter: true,
-      // gutters:["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
     },
   };
   constructor(props) {

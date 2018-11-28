@@ -229,7 +229,7 @@ class InstancesDetail extends Component {
       </React.Fragment> }
       description={<React.Fragment>
         <pre className={`${more > 0 && eName === e.name ? '' : 'c7n-event-hidden'}`}>{e.event}</pre>
-        {e.event.split('\n').length > 4 && <a onClick={this.showMore.bind(this, more, e.name)}>
+        {e.event && e.event.split('\n').length > 4 && <a onClick={this.showMore.bind(this, more, e.name)}>
           {more > 0 && eName === e.name ? intl.formatMessage({ id: 'shrink' }) : intl.formatMessage({ id: 'expand' })}
         </a>}
       </React.Fragment>}

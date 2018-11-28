@@ -107,4 +107,11 @@
   width: 38px !important;
 }
 
-.CodeMirror-selected { background-color: #b3d7fd !important; }
+.CodeMirror-selected {
+  background-color: #b3d7fd !important;
+}
+
+.CodeMirror {
+  font-size: 15px;
+  height: unset !important;
+}

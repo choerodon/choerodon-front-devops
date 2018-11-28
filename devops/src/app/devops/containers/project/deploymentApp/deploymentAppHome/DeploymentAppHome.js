@@ -558,6 +558,13 @@ class DeploymentAppHome extends Component {
     const envs = EnvOverviewStore.getEnvcard;
     const envId = EnvOverviewStore.getTpEnvId;
     const env = _.filter(envs, { connect: true, id: envId });
+    const codeOptions = {
+      theme: "neat",
+      mode: "text/x-yaml",
+      readOnly: false,
+      lineNumbers: true,
+      lineWrapping: false,
+    };
     const data = this.state.yaml || DeploymentAppStore.value;
     return (
       <div className="deployApp-env">
@@ -596,7 +603,7 @@ class DeploymentAppHome extends Component {
                 {v.connect ? (
                   <span className="c7ncd-status c7ncd-status-success" />
                 ) : (
-                    <span className="c7ncd-status c7ncd-status-disconnect" />
+                  <span className="c7ncd-status c7ncd-status-disconnect" />
                 )}
                 {v.name}
               </Option>
@@ -616,6 +623,7 @@ class DeploymentAppHome extends Component {
           </div>
           {data && (
             <AceForYaml
+              options={codeOptions}
               newLines={data.newLines}
               isFileError={!!data.errorLines}
               totalLine={data.totalLine}
@@ -1066,7 +1074,7 @@ class DeploymentAppHome extends Component {
                         {e.connect ? (
                           <span className="c7ncd-status c7ncd-status-success" />
                         ) : (
-                            <span className="c7ncd-status c7ncd-status-disconnect" />
+                          <span className="c7ncd-status c7ncd-status-disconnect" />
                         )}
                         {e.name}
                       </span>
