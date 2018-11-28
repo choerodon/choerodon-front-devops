@@ -68,7 +68,6 @@ class InstancesDetail extends Component {
       overview: props.location.search.indexOf('overview') > 0,
       expand: false,
       visible: false,
-      eName: '',
       time: '',
       sideType: 'log',
       podEvent: [],
