@@ -68,11 +68,10 @@ class InstancesDetail extends Component {
       overview: props.location.search.indexOf('overview') > 0,
       expand: false,
       visible: false,
-      eName: '',
       time: '',
       sideType: 'log',
       podEvent: [],
-      more: -1,
+      activeKey: [],
       log: null,
       current: false,
     };
@@ -94,12 +93,25 @@ class InstancesDetail extends Component {
     DeployDetailStore.changeLogVisible(false);
   };
 
-  showMore = (more, eName) => {
-    if (eName === this.state.eName) {
-      this.setState({ more: more * -1, eName });
-    } else {
-      this.setState({ more: 1, eName });
+  showMore = (eName) => {
+    let time = this.state.time;
+    if (this.state.time === '') {
+      const { DeployDetailStore } = this.props;
+      const event = DeployDetailStore.getIstEvent;
+      time = event[0].createTime;
+      this.setState({ time });
     }
+    let activeKey = this.state.activeKey;
+    activeKey = [...activeKey];
+    const index = activeKey.indexOf(`${time}-${eName}`);
+    const isActive = index > -1;
+    if (isActive) {
+      // remove active state
+      activeKey.splice(index, 1);
+    } else {
+      activeKey.push(`${time}-${eName}`);
+    }
+    this.setState({ activeKey });
   };
 
   loadEvent = (e) => {
@@ -208,7 +220,7 @@ class InstancesDetail extends Component {
       intl,
       history: { location: { state } },
     } = this.props;
-    const { expand, log, overview, more, eName, sideType, visible, sidebarName, podEvent, current } = this.state;
+    const { expand, log, overview, activeKey, sideType, visible, sidebarName, podEvent, current, time } = this.state;
     const valueStyle = classnames({
       'c7n-deployDetail-show': expand,
       'c7n-deployDetail-hidden': !expand,
@@ -237,12 +249,12 @@ class InstancesDetail extends Component {
         </Tooltip> : null}
       </React.Fragment> }
       description={<React.Fragment>
-        <pre className={`${more > 0 && eName === e.name ? '' : 'c7n-event-hidden'}`}>{e.event}</pre>
-        {e.event && e.event.split('\n').length > 4 && <a onClick={this.showMore.bind(this, more, e.name)}>
-          {more > 0 && eName === e.name ? intl.formatMessage({ id: 'shrink' }) : intl.formatMessage({ id: 'expand' })}
+        <pre className={`${activeKey.indexOf(`${time}-${e.name}`) > -1 ? '' : 'c7n-event-hidden'}`}>{e.event}</pre>
+        {e.event && e.event.split('\n').length > 4 && <a onClick={this.showMore.bind(this, e.name)}>
+          {activeKey.indexOf(`${time}-${e.name}`) > -1 ? intl.formatMessage({ id: 'shrink' }) : intl.formatMessage({ id: 'expand' })}
         </a>}
       </React.Fragment>}
-      icon={e.jobPodStatus === 'running' ? <Progress strokeWidth={10} width={10} type="loading" /> : <Icon style={{ color: ICONS_TYPE[`pod_${e.jobPodStatus}`] ? ICONS_TYPE[`pod_${e.jobPodStatus}`].color : '#3f51b5' }} type="wait_circle" />}
+      icon={e.jobPodStatus === 'running' ? <Progress strokeWidth={10} width={13} type="loading" /> : <Icon style={{ color: ICONS_TYPE[`pod_${e.jobPodStatus}`] ? ICONS_TYPE[`pod_${e.jobPodStatus}`].color : '#3f51b5' }} type="wait_circle" />}
     />) : null;
 
     const options = {
