@@ -100,7 +100,7 @@ class AppTagHome extends Component {
   openRemove = (e, tag) => {
     e.stopPropagation();
     this.setState({ visible: true, tag });
-  }
+  };
 
   /**
    * 关闭删除确认框

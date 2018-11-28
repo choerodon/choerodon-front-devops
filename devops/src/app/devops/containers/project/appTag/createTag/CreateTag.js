@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, stores } from 'choerodon-front-boot';
@@ -34,7 +34,7 @@ class CreateTag extends Component {
     const { store, intl: { formatMessage } } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     const pa = /^\d+(\.\d+){2}$/;
-    const SemanticVersion = /^\d+(\.\d+){2}-([a-zA-Z0-9]|\.)+$/;
+    const SemanticVersion = /^\d+(\.\d+){2}-([a-zA-Z0-9]|\.)+[^.]$/;
     if (value && (pa.test(value) || SemanticVersion.test(value))) {
       store.checkTagName(projectId, value)
         .then((data) => {

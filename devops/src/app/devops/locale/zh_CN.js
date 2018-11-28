@@ -24,11 +24,11 @@ const pageDetail = {
   "env.link": `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
   "env.create.title": '在项目"{name}"中创建环境',
   "env.create.description":
-    "请在下面输入环境编码、名称、描述，来创建新环境，同时您还需要为此环境配置特定的操作人员，配置后，只有被勾选的项目成员才有权限在该环境下进行部署操作。新环境会默认新增在环境流水线的最后一个节点。",
+    "请在下面选择集群，输入环境编码、名称、描述，来创建新环境；同时您还需要为此环境配置特定的操作人员，配置后，只有被勾选的项目成员才有权限在该环境下进行部署操作。新环境会默认新增在环境流水线的最后一个节点。",
   "env.create.link": `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
   "env.edit.title": '对环境"{name}"进行修改',
   "env.edit.description":
-    "您可在此修改环境名称及描述，也可以复制指令至Kubernetes运行，与平台建立连接。",
+    "您可在此修改环境名称、描述以及分组。",
   "env.edit.link": `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
   "env.token.title": '复制环境"{name}"的指令',
   "env.token.description": "复制下文代码至Kubernetes运行，与平台建立链接。",

@@ -211,7 +211,7 @@ class RepositoryHome extends Component {
               pagination={getPageInfo}
               columns={columns}
               filters={param || []}
-              dataSource={_.filter(getRepoData, ['permission', true]) || []}
+              dataSource={getRepoData}
               rowKey={record => record.id}
             />
           </Content>
