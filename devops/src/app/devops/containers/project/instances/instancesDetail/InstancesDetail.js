@@ -32,7 +32,7 @@ const ICONS_TYPE = {
     color: '#f44336',
     mes: 'failed',
   },
-  running: {
+  operating: {
     icon: 'timelapse',
     color: '#4d90fe',
     mes: 'operating',
