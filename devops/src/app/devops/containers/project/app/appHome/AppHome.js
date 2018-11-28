@@ -109,7 +109,8 @@ class AppHome extends Component {
         value: 1,
       }],
       filteredValue: filters.type || [],
-      render: text => (<FormattedMessage id={`app.type.${text}`} />),
+      render: text =>
+        text ? <FormattedMessage id={`app.type.${text}`} /> : "",
     },{
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'name',
@@ -175,11 +176,11 @@ class AppHome extends Component {
                   <FormattedMessage id="app.start" />}</Fragment>}</div>}>
                 {record.active && record.synchro
                   ? <Button
-                      icon="mode_edit"
-                      shape="circle"
-                      size="small"
-                      onClick={this.showSideBar.bind(this, 'edit', record.id)}
-                    /> : <Icon type="mode_edit" className="c7n-app-icon-disabled" />}
+                    icon="mode_edit"
+                    shape="circle"
+                    size="small"
+                    onClick={this.showSideBar.bind(this, 'edit', record.id)}
+                  /> : <Icon type="mode_edit" className="c7n-app-icon-disabled" />}
               </Tooltip>
             </Permission>
               <Permission type={type} projectId={projectId} organizationId={orgId} service={['devops-service.application.queryByAppIdAndActive']}>
@@ -347,7 +348,7 @@ class AppHome extends Component {
                   createSelected: [],
                 });
               }
-          });
+            });
         }
       });
     } else if (type === 'edit') {
@@ -718,27 +719,27 @@ class AppHome extends Component {
         </RadioGroup>
       </div>
       {checked ? null : <div>
-          <div className="c7n-sidebar-form">
-            <Table
-              className="c7n-env-noTotal"
-              rowSelection={modeType === 'create' ? rowCreateSelection : rowSelection}
-              columns={columns}
-              dataSource={getMbr}
-              filterBarPlaceholder={formatMessage({ id: "filter" })}
-              pagination={getMbrPageInfo}
-              loading={tableLoading}
-              onChange={this.mbrTableChange}
-              rowKey={record => record.iamUserId}
-              filters={mbrParas.slice()}
-            />
-          </div>
-          <div className="c7n-env-tag-title">
-            <FormattedMessage id="cluster.authority.project" />
-          </div>
-          <div className="c7n-env-tag-wrap">
-            {modeType === 'create' ? tagCreateDom : tagDom}
-          </div>
-        </div>}
+        <div className="c7n-sidebar-form">
+          <Table
+            className="c7n-env-noTotal"
+            rowSelection={modeType === 'create' ? rowCreateSelection : rowSelection}
+            columns={columns}
+            dataSource={getMbr}
+            filterBarPlaceholder={formatMessage({ id: "filter" })}
+            pagination={getMbrPageInfo}
+            loading={tableLoading}
+            onChange={this.mbrTableChange}
+            rowKey={record => record.iamUserId}
+            filters={mbrParas.slice()}
+          />
+        </div>
+        <div className="c7n-env-tag-title">
+          <FormattedMessage id="cluster.authority.project" />
+        </div>
+        <div className="c7n-env-tag-wrap">
+          {modeType === 'create' ? tagCreateDom : tagDom}
+        </div>
+      </div>}
     </React.Fragment>);
 
     return (
