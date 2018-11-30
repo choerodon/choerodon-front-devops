@@ -116,9 +116,10 @@ class Environment extends Component {
       intl: { formatMessage },
     } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    const { cluster } = this.state;
+    const { cluster: clusterId } = this.state;
     const envData = EnvPipelineStore.getEnvData;
     const flag = envData ? value !== envData.name : value;
+    const cluster = envData ? envData.clusterId : clusterId;
     if (cluster && flag) {
       EnvPipelineStore.checkEnvName(projectId, cluster, value).then(error => {
         if (error && error.failed) {
