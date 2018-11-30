@@ -10,9 +10,6 @@ import LoadingBar from '../../../../components/loadingBar';
 import './AppHome.scss';
 import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
-import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
-import DeploymentPipelineStore from '../../../../stores/project/deploymentPipeline';
-import AppVersionStore from '../../../../stores/project/applicationVersion';
 import { getSelectTip } from '../../../../utils';
 import '../../envPipeline/EnvPipeLineHome.scss';
 
@@ -535,7 +532,7 @@ class AppHome extends Component {
       intl: { formatMessage },
       form: { getFieldDecorator },
     } = this.props;
-    const { type: modeType, show, submitting, openRemove, name: appName, id, checked, createSelectedRowKeys, createSelected } = this.state;
+    const { type: modeType, show, submitting, openRemove, name: delName, id, checked, createSelectedRowKeys, createSelected } = this.state;
 
     const rowCreateSelection = {
       selectedRowKeys: createSelectedRowKeys,
@@ -789,7 +786,7 @@ class AppHome extends Component {
               onCancel={this.hideSidebar}
               className="c7n-create-sidebar-tooltip"
             >
-              <Content code={`app.${modeType}`} values={{ name }} className="sidebar-content">
+              <Content code={`app.${modeType}`} values={{ name: singleData ? singleData.name : name }} className="sidebar-content">
                 {formContent}
               </Content>
             </Sidebar>}
@@ -808,7 +805,7 @@ class AppHome extends Component {
         <Modal
           confirmLoading={submitting}
           visible={openRemove}
-          title={`${formatMessage({ id: 'app.delete' })}“${appName}”`}
+          title={`${formatMessage({ id: 'app.delete' })}“${delName}”`}
           closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove} disabled={submitting}>{<FormattedMessage
