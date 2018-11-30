@@ -154,7 +154,6 @@ class Cluster extends Component {
         s.push(_.filter(a, ['id', o])[0])
       }
     });
-    ClusterStore.setSelectedRk(keys);
     ClusterStore.setTagKeys(s);
   };
 
@@ -634,7 +633,6 @@ class Cluster extends Component {
                 });
                 Choerodon.prompt(res.message);
               } else {
-                ClusterStore.setSelectedRk([]);
                 ClusterStore.setTagKeys([]);
                 this.loadCluster();
                 this.setState({ show: false, submitting: false });
@@ -655,7 +653,6 @@ class Cluster extends Component {
     }
     this.setState({ checked: true, show: false, createSelectedRowKeys: [], createSelected: [] });
     ClusterStore.setClsData(null);
-    ClusterStore.setSelectedRk([]);
     ClusterStore.setInfo({
       filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
     });

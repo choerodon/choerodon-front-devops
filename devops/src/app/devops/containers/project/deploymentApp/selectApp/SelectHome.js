@@ -37,6 +37,7 @@ class DeployAppHome extends Component {
   componentWillUnmount() {
     SelectAppStore.setAllData([]);
     SelectAppStore.setStoreData([]);
+    this.clearInputValue();
   }
 
   /**
