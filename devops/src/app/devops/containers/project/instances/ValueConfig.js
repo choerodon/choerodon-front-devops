@@ -198,6 +198,7 @@ class ValueConfig extends Component {
                 className="ant-modal-btn-cancel"
                 key="back"
                 onClick={this.onClose.bind(this, false)}
+                disabled={loading}
               >
                 {intl.formatMessage({ id: "cancel" })}
               </Button>
