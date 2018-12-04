@@ -22,19 +22,19 @@ class DevOpsBuild extends Component {
     this.state = {
       appId: null,
       loading: true,
-      noSelect: false,
+      noSelect: true,
     };
   }
 
   componentDidMount() {
     const { id } = AppState.currentMenuType;
     ReportsStore.loadAllApps(id).then((data) => {
-      if (data && data.length) {
-        this.setState({ appId: data[0].id });
+      const appData = data && data.length ? _.filter(data, ['permission', true]) : [];
+      if (appData.length) {
+        this.setState({ appId: appData[0].id, noSelect: false });
         this.loadCharts();
-      } else {
-        this.setState({ noSelect: true, loading: false });
       }
+      this.setState({ loading: false });
     });
   }
 
@@ -51,10 +51,7 @@ class DevOpsBuild extends Component {
     const { appId } = this.state;
     const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
     const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
-    ReportsStore.loadBuildNumber(projectId, appId, startTime, endTime)
-      .then(() => {
-        this.setState({ loading: false });
-      });
+    ReportsStore.loadBuildNumber(projectId, appId, startTime, endTime);
   };
 
   handleChange = (id) => {

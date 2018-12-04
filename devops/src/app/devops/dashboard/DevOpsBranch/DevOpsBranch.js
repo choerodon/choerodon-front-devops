@@ -30,9 +30,10 @@ class DevOpsBranch extends Component {
   componentDidMount() {
     const { id } = AppState.currentMenuType;
     ReportsStore.loadAllApps(id).then((data) => {
-      if (data && data.length) {
-        DevPipelineStore.setRecentApp(data[0].id);
-        this.setState({ appId: data[0].id });
+      const appData = data && data.length ? _.filter(data, ['permission', true]) : [];
+      if (appData.length) {
+        DevPipelineStore.setRecentApp(appData[0].id);
+        this.setState({ appId: appData[0].id });
         this.loadData();
       } else {
         this.setState({ loading: false, noSelect: true });
