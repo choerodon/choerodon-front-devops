@@ -77,14 +77,15 @@ class DevOpsCommit extends Component {
       start={moment().subtract(7, 'days')}
       end={moment()}
     />);
-  }
+  };
 
   loadCommits = () => {
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ loading: true });
     ReportsStore.loadAllApps(projectId).then((data) => {
-      if (data && data.length) {
-        const selectApp = _.map(data, item => item.id);
+      const appData = data && data.length ? _.filter(data, ['permission', true]) : [];
+      if (appData.length) {
+        const selectApp = _.map(appData, item => item.id);
         this.setState({ appId: selectApp });
         ReportsStore.loadCommits(projectId, START, END, selectApp);
       }

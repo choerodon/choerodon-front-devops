@@ -31,7 +31,7 @@ import LoadingBar from "../../../components/loadingBar/index";
 import EnvGroup from "./EnvGroup";
 import "../../main.scss";
 import "./EnvPipeLineHome.scss";
-import { getSelectTip } from "../../../utils";
+import { getSelectTip, scrollTo } from "../../../utils";
 
 /**
  * 分页查询单页size
@@ -152,7 +152,6 @@ class Environment extends Component {
       delEnv: null,
       disEnv: null,
       delGroup: null,
-      moveRight: 300,
       createSelectedRowKeys: [],
       createSelected: [],
       selected: [],
@@ -575,18 +574,14 @@ class Environment extends Component {
    * 点击右滑动
    */
   pushScrollRight = () => {
-    const { moveRight } = this.state;
-    scrollLeft -= 300;
-    if (scrollLeft < 0) {
+    scrollLeft = scrollTo(document.getElementsByClassName(
+      "c7n-inner-container-ban"
+    )[0], -300);
+    if (scrollLeft < 300) {
       scrollLeft = 0;
     }
     this.setState({
       moveBan: false,
-      moveRight: moveRight - 300,
-    });
-    document.getElementsByClassName("c7n-inner-container-ban")[0].scroll({
-      left: scrollLeft,
-      behavior: "smooth",
     });
   };
 
@@ -597,24 +592,21 @@ class Environment extends Component {
     const domPosition = document.getElementsByClassName(
       "c7n-inner-container-ban"
     )[0].scrollLeft;
+    const { EnvPipelineStore } = this.props;
+    const { getDisEnvcardPosition: disEnvCard } = EnvPipelineStore;
+    const DisEnvLength  = disEnvCard.length ? disEnvCard[0].devopsEnviromentRepDTOs.length : 0;
+    const flag = DisEnvLength * 265 - window.innerWidth + 297 <= domPosition + 300;
     this.setState({
-      moveRight: domPosition,
+      moveBan: flag,
     });
-    if (this.state.moveRight === domPosition) {
-      this.setState({
-        moveBan: true,
-      });
-      scrollLeft = domPosition;
+    const res = scrollTo(document.getElementsByClassName(
+      "c7n-inner-container-ban"
+    )[0], 300);
+    if ( res === 0 ) {
+      scrollLeft = 300;
     } else {
-      this.setState({
-        moveBan: false,
-      });
+      scrollLeft = res;
     }
-    document.getElementsByClassName("c7n-inner-container-ban")[0].scroll({
-      left: scrollLeft + 300,
-      behavior: "smooth",
-    });
-    scrollLeft += 300;
   };
 
   /**
@@ -876,14 +868,15 @@ class Environment extends Component {
         />
       ) : null;
 
+    const DisEnvLength  = disEnvCard.length ? disEnvCard[0].devopsEnviromentRepDTOs.length : 0;
     const rightStyle = classNames({
       "c7n-push-right-ban icon icon-navigate_next":
         (window.innerWidth >= 1680 &&
           window.innerWidth < 1920 &&
-          disEnvCard.length >= 5) ||
-        (window.innerWidth >= 1920 && disEnvCard.length >= 6) ||
-        (window.innerWidth < 1680 && disEnvCard.length >= 4),
-      "c7n-push-none": disEnvCard.length <= 4,
+          DisEnvLength >= 5) ||
+        (window.innerWidth >= 1920 && DisEnvLength >= 6) ||
+        (window.innerWidth < 1680 && DisEnvLength >= 4),
+      "c7n-push-none": DisEnvLength <= 4,
     });
 
     const rightDom = moveBan ? null : (

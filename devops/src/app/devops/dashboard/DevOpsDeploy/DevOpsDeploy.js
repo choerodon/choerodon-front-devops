@@ -46,7 +46,8 @@ class DevOpsDeploy extends Component {
     axios.all([loadApp(), loadEnv()])
       .then(axios.spread((app, env) => {
         const appRes = handleProptError(app);
-        const envRes = handleProptError(env);
+        const envData = handleProptError(env);
+        const envRes = envData && envData.length ? _.filter(envData, ['permission', true]) : [];
         if (appRes.length && envRes.length) {
           this.setState({
             app: appRes,

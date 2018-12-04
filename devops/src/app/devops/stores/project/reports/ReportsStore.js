@@ -1,6 +1,7 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import moment from 'moment';
+import _ from 'lodash';
 import { handleProptError } from '../../../utils';
 
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
@@ -41,7 +42,7 @@ class ReportsStore {
 
   @observable BuildDuration = {};
 
-  @observable echartsLoading = true;
+  @observable echartsLoading = false;
 
   @observable commits = {};
 
@@ -254,12 +255,12 @@ class ReportsStore {
   });
 
   handleAppsDate = (data) => {
-    if (data) {
-      this.setAllApps(data);
-      if (!data.length) {
-        this.setEchartsLoading(false);
-        this.changeLoading(false);
-      }
+    const apps = data ? _.filter(data, ['permission', true]) : [];
+    if (apps.length) {
+      this.setAllApps(apps);
+    } else {
+      this.setEchartsLoading(false);
+      this.changeLoading(false);
     }
     this.changeIsRefresh(false);
   };

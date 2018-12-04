@@ -100,7 +100,8 @@ class DeployTimes extends Component {
       historyEnvsId = state.envIds;
     }
     ContainerStore.loadActiveEnv(projectId)
-      .then((env) => {
+      .then((data) => {
+        const env = data && data.length ? _.filter(data, ['permission', true]) : [];
         if (env.length) {
           let selectEnv = this.envIds.length ? this.envIds : [env[0].id];
           if (historyEnvsId) {

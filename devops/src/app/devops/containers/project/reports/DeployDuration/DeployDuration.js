@@ -110,7 +110,8 @@ class DeployDuration extends Component {
     const { ReportsStore } = this.props;
     const projectId = AppState.currentMenuType.id;
     ContainerStore.loadActiveEnv(projectId)
-      .then((env) => {
+      .then((data) => {
+        const env = data && data.length ? _.filter(data, ['permission', true]) : [];
         if (env.length) {
           this.env = env;
           this.envId = this.envId || env[0].id;

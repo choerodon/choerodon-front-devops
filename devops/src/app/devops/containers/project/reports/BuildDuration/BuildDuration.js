@@ -53,8 +53,9 @@ class BuildDuration extends Component {
     const { ReportsStore } = this.props;
     const { id } = AppState.currentMenuType;
     ReportsStore.loadAllApps(id).then((data) => {
-      if (data && data.length) {
-        ReportsStore.setAppId(data[0].id);
+      const appData = data && data.length ? _.filter(data, ['permission', true]) : [];
+      if (appData.length) {
+        ReportsStore.setAppId(appData[0].id);
         this.loadCharts();
       }
     });

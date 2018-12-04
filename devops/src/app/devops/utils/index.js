@@ -67,6 +67,7 @@ export function scrollTo(element, change, duration = 0.5) {
     }
   }
   animateScroll();
+  return element.scrollLeft;
 }
 
 /**

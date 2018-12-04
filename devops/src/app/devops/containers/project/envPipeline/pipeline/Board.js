@@ -30,7 +30,6 @@ class Board extends Component {
     super(props);
     this.state = {
       move: false,
-      moveRight: 300,
     };
   }
 
@@ -51,36 +50,28 @@ class Board extends Component {
   };
 
   pushScrollRight = (Title) => {
-    const { moveRight } = this.state;
-    scrollLeft[Title] -= 300;
-    if (scrollLeft[Title] < 0) {
+    scrollLeft[Title] = scrollTo(document.getElementById(Title), -300);
+    if (scrollLeft[Title] < 300) {
       scrollLeft[Title] = 0;
     }
     this.setState({
       move: false,
-      moveRight: moveRight - 300,
     });
-    scrollTo(document.getElementById(Title), -300);
   };
 
   pushScrollLeft = (Title) => {
     const domPosition = document.getElementById(Title).scrollLeft;
     const { envcardPositionChild } = this.props;
+    const flag = envcardPositionChild.length * 310 - window.innerWidth + 297 <= domPosition + 300;
     this.setState({
-      moveRight: domPosition,
+      move: flag,
     });
-    if (envcardPositionChild.length * 310 - window.innerWidth + 297 <= domPosition + 300) {
-      this.setState({
-        move: true,
-      });
-      scrollLeft[Title] = domPosition;
+    const res = scrollTo(document.getElementById(Title), 300);
+    if ( res === 0 ) {
+      scrollLeft[Title] = 300;
     } else {
-      this.setState({
-        move: false,
-      });
+      scrollLeft[Title] = res;
     }
-    scrollLeft[Title] += 300;
-    scrollTo(document.getElementById(Title), 300);
   };
 
   renderSquare(i) {
