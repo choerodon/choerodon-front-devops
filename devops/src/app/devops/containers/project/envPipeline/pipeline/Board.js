@@ -62,7 +62,7 @@ class Board extends Component {
   pushScrollLeft = (Title) => {
     const domPosition = document.getElementById(Title).scrollLeft;
     const { envcardPositionChild } = this.props;
-    const flag = envcardPositionChild.length * 310 - window.innerWidth + 297 <= domPosition + 300;
+    const flag = envcardPositionChild.length * 330 - window.innerWidth + 297 <= domPosition + 300;
     this.setState({
       move: flag,
     });

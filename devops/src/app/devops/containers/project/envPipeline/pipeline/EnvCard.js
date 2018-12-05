@@ -127,7 +127,7 @@ class EnvCard extends Component {
     const {
       intl: { formatMessage },
     } = this.props;
-    const { connect, description, failed, synchro } = data;
+    const { connect, description, failed, synchro, clusterName } = data;
     let status = "";
     let styles = "";
     if (failed) {
@@ -150,10 +150,18 @@ class EnvCard extends Component {
         </div>
         <div className="c7n-env-des-wrap">
           <div className="c7n-env-des" title={description}>
-            <span className="c7n-env-des-head">
-              {formatMessage({ id: "envPl.description" })}
-            </span>
-            {description}
+            {clusterName && <div>
+              <span className="c7n-env-des-head">
+                {formatMessage({ id: "envPl.cluster" })}
+              </span>
+                {clusterName}
+            </div>}
+            <div>
+              <span className="c7n-env-des-head">
+                {formatMessage({ id: "envPl.description" })}
+              </span>
+              {description}
+            </div>
           </div>
         </div>
       </div>

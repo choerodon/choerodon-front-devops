@@ -1,6 +1,6 @@
 .c7n-env-card {
   margin-right: 25px;
-  width: 240px;
+  width: 260px;
   cursor: move;
   height: 150px;
   color: rgba(0, 0, 0, 0.87);
@@ -73,7 +73,7 @@
 
 .c7n-env-card-dragging {
   margin-right: 25px;
-  width: 240px;
+  width: 260px;
   cursor: move;
   height: 150px;
   font-family: Roboto, sans-serif;
@@ -111,7 +111,7 @@
 .c7n-env-square {
   display: inline-block;
   margin-right: 70px;
-  width: 240px;
+  width: 260px;
   height: 150px;
 
   .c7n-env-arrow {
@@ -169,7 +169,7 @@
 }
 
 .c7n-env-des-wrap {
-  margin: 12px;
+  margin: 12px 16px 12px 0;
 
   .c7n-env-des {
     position: relative;
@@ -177,7 +177,7 @@
     font-size: 13px;
     line-height: 20px;
     overflow: hidden;
-    width: 116px;
+    width: 144px;
     word-break: break-all;
     white-space: normal;
 

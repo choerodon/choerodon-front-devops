@@ -18,7 +18,7 @@ import _ from "lodash";
 import "../../../main.scss";
 import "./CreateDomain.scss";
 import EnvOverviewStore from "../../../../stores/project/envOverview";
-import { getTableTitle } from "../../../../utils";
+import Tips from "../../../../components/Tips/Tips";
 
 const { Option } = Select;
 const { Item: FormItem } = Form;
@@ -764,14 +764,7 @@ class CreateDomain extends Component {
               </FormItem>
               <div className="c7n-creation-title">
                 <Icon type="language" />
-                <FormattedMessage id="domain.protocol" />
-                <Popover
-                  content={formatMessage({ id: "domain.protocol.tip" })}
-                  overlayClassName="c7n-tips-popover"
-                  arrowPointAtCenter
-                >
-                  <Icon type="help c7n-tooltip-icon" />
-                </Popover>
+                <Tips type="title" data="domain.protocol" />
               </div>
               <div className="c7n-creation-radio">
                 <div className="creation-radio-label">

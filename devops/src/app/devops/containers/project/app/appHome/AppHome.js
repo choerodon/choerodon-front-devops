@@ -29,8 +29,8 @@ import RefreshBtn from "../../../../components/refreshBtn";
 import "./AppHome.scss";
 import "../../../main.scss";
 import MouserOverWrapper from "../../../../components/MouseOverWrapper";
-import { getSelectTip } from "../../../../utils";
 import "../../envPipeline/EnvPipeLineHome.scss";
+import Tips from "../../../../components/Tips/Tips";
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -771,7 +771,7 @@ class AppHome extends Component {
                 </Select>
               )}
             </FormItem>
-            {getSelectTip("app.chooseType.tip")}
+            <Tips type="form" data="app.chooseType.tip" />
           </div>
           {modeType === "create" && (
             <FormItem {...formItemLayout}>
@@ -793,7 +793,7 @@ class AppHome extends Component {
                   maxLength={30}
                   label={<FormattedMessage id="app.code" />}
                   size="default"
-                  suffix={getSelectTip("app.code.tooltip")}
+                  suffix={<Tips type="form" data="app.code.tooltip" />}
                 />
               )}
             </FormItem>
@@ -870,7 +870,7 @@ class AppHome extends Component {
                   </Select>
                 )}
               </FormItem>
-              {getSelectTip("app.chooseTem.tip")}
+              <Tips type="form" data="app.chooseTem.tip" />
             </div>
           )}
         </Form>
