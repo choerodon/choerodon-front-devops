@@ -20,6 +20,7 @@ import StatusIcon from "../../../../components/StatusIcon";
 import MouserOverWrapper from "../../../../components/MouseOverWrapper/MouserOverWrapper";
 import EnvOverviewStore from "../../../../stores/project/envOverview";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
+import RefreshBtn from "../../../../components/refreshBtn";
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -43,10 +44,15 @@ class DomainHome extends Component {
         const envId = EnvOverviewStore.getTpEnvId;
         if (envId) {
           // 这个方法定义在 commonComponent装饰器中
-          this.loadAllData(envId);
+          this.loadAllData(0, envId);
         }
       }
     });
+  }
+
+  componentWillUnmount() {
+    this.clearAutoRefresh();
+    this.clearFilterInfo();
   }
 
   /**
@@ -125,6 +131,9 @@ class DomainHome extends Component {
       organizationId: orgId,
       name,
     } = AppState.currentMenuType;
+
+    this.initAutoRefresh("domain");
+
     const columns = [
       {
         title: formatMessage({ id: "domain.column.name" }),
@@ -346,15 +355,15 @@ class DomainHome extends Component {
       <Page
         className="c7n-region c7n-domain-wrapper"
         service={[
-          'devops-service.devops-ingress.create',
-          'devops-service.devops-ingress.checkDomain',
-          'devops-service.devops-ingress.checkName',
-          'devops-service.devops-ingress.listByEnv',
-          'devops-service.devops-ingress.queryDomainId',
-          'devops-service.devops-ingress.update',
-          'devops-service.devops-ingress.delete',
-          'devops-service.devops-service.listByEnvId',
-          'devops-service.devops-environment.listByProjectIdAndActive',
+          "devops-service.devops-ingress.create",
+          "devops-service.devops-ingress.checkDomain",
+          "devops-service.devops-ingress.checkName",
+          "devops-service.devops-ingress.listByEnv",
+          "devops-service.devops-ingress.queryDomainId",
+          "devops-service.devops-ingress.update",
+          "devops-service.devops-ingress.delete",
+          "devops-service.devops-service.listByEnvId",
+          "devops-service.devops-environment.listByProjectIdAndActive",
         ]}
       >
         {DomainStore.isRefresh ? (
@@ -423,10 +432,7 @@ class DomainHome extends Component {
                 projectId={projectId}
                 organizationId={orgId}
               >
-                <Button funcType="flat" onClick={this.handleRefresh}>
-                  <i className="icon-refresh icon" />
-                  <FormattedMessage id="refresh" />
-                </Button>
+                <RefreshBtn name="domain" onFresh={this.handleRefresh} />
               </Permission>
             </Header>
             <Content code="domain" values={{ name }}>
@@ -483,7 +489,9 @@ class DomainHome extends Component {
             </Button>,
           ]}
         >
-          <div className="c7n-padding-top_8">{formatMessage({ id: 'domain.delete.des' })}</div>
+          <div className="c7n-padding-top_8">
+            {formatMessage({ id: "domain.delete.des" })}
+          </div>
         </Modal>
       </Page>
     );

@@ -1,9 +1,12 @@
-import { observable, action, computed } from 'mobx';
-import { axios, store } from 'choerodon-front-boot';
-import { handleProptError } from '../../../utils';
+import { observable, action, computed } from "mobx";
+import { axios, store } from "choerodon-front-boot";
+import { handleProptError } from "../../../utils";
 
-const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-@store('DomainStore')
+const HEIGHT =
+  window.innerHeight ||
+  document.documentElement.clientHeight ||
+  document.body.clientHeight;
+@store("DomainStore")
 class DomainStore {
   @observable allData = [];
 
@@ -22,13 +25,17 @@ class DomainStore {
   @observable dto = [];
 
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
+    current: 1,
+    total: 0,
+    pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
   @observable certificates = [];
 
   @observable Info = {
-    filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+    filters: {},
+    sort: { columnKey: "id", order: "descend" },
+    paras: [],
   };
 
   @action setCertificates(data) {
@@ -125,41 +132,56 @@ class DomainStore {
     return this.Info;
   }
 
-  loadData = (isRefresh = true, proId, envId, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
-    searchParam: {},
-    param: '',
-  }) => {
+  loadData = (
+    loading,
+    isRefresh = true,
+    proId,
+    envId,
+    page = this.pageInfo.current - 1,
+    pageSize = this.pageInfo.pageSize,
+    sort = { field: "id", order: "desc" },
+    datas = {
+      searchParam: {},
+      param: "",
+    }
+  ) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
-    this.changeLoading(true);
-    return axios.post(`/devops/v1/projects/${proId}/ingress/${envId}/listByEnv?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
-      .then((data) => {
+    loading && this.changeLoading(true);
+    return axios
+      .post(
+        `/devops/v1/projects/${proId}/ingress/${envId}/listByEnv?page=${page}&size=${pageSize}&sort=${sort.field ||
+          "id"},${sort.order}`,
+        JSON.stringify(datas)
+      )
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.handleData(data);
         }
-        this.changeLoading(false);
+        loading && this.changeLoading(false);
         this.changeIsRefresh(false);
       });
   };
 
-  handleData =(data) => {
+  handleData = data => {
     this.setAllData(data.content);
     const { number, size, totalElements } = data;
     this.setPageInfo({ number, size, totalElements });
   };
 
-  loadDataById = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/ingress/${id}`).then((data) => {
-    const res = handleProptError(data);
-    if (res) {
-      this.setSingleData(data);
-    }
-    return res;
-  });
+  loadDataById = (projectId, id) =>
+    axios.get(`/devops/v1/projects/${projectId}/ingress/${id}`).then(data => {
+      const res = handleProptError(data);
+      if (res) {
+        this.setSingleData(data);
+      }
+      return res;
+    });
 
-  loadEnv = projectId => axios.get(`devops/v1/projects/${projectId}/envs?active=true`)
-    .then((data) => {
+  loadEnv = projectId =>
+    axios.get(`devops/v1/projects/${projectId}/envs?active=true`).then(data => {
       const res = handleProptError(data);
       if (res) {
         this.setEnv(data);
@@ -167,33 +189,55 @@ class DomainStore {
       return res;
     });
 
-  checkName = (projectId, envId, value) => axios.get(`/devops/v1/projects/${projectId}/ingress/check_name?name=${envId}&envId=${value}`)
-    .then(data => handleProptError(data));
+  checkName = (projectId, envId, value) =>
+    axios
+      .get(
+        `/devops/v1/projects/${projectId}/ingress/check_name?name=${envId}&envId=${value}`
+      )
+      .then(data => handleProptError(data));
 
-  checkPath =(projectId, domain, env, value, id = '') => axios.get(`/devops/v1/projects/${projectId}/ingress/check_domain?domain=${domain}&envId=${env}&path=${value}&id=${id}`)
-    .then(data => handleProptError(data));
+  checkPath = (projectId, domain, env, value, id = "") =>
+    axios
+      .get(
+        `/devops/v1/projects/${projectId}/ingress/check_domain?domain=${domain}&envId=${env}&path=${value}&id=${id}`
+      )
+      .then(data => handleProptError(data));
 
-  updateData = (projectId, id, data) => axios.put(`/devops/v1/projects/${projectId}/ingress/${id}`, JSON.stringify(data))
-    .then(res => handleProptError(res));
+  updateData = (projectId, id, data) =>
+    axios
+      .put(
+        `/devops/v1/projects/${projectId}/ingress/${id}`,
+        JSON.stringify(data)
+      )
+      .then(res => handleProptError(res));
 
-  addData = (projectId, data) => axios.post(`/devops/v1/projects/${projectId}/ingress`, JSON.stringify(data))
-    .then(res => handleProptError(res));
+  addData = (projectId, data) =>
+    axios
+      .post(`/devops/v1/projects/${projectId}/ingress`, JSON.stringify(data))
+      .then(res => handleProptError(res));
 
-  deleteData = (projectId, id) => axios.delete(`/devops/v1/projects/${projectId}/ingress/${id}`)
-    .then(data => handleProptError(data));
+  deleteData = (projectId, id) =>
+    axios
+      .delete(`/devops/v1/projects/${projectId}/ingress/${id}`)
+      .then(data => handleProptError(data));
 
-  loadNetwork = (projectId, envId) => axios.get(`/devops/v1/projects/${projectId}/service?envId=${envId}`)
-    .then((data) => {
-      const res = handleProptError(data);
-      if (res) {
-        this.setNetwork(data);
-      }
-      return res;
-    });
+  loadNetwork = (projectId, envId) =>
+    axios
+      .get(`/devops/v1/projects/${projectId}/service?envId=${envId}`)
+      .then(data => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setNetwork(data);
+        }
+        return res;
+      });
 
   loadCertByEnv = (projectId, envId, domain) => {
-    axios.post(`/devops/v1/projects/${projectId}/certifications/active?env_id=${envId}&domain=${domain}`)
-      .then((data) => {
+    axios
+      .post(
+        `/devops/v1/projects/${projectId}/certifications/active?env_id=${envId}&domain=${domain}`
+      )
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.setCertificates(res);

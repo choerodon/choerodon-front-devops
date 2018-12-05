@@ -1,9 +1,12 @@
-import { observable, action, computed } from 'mobx';
-import { axios, store } from 'choerodon-front-boot';
-import { handleProptError } from '../../../utils';
+import { observable, action, computed } from "mobx";
+import { axios, store } from "choerodon-front-boot";
+import { handleProptError } from "../../../utils";
 
-const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-@store('NetworkConfigStore')
+const HEIGHT =
+  window.innerHeight ||
+  document.documentElement.clientHeight ||
+  document.body.clientHeight;
+@store("NetworkConfigStore")
 class NetworkConfigStore {
   @observable env = [];
 
@@ -22,11 +25,15 @@ class NetworkConfigStore {
 
   // 打开tab的loading
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
+    current: 1,
+    total: 0,
+    pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
   @observable Info = {
-    filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+    filters: {},
+    sort: { columnKey: "id", order: "descend" },
+    paras: [],
   };
 
   @action setPageInfo(page) {
@@ -131,8 +138,10 @@ class NetworkConfigStore {
    * @param projectId
    * @param id
    */
-  deleteData = (projectId, id) => axios.delete(`/devops/v1/projects/${projectId}/service/${id}`)
-    .then(data => handleProptError(data));
+  deleteData = (projectId, id) =>
+    axios
+      .delete(`/devops/v1/projects/${projectId}/service/${id}`)
+      .then(data => handleProptError(data));
 
   /**
    * 加载网络列表数据
@@ -145,23 +154,37 @@ class NetworkConfigStore {
    * @param datas
    * @returns {JQueryPromise<any>}
    */
-  loadData = (isRefresh = false, proId, envId, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
-    searchParam: {},
-    param: '',
-  }) => {
+  loadData = (
+    loading,
+    isRefresh = false,
+    proId,
+    envId,
+    page = this.pageInfo.current - 1,
+    pageSize = this.pageInfo.pageSize,
+    sort = { field: "id", order: "desc" },
+    datas = {
+      searchParam: {},
+      param: "",
+    }
+  ) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
-    this.changeLoading(true);
-    return axios.post(`/devops/v1/projects/${proId}/service/${envId}/listByEnv?page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
-      .then((data) => {
+    loading && this.changeLoading(true);
+    return axios
+      .post(
+        `/devops/v1/projects/${proId}/service/${envId}/listByEnv?page=${page}&size=${pageSize}&sort=${sort.field ||
+          "id"},${sort.order}`,
+        JSON.stringify(datas)
+      )
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           const { number, size, totalElements, content } = res;
           this.setAllData(content);
           this.setPageInfo({ number, size, totalElements });
         }
-        this.changeLoading(false);
+        loading && this.changeLoading(false);
         this.changeIsRefresh(false);
       });
   };
@@ -170,9 +193,10 @@ class NetworkConfigStore {
    * 加载项目下的环境
    * @param projectId
    */
-  loadEnv = (projectId) => {
-    axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
-      .then((data) => {
+  loadEnv = projectId => {
+    axios
+      .get(`/devops/v1/projects/${projectId}/envs?active=true`)
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.setEnv(res);
@@ -189,12 +213,15 @@ class NetworkConfigStore {
    * @param appId
    */
   loadApp = (projectId, envId, option, appId) => {
-    axios.get(`/devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=running`)
-      .then((data) => {
+    axios
+      .get(
+        `/devops/v1/projects/${projectId}/apps/options?envId=${envId}&status=running`
+      )
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.setApp(res);
-          if (option === 'update' && appId) {
+          if (option === "update" && appId) {
             this.loadInstance(projectId, envId, appId);
           }
         }
@@ -208,16 +235,20 @@ class NetworkConfigStore {
    * @param envId
    * @param appId
    */
-  loadInstance = (projectId, envId, appId) => axios.get(`/devops/v1/projects/${projectId}/app_instances/options?envId=${envId}&appId=${appId}`)
-    .then((data) => {
-      const res = handleProptError(data);
-      if (res) {
-        this.setIst(res);
+  loadInstance = (projectId, envId, appId) =>
+    axios
+      .get(
+        `/devops/v1/projects/${projectId}/app_instances/options?envId=${envId}&appId=${appId}`
+      )
+      .then(data => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setIst(res);
+          return res;
+        }
         return res;
-      }
-      return res;
-    })
-    .catch(err => Choerodon.handleResponseError(err));
+      })
+      .catch(err => Choerodon.handleResponseError(err));
 
   /**
    * 检查网络名称
@@ -225,19 +256,25 @@ class NetworkConfigStore {
    * @param envId
    * @param value
    */
-  checkNetWorkName = (projectId, envId, value) => axios.get(`/devops/v1/projects/${projectId}/service/check?envId=${envId}&name=${value}`)
-    .then((data) => {
-      const res = handleProptError(data);
-      return res;
-    });
+  checkNetWorkName = (projectId, envId, value) =>
+    axios
+      .get(
+        `/devops/v1/projects/${projectId}/service/check?envId=${envId}&name=${value}`
+      )
+      .then(data => {
+        const res = handleProptError(data);
+        return res;
+      });
 
   /**
    * 创建网络
    * @param projectId
    * @param data
    */
-  createNetwork = (projectId, data) => axios.post(`/devops/v1/projects/${projectId}/service`, JSON.stringify(data))
-    .then(res => handleProptError(res));
+  createNetwork = (projectId, data) =>
+    axios
+      .post(`/devops/v1/projects/${projectId}/service`, JSON.stringify(data))
+      .then(res => handleProptError(res));
 
   /**
    * 更新网络
@@ -245,22 +282,26 @@ class NetworkConfigStore {
    * @param id
    * @param data
    */
-  updateData = (projectId, id, data) => axios.put(`/devops/v1/projects/${projectId}/service/${id}`, JSON.stringify(data))
-    .then(res => handleProptError(res));
-
+  updateData = (projectId, id, data) =>
+    axios
+      .put(
+        `/devops/v1/projects/${projectId}/service/${id}`,
+        JSON.stringify(data)
+      )
+      .then(res => handleProptError(res));
 
   /**
    * 根据id加载单个网络
    * @param projectId
    * @param id
    */
-  loadDataById = (projectId, id) => axios.get(`/devops/v1/projects/${projectId}/service/${id}`)
-    .then((data) => {
+  loadDataById = (projectId, id) =>
+    axios.get(`/devops/v1/projects/${projectId}/service/${id}`).then(data => {
       const res = handleProptError(data);
       if (res) {
         this.setSingleData(data);
         if (!res.target.label) {
-          this.loadApp(projectId, res.envId, 'update', res.appId);
+          this.loadApp(projectId, res.envId, "update", res.appId);
         }
         return res;
       }

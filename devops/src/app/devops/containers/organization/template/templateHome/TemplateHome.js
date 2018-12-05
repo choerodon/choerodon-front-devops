@@ -23,6 +23,7 @@ import { commonComponent } from "../../../../components/commonFunction";
 import LoadingBar from "../../../../components/loadingBar";
 import MouserOverWrapper from "../../../../components/MouseOverWrapper";
 import StatusIcon from "../../../../components/StatusIcon";
+import RefreshBtn from "../../../../components/refreshBtn";
 import "./TemplateHome.scss";
 import "../../../main.scss";
 
@@ -120,7 +121,12 @@ class TemplateHome extends Component {
   }
 
   componentDidMount() {
-    this.loadAllData();
+    this.loadAllData(0);
+  }
+
+  componentWillUnmount() {
+    this.clearAutoRefresh();
+    this.clearFilterInfo();
   }
 
   getName(text, record) {
@@ -327,7 +333,7 @@ class TemplateHome extends Component {
           TemplateStore.addData(organizationId, postData)
             .then(res => {
               if (res) {
-                this.loadAllData();
+                this.loadAllData(0);
                 this.setState({ type: false, show: false });
               }
               this.setState({
@@ -355,7 +361,7 @@ class TemplateHome extends Component {
           TemplateStore.updateData(organizationId, formData)
             .then(res => {
               if (res) {
-                this.loadAllData();
+                this.loadAllData(0);
                 this.setState({ show: false });
                 this.setState({
                   submitting: false,
@@ -404,6 +410,7 @@ class TemplateHome extends Component {
 
   render() {
     const { type, organizationId, name } = AppState.currentMenuType;
+    this.initAutoRefresh("template");
     const {
       TemplateStore: {
         singleData,
@@ -576,13 +583,7 @@ class TemplateHome extends Component {
                 type={type}
                 organizationId={organizationId}
               >
-                <Button
-                  icon="refresh"
-                  funcType="flat"
-                  onClick={this.handleRefresh}
-                >
-                  <FormattedMessage id="refresh" />
-                </Button>
+                <RefreshBtn name="template" onFresh={this.handleRefresh} />
               </Permission>
             </Header>
             <Content code="template" values={{ name }}>

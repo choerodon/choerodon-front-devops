@@ -30,11 +30,10 @@ import MouserOverWrapper from "../../../../components/MouseOverWrapper";
 import StatusIcon from "../../../../components/StatusIcon";
 import EnvOverviewStore from "../../../../stores/project/envOverview";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
+import RefreshBtn from "../../../../components/refreshBtn";
 
 const { AppState } = stores;
 const { Option } = Select;
-
-// commonComponent装饰器
 @commonComponent("NetworkConfigStore")
 @observer
 class NetworkHome extends Component {
@@ -53,11 +52,15 @@ class NetworkHome extends Component {
       if (env.length) {
         const envId = EnvOverviewStore.getTpEnvId;
         if (envId) {
-          // 这个方法定义在 commonComponent装饰器中
-          this.loadAllData(envId);
+          this.loadAllData(0, envId);
         }
       }
     });
+  }
+
+  componentWillUnmount() {
+    this.clearAutoRefresh();
+    this.clearFilterInfo();
   }
 
   /**
@@ -374,6 +377,9 @@ class NetworkHome extends Component {
     const envState = envData.length
       ? envData.filter(d => d.id === Number(envId))[0]
       : { connect: false };
+
+    this.initAutoRefresh("network");
+
     const columns = [
       {
         title: <FormattedMessage id="network.column.name" />,
@@ -438,17 +444,17 @@ class NetworkHome extends Component {
     return (
       <Page
         service={[
-          'devops-service.devops-service.create',
-          'devops-service.devops-service.checkName',
-          'devops-service.devops-service.listByEnv',
-          'devops-service.devops-service.query',
-          'devops-service.devops-service.update',
-          'devops-service.devops-service.delete',
-          'devops-service.devops-service.listByEnvId',
-          'devops-service.devops-environment.listByProjectIdAndActive',
-          'devops-service.application.listByEnvIdAndStatus',
-          'devops-service.application-version.queryByAppIdAndEnvId',
-          'devops-service.application-instance.listByAppVersionId',
+          "devops-service.devops-service.create",
+          "devops-service.devops-service.checkName",
+          "devops-service.devops-service.listByEnv",
+          "devops-service.devops-service.query",
+          "devops-service.devops-service.update",
+          "devops-service.devops-service.delete",
+          "devops-service.devops-service.listByEnvId",
+          "devops-service.devops-environment.listByProjectIdAndActive",
+          "devops-service.application.listByEnvIdAndStatus",
+          "devops-service.application-version.queryByAppIdAndEnvId",
+          "devops-service.application-instance.listByAppVersionId",
         ]}
         className="c7n-region c7n-network-wrapper"
       >
@@ -520,12 +526,7 @@ class NetworkHome extends Component {
                 projectId={projectId}
                 organizationId={orgId}
               >
-                <Button funcType="flat" onClick={this.handleRefresh}>
-                  <i className="icon-refresh icon" />
-                  <span>
-                    <FormattedMessage id="refresh" />
-                  </span>
-                </Button>
+                <RefreshBtn name="network" onFresh={this.handleRefresh} />
               </Permission>
             </Header>
             <Content code="network" values={{ name: projectName }}>
@@ -586,7 +587,9 @@ class NetworkHome extends Component {
             </Button>,
           ]}
         >
-          <div className="c7n-padding-top_8"><FormattedMessage id="network.delete.tooltip" /></div>
+          <div className="c7n-padding-top_8">
+            <FormattedMessage id="network.delete.tooltip" />
+          </div>
         </Modal>
       </Page>
     );
