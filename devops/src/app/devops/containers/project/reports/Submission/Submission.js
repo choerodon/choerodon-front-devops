@@ -278,10 +278,7 @@ class Submission extends Component {
         <div className="c7n-report-submission-wrap clearfix">{personChart}</div>
       </Fragment>
     ) : (
-      <NoChart
-        title={formatMessage({ id: "report.no-app" })}
-        des={formatMessage({ id: "report.no-app-des" })}
-      />
+      <NoChart type="app" />
     );
 
     return (

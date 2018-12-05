@@ -88,7 +88,7 @@ class DepPipelineEmpty extends Component {
             </Button>
           </Card>)}
           {type === 'app' && app === 'member' && (<Card title={formatMessage({ id: 'depPl.noPermission' })}>
-            <FormattedMessage id="empty.member.noApp" />
+            <FormattedMessage id="empty.member.no-app" />
             <a
               href={formatMessage({ id: 'app.link' })}
               rel="nofollow me noopener noreferrer"
