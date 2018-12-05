@@ -137,6 +137,8 @@ class DeployTimes extends Component {
           }
           this.app = app;
           this.appId = selectApp;
+        } else {
+          ReportsStore.judgeRole();
         }
       });
   };
@@ -470,7 +472,7 @@ class DeployTimes extends Component {
       <div className="c7n-report-table">
         {this.renderTable()}
       </div>
-    </React.Fragment> : <NoChart title={formatMessage({ id: 'report.no-app' })} des={formatMessage({ id: 'report.no-app-des' })} />);
+    </React.Fragment> : <NoChart type="app" />);
 
     return (<Page
       className="c7n-region"

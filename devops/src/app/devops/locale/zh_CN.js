@@ -1139,7 +1139,7 @@ const zhCN = {
   "report.no-app": "当前项目下无应用",
   "report.no-env": "当前项目下无可用环境",
   "report.no-app-des": "请使用项目所有者角色登录去创建一个应用",
-  "report.no-env-des": "请使用部署管理员角色登录去创建一个可用环境",
+  "report.no-env-des": "请使用项目所有者角色登录去创建一个可用环境",
   "report.commit.history": "提交历史",
   "report.commit.by": "提交于 ",
   "report.commit.date": "日期：",
@@ -1150,6 +1150,8 @@ const zhCN = {
   "report.date.more": "报表暂支持最多查看30天，已自动截取开始日期后30天。",
   "report.commits.unknown": "非平台用户提交汇总",
   "report.unknown.user": "非平台用户",
+  "empty.member.no-env":
+    "您当前暂无任何环境的权限，若需查看某个环境的相关内容，请联系项目所有者添加权限。",
 
   // 部署总览
   "dpOverview.head": "部署总览",
@@ -1173,7 +1175,7 @@ const zhCN = {
   "depPl.addPermission":
     "若需查看某个环境相关内容，请联系项目所有者进行权限添加。",
   "empty.owner.noApp": "当前项目下无应用，请创建应用。",
-  "empty.member.noApp":
+  "empty.member.no-app":
     "您当前暂无此项目下任何应用的权限，若需查看某个应用下相关内容，请联系项目所有者添加权限。",
   "depPl.more": "了解更多",
 

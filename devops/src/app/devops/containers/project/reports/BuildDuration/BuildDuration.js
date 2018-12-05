@@ -285,7 +285,7 @@ class BuildDuration extends Component {
         <ReactEcharts className="c7n-buildDuration-echarts" option={this.getOption()} />
       </Spin>
       <BuildTable loading={loading} dataSource={allData} pagination={pageInfo} loadDatas={this.loadDatas} />
-    </React.Fragment> : <NoChart title={formatMessage({ id: 'report.no-app' })} des={formatMessage({ id: 'report.no-app-des' })} />);
+    </React.Fragment> : <NoChart type="app" />);
 
     return (<Page
       className="c7n-region c7n-ciPipeline"
