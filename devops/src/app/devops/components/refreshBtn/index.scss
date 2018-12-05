@@ -1,0 +1,23 @@
+.page-head {
+  .ant-btn:not(.back-btn) {
+    &+.c7ncd-refresh {
+      margin-left: 8px;
+    }
+  }
+}
+
+.c7ncd-refresh {
+  .ant-dropdown-trigger {
+    margin-left: 0 !important;
+  }
+}
+
+.c7ncd-refresh-radioGroup {
+  padding: 8px 0 5px 12px;
+
+  .c7ncd-refresh-radio {
+    display: block;
+    height: 30px;
+    line-height: 30px;
+  }
+}

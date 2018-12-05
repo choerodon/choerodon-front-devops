@@ -1,8 +1,11 @@
-import { observable, action, computed } from 'mobx';
-import { axios, store } from 'choerodon-front-boot';
+import { observable, action, computed } from "mobx";
+import { axios, store } from "choerodon-front-boot";
 
-const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-@store('TemplateStore')
+const HEIGHT =
+  window.innerHeight ||
+  document.documentElement.clientHeight ||
+  document.body.clientHeight;
+@store("TemplateStore")
 class TemplateStore {
   @observable allData = [];
 
@@ -17,11 +20,15 @@ class TemplateStore {
   @observable selectData = [];
 
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
+    current: 1,
+    total: 0,
+    pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
   @observable Info = {
-    filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+    filters: {},
+    sort: { columnKey: "id", order: "descend" },
+    paras: [],
   };
 
   @action setPageInfo(page) {
@@ -82,78 +89,115 @@ class TemplateStore {
     return this.Info;
   }
 
-  loadData = (isRefresh = false, orgId, envId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, datas = {
-    searchParam: {},
-    param: '',
-  }) => {
+  loadData = (
+    loading,
+    isRefresh = false,
+    orgId,
+    envId,
+    page = this.pageInfo.current - 1,
+    size = this.pageInfo.pageSize,
+    sort = { field: "id", order: "desc" },
+    datas = {
+      searchParam: {},
+      param: "",
+    }
+  ) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
-    this.changeLoading(true);
-    return axios.post(`/devops/v1/organizations/${orgId}/app_templates/list_by_options?page=${page}&size=${size}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(datas))
-      .then((data) => {
+    loading && this.changeLoading(true);
+    return axios
+      .post(
+        `/devops/v1/organizations/${orgId}/app_templates/list_by_options?page=${page}&size=${size}&sort=${sort.field ||
+          "id"},${sort.order}`,
+        JSON.stringify(datas)
+      )
+      .then(data => {
         const res = this.handleProptError(data);
         if (res) {
           this.handleData(data);
-          this.changeLoading(false);
+          loading && this.changeLoading(false);
           this.changeIsRefresh(false);
         }
       });
   };
 
-  handleData =(data) => {
+  handleData = data => {
     this.setAllData(data.content);
     const { number, size, totalElements } = data;
     const page = { number, size, totalElements };
     this.setPageInfo(page);
   };
 
-  loadSelectData =orgId => axios.get(`/devops/v1/organizations/${orgId}/app_templates`)
-    .then((data) => {
+  loadSelectData = orgId =>
+    axios.get(`/devops/v1/organizations/${orgId}/app_templates`).then(data => {
       const res = this.handleProptError(data);
       if (res) {
         this.setSelectData(data);
       }
     });
 
-  loadDataById =(orgId, id) => axios.get(`/devops/v1/organizations/${orgId}/app_templates/${id}`).then((data) => {
-    const res = this.handleProptError(data);
-    if (res) {
-      this.setSingleData(data);
-    }
-  });
+  loadDataById = (orgId, id) =>
+    axios
+      .get(`/devops/v1/organizations/${orgId}/app_templates/${id}`)
+      .then(data => {
+        const res = this.handleProptError(data);
+        if (res) {
+          this.setSingleData(data);
+        }
+      });
 
-  checkCode =(orgId, code) => axios.get(`/devops/v1/organizations/${orgId}/app_templates/check_code?code=${code}`)
-    .then((data) => {
-      const res = this.handleProptError(data);
-      return res;
-    });
+  checkCode = (orgId, code) =>
+    axios
+      .get(
+        `/devops/v1/organizations/${orgId}/app_templates/check_code?code=${code}`
+      )
+      .then(data => {
+        const res = this.handleProptError(data);
+        return res;
+      });
 
-  checkName = (orgId, name) => axios.get(`/devops/v1/organizations/${orgId}/app_templates/check_name?name=${name}`)
-    .then((data) => {
-      const res = this.handleProptError(data);
-      return res;
-    });
+  checkName = (orgId, name) =>
+    axios
+      .get(
+        `/devops/v1/organizations/${orgId}/app_templates/check_name?name=${name}`
+      )
+      .then(data => {
+        const res = this.handleProptError(data);
+        return res;
+      });
 
-  updateData = (orgId, data) => axios.put(`/devops/v1/organizations/${orgId}/app_templates`, JSON.stringify(data))
-    .then((datas) => {
-      const res = this.handleProptError(datas);
-      return res;
-    });
+  updateData = (orgId, data) =>
+    axios
+      .put(
+        `/devops/v1/organizations/${orgId}/app_templates`,
+        JSON.stringify(data)
+      )
+      .then(datas => {
+        const res = this.handleProptError(datas);
+        return res;
+      });
 
-  addData = (orgId, data) => axios.post(`/devops/v1/organizations/${orgId}/app_templates`, JSON.stringify(data))
-    .then((datas) => {
-      const res = this.handleProptError(datas);
-      return res;
-    });;
+  addData = (orgId, data) =>
+    axios
+      .post(
+        `/devops/v1/organizations/${orgId}/app_templates`,
+        JSON.stringify(data)
+      )
+      .then(datas => {
+        const res = this.handleProptError(datas);
+        return res;
+      });
 
-  deleteData =(orgId, id) => axios.delete(`/devops/v1/organizations/${orgId}/app_templates/${id}`)
-    .then((datas) => {
-      const res = this.handleProptError(datas);
-      return res;
-    });
+  deleteData = (orgId, id) =>
+    axios
+      .delete(`/devops/v1/organizations/${orgId}/app_templates/${id}`)
+      .then(datas => {
+        const res = this.handleProptError(datas);
+        return res;
+      });
 
-  handleProptError =(error) => {
+  handleProptError = error => {
     if (error && error.failed) {
       Choerodon.prompt(error.message);
       this.changeLoading(false);
@@ -162,7 +206,7 @@ class TemplateStore {
     } else {
       return error;
     }
-  }
+  };
 }
 
 const templateStore = new TemplateStore();

@@ -27,8 +27,7 @@ const pageDetail = {
     "请在下面选择集群，输入环境编码、名称、描述，来创建新环境；同时您还需要为此环境配置特定的操作人员，配置后，只有被勾选的项目成员才有权限在该环境下进行部署操作。新环境会默认新增在环境流水线的最后一个节点。",
   "env.create.link": `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
   "env.edit.title": '对环境"{name}"进行修改',
-  "env.edit.description":
-    "您可在此修改环境名称、描述以及分组。",
+  "env.edit.description": "您可在此修改环境名称、描述以及分组。",
   "env.edit.link": `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
   "env.token.title": '复制环境"{name}"的指令',
   "env.token.description": "复制下文代码至Kubernetes运行，与平台建立链接。",
@@ -308,18 +307,17 @@ const pageDetail = {
 
   // 日志右侧弹窗
   "log.title": '查看"{sidebarName}"的日志',
-  "log.description": '您可在此查看该job的日志进行错误定位和状态监控。',
+  "log.description": "您可在此查看该job的日志进行错误定位和状态监控。",
   "log.link": `${docServer}/user-guide/deployment-pipeline/application-deployment/`,
 
   // 部署详情右侧弹窗
   "deployInfo.title": '查看实例"{sidebarName}"的部署配置信息',
-  "deployInfo.description": '您可在此查看该实例详细的配置信息。',
+  "deployInfo.description": "您可在此查看该实例详细的配置信息。",
   "deployInfo.link": `${docServer}/user-guide/deployment-pipeline/application-deployment/`,
 };
 
 const zhCN = {
   // public
-  refresh: "刷新",
   detail: "详情",
   operate: "操作",
   save: "保存",
@@ -389,6 +387,13 @@ const zhCN = {
   recent: "最近",
   return: "返回",
   submit: "确认",
+
+  // 刷新
+  refresh: "刷新",
+  "refresh.manual": "手动刷新",
+  "refresh.auto": "自动刷新",
+  "refresh.auto.open": "自动刷新已打开",
+  "refresh.auto.close": "自动刷新已关闭",
 
   "chart.change": "切换报表",
   "confirm.delete": "确认删除吗？",
@@ -648,7 +653,8 @@ const zhCN = {
   "app.chooseType": "选择应用类型",
   "app.type.normal": "普通应用",
   "app.type.test": "测试应用",
-  'app.chooseType.tip': '测试应用是用于实现自动化测试的载体，不能将此类应用发布至应用市场，同时，也不能将此类应用部署到任何环境；仅支持在开发流水线对测试应用进行开发操作。而普通应用则支持正常的开发、部署与发布操作。  ',
+  "app.chooseType.tip":
+    "测试应用是用于实现自动化测试的载体，不能将此类应用发布至应用市场，同时，也不能将此类应用部署到任何环境；仅支持在开发流水线对测试应用进行开发操作。而普通应用则支持正常的开发、部署与发布操作。  ",
   "app.url": "仓库地址",
   "app.active": "状态",
   "app.delete.tip": "这将会删除gitlab代码库，请确认是否删除？",
@@ -1167,7 +1173,8 @@ const zhCN = {
   "depPl.addPermission":
     "若需查看某个环境相关内容，请联系项目所有者进行权限添加。",
   "empty.owner.noApp": "当前项目下无应用，请创建应用。",
-  "empty.member.noApp": "您当前暂无此项目下任何应用的权限，若需查看某个应用下相关内容，请联系项目所有者添加权限。",
+  "empty.member.noApp":
+    "您当前暂无此项目下任何应用的权限，若需查看某个应用下相关内容，请联系项目所有者添加权限。",
   "depPl.more": "了解更多",
 
   // 集群
