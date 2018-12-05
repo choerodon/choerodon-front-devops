@@ -31,7 +31,8 @@ import LoadingBar from "../../../components/loadingBar/index";
 import EnvGroup from "./EnvGroup";
 import "../../main.scss";
 import "./EnvPipeLineHome.scss";
-import { getSelectTip, scrollTo } from "../../../utils";
+import { scrollTo } from "../../../utils";
+import Tips from "../../../components/Tips/Tips";
 
 /**
  * 分页查询单页size
@@ -595,7 +596,7 @@ class Environment extends Component {
     const { EnvPipelineStore } = this.props;
     const { getDisEnvcardPosition: disEnvCard } = EnvPipelineStore;
     const DisEnvLength  = disEnvCard.length ? disEnvCard[0].devopsEnviromentRepDTOs.length : 0;
-    const flag = DisEnvLength * 265 - window.innerWidth + 297 <= domPosition + 300;
+    const flag = DisEnvLength * 285 - window.innerWidth + 297 <= domPosition + 300;
     this.setState({
       moveBan: flag,
     });
@@ -964,7 +965,7 @@ class Environment extends Component {
                     </Select>
                   )}
                 </FormItem>
-                {getSelectTip("envPl.cluster.tip")}
+                <Tips type="form" data="envPl.cluster.tip" />
               </div>
               <FormItem {...formItemLayout}>
                 {getFieldDecorator("code", {
@@ -984,7 +985,8 @@ class Environment extends Component {
                     disabled={!getFieldValue("clusterId")}
                     maxLength={30}
                     label={<FormattedMessage id="envPl.form.code" />}
-                    suffix={getSelectTip("envPl.envCode.tip")}
+                    suffix={<Tips type="form" data="envPl.envCode.tip" />
+                    }
                   />
                 )}
               </FormItem>
@@ -1006,7 +1008,7 @@ class Environment extends Component {
                     disabled={!getFieldValue("clusterId")}
                     maxLength={10}
                     label={<FormattedMessage id="envPl.form.name" />}
-                    suffix={getSelectTip("envPl.envName.tip")}
+                    suffix={<Tips type="form" data="envPl.envName.tip" />}
                   />
                 )}
               </FormItem>
@@ -1021,7 +1023,7 @@ class Environment extends Component {
                     }}
                     maxLength={60}
                     label={<FormattedMessage id="envPl.form.description" />}
-                    suffix={getSelectTip("envPl.chooseClu.tip")}
+                    suffix={<Tips type="form" data="envPl.chooseClu.tip" />}
                   />
                 )}
               </FormItem>
@@ -1048,7 +1050,7 @@ class Environment extends Component {
                     </Select>
                   )}
                 </FormItem>
-                {getSelectTip("envPl.group.tip")}
+                <Tips type="form" data="envPl.group.tip" />
               </div>
             </Form>
             <div className="c7n-sidebar-form">
@@ -1107,6 +1109,7 @@ class Environment extends Component {
                   <Input
                     maxLength={10}
                     label={<FormattedMessage id="envPl.form.name" />}
+                    suffix={<Tips type="form" data="envPl.envName.tip" />}
                   />
                 )}
               </FormItem>
@@ -1150,7 +1153,7 @@ class Environment extends Component {
                     </Select>
                   )}
                 </FormItem>
-                {getSelectTip("envPl.group.tip")}
+                <Tips type="form" data="envPl.group.tip" />
               </div>
             </Form>
           </div>

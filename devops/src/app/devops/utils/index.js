@@ -191,35 +191,3 @@ export function pickEntries(obj) {
     values,
   };
 }
-
-/**
- * 返回Table中带提示的title
- * @param data
- */
-export function  getTableTitle(data) {
-  return (<div className="c7n-table-title-tip">
-    <FormattedMessage id={data} />
-    <Popover
-      content={<FormattedMessage id={`${data}.tip`} />}
-      overlayClassName="c7n-tips-popover"
-      arrowPointAtCenter
-    >
-      <Icon type="help" />
-    </Popover>
-  </div>);
-}
-
-/**
- * 返回Select或者Input的提示内容
- * @param data
- */
-export function  getSelectTip(data) {
-  return (<Popover
-    content={<FormattedMessage id={data} />}
-    overlayClassName="c7n-tips-popover"
-    placement="topRight"
-    arrowPointAtCenter
-  >
-    <Icon type="help c7n-select-tip" />
-  </Popover>);
-}

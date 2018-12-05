@@ -11,7 +11,7 @@ import '../../../main.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
 import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
-import { getTableTitle } from '../../../../utils';
+import Tips from '../../../../components/Tips';
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -137,7 +137,7 @@ class MergeRequestHome extends Component {
     const  backPath = state && state.backPath;
 
     const columnsAll = [{
-      title: getTableTitle('app.code'),
+      title: <Tips type="title" data="app.code" />,
       key: 'iid',
       render: record => (<span>!{record.iid}</span>),
     }, {
@@ -148,7 +148,7 @@ class MergeRequestHome extends Component {
         {record.title}
       </MouserOverWrapper>),
     }, {
-      title: getTableTitle('app.branch'),
+      title: <Tips type="title" data="app.branch" />,
       key: 'targetBranch',
       render: record => (
         <div className="c7n-merge-branches">
@@ -164,7 +164,7 @@ class MergeRequestHome extends Component {
       dataIndex: 'state',
       key: 'state',
     }, {
-      title: getTableTitle('create'),
+      title: <Tips type="title" data="create" />,
       key: 'createdAt',
       render: record => (
         <div>
@@ -184,7 +184,7 @@ class MergeRequestHome extends Component {
           </Tooltip>
         </div>),
     }, {
-      title: getTableTitle('merge.commit'),
+      title: <Tips type="title" data="merge.commit" />,
       key: 'commits',
       render: record => (
         <div>
@@ -228,7 +228,7 @@ class MergeRequestHome extends Component {
     }];
 
     const columns = [{
-      title: getTableTitle('app.code'),
+      title: <Tips type="title" data="app.code" />,
       key: 'iid',
       render: record => (<span>!{record.iid}</span>),
     }, {
@@ -239,7 +239,7 @@ class MergeRequestHome extends Component {
         {record.title}
       </MouserOverWrapper>),
     }, {
-      title: getTableTitle('app.branch'),
+      title: <Tips type="title" data="app.branch" />,
       key: 'targetBranch',
       render: record => (
         <div className="c7n-merge-branches">
@@ -251,7 +251,7 @@ class MergeRequestHome extends Component {
         </div>
       ),
     }, {
-      title: getTableTitle('create'),
+      title: <Tips type="title" data="create" />,
       key: 'createdAt',
       render: record => (
         <div>
@@ -269,7 +269,7 @@ class MergeRequestHome extends Component {
           </Tooltip>
         </div>),
     }, {
-      title: getTableTitle('merge.commit'),
+      title: <Tips type="title" data="merge.commit" />,
       key: 'commits',
       render: record => (
         <div>
@@ -315,7 +315,7 @@ class MergeRequestHome extends Component {
     }];
 
     const columnsOpen = [{
-      title: getTableTitle('app.code'),
+      title: <Tips type="title" data="app.code" />,
       key: 'iid',
       render: record => (<span>!{record.iid}</span>),
     }, {
@@ -326,7 +326,7 @@ class MergeRequestHome extends Component {
         {record.title}
       </MouserOverWrapper>),
     }, {
-      title: getTableTitle('app.branch'),
+      title: <Tips type="title" data="app.branch" />,
       key: 'targetBranch',
       render: record => (
         <div className="c7n-merge-branches">
@@ -338,7 +338,7 @@ class MergeRequestHome extends Component {
         </div>
       ),
     }, {
-      title: getTableTitle('create'),
+      title: <Tips type="title" data="create" />,
       key: 'createdAt',
       render: record => (
         <div>
@@ -356,7 +356,7 @@ class MergeRequestHome extends Component {
           </Tooltip>
         </div>),
     }, {
-      title: getTableTitle('merge.commit'),
+      title: <Tips type="title" data="merge.commit" />,
       key: 'commits',
       render: record => (
         <div>

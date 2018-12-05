@@ -12,7 +12,7 @@ import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
 import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
-import { getTableTitle } from '../../../../utils';
+import Tips from "../../../../components/Tips/Tips";
 
 const { Option, OptGroup } = Select;
 const ICONS = {
@@ -108,17 +108,17 @@ class CiPipelineHome extends Component {
         render: (status, record) => this.renderStatus(status, record),
       },
       {
-        title: getTableTitle('ciPipeline.sign'),
+        title: <Tips type="title" data="ciPipeline.sign" />,
         dataIndex: 'pipelineId',
         render: (pipelineId, record) => this.renderSign(pipelineId, record),
       },
       {
-        title: getTableTitle('ciPipeline.commit'),
+        title: <Tips type="title" data="ciPipeline.commit" />,
         dataIndex: 'commit',
         render: (commit, record) => this.renderCommit(commit, record),
       },
       {
-        title: getTableTitle('ciPipeline.jobs'),
+        title: <Tips type="title" data="ciPipeline.jobs" />,
         dataIndex: 'stages',
         render: (stages, record) => this.renderstages(stages, record),
       },

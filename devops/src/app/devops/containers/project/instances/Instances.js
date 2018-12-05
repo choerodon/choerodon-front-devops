@@ -17,8 +17,8 @@ import "./Instances.scss";
 import "../../main.scss";
 import EnvOverviewStore from "../../../stores/project/envOverview";
 import DepPipelineEmpty from "../../../components/DepPipelineEmpty/DepPipelineEmpty";
-import { getTableTitle } from "../../../utils";
 import InstancesStore from "../../../stores/project/instances";
+import Tips from "../../../components/Tips/Tips";
 
 const Option = Select.Option;
 const { AppState } = stores;
@@ -592,7 +592,7 @@ class Instances extends Component {
         render: this.renderStatus,
       },
       {
-        title: getTableTitle("deploy.ver"),
+        title: <Tips type="title" data="deploy.ver" />,
         key: "version",
         filters: [],
         filteredValue: filters.version || [],

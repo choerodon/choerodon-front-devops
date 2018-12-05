@@ -8,7 +8,7 @@ import { getTimeLeft } from "../../../../utils";
 import MouserOverWrapper from "../../../../components/MouseOverWrapper";
 import StatusIcon from "../../../../components/StatusIcon";
 import "./CertTable.scss";
-import { getTableTitle } from "../../../../utils";
+import Tips from '../../../../components/Tips';
 
 const { AppState } = stores;
 const HEIGHT =
@@ -332,7 +332,7 @@ class CertTable extends Component {
         ),
       },
       {
-        title: getTableTitle("validDate"),
+        title: <Tips type="title" data="validDate" />,
         key: "valid",
         render: this.validColumn,
       },

@@ -7,7 +7,7 @@ import _ from 'lodash';
 import MdEditor from '../../../../components/MdEditor';
 import '../../../main.scss';
 import './CreateTag.scss';
-import { getSelectTip } from '../../../../utils';
+import Tips from "../../../../components/Tips/Tips";
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -172,7 +172,7 @@ class CreateTag extends Component {
                   autoFocus
                   label={<FormattedMessage id="apptag.name" />}
                   size="default"
-                  suffix={getSelectTip('apptag.name.tip')}
+                  suffix={<Tips type="form" data="apptag.name.tip" />}
                   maxLength="20"
                 />,
               )}
@@ -218,7 +218,7 @@ class CreateTag extends Component {
                 </Select>
               )}
             </FormItem>
-            {getSelectTip('apptag.tip')}
+            <Tips type="form" data="apptag.tip" />
           </div>
         </Form>
         <div className="c7n-apptag-release-title">{formatMessage({ id: 'apptag.release.title' })}</div>
