@@ -33,10 +33,10 @@ class DomainOverview extends Component {
    * 按环境加载域名
    * @param envId
    */
-  loadDomain = envId => {
+  loadDomain = (envId, spin = true) => {
     const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
-    store.loadDomain(projectId, envId);
+    store.loadDomain(spin, projectId, envId);
   };
 
   /**
@@ -56,9 +56,19 @@ class DomainOverview extends Component {
       .then(() => {
         this.submitting = false;
         if (lastDatas === 1 && page === totalPage) {
-          store.loadDomain(projectId, envId, store.getPageInfo.current - 2);
+          store.loadDomain(
+            true,
+            projectId,
+            envId,
+            store.getPageInfo.current - 2
+          );
         } else {
-          store.loadDomain(projectId, envId, store.getPageInfo.current - 1);
+          store.loadDomain(
+            true,
+            projectId,
+            envId,
+            store.getPageInfo.current - 1
+          );
         }
         this.closeRemove();
       })
@@ -161,7 +171,15 @@ class DomainOverview extends Component {
       param: paras.toString(),
     };
     store.setInfo({ filters, sort: sorter, paras });
-    store.loadDomain(id, envId, page, pagination.pageSize, sort, postData);
+    store.loadDomain(
+      true,
+      id,
+      envId,
+      page,
+      pagination.pageSize,
+      sort,
+      postData
+    );
   };
 
   render() {
@@ -235,7 +253,11 @@ class DomainOverview extends Component {
                   placement="top"
                 >
                   <span
-                    className={`c7ncd-status c7ncd-status-${instance.serviceStatus === "running" ? "success" : "disconnect"}`}
+                    className={`c7ncd-status c7ncd-status-${
+                      instance.serviceStatus === "running"
+                        ? "success"
+                        : "disconnect"
+                    }`}
                   />
                 </Tooltip>
                 {instance.serviceName}
@@ -407,7 +429,9 @@ class DomainOverview extends Component {
             </Button>,
           ]}
         >
-          <div className="c7n-padding-top_8">{intl.formatMessage({ id: 'confirm.delete' })}</div>
+          <div className="c7n-padding-top_8">
+            {intl.formatMessage({ id: "confirm.delete" })}
+          </div>
         </Modal>
       </div>
     );

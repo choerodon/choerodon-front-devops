@@ -399,6 +399,7 @@ const zhCN = {
   submit: "确认",
   key: "键",
   value: "值",
+  detailMore: "更多详情",
 
   // 刷新
   refresh: "刷新",
