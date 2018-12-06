@@ -227,6 +227,16 @@
           - 'devops-service.certification.listByOptions'
           - 'devops-service.certification.create'
           - 'devops-service.certification.delete'
+    - "config-map":
+        icon: compare_arrows
+        Routes: /devops/config-map
+        sort: 10
+        permission:
+          - 'devops-service.devops-config-map.create'
+          - 'devops-service.devops-config-map.query'
+          - 'devops-service.devops-config-map.delete'
+          - 'devops-service.devops-config-map.checkName'
+          - 'devops-service.devops-config-map.listByEnv'
 "platform-reports":
   icon: bar_chart
   sort: 99

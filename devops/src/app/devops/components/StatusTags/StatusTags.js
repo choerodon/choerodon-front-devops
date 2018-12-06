@@ -7,6 +7,7 @@ const Color = {
   error: '#f44336',
   failed: '#f44336',
   merged: '#4D90FE',
+  operating: '#4D90FE',
   opened: '#FFB100',
 };
 

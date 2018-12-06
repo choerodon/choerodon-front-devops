@@ -28,6 +28,7 @@
 "deployment-pipeline.ingress": "Ingress"
 "deployment-pipeline.container": "Container"
 "deployment-pipeline.certificate": "Certificate"
+"deployment-pipeline.config-map": "Config Map"
 
 # 报表
 "platform-reports": "Reports"

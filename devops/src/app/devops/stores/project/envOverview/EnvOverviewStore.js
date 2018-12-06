@@ -4,6 +4,7 @@ import _ from "lodash";
 import ContainerStore from "../container";
 import CertificateStore from "../certificate";
 import InstancesStore from "../instances";
+import ConfigMapStore from "../configMap";
 import { handleProptError } from "../../../utils";
 import DeploymentPipelineStore from "../deploymentPipeline";
 
@@ -230,6 +231,9 @@ class EnvOverviewStore {
                   });
                 }
                 InstancesStore.setIsCache(false);
+                break;
+              case "configMap":
+                ConfigMapStore.loadConfigMap(projectId, this.tpEnvId, page, pageSize, sorter, postData);
                 break;
               case "all":
                 break;
