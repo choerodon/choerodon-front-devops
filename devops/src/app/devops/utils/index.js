@@ -24,7 +24,7 @@ export function handleProptError(data) {
 /**
  * 参数 长度低于2则前面加 0，否则不加
  * @param {string | number} str
- * @returns {string} 
+ * @returns {string}
  */
 function padZero(str) {
   return str.toString().padStart(2, '0');
@@ -32,7 +32,7 @@ function padZero(str) {
 
 /**
  * 格式化时间，转化为 YYYY-MM-DD hh:mm:ss
- * @param {Date} timestamp 
+ * @param {Date} timestamp
  * @returns {string}
  */
 export function formatDate(timestamp) {

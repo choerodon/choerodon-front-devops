@@ -314,6 +314,16 @@ const pageDetail = {
   "deployInfo.title": '查看实例"{sidebarName}"的部署配置信息',
   "deployInfo.description": "您可在此查看该实例详细的配置信息。",
   "deployInfo.link": `${docServer}/user-guide/deployment-pipeline/application-deployment/`,
+
+  // 配置映射
+  "configMap.title": '环境"{name}"的配置映射',
+  "configMap.create.title": '在环境"{name}"中创建配置映射',
+  "configMap.edit.title": '对映射配置"{name}"进行修改',
+  "configMap.edit.description": '您可以在此处修改配置映射的描述与其中包含的键值对。',
+  "configMap.create.description": 'description',
+  "configMap.description": '配置映射是受法律认可的证书文件，确定了域名注册者对域名的拥有权与拥有时限。您在每个环境中添加的所有域名都需要有域名证书。',
+  "configMap.link": `${docServer}/user-guide/deployment-pipeline/config-map/`,
+  "configMap.create.link": `${docServer}/user-guide/deployment-pipeline/config-map/`,
 };
 
 const zhCN = {
@@ -387,6 +397,8 @@ const zhCN = {
   recent: "最近",
   return: "返回",
   submit: "确认",
+  key: "键",
+  value: "值",
 
   // 刷新
   refresh: "刷新",
@@ -1183,7 +1195,7 @@ const zhCN = {
   // 集群
   "cluster.head": "集群",
   "cluster.create": "创建集群",
-  "cluster.edit": "编辑集群",
+  "cluster.edit": "修改集群",
   "cluster.name": "集群名称",
   "cluster.code": "集群编码",
   "cluster.des": "集群描述",
@@ -1211,6 +1223,20 @@ const zhCN = {
   "cluster.noData.text2": "1. 点击下方按钮进入创建集群页面，填写相关信息；",
   "cluster.noData.text3":
     "2. 点击创建后，会生成创建agent的脚本，复制至对应的k8s平台运行，即可成功激活此集群，进而激活此集群关联项目下的环境。",
+
+  // 配置映射
+  "configMap.head": "配置映射",
+  "configMap.create": "创建配置映射",
+  "configMap.edit": "修改配置映射",
+  "configMap.add": "添加配置映射",
+  "configMap.key": "键",
+  "configMap.des": "描述",
+  "configMap.keyRule": "不能含空格及-、_、.以外的特殊字符",
+  "configMap.keyRuleSpan": "键值不能含空格及-、_、.以外的特殊字符，请检查输入。",
+  "configMap.keyValueSpan": "键值对需配对输入，请检查输入。",
+  "configMap.keyRepeat": "存在重复键，请检查输入。",
+  "configMap.del": "删除配置映射",
+  "configMap.del.tooltip": "确认删除配置映射吗？",
 
   ...pageDetail,
 };
