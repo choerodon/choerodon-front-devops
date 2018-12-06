@@ -17,6 +17,8 @@ import CertTable from "../certTable";
 import CreateCert from "../createCert";
 import EnvOverviewStore from "../../../../stores/project/envOverview";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
+import RefreshBtn from "../../../../components/refreshBtn";
+import DevopsStore from "../../../../stores/DevopsStore";
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -33,6 +35,10 @@ class CertificateHome extends Component {
   componentDidMount() {
     const { id: projectId } = AppState.currentMenuType;
     EnvOverviewStore.loadActiveEnv(projectId, "certificate");
+  }
+
+  componentWillUnmount() {
+    DevopsStore.clearAutoRefresh();
   }
 
   /**
@@ -52,9 +58,9 @@ class CertificateHome extends Component {
   /**
    * 刷新
    */
-  reload = () => this.loadCertData();
+  reload = (spin = true) => this.loadCertData(spin);
 
-  loadCertData = value => {
+  loadCertData = (spin, value) => {
     const envId = value || EnvOverviewStore.getTpEnvId;
     const { CertificateStore } = this.props;
     const {
@@ -65,6 +71,7 @@ class CertificateHome extends Component {
     } = CertificateStore.getTableFilter;
     const { id: projectId } = AppState.currentMenuType;
     CertificateStore.loadCertData(
+      spin,
       projectId,
       page,
       pageSize,
@@ -80,7 +87,7 @@ class CertificateHome extends Component {
    */
   handleEnvSelect = value => {
     EnvOverviewStore.setTpEnvId(value);
-    this.loadCertData(value);
+    this.loadCertData(true, value);
   };
 
   render() {
@@ -95,8 +102,13 @@ class CertificateHome extends Component {
       organizationId: orgId,
       name,
     } = AppState.currentMenuType;
+
     const envData = EnvOverviewStore.getEnvcard;
     const envId = EnvOverviewStore.getTpEnvId;
+
+    if (envData && envData.length && envId) {
+      DevopsStore.initAutoRefresh("cert", this.reload);
+    }
 
     return (
       <Page
@@ -157,9 +169,7 @@ class CertificateHome extends Component {
                   <FormattedMessage id="ctf.create" />
                 </Button>
               </Permission>
-              <Button funcType="flat" onClick={this.reload} icon="refresh">
-                <FormattedMessage id="refresh" />
-              </Button>
+              <RefreshBtn name="cert" onFresh={this.reload} />
             </Header>
             <Content className="page-content" code="ctf" values={{ name }}>
               <CertTable store={CertificateStore} envId={envId} />

@@ -19,6 +19,8 @@ import EnvOverviewStore from "../../../stores/project/envOverview";
 import DepPipelineEmpty from "../../../components/DepPipelineEmpty/DepPipelineEmpty";
 import InstancesStore from "../../../stores/project/instances";
 import Tips from "../../../components/Tips/Tips";
+import RefreshBtn from "../../../components/refreshBtn";
+import DevopsStore from "../../../stores/DevopsStore";
 
 const Option = Select.Option;
 const { AppState } = stores;
@@ -38,13 +40,6 @@ class Instances extends Component {
   componentDidMount() {
     const { id: projectId } = AppState.currentMenuType;
     EnvOverviewStore.loadActiveEnv(projectId, "instance");
-    if (!this.timer) {
-      this.timer = setInterval(() => {
-        if (EnvOverviewStore.tpEnvId) {
-          this.reload(false);
-        }
-      }, 1000 * 10);
-    }
   }
 
   componentWillUnmount() {
@@ -56,15 +51,8 @@ class Instances extends Component {
       InstancesStore.setIstTableFilter(null);
       InstancesStore.setIstPage(null);
     }
-    this.clearTimer();
+    DevopsStore.clearAutoRefresh();
   }
-
-  clearTimer = () => {
-    if (this.timer) {
-      clearInterval(this.timer);
-      this.timer = null;
-    }
-  };
 
   /**
    * 页码改变的回调
@@ -156,7 +144,6 @@ class Instances extends Component {
       appId,
     }).catch(err => {
       InstancesStore.changeLoading(false);
-      // this.clearTimer();
       Choerodon.handleResponseError(err);
     });
   };
@@ -205,7 +192,6 @@ class Instances extends Component {
       })
       .catch(err => {
         InstancesStore.changeLoading(false);
-        // this.clearTimer();
         Choerodon.handleResponseError(err);
       });
   };
@@ -275,17 +261,17 @@ class Instances extends Component {
 
   /**
    * 页面数据重载
-   * @param envId
+   * @param spin 加载动画
+   * @param clear 清空筛选条件
    * @param appId
    */
-  reloadData = (fresh, clear, appId = false) => {
+  reloadData = (spin, clear, appId = false) => {
     const { id: projectId } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
     const envId = EnvOverviewStore.getTpEnvId;
-    InstancesStore.loadInstanceAll(fresh, projectId, { envId, appId }).catch(
+    InstancesStore.loadInstanceAll(spin, projectId, { envId, appId }).catch(
       err => {
         InstancesStore.changeLoading(false);
-        // this.clearTimer();
         Choerodon.handleResponseError(err);
       }
     );
@@ -295,7 +281,7 @@ class Instances extends Component {
   /**
    * 刷新按钮
    */
-  reload = (fresh = true, clear = false) => {
+  reload = (spin = true, clear = false) => {
     const { id: projectId } = AppState.currentMenuType;
     const {
       InstancesStore: {
@@ -307,7 +293,7 @@ class Instances extends Component {
     } = this.props;
     const envId = EnvOverviewStore.getTpEnvId;
     loadAppNameByEnv(projectId, envId, getAppPage - 1, getAppPageSize);
-    this.reloadData(fresh, clear, getAppId);
+    this.reloadData(spin, clear, getAppId);
   };
 
   /**
@@ -348,7 +334,6 @@ class Instances extends Component {
           loading: false,
           deleteIst: this.state.deleteIst,
         });
-        // this.clearTimer();
         Choerodon.handleResponseError(err);
       });
     InstancesStore.setIstTableFilter(null);
@@ -383,7 +368,6 @@ class Instances extends Component {
         InstancesStore.setIstTableFilter(null);
         loadInstanceAll(true, projectId, { envId }).catch(err => {
           InstancesStore.changeLoading(false);
-          // this.clearTimer();
           Choerodon.handleResponseError(err);
         });
       }
@@ -527,6 +511,8 @@ class Instances extends Component {
   }
 
   render() {
+    DevopsStore.initAutoRefresh("ist", this.reload);
+
     const { id: projectId, name: projectName } = AppState.currentMenuType;
     const {
       InstancesStore,
@@ -705,16 +691,7 @@ class Instances extends Component {
                   </Option>
                 ))}
               </Select>
-              <Button
-                icon="refresh"
-                funcType="flat"
-                onClick={e => {
-                  e.persist();
-                  this.reload();
-                }}
-              >
-                <FormattedMessage id="refresh" />
-              </Button>
+              <RefreshBtn name="ist" onFresh={this.reload} />
             </Header>
             <Content className="page-content">
               <div className="c7n-instance-header">

@@ -133,7 +133,7 @@ class DomainStore {
   }
 
   loadData = (
-    loading,
+    spin,
     isRefresh = true,
     proId,
     envId,
@@ -148,7 +148,7 @@ class DomainStore {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
-    loading && this.changeLoading(true);
+    spin && this.changeLoading(true);
     return axios
       .post(
         `/devops/v1/projects/${proId}/ingress/${envId}/listByEnv?page=${page}&size=${pageSize}&sort=${sort.field ||
@@ -160,7 +160,7 @@ class DomainStore {
         if (res) {
           this.handleData(data);
         }
-        loading && this.changeLoading(false);
+        spin && this.changeLoading(false);
         this.changeIsRefresh(false);
       });
   };

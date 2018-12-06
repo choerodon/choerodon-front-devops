@@ -36,6 +36,8 @@ import DomainStore from "../../../../stores/project/domain";
 import NetworkConfigStore from "../../../../stores/project/networkConfig";
 import CertificateStore from "../../../../stores/project/certificate";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
+import RefreshBtn from "../../../../components/refreshBtn";
+import DevopsStore from "../../../../stores/DevopsStore";
 
 const { AppState } = stores;
 const { TabPane } = Tabs;
@@ -72,24 +74,25 @@ class EnvOverviewHome extends Component {
     const { EnvOverviewStore } = this.props;
     EnvOverviewStore.setIst(null);
     EnvOverviewStore.setTabKey("app");
+    DevopsStore.clearAutoRefresh();
   }
 
   /**
-   * 刷新函数重调用tabchange
+   * 刷新函数重调用 tabChange
    */
-  handleRefresh = () => {
+  handleRefresh = (spin = true) => {
     const { EnvOverviewStore } = this.props;
     EnvOverviewStore.setVal("");
-    const key = EnvOverviewStore.getTabKey;
-    const envId = EnvOverviewStore.getTpEnvId;
-    const { filters, sort, paras } = EnvOverviewStore.getInfo;
+    const {
+      getTabKey,
+      getTpEnvId,
+      getInfo: { filters, sort, paras },
+    } = EnvOverviewStore;
     const sorter = { field: "", order: "desc" };
     if (sort.column) {
       sorter.field = sort.field || sort.columnKey;
       if (sort.order === "ascend") {
         sorter.order = "asc";
-      } else if (sort.order === "descend") {
-        sorter.order = "desc";
       }
     }
     let searchParam = {};
@@ -101,7 +104,7 @@ class EnvOverviewHome extends Component {
       param: paras.toString(),
     };
     if (this.env.length) {
-      this.loadModuleDate(key, envId, sorter, postData);
+      this.loadModuleDate(spin, getTabKey, getTpEnvId, sorter, postData);
     }
   };
 
@@ -120,7 +123,7 @@ class EnvOverviewHome extends Component {
       param: "",
     };
     if (this.env.length && envId) {
-      this.loadModuleDate(key, envId, sort, post);
+      this.loadModuleDate(true, key, envId, sort, post);
     }
     EnvOverviewStore.setInfo({
       filters: {},
@@ -129,23 +132,23 @@ class EnvOverviewHome extends Component {
     });
   };
 
-  loadModuleDate = (key, env, sort, post) => {
+  loadModuleDate = (spin, key, env, sort, post) => {
     this.loadSync(env);
-    this.loadLog(env);
+    this.loadLog(spin, env);
     switch (key) {
       case "domain":
-        this.loadDomainOrNet("domain", env, sort, post);
+        this.loadDomainOrNet(spin, "domain", env, sort, post);
         break;
       case "network":
-        this.loadDomainOrNet("net", env, sort, post);
+        this.loadDomainOrNet(spin, "net", env, sort, post);
         break;
       case "log":
         break;
       case "cert":
-        this.loadCertData(env);
+        this.loadCertData(spin, env);
         break;
       default:
-        this.loadIstOverview(env);
+        this.loadIstOverview(spin, env);
         break;
     }
   };
@@ -158,12 +161,7 @@ class EnvOverviewHome extends Component {
   handleEnvSelect = value => {
     const { EnvOverviewStore } = this.props;
     EnvOverviewStore.setTpEnvId(value);
-    this.loadIstOverview(value);
-    this.loadDomainOrNet("domain", value);
-    this.loadDomainOrNet("net", value);
-    this.loadLog(value);
-    this.loadSync(value);
-    this.loadCertData(value);
+    this.loadAllDate(value);
   };
 
   /**
@@ -178,12 +176,7 @@ class EnvOverviewHome extends Component {
         const envId = EnvOverviewStore.getTpEnvId;
         this.env = env;
         if (envId) {
-          this.loadIstOverview(envId);
-          this.loadDomainOrNet("domain", envId);
-          this.loadDomainOrNet("net", envId);
-          this.loadLog(envId);
-          this.loadSync(envId);
-          this.loadCertData(envId);
+          this.loadAllDate(envId);
         }
       }
     });
@@ -193,16 +186,17 @@ class EnvOverviewHome extends Component {
    * 加载应用实例列表
    * @param envId
    */
-  loadIstOverview = envId => {
+  loadIstOverview = (spin, envId) => {
     const { EnvOverviewStore } = this.props;
     const projectId = AppState.currentMenuType.id;
-    EnvOverviewStore.loadIstOverview(projectId, envId);
+    EnvOverviewStore.loadIstOverview(spin, projectId, envId);
   };
 
   /**
    * 按环境加载域名
    */
   loadDomainOrNet = (
+    spin,
     type,
     envId,
     sort = { field: "id", order: "desc" },
@@ -216,6 +210,7 @@ class EnvOverviewHome extends Component {
     const pagination = EnvOverviewStore.getPageInfo;
     if (type === "domain") {
       EnvOverviewStore.loadDomain(
+        spin,
         projectId,
         envId,
         pagination.current - 1,
@@ -225,6 +220,7 @@ class EnvOverviewHome extends Component {
       );
     } else if (type === "net") {
       EnvOverviewStore.loadNetwork(
+        spin,
         projectId,
         envId,
         pagination.current - 1,
@@ -239,10 +235,10 @@ class EnvOverviewHome extends Component {
    * 按环境加载错误日志
    * @param envId
    */
-  loadLog = envId => {
+  loadLog = (spin, envId) => {
     const { EnvOverviewStore } = this.props;
     const projectId = AppState.currentMenuType.id;
-    EnvOverviewStore.loadLog(projectId, envId);
+    EnvOverviewStore.loadLog(spin, projectId, envId);
   };
 
   /**
@@ -257,12 +253,14 @@ class EnvOverviewHome extends Component {
 
   /**
    * 加载证书
+   * @param spin
    * @param envId
    */
-  loadCertData = envId => {
+  loadCertData = (spin, envId) => {
     const { page, pageSize } = CertificateStore.getTableFilter;
     const { id: projectId } = AppState.currentMenuType;
     CertificateStore.loadCertData(
+      spin,
       projectId,
       page,
       pageSize,
@@ -272,20 +270,33 @@ class EnvOverviewHome extends Component {
     );
   };
 
+  loadAllDate(envId) {
+    this.loadIstOverview(true, envId);
+    this.loadDomainOrNet(true, "domain", envId);
+    this.loadDomainOrNet(true, "net", envId);
+    this.loadLog(true, envId);
+    this.loadSync(envId);
+    this.loadCertData(true, envId);
+  }
+
   /**
    *打开域名创建弹框
    */
   @action
   createDomain = (type, id = "") => {
-    this.props.form.resetFields();
+    const {
+      form,
+      intl: { formatMessage },
+    } = this.props;
+    form.resetFields();
     if (type === "create") {
-      this.domainTitle = this.props.intl.formatMessage({
+      this.domainTitle = formatMessage({
         id: "domain.header.create",
       });
       this.domainType = type;
       this.domainId = id;
     } else {
-      this.domainTitle = this.props.intl.formatMessage({
+      this.domainTitle = formatMessage({
         id: "domain.header.update",
       });
       this.domainType = type;
@@ -313,7 +324,7 @@ class EnvOverviewHome extends Component {
     this.domainId = null;
     if (isLoad) {
       const envId = EnvOverviewStore.getTpEnvId;
-      this.loadDomainOrNet("domain", envId);
+      this.loadDomainOrNet(true, "domain", envId);
       EnvOverviewStore.setInfo({
         filters: {},
         sort: { columnKey: "id", order: "descend" },
@@ -333,7 +344,7 @@ class EnvOverviewHome extends Component {
     this.showNetwork = false;
     if (isLoad) {
       const envId = EnvOverviewStore.getTpEnvId;
-      this.loadDomainOrNet("net", envId);
+      this.loadDomainOrNet(true, "net", envId);
       EnvOverviewStore.setInfo({
         filters: {},
         sort: { columnKey: "id", order: "descend" },
@@ -360,7 +371,7 @@ class EnvOverviewHome extends Component {
     this.props.form.resetFields();
     if (isLoad) {
       const envId = EnvOverviewStore.getTpEnvId;
-      this.loadCertData(envId);
+      this.loadCertData(true, envId);
       EnvOverviewStore.setInfo({
         filters: {},
         sort: { columnKey: "id", order: "descend" },
@@ -445,6 +456,10 @@ class EnvOverviewHome extends Component {
     const envState = this.env.length
       ? this.env.filter(d => d.id === Number(envId))[0]
       : { connect: false };
+
+    if (envData && envData.length && envId) {
+      DevopsStore.initAutoRefresh("overview", this.handleRefresh);
+    }
 
     // tab页选项
     const tabOption = [
@@ -748,9 +763,7 @@ class EnvOverviewHome extends Component {
                   </Button>
                 </a>
               </Tooltip>
-              <Button onClick={this.handleRefresh} icon="refresh">
-                <FormattedMessage id="refresh" />
-              </Button>
+              <RefreshBtn name="overview" onFresh={this.handleRefresh} />
             </Header>
             <Content>
               <div className="c7n-envow-status-wrap">

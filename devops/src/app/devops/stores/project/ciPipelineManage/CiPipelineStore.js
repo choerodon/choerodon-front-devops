@@ -20,9 +20,9 @@ class CiPipelineStore {
 
   @observable loading = true;
 
-  loadPipelines(appId, page = 0, size = this.pagination.pageSize, projectId = AppState.currentMenuType.id) {
-    this.setCiPipelines([]);
-    this.setLoading(true);
+  loadPipelines(spin, appId, page = 0, size = this.pagination.pageSize, projectId = AppState.currentMenuType.id) {
+    spin && this.setCiPipelines([]);
+    spin && this.setLoading(true);
     axios.get(`/devops/v1/projects/${projectId}/pipeline/page?appId=${appId}&page=${page}&size=${size}`)
       .then((res) => {
         const response = this.handleProptError(res);
@@ -34,7 +34,7 @@ class CiPipelineStore {
           });
           this.setCiPipelines(res.content);
         }
-        this.setLoading(false);
+        spin && this.setLoading(false);
       });
   }
 

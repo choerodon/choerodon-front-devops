@@ -61,9 +61,9 @@ class CreateDomain extends Component {
           .checkName(this.state.projectId, value, envId)
           .then(data => {
             if (data) {
-              callback(intl.formatMessage({ id: "domain.name.check.exist" }));
-            } else {
               callback();
+            } else {
+              callback(intl.formatMessage({ id: "domain.name.check.exist" }));
             }
           })
           .catch(() => callback());
@@ -700,7 +700,6 @@ class CreateDomain extends Component {
                   <Select
                     ref={this.envSelectRef}
                     className="c7n-select_512"
-                    dropdownClassName="c7n-network-env"
                     label={<FormattedMessage id="network.env" />}
                     placeholder={formatMessage({
                       id: "network.env.placeholder",

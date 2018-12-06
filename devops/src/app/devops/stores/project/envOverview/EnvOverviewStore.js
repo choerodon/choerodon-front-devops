@@ -201,6 +201,7 @@ class EnvOverviewStore {
                   postData,
                 } = CertificateStore.getTableFilter;
                 CertificateStore.loadCertData(
+                  true,
                   projectId,
                   page,
                   pageSize,
@@ -245,6 +246,7 @@ class EnvOverviewStore {
   };
 
   loadIstOverview = (
+    spin,
     projectId,
     envId,
     datas = {
@@ -252,8 +254,8 @@ class EnvOverviewStore {
       param: "",
     }
   ) => {
-    this.changeLoading(true);
-    this.setIst(null);
+    spin && this.changeLoading(true);
+    spin && this.setIst(null);
     axios
       .post(
         `/devops/v1/projects/${projectId}/app_instances/${envId}/listByEnv`,
@@ -264,11 +266,12 @@ class EnvOverviewStore {
         if (res) {
           this.setIst(data);
         }
-        this.changeLoading(false);
+        spin && this.changeLoading(false);
       });
   };
 
   loadDomain = (
+    spin,
     proId,
     envId,
     page = this.pageInfo.current - 1,
@@ -279,7 +282,7 @@ class EnvOverviewStore {
       param: "",
     }
   ) => {
-    this.changeLoading(true);
+    spin && this.changeLoading(true);
     return axios
       .post(
         `/devops/v1/projects/${proId}/ingress/${envId}/listByEnv?page=${page}&size=${pageSize}&sort=${sort.field ||
@@ -293,11 +296,12 @@ class EnvOverviewStore {
           this.setPageInfo({ number, size, totalElements });
           this.setDomin(data.content);
         }
-        this.changeLoading(false);
+        spin && this.changeLoading(false);
       });
   };
 
   loadNetwork = (
+    spin,
     proId,
     envId,
     page = this.pageInfo.current - 1,
@@ -308,7 +312,7 @@ class EnvOverviewStore {
       param: "",
     }
   ) => {
-    this.changeLoading(true);
+    spin && this.changeLoading(true);
     return axios
       .post(
         `/devops/v1/projects/${proId}/service/${envId}/listByEnv?page=${page}&size=${pageSize}&sort=${sort.field ||
@@ -322,17 +326,18 @@ class EnvOverviewStore {
           this.setPageInfo({ number, size, totalElements });
           this.setNetwork(data.content);
         }
-        this.changeLoading(false);
+        spin && this.changeLoading(false);
       });
   };
 
   loadLog = (
+    spin,
     proId,
     envId,
     page = this.pageInfo.current - 1,
     pageSize = this.pageInfo.pageSize
   ) => {
-    this.changeLoading(true);
+    spin && this.changeLoading(true);
     return axios
       .get(
         `/devops/v1/projects/${proId}/envs/${envId}/error_file/list_by_page?page=${page}&size=${pageSize}`
@@ -344,7 +349,7 @@ class EnvOverviewStore {
           this.setPageInfo({ number, size, totalElements });
           this.setLog(data.content);
         }
-        this.changeLoading(false);
+        spin && this.changeLoading(false);
       });
   };
 

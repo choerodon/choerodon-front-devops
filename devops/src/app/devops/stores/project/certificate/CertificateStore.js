@@ -103,6 +103,7 @@ class CertificateStore {
 
   /**
    * 加载证书列表
+   * @param spin
    * @param projectId
    * @param page
    * @param sizes
@@ -110,8 +111,8 @@ class CertificateStore {
    * @param filter
    * @param envId 根据环境查询时填写的环境id，否则传null
    */
-  loadCertData = (projectId, page, sizes, sort, filter, envId) => {
-    this.setCertLoading(true);
+  loadCertData = (spin, projectId, page, sizes, sort, filter, envId) => {
+    spin && this.setCertLoading(true);
     const url = envId ? `&env_id=${envId}` : "";
     axios
       .post(
@@ -121,7 +122,7 @@ class CertificateStore {
         JSON.stringify(filter)
       )
       .then(data => {
-        this.setCertLoading(false);
+        spin && this.setCertLoading(false);
         const res = handleProptError(data);
         if (res) {
           const { content, totalElements, number, size } = res;

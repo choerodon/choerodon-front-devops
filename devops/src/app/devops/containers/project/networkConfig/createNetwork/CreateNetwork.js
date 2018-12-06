@@ -147,6 +147,7 @@ class CreateNetwork extends Component {
             }
           });
         }
+
         if (targetKeys) {
           _.forEach(targetKeys, item => {
             if (item || item === 0) {
@@ -155,6 +156,7 @@ class CreateNetwork extends Component {
             }
           });
         }
+
         const network = {
           name,
           appId: appId || null,
@@ -165,6 +167,7 @@ class CreateNetwork extends Component {
           label: !_.isEmpty(label) ? label : null,
           type: config,
         };
+
         store
           .createNetwork(id, network)
           .then(res => {
@@ -804,7 +807,6 @@ class CreateNetwork extends Component {
                   <Select
                     ref={this.envSelectRef}
                     className="c7n-select_512"
-                    dropdownClassName="c7n-network-env"
                     label={<FormattedMessage id="network.env" />}
                     placeholder={intl.formatMessage({
                       id: "network.env.placeholder",

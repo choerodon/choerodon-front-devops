@@ -3,8 +3,8 @@ import { stores } from "choerodon-front-boot";
 import EnvOverviewStore from "../stores/project/envOverview";
 import DevopsStore from "../stores/DevopsStore";
 
-const REFRESH_MANUAL = "manual";
-const REFRESH_AUTOMATIC = "auto";
+// const REFRESH_MANUAL = "manual";
+// const REFRESH_AUTOMATIC = "auto";
 
 const { AppState } = stores;
 
@@ -14,13 +14,7 @@ export const commonComponent = storeName => {
       static displayName = "commonComponent";
 
       clearAutoRefresh() {
-        DevopsStore.setRadioValue(REFRESH_MANUAL);
-        DevopsStore.clearTimer();
-      }
-
-      startAutoRefresh() {
-        DevopsStore.setRadioValue(REFRESH_AUTOMATIC);
-        DevopsStore.setTimer(this.handleRefresh);
+        DevopsStore.clearAutoRefresh();
       }
 
       /**
@@ -28,12 +22,7 @@ export const commonComponent = storeName => {
        * @param {*} name
        */
       initAutoRefresh(name) {
-        const isAuto = DevopsStore.getAutoFlag;
-        if (isAuto[name]) {
-          this.startAutoRefresh();
-        } else {
-          this.clearAutoRefresh();
-        }
+        DevopsStore.initAutoRefresh(name, this.handleRefresh);
       }
 
       /**
@@ -52,13 +41,13 @@ export const commonComponent = storeName => {
        * 加载table数据
        * @param page 加载第几页
        * @param envId 环境id
-       * @param loading table加载动画
+       * @param spin table加载动画
        * @param isRefresh 页面初始加载动画
        */
-      loadAllData = (page, envId, loading = true, isRefresh = false) => {
+      loadAllData = (page, envId, spin = true, isRefresh = false) => {
         const store = this.props[storeName];
         const { id: projectId } = AppState.currentMenuType;
-        store.loadData(loading, isRefresh, projectId, envId, page);
+        store.loadData(spin, isRefresh, projectId, envId, page);
       };
 
       /**
@@ -137,8 +126,9 @@ export const commonComponent = storeName => {
        * @param filters
        * @param sorter
        * @param paras
+       * @param spin
        */
-      tableChange = (pagination, filters, sorter, paras, loading = true) => {
+      tableChange = (pagination, filters, sorter, paras, spin = true) => {
         const store = this.props[storeName];
         const { id } = AppState.currentMenuType;
         const envId = EnvOverviewStore.getTpEnvId;
@@ -162,7 +152,7 @@ export const commonComponent = storeName => {
           param: paras.toString(),
         };
         store.loadData(
-          loading,
+          spin,
           false,
           id,
           envId,

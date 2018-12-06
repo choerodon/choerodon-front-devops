@@ -13,6 +13,9 @@ import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
 import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
 import Tips from "../../../../components/Tips/Tips";
+import RefreshBtn from '../../../../components/refreshBtn';
+import DevopsStore from '../../../../stores/DevopsStore';
+import { getTableTitle } from '../../../../utils';
 
 const { Option, OptGroup } = Select;
 const ICONS = {
@@ -95,6 +98,7 @@ class CiPipelineHome extends Component {
 
   componentWillUnmount() {
     CiPipelineStore.setCiPipelines([]);
+    DevopsStore.clearAutoRefresh();
   }
 
   get tableCiPipeline() {
@@ -173,14 +177,16 @@ class CiPipelineHome extends Component {
 
   handleTableChange = (pagination) => {
     CiPipelineStore.loadPipelines(
+      true,
       DevPipelineStore.selectedApp,
       pagination.current - 1,
       pagination.pageSize,
     );
   };
 
-  handleRefresh =() => {
+  handleRefresh =(spin = true) => {
     CiPipelineStore.loadPipelines(
+      spin,
       DevPipelineStore.selectedApp,
       CiPipelineStore.pagination.current - 1,
       CiPipelineStore.pagination.pageSize,
@@ -190,7 +196,7 @@ class CiPipelineHome extends Component {
   handleChange(appId) {
     DevPipelineStore.setSelectApp(appId);
     DevPipelineStore.setRecentApp(appId);
-    CiPipelineStore.loadPipelines(appId);
+    CiPipelineStore.loadPipelines(true, appId);
   }
 
   handleAction(record) {
@@ -415,6 +421,9 @@ class CiPipelineHome extends Component {
     const { intl: { formatMessage } } = this.props;
     const appData = DevPipelineStore.getAppData;
     const appId = DevPipelineStore.getSelectApp;
+    if (appData && appData.length && appId) {
+      DevopsStore.initAutoRefresh('ci', this.handleRefresh);
+    }
     const titleName = _.find(appData, ['id', appId]) ? _.find(appData, ['id', appId]).name : name;
     return (
       <Page
@@ -463,13 +472,7 @@ class CiPipelineHome extends Component {
               }
             </OptGroup>
           </Select>
-          <Button
-            funcType="flat"
-            onClick={this.handleRefresh}
-          >
-            <i className="icon-refresh icon" />
-            <FormattedMessage id="refresh" />
-          </Button>
+          <RefreshBtn name="ci" onFresh={this.handleRefresh} />
         </Header>
         <Content code={appData.length ? 'ciPipeline.app' : 'ciPipeline'} values={{ name: titleName }}>
           {this.tableCiPipeline}
