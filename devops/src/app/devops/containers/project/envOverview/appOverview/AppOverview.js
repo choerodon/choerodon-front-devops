@@ -111,7 +111,7 @@ class AppOverview extends Component {
       searchParam,
       param: val.toString(),
     };
-    store.loadIstOverview(projectId, envId, postData);
+    store.loadIstOverview(true, projectId, envId, postData);
   };
 
   /**
@@ -141,10 +141,10 @@ class AppOverview extends Component {
   /**
    * 加载实例总览列表
    */
-  loadIstOverview = () => {
+  loadIstOverview = (spin = true) => {
     const { store, envId } = this.props;
     const projectId = AppState.currentMenuType.id;
-    store.loadIstOverview(projectId, envId);
+    store.loadIstOverview(spin, projectId, envId);
   };
 
   /**

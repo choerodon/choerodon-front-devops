@@ -450,18 +450,42 @@ class CreateDomain extends Component {
    * 切换网络协议
    * @param e
    */
-  handleTypeChange = e => this.setState({ protocol: e.target.value });
+  handleTypeChange = e => {
+    const {
+      form: { getFieldValue, getFieldError },
+    } = this.props;
+
+    const protocol = e.target.value;
+
+    this.setState({ protocol });
+
+    const domain = getFieldValue("domain");
+    if (domain && !getFieldError("domain")) {
+      this.loadCertByDomain(domain, protocol);
+    }
+  };
 
   /**
    * 域名输入框失焦，查询证书
    * @param e
+   * @param p 协议类型
    */
-  loadCertByDomain = e => {
-    const { store, form } = this.props;
+  loadCertByDomain = (e, p) => {
+    const {
+      store,
+      form: { isModifiedField, resetFields },
+    } = this.props;
     const { projectId, selectEnv, protocol } = this.state;
-    form.resetFields("certId");
-    if (protocol === "secret" && selectEnv) {
-      store.loadCertByEnv(projectId, selectEnv, e.target.value);
+
+    const value = e.target ? e.target.value : e;
+    const type = p || protocol;
+
+    if (isModifiedField("domain")) {
+      resetFields("certId");
+    }
+
+    if (type === "secret" && selectEnv) {
+      store.loadCertByEnv(projectId, selectEnv, value);
     }
   };
 
