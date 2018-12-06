@@ -146,7 +146,7 @@ class DevPipelineStore {
                 MergeRequestStore.loadUrl(projectId, this.selectedApp);
                 break;
               case 'ci':
-                CiPipelineStore.loadPipelines(this.selectedApp);
+                CiPipelineStore.loadPipelines(true, this.selectedApp);
                 break;
               case 'all':
                 DevConsoleStore.loadBranchList(projectId, this.selectedApp);

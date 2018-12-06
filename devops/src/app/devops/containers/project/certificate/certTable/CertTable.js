@@ -7,6 +7,7 @@ import _ from "lodash";
 import { getTimeLeft } from "../../../../utils";
 import MouserOverWrapper from "../../../../components/MouseOverWrapper";
 import StatusIcon from "../../../../components/StatusIcon";
+import EnvFlag from "../../../../components/envFlag";
 import "./CertTable.scss";
 import Tips from '../../../../components/Tips';
 
@@ -66,6 +67,7 @@ class CertTable extends Component {
           Choerodon.prompt(data.message);
         } else {
           store.loadCertData(
+            true,
             projectId,
             page,
             pageSize,
@@ -124,7 +126,7 @@ class CertTable extends Component {
       sorter: sort,
       param: paras,
     });
-    store.loadCertData(projectId, page, pageSize, sort, postData, envId);
+    store.loadCertData(true, projectId, page, pageSize, sort, postData, envId);
   };
 
   /**
@@ -317,18 +319,7 @@ class CertTable extends Component {
         sortOrder: columnKey === "envName" && order,
         filteredValue: filters.envName || [],
         render: (text, record) => (
-          <React.Fragment>
-            {record.envConnected ? (
-              <Tooltip title={<FormattedMessage id="connect" />}>
-                <span className="c7ncd-status c7ncd-status-success" />
-              </Tooltip>
-            ) : (
-              <Tooltip title={<FormattedMessage id="disconnect" />}>
-                <span className="c7ncd-status c7ncd-status-disconnect" />
-              </Tooltip>
-            )}
-            {text}
-          </React.Fragment>
+          <EnvFlag status={record.envConnected} name={record.envName} />
         ),
       },
       {

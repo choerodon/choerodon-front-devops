@@ -29,6 +29,8 @@ import CopyToBoard from "react-copy-to-clipboard";
 import Board from "./pipeline/Board";
 import LoadingBar from "../../../components/loadingBar/index";
 import EnvGroup from "./EnvGroup";
+import RefreshBtn from "../../../components/refreshBtn";
+import DevopsStore from "../../../stores/DevopsStore";
 import "../../main.scss";
 import "./EnvPipeLineHome.scss";
 import { scrollTo } from "../../../utils";
@@ -159,24 +161,17 @@ class Environment extends Component {
       createSelectedTemp: [],
       cluster: null,
     };
-    // this.timer = null;
   }
 
   componentDidMount() {
     this.reload();
-    this.timer = setInterval(() => {
-      this.reload(false);
-    }, 1000 * 10);
   }
 
   componentWillUnmount() {
     const { EnvPipelineStore } = this.props;
+    DevopsStore.clearAutoRefresh();
     EnvPipelineStore.setEnvcardPosition([]);
     EnvPipelineStore.setDisEnvcardPosition([]);
-    if (this.timer) {
-      clearInterval(this.timer);
-      this.timer = null;
-    }
   }
 
   /**
@@ -469,24 +464,31 @@ class Environment extends Component {
       form.validateFieldsAndScroll((err, data, modify) => {
         if (modify) {
           if (!err) {
-            EnvPipelineStore.setShow(false);
+            // EnvPipelineStore.setShow(false);
             const id = EnvPipelineStore.getEnvData.id;
-            EnvPipelineStore.setSideType(null);
-            EnvPipelineStore.updateEnv(projectId, { ...data, id }).then(res => {
-              if (res && res.failed) {
+            EnvPipelineStore.updateEnv(projectId, { ...data, id })
+              .then(res => {
+                if (res && res.failed) {
+                  this.setState({
+                    submitting: false,
+                  });
+                  Choerodon.prompt(res.message);
+                } else if (res) {
+                  this.loadEnvs();
+                  EnvPipelineStore.setShow(false);
+                  EnvPipelineStore.setSideType(null);
+                  form.resetFields();
+                  this.setState({
+                    submitting: false,
+                  });
+                }
+              })
+              .catch(error => {
                 this.setState({
                   submitting: false,
                 });
-                Choerodon.prompt(res.message);
-              } else if (res) {
-                this.loadEnvs();
-                EnvPipelineStore.setShow(false);
-                form.resetFields();
-                this.setState({
-                  submitting: false,
-                });
-              }
-            });
+                Choerodon.handleResponseError(error);
+              });
           }
         } else {
           this.setState({
@@ -575,9 +577,10 @@ class Environment extends Component {
    * 点击右滑动
    */
   pushScrollRight = () => {
-    scrollLeft = scrollTo(document.getElementsByClassName(
-      "c7n-inner-container-ban"
-    )[0], -300);
+    scrollLeft = scrollTo(
+      document.getElementsByClassName("c7n-inner-container-ban")[0],
+      -300
+    );
     if (scrollLeft < 300) {
       scrollLeft = 0;
     }
@@ -595,15 +598,18 @@ class Environment extends Component {
     )[0].scrollLeft;
     const { EnvPipelineStore } = this.props;
     const { getDisEnvcardPosition: disEnvCard } = EnvPipelineStore;
+
     const DisEnvLength  = disEnvCard.length ? disEnvCard[0].devopsEnviromentRepDTOs.length : 0;
     const flag = DisEnvLength * 285 - window.innerWidth + 297 <= domPosition + 300;
+
     this.setState({
       moveBan: flag,
     });
-    const res = scrollTo(document.getElementsByClassName(
-      "c7n-inner-container-ban"
-    )[0], 300);
-    if ( res === 0 ) {
+    const res = scrollTo(
+      document.getElementsByClassName("c7n-inner-container-ban")[0],
+      300
+    );
+    if (res === 0) {
       scrollLeft = 300;
     } else {
       scrollLeft = res;
@@ -708,11 +714,14 @@ class Environment extends Component {
   };
 
   render() {
+    DevopsStore.initAutoRefresh("env", this.reload);
+
     const {
       EnvPipelineStore,
       intl: { formatMessage },
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
+
     const {
       moveBan,
       submitting,
@@ -726,12 +735,14 @@ class Environment extends Component {
       envName,
       delGroupName,
     } = this.state;
+
     const {
       id: projectId,
       organizationId,
       type,
       name,
     } = AppState.currentMenuType;
+
     const {
       getEnvcardPosition: envCard,
       getDisEnvcardPosition: disEnvCard,
@@ -869,7 +880,9 @@ class Environment extends Component {
         />
       ) : null;
 
-    const DisEnvLength  = disEnvCard.length ? disEnvCard[0].devopsEnviromentRepDTOs.length : 0;
+    const DisEnvLength = disEnvCard.length
+      ? disEnvCard[0].devopsEnviromentRepDTOs.length
+      : 0;
     const rightStyle = classNames({
       "c7n-push-right-ban icon icon-navigate_next":
         (window.innerWidth >= 1680 &&
@@ -1242,10 +1255,7 @@ class Environment extends Component {
               <FormattedMessage id="envPl.group.create" />
             </Button>
           </Permission>
-          <Button funcType="flat" onClick={this.reload}>
-            <i className="icon-refresh icon" />
-            <FormattedMessage id="refresh" />
-          </Button>
+          <RefreshBtn name="env" onFresh={this.reload} />
         </Header>
         <Content
           code="env"

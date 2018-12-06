@@ -935,7 +935,6 @@ class EditNetwork extends Component {
                   <Select
                     disabled
                     className="c7n-select_512"
-                    dropdownClassName="c7n-network-env"
                     label={<FormattedMessage id="network.env" />}
                     optionFilterProp="children"
                   >

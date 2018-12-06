@@ -31,6 +31,7 @@ import StatusIcon from "../../../../components/StatusIcon";
 import EnvOverviewStore from "../../../../stores/project/envOverview";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 import RefreshBtn from "../../../../components/refreshBtn";
+import EnvFlag from "../../../../components/envFlag";
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -44,6 +45,9 @@ class NetworkHome extends Component {
       openRemove: false,
       submitting: false,
     };
+    this.opColumn = this.opColumn.bind(this);
+    this.configColumn = this.configColumn.bind(this);
+    this.targetColumn = this.targetColumn.bind(this);
   }
 
   componentDidMount() {
@@ -59,8 +63,10 @@ class NetworkHome extends Component {
   }
 
   componentWillUnmount() {
+    const { NetworkConfigStore } = this.props;
     this.clearAutoRefresh();
     this.clearFilterInfo();
+    NetworkConfigStore.setAllData([]);
   }
 
   /**
@@ -76,7 +82,7 @@ class NetworkHome extends Component {
         paras: [],
       });
       const envId = EnvOverviewStore.getTpEnvId;
-      this.loadAllData(envId);
+      this.loadAllData(0, envId);
     }
   };
 
@@ -112,7 +118,7 @@ class NetworkHome extends Component {
    * @param record
    * @returns {Array}
    */
-  configColumn = record => {
+  configColumn(record) {
     const { config, type } = record;
     const { externalIps, ports } = config;
     const iPArr = [];
@@ -173,14 +179,14 @@ class NetworkHome extends Component {
         </Popover>
       </div>
     );
-  };
+  }
 
   /**
    * 生成 目标对象 列
    * @param record
    * @returns {Array}
    */
-  targetColumn = record => {
+  targetColumn(record) {
     const { appInstance, labels } = record.target;
     const node = [];
     if (appInstance && appInstance.length) {
@@ -235,18 +241,21 @@ class NetworkHome extends Component {
         )}
       </div>
     );
-  };
+  }
 
   /**
    * 操作 列
    * @param record
-   * @param type
-   * @param projectId
-   * @param orgId
    * @returns {*}
    */
-  opColumn = (record, type, projectId, orgId) => {
+  opColumn(record) {
     const { status, envStatus, id, name } = record;
+    const {
+      type,
+      id: projectId,
+      organizationId,
+      name: projectName,
+    } = AppState.currentMenuType;
     const { intl } = this.props;
     let editDom = null;
     let deleteDom = null;
@@ -330,7 +339,7 @@ class NetworkHome extends Component {
           service={["devops-service.devops-service.update"]}
           type={type}
           projectId={projectId}
-          organizationId={orgId}
+          organizationId={organizationId}
         >
           {editDom}
         </Permission>
@@ -338,13 +347,13 @@ class NetworkHome extends Component {
           service={["devops-service.devops-service.delete"]}
           type={type}
           projectId={projectId}
-          organizationId={orgId}
+          organizationId={organizationId}
         >
           {deleteDom}
         </Permission>
       </Fragment>
     );
-  };
+  }
 
   /**
    * 环境选择
@@ -352,7 +361,7 @@ class NetworkHome extends Component {
    */
   handleEnvSelect = value => {
     EnvOverviewStore.setTpEnvId(value);
-    this.loadAllData(value);
+    this.loadAllData(0, value);
   };
 
   render() {
@@ -360,25 +369,29 @@ class NetworkHome extends Component {
       NetworkConfigStore,
       intl: { formatMessage },
     } = this.props;
+
     const { show, showEdit, id, openRemove, submitting, name } = this.state;
+
     const {
       filters,
+      paras,
       sort: { columnKey, order },
     } = NetworkConfigStore.getInfo;
+
     const {
       type,
       id: projectId,
       organizationId: orgId,
       name: projectName,
     } = AppState.currentMenuType;
+
     const data = NetworkConfigStore.getAllData;
     const envData = EnvOverviewStore.getEnvcard;
     const envId = EnvOverviewStore.getTpEnvId;
+
     const envState = envData.length
       ? envData.filter(d => d.id === Number(envId))[0]
       : { connect: false };
-
-    this.initAutoRefresh("network");
 
     const columns = [
       {
@@ -404,43 +417,122 @@ class NetworkHome extends Component {
         filters: [],
         filteredValue: filters.envName || [],
         render: record => (
-          <div className="env-status-wrap">
-            {record.envStatus ? (
-              <Tooltip title={<FormattedMessage id="connect" />}>
-                <span className="c7ncd-status c7ncd-status-success" />
-              </Tooltip>
-            ) : (
-              <Tooltip title={<FormattedMessage id="disconnect" />}>
-                <span className="c7ncd-status c7ncd-status-disconnect" />
-              </Tooltip>
-            )}
-            <MouserOverWrapper
-              text={record.envName || ""}
-              width={0.12}
-              className="network-list-name"
-            >
-              {record.envName}
-            </MouserOverWrapper>
-          </div>
+          <EnvFlag status={record.envStatus} name={record.envName} />
         ),
       },
       {
         title: <FormattedMessage id="network.target" />,
         key: "target",
-        render: record => this.targetColumn(record),
+        render: this.targetColumn,
       },
       {
         width: 108,
         title: <FormattedMessage id="network.config.column" />,
         key: "type",
-        render: record => this.configColumn(record),
+        render: this.configColumn,
       },
       {
         width: 82,
         key: "action",
-        render: record => this.opColumn(record, type, projectId, orgId),
+        render: this.opColumn,
       },
     ];
+
+    let mainContent = null;
+    if (envData && envData.length && envId) {
+      this.initAutoRefresh("network");
+      mainContent = (
+        <Fragment>
+          <Header title={<FormattedMessage id="network.header.title" />}>
+            <Select
+              className={`${
+                envId
+                  ? "c7n-header-select"
+                  : "c7n-header-select c7n-select_min100"
+              }`}
+              dropdownClassName="c7n-header-env_drop"
+              placeholder={formatMessage({ id: "envoverview.noEnv" })}
+              value={envData && envData.length ? envId : undefined}
+              disabled={envData && envData.length === 0}
+              onChange={this.handleEnvSelect}
+            >
+              {_.map(envData, e => (
+                <Option
+                  key={e.id}
+                  value={e.id}
+                  disabled={!e.permission}
+                  title={e.name}
+                >
+                  <Tooltip placement="right" title={e.name}>
+                    <span className="c7n-ib-width_100">
+                      {e.connect ? (
+                        <span className="c7ncd-status c7ncd-status-success" />
+                      ) : (
+                        <span className="c7ncd-status c7ncd-status-disconnect" />
+                      )}
+                      {e.name}
+                    </span>
+                  </Tooltip>
+                </Option>
+              ))}
+            </Select>
+            <Permission
+              service={["devops-service.devops-service.create"]}
+              type={type}
+              projectId={projectId}
+              organizationId={orgId}
+            >
+              <Tooltip
+                title={
+                  envState && !envState.connect ? (
+                    <FormattedMessage id="envoverview.envinfo" />
+                  ) : null
+                }
+              >
+                <Button
+                  disabled={envState && !envState.connect}
+                  funcType="flat"
+                  onClick={this.showSideBar}
+                >
+                  <i className="icon-playlist_add icon" />
+                  <span>
+                    <FormattedMessage id="network.header.create" />
+                  </span>
+                </Button>
+              </Tooltip>
+            </Permission>
+            <Permission
+              service={["devops-service.devops-service.listByEnv"]}
+              type={type}
+              projectId={projectId}
+              organizationId={orgId}
+            >
+              <RefreshBtn name="network" onFresh={this.handleRefresh} />
+            </Permission>
+          </Header>
+          <Content code="network" values={{ name: projectName }}>
+            <Table
+              filterBarPlaceholder={formatMessage({ id: "filter" })}
+              loading={NetworkConfigStore.getLoading}
+              pagination={NetworkConfigStore.getPageInfo}
+              columns={columns}
+              onChange={this.tableChange}
+              dataSource={data}
+              rowKey={record => record.id}
+              filters={paras.slice()}
+            />
+          </Content>
+        </Fragment>
+      );
+    } else {
+      mainContent = (
+        <DepPipelineEmpty
+          title={<FormattedMessage id="network.header.title" />}
+          type="env"
+        />
+      );
+    }
+
     return (
       <Page
         service={[
@@ -458,95 +550,7 @@ class NetworkHome extends Component {
         ]}
         className="c7n-region c7n-network-wrapper"
       >
-        {NetworkConfigStore.isRefresh ? (
-          <LoadingBar display />
-        ) : envData && envData.length && envId ? (
-          <Fragment>
-            <Header title={<FormattedMessage id="network.header.title" />}>
-              <Select
-                className={`${
-                  envId
-                    ? "c7n-header-select"
-                    : "c7n-header-select c7n-select_min100"
-                }`}
-                dropdownClassName="c7n-header-env_drop"
-                placeholder={formatMessage({ id: "envoverview.noEnv" })}
-                value={envData && envData.length ? envId : undefined}
-                disabled={envData && envData.length === 0}
-                onChange={this.handleEnvSelect}
-              >
-                {_.map(envData, e => (
-                  <Option
-                    key={e.id}
-                    value={e.id}
-                    disabled={!e.permission}
-                    title={e.name}
-                  >
-                    <Tooltip placement="right" title={e.name}>
-                      <span className="c7n-ib-width_100">
-                        {e.connect ? (
-                          <span className="c7ncd-status c7ncd-status-success" />
-                        ) : (
-                          <span className="c7ncd-status c7ncd-status-disconnect" />
-                        )}
-                        {e.name}
-                      </span>
-                    </Tooltip>
-                  </Option>
-                ))}
-              </Select>
-              <Permission
-                service={["devops-service.devops-service.create"]}
-                type={type}
-                projectId={projectId}
-                organizationId={orgId}
-              >
-                <Tooltip
-                  title={
-                    envState && !envState.connect ? (
-                      <FormattedMessage id="envoverview.envinfo" />
-                    ) : null
-                  }
-                >
-                  <Button
-                    disabled={envState && !envState.connect}
-                    funcType="flat"
-                    onClick={this.showSideBar}
-                  >
-                    <i className="icon-playlist_add icon" />
-                    <span>
-                      <FormattedMessage id="network.header.create" />
-                    </span>
-                  </Button>
-                </Tooltip>
-              </Permission>
-              <Permission
-                service={["devops-service.devops-service.listByEnv"]}
-                type={type}
-                projectId={projectId}
-                organizationId={orgId}
-              >
-                <RefreshBtn name="network" onFresh={this.handleRefresh} />
-              </Permission>
-            </Header>
-            <Content code="network" values={{ name: projectName }}>
-              <Table
-                filterBarPlaceholder={formatMessage({ id: "filter" })}
-                loading={NetworkConfigStore.getLoading}
-                pagination={NetworkConfigStore.getPageInfo}
-                columns={columns}
-                onChange={this.tableChange}
-                dataSource={data}
-                rowKey={record => record.id}
-              />
-            </Content>
-          </Fragment>
-        ) : (
-          <DepPipelineEmpty
-            title={<FormattedMessage id="network.header.title" />}
-            type="env"
-          />
-        )}
+        {NetworkConfigStore.isRefresh ? <LoadingBar display /> : mainContent}
 
         {show && (
           <CreateNetwork

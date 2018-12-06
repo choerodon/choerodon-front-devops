@@ -145,6 +145,7 @@ class NetworkConfigStore {
 
   /**
    * 加载网络列表数据
+   * @param spin 加载动画
    * @param isRefresh
    * @param proId
    * @param envId
@@ -155,7 +156,7 @@ class NetworkConfigStore {
    * @returns {JQueryPromise<any>}
    */
   loadData = (
-    loading,
+    spin,
     isRefresh = false,
     proId,
     envId,
@@ -170,7 +171,7 @@ class NetworkConfigStore {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
-    loading && this.changeLoading(true);
+    spin && this.changeLoading(true);
     return axios
       .post(
         `/devops/v1/projects/${proId}/service/${envId}/listByEnv?page=${page}&size=${pageSize}&sort=${sort.field ||
@@ -184,7 +185,7 @@ class NetworkConfigStore {
           this.setAllData(content);
           this.setPageInfo({ number, size, totalElements });
         }
-        loading && this.changeLoading(false);
+        spin && this.changeLoading(false);
         this.changeIsRefresh(false);
       });
   };

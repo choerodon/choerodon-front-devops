@@ -152,7 +152,7 @@ class AppStore {
   }
 
   loadData = (
-    loading,
+    spin,
     isRefresh = false,
     projectId,
     envId,
@@ -166,7 +166,7 @@ class AppStore {
     }
     let url =
       sort.field !== "" ? `${url}&sort=${sort.field},${sort.order}` : "";
-    loading && this.changeLoading(true);
+    spin && this.changeLoading(true);
     return axios
       .post(
         `/devops/v1/projects/${projectId}/apps/list_by_options?page=${page}&size=${size}${url}`,
@@ -177,7 +177,7 @@ class AppStore {
         if (res) {
           this.handleData(data);
         }
-        loading && this.changeLoading(false);
+        spin && this.changeLoading(false);
         this.changeIsRefresh(false);
       });
   };

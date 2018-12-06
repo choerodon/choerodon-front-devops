@@ -90,7 +90,7 @@ class TemplateStore {
   }
 
   loadData = (
-    loading,
+    spin,
     isRefresh = false,
     orgId,
     envId,
@@ -105,7 +105,7 @@ class TemplateStore {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
-    loading && this.changeLoading(true);
+    spin && this.changeLoading(true);
     return axios
       .post(
         `/devops/v1/organizations/${orgId}/app_templates/list_by_options?page=${page}&size=${size}&sort=${sort.field ||
@@ -116,7 +116,7 @@ class TemplateStore {
         const res = this.handleProptError(data);
         if (res) {
           this.handleData(data);
-          loading && this.changeLoading(false);
+          spin && this.changeLoading(false);
           this.changeIsRefresh(false);
         }
       });

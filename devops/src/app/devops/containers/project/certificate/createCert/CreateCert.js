@@ -143,6 +143,7 @@ class CreateCert extends Component {
           };
           store.setTableFilter(filter);
           store.loadCertData(
+            true,
             projectId,
             0,
             initSize,
