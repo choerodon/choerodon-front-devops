@@ -32,7 +32,7 @@ class DevOpsBuild extends Component {
       const appData = data && data.length ? _.filter(data, ['permission', true]) : [];
       if (appData.length) {
         this.setState({ appId: appData[0].id, noSelect: false });
-        this.loadCharts();
+        this.loadCharts(appData[0].id);
       }
       this.setState({ loading: false });
     });
@@ -46,16 +46,16 @@ class DevOpsBuild extends Component {
   /**
    * 加载图表
    */
-  loadCharts = () => {
+  loadCharts = (appId) => {
     const projectId = AppState.currentMenuType.id;
-    const { appId } = this.state;
     const startTime = ReportsStore.getStartTime.format().split('T')[0].replace(/-/g, '/');
     const endTime = ReportsStore.getEndTime.format().split('T')[0].replace(/-/g, '/');
     ReportsStore.loadBuildNumber(projectId, appId, startTime, endTime);
   };
 
   handleChange = (id) => {
-    this.setState({ appId: id }, () => this.loadCharts());
+    this.setState({ appId: id });
+    this.loadCharts(id);
   };
 
   getContent = () => {

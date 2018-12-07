@@ -154,7 +154,7 @@ class EnvCard extends Component {
               <span className="c7n-env-des-head">
                 {formatMessage({ id: "envPl.cluster" })}
               </span>
-                {clusterName}
+              {clusterName}
             </div>}
             <div>
               <span className="c7n-env-des-head">

@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import { observer, inject } from "mobx-react";
 import { withRouter } from "react-router-dom";
 import { injectIntl, FormattedMessage } from "react-intl";
-import { Table, Select, Tooltip, Pagination, Button, Icon } from "choerodon-ui";
+import { Table, Select, Tooltip, Pagination, Button, Icon, Modal } from "choerodon-ui";
 import { Action, stores, Content, Header, Page } from "choerodon-front-boot";
 import _ from "lodash";
 import { handleProptError } from "../../../utils";
@@ -32,6 +32,8 @@ class Instances extends Component {
     this.state = {
       visibleUp: false,
       deleteIst: {},
+      confirmType: '',
+      confirmLoading: false,
     };
     this.columnAction = this.columnAction.bind(this);
     this.renderVersion = this.renderVersion.bind(this);
@@ -180,6 +182,9 @@ class Instances extends Component {
     const {
       InstancesStore: { reStarts, loadInstanceAll },
     } = this.props;
+    this.setState({
+      confirmLoading: true,
+    });
     reStarts(projectId, id)
       .then(data => {
         const res = handleProptError(data);
@@ -188,10 +193,17 @@ class Instances extends Component {
             InstancesStore.changeLoading(false);
             Choerodon.handleResponseError(err);
           });
+          this.closeConfirm();
         }
+        this.setState({
+          confirmLoading: false,
+        });
       })
       .catch(err => {
         InstancesStore.changeLoading(false);
+        this.setState({
+          confirmLoading: false,
+        });
         Choerodon.handleResponseError(err);
       });
   };
@@ -361,6 +373,9 @@ class Instances extends Component {
       InstancesStore: { changeIstActive, loadInstanceAll, getAppId },
     } = this.props;
     const envId = EnvOverviewStore.getTpEnvId;
+    this.setState({
+      confirmLoading: true,
+    });
     changeIstActive(projectId, id, status).then(data => {
       const res = handleProptError(data);
       if (res) {
@@ -370,8 +385,36 @@ class Instances extends Component {
           InstancesStore.changeLoading(false);
           Choerodon.handleResponseError(err);
         });
+        this.closeConfirm();
       }
+      this.setState({
+        confirmLoading: false,
+      });
     });
+  };
+
+  /**
+   * 打开确认框
+   * @param id 实例ID
+   * @param type 类型：重新部署或启停实例
+   * @param status 状态：启动或停止实例
+   */
+  openConfirm = (record, type) => {
+    const { id, code } = record;
+    this.setState({
+      confirmType: type,
+      id,
+      name: code,
+    });
+  };
+
+  /**
+   * 关闭确认框
+   */
+  closeConfirm = () => {
+    this.setState({
+      confirmType: '',
+    })
   };
 
   /**
@@ -399,7 +442,7 @@ class Instances extends Component {
       restart: {
         service: ["devops-service.application-instance.restart"],
         text: formatMessage({ id: "ist.reDeploy" }),
-        action: this.reStart.bind(this, id),
+        action: this.openConfirm.bind(this, record, 'reDeploy'),
       },
       update: {
         service: ["devops-service.application-version.getUpgradeAppVersion"],
@@ -417,8 +460,8 @@ class Instances extends Component {
             : formatMessage({ id: "ist.run" }),
         action:
           status !== "stopped"
-            ? this.activeIst.bind(this, id, "stop")
-            : this.activeIst.bind(this, id, "start"),
+            ? this.openConfirm.bind(this, record, 'stop')
+            : this.openConfirm.bind(this, record, 'start'),
       },
       delete: {
         service: ["devops-service.application-instance.delete"],
@@ -502,6 +545,46 @@ class Instances extends Component {
     );
   }
 
+  renderPods(record) {
+    const { deploymentDTOS } = record;
+    let correctCount = 0;
+    let errorCount = 0;
+    _.map(deploymentDTOS, (item) => {
+      const { devopsEnvPodDTOS } = item;
+      _.forEach(devopsEnvPodDTOS, (p) => {
+        if (p.ready) {
+          correctCount += 1;
+        } else {
+          errorCount += 1;
+        }
+      });
+    });
+    const sum = correctCount + errorCount;
+    const correct = sum > 0 ? (correctCount / sum) * (Math.PI * 2 * 10) : 0;
+    const circle = (<svg width="24" height="24">
+      <circle
+        cx="50%"
+        cy="50%"
+        r="10"
+        fill="none"
+        strokeWidth={(sum === 0 || sum > correctCount) ? 4 : 0}
+        stroke={sum > 0 ? '#FFB100' : '#f3f3f3'}
+      />
+      <circle
+        cx="50%"
+        cy="50%"
+        r="10"
+        fill="none"
+        className="c7n-pod-circle"
+        strokeWidth="4px"
+        stroke="#0bc2a8"
+        strokeDasharray={`${correct}, 10000`}
+      />
+      <text x="50%" y="16" className="c7n-pod-circle-num">{sum}</text>
+    </svg>);
+    return <div className="c7n-deploy-pod-status">{circle}</div>
+  }
+
   /**
    * 打开删除数据模态框
    */
@@ -535,6 +618,8 @@ class Instances extends Component {
       openRemove,
       id,
       loading,
+      confirmType,
+      confirmLoading,
     } = this.state;
 
     const envData = EnvOverviewStore.getEnvcard;
@@ -590,6 +675,11 @@ class Instances extends Component {
         filters: [],
         filteredValue: filters.appName || [],
         render: this.renderAppName,
+      },
+      {
+        title: <FormattedMessage id="deploy.pod" />,
+        key: "podsStatus",
+        render: this.renderPods,
       },
       {
         width: 56,
@@ -737,6 +827,30 @@ class Instances extends Component {
                 confirmLoading={loading}
                 name={name}
               />
+              <Modal
+                title={`${formatMessage({ id: 'ist.reDeploy'})}“${name}”`}
+                visible={confirmType === 'reDeploy'}
+                onOk={this.reStart.bind(this, id)}
+                onCancel={this.closeConfirm}
+                confirmLoading={confirmLoading}
+                closable={false}
+              >
+                <div className="c7n-padding-top_8">
+                  <FormattedMessage id="ist.reDeployDes" />
+                </div>
+              </Modal>
+              <Modal
+                title={`${formatMessage({ id: `${confirmType === 'stop' ? 'ist.stop' : 'ist.run'}` })}“${name}”`}
+                visible={confirmType === 'stop' || confirmType === 'start'}
+                onOk={this.activeIst.bind(this, id, confirmType)}
+                onCancel={this.closeConfirm}
+                confirmLoading={confirmLoading}
+                closable={false}
+              >
+                <div className="c7n-padding-top_8">
+                  <FormattedMessage id = {`ist.${confirmType}Des`} />
+                </div>
+              </Modal>
             </Content>
           </Fragment>
         ) : (

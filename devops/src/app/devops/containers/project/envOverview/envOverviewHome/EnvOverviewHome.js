@@ -646,6 +646,7 @@ class EnvOverviewHome extends Component {
           "devops-service.application-instance.delete",
           "devops-service.application-instance.start",
           "devops-service.application-instance.stop",
+          "devops-service.application-instance.restart",
           "devops-service.application-instance.listByEnv",
           "devops-service.application-version.getUpgradeAppVersion",
           "devops-service.devops-env-file-error.page",
