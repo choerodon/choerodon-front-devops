@@ -33,7 +33,7 @@ import NetworkConfigStore from "../../../../stores/project/networkConfig";
 import LoadingBar from "../../../../components/loadingBar";
 import ExpandRow from "../../instances/components/ExpandRow";
 import UploadIcon from "../../instances/components/UploadIcon";
-import EnvOverviewStore from "../../../../stores/project/envOverview";
+import PodStatus from "../../instances/components/PodStatus/PodStatus";
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -459,6 +459,7 @@ class AppOverview extends Component {
                   ingressDTOS,
                   commandVersion,
                   appId,
+                  deploymentDTOS,
                 } = c;
                 let uploadIcon = null;
                 if (appVersion !== commandVersion) {
@@ -525,6 +526,9 @@ class AppOverview extends Component {
                             isDelete={this.isDelete}
                           />
                         </span>
+                        <div className="c7n-appow-pod-status">
+                          <PodStatus deploymentDTOS={deploymentDTOS} />
+                        </div>
                         <div className="c7n-envow-ist-action">
                           {this.columnAction(c)}
                         </div>

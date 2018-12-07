@@ -559,7 +559,7 @@ const zhCN = {
   "deploy.app": "应用",
   "deploy.ver": "版本",
   "deploy.env": "环境",
-  "deploy.pod": "Pods状态",
+  "deploy.pod": "Pod状态",
   "deploy.cNumber": "容器数量",
   "deploy.header.title": "应用部署",
   "deploy.step.one.title": "选择应用及版本",

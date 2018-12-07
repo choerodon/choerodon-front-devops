@@ -1,0 +1,13 @@
+.c7n-deploy-pod-status {
+
+  height: 24px;
+
+  .c7n-pod-circle {
+    transform: rotate(-90deg);
+    transform-origin: center;
+  }
+
+  .c7n-pod-circle-num {
+    text-anchor: middle;
+  }
+}

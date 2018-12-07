@@ -21,6 +21,7 @@ import InstancesStore from "../../../stores/project/instances";
 import Tips from "../../../components/Tips/Tips";
 import RefreshBtn from "../../../components/refreshBtn";
 import DevopsStore from "../../../stores/DevopsStore";
+import PodStatus from "./components/PodStatus/PodStatus";
 
 const Option = Select.Option;
 const { AppState } = stores;
@@ -545,46 +546,6 @@ class Instances extends Component {
     );
   }
 
-  renderPods(record) {
-    const { deploymentDTOS } = record;
-    let correctCount = 0;
-    let errorCount = 0;
-    _.map(deploymentDTOS, (item) => {
-      const { devopsEnvPodDTOS } = item;
-      _.forEach(devopsEnvPodDTOS, (p) => {
-        if (p.ready) {
-          correctCount += 1;
-        } else {
-          errorCount += 1;
-        }
-      });
-    });
-    const sum = correctCount + errorCount;
-    const correct = sum > 0 ? (correctCount / sum) * (Math.PI * 2 * 10) : 0;
-    const circle = (<svg width="24" height="24">
-      <circle
-        cx="50%"
-        cy="50%"
-        r="10"
-        fill="none"
-        strokeWidth={(sum === 0 || sum > correctCount) ? 4 : 0}
-        stroke={sum > 0 ? '#FFB100' : '#f3f3f3'}
-      />
-      <circle
-        cx="50%"
-        cy="50%"
-        r="10"
-        fill="none"
-        className="c7n-pod-circle"
-        strokeWidth="4px"
-        stroke="#0bc2a8"
-        strokeDasharray={`${correct}, 10000`}
-      />
-      <text x="50%" y="16" className="c7n-pod-circle-num">{sum}</text>
-    </svg>);
-    return <div className="c7n-deploy-pod-status">{circle}</div>
-  }
-
   /**
    * 打开删除数据模态框
    */
@@ -678,8 +639,8 @@ class Instances extends Component {
       },
       {
         title: <FormattedMessage id="deploy.pod" />,
-        key: "podsStatus",
-        render: this.renderPods,
+        key: "podStatus",
+        render: record => <PodStatus deploymentDTOS={record.deploymentDTOS} />,
       },
       {
         width: 56,

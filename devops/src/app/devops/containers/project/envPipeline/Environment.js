@@ -857,7 +857,7 @@ class Environment extends Component {
                     id: "envPl.description",
                   })}
                 </span>
-                {env.description}
+                {env.description || formatMessage({ id: 'null' })}
               </div>
             </div>
           </div>
