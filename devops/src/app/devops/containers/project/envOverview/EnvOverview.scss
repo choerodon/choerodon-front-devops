@@ -176,7 +176,7 @@
   .ant-collapse-item-active>.ant-collapse-header {
     background-color: rgba(0, 0, 0, 0.004) !important;
 
-    .c7n-deploy-status {
+    .c7n-appow-pod-status {
       display: none;
     }
 
@@ -483,4 +483,8 @@
 
 .c7n-envow-gitlab {
   margin: 0 8px;
+}
+
+.c7n-appow-pod-status {
+  padding-top: 4px;
 }

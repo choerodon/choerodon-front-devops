@@ -160,7 +160,7 @@ class EnvCard extends Component {
               <span className="c7n-env-des-head">
                 {formatMessage({ id: "envPl.description" })}
               </span>
-              {description}
+              {description || formatMessage({ id: 'null' })}
             </div>
           </div>
         </div>
