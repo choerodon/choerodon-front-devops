@@ -90,6 +90,10 @@ class AppOverview extends Component {
 
   @observable isDelete = {};
 
+  @observable confirmType = '';
+
+  @observable confirmLoading = false;
+
   componentDidMount() {
     const { store } = this.props;
     const refresh = store.getRefresh;
@@ -174,12 +178,15 @@ class AppOverview extends Component {
    */
   reStart = id => {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
+    this.confirmLoading = true;
     InstancesStore.reStarts(projectId, id).then(error => {
       if (error && error.failed) {
         Choerodon.prompt(error.message);
       } else {
         this.loadIstOverview();
+        this.closeConfirm();
       }
+      this.confirmLoading = false;
     });
   };
 
@@ -235,18 +242,43 @@ class AppOverview extends Component {
   };
 
   /**
+   * 打开确认框
+   * @param id 实例ID
+   * @param type 类型：重新部署或启停实例
+   * @param status 状态：启动或停止实例
+   */
+  @action
+  openConfirm = (record, type) => {
+    const { id, code } = record;
+    this.confirmType = type;
+    this.id = id;
+    this.istName = code;
+  };
+
+  /**
+   * 关闭确认框
+   */
+  @action
+  closeConfirm = () => {
+    this.confirmType = '';
+  };
+
+  /**
    * 启停用实例
    * @param id 实例ID
    * @param status 状态
    */
   activeIst = (id, status) => {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
+    this.confirmLoading = true;
     InstancesStore.changeIstActive(projectId, id, status).then(error => {
       if (error && error.failed) {
         Choerodon.prompt(error.message);
       } else {
         this.loadIstOverview();
+        this.closeConfirm();
       }
+      this.confirmLoading = false;
     });
   };
 
@@ -688,7 +720,7 @@ class AppOverview extends Component {
       restart: {
         service: ["devops-service.application-instance.restart"],
         text: formatMessage({ id: "ist.reDeploy" }),
-        action: this.reStart.bind(this, id),
+        action: this.openConfirm.bind(this, record, 'reDeploy'),
       },
       update: {
         service: ["devops-service.application-version.getUpgradeAppVersion"],
@@ -706,8 +738,8 @@ class AppOverview extends Component {
             : formatMessage({ id: "ist.run" }),
         action:
           status !== "stopped"
-            ? this.activeIst.bind(this, id, "stop")
-            : this.activeIst.bind(this, id, "start"),
+            ? this.openConfirm.bind(this, record, 'stop')
+            : this.openConfirm.bind(this, record, 'start'),
       },
       delete: {
         service: ["devops-service.application-instance.delete"],
@@ -750,7 +782,7 @@ class AppOverview extends Component {
   };
 
   render() {
-    const { intl, store } = this.props;
+    const { intl: { formatMessage }, store } = this.props;
     const {
       type,
       id: projectId,
@@ -785,7 +817,7 @@ class AppOverview extends Component {
           <React.Fragment>
             <div className="c7n-envow-search">
               <Input
-                placeholder={intl.formatMessage({ id: "envoverview.search" })}
+                placeholder={formatMessage({ id: "envoverview.search" })}
                 value={val}
                 prefix={prefix}
                 suffix={suffix}
@@ -823,6 +855,30 @@ class AppOverview extends Component {
               confirmLoading={this.loading}
               name={this.istName}
             />
+            <Modal
+              title={`${formatMessage({ id: 'ist.reDeploy'})}“${this.istName}”`}
+              visible={this.confirmType === 'reDeploy'}
+              onOk={this.reStart.bind(this, this.id)}
+              onCancel={this.closeConfirm}
+              confirmLoading={this.confirmLoading}
+              closable={false}
+            >
+              <div className="c7n-padding-top_8">
+                <FormattedMessage id="ist.reDeployDes" />
+              </div>
+            </Modal>
+            <Modal
+              title={`${formatMessage({ id: `${this.confirmType === 'stop' ? 'ist.stop' : 'ist.run'}` })}“${this.istName}”`}
+              visible={this.confirmType === 'stop' || this.confirmType === 'start'}
+              onOk={this.activeIst.bind(this, this.id, this.confirmType)}
+              onCancel={this.closeConfirm}
+              confirmLoading={this.confirmLoading}
+              closable={false}
+            >
+              <div className="c7n-padding-top_8">
+                <FormattedMessage id = {`ist.${this.confirmType}Des`} />
+              </div>
+            </Modal>
             {this.showDomain && (
               <CreateDomain
                 id={this.domainId}

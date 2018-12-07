@@ -846,6 +846,12 @@ class Environment extends Component {
             </div>
             <div className="c7n-env-des-wrap">
               <div className="c7n-env-des" title={env.description}>
+                {env.clusterName && <div>
+                  <span className="c7n-env-des-head">
+                    {formatMessage({ id: "envPl.cluster" })}
+                  </span>
+                  {env.clusterName}
+                </div>}
                 <span className="c7n-env-des-head">
                   {formatMessage({
                     id: "envPl.description",

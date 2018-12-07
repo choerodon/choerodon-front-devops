@@ -41,7 +41,7 @@ function ExpandRow(props) {
           cy="35"
           r="30"
           strokeWidth={sum === 0 || sum > correctCount ? 5 : 0}
-          stroke={sum > 0 ? "#f44336" : "#f3f3f3"}
+          stroke={sum > 0 ? "#FFB100" : "#f3f3f3"}
           className="c7n-pod-circle-error"
         />
         <circle
