@@ -1,21 +1,54 @@
-import React, { Fragment } from "react";
-import { FormattedMessage } from "react-intl";
+import React, { Component, Fragment } from "react";
+import { FormattedMessage, injectIntl } from "react-intl";
 import { withRouter, Link } from "react-router-dom";
 import _ from "lodash";
 import TimeAgo from "timeago-react";
-import { stores } from "choerodon-front-boot";
-import { Tooltip, Button } from "choerodon-ui";
+import { stores, Content } from "choerodon-front-boot";
+import { Tooltip, Button, Modal, Collapse } from "choerodon-ui";
 import { formatDate } from "../../../../../utils/index";
 import "./index.scss";
+import { inject } from "mobx-react";
 
 const { AppState } = stores;
+const { Sidebar } = Modal;
+const { Panel } = Collapse;
 
-function ExpandRow(props) {
-  const {
-    record: { deploymentDTOS, envId, appId, status },
-    url,
-  } = props;
-  const content = _.map(deploymentDTOS, item => {
+const PANEL_TYPE = [
+  "ports",
+  "volume",
+  "health",
+  "security",
+  "label",
+  "variables",
+];
+
+class ExpandRow extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      visible: false,
+      sideName: "",
+    };
+  }
+
+  handleClick(name) {
+    this.setState({ visible: true, sideName: name });
+  }
+
+  hideSidebar = () => {
+    this.setState({ visible: false });
+  };
+
+  /**
+   *
+   * @param {*} item
+   * @param {*} envId
+   * @param {*} appId
+   * @param {*} status
+   * @returns
+   * @memberof ExpandRow
+   */
+  getContent(item, envId, appId, status) {
     const { name, available, age, devopsEnvPodDTOS, current, desired } = item;
     let correctCount = 0;
     let errorCount = 0;
@@ -93,7 +126,10 @@ function ExpandRow(props) {
             </span>
           </li>
           <li className="c7n-deploy-expanded-lists">
-            <Button>
+            <Button
+              className="c7ncd-detail-btn"
+              onClick={this.handleClick.bind(this, name)}
+            >
               <FormattedMessage id="detailMore" />
             </Button>
           </li>
@@ -119,21 +155,68 @@ function ExpandRow(props) {
         </div>
       </div>
     );
-  });
-  return (
-    <Fragment>
-      {deploymentDTOS && deploymentDTOS.length ? (
-        <div className="c7n-deploy-expanded">
-          <div className="c7n-deploy-expanded-title">Deployments</div>
-          {content}
-        </div>
-      ) : (
-        <div className="c7n-deploy-expanded-empty">
-          <FormattedMessage id="ist.expand.empty" />
-        </div>
-      )}
-    </Fragment>
-  );
+  }
+
+  render() {
+    const {
+      record: { deploymentDTOS, envId, appId, status },
+      url,
+      intl: { formatMessage },
+    } = this.props;
+
+    const { visible, sideName } = this.state;
+
+    const deployContent = _.map(deploymentDTOS, item =>
+      this.getContent(item, envId, appId, status)
+    );
+
+    const panelContent = _.map(PANEL_TYPE, item => (
+      <Panel
+        key={item}
+        header={
+          <div className="c7ncd-deploy-panel-header">
+            <div className="c7ncd-deploy-panel-title">
+              <FormattedMessage id={`ist.deploy.${item}`} />
+            </div>
+            <div className="c7ncd-deploy-panel-text">
+              <FormattedMessage id={`ist.deploy.${item}.describe`} />
+            </div>
+          </div>
+        }
+        className="c7ncd-deploy-panel"
+      >
+        {item !== "variables" ? "楼下有🐕！" : "🐶:汪汪汪~~~"}
+      </Panel>
+    ));
+
+    return (
+      <Fragment>
+        {deploymentDTOS && deploymentDTOS.length ? (
+          <div className="c7n-deploy-expanded">
+            <div className="c7n-deploy-expanded-title">Deployments</div>
+            {deployContent}
+          </div>
+        ) : (
+          <div className="c7n-deploy-expanded-empty">
+            <FormattedMessage id="ist.expand.empty" />
+          </div>
+        )}
+        <Sidebar
+          footer={[
+            <Button type="primary" key="back" onClick={this.hideSidebar}>
+              <FormattedMessage id="close" />
+            </Button>,
+          ]}
+          title={formatMessage({ id: "ist.deploy.detail" })}
+          visible={visible}
+        >
+          <Content code="ist.deploy" values={{ name: sideName }}>
+            <Collapse bordered={false}>{panelContent}</Collapse>
+          </Content>
+        </Sidebar>
+      </Fragment>
+    );
+  }
 }
 
-export default withRouter(ExpandRow);
+export default withRouter(injectIntl(ExpandRow));

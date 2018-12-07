@@ -319,9 +319,11 @@ const pageDetail = {
   "configMap.title": '环境"{name}"的配置映射',
   "configMap.create.title": '在环境"{name}"中创建配置映射',
   "configMap.edit.title": '对映射配置"{name}"进行修改',
-  "configMap.edit.description": '您可以在此处修改配置映射的描述与其中包含的键值对。',
-  "configMap.create.description": 'description',
-  "configMap.description": '配置映射是受法律认可的证书文件，确定了域名注册者对域名的拥有权与拥有时限。您在每个环境中添加的所有域名都需要有域名证书。',
+  "configMap.edit.description":
+    "您可以在此处修改配置映射的描述与其中包含的键值对。",
+  "configMap.create.description": "description",
+  "configMap.description":
+    "配置映射是受法律认可的证书文件，确定了域名注册者对域名的拥有权与拥有时限。您在每个环境中添加的所有域名都需要有域名证书。",
   "configMap.link": `${docServer}/user-guide/deployment-pipeline/config-map/`,
   "configMap.create.link": `${docServer}/user-guide/deployment-pipeline/config-map/`,
 };
@@ -479,6 +481,25 @@ const zhCN = {
   "ist.deploy.mbr": "操作人员",
   "ist.log": "查看日志详情",
   "ist.deployInfo": "查看部署配置信息",
+  "ist.deploy.detail": "查看实例Deployment详情",
+  "ist.deploy.title": "查看实例“{name}”的Deployment详情",
+  "ist.deploy.description": "您可在此查看各个实例Deployment的详情。",
+  "ist.deploy.link": `${docServer}/user-guide/`,
+  "ist.deploy.ports": "端口",
+  "ist.deploy.ports.describe": "容器监听端口到主机公用IP地址端口的映射关系。",
+  "ist.deploy.volume": "数据卷",
+  "ist.deploy.volume.describe": "持久化及共享数据并与独立容器的生命周期分离。",
+  "ist.deploy.health": "健康检查",
+  "ist.deploy.health.describe":
+    "周期性向容器发出请求，以检测其健康状态。默认设置下，readiness 和 liveness 使用相同的配置参数。对于应用初始化较长的容器，需要增加就绪检测时间。",
+  "ist.deploy.security": "安全/主机设置",
+  "ist.deploy.security.describe":
+    "容器监听端口到主机公用IP地址端口的映射关系。",
+  "ist.deploy.label": "标签/注释",
+  "ist.deploy.label.describe":
+    "用于调度决策的键值对。后端重写请配置注释: 键: nginx.ingress.kubernetes.io/rewrite-target，值: /。",
+  "ist.deploy.variables": "环境变量",
+  "ist.deploy.variables.describe": "在创建时添加的环境变量。",
 
   // network
   network_delete: "网络删除中，请耐心等待",
@@ -1237,7 +1258,8 @@ const zhCN = {
   "configMap.key": "键",
   "configMap.des": "描述",
   "configMap.keyRule": "不能含空格及-、_、.以外的特殊字符",
-  "configMap.keyRuleSpan": "键值不能含空格及-、_、.以外的特殊字符，请检查输入。",
+  "configMap.keyRuleSpan":
+    "键值不能含空格及-、_、.以外的特殊字符，请检查输入。",
   "configMap.keyValueSpan": "键值对需配对输入，请检查输入。",
   "configMap.keyRepeat": "存在重复键，请检查输入。",
   "configMap.del": "删除配置映射",

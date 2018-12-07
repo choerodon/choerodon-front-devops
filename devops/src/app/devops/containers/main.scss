@@ -466,6 +466,12 @@ table {
 
 // 创建侧边栏的单选
 .c7n-creation-title {
+  display: flex;
+
+  .icon {
+    line-height: 1.5;
+  }
+
   &_disabled {
     color: rgba(0, 0, 0, .36);
   }

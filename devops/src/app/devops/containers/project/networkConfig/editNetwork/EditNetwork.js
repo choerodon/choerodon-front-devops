@@ -73,21 +73,21 @@ class EditNetwork extends Component {
   }
 
   /**
-   * 将值放入 externalIp 表单项
+   * 将值放入 externalIps 表单项
    * @param value
    */
   setIpInSelect = value => {
     const {
       form: { getFieldValue, validateFields, setFieldsValue },
     } = this.props;
-    const ip = getFieldValue("externalIp") || [];
+    const ip = getFieldValue("externalIps") || [];
     if (!ip.includes(value)) {
       ip.push(value);
       setFieldsValue({
-        externalIp: ip,
+        externalIps: ip,
       });
     }
-    validateFields(["externalIp"]);
+    validateFields(["externalIps"]);
     if (this.ipSelect) {
       this.ipSelect.setState({
         inputValue: "",
@@ -108,7 +108,7 @@ class EditNetwork extends Component {
           appId,
           appInstance,
           envId,
-          externalIp,
+          externalIps,
           portKeys,
           port,
           tport,
@@ -148,7 +148,7 @@ class EditNetwork extends Component {
           appId: oldAppId,
           target: { appInstance: oldAppInstance, labels: oldLabel },
           envId: oldEnvId,
-          config: { externalIps, ports: oldPorts },
+          config: { externalIps: oldIps, ports: oldPorts },
           type,
         } = network;
         const oldIst = _.map(oldAppInstance, item => _.toNumber(item.id));
@@ -162,7 +162,7 @@ class EditNetwork extends Component {
           appId: oldAppId || null,
           appInstance: oldIst.length ? oldIst : null,
           envId: oldEnvId,
-          externalIp: externalIps,
+          externalIp: oldIps,
           ports: oldPortId,
           label: oldLabel || null,
           type,
@@ -172,7 +172,7 @@ class EditNetwork extends Component {
           appId: appId || null,
           appInstance: appIst,
           envId,
-          externalIp: externalIp ? externalIp.join(",") : null,
+          externalIp: externalIps ? externalIps.join(",") : null,
           ports,
           label: !_.isEmpty(label) ? label : null,
           type: config,
@@ -617,7 +617,7 @@ class EditNetwork extends Component {
     if (value in validIp) {
       delete validIp[value];
     }
-    validateFields(["externalIp"]);
+    validateFields(["externalIps"]);
   };
 
   /**
@@ -671,8 +671,8 @@ class EditNetwork extends Component {
     }
 
     // 生成多组 port
-    const { ports, externalIp } = config;
-    const initIp = externalIp ? externalIp.split(",") : undefined;
+    const { ports, externalIps } = config;
+    const initIp = externalIps || undefined;
     const initPort = [0];
     const nPort = [];
     const pPort = [];
@@ -1128,7 +1128,7 @@ class EditNetwork extends Component {
                       className="c7n-select_480 network-panel-form"
                       {...formItemLayout}
                     >
-                      {getFieldDecorator("externalIp", {
+                      {getFieldDecorator("externalIps", {
                         initialValue: initIp,
                         rules: [
                           {
