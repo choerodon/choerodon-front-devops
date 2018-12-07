@@ -93,14 +93,14 @@ class CreateNetwork extends Component {
 
   setIpInSelect = value => {
     const { getFieldValue, validateFields, setFieldsValue } = this.props.form;
-    const ip = getFieldValue("externalIp") || [];
+    const ip = getFieldValue("externalIps") || [];
     if (!ip.includes(value)) {
       ip.push(value);
       setFieldsValue({
-        externalIp: ip,
+        externalIps: ip,
       });
     }
-    validateFields(["externalIp"]);
+    validateFields(["externalIps"]);
     if (this.ipSelect) {
       this.ipSelect.setState({
         inputValue: "",
@@ -120,7 +120,7 @@ class CreateNetwork extends Component {
           appId,
           appInstance,
           envId,
-          externalIp,
+          externalIps,
           portKeys,
           port,
           tport,
@@ -162,7 +162,7 @@ class CreateNetwork extends Component {
           appId: appId || null,
           appInstance: appIst,
           envId,
-          externalIp: externalIp ? externalIp.join(",") : null,
+          externalIp: externalIps ? externalIps.join(",") : null,
           ports,
           label: !_.isEmpty(label) ? label : null,
           type: config,
@@ -1034,7 +1034,7 @@ class CreateNetwork extends Component {
                       className="c7n-select_480 network-panel-form"
                       {...formItemLayout}
                     >
-                      {getFieldDecorator("externalIp", {
+                      {getFieldDecorator("externalIps", {
                         rules: [
                           {
                             validator: this.checkIP,
