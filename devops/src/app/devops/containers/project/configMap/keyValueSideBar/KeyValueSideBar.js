@@ -54,6 +54,9 @@ class EditableCell extends Component {
     }
   }
 
+  /**
+   * 切换输入编辑状态
+   */
   toggleEdit = () => {
     const editing = !this.state.editing;
     this.setState({ editing }, () => {
@@ -63,6 +66,10 @@ class EditableCell extends Component {
     });
   };
 
+  /**
+   * 点击外部触发保存切换编辑状态
+   * @param e
+   */
   handleClickOutside = (e) => {
     const { editing } = this.state;
     if (editing && this.cell !== e.target && !this.cell.contains(e.target)) {
@@ -70,6 +77,9 @@ class EditableCell extends Component {
     }
   };
 
+  /**
+   * from获取value 保存
+   */
   save = () => {
     const { record, handleSave } = this.props;
     this.form.validateFields((error, values) => {
@@ -84,6 +94,12 @@ class EditableCell extends Component {
     });
   };
 
+  /**
+   * input change触发
+   * 判断是否粘贴，处理数据调用add函数
+   * 添加key-value
+   * @param e
+   */
   onChange = (e) => {
     const { handleAdd } = this.props;
     const { oldValue, pasting } = this.state;
@@ -103,12 +119,22 @@ class EditableCell extends Component {
     this.setState({ pasting: false })
   };
 
+  /**
+   * 判断粘贴事件
+   * @param e
+   */
   onKeyDown = (e) => {
     if (e.keyCode === 86 && (e.ctrlKey || e.metaKey)) {
       this.setState({ pasting: true, oldValue: e.target.value });
     }
   };
 
+  /**
+   * 校验key
+   * @param rule
+   * @param value
+   * @param callback
+   */
   checkKey = (rule, value, callback) => {
     const { intl } = this.props;
     const pattern = /[^0-9A-Za-z\.\-\_]/;
@@ -281,18 +307,26 @@ class KeyValueSideBar extends Component {
     const { store, title } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     if (title === 'configMap') {
-      store.loadConfigMap(projectId, value);
+      store.loadConfigMap(true, projectId, value);
     } else if (title === 'secret') {
-      store.loadSecret(projectId, value);
+      store.loadSecret(true, projectId, value);
     }
     EnvOverviewStore.setTpEnvId(value);
   };
 
+  /**
+   * 删除key-value
+   * @param key
+   */
   handleDelete = (key) => {
     const dataSource = [...this.state.dataSource];
     this.setState({ dataSource: dataSource.filter(item => item.keys !== key) });
   };
 
+  /**
+   * 添加key-value
+   * @param addData
+   */
   handleAdd = (addData) => {
     const { count, dataSource } = this.state;
     let newData = [];
@@ -320,6 +354,10 @@ class KeyValueSideBar extends Component {
     });
   };
 
+  /**
+   * 保存输入
+   * @param row
+   */
   handleSave = (row) => {
     const newData = [...this.state.dataSource];
     const index = newData.findIndex(item => row.keys === item.keys);
@@ -331,6 +369,11 @@ class KeyValueSideBar extends Component {
     this.setState({ dataSource: newData });
   };
 
+  /**
+   * form提交函数
+   * 添加粘贴后key-value校验
+   * @param e
+   */
   handleSubmit = e => {
     e.preventDefault();
     const { form, store, intl: { formatMessage }, id } = this.props;
@@ -403,6 +446,10 @@ class KeyValueSideBar extends Component {
     onClose(isload);
   };
 
+  /**
+   * form DOM
+   * @returns {*}
+   */
   getFormContent = () => {
     const {
       intl: { formatMessage },

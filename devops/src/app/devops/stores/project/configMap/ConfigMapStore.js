@@ -1,6 +1,8 @@
 import { observable, action, computed } from "mobx";
-import { axios, store } from "choerodon-front-boot";
+import { axios, store, stores } from "choerodon-front-boot";
 import { handleProptError } from "../../../utils/index";
+
+const { AppState } = stores;
 
 const HEIGHT =
   window.innerHeight ||
@@ -13,6 +15,8 @@ class ConfigMapStore {
   @observable cmData = false;
 
   @observable loading = false;
+
+  @observable preProId = AppState.currentMenuType.id;
 
   @observable pageInfo = {
     current: 1,
@@ -30,6 +34,10 @@ class ConfigMapStore {
     this.pageInfo.current = page.number + 1;
     this.pageInfo.total = page.totalElements;
     this.pageInfo.pageSize = page.size;
+  }
+
+  @action setPreProId(id) {
+    this.preProId = id;
   }
 
   @computed get getPageInfo() {
@@ -79,6 +87,7 @@ class ConfigMapStore {
   }
 
   loadConfigMap = (
+    spin,
     projectId,
     envId,
     page = this.pageInfo.current - 1,
@@ -89,7 +98,11 @@ class ConfigMapStore {
       param: "",
     }
   ) => {
-    this.changeLoading(true);
+    if (Number(this.preProId) !== Number(projectId)) {
+      this.setData([]);
+    }
+    this.setPreProId(projectId);
+    spin && this.changeLoading(true);
     return axios
       .post(`/devops/v1/projects/${projectId}/config_maps/${envId}/listByEnv?page=${page}&size=${size}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(postData))
       .then(data => {
@@ -99,7 +112,7 @@ class ConfigMapStore {
           const { number, size, totalElements } = data;
           const page = { number, size, totalElements };
           this.setPageInfo(page);
-          this.changeLoading(false);
+          spin && this.changeLoading(false);
         }
       });
   };

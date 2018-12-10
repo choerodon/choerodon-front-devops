@@ -26,16 +26,6 @@ class KeyValueTable extends Component {
     };
   }
 
-  componentWillUnmount() {
-    const { store } = this.props;
-    store.setData([]);
-    store.setPageInfo({
-      current: 0,
-      total: 0,
-      pageSize: HEIGHT <= 900 ? 10 : 15,
-    });
-  }
-
   /**
    * 删除
    */
@@ -62,9 +52,9 @@ class KeyValueTable extends Component {
               deleteStatus: false,
             }, () => {
               if (datas.length % this.state.size === 1) {
-                store.loadConfigMap(projectId, envId, page - 1, pagination.pageSize);
+                store.loadConfigMap(true, projectId, envId, page - 1, pagination.pageSize);
               } else {
-                store.loadConfigMap(projectId, envId, page, pagination.pageSize);
+                store.loadConfigMap(true, projectId, envId, page, pagination.pageSize);
               }
             })
           }
@@ -86,9 +76,9 @@ class KeyValueTable extends Component {
               deleteStatus: false,
             }, () => {
               if (datas.length % this.state.size === 1) {
-                store.loadSecret(projectId, envId, page - 1, pagination.pageSize);
+                store.loadSecret(true, projectId, envId, page - 1, pagination.pageSize);
               } else {
-                store.loadSecret(projectId, envId, page, pagination.pageSize);
+                store.loadSecret(true, projectId, envId, page, pagination.pageSize);
               }
             })
           }
@@ -126,9 +116,9 @@ class KeyValueTable extends Component {
       param: paras.toString(),
     };
     if (title === 'configMap') {
-      store.loadConfigMap(projectId, envId, page, pagination.pageSize, sort, postData);
+      store.loadConfigMap(true, projectId, envId, page, pagination.pageSize, sort, postData);
     } else if (title === 'secret') {
-      store.loadSecret(projectId, envId, page, pagination.pageSize, sort, postData);
+      store.loadSecret(true, projectId, envId, page, pagination.pageSize, sort, postData);
     }
   };
 
@@ -145,8 +135,10 @@ class KeyValueTable extends Component {
     });
   };
 
+  /**
+   * 关闭删除弹窗
+   */
   closeRemoveModal = () => this.setState({ removeDisplay: false });
-
 
   render() {
     const {

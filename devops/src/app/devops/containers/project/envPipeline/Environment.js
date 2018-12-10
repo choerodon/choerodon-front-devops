@@ -1111,6 +1111,18 @@ class Environment extends Component {
           <div className="c7n-sidebar-form">
             <Form>
               <FormItem {...formItemLayout}>
+                {getFieldDecorator("code", {
+                  initialValue: envData ? envData.code : "",
+                })(
+                  <Input
+                    disabled
+                    maxLength={30}
+                    label={<FormattedMessage id="envPl.form.code" />}
+                    suffix={<Tips type="form" data="envPl.envCode.tip" />}
+                  />
+                )}
+              </FormItem>
+              <FormItem {...formItemLayout}>
                 {getFieldDecorator("name", {
                   rules: [
                     {

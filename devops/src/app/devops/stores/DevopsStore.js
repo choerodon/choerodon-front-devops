@@ -31,6 +31,8 @@ class DevopsStore {
     ci: false,
     overview: false,
     cert: false,
+    configMap: false,
+    secret: false,
   };
 
   @action setAutoFlag(data) {
