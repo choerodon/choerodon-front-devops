@@ -319,13 +319,23 @@ const pageDetail = {
   "configMap.title": '环境"{name}"的配置映射',
   "configMap.create.title": '在环境"{name}"中创建配置映射',
   "configMap.edit.title": '对映射配置"{name}"进行修改',
-  "configMap.edit.description":
-    "您可以在此处修改配置映射的描述与其中包含的键值对。",
-  "configMap.create.description": "description",
-  "configMap.description":
-    "配置映射是受法律认可的证书文件，确定了域名注册者对域名的拥有权与拥有时限。您在每个环境中添加的所有域名都需要有域名证书。",
+  "configMap.edit.description": '您可在此编辑配置映射的描述以及键值对的内容。',
+  "configMap.create.description": '您可以在此处选择环境，填写配置映射名称及描述，在该环境下添加配置映射。',
+  "configMap.description": '配置映射是用来存储配置文件的Kubernetes资源对象，其中存储的键值对可以在pods中使用。',
   "configMap.link": `${docServer}/user-guide/deployment-pipeline/config-map/`,
   "configMap.create.link": `${docServer}/user-guide/deployment-pipeline/config-map/`,
+  "configMap.help.tooltip": '您可粘贴多行“键=值”格式的字段至任何键框中，以便于批量输入键值对。',
+
+  // 配置映射
+  "secret.title": '环境"{name}"的密文',
+  "secret.create.title": '在环境"{name}"中创建密文',
+  "secret.edit.title": '对密文"{name}"进行修改',
+  "secret.edit.description": '您可在此编辑密文的描述以及键值对的内容。',
+  "secret.create.description": '您可以在此处选择环境，填写密文名称及描述，在该环境下添加密文。',
+  "secret.description": '密文是用来保存小片敏感数据的Kubernetes资源对象，例如密码，token，或者秘钥等。',
+  "secret.link": `${docServer}/user-guide/deployment-pipeline/secret/`,
+  "secret.create.link": `${docServer}/user-guide/deployment-pipeline/secret/`,
+  "secret.help.tooltip": '您可粘贴多行“键=值”格式的字段至任何键框中，以便于批量输入键值对。',
 };
 
 const zhCN = {
@@ -1264,6 +1274,16 @@ const zhCN = {
   "configMap.keyRepeat": "存在重复键，请检查输入。",
   "configMap.del": "删除配置映射",
   "configMap.del.tooltip": "确认删除配置映射吗？",
+
+  // 配置映射
+  "secret.head": "密文",
+  "secret.create": "创建密文",
+  "secret.edit": "修改密文",
+  "secret.add": "添加密文",
+  "secret.key": "键",
+  "secret.des": "描述",
+  "secret.del": "删除密文",
+  "secret.del.tooltip": "确认删除密文吗？",
 
   ...pageDetail,
 };
