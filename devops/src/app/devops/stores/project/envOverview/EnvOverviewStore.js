@@ -234,10 +234,10 @@ class EnvOverviewStore {
                 InstancesStore.setIsCache(false);
                 break;
               case "configMap":
-                ConfigMapStore.loadConfigMap(projectId, this.tpEnvId);
+                ConfigMapStore.loadConfigMap(true, projectId, this.tpEnvId);
                 break;
               case "secret":
-                SecretStore.loadSecret(projectId, this.tpEnvId);
+                SecretStore.loadSecret(true, projectId, this.tpEnvId);
                 break;
               case "all":
                 break;

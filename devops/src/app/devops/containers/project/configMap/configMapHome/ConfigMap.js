@@ -10,7 +10,9 @@ import KeyValueSideBar from '../keyValueSideBar';
 import './ConfigMap.scss';
 import '../../../main.scss';
 import EnvOverviewStore from "../../../../stores/project/envOverview";
+import DevopsStore from "../../../../stores/DevopsStore";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
+import RefreshBtn from "../../../../components/refreshBtn";
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -25,23 +27,40 @@ class ConfigMap extends Component {
     };
   }
 
-
   componentDidMount() {
     const { id: projectId } = AppState.currentMenuType;
     EnvOverviewStore.loadActiveEnv(projectId, 'configMap');
   }
 
+  /**
+   * 打开侧边栏
+   * @param configMapId
+   */
   openSideBar = (configMapId) => {
     this.setState({ sideBarDisplay: true, configMapId });
   };
 
-  reload = () => this.loadConfigMap();
+  /**
+   * 刷新函数
+   * @param spin 是否自动刷新 spin效果
+   */
+  reload = (spin = true) => {
+    const { id: projectId } = AppState.currentMenuType;
+    EnvOverviewStore.loadActiveEnv(projectId);
+    this.loadConfigMap(spin);
+  };
 
-  loadConfigMap = (page, size) => {
+  /**
+   * 加载配置映射
+   * @param spin
+   * @param page
+   * @param size
+   */
+  loadConfigMap = (spin, page, size) => {
     const { ConfigMapStore } = this.props;
     const tpEnvId = EnvOverviewStore.getTpEnvId;
     const { id: projectId } = AppState.currentMenuType;
-    ConfigMapStore.loadConfigMap(projectId, tpEnvId, page, size);
+    ConfigMapStore.loadConfigMap(spin, projectId, tpEnvId, page, size);
   };
 
   /**
@@ -50,13 +69,17 @@ class ConfigMap extends Component {
    */
   handleEnvSelect = (value) => {
     EnvOverviewStore.setTpEnvId(value);
-    this.loadConfigMap();
+    this.loadConfigMap(true);
   };
 
+  /**
+   * 关闭侧边栏
+   * @param isLoad
+   */
   closeSideBar = (isLoad) => {
     this.setState({ sideBarDisplay: false });
     if(isLoad) {
-      this.loadConfigMap();
+      this.loadConfigMap(true);
     }
   };
 
@@ -73,6 +96,10 @@ class ConfigMap extends Component {
     const envState = envData.length
       ? envData.filter(d => d.id === Number(envId))[0]
       : { connect: false };
+
+    if (envData && envData.length && envId) {
+      DevopsStore.initAutoRefresh('configMap', this.reload);
+    }
 
     return (
       <Page
@@ -143,9 +170,7 @@ class ConfigMap extends Component {
                   </Button>
                 </Tooltip>
               </Permission>
-              <Button funcType="flat" onClick={this.reload} icon="refresh">
-                <FormattedMessage id="refresh" />
-              </Button>
+              <RefreshBtn name="configMap" onFresh={this.reload} />
             </Header>
             <Content code={'configMap'} values={{ name: title ? title.name : name }}>
               <KeyValueTable title="configMap" store={ConfigMapStore} envId={envId} editOpen={this.openSideBar} />

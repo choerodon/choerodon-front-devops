@@ -10,7 +10,9 @@ import KeyValueSideBar from '../../configMap/keyValueSideBar';
 import '../../configMap/configMapHome/ConfigMap.scss';
 import '../../../main.scss';
 import EnvOverviewStore from "../../../../stores/project/envOverview";
+import DevopsStore from "../../../../stores/DevopsStore";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
+import RefreshBtn from "../../../../components/refreshBtn";
 
 const { AppState } = stores;
 const { Option } = Select;
@@ -30,17 +32,35 @@ class Secret extends Component {
     EnvOverviewStore.loadActiveEnv(projectId, 'secret');
   }
 
+  /**
+   * 开启侧边框
+   * @param secretId
+   */
   openSideBar = (secretId) => {
     this.setState({ sideBarDisplay: true, secretId });
   };
 
-  reload = () => this.loadSecret();
+  /**
+   * 刷新函数
+   * @param spin
+   */
+  reload = (spin = true) => {
+    const { id: projectId } = AppState.currentMenuType;
+    EnvOverviewStore.loadActiveEnv(projectId);
+    this.loadSecret(spin);
+  };
 
-  loadSecret = (page, size) => {
+  /**
+   * 加载密文
+   * @param spin
+   * @param page
+   * @param size
+   */
+  loadSecret = (spin, page, size) => {
     const { SecretStore } = this.props;
     const tpEnvId = EnvOverviewStore.getTpEnvId;
     const { id: projectId } = AppState.currentMenuType;
-    SecretStore.loadSecret(projectId, tpEnvId, page, size);
+    SecretStore.loadSecret(spin, projectId, tpEnvId, page, size);
   };
 
   /**
@@ -49,13 +69,17 @@ class Secret extends Component {
    */
   handleEnvSelect = (value) => {
     EnvOverviewStore.setTpEnvId(value);
-    this.loadSecret();
+    this.loadSecret(true);
   };
 
+  /**
+   * 关闭侧边栏
+   * @param isLoad
+   */
   closeSideBar = (isLoad) => {
     this.setState({ sideBarDisplay: false });
     if(isLoad) {
-      this.loadSecret();
+      this.loadSecret(true);
     }
   };
 
@@ -72,6 +96,10 @@ class Secret extends Component {
     const envState = envData.length
       ? envData.filter(d => d.id === Number(envId))[0]
       : { connect: false };
+
+    if (envData && envData.length && envId) {
+      DevopsStore.initAutoRefresh('secret', this.reload);
+    }
 
     return (
       <Page
@@ -142,9 +170,7 @@ class Secret extends Component {
                   </Button>
                 </Tooltip>
               </Permission>
-              <Button funcType="flat" onClick={this.reload} icon="refresh">
-                <FormattedMessage id="refresh" />
-              </Button>
+              <RefreshBtn name="secret" onFresh={this.reload} />
             </Header>
             <Content code={'secret'} values={{ name: title ? title.name : name }}>
               <KeyValueTable title="secret" store={SecretStore} envId={envId} editOpen={this.openSideBar} />

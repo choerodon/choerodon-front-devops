@@ -320,7 +320,7 @@ const pageDetail = {
   "configMap.create.title": '在环境"{name}"中创建配置映射',
   "configMap.edit.title": '对映射配置"{name}"进行修改',
   "configMap.edit.description": '您可在此编辑配置映射的描述以及键值对的内容。',
-  "configMap.create.description": '您可以在此处选择环境，填写配置映射名称及描述，在该环境下添加配置映射。',
+  "configMap.create.description": '您可以在此处选择环境，填写配置映射名称及描述，添加配置映射。',
   "configMap.description": '配置映射是用来存储配置文件的Kubernetes资源对象，其中存储的键值对可以在pods中使用。',
   "configMap.link": `${docServer}/user-guide/deployment-pipeline/config-map/`,
   "configMap.create.link": `${docServer}/user-guide/deployment-pipeline/config-map/`,
