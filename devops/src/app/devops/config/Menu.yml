@@ -235,8 +235,16 @@
           - 'devops-service.devops-config-map.create'
           - 'devops-service.devops-config-map.query'
           - 'devops-service.devops-config-map.delete'
-          - 'devops-service.devops-config-map.checkName'
           - 'devops-service.devops-config-map.listByEnv'
+    - "secret":
+        icon: secret
+        Routes: /devops/secret
+        sort: 11
+        permission:
+          - 'devops-service.devops-secret.createOrUpdate'
+          - 'devops-service.devops-secret.querySecret'
+          - 'devops-service.devops-secret.deleteSecret'
+          - 'devops-service.devops-secret.listByOption'
 "platform-reports":
   icon: bar_chart
   sort: 99

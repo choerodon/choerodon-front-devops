@@ -29,6 +29,7 @@
 "deployment-pipeline.container": "容器"
 "deployment-pipeline.certificate": "证书"
 "deployment-pipeline.config-map": "配置映射"
+"deployment-pipeline.secret": "密文"
 
 # 报表
 "platform-reports": "报表"

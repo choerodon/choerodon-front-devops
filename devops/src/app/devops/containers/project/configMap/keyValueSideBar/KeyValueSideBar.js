@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import { Button, Form, Select, Input, Modal, Icon, Table } from 'choerodon-ui';
+import { Button, Form, Select, Input, Modal, Icon, Table, Popover } from 'choerodon-ui';
 import '../../../main.scss';
 import './KeyValueSideBar.scss';
 import EnvOverviewStore from "../../../../stores/project/envOverview";
@@ -122,6 +122,7 @@ class EditableCell extends Component {
   render() {
     const { editing } = this.state;
     const {
+      title,
       editable,
       dataIndex,
       record,
@@ -161,7 +162,7 @@ class EditableCell extends Component {
                     className="editable-cell-value-wrap"
                     onClick={this.toggleEdit}
                     onFocus={this.toggleEdit}
-                    value={restProps.children.filter(a => typeof(a) === 'string')}
+                    value={title === 'secret' && dataIndex === 'value' && restProps.children.filter(a => typeof(a) === 'string')[0].length ? '******' : restProps.children.filter(a => typeof(a) === 'string')}
                   />
                 )
               );
@@ -193,13 +194,10 @@ class KeyValueSideBar extends Component {
       store.checkName(id, envId, value)
         .then((data) => {
           if (data && data.failed) {
-            callback(formatMessage({ id: 'template.checkName' }));
+            callback(intl.formatMessage({ id: 'template.checkName' }));
           } else {
             callback();
           }
-        })
-        .catch((error) => {
-          Choerodon.prompt(error.response.data.message);
         });
     } else {
       callback();
@@ -220,7 +218,7 @@ class KeyValueSideBar extends Component {
       align: 'center',
       dataIndex: 'temp',
     }, {
-      title: 'value',
+      title: this.props.title,
       width: 230,
       dataIndex: 'value',
       editable: true,
@@ -251,21 +249,25 @@ class KeyValueSideBar extends Component {
     const { store, id } = this.props;
     EnvOverviewStore.loadActiveEnv(projectId);
     if (typeof(id) === 'number') {
-      store.loadCmById(projectId, id)
+      store.loadKVById(projectId, id)
         .then((data) => {
           if (data && data.failed) {
             Choerodon.prompt(data.message);
           } else {
             let temp = [];
-            _.map(Object.entries(data.value), d => {
-              temp.push({
-                keys: d[0],
-                key: d[0],
-                temp: '=',
-                value: d[1],
-              })
-            });
-            this.setState({ data, dataSource: temp });
+            if (_.isEmpty(data.value)) {
+              this.setState({ data });
+            } else {
+              _.map(Object.entries(data.value), d => {
+                temp.push({
+                  keys: d[0],
+                  key: d[0],
+                  temp: '=',
+                  value: d[1],
+                })
+              });
+              this.setState({ data, dataSource: temp });
+            }
           }
         })
     }
@@ -276,9 +278,13 @@ class KeyValueSideBar extends Component {
    * @param value
    */
   handleEnvSelect = (value) => {
-    const { store } = this.props;
+    const { store, title } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    store.loadConfigMap(projectId, value);
+    if (title === 'configMap') {
+      store.loadConfigMap(projectId, value);
+    } else if (title === 'secret') {
+      store.loadSecret(projectId, value);
+    }
     EnvOverviewStore.setTpEnvId(value);
   };
 
@@ -372,7 +378,7 @@ class KeyValueSideBar extends Component {
             id: id || undefined,
             value: temp,
           };
-          store.postConfigMap(projectId, devopsConfigMapDTO)
+          store.postKV(projectId, devopsConfigMapDTO)
             .then((res) => {
               if (res) {
                 if (res && res.failed) {
@@ -487,11 +493,11 @@ class KeyValueSideBar extends Component {
   };
 
   render() {
-    const { visible, intl, id, envId } = this.props;
+    const { visible, intl, id, envId, title } = this.props;
     const { submitting, dataSource, warningDisplay, warningMes, data } = this.state;
     const envData = EnvOverviewStore.getEnvcard;
     const envName = _.find(envData, ["id", envId]).name;
-    const title = id ? data.name : envName;
+    const titles = id ? data.name : envName;
     const components = {
       body: {
         row: EditableFormRow,
@@ -522,18 +528,27 @@ class KeyValueSideBar extends Component {
           destroyOnClose
           cancelText={<FormattedMessage id="cancel" />}
           okText={id ? <FormattedMessage id="save" /> : <FormattedMessage id="create" />}
-          title={id ? <FormattedMessage id="configMap.edit" /> : <FormattedMessage id="configMap.create" />}
+          title={id ? <FormattedMessage id={`${title}.edit`} /> : <FormattedMessage id={`${title}.create`} />}
           visible={visible}
           onOk={this.handleSubmit}
           onCancel={this.handleClose.bind(this, false)}
           confirmLoading={submitting}
         >
           <Content
-            code={id ? 'configMap.edit' : 'configMap.create'}
-            values={{ name: title }}
+            code={id ? `${title}.edit` : `${title}.create`}
+            values={{ name: titles }}
             className="c7n-ctf-create sidebar-content"
           >
             {this.getFormContent()}
+            <div className="c7n-sidebar-from-title">
+              <FormattedMessage id={`${title}.head`} />
+              <Popover
+                overlayStyle={{ maxWidth: '350px' }}
+                content={intl.formatMessage({ id: `${title}.help.tooltip` })}
+              >
+                <Icon type="help" />
+              </Popover>
+            </div>
             <Table
               filterBar={false}
               showHeader={false}
@@ -545,7 +560,7 @@ class KeyValueSideBar extends Component {
               rowKey={record => record.keys}
             />
             <Button icon="add" onClick={this.handleAdd} type="primary">
-              <FormattedMessage id="configMap.add" />
+              <FormattedMessage id={`${title}.add`} />
             </Button>
             {warningDisplay ? <div className="c7n-cm-warning">{warningMes}</div> : null}
           </Content>

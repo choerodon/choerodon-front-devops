@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { observer } from "mobx-react";
 import { injectIntl, FormattedMessage } from "react-intl";
-import { Table, Button, Tooltip, Modal } from "choerodon-ui";
+import { Table, Button, Tooltip, Popover, Modal } from "choerodon-ui";
 import { Permission, stores } from "choerodon-front-boot";
 import MouserOverWrapper from "../../../../components/MouseOverWrapper";
 import TimePopover from '../../../../components/timePopover';
@@ -39,36 +39,61 @@ class KeyValueTable extends Component {
   /**
    * 删除
    */
-  deleteConfigMap = () => {
-    const { store, envId } = this.props;
+  deleteKeyValue = () => {
+    const { store, envId, title } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     const { delId } = this.state;
-    const configMaps = store.getData;
+    const datas = store.getData;
     this.setState({ deleteStatus: true });
-    store
-      .deleteConfigMap(projectId, delId)
-      .then((data) => {
-        const pagination = store.getPageInfo;
-        let page = pagination.current - 1;
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-          this.setState({
-            deleteStatus: false,
-          })
-        } else {
-          this.setState({
-            delId: null,
-            removeDisplay: false,
-            deleteStatus: false,
-          }, () => {
-            if (configMaps.length % this.state.size === 1) {
-              store.loadConfigMap(projectId, envId, page - 1, pagination.pageSize);
-            } else {
-              store.loadConfigMap(projectId, envId, page, pagination.pageSize);
-            }
-          })
-        }
-      })
+    if (title === 'configMap') {
+      store.deleteConfigMap(projectId, delId)
+        .then((data) => {
+          const pagination = store.getPageInfo;
+          let page = pagination.current - 1;
+          if (data && data.failed) {
+            Choerodon.prompt(data.message);
+            this.setState({
+              deleteStatus: false,
+            })
+          } else {
+            this.setState({
+              delId: null,
+              removeDisplay: false,
+              deleteStatus: false,
+            }, () => {
+              if (datas.length % this.state.size === 1) {
+                store.loadConfigMap(projectId, envId, page - 1, pagination.pageSize);
+              } else {
+                store.loadConfigMap(projectId, envId, page, pagination.pageSize);
+              }
+            })
+          }
+        })
+    } else if (title === 'secret') {
+      store.deleteSecret(projectId, delId, envId)
+        .then((data) => {
+          const pagination = store.getPageInfo;
+          let page = pagination.current - 1;
+          if (data && data.failed) {
+            Choerodon.prompt(data.message);
+            this.setState({
+              deleteStatus: false,
+            })
+          } else {
+            this.setState({
+              delId: null,
+              removeDisplay: false,
+              deleteStatus: false,
+            }, () => {
+              if (datas.length % this.state.size === 1) {
+                store.loadSecret(projectId, envId, page - 1, pagination.pageSize);
+              } else {
+                store.loadSecret(projectId, envId, page, pagination.pageSize);
+              }
+            })
+          }
+        })
+    }
   };
 
   /**
@@ -79,7 +104,7 @@ class KeyValueTable extends Component {
    * @param paras
    */
   tableChange = (pagination, filters, sorter, paras) => {
-    const { store, envId } = this.props;
+    const { store, envId, title } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     store.setInfo({ filters, sort: sorter, paras });
     let sort = { field: '', order: 'desc' };
@@ -100,7 +125,11 @@ class KeyValueTable extends Component {
       searchParam,
       param: paras.toString(),
     };
-    store.loadConfigMap(projectId, envId, page, pagination.pageSize, sort, postData);
+    if (title === 'configMap') {
+      store.loadConfigMap(projectId, envId, page, pagination.pageSize, sort, postData);
+    } else if (title === 'secret') {
+      store.loadSecret(projectId, envId, page, pagination.pageSize, sort, postData);
+    }
   };
 
   /**
@@ -121,10 +150,7 @@ class KeyValueTable extends Component {
 
   render() {
     const {
-      intl: { formatMessage },
-      store,
-      envId,
-    } = this.props;
+      intl: { formatMessage }, store, envId, title } = this.props;
     const { removeDisplay, deleteStatus, delName } = this.state;
     const { filters, sort: { columnKey, order }, paras } = store.getInfo;
     const {
@@ -150,15 +176,17 @@ class KeyValueTable extends Component {
         sortOrder: columnKey === 'name' && order,
         filters: [],
         filteredValue: filters.name || [],
-        render: record => (<Tooltip placement="bottom" title={`${formatMessage({ id: "ist.des" })}${record.description}`}>
+        render: record => (<Popover overlayStyle={{ maxWidth: '350px', wordBreak: 'break-word' }} placement="topLeft" content={`${formatMessage({ id: "ist.des" })}${record.description}`}>
             {record.name}
-        </Tooltip>),
+        </Popover>),
       }, {
         title: <FormattedMessage id="configMap.key" />,
         dataIndex: 'key',
         key: 'key',
-        render: text => (<MouserOverWrapper text={text.join(',')} width={0.25}>
-          {text.join(',')}
+        render: text => (<MouserOverWrapper width={0.5}>
+          <Popover content={text.join(',')} placement="topLeft" overlayStyle={{ maxWidth: '350px', wordBreak: 'break-word' }}>
+              {text.join(',')}
+          </Popover>
         </MouserOverWrapper>),
       }, {
         title: <FormattedMessage id="ciPipeline.createdAt" />,
@@ -171,7 +199,7 @@ class KeyValueTable extends Component {
         key: 'action',
         render: record => (
           <Fragment>
-            <Permission type={type} projectId={projectId} organizationId={organizationId} service={['devops-service.devops-config-map.create']}>
+            <Permission type={type} projectId={projectId} organizationId={organizationId} service={['devops-service.devops-config-map.create', 'devops-service.devops-secret.createOrUpdate']}>
               <Tooltip
                 placement="bottom"
                 title={envState && !envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : <FormattedMessage id="edit" />}
@@ -185,7 +213,7 @@ class KeyValueTable extends Component {
                 />
               </Tooltip>
             </Permission>
-            <Permission type={type} projectId={projectId} organizationId={organizationId} service={['devops-service.devops-config-map.delete']}>
+            <Permission type={type} projectId={projectId} organizationId={organizationId} service={['devops-service.devops-config-map.delete', 'devops-service.devops-secret.deleteSecret']}>
               <Tooltip
                 placement="bottom"
                 title={envState && !envState.connect ? <FormattedMessage id="envoverview.envinfo" /> : <FormattedMessage id="delete" />}
@@ -218,7 +246,7 @@ class KeyValueTable extends Component {
         <Modal
           confirmLoading={deleteStatus}
           visible={removeDisplay}
-          title={`${formatMessage({ id: "configMap.del" })}“${delName}”`}
+          title={`${formatMessage({ id: `${title}.del` })}“${delName}”`}
           closable={false}
           footer={[
             <Button
@@ -232,14 +260,14 @@ class KeyValueTable extends Component {
               key="submit"
               loading={deleteStatus}
               type="danger"
-              onClick={this.deleteConfigMap}
+              onClick={this.deleteKeyValue}
             >
               <FormattedMessage id="delete" />
             </Button>,
           ]}
         >
           <div className="c7n-padding-top_8">
-            <FormattedMessage id="configMap.del.tooltip" />
+            <FormattedMessage id={ `${title}.del.tooltip`} />
           </div>
         </Modal>
       </Fragment>

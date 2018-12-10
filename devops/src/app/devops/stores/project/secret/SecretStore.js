@@ -6,11 +6,11 @@ const HEIGHT =
   window.innerHeight ||
   document.documentElement.clientHeight ||
   document.body.clientHeight;
-@store("ConfigMapStore")
-class ConfigMapStore {
+@store("SecretStore")
+class SecretStore {
   @observable data = [];
 
-  @observable cmData = false;
+  @observable secretData = false;
 
   @observable loading = false;
 
@@ -44,12 +44,12 @@ class ConfigMapStore {
     this.data = data;
   }
 
-  @computed get getCmData() {
-    return this.cmData.slice();
+  @computed get getSecretData() {
+    return this.secretData.slice();
   }
 
-  @action setCmData(data) {
-    this.cmData = data;
+  @action setSecretData(data) {
+    this.secretData = data;
   }
 
   @action changeLoading(flag) {
@@ -78,7 +78,7 @@ class ConfigMapStore {
     return this.sideType;
   }
 
-  loadConfigMap = (
+  loadSecret = (
     projectId,
     envId,
     page = this.pageInfo.current - 1,
@@ -91,7 +91,7 @@ class ConfigMapStore {
   ) => {
     this.changeLoading(true);
     return axios
-      .post(`/devops/v1/projects/${projectId}/config_maps/${envId}/listByEnv?page=${page}&size=${size}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(postData))
+      .post(`/devops/v1/projects/${projectId}/secret/${envId}/list_by_option?page=${page}&size=${size}&sort=${sort.field || 'id'},${sort.order}`, JSON.stringify(postData))
       .then(data => {
         const res = handleProptError(data);
         if (res) {
@@ -106,30 +106,30 @@ class ConfigMapStore {
 
   loadKVById(projectId, id) {
     return axios
-      .get(`/devops/v1/projects/${projectId}/config_maps/${id}`)
+      .get(`/devops/v1/projects/${projectId}/secret/${id}`)
       .then(data => {
         if (data && data.failed) {
           Choerodon.prompt(data.message);
         } else {
-          this.setCmData(data);
+          this.setSecretData(data);
         }
         return data;
       });
   }
 
   postKV(projectId, data) {
-    return axios.post(`/devops/v1/projects/${projectId}/config_maps`, JSON.stringify(data));
+    return axios.put(`/devops/v1/projects/${projectId}/secret`, JSON.stringify(data));
   }
 
 
-  deleteConfigMap(projectId, id) {
-    return axios.delete(`/devops/v1/projects/${projectId}/config_maps/${id}/delete`);
+  deleteSecret(projectId, id, envId) {
+    return axios.delete(`/devops/v1/projects/${projectId}/secret/${envId}/${id}`);
   }
 
   checkName(projectId, envId, name){
-    return axios.get(`/devops/v1/projects/${projectId}/config_maps/check_name?configMapName=${name}&envId=${envId}`);
+    return axios.get(`/devops/v1/projects/${projectId}/secret/${envId}/check_name?secret_name=${name}`);
   }
 }
 
-const configMapStore = new ConfigMapStore();
-export default configMapStore;
+const secretStore = new SecretStore();
+export default secretStore;
