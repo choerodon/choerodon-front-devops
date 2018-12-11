@@ -123,6 +123,10 @@
     box-shadow: 1px 0 1px 0 rgba(0, 0, 0, .45);
   }
 
+  .ant-collapse-header:hover {
+    background: rgba(0, 0, 0, .04);
+  }
+
   &.ant-collapse-item-active {
     .ant-collapse-header {
       background: rgba(0, 0, 0, .04);
@@ -141,5 +145,17 @@
         }
       }
     }
+  }
+
+  .c7ncd-deploy-spin {
+    text-align: center;
+    padding: 50px 20px;
+  }
+
+  .c7ncd-deploy-ports-name {
+    margin-top: 16px;
+    padding-left: 8px;
+    font-size: 16px;
+    color: rgba(0, 0, 0, .45);
   }
 }

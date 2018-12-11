@@ -25,7 +25,7 @@ import DelIst from "../../instances/components/DelIst";
 import "../EnvOverview.scss";
 import "../../instances/Instances.scss";
 import "../../../main.scss";
-import InstancesStore from "../../../../stores/project/instances/index";
+import InstancesStore from "../../../../stores/project/instances/InstancesStore";
 import DomainStore from "../../../../stores/project/domain";
 import CreateDomain from "../../domain/createDomain";
 import CreateNetwork from "../../networkConfig/createNetwork";
@@ -90,7 +90,7 @@ class AppOverview extends Component {
 
   @observable isDelete = {};
 
-  @observable confirmType = '';
+  @observable confirmType = "";
 
   @observable confirmLoading = false;
 
@@ -260,7 +260,7 @@ class AppOverview extends Component {
    */
   @action
   closeConfirm = () => {
-    this.confirmType = '';
+    this.confirmType = "";
   };
 
   /**
@@ -724,7 +724,7 @@ class AppOverview extends Component {
       restart: {
         service: ["devops-service.application-instance.restart"],
         text: formatMessage({ id: "ist.reDeploy" }),
-        action: this.openConfirm.bind(this, record, 'reDeploy'),
+        action: this.openConfirm.bind(this, record, "reDeploy"),
       },
       update: {
         service: ["devops-service.application-version.getUpgradeAppVersion"],
@@ -742,8 +742,8 @@ class AppOverview extends Component {
             : formatMessage({ id: "ist.run" }),
         action:
           status !== "stopped"
-            ? this.openConfirm.bind(this, record, 'stop')
-            : this.openConfirm.bind(this, record, 'start'),
+            ? this.openConfirm.bind(this, record, "stop")
+            : this.openConfirm.bind(this, record, "start"),
       },
       delete: {
         service: ["devops-service.application-instance.delete"],
@@ -786,7 +786,10 @@ class AppOverview extends Component {
   };
 
   render() {
-    const { intl: { formatMessage }, store } = this.props;
+    const {
+      intl: { formatMessage },
+      store,
+    } = this.props;
     const {
       type,
       id: projectId,
@@ -860,8 +863,10 @@ class AppOverview extends Component {
               name={this.istName}
             />
             <Modal
-              title={`${formatMessage({ id: 'ist.reDeploy'})}“${this.istName}”`}
-              visible={this.confirmType === 'reDeploy'}
+              title={`${formatMessage({ id: "ist.reDeploy" })}“${
+                this.istName
+              }”`}
+              visible={this.confirmType === "reDeploy"}
               onOk={this.reStart.bind(this, this.id)}
               onCancel={this.closeConfirm}
               confirmLoading={this.confirmLoading}
@@ -872,15 +877,19 @@ class AppOverview extends Component {
               </div>
             </Modal>
             <Modal
-              title={`${formatMessage({ id: `${this.confirmType === 'stop' ? 'ist.stop' : 'ist.run'}` })}“${this.istName}”`}
-              visible={this.confirmType === 'stop' || this.confirmType === 'start'}
+              title={`${formatMessage({
+                id: `${this.confirmType === "stop" ? "ist.stop" : "ist.run"}`,
+              })}“${this.istName}”`}
+              visible={
+                this.confirmType === "stop" || this.confirmType === "start"
+              }
               onOk={this.activeIst.bind(this, this.id, this.confirmType)}
               onCancel={this.closeConfirm}
               confirmLoading={this.confirmLoading}
               closable={false}
             >
               <div className="c7n-padding-top_8">
-                <FormattedMessage id = {`ist.${this.confirmType}Des`} />
+                <FormattedMessage id={`ist.${this.confirmType}Des`} />
               </div>
             </Modal>
             {this.showDomain && (

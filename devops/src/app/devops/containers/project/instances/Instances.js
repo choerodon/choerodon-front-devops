@@ -2,7 +2,15 @@ import React, { Component, Fragment } from "react";
 import { observer, inject } from "mobx-react";
 import { withRouter } from "react-router-dom";
 import { injectIntl, FormattedMessage } from "react-intl";
-import { Table, Select, Tooltip, Pagination, Button, Icon, Modal } from "choerodon-ui";
+import {
+  Table,
+  Select,
+  Tooltip,
+  Pagination,
+  Button,
+  Icon,
+  Modal,
+} from "choerodon-ui";
 import { Action, stores, Content, Header, Page } from "choerodon-front-boot";
 import _ from "lodash";
 import { handleProptError } from "../../../utils";
@@ -17,7 +25,7 @@ import "./Instances.scss";
 import "../../main.scss";
 import EnvOverviewStore from "../../../stores/project/envOverview";
 import DepPipelineEmpty from "../../../components/DepPipelineEmpty/DepPipelineEmpty";
-import InstancesStore from "../../../stores/project/instances";
+import InstancesStore from "../../../stores/project/instances/InstancesStore";
 import Tips from "../../../components/Tips/Tips";
 import RefreshBtn from "../../../components/refreshBtn";
 import DevopsStore from "../../../stores/DevopsStore";
@@ -33,7 +41,7 @@ class Instances extends Component {
     this.state = {
       visibleUp: false,
       deleteIst: {},
-      confirmType: '',
+      confirmType: "",
       confirmLoading: false,
     };
     this.columnAction = this.columnAction.bind(this);
@@ -414,8 +422,8 @@ class Instances extends Component {
    */
   closeConfirm = () => {
     this.setState({
-      confirmType: '',
-    })
+      confirmType: "",
+    });
   };
 
   /**
@@ -443,7 +451,7 @@ class Instances extends Component {
       restart: {
         service: ["devops-service.application-instance.restart"],
         text: formatMessage({ id: "ist.reDeploy" }),
-        action: this.openConfirm.bind(this, record, 'reDeploy'),
+        action: this.openConfirm.bind(this, record, "reDeploy"),
       },
       update: {
         service: ["devops-service.application-version.getUpgradeAppVersion"],
@@ -461,8 +469,8 @@ class Instances extends Component {
             : formatMessage({ id: "ist.run" }),
         action:
           status !== "stopped"
-            ? this.openConfirm.bind(this, record, 'stop')
-            : this.openConfirm.bind(this, record, 'start'),
+            ? this.openConfirm.bind(this, record, "stop")
+            : this.openConfirm.bind(this, record, "start"),
       },
       delete: {
         service: ["devops-service.application-instance.delete"],
@@ -789,8 +797,8 @@ class Instances extends Component {
                 name={name}
               />
               <Modal
-                title={`${formatMessage({ id: 'ist.reDeploy'})}“${name}”`}
-                visible={confirmType === 'reDeploy'}
+                title={`${formatMessage({ id: "ist.reDeploy" })}“${name}”`}
+                visible={confirmType === "reDeploy"}
                 onOk={this.reStart.bind(this, id)}
                 onCancel={this.closeConfirm}
                 confirmLoading={confirmLoading}
@@ -801,15 +809,17 @@ class Instances extends Component {
                 </div>
               </Modal>
               <Modal
-                title={`${formatMessage({ id: `${confirmType === 'stop' ? 'ist.stop' : 'ist.run'}` })}“${name}”`}
-                visible={confirmType === 'stop' || confirmType === 'start'}
+                title={`${formatMessage({
+                  id: `${confirmType === "stop" ? "ist.stop" : "ist.run"}`,
+                })}“${name}”`}
+                visible={confirmType === "stop" || confirmType === "start"}
                 onOk={this.activeIst.bind(this, id, confirmType)}
                 onCancel={this.closeConfirm}
                 confirmLoading={confirmLoading}
                 closable={false}
               >
                 <div className="c7n-padding-top_8">
-                  <FormattedMessage id = {`ist.${confirmType}Des`} />
+                  <FormattedMessage id={`ist.${confirmType}Des`} />
                 </div>
               </Modal>
             </Content>

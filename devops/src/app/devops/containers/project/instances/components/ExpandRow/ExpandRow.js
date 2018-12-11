@@ -1,13 +1,14 @@
 import React, { Component, Fragment } from "react";
 import { FormattedMessage, injectIntl } from "react-intl";
+import { observer, renderReporter } from "mobx-react";
 import { withRouter, Link } from "react-router-dom";
 import _ from "lodash";
 import TimeAgo from "timeago-react";
 import { stores, Content } from "choerodon-front-boot";
-import { Tooltip, Button, Modal, Collapse } from "choerodon-ui";
+import { Tooltip, Button, Modal, Collapse, Table, Spin } from "choerodon-ui";
 import { formatDate } from "../../../../../utils/index";
+import DeploymentStore from "../../../../../stores/project/instances/DeploymentStore";
 import "./index.scss";
-import { inject } from "mobx-react";
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -22,33 +23,48 @@ const PANEL_TYPE = [
   "variables",
 ];
 
+@observer
 class ExpandRow extends Component {
   constructor(props) {
     super(props);
     this.state = {
       visible: false,
       sideName: "",
+      activeKey: [],
     };
   }
 
-  handleClick(name) {
+  /**
+   * 打开Deployment详情侧边栏，并加载数据
+   * @param {*} id
+   * @param {*} name
+   */
+  handleClick(id, name) {
+    const { id: projectId } = AppState.currentMenuType;
     this.setState({ visible: true, sideName: name });
+    DeploymentStore.loadDeploymentsJson(projectId, id, name);
   }
 
   hideSidebar = () => {
-    this.setState({ visible: false });
+    this.setState({ visible: false, activeKey: [] });
+    DeploymentStore.setData([]);
+  };
+
+  handlePanelChange = key => {
+    this.setState({ activeKey: key });
   };
 
   /**
    *
-   * @param {*} item
-   * @param {*} envId
-   * @param {*} appId
-   * @param {*} status
+   * @param {object} item
+   * @param {number} envId
+   * @param {number} appId
+   * @param {number} id 实例id
+   * @param {string} status
    * @returns
    * @memberof ExpandRow
    */
-  getContent(item, envId, appId, status) {
+  getContent(item, envId, appId, id, status) {
     const { name, available, age, devopsEnvPodDTOS, current, desired } = item;
     let correctCount = 0;
     let errorCount = 0;
@@ -128,7 +144,7 @@ class ExpandRow extends Component {
           <li className="c7n-deploy-expanded-lists">
             <Button
               className="c7ncd-detail-btn"
-              onClick={this.handleClick.bind(this, name)}
+              onClick={this.handleClick.bind(this, id, name)}
             >
               <FormattedMessage id="detailMore" />
             </Button>
@@ -157,37 +173,315 @@ class ExpandRow extends Component {
     );
   }
 
+  renderPorts(container, isLoading) {
+    let hasPorts = false;
+
+    const colItems = ["name", "containerPort", "protocol", "hostPort"];
+
+    const columns = _.map(colItems, item => ({
+      title: <FormattedMessage id={`ist.deploy.ports.${item}`} />,
+      key: item,
+      dataIndex: item,
+      render: textOrNA,
+    }));
+
+    let portsContent = _.map(container, item => {
+      const { name, ports } = item;
+      if (ports && ports.length) {
+        hasPorts = true;
+      }
+      return (
+        <Fragment key={name}>
+          <div className="c7ncd-deploy-ports-name">
+            <FormattedMessage id="ist.deploy.container" />
+            {name}
+          </div>
+          <Table
+            filterBar={false}
+            dataSource={ports && ports.slice()}
+            columns={columns}
+            pagination={false}
+            rowKey={record => record.name}
+          />
+        </Fragment>
+      );
+    });
+
+    if (!hasPorts) {
+      portsContent = <div>没有端口配置</div>;
+    }
+
+    return isLoading ? (
+      <div className="c7ncd-deploy-spin">
+        <Spin />
+      </div>
+    ) : (
+      portsContent
+    );
+  }
+
+  renderHealth() {
+    return <div>...</div>;
+  }
+
+  renderVar() {
+    const {
+      getData: { detail },
+      getLoading,
+    } = DeploymentStore;
+    let containers = [];
+    if (
+      detail &&
+      detail.spec &&
+      detail.spec.template &&
+      detail.spec.template.spec
+    ) {
+      containers = detail.spec.template.spec.containers;
+    }
+    const columns = [
+      {
+        title: <FormattedMessage id="ist.deploy.variables.key" />,
+        key: "name",
+        dataIndex: "name",
+      },
+      {
+        title: <FormattedMessage id="ist.deploy.variables.value" />,
+        key: "value",
+        dataIndex: "value",
+      },
+    ];
+    let hasEnv = false;
+    let envContent = _.map(containers, item => {
+      const { name, env } = item;
+      if (env && env.length) {
+        hasEnv = true;
+      }
+      return (
+        <Fragment key={name}>
+          <div className="c7ncd-deploy-ports-name">
+            <FormattedMessage id="ist.deploy.container" />
+            {name}
+          </div>
+          <Table
+            filterBar={false}
+            // onChange={this.tableChange}
+            dataSource={env && env.slice()}
+            columns={columns}
+            pagination={false}
+            rowKey={record => record.name}
+          />
+        </Fragment>
+      );
+    });
+
+    if (!hasEnv) {
+      envContent = (
+        <Table
+          key="noDate"
+          filterBar={false}
+          pagination={false}
+          dataSource={[]}
+          columns={columns}
+        />
+      );
+    }
+
+    return getLoading ? (
+      <div className="c7ncd-deploy-spin">
+        <Spin />
+      </div>
+    ) : (
+      envContent
+    );
+  }
+
+  renderLabel() {
+    const {
+      getData: { detail },
+      getLoading,
+    } = DeploymentStore;
+    let labels = [];
+    let annotations = [];
+    if (detail && detail.metadata) {
+      labels = detail.metadata.labels;
+      annotations = detail.metadata.annotations;
+    }
+
+    /**
+     * 表格数据
+     * @param {object} obj
+     * @param {array} col
+     */
+    function format(obj, col) {
+      const arr = [];
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          const value = obj[key];
+          arr.push({ key, value });
+        }
+      }
+      return (
+        <Table
+          filterBar={false}
+          pagination={false}
+          dataSource={arr.length ? arr : []}
+          columns={col}
+        />
+      );
+    }
+
+    const columns = [
+      {
+        width: "50%",
+        title: <FormattedMessage id="ist.deploy.key" />,
+        key: "key",
+        dataIndex: "key",
+      },
+      {
+        width: "50%",
+        title: <FormattedMessage id="ist.deploy.value" />,
+        key: "value",
+        dataIndex: "value",
+      },
+    ];
+
+    const labelContent = format(labels, columns);
+
+    const annoContent = format(annotations, columns);
+
+    return getLoading ? (
+      <div className="c7ncd-deploy-spin">
+        <Spin />
+      </div>
+    ) : (
+      <Fragment>
+        <div className="c7ncd-deploy-ports-name">Labels</div>
+        {labelContent}
+        <div className="c7ncd-deploy-ports-name">Annotations</div>
+        {annoContent}
+      </Fragment>
+    );
+  }
+
+  renderVolume() {
+    const {
+      getData: { detail },
+      getLoading,
+    } = DeploymentStore;
+
+    let containers = [];
+    let volumes = [];
+    if (
+      detail &&
+      detail.spec &&
+      detail.spec.template &&
+      detail.spec.template.spec
+    ) {
+      containers = detail.spec.template.spec.containers;
+      volumes = detail.spec.template.spec.volumes;
+    }
+
+    const volumeType = keys => {
+      const VOL_TYPE = ["configMap", "persistentVolumeClaim", "secret"];
+      const type = _.filter(VOL_TYPE, item => keys.includes(item));
+      let content = null;
+      switch (type) {
+        case "configMap":
+          break;
+        case "persistentVolumeClaim":
+          break;
+        case "secret":
+          break;
+        case "hostPath":
+          break;
+
+        default:
+          break;
+      }
+      return content;
+    };
+
+    const volumeContent = [];
+    _.map(volumes, vol => {
+      const vKey = Object.keys(vol);
+      volumeContent.push(volumeType(vKey));
+    });
+  }
+
+  renderSecurity() {
+    const {
+      getData: { detail },
+      getLoading,
+    } = DeploymentStore;
+    let containers = [];
+    let volumes = [];
+    if (
+      detail &&
+      detail.spec &&
+      detail.spec.template &&
+      detail.spec.template.spec
+    ) {
+      containers = detail.spec.template.spec.containers;
+      volumes = detail.spec.template.spec.volumes;
+    }
+  }
+
   render() {
     const {
-      record: { deploymentDTOS, envId, appId, status },
+      record: { deploymentDTOS, envId, appId, status, id },
       url,
       intl: { formatMessage },
     } = this.props;
 
-    const { visible, sideName } = this.state;
+    const { visible, sideName, activeKey } = this.state;
 
     const deployContent = _.map(deploymentDTOS, item =>
-      this.getContent(item, envId, appId, status)
+      this.getContent(item, envId, appId, id, status)
     );
 
-    const panelContent = _.map(PANEL_TYPE, item => (
-      <Panel
-        key={item}
-        header={
-          <div className="c7ncd-deploy-panel-header">
-            <div className="c7ncd-deploy-panel-title">
-              <FormattedMessage id={`ist.deploy.${item}`} />
-            </div>
-            <div className="c7ncd-deploy-panel-text">
-              <FormattedMessage id={`ist.deploy.${item}.describe`} />
-            </div>
-          </div>
-        }
-        className="c7ncd-deploy-panel"
-      >
-        {item !== "variables" ? "楼下有🐕！" : "🐶:汪汪汪~~~"}
-      </Panel>
-    ));
+    const {
+      getData: { detail },
+      getLoading,
+    } = DeploymentStore;
+    let containers = [];
+    if (
+      detail &&
+      detail.spec &&
+      detail.spec.template &&
+      detail.spec.template.spec
+    ) {
+      containers = detail.spec.template.spec.containers;
+    }
+
+    const renderFun = {
+      ports: this.renderPorts.bind(this, containers, getLoading),
+      volume: this.renderVolume,
+      health: this.renderHealth,
+      security: this.renderSecurity,
+      label: this.renderLabel,
+      variables: this.renderVar,
+    };
+
+    const panelContent = visible
+      ? _.map(PANEL_TYPE, item => (
+          <Panel
+            key={item}
+            header={
+              <div className="c7ncd-deploy-panel-header">
+                <div className="c7ncd-deploy-panel-title">
+                  <FormattedMessage id={`ist.deploy.${item}`} />
+                </div>
+                <div className="c7ncd-deploy-panel-text">
+                  <FormattedMessage id={`ist.deploy.${item}.describe`} />
+                </div>
+              </div>
+            }
+            className="c7ncd-deploy-panel"
+          >
+            {renderFun[item]()}
+          </Panel>
+        ))
+      : null;
 
     return (
       <Fragment>
@@ -211,12 +505,28 @@ class ExpandRow extends Component {
           visible={visible}
         >
           <Content code="ist.deploy" values={{ name: sideName }}>
-            <Collapse bordered={false}>{panelContent}</Collapse>
+            <Collapse
+              bordered={false}
+              activeKey={activeKey}
+              onChange={this.handlePanelChange}
+            >
+              {panelContent}
+            </Collapse>
           </Content>
         </Sidebar>
       </Fragment>
     );
   }
+}
+
+/**
+ * 内容为空时返回 n/a
+ */
+function textOrNA(text) {
+  if (!text) {
+    return "n/a";
+  }
+  return text;
 }
 
 export default withRouter(injectIntl(ExpandRow));
