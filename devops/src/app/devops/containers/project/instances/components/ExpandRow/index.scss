@@ -152,10 +152,136 @@
     padding: 50px 20px;
   }
 
-  .c7ncd-deploy-ports-name {
+  .c7ncd-deploy-container-title {
     margin-top: 16px;
-    padding-left: 8px;
+    // padding-left: 8px;
     font-size: 16px;
     color: rgba(0, 0, 0, .45);
+
+    .c7ncd-deploy-container-name {
+      color: #000;
+    }
+  }
+
+  .c7ncd-deploy-label {
+    margin: 16px 0 12px 0;
+    color: rgba(0, 0, 0, .45);
+    font-size: 14px;
+  }
+
+  .c7ncd-deploy-detail-label {
+    margin-bottom: 3px;
+    font-size: 13px;
+    color: rgba(0, 0, 0, .65);
+  }
+
+  .c7ncd-deploy-detail-text {
+    width: 100%;
+    font-size: 13px;
+    color: #000;
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+
+  .c7ncd-deploy-volume-wrap {
+    background: rgba(0, 0, 0, .04);
+    padding: 0 20px 20px;
+    margin-top: 16px;
+
+    .c7ncd-deploy-volume-line {
+      margin: 12px 0;
+      box-sizing: content-box;
+      border: 0;
+      height: 0;
+      border-top: 1px solid #d9d9d9;
+      border-bottom: 1px solid #d9d9d9;
+    }
+
+    .c7ncd-deploy-volume-main {
+      display: flex;
+      flex-wrap: wrap;
+
+      .c7ncd-deploy-volume-item {
+        flex: 0 0 50%;
+        width: 50%;
+        margin-top: 20px;
+        padding: 0 12px;
+
+        &_full {
+          flex: 0 0 100%;
+          width: 100%;
+          margin-top: 20px;
+          padding: 0 12px;
+        }
+      }
+    }
+
+    .c7ncd-deploy-volume-flex {
+      display: table;
+      width: 100%;
+
+      .c7ncd-deploy-volume-item {
+        display: table-cell;
+        width: 42%;
+        padding: 0 12px;
+
+        &_short {
+          display: table-cell;
+          width: 16%;
+        }
+      }
+    }
+  }
+
+  .c7ncd-deploy-security-wrap {
+
+    margin-top: 4px;
+
+    .c7ncd-deploy-security-block {
+      display: table;
+      margin-top: 12px;
+      padding: 20px;
+      width: 100%;
+      background: rgba(0, 0, 0, .04);
+
+      .c7ncd-deploy-security-item {
+        display: table-cell;
+      }
+    }
+  }
+
+  .c7ncd-deploy-health-wrap {
+    .c7ncd-deploy-health-content {
+      display: table;
+      width: 100%;
+      background: rgba(0, 0, 0, .04);
+
+      .c7ncd-deploy-health-block {
+        display: table-cell;
+        padding: 0 20px 20px;
+
+        .c7ncd-deploy-health-main {
+          margin-top: -10px;
+
+          &::after {
+            visibility: hidden;
+            display: block;
+            font-size: 0;
+            content: " ";
+            clear: both;
+            height: 0;
+          }
+
+          zoom: 1;
+
+          .c7ncd-deploy-health-item {
+            float: left;
+            margin-top: 10px;
+            padding-left: 10px;
+            width: 50%;
+          }
+        }
+      }
+    }
   }
 }

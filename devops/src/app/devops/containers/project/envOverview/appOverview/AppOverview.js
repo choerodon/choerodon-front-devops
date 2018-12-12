@@ -774,7 +774,7 @@ class AppOverview extends Component {
         actionItem = ["detail"];
     }
     if (!connect) {
-      actionItem = ["detail", "delete"];
+      actionItem = ["detail"];
     }
     const actionData = _.map(actionItem, item => ({
       projectId,
