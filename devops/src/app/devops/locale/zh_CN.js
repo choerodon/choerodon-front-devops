@@ -1,6 +1,6 @@
 // zh_CN.js
 // 文档地址前缀
-const docServer = "http://v0-11.choerodon.io/zh/docs";
+const docServer = "http://v0-12.choerodon.io/zh/docs";
 // 界面标题描述统一管理
 const pageDetail = {
   // network
@@ -319,13 +319,35 @@ const pageDetail = {
   "configMap.title": '环境"{name}"的配置映射',
   "configMap.create.title": '在环境"{name}"中创建配置映射',
   "configMap.edit.title": '对映射配置"{name}"进行修改',
-  "configMap.edit.description":
-    "您可以在此处修改配置映射的描述与其中包含的键值对。",
-  "configMap.create.description": "description",
-  "configMap.description":
-    "配置映射是受法律认可的证书文件，确定了域名注册者对域名的拥有权与拥有时限。您在每个环境中添加的所有域名都需要有域名证书。",
+  "configMap.edit.description": '您可在此编辑配置映射的描述以及键值对的内容。',
+  "configMap.create.description": '您可以在此处选择环境，填写配置映射名称及描述，添加配置映射。',
+  "configMap.description": '配置映射是用来存储配置文件的Kubernetes资源对象，其中存储的键值对可以在pods中使用。',
   "configMap.link": `${docServer}/user-guide/deployment-pipeline/config-map/`,
   "configMap.create.link": `${docServer}/user-guide/deployment-pipeline/config-map/`,
+  "configMap.help.tooltip": '您可粘贴多行“键=值”格式的字段至任何键框中，以便于批量输入键值对。',
+
+  // 配置映射
+  "secret.title": '环境"{name}"的密文',
+  "secret.create.title": '在环境"{name}"中创建密文',
+  "secret.edit.title": '对密文"{name}"进行修改',
+  "secret.edit.description": '您可在此编辑密文的描述以及键值对的内容。',
+  "secret.create.description": '您可以在此处选择环境，填写密文名称及描述，在该环境下添加密文。',
+  "secret.description": '密文是用来保存小片敏感数据的Kubernetes资源对象，例如密码，token，或者密钥等。',
+  "secret.link": `${docServer}/user-guide/deployment-pipeline/secret/`,
+  "secret.create.link": `${docServer}/user-guide/deployment-pipeline/secret/`,
+  "secret.help.tooltip": '您可粘贴多行“键=值”格式的字段至任何键框中，以便于批量输入键值对。',
+
+  //组织层证书
+  "certificate.title": '组织"{name}"的证书',
+  "certificate.description":
+    "域名证书是受法律认可的证书文件，确定了域名注册者对域名的拥有权与拥有时限。",
+  "certificate.link": `${docServer}/user-guide/devops-management/certificate`,
+  "certificate.create.title": '在组织"{name}"中创建证书',
+  "certificate.create.description": '请在下方输入证书名称，并上传相应的证书文件来创建证书。同时，您可以选择为所创证书配置公开范围，配置后，只有在被勾选的项目下创建证书时，才能选择此证书。',
+  "certificate.create.link": `${docServer}/user-guide/devops-management/certificate`,
+  "certificate.edit.title": '对证书"{name}"进行修改',
+  "certificate.edit.description": "您可在此修改证书的公开范围。",
+  "certificate.edit.link": `${docServer}/user-guide/devops-management/certificate`,
 };
 
 const zhCN = {
@@ -1152,6 +1174,8 @@ const zhCN = {
   "ctf.config": "参数配置",
   "ctf.apply": "申请证书",
   "ctf.upload": "上传证书",
+  "ctf.choose": "选择证书",
+  "ctf.choose.tips": "此处选择的证书为该组织下已对本项目授权的证书。",
   "ctf.config.add": "添加域名",
   "ctf.config.domain": "域名",
   "ctf.env.placeholder": "请选择环境",
@@ -1295,6 +1319,28 @@ const zhCN = {
   "configMap.keyRepeat": "存在重复键，请检查输入。",
   "configMap.del": "删除配置映射",
   "configMap.del.tooltip": "确认删除配置映射吗？",
+
+  // 配置映射
+  "secret.head": "密文",
+  "secret.create": "创建密文",
+  "secret.edit": "修改密文",
+  "secret.add": "添加密文",
+  "secret.key": "键",
+  "secret.des": "描述",
+  "secret.del": "删除密文",
+  "secret.del.tooltip": "确认删除密文吗？",
+
+  //组织层证书管理
+  "certificate.head": "证书管理",
+  "certificate.file.add": "添加证书文件",
+  "certificate.file.add.tip": "您需在此粘贴输入对应的文件内容。",
+  "certificate.key.content": "KEY文件内容",
+  "certificate.cert.content": "CERT文件内容",
+  "certificate.permission": "证书权限分配",
+  "certificate.permission.tip":
+    "此操作用于为此证书在该组织下配置公开范围。一般默认选择为组织下所有项目，即该证书可在所有项目下创建证书时使用；若选择组织下特定项目，则只有在被勾选项目下创建证书时才有权限选择此证书。",
+  "certificate.public": "证书公开范围",
+  "ctf.sidebar.edit": "编辑证书",
 
   ...pageDetail,
 };

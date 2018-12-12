@@ -5,6 +5,7 @@ import ContainerStore from "../container";
 import CertificateStore from "../certificate";
 import InstancesStore from "../instances/InstancesStore";
 import ConfigMapStore from "../configMap";
+import SecretStore from "../secret";
 import { handleProptError } from "../../../utils";
 import DeploymentPipelineStore from "../deploymentPipeline";
 
@@ -233,14 +234,10 @@ class EnvOverviewStore {
                 InstancesStore.setIsCache(false);
                 break;
               case "configMap":
-                ConfigMapStore.loadConfigMap(
-                  projectId,
-                  this.tpEnvId,
-                  page,
-                  pageSize,
-                  sorter,
-                  postData
-                );
+                ConfigMapStore.loadConfigMap(true, projectId, this.tpEnvId);
+                break;
+              case "secret":
+                SecretStore.loadSecret(true, projectId, this.tpEnvId);
                 break;
               case "all":
                 break;

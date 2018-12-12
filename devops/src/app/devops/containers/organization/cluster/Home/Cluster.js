@@ -418,7 +418,6 @@ class Cluster extends Component {
             </FormItem>
             <FormItem
               {...formItemLayout}
-              label={<FormattedMessage id="envPl.form.description" />}
             >
               {getFieldDecorator('description')(
                 <TextArea
@@ -433,7 +432,7 @@ class Cluster extends Component {
             <FormattedMessage id="cluster.authority" />
             <Popover
               overlayStyle={{ maxWidth: '350px' }}
-              content={formatMessage({ id: 'envPl.authority.help' })}
+              content={formatMessage({ id: 'cluster.authority.help' })}
             >
               <Icon type="help" />
             </Popover>

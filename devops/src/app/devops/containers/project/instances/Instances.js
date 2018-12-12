@@ -227,7 +227,7 @@ class Instances extends Component {
       InstancesStore: { loadUpVersion, loadValue },
       intl,
     } = this.props;
-    loadUpVersion(projectId, appVersionId || commandVersionId)
+    loadUpVersion(projectId, commandVersionId)
       .then(data => {
         const res = handleProptError(data);
         if (res) {

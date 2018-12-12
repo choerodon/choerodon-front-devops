@@ -5,9 +5,9 @@ import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import KeyValueTable from '../keyValueTable';
-import KeyValueSideBar from '../keyValueSideBar';
-import './ConfigMap.scss';
+import KeyValueTable from '../../configMap/keyValueTable';
+import KeyValueSideBar from '../../configMap/keyValueSideBar';
+import '../../configMap/configMapHome/ConfigMap.scss';
 import '../../../main.scss';
 import EnvOverviewStore from "../../../../stores/project/envOverview";
 import DevopsStore from "../../../../stores/DevopsStore";
@@ -18,49 +18,49 @@ const { AppState } = stores;
 const { Option } = Select;
 
 @observer
-class ConfigMap extends Component {
+class Secret extends Component {
   constructor(props) {
     super(props);
     this.state = {
       sideBarDisplay: false,
-      configMapId: undefined,
+      secretId: undefined,
     };
   }
 
   componentDidMount() {
     const { id: projectId } = AppState.currentMenuType;
-    EnvOverviewStore.loadActiveEnv(projectId, 'configMap');
+    EnvOverviewStore.loadActiveEnv(projectId, 'secret');
   }
 
   /**
-   * 打开侧边栏
-   * @param configMapId
+   * 开启侧边框
+   * @param secretId
    */
-  openSideBar = (configMapId) => {
-    this.setState({ sideBarDisplay: true, configMapId });
+  openSideBar = (secretId) => {
+    this.setState({ sideBarDisplay: true, secretId });
   };
 
   /**
    * 刷新函数
-   * @param spin 是否自动刷新 spin效果
+   * @param spin
    */
   reload = (spin = true) => {
     const { id: projectId } = AppState.currentMenuType;
     EnvOverviewStore.loadActiveEnv(projectId);
-    this.loadConfigMap(spin);
+    this.loadSecret(spin);
   };
 
   /**
-   * 加载配置映射
+   * 加载密文
    * @param spin
    * @param page
    * @param size
    */
-  loadConfigMap = (spin, page, size) => {
-    const { ConfigMapStore } = this.props;
+  loadSecret = (spin, page, size) => {
+    const { SecretStore } = this.props;
     const tpEnvId = EnvOverviewStore.getTpEnvId;
     const { id: projectId } = AppState.currentMenuType;
-    ConfigMapStore.loadConfigMap(spin, projectId, tpEnvId, page, size);
+    SecretStore.loadSecret(spin, projectId, tpEnvId, page, size);
   };
 
   /**
@@ -69,7 +69,7 @@ class ConfigMap extends Component {
    */
   handleEnvSelect = (value) => {
     EnvOverviewStore.setTpEnvId(value);
-    this.loadConfigMap(true);
+    this.loadSecret(true);
   };
 
   /**
@@ -79,15 +79,15 @@ class ConfigMap extends Component {
   closeSideBar = (isLoad) => {
     this.setState({ sideBarDisplay: false });
     if(isLoad) {
-      this.loadConfigMap(true);
+      this.loadSecret(true);
     }
   };
 
   render() {
     const { type, organizationId, name, id: projectId } = AppState.currentMenuType;
-    const { sideBarDisplay, configMapId } = this.state;
+    const { sideBarDisplay, secretId } = this.state;
     const {
-      ConfigMapStore,
+      SecretStore,
       intl: { formatMessage },
     } = this.props;
     const envData = EnvOverviewStore.getEnvcard;
@@ -98,23 +98,23 @@ class ConfigMap extends Component {
       : { connect: false };
 
     if (envData && envData.length && envId) {
-      DevopsStore.initAutoRefresh('configMap', this.reload);
+      DevopsStore.initAutoRefresh('secret', this.reload);
     }
 
     return (
       <Page
         className="c7n-region c7n-app-wrapper"
         service={[
-          'devops-service.devops-config-map.create',
-          'devops-service.devops-config-map.query',
-          'devops-service.devops-config-map.delete',
-          'devops-service.devops-config-map.checkName',
-          'devops-service.devops-config-map.listByEnv',
+          'devops-service.devops-secret.createOrUpdate',
+          'devops-service.devops-secret.querySecret',
+          'devops-service.devops-secret.deleteSecret',
+          'devops-service.devops-secret.checkName',
+          'devops-service.devops-secret.listByOption',
         ]}
       >
         {envData && envData.length && envId ? (
           <Fragment>
-            <Header title={<FormattedMessage id="configMap.head" />}>
+            <Header title={<FormattedMessage id="secret.head" />}>
               <Select
                 className={`${
                   envId
@@ -151,7 +151,7 @@ class ConfigMap extends Component {
                 type={type}
                 projectId={projectId}
                 organizationId={organizationId}
-                service={['devops-service.devops-config-map.create']}
+                service={['devops-service.devops-secret.createOrUpdate']}
               >
                 <Tooltip
                   title={
@@ -166,29 +166,29 @@ class ConfigMap extends Component {
                     onClick={this.openSideBar.bind(this, false)}
                     icon="playlist_add"
                   >
-                    <FormattedMessage id="configMap.create" />
+                    <FormattedMessage id="secret.create" />
                   </Button>
                 </Tooltip>
               </Permission>
-              <RefreshBtn name="configMap" onFresh={this.reload} />
+              <RefreshBtn name="secret" onFresh={this.reload} />
             </Header>
-            <Content code={'configMap'} values={{ name: title ? title.name : name }}>
-              <KeyValueTable title="configMap" store={ConfigMapStore} envId={envId} editOpen={this.openSideBar} />
+            <Content code={'secret'} values={{ name: title ? title.name : name }}>
+              <KeyValueTable title="secret" store={SecretStore} envId={envId} editOpen={this.openSideBar} />
             </Content>
           </Fragment>
         ) : (
           <DepPipelineEmpty
-            title={<FormattedMessage id="configMap.head" />}
+            title={<FormattedMessage id="secret.head" />}
             type="env"
           />
         )}
         {sideBarDisplay && (
           <KeyValueSideBar
-            title="configMap"
+            title="secret"
             visible={sideBarDisplay}
-            store={ConfigMapStore}
+            store={SecretStore}
             envId={envId}
-            id={configMapId}
+            id={secretId}
             onClose={this.closeSideBar}
           />
         )}
@@ -197,4 +197,4 @@ class ConfigMap extends Component {
   }
 }
 
-export default withRouter(injectIntl(ConfigMap));
+export default withRouter(injectIntl(Secret));

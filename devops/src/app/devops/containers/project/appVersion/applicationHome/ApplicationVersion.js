@@ -69,7 +69,7 @@ class ApplicationVersion extends Component {
       searchParam = filters;
     }
     if (paras.length) {
-      param = paras[0].toString();
+      param = paras.toString();
     }
     const postData = {
       searchParam,

@@ -112,7 +112,7 @@ class CertTable extends Component {
       });
     }
     if (paras.length) {
-      param = paras[0].toString();
+      param = paras.toString();
     }
     const postData = {
       searchParam,

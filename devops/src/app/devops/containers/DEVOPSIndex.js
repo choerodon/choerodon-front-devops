@@ -9,6 +9,7 @@ import { asyncRouter, nomatch, asyncLocaleProvider } from 'choerodon-front-boot'
 // organization
 const Template = asyncRouter(() => import('./organization/template'));
 const Cluster = asyncRouter(() => import('./organization/cluster'));
+const CertificateManage = asyncRouter(() => import('./organization/certificate'));
 // project
 const EnvPipelineIndex = asyncRouter(() => import('./project/envPipeline'));
 const CiPipelineManageIndex = asyncRouter(() => import('./project/ciPipelineManage'));
@@ -31,6 +32,7 @@ const Certificate = asyncRouter(() => import('./project/certificate'));
 const Reports = asyncRouter(() => import('./project/reports'));
 const DevConsole = asyncRouter(() => import('./project/devConsole'));
 const ConfigMap = asyncRouter(() => import('./project/configMap'));
+const Secret = asyncRouter(() => import('./project/secret'));
 
 @inject('AppState')
 class DEVOPSIndex extends React.Component {
@@ -64,6 +66,8 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/reports`} component={Reports} />
           <Route path={`${match.url}/dev-console`} component={DevConsole} />
           <Route path={`${match.url}/config-map`} component={ConfigMap} />
+          <Route path={`${match.url}/secret`} component={Secret} />
+          <Route path={`${match.url}/certificate-manage`} component={CertificateManage} />
           <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>
