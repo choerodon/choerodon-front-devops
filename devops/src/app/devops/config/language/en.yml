@@ -1,6 +1,5 @@
 # 应用管理
 "application-management": "Application Management"
-"application-management.application-template": "Application Template"
 "application-management.application": "Application"
 "application-management.application-version": "Application Version"
 "application-management.application-release": "Application Release"
@@ -35,9 +34,11 @@
 "platform-reports": "Reports"
 "platform-reports.reports": "DevOps Report"
 
-# 集群管理
-"cluster-management": "Cluster Management"
-"cluster-management.cluster": "Cluster"
+# Devops管理
+"devops-management": "DevOps Management"
+"devops-management.cluster": "Cluster Management"
+"devops-management.application-template": "Application Template"
+"devops-management.certificate-manage": "Certificate Management"
 
 # 0.8废弃
 "application-market": "Application Market"
@@ -58,3 +59,8 @@
 "devops.appstore": "App Store"
 "platform_reports": "Reports"
 "platform_reports.reports": "DevOps Report"
+
+#0.11废弃
+"cluster-management": "Cluster Management"
+"cluster-management.cluster": "Cluster"
+"application-management.application-template": "Application Template"

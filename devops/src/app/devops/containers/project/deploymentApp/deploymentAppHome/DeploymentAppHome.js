@@ -1011,7 +1011,13 @@ class DeploymentAppHome extends Component {
    * @param value
    */
   handleEnvSelect = value => {
+    const { current } = this.state;
+    const envs = EnvOverviewStore.getEnvcard;
+    const env = _.filter(envs, { connect: true, id: value });
     EnvOverviewStore.setTpEnvId(value);
+    if (current === 2 && env && env.length ) {
+      this.handleSelectEnv(value);
+    }
   };
 
   render() {

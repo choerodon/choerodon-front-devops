@@ -118,6 +118,7 @@ class CertificateHome extends Component {
           "devops-service.certification.listByOptions",
           "devops-service.certification.create",
           "devops-service.certification.delete",
+          "devops-service.certification.listOrgCert",
         ]}
       >
         {envData && envData.length && envId ? (

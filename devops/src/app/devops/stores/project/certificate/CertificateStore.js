@@ -20,6 +20,8 @@ class CertificateStore {
 
   @observable certData = [];
 
+  @observable cert = [];
+
   @observable loading = false;
 
   @observable pageInfo = {
@@ -63,6 +65,14 @@ class CertificateStore {
 
   @computed get getCertData() {
     return this.certData.slice();
+  }
+
+  @action setCert(data) {
+    this.cert = data;
+  }
+
+  @computed get getCert() {
+    return this.cert.slice();
   }
 
   @action setCertLoading(flag) {
@@ -138,6 +148,20 @@ class CertificateStore {
         this.setCertLoading(false);
         Choerodon.handleResponseError(err);
       });
+  };
+
+  /**
+   * 加载组织层证书
+   * @param projectId
+   */
+  loadCert = (projectId) => {
+    axios.get(`/devops/v1/projects/${projectId}/certifications/list_org_cert`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setCert(res);
+        }
+      })
   };
 
   /**

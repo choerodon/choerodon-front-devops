@@ -1,7 +1,7 @@
 .c7n-ctf-create {
   .c7n-creation-panel {
     .ctf-upload-head {
-      margin: 20px 0;
+      margin: 32px 0 20px 0;
       .ctf-upload-title {
         margin-bottom: 12px;
         line-height: 20px;
@@ -11,6 +11,7 @@
         line-height: 16px;
         color: rgba(0, 0, 0, .65);
         font-size: 12px;
+        margin-top: 12px;
       }
     }
     .ctf-upload-item {

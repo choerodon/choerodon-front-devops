@@ -9,6 +9,7 @@ import { asyncRouter, nomatch, asyncLocaleProvider } from 'choerodon-front-boot'
 // organization
 const Template = asyncRouter(() => import('./organization/template'));
 const Cluster = asyncRouter(() => import('./organization/cluster'));
+const CertificateManage = asyncRouter(() => import('./organization/certificate'));
 // project
 const EnvPipelineIndex = asyncRouter(() => import('./project/envPipeline'));
 const CiPipelineManageIndex = asyncRouter(() => import('./project/ciPipelineManage'));
@@ -66,6 +67,7 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/dev-console`} component={DevConsole} />
           <Route path={`${match.url}/config-map`} component={ConfigMap} />
           <Route path={`${match.url}/secret`} component={Secret} />
+          <Route path={`${match.url}/certificate-manage`} component={CertificateManage} />
           <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>
