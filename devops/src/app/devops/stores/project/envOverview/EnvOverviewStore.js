@@ -3,7 +3,7 @@ import { axios, store, stores } from "choerodon-front-boot";
 import _ from "lodash";
 import ContainerStore from "../container";
 import CertificateStore from "../certificate";
-import InstancesStore from "../instances";
+import InstancesStore from "../instances/InstancesStore";
 import ConfigMapStore from "../configMap";
 import SecretStore from "../secret";
 import { handleProptError } from "../../../utils";

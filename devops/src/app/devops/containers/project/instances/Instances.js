@@ -25,7 +25,7 @@ import "./Instances.scss";
 import "../../main.scss";
 import EnvOverviewStore from "../../../stores/project/envOverview";
 import DepPipelineEmpty from "../../../components/DepPipelineEmpty/DepPipelineEmpty";
-import InstancesStore from "../../../stores/project/instances";
+import InstancesStore from "../../../stores/project/instances/InstancesStore";
 import Tips from "../../../components/Tips/Tips";
 import RefreshBtn from "../../../components/refreshBtn";
 import DevopsStore from "../../../stores/DevopsStore";
@@ -498,7 +498,7 @@ class Instances extends Component {
         actionItem = ["detail"];
     }
     if (!connect) {
-      actionItem = ["detail", "delete"];
+      actionItem = ["detail"];
     }
     const actionData = _.map(actionItem, item => ({
       projectId,

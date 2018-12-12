@@ -1,10 +1,16 @@
 .page-head {
   .ant-btn:not(.back-btn) {
+
+    // 适配应用和模版界面
     &+.c7ncd-refresh {
       margin-left: 8px;
       margin-bottom: 0;
     }
   }
+}
+
+.ant-btn-group.ant-dropdown-button.c7ncd-refresh {
+  margin-bottom: 0;
 }
 
 .c7ncd-refresh {
