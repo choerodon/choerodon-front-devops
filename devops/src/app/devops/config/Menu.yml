@@ -1,3 +1,27 @@
+"devops-management":
+  icon: devops
+  sort: 1
+  organization:
+  - "application-template":
+      icon: application_model
+      Routes: /devops/template
+      sort: 1
+      permission:
+      - 'devops-service.application-template.listByOrgId'
+      - 'devops-service.application-template.queryByAppTemplateId'
+      - 'devops-service.application-template.delete'
+  - "cluster":
+      icon: cluster
+      Routes: /devops/cluster
+      sort: 2
+      permission:
+      - 'devops-service.devops-cluster.listCluster'
+  - "certificate-manage":
+      icon: class
+      Routes: /devops/certificate-manage
+      sort: 3
+      permission:
+      - 'devops-service.org-certification.listOrgCert'
 "application-management":
   icon: apps
   sort: 1
@@ -6,6 +30,7 @@
         icon: application_model
         Routes: /devops/template
         sort: 1
+        delete: true
         permission:
           - 'devops-service.application-template.listByOrgId'
           - 'devops-service.application-template.queryByAppTemplateId'
@@ -269,11 +294,13 @@
 "cluster-management":
   icon: cluster
   sort: 4
+  delete: true
   organization:
     - "cluster":
         icon: kubernetes_cluster
         Routes: /devops/cluster
         sort: 1
+        delete: true
         permission:
           - 'devops-service.devops-cluster.listCluster'
 

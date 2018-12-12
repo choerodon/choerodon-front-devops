@@ -11,10 +11,10 @@ import {
   Modal,
   Icon,
   Radio,
-  Upload,
 } from "choerodon-ui";
 import "../../../main.scss";
 import "./CreateCert.scss";
+import Tips from "../../../../components/Tips/Tips";
 
 const HEIGHT =
   window.innerHeight ||
@@ -26,6 +26,7 @@ const { Sidebar } = Modal;
 const { Item: FormItem } = Form;
 const { Option, OptGroup } = Select;
 const { Group: RadioGroup } = Radio;
+const { TextArea } = Input;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -70,6 +71,8 @@ class CreateCert extends Component {
       type: "request",
       keyLoad: false,
       certLoad: false,
+      suffix: null,
+      certId: null,
     };
     this.domainCount = 1;
   }
@@ -87,28 +90,11 @@ class CreateCert extends Component {
     this.setState({ submitting: true });
     form.validateFieldsAndScroll((err, data) => {
       if (!err) {
-        if (data.type === "upload") {
-          const { key, cert } = data;
-          const formdata = new FormData();
-          _.forEach(data, (value, k) => {
-            if (k !== "domainArr" && k !== "key" && k !== "cert") {
-              formdata.append(k, value);
-            }
-          });
-          formdata.append("key", key[0]);
-          formdata.append("cert", cert[0]);
-          const p = store.createCert(projectId, formdata);
-          this.handleResponse(p);
-        } else if (data.type === "request") {
-          const formdata = new FormData();
-          _.forEach(data, (value, k) => {
-            if (k !== "domainArr" && k !== "key" && k !== "cert") {
-              formdata.append(k, value);
-            }
-          });
-          const p = store.createCert(projectId, formdata);
-          this.handleResponse(p);
+        if (data.type === 'choose') {
+          data.type = 'upload';
         }
+        const p = store.createCert(projectId, data);
+        this.handleResponse(p);
       } else {
         this.setState({ submitting: false });
       }
@@ -176,8 +162,12 @@ class CreateCert extends Component {
    */
   checkDomain = (rule, value, callback) => {
     const { intl, form } = this.props;
+    const { type } = this.state;
     const { getFieldValue } = form;
-    const p = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)+)$/;
+    let p = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)+)$/;
+    if (type === 'choose') {
+      p = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)?)$/
+    }
     const keyCount = _.countBy(getFieldValue("domains"));
     if (p.test(value)) {
       if (keyCount[value] < 2) {
@@ -233,78 +223,39 @@ class CreateCert extends Component {
    * 切换参数类型
    * @param e
    */
-  handleTypeChange = e => this.setState({ type: e.target.value });
-
-  /**
-   * 表单中Upload的onChange
-   * 响应 上传、删除
-   * @param type
-   * @param e
-   * @returns {*}
-   */
-  handleUpload = (type, e) => {
-    const { file, fileList } = e;
-    const keyFileList = [];
-    const fileLoadType = type === ".key" ? "keyLoad" : "certLoad";
-    this.setState({ [fileLoadType]: true });
-    if (_.isArray(e)) {
-      return e;
-    } else if (fileList.length) {
-      // 上传，且只能上传一个文件
-      const isType = file.name.endsWith(type);
-      if (!isType) {
-        this.setState({ [fileLoadType]: false });
-      } else {
-        keyFileList.push(file);
-        this.setState({ [fileLoadType]: true });
-      }
-    } else {
-      // 移除
-      this.setState({ [fileLoadType]: false });
+  handleTypeChange = e => {
+    const { store, form } = this.props;
+    const { resetFields, setFieldsValue } = form;
+    const { projectId } = AppState.currentMenuType;
+    const type =  e.target.value;
+    if (type === 'choose') {
+      store.loadCert(projectId);
     }
-    return keyFileList;
+    this.setState({ type, suffix: null, certId: null });
+    resetFields(["domainArr"]);
+    setFieldsValue({"domains[0]": ''});
   };
 
   /**
-   * 始终返回false，阻止自动上传
-   * @param type
-   * @param file
-   * @returns {boolean}
+   * 选择证书
+   * @param value
    */
-  beforeUploadFile = (type, file) => {
-    const { intl } = this.props;
-    const isKeyFile = file.name.endsWith(type);
-    if (!isKeyFile) {
-      Choerodon.prompt(intl.formatMessage({ id: "file.type.error" }));
-    } else {
-      Choerodon.prompt(
-        `${file.name} ${intl.formatMessage({ id: "file.uploaded.success" })}`
-      );
-    }
-    return false;
+  handleCertSelect = value => {
+    const { store } = this.props;
+    const cert = store.getCert;
+    const data = _.filter(cert, ['id', value]);
+    this.setState({
+      suffix: data && data.length ? `.${data[0].domain}` : null,
+      certId: value,
+    });
   };
 
   render() {
-    const { visible, form, intl, store, onClose, envId } = this.props;
+    const { visible, form, intl, store, envId } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
-    const { submitting, type, keyLoad, certLoad } = this.state;
+    const { submitting, type, suffix, certId } = this.state;
     const { name: menuName, id: projectId } = AppState.currentMenuType;
-    // 上传配置
-    const uploadKeyProps = {
-      action: "//jsonplaceholder.typicode.com/posts/",
-      beforeUpload: this.beforeUploadFile.bind(this, ".key"),
-      multiple: false,
-    };
-    const uploadCertProps = {
-      action: "//jsonplaceholder.typicode.com/posts/",
-      beforeUpload: this.beforeUploadFile.bind(this, ".crt"),
-      multiple: false,
-    };
     getFieldDecorator("domainArr", { initialValue: [0] });
-    // 设置环境选择器自动聚焦
-    // if (this.envSelect && !getFieldValue('envId')) {
-    //   this.envSelect.focus();
-    // }
     const domainArr = getFieldValue("domainArr");
     const domainItems = _.map(domainArr, (k, index) => (
       <div key={`domains-${k}`} className="creation-panel-group">
@@ -329,6 +280,8 @@ class CreateCert extends Component {
               type="text"
               maxLength={50}
               label={<FormattedMessage id="ctf.config.domain" />}
+              suffix={suffix}
+              disabled={type === 'choose' && !certId}
             />
           )}
         </FormItem>
@@ -342,6 +295,7 @@ class CreateCert extends Component {
       </div>
     ));
     const env = store.getEnvData;
+    const cert = store.getCert;
     return (
       <div className="c7n-region">
         <Sidebar
@@ -353,13 +307,14 @@ class CreateCert extends Component {
           onOk={this.handleSubmit}
           onCancel={this.handleClose.bind(this, false)}
           confirmLoading={submitting}
+          className="c7n-create-sidebar-tooltip"
         >
           <Content
             code="ctf.create"
             values={{ name: menuName }}
             className="c7n-ctf-create sidebar-content"
           >
-            <Form layout="vertical">
+            <Form layout="vertical" className="c7n-sidebar-form">
               <FormItem className="c7n-select_512" {...formItemLayout}>
                 {getFieldDecorator("envId", {
                   initialValue: env.length ? envId : undefined,
@@ -447,11 +402,55 @@ class CreateCert extends Component {
                       <Radio value="upload">
                         <FormattedMessage id="ctf.upload" />
                       </Radio>
+                      <Radio value="choose">
+                        <FormattedMessage id="ctf.choose" />
+                      </Radio>
                     </RadioGroup>
                   )}
                 </FormItem>
               </div>
               <div className="c7n-creation-panel">
+                {type === 'choose' && <div className="c7ncd-sidebar-select">
+                  <FormItem
+                    className="c7n-select_480"
+                    {...formItemLayout}
+                  >
+                    {getFieldDecorator("certId", {
+                      rules: [
+                        {
+                          required: true,
+                          message: intl.formatMessage({ id: "required" }),
+                        },
+                      ],
+                    })(
+                      <Select
+                        className="c7n-select_480"
+                        label={<FormattedMessage id="ctf.choose" />}
+                        placeholder={intl.formatMessage({
+                          id: "ctf.choose",
+                        })}
+                        optionFilterProp="children"
+                        onChange={this.handleCertSelect}
+                        filterOption={(input, option) =>
+                          option.props.children
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                        filter
+                      >
+                        {_.map(cert, item => {
+                          const { id, name } = item;
+                          return (
+                            <Option key={id} value={id}>
+                              {name}
+                            </Option>
+                          );
+                        })}
+                      </Select>
+                    )}
+                  </FormItem>
+                  <Tips type="form" data="ctf.choose.tips" />
+                </div>}
                 {domainItems}
                 <FormItem
                   className="c7n-select_480 creation-panel-button"
@@ -469,77 +468,50 @@ class CreateCert extends Component {
                 {type === "upload" ? (
                   <Fragment>
                     <div className="ctf-upload-head">
-                      <p className="ctf-upload-title">
-                        <FormattedMessage id="ctf.add.cert" />
-                      </p>
-                      <p className="ctf-upload-text">
-                        <FormattedMessage id="ctf.add.describe" />
-                      </p>
+                      <Tips type="title" data="certificate.file.add" />
                     </div>
-                    <div className="ctf-upload-item">
-                      <FormItem
-                        label={<FormattedMessage id="ctf.keyFile" />}
-                        {...formItemLayout}
-                      >
-                        {getFieldDecorator("key", {
-                          valuePropName: "fileList",
-                          getValueFromEvent: this.handleUpload.bind(
-                            this,
-                            ".key"
-                          ),
-                          rules: [
-                            {
-                              required: true,
-                              message: intl.formatMessage({
-                                id: "ctf.key.required",
-                              }),
-                            },
-                          ],
-                        })(
-                          <Upload disabled={keyLoad} {...uploadKeyProps}>
-                            <Button
-                              disabled={keyLoad}
-                              className="ctf-upload-button"
-                            >
-                              <Icon type="file_upload" />
-                              <FormattedMessage id="ctf.keyFile" />
-                            </Button>
-                          </Upload>
-                        )}
-                      </FormItem>
-                    </div>
-                    <div className="ctf-upload-item">
-                      <FormItem
-                        label={<FormattedMessage id="ctf.certFile" />}
-                        {...formItemLayout}
-                      >
-                        {getFieldDecorator("cert", {
-                          valuePropName: "fileList",
-                          getValueFromEvent: this.handleUpload.bind(
-                            this,
-                            ".crt"
-                          ),
-                          rules: [
-                            {
-                              required: true,
-                              message: intl.formatMessage({
-                                id: "ctf.cert.required",
-                              }),
-                            },
-                          ],
-                        })(
-                          <Upload disabled={certLoad} {...uploadCertProps}>
-                            <Button
-                              disabled={certLoad}
-                              className="ctf-upload-button"
-                            >
-                              <Icon type="file_upload" />
-                              <FormattedMessage id="ctf.certFile" />
-                            </Button>
-                          </Upload>
-                        )}
-                      </FormItem>
-                    </div>
+                    <FormItem
+                      className="c7n-select_480"
+                      {...formItemLayout}
+                      label={<FormattedMessage id="certificate.key.content" />}
+                    >
+                      {getFieldDecorator("keyValue",{
+                        rules: [
+                          {
+                            required: true,
+                            message: intl.formatMessage({ id: "required" }),
+                          },
+                        ],
+                      })(
+                        <TextArea
+                          autosize={{
+                            minRows: 2,
+                          }}
+                          label={<FormattedMessage id="certificate.key.content" />}
+                        />
+                      )}
+                    </FormItem>
+                    <FormItem
+                      className="c7n-select_480"
+                      {...formItemLayout}
+                      label={<FormattedMessage id="certificate.cert.content" />}
+                    >
+                      {getFieldDecorator("certValue",{
+                        rules: [
+                          {
+                            required: true,
+                            message: intl.formatMessage({ id: "required" }),
+                          },
+                        ],
+                      })(
+                        <TextArea
+                          autosize={{
+                            minRows: 2,
+                          }}
+                          label={<FormattedMessage id="certificate.cert.content" />}
+                        />
+                      )}
+                    </FormItem>
                   </Fragment>
                 ) : null}
               </div>
