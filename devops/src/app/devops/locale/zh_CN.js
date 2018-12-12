@@ -1310,6 +1310,7 @@ const zhCN = {
   "configMap.create": "创建配置映射",
   "configMap.edit": "修改配置映射",
   "configMap.add": "添加配置映射",
+  "configMap.updateAt": "更新时间",
   "configMap.key": "键",
   "configMap.des": "描述",
   "configMap.keyRule": "不能含空格及-、_、.以外的特殊字符",
