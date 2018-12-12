@@ -12,7 +12,6 @@ import {
   Popover,
   Icon,
   Radio,
-  Tooltip,
 } from "choerodon-ui";
 import { stores, Content } from "choerodon-front-boot";
 import uuidv1 from "uuid/v1";
@@ -131,7 +130,7 @@ class CreateNetwork extends Component {
           values,
         } = data;
         const appIst = appInstance
-          ? _.map(appInstance, item => Number(item))
+          ? _.map(appInstance, item => item)
           : null;
         const ports = [];
         const label = {};
@@ -305,7 +304,7 @@ class CreateNetwork extends Component {
           _.forEach(data, item => {
             const { id: istIds, code } = item;
             initIstOption.push(
-              <Option key={istIds} value={istIds}>
+              <Option key={istIds} value={code}>
                 {code}
               </Option>
             );

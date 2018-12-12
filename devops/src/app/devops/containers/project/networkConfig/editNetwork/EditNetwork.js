@@ -119,7 +119,7 @@ class EditNetwork extends Component {
           values,
         } = data;
         const appIst = appInstance
-          ? _.map(appInstance, item => Number(item))
+          ? _.map(appInstance, item => item)
           : null;
         const ports = [];
         const label = {};
@@ -234,7 +234,7 @@ class EditNetwork extends Component {
             const { id: istId, code, instanceStatus } = item;
             initIst.push(istId);
             initIstOption.push(
-              <Option key={istId} value={istId}>
+              <Option key={istId} value={code}>
                 <Tooltip
                   title={
                     instanceStatus ? (
@@ -867,7 +867,7 @@ class EditNetwork extends Component {
       item => {
         const { id, code } = item;
         return (
-          <Option key={id} value={id}>
+          <Option key={id} value={code}>
             <Tooltip
               title={<FormattedMessage id="running" />}
               placement="right"
