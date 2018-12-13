@@ -1,11 +1,11 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable no-useless-return */
 
-import moment from 'moment';
-import _ from 'lodash';
-import React from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Icon, Popover } from 'choerodon-ui';
+import moment from "moment";
+import _ from "lodash";
+import React from "react";
+import { FormattedMessage } from "react-intl";
+import { Icon, Popover } from "choerodon-ui";
 
 /**
  * 处理数据请求错误
@@ -27,7 +27,7 @@ export function handleProptError(data) {
  * @returns {string}
  */
 function padZero(str) {
-  return str.toString().padStart(2, '0');
+  return str.toString().padStart(2, "0");
 }
 
 /**
@@ -44,7 +44,13 @@ export function formatDate(timestamp) {
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
 
-  return `${[year, month, day].map(padZero).join('-')} ${[hour, minutes, seconds].map(padZero).join(':')}`;
+  return `${[year, month, day].map(padZero).join("-")} ${[
+    hour,
+    minutes,
+    seconds,
+  ]
+    .map(padZero)
+    .join(":")}`;
 }
 
 /**
@@ -56,11 +62,13 @@ export function formatDate(timestamp) {
 export function scrollTo(element, change, duration = 0.5) {
   const domPosition = element.scrollLeft;
   const startTime = performance.now();
-  function easeInOutQuad(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+  function easeInOutQuad(t) {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  }
   function animateScroll() {
     const now = performance.now();
     const elapsed = (now - startTime) / 1000;
-    const t = (elapsed / duration);
+    const t = elapsed / duration;
     element.scrollLeft = domPosition + change * easeInOutQuad(t);
     if (t < 1) {
       window.requestAnimationFrame(animateScroll);
@@ -78,7 +86,7 @@ export function scrollTo(element, change, duration = 0.5) {
  */
 export function getTimeLeft(nowTime, endTime) {
   if (nowTime >= endTime) {
-    return '剩余 0 天';
+    return "剩余 0 天";
   }
   const resTime = endTime - nowTime;
   const days = Math.floor(resTime / (24 * 3600 * 1000));
@@ -96,7 +104,7 @@ export function getToDayStr() {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
-  return [year, month, day].map(padZero).join('-');
+  return [year, month, day].map(padZero).join("-");
 }
 
 /**
@@ -107,7 +115,11 @@ export function getToDayStr() {
 export function getNear7Day() {
   const dateArr = [];
   for (let i = 0; i < 7; i++) {
-    dateArr.push(moment().subtract(i, 'days').format('YYYY-MM-DD'));
+    dateArr.push(
+      moment()
+        .subtract(i, "days")
+        .format("YYYY-MM-DD")
+    );
   }
   return dateArr.reverse();
 }
@@ -124,7 +136,11 @@ export function getAxis(startTime, endTime, oldxAxis = [], oldyAxis = {}) {
   const xAxis = [];
   for (; startTime <= endTime; startTime += 86400000) {
     const tmp = new Date(startTime);
-    xAxis.push(`${tmp.getFullYear()}-${padZero(tmp.getMonth() + 1)}-${padZero(tmp.getDate())}`);
+    xAxis.push(
+      `${tmp.getFullYear()}-${padZero(tmp.getMonth() + 1)}-${padZero(
+        tmp.getDate()
+      )}`
+    );
   }
   const yAxis = {};
   _.foreach(oldyAxis, (value, key) => {
@@ -149,8 +165,8 @@ export function getAxis(startTime, endTime, oldxAxis = [], oldyAxis = {}) {
  * @returns {{}}
  */
 export function dateSplitAndPad(start, end, date) {
-  start = moment(start, 'x');
-  end = moment(end, 'x');
+  start = moment(start, "x");
+  end = moment(end, "x");
   if (start > end) {
     return {};
   }
@@ -158,12 +174,16 @@ export function dateSplitAndPad(start, end, date) {
   const timeDiff = end - start;
   if (timeDiff < 3600 * 25 * 1000) {
     const oneDay = _.countBy(date, item => item.slice(0, 10));
-    dateArr = !_.isEmpty(oneDay) ? oneDay : { [moment().format('YYYY-MM-DD')]: 0 };
+    dateArr = !_.isEmpty(oneDay)
+      ? oneDay
+      : { [moment().format("YYYY-MM-DD")]: 0 };
   } else {
     const days = timeDiff / (3600 * 24 * 1000);
     const dateGroup = _.countBy(date, item => item.slice(0, 10));
     for (let i = 0; i <= Math.floor(days); i++) {
-      const d = moment(end).subtract(i, 'days').format('YYYY-MM-DD');
+      const d = moment(end)
+        .subtract(i, "days")
+        .format("YYYY-MM-DD");
       if (dateGroup[d] || dateGroup[d] === 0) {
         dateArr[d] = dateGroup[d];
       } else {
@@ -181,7 +201,7 @@ export function dateSplitAndPad(start, end, date) {
  * @returns {*}
  */
 export function pickEntries(obj) {
-  if (Object.prototype.toString.call(obj) !== '[object Object]') {
+  if (Object.prototype.toString.call(obj) !== "[object Object]") {
     return {};
   }
   const keys = Object.keys(obj);
