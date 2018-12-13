@@ -86,12 +86,18 @@ class CreateCert extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, store } = this.props;
+    const { suffix } = this.state;
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ submitting: true });
     form.validateFieldsAndScroll((err, data) => {
       if (!err) {
         if (data.type === 'choose') {
           data.type = 'upload';
+          let list = [];
+          _.map(data.domains, item => {
+            list.push(`${item}${suffix}`);
+          });
+          data.domains = list;
         }
         const p = store.createCert(projectId, data);
         this.handleResponse(p);
