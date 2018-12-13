@@ -319,23 +319,29 @@ const pageDetail = {
   "configMap.title": '环境"{name}"的配置映射',
   "configMap.create.title": '在环境"{name}"中创建配置映射',
   "configMap.edit.title": '对映射配置"{name}"进行修改',
-  "configMap.edit.description": '您可在此编辑配置映射的描述以及键值对的内容。',
-  "configMap.create.description": '您可以在此处选择环境，填写配置映射名称及描述，添加配置映射。',
-  "configMap.description": '配置映射是用来存储配置文件的Kubernetes资源对象，其中存储的键值对可以在pods中使用。',
+  "configMap.edit.description": "您可在此编辑配置映射的描述以及键值对的内容。",
+  "configMap.create.description":
+    "您可以在此处选择环境，填写配置映射名称及描述，添加配置映射。",
+  "configMap.description":
+    "配置映射是用来存储配置文件的Kubernetes资源对象，其中存储的键值对可以在pods中使用。",
   "configMap.link": `${docServer}/user-guide/deployment-pipeline/config-map/`,
   "configMap.create.link": `${docServer}/user-guide/deployment-pipeline/config-map/`,
-  "configMap.help.tooltip": '您可粘贴多行“键=值”格式的字段至任何键框中，以便于批量输入键值对。',
+  "configMap.help.tooltip":
+    "您可粘贴多行“键=值”格式的字段至任何键框中，以便于批量输入键值对。",
 
   // 配置映射
   "secret.title": '环境"{name}"的密文',
   "secret.create.title": '在环境"{name}"中创建密文',
   "secret.edit.title": '对密文"{name}"进行修改',
-  "secret.edit.description": '您可在此编辑密文的描述以及键值对的内容。',
-  "secret.create.description": '您可以在此处选择环境，填写密文名称及描述，在该环境下添加密文。',
-  "secret.description": '密文是用来保存小片敏感数据的Kubernetes资源对象，例如密码，token，或者密钥等。',
+  "secret.edit.description": "您可在此编辑密文的描述以及键值对的内容。",
+  "secret.create.description":
+    "您可以在此处选择环境，填写密文名称及描述，在该环境下添加密文。",
+  "secret.description":
+    "密文是用来保存小片敏感数据的Kubernetes资源对象，例如密码，token，或者密钥等。",
   "secret.link": `${docServer}/user-guide/deployment-pipeline/secret/`,
   "secret.create.link": `${docServer}/user-guide/deployment-pipeline/secret/`,
-  "secret.help.tooltip": '您可粘贴多行“键=值”格式的字段至任何键框中，以便于批量输入键值对。',
+  "secret.help.tooltip":
+    "您可粘贴多行“键=值”格式的字段至任何键框中，以便于批量输入键值对。",
 
   //组织层证书
   "certificate.title": '组织"{name}"的证书',
@@ -343,7 +349,8 @@ const pageDetail = {
     "域名证书是受法律认可的证书文件，确定了域名注册者对域名的拥有权与拥有时限。",
   "certificate.link": `${docServer}/user-guide/devops-management/certificate`,
   "certificate.create.title": '在组织"{name}"中创建证书',
-  "certificate.create.description": '请在下方输入证书名称，并上传相应的证书文件来创建证书。同时，您可以选择为所创证书配置公开范围，配置后，只有在被勾选的项目下创建证书时，才能选择此证书。',
+  "certificate.create.description":
+    "请在下方输入证书名称，并上传相应的证书文件来创建证书。同时，您可以选择为所创证书配置公开范围，配置后，只有在被勾选的项目下创建证书时，才能选择此证书。",
   "certificate.create.link": `${docServer}/user-guide/devops-management/certificate`,
   "certificate.edit.title": '对证书"{name}"进行修改',
   "certificate.edit.description": "您可在此修改证书的公开范围。",
@@ -510,17 +517,20 @@ const zhCN = {
   "ist.deploy.container": "容器名称：",
   "ist.deploy.key": "键",
   "ist.deploy.value": "值",
+  "ist.deploy.none": "无",
   "ist.deploy.ports": "端口",
+  "ist.deploy.ports.map": "端口映射",
+  "ist.deploy.ports.empty": "当前容器没有端口映射",
   "ist.deploy.ports.describe": "容器监听端口到主机公用IP地址端口的映射关系。",
   "ist.deploy.ports.name": "名称",
   "ist.deploy.ports.containerPort": "端口号",
   "ist.deploy.ports.protocol": "协议",
   "ist.deploy.ports.hostPort": "监听端口号",
   "ist.deploy.volume": "数据卷",
+  "ist.deploy.volume.empty": "没有获取到数据卷信息",
   "ist.deploy.volume.describe": "持久化及共享数据并与独立容器的生命周期分离。",
   "ist.deploy.volume.mountPath": "容器路径",
   "ist.deploy.volume.subPath": "子路径",
-  "ist.deploy.volume.readOnly": "只读",
   "ist.deploy.volume.defaultMode": "默认模式",
   "ist.deploy.volume.optional": "可选",
   "ist.deploy.volume.claimName": "名称",
@@ -528,7 +538,7 @@ const zhCN = {
   "ist.deploy.volume.path": "主机路径",
   "ist.deploy.volume.type": "类型",
   "ist.deploy.volume.name": "卷名",
-  "ist.deploy.volume.type": "卷类型",
+  "ist.deploy.volume.volume.type": "卷类型",
   "ist.deploy.volume.item": "项目",
   "ist.deploy.volume.config.key": "键",
   "ist.deploy.volume.config.mode": "模式",
@@ -546,6 +556,17 @@ const zhCN = {
   "ist.deploy.security": "安全/主机设置",
   "ist.deploy.security.describe":
     "容器监听端口到主机公用IP地址端口的映射关系。",
+
+  "ist.deploy.security.imagePullPolicy": "镜像拉取",
+  "ist.deploy.security.privileged": "特权模式",
+  "ist.deploy.security.allowPrivilegeEscalation": "提升特权",
+  "ist.deploy.security.runAsNonRoot": "以非root用户身份运行",
+  "ist.deploy.security.readOnlyRootFilesystem": "只读根文件系统",
+  "ist.deploy.security.hostIPC": "使用主机的网络",
+  "ist.deploy.security.hostNetwork": "使用主机的IPC命名空间",
+  "ist.deploy.security.capabilities.add": "增加内核能力",
+  "ist.deploy.security.capabilities.drop": "移除内核能力",
+
   "ist.deploy.label": "标签/注释",
   "ist.deploy.label.describe":
     "用于调度决策的键值对。后端重写请配置注释: 键: nginx.ingress.kubernetes.io/rewrite-target，值: /。",

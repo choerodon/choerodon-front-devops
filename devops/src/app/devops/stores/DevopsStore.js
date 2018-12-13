@@ -3,20 +3,19 @@ import { axios, store, stores } from "choerodon-front-boot";
 import { relativeTimeThreshold } from "moment";
 
 const REFRESH_INTERVAL = 1000 * 10;
-const REFRESH_MANUAL = "manual";
-const REFRESH_AUTOMATIC = "auto";
+
 @store("DevopsStore")
 class DevopsStore {
   @observable timer = null;
 
-  @observable radioValue = "manual";
+  @observable switchValue = false;
 
-  @action setRadioValue(data) {
-    this.radioValue = data;
+  @action setSwitchValue(data) {
+    this.switchValue = data;
   }
 
-  @computed get getRadioValue() {
-    return this.radioValue;
+  @computed get getSwitchValue() {
+    return this.switchValue;
   }
 
   // true 自动刷新
@@ -57,7 +56,7 @@ class DevopsStore {
   }
 
   clearAutoRefresh() {
-    this.setRadioValue(REFRESH_MANUAL);
+    this.setSwitchValue(false);
     this.clearTimer();
   }
 
@@ -68,7 +67,7 @@ class DevopsStore {
    */
   initAutoRefresh(name, callback) {
     if (this.isAuto[name]) {
-      this.setRadioValue(REFRESH_AUTOMATIC);
+      this.setSwitchValue(true);
       this.setTimer(callback);
     } else {
       this.clearAutoRefresh();
