@@ -105,6 +105,7 @@ class CertificateHome extends Component {
 
     const envData = EnvOverviewStore.getEnvcard;
     const envId = EnvOverviewStore.getTpEnvId;
+    const envState = _.filter(envData, {id: envId, connect: true});
 
     if (envData && envData.length && envId) {
       DevopsStore.initAutoRefresh("cert", this.reload);
@@ -166,6 +167,7 @@ class CertificateHome extends Component {
                   funcType="flat"
                   onClick={this.openCreateModal}
                   icon="playlist_add"
+                  disabled={!(envState && envState.length)}
                 >
                   <FormattedMessage id="ctf.create" />
                 </Button>

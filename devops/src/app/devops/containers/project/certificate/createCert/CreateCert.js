@@ -258,7 +258,7 @@ class CreateCert extends Component {
     getFieldDecorator("domainArr", { initialValue: [0] });
     const domainArr = getFieldValue("domainArr");
     const domainItems = _.map(domainArr, (k, index) => (
-      <div key={`domains-${k}`} className="creation-panel-group">
+      <div key={`domains-${k}`} className="creation-panel-group c7n-form-domains">
         <FormItem
           className={`c7n-select_${
             domainArr.length > 1 ? 454 : 480
