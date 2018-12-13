@@ -218,10 +218,7 @@ class AppOverview extends Component {
     const { intl } = this.props;
     const { code, id, envId, appVersionId, commandVersionId, appId } = record;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    InstancesStore.loadUpVersion(
-      projectId,
-      appVersionId || commandVersionId
-    ).then(val => {
+    InstancesStore.loadUpVersion(projectId, commandVersionId).then(val => {
       if (val && val.failed) {
         Choerodon.prompt(val.message);
       } else if (val.length === 0) {
