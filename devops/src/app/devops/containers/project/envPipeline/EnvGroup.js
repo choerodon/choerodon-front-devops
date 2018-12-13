@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Input, Form, Modal } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
+import './EnvPipeLineHome.scss';
 import _ from 'lodash';
 
 const FormItem = Form.Item;
@@ -146,7 +147,7 @@ class EnvGroup extends Component {
           </Button>,
         ]}
       >
-        <h2>{showTitle(sideType)}</h2>
+        <div className="group-title">{showTitle(sideType)}</div>
         <Form>
           <FormItem
             {...formItemLayout}
