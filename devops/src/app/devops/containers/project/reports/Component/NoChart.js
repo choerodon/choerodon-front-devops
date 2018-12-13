@@ -18,8 +18,8 @@ function NoChart(props) {
       des: `empty.member.no-${type}`,
     },
     '': {
-      title: '',
-      des: '',
+      title: 'null',
+      des: 'null',
     },
   };
   return (
