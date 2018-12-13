@@ -13,14 +13,11 @@
   max-width: 350px;
 }
 
-.c7n-create-sidebar-tooltip {
+.c7ncd-sidebar-select {
+  position: relative;
 
   .ant-select-selection__rendered {
     padding-right: 52px;
-  }
-
-  .c7ncd-sidebar-select {
-    position: relative;
   }
 
   .ant-select-arrow {
@@ -31,22 +28,22 @@
     transition: opacity .15s ease;
     cursor: pointer;
   }
+}
 
+.c7n-select-tip {
+  position: absolute !important;
+  right: 1px;
+  top: 19px;
+  color: rgba(0, 0, 0, .65);
+}
+
+.ant-select-clear {
+  right: 34px;
+}
+
+.ant-input-rendered-wrapper {
   .c7n-select-tip {
-    position: absolute !important;
-    right: 1px;
-    top: 19px;
-    color: rgba(0, 0, 0, .65);
-  }
-
-  .ant-select-clear {
-    right: 34px;
-  }
-
-  .ant-input-rendered-wrapper {
-    .c7n-select-tip {
-      top: 2px;
-    }
+    top: 2px;
   }
 }
 

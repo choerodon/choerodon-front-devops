@@ -329,7 +329,7 @@ const pageDetail = {
   "configMap.help.tooltip":
     "您可粘贴多行“键=值”格式的字段至任何键框中，以便于批量输入键值对。",
 
-  // 配置映射
+  // 密文
   "secret.title": '环境"{name}"的密文',
   "secret.create.title": '在环境"{name}"中创建密文',
   "secret.edit.title": '对密文"{name}"进行修改',
@@ -343,7 +343,7 @@ const pageDetail = {
   "secret.help.tooltip":
     "您可粘贴多行“键=值”格式的字段至任何键框中，以便于批量输入键值对。",
 
-  //组织层证书
+  // 组织层证书
   "certificate.title": '组织"{name}"的证书',
   "certificate.description":
     "域名证书是受法律认可的证书文件，确定了域名注册者对域名的拥有权与拥有时限。",
@@ -513,7 +513,7 @@ const zhCN = {
   "ist.deploy.detail": "查看实例Deployment详情",
   "ist.deploy.title": "查看实例“{name}”的Deployment详情",
   "ist.deploy.description": "您可在此查看各个实例Deployment的详情。",
-  "ist.deploy.link": `${docServer}/user-guide/`,
+  "ist.deploy.link": `${docServer}/user-guide/deployment-pipeline/instance/`,
   "ist.deploy.container": "容器名称：",
   "ist.deploy.key": "键",
   "ist.deploy.value": "值",

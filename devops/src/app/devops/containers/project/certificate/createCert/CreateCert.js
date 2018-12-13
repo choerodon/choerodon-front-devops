@@ -307,7 +307,6 @@ class CreateCert extends Component {
           onOk={this.handleSubmit}
           onCancel={this.handleClose.bind(this, false)}
           confirmLoading={submitting}
-          className="c7n-create-sidebar-tooltip"
         >
           <Content
             code="ctf.create"
