@@ -226,6 +226,7 @@ class DeploymentAppHome extends Component {
         DeploymentAppStore.loadVersion(app.appId, this.state.projectId, true);
         this.setState({
           app,
+          istName: `${app.code}-${uuidv1().substring(0, 5)}`,
           appId: app.appId,
           show: false,
           is_project: false,
