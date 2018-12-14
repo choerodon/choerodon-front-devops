@@ -197,7 +197,7 @@ class CertTable extends Component {
    * @param orgId
    */
   opColumn = (record, type, projectId, orgId) => {
-    const { id, domains, certName } = record;
+    const { id, domains, certName, commandStatus } = record;
     const {
       intl: { formatMessage },
     } = this.props;
@@ -256,6 +256,7 @@ class CertTable extends Component {
               size="small"
               funcType="flat"
               onClick={this.openRemoveModal.bind(this, id, certName)}
+              disabled={commandStatus === 'operating'}
             />
           </Tooltip>
         </Permission>
