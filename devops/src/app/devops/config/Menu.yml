@@ -25,16 +25,6 @@
 "application-management":
   icon: apps
   sort: 1
-  organization:
-    - "application-template":
-        icon: application_model
-        Routes: /devops/template
-        sort: 1
-        delete: true
-        permission:
-          - 'devops-service.application-template.listByOrgId'
-          - 'devops-service.application-template.queryByAppTemplateId'
-          - 'devops-service.application-template.delete'
   project:
     - "application":
         icon: widgets
@@ -435,3 +425,18 @@
       delete: true
       permission:
       - 'devops-service.application.listByActive'
+
+"application-management":
+  icon: apps
+  sort: 1
+  delete: true
+  organization:
+    - "application-template":
+        icon: application_model
+        Routes: /devops/template
+        sort: 1
+        delete: true
+        permission:
+          - 'devops-service.application-template.listByOrgId'
+          - 'devops-service.application-template.queryByAppTemplateId'
+          - 'devops-service.application-template.delete'
