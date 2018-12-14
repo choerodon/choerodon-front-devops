@@ -181,7 +181,7 @@ class KeyValueTable extends Component {
           </Popover>
         </MouserOverWrapper>),
       }, {
-        title: <FormattedMessage id="ciPipeline.createdAt" />,
+        title: <FormattedMessage id="configMap.updateAt" />,
         dataIndex: 'lastUpdateDate',
         key: 'createdAt',
         render: text => <TimePopover content={text} />,

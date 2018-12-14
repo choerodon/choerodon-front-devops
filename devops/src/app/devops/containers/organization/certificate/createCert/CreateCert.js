@@ -43,11 +43,11 @@ const formItemLayout = {
 @observer
 class CreateCert extends Component {
   /**
-   * 与域名相同的校验
+   * 校验证书名称唯一性
    */
   checkName = _.debounce((rule, value, callback) => {
     const { organizationId } = AppState.currentMenuType;
-    const { store } = this.props;
+    const { store, intl: { formatMessage } } = this.props;
     store.checkCertName(organizationId, value)
       .then(data => {
         if (data && data.failed) {
@@ -93,15 +93,6 @@ class CreateCert extends Component {
       store.loadTagKeys(organizationId, id);
     }
   }
-
-  componentWillUnmount() {
-    const { store } = this.props;
-    store.setProPageInfo({
-      number: 0,
-      size: HEIGHT <= 900 ? 10 : 15,
-      totalElements: 0,
-    });
-  };
 
   handleSubmit = e => {
     e.preventDefault();
@@ -185,7 +176,14 @@ class CreateCert extends Component {
   handleClose = () => {
     const { onClose, store } = this.props;
     store.setInfo({
-      filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+      filters: {},
+      sort: { columnKey: 'id', order: 'descend' },
+      paras: [],
+    });
+    store.setProPageInfo({
+      number: 0,
+      size: HEIGHT <= 900 ? 10 : 15,
+      totalElements: 0,
     });
     onClose();
   };
@@ -282,8 +280,8 @@ class CreateCert extends Component {
     const {
       getCert,
     } = store;
-    const { getFieldDecorator, getFieldValue } = form;
-    const { submitting, type, checked, createSelectedRowKeys, createSelected} = this.state;
+    const { getFieldDecorator } = form;
+    const { submitting, checked, createSelectedRowKeys, createSelected} = this.state;
     const { name } = AppState.currentMenuType;
     const {
       getInfo: { filters, sort: { columnKey, order }, paras },
@@ -342,7 +340,7 @@ class CreateCert extends Component {
                       message: formatMessage({ id: "required" }),
                     },
                     {
-                      validator: this.checkName,
+                      validator: showType === 'create' ? this.checkName : null,
                     },
                   ],
                   initialValue: getCert ? getCert.name : '',
@@ -370,7 +368,7 @@ class CreateCert extends Component {
                         message: formatMessage({ id: "required" }),
                       },
                       {
-                        validator: this.checkDomain,
+                        validator: showType === 'create' ? this.checkDomain : null,
                       },
                     ],
                     initialValue: getCert ? getCert.domain : '',

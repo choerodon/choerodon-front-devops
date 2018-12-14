@@ -176,25 +176,25 @@
           - 'devops-service.devops-ingress.queryDomainId'
           - 'devops-service.devops-ingress.delete'
           - 'devops-service.devops-ingress.listByEnv'
-    - "environment-pipeline":
-        icon: linear_scale
-        Routes: /devops/env-pipeline
-        sort: 2
-        permission:
-          - 'devops-service.devops-environment.create'
     - "deployment-overview":
         icon: Operation-monitoring
         Routes: /devops/deploy-overview
-        sort: 3
+        sort: 2
         permission:
           - 'devops-service.application.listAll'
           - 'devops-service.application-instance.deploy'
     - "application-deployment":
         icon: jsfiddle
         Routes: /devops/deployment-app
-        sort: 4
+        sort: 3
         permission:
           - 'devops-service.application-instance.deploy'
+    - "environment-pipeline":
+        icon: linear_scale
+        Routes: /devops/env-pipeline
+        sort: 4
+        permission:
+          - 'devops-service.devops-environment.create'
     - "instance":
         icon: instance_outline
         Routes: /devops/instance

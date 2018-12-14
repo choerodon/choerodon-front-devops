@@ -23,17 +23,24 @@
   }
 
   .network-panel-title {
+    display: flex;
+    margin-bottom: 10px;
+
+    i {
+      line-height: 24px;
+      font-size: 16px;
+      padding-right: 5px;
+    }
+
     &_disabled {
       color: rgba(0, 0, 0, .36);
     }
 
-    margin-bottom: 16px;
-
     span {
-      display: inline-block;
-      vertical-align: middle;
-      font-size: 13px;
-      margin-left: 10px;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 24px;
+      margin-bottom: 10px;
     }
   }
 

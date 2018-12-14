@@ -86,12 +86,18 @@ class CreateCert extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, store } = this.props;
+    const { suffix } = this.state;
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ submitting: true });
     form.validateFieldsAndScroll((err, data) => {
       if (!err) {
         if (data.type === 'choose') {
           data.type = 'upload';
+          let list = [];
+          _.map(data.domains, item => {
+            list.push(`${item}${suffix}`);
+          });
+          data.domains = list;
         }
         const p = store.createCert(projectId, data);
         this.handleResponse(p);
@@ -258,7 +264,7 @@ class CreateCert extends Component {
     getFieldDecorator("domainArr", { initialValue: [0] });
     const domainArr = getFieldValue("domainArr");
     const domainItems = _.map(domainArr, (k, index) => (
-      <div key={`domains-${k}`} className="creation-panel-group">
+      <div key={`domains-${k}`} className="creation-panel-group c7n-form-domains">
         <FormItem
           className={`c7n-select_${
             domainArr.length > 1 ? 454 : 480
@@ -307,7 +313,6 @@ class CreateCert extends Component {
           onOk={this.handleSubmit}
           onCancel={this.handleClose.bind(this, false)}
           confirmLoading={submitting}
-          className="c7n-create-sidebar-tooltip"
         >
           <Content
             code="ctf.create"

@@ -150,7 +150,6 @@ class CreateTag extends Component {
       cancelText={<FormattedMessage id="cancel" />}
       confirmLoading={submitting}
       onCancel={this.handleCancel}
-      className="c7n-create-sidebar-tooltip"
     >
       <Content code="apptag.create" values={{ name }} className="c7n-tag-create sidebar-content">
         <Form layout="vertical" className="c7n-sidebar-form">
@@ -178,7 +177,7 @@ class CreateTag extends Component {
               )}
             </FormItem>
           </div>
-          <div className="apptag-formitem">
+          <div className="apptag-formitem c7ncd-sidebar-select">
             <Icon type="wrap_text" className="c7n-apptag-icon" />
             <FormItem
               {...formItemLayout}
@@ -221,7 +220,7 @@ class CreateTag extends Component {
             <Tips type="form" data="apptag.tip" />
           </div>
         </Form>
-        <div className="c7n-apptag-release-title">{formatMessage({ id: 'apptag.release.title' })}</div>
+        <div className="c7n-creation-title"><FormattedMessage id='apptag.release.title' /></div>
         <MdEditor
           value={release}
           onChange={this.handleNoteChange}

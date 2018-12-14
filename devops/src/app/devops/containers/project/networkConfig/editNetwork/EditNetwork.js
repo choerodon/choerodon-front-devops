@@ -234,7 +234,7 @@ class EditNetwork extends Component {
             const { id: istId, code, instanceStatus } = item;
             initIst.push(istId);
             initIstOption.push(
-              <Option key={istId} value={code}>
+              <Option key={istId} value={istId}>
                 <Tooltip
                   title={
                     instanceStatus ? (

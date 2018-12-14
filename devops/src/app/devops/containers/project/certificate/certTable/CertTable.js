@@ -9,7 +9,7 @@ import MouserOverWrapper from "../../../../components/MouseOverWrapper";
 import StatusIcon from "../../../../components/StatusIcon";
 import EnvFlag from "../../../../components/envFlag";
 import "./CertTable.scss";
-import Tips from '../../../../components/Tips';
+import Tips from "../../../../components/Tips";
 
 const { AppState } = stores;
 const HEIGHT =
@@ -197,7 +197,7 @@ class CertTable extends Component {
    * @param orgId
    */
   opColumn = (record, type, projectId, orgId) => {
-    const { id, domains, certName } = record;
+    const { id, domains, certName, commandStatus } = record;
     const {
       intl: { formatMessage },
     } = this.props;
@@ -211,12 +211,10 @@ class CertTable extends Component {
           if (value.length) {
             return (
               <div className="c7n-overlay-content" key={value}>
-                <div className="c7n-overlay-item">
-                  <p className="c7n-overlay-title">{key}</p>
-                </div>
+                <p className="c7n-overlay-title">{key}</p>
                 <div className="c7n-overlay-item">
                   {_.map(value, item => (
-                    <p key={item} className="c7n-overlay-detail">
+                    <p key={item} title={item} className="c7n-overlay-detail">
                       {item}
                     </p>
                   ))}
@@ -258,6 +256,7 @@ class CertTable extends Component {
               size="small"
               funcType="flat"
               onClick={this.openRemoveModal.bind(this, id, certName)}
+              disabled={commandStatus === 'operating'}
             />
           </Tooltip>
         </Permission>

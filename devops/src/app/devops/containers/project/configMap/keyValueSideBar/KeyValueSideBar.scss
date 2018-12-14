@@ -9,6 +9,14 @@
 .editable {
   width: 512px;
 
+  .ant-form-item-children {
+    .ant-input-focus {
+      .ant-input-label {
+        transition: none;
+      }
+    }
+  }
+
   .ant-form-explain {
     position: absolute;
   }

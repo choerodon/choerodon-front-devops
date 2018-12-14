@@ -84,10 +84,14 @@ class DeploymentAppHome extends Component {
   componentDidMount() {
     const { DeploymentAppStore } = this.props;
     const { projectId, current, appId, versionId, envId: id } = this.state;
+    EnvOverviewStore.loadActiveEnv(projectId);
     DeploymentAppStore.setValue(null);
     if (this.state.appId) {
       DeploymentAppStore.loadApps(this.state.appId).then(data => {
-        this.setState({ app: data });
+        this.setState({
+          app: data,
+          istName: `${data.code}-${uuidv1().substring(0, 5)}`,
+        });
       });
       const versionId = parseInt(this.state.versionId, 10);
       if (this.state.is_project) {
@@ -126,18 +130,19 @@ class DeploymentAppHome extends Component {
       DeploymentAppStore.setVersions([]);
     }
     if (current === 2) {
-      const envs = EnvOverviewStore.getEnvcard;
       const envID = EnvOverviewStore.getTpEnvId;
-      const env = _.filter(envs, { connect: true, id: envID });
-      const envId = env && env.length ? env[0].id : id;
-      this.setState({ envId, envDto: env[0] });
-      DeploymentAppStore.setValue(null);
-      DeploymentAppStore.loadValue(appId, versionId, envId).then(data => {
-        this.setState({ errorLine: data.errorLines });
-      });
-      DeploymentAppStore.loadInstances(appId, envId);
+      EnvOverviewStore.loadActiveEnv(projectId)
+        .then((envData) => {
+          const envs = _.filter(envData, { connect: true, id: envID });
+          const envId = envs && envs.length ? envs[0].id : envData[0].id;
+          this.setState({ envId, envDto: envs[0] });
+          DeploymentAppStore.setValue(null);
+          DeploymentAppStore.loadValue(appId, versionId, envId).then(data => {
+            this.setState({ errorLine: data.errorLines });
+          });
+          DeploymentAppStore.loadInstances(appId, envId);
+        });
     }
-    EnvOverviewStore.loadActiveEnv(projectId);
   }
 
   /**
@@ -226,6 +231,7 @@ class DeploymentAppHome extends Component {
         DeploymentAppStore.loadVersion(app.appId, this.state.projectId, true);
         this.setState({
           app,
+          istName: `${app.code}-${uuidv1().substring(0, 5)}`,
           appId: app.appId,
           show: false,
           is_project: false,

@@ -25,7 +25,6 @@ import {
 } from "choerodon-front-boot";
 import _ from "lodash";
 import classNames from "classnames";
-import CopyToBoard from "react-copy-to-clipboard";
 import Board from "./pipeline/Board";
 import LoadingBar from "../../../components/loadingBar/index";
 import EnvGroup from "./EnvGroup";
@@ -1289,7 +1288,6 @@ class Environment extends Component {
             confirmLoading={submitting}
             cancelText={<FormattedMessage id="cancel" />}
             okText={this.okText(sideType)}
-            className="c7n-create-sidebar-tooltip"
           >
             <Content
               code={`env.${sideType}`}

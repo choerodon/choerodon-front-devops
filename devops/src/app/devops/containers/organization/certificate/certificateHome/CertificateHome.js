@@ -100,8 +100,8 @@ class CertificateHome extends Component {
     CertificateStore.deleteCertById(organizationId, deleteCert)
       .then(data => {
         const { page, pageSize, sorter, postData } = CertificateStore.getTableFilter;
-        this.setState({ deleteStatus: false, removeDisplay: false });
         if (data && data.failed) {
+          this.setState({ deleteStatus: false });
           Choerodon.prompt(data.message);
         } else {
           CertificateStore.loadCertData(
@@ -111,6 +111,7 @@ class CertificateHome extends Component {
             sorter,
             postData,
           );
+          this.setState({ deleteStatus: false, removeDisplay: false });
         }
       })
       .catch(err => {

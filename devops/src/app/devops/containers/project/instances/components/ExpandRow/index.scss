@@ -172,11 +172,13 @@
   .c7ncd-deploy-detail-label {
     margin-bottom: 3px;
     font-size: 13px;
+    min-height: 20px;
     color: rgba(0, 0, 0, .65);
   }
 
   .c7ncd-deploy-detail-text {
     width: 100%;
+    min-height: 20px;
     font-size: 13px;
     color: #000;
     word-wrap: break-word;
@@ -246,6 +248,11 @@
 
       .c7ncd-deploy-security-item {
         display: table-cell;
+        width: 50%;
+
+        &_flex {
+          display: table-cell;
+        }
       }
     }
   }
@@ -282,6 +289,29 @@
           }
         }
       }
+    }
+  }
+
+  .c7ncd-deploy-detail-empty {
+    margin-top: 12px;
+    background: rgba(0, 0, 0, .04);
+    padding: 20px;
+    color: rgba(0, 0, 0, .45);
+
+    p {
+      color: rgba(0, 0, 0, .45);
+      margin-bottom: 8px;
+    }
+
+    .c7ncd-deploy-health-empty,
+    &>span:first-child {
+      padding-right: 12px;
+      font-size: 14px;
+      color: #000;
+    }
+
+    .c7ncd-deploy-health-empty {
+      margin-left: 12px;
     }
   }
 }

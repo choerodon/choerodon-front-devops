@@ -526,10 +526,11 @@ class AppHome extends Component {
               this.setState({
                 show: false,
                 submitting: false,
+              }, () => {
+                AppStore.setTagKeys([]);
               });
             }
           });
-          AppStore.setTagKeys([]);
         }
       });
     }
@@ -978,7 +979,6 @@ class AppHome extends Component {
                   cancelText={<FormattedMessage id="cancel" />}
                   confirmLoading={submitting}
                   onCancel={this.hideSidebar}
-                  className="c7n-create-sidebar-tooltip"
                 >
                   <Content
                     code={`app.${modeType}`}

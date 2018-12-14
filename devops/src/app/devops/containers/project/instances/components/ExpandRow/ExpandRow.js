@@ -23,189 +23,6 @@ const PANEL_TYPE = [
   "variables",
 ];
 
-const DEPLOYMENT_INFO = {
-  metadata: {
-    name: "alize-7591c",
-    namespace: "testlonglonglonglonglonglonglo",
-    selfLink:
-      "/apis/extensions/v1beta1/namespaces/testlonglonglonglonglonglonglo/deployments/alize-7591c",
-    uid: "cf28880c-f866-11e8-aca1-525400d91faf",
-    resourceVersion: "69716125",
-    generation: 1,
-    creationTimestamp: "2018-12-05T08:21:48Z",
-    labels: {
-      "choerodon.io": "2018.11.30-105053-master",
-      "choerodon.io/application": "alize",
-      "choerodon.io/logs-parser": "nginx",
-      "choerodon.io/release": "alize-7591c",
-      "choerodon.io/version": "2018.11.26-085233-master",
-    },
-    annotations: {
-      "deployment.kubernetes.io/revision": "1",
-    },
-  },
-  spec: {
-    replicas: 1,
-    selector: {
-      matchLabels: {
-        "choerodon.io/release": "alize-7591c",
-      },
-    },
-    template: {
-      metadata: {
-        creationTimestamp: null,
-        labels: {
-          "choerodon.io": "2018.11.30-105053-master",
-          "choerodon.io/application": "alize",
-          "choerodon.io/release": "alize-7591c",
-          "choerodon.io/version": "2018.11.26-085233-master",
-        },
-      },
-      spec: {
-        containers: [
-          {
-            name: "alize-7591c",
-            image:
-              "registry.saas.hand-china.com/operation-test11/alize:2018.11.26-085233-master",
-            ports: [
-              {
-                name: "http",
-                containerPort: 80,
-                protocol: "TCP",
-              },
-            ],
-            env: [
-              {
-                name: "PRO_API_HOST",
-                value: "api.example.com.cn",
-              },
-              {
-                name: "PRO_CLIENT_ID",
-                value: "example",
-              },
-              {
-                name: "PRO_COOKIE_SERVER",
-                value: "example.com.cn",
-              },
-              {
-                name: "PRO_HEADER_TITLE_NAME",
-                value: "Choerodon",
-              },
-              {
-                name: "PRO_HTTP",
-                value: "http",
-              },
-              {
-                name: "PRO_LOCAL",
-                value: "true",
-              },
-              {
-                name: "PRO_TITLE_NAME",
-                value: "Choerodon",
-              },
-            ],
-            resources: {},
-            readinessProbe: {
-              exec: {
-                command: ["curl", "localhost:8031/health"],
-              },
-              failureThreshold: 3,
-              initialDelaySeconds: 60,
-              periodSeconds: 10,
-              successThreshold: 1,
-              timeoutSeconds: 10,
-            },
-            terminationMessagePath: "/dev/termination-log",
-            terminationMessagePolicy: "File",
-            imagePullPolicy: "IfNotPresent",
-            securityContext: {
-              privileged: true,
-              allowPrivilegeEscalation: true,
-              readOnlyRootFilesystem: true,
-              runAsNonRoot: false,
-              capabilities: {
-                add: [1, 2, 3],
-                drop: ["a", "b", "c"],
-              },
-            },
-            volumeMounts: [
-              {
-                mountPath: "/test-pd",
-                name: "test-volume",
-              },
-              {
-                mountPath: "/var/run/secrets/kubernetes.io/serviceaccount",
-                name: "default-token-rmhmg",
-                readOnly: true,
-              },
-            ],
-          },
-        ],
-        restartPolicy: "Always",
-        terminationGracePeriodSeconds: 30,
-        dnsPolicy: "ClusterFirst",
-        schedulerName: "default-scheduler",
-        volumes: [
-          {
-            hostPath: {
-              path: "/tmp",
-              type: "Directory",
-            },
-            name: "test-volume",
-          },
-          {
-            name: "default-token-rmhmg",
-            secret: {
-              defaultMode: 420,
-              secretName: "default-token-rmhmg",
-              items: [
-                { path: "/data", key: "a1", mode: 21 },
-                { path: "/data2", key: "ad", mode: 232 },
-                { path: "/datea", key: "asaa", mode: 45 },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    strategy: {
-      type: "RollingUpdate",
-      rollingUpdate: {
-        maxUnavailable: "25%",
-        maxSurge: "25%",
-      },
-    },
-    revisionHistoryLimit: 10,
-    progressDeadlineSeconds: 600,
-  },
-  status: {
-    observedGeneration: 1,
-    replicas: 1,
-    updatedReplicas: 1,
-    readyReplicas: 1,
-    availableReplicas: 1,
-    conditions: [
-      {
-        type: "Available",
-        status: "True",
-        lastUpdateTime: "2018-12-05T08:21:52Z",
-        lastTransitionTime: "2018-12-05T08:21:52Z",
-        reason: "MinimumReplicasAvailable",
-        message: "Deployment has minimum availability.",
-      },
-      {
-        type: "Progressing",
-        status: "True",
-        lastUpdateTime: "2018-12-05T08:21:52Z",
-        lastTransitionTime: "2018-12-05T08:21:48Z",
-        reason: "NewReplicaSetAvailable",
-        message:
-          'ReplicaSet "alize-7591c-657f5566b" has successfully progressed.',
-      },
-    ],
-  },
-};
-
 @observer
 class ExpandRow extends Component {
   constructor(props) {
@@ -215,6 +32,12 @@ class ExpandRow extends Component {
       sideName: "",
       activeKey: [],
     };
+    this.renderPorts = this.renderPorts.bind(this);
+    this.renderVolume = this.renderVolume.bind(this);
+    this.renderHealth = this.renderHealth.bind(this);
+    this.renderSecurity = this.renderSecurity.bind(this);
+    this.renderLabel = this.renderLabel.bind(this);
+    this.renderVar = this.renderVar.bind(this);
   }
 
   /**
@@ -357,41 +180,57 @@ class ExpandRow extends Component {
   }
 
   renderPorts(containers, isLoading) {
+    let portsContent = null;
     let hasPorts = false;
 
-    const colItems = ["name", "containerPort", "protocol", "hostPort"];
+    if (containers && containers.length) {
+      const colItems = ["name", "containerPort", "protocol", "hostPort"];
 
-    const columns = _.map(colItems, item => ({
-      title: <FormattedMessage id={`ist.deploy.ports.${item}`} />,
-      key: item,
-      dataIndex: item,
-      render: _textOrNA,
-    }));
+      const columns = _.map(colItems, item => ({
+        title: <FormattedMessage id={`ist.deploy.ports.${item}`} />,
+        key: item,
+        dataIndex: item,
+        render: _textOrNA,
+        sorter: true,
+      }));
 
-    let portsContent = _.map(containers, item => {
-      const { name, ports } = item;
-      if (ports && ports.length) {
-        hasPorts = true;
-      }
-      return (
-        <Fragment key={name}>
-          <div className="c7ncd-deploy-container-title">
-            <FormattedMessage id="ist.deploy.container" />
-            <span className="c7ncd-deploy-container-name">{name}</span>
-          </div>
-          <Table
-            filterBar={false}
-            dataSource={ports && ports.slice()}
-            columns={columns}
-            pagination={false}
-            rowKey={record => record.name}
-          />
-        </Fragment>
+      portsContent = _.map(containers, item => {
+        const { name, ports } = item;
+        if (ports && ports.length) {
+          hasPorts = true;
+        }
+        return (
+          <Fragment key={name}>
+            <div className="c7ncd-deploy-container-title">
+              <FormattedMessage id="ist.deploy.container" />
+              <span className="c7ncd-deploy-container-name">{name}</span>
+            </div>
+            <Table
+              filterBar={false}
+              dataSource={ports && ports.slice()}
+              columns={columns}
+              pagination={false}
+              rowKey={record => record.name}
+            />
+          </Fragment>
+        );
+      });
+    } else {
+      portsContent = (
+        <div className="c7ncd-deploy-detail-empty">
+          <FormattedMessage id="ist.deploy.ports.map" />
+          <FormattedMessage id="ist.deploy.ports.empty" />
+        </div>
       );
-    });
+    }
 
     if (!hasPorts) {
-      portsContent = <div>没有端口配置</div>;
+      portsContent = (
+        <div className="c7ncd-deploy-detail-empty">
+          <FormattedMessage id="ist.deploy.ports.map" />
+          <FormattedMessage id="ist.deploy.ports.empty" />
+        </div>
+      );
     }
 
     return isLoading ? (
@@ -404,27 +243,43 @@ class ExpandRow extends Component {
   }
 
   renderHealth(containers, isLoading) {
-    let healthContent = _.map(containers, item => {
-      const { name } = item;
-      const readinessProbe = item.readinessProbe || {};
-      const livenessProbe = item.livenessProbe || {};
+    let healthContent = null;
 
-      const readDom = _returnHealthDom("readiness", readinessProbe);
-      const liveDom = _returnHealthDom("liveness", livenessProbe);
+    if (containers && containers.length) {
+      healthContent = _.map(containers, item => {
+        const { name } = item;
+        const readinessProbe = item.readinessProbe || {};
+        const livenessProbe = item.livenessProbe || {};
 
-      return (
-        <div key={name} className="c7ncd-deploy-health-wrap">
-          <div className="c7ncd-deploy-container-title">
-            <FormattedMessage id="ist.deploy.container" />
-            <span className="c7ncd-deploy-container-name">{name}</span>
+        const readDom = _returnHealthDom("readiness", readinessProbe);
+        const liveDom = _returnHealthDom("liveness", livenessProbe);
+
+        return (
+          <div key={name} className="c7ncd-deploy-health-wrap">
+            <div className="c7ncd-deploy-container-title">
+              <FormattedMessage id="ist.deploy.container" />
+              <span className="c7ncd-deploy-container-name">{name}</span>
+            </div>
+            <div className="c7ncd-deploy-health-content">
+              {readDom}
+              {liveDom}
+            </div>
           </div>
-          <div className="c7ncd-deploy-health-content">
-            {readDom}
-            {liveDom}
-          </div>
+        );
+      });
+    } else {
+      healthContent = (
+        <div className="c7ncd-deploy-detail-empty">
+          <p>
+            <FormattedMessage id="ist.deploy.health.readiness" />
+          </p>
+          <FormattedMessage id="ist.deploy.volume.type" />
+          <span className="c7ncd-deploy-health-empty">
+            <FormattedMessage id="ist.deploy.none" />
+          </span>
         </div>
       );
-    });
+    }
 
     return isLoading ? (
       <div className="c7ncd-deploy-spin">
@@ -435,20 +290,7 @@ class ExpandRow extends Component {
     );
   }
 
-  renderVar() {
-    const {
-      getData: { detail },
-      getLoading,
-    } = DeploymentStore;
-    let containers = [];
-    if (
-      detail &&
-      detail.spec &&
-      detail.spec.template &&
-      detail.spec.template.spec
-    ) {
-      containers = detail.spec.template.spec.containers;
-    }
+  renderVar(containers, isLoading) {
     const columns = [
       {
         width: "50%",
@@ -463,6 +305,7 @@ class ExpandRow extends Component {
         dataIndex: "value",
       },
     ];
+
     let hasEnv = false;
     let envContent = _.map(containers, item => {
       const { name, env } = item;
@@ -477,7 +320,6 @@ class ExpandRow extends Component {
           </div>
           <Table
             filterBar={false}
-            // onChange={this.tableChange}
             dataSource={env && env.slice()}
             columns={columns}
             pagination={false}
@@ -499,7 +341,7 @@ class ExpandRow extends Component {
       );
     }
 
-    return getLoading ? (
+    return isLoading ? (
       <div className="c7ncd-deploy-spin">
         <Spin />
       </div>
@@ -508,18 +350,7 @@ class ExpandRow extends Component {
     );
   }
 
-  renderLabel() {
-    const {
-      getData: { detail },
-      getLoading,
-    } = DeploymentStore;
-    let labels = [];
-    let annotations = [];
-    if (detail && detail.metadata) {
-      labels = detail.metadata.labels;
-      annotations = detail.metadata.annotations;
-    }
-
+  renderLabel(labels, annotations, isLoading) {
     /**
      * 表格数据
      * @param {object} obj
@@ -562,7 +393,7 @@ class ExpandRow extends Component {
 
     const annoContent = format(annotations, columns);
 
-    return getLoading ? (
+    return isLoading ? (
       <div className="c7ncd-deploy-spin">
         <Spin />
       </div>
@@ -577,13 +408,12 @@ class ExpandRow extends Component {
   }
 
   renderVolume(containers, volumes, isLoading) {
-    containers = DEPLOYMENT_INFO.spec.template.spec.containers;
-    volumes = DEPLOYMENT_INFO.spec.template.spec.volumes;
+    let volumeContent = null;
 
     const _volumeType = (vol, mounts) => {
       const vDom = _volumesTemplate(vol);
-
-      const mDom = _.map(mounts, item => {
+      const mountsArr = mounts.length ? mounts : [{}];
+      const mDom = _.map(mountsArr, item => {
         const mount = {
           mountPath: item.mountPath,
           subPath: item.subPath,
@@ -618,19 +448,24 @@ class ExpandRow extends Component {
       );
     };
 
-    let volumeContent = _.map(volumes, vol => {
-      const { name } = vol;
-      const mounts = [];
-      _.forEach(containers, item => {
-        const { volumeMounts } = item;
-        const filterVol = _.filter(volumeMounts, m => m.name === name);
-        mounts.push(...filterVol);
+    if (volumes && volumes.length) {
+      volumeContent = _.map(volumes, vol => {
+        const { name } = vol;
+        const mounts = [];
+        _.forEach(containers, item => {
+          const { volumeMounts } = item;
+          const filterVol = _.filter(volumeMounts, m => m.name === name);
+          mounts.push(...filterVol);
+        });
+        return _volumeType(vol, mounts);
       });
-      return _volumeType(vol, mounts);
-    });
-
-    if (!volumeContent.length) {
-      volumeContent = <div className="c7ncd-deploy-empty">没有数据卷信息</div>;
+    } else {
+      volumeContent = (
+        <div className="c7ncd-deploy-detail-empty">
+          <FormattedMessage id="ist.deploy.volume" />
+          <FormattedMessage id="ist.deploy.volume.empty" />
+        </div>
+      );
     }
 
     return isLoading ? (
@@ -642,27 +477,9 @@ class ExpandRow extends Component {
     );
   }
 
-  renderSecurity() {
-    const {
-      // getData: { detail },
-      getLoading,
-    } = DeploymentStore;
-    let containers = [];
-    let hostIPC = null;
-    let hostNetwork = null;
-    const detail = DEPLOYMENT_INFO;
-    if (
-      detail &&
-      detail.spec &&
-      detail.spec.template &&
-      detail.spec.template.spec
-    ) {
-      containers = detail.spec.template.spec.containers;
-      hostIPC = detail.spec.template.spec.hostIPC;
-      hostNetwork = detail.spec.template.spec.hostNetwork;
-    }
-
-    const securityCtx = _.map(containers, item => {
+  renderSecurity(containers, hostIPC, hostNetwork, isLoading) {
+    const containerArr = containers.length ? containers : [{}];
+    const securityCtx = _.map(containerArr, item => {
       const { imagePullPolicy, name } = item;
       const securityContext = item.securityContext || {};
       const {
@@ -681,6 +498,21 @@ class ExpandRow extends Component {
         capDrop = capabilities.drop;
       }
 
+      const addArr = capAdd.length ? (
+        _.map(capAdd, item => (
+          <p className="c7ncd-deploy-detail-text">{item}</p>
+        ))
+      ) : (
+        <FormattedMessage id="ist.deploy.none" />
+      );
+      const dropArr = capDrop.length ? (
+        _.map(capDrop, item => (
+          <p className="c7ncd-deploy-detail-text">{item}</p>
+        ))
+      ) : (
+        <FormattedMessage id="ist.deploy.none" />
+      );
+
       return (
         <Fragment key={name}>
           <div className="c7ncd-deploy-container-title">
@@ -688,56 +520,21 @@ class ExpandRow extends Component {
             <span className="c7ncd-deploy-container-name">{name}</span>
           </div>
           <div className="c7ncd-deploy-security-block">
-            <div className="c7ncd-deploy-security-item">
-              <p className="c7ncd-deploy-detail-label">镜像拉取</p>
-              <p className="c7ncd-deploy-detail-text">
-                {_textOrNA(imagePullPolicy)}
-              </p>
-            </div>
-            <div className="c7ncd-deploy-security-item">
-              <p className="c7ncd-deploy-detail-label">特权模式</p>
-              <p className="c7ncd-deploy-detail-text">
-                {_textOrNA(privileged)}
-              </p>
-            </div>
-            <div className="c7ncd-deploy-security-item">
-              <p className="c7ncd-deploy-detail-label">提升特权</p>
-              <p className="c7ncd-deploy-detail-text">
-                {_textOrNA(allowPrivilegeEscalation)}
-              </p>
-            </div>
+            {_securityItem("imagePullPolicy", imagePullPolicy, "_flex")}
+            {_securityItem("privileged", privileged, "_flex")}
+            {_securityItem(
+              "allowPrivilegeEscalation",
+              allowPrivilegeEscalation,
+              "_flex"
+            )}
           </div>
           <div className="c7ncd-deploy-security-block">
-            <div className="c7ncd-deploy-security-item">
-              <p className="c7ncd-deploy-detail-label">以非root用户身份运行</p>
-              <p className="c7ncd-deploy-detail-text">
-                {_textOrNA(runAsNonRoot)}
-              </p>
-            </div>
-            <div className="c7ncd-deploy-security-item">
-              <p className="c7ncd-deploy-detail-label">只读根文件系统</p>
-              <p className="c7ncd-deploy-detail-text">
-                {_textOrNA(readOnlyRootFilesystem)}
-              </p>
-            </div>
+            {_securityItem("runAsNonRoot", runAsNonRoot)}
+            {_securityItem("readOnlyRootFilesystem", readOnlyRootFilesystem)}
           </div>
           <div className="c7ncd-deploy-security-block">
-            <div className="c7ncd-deploy-security-item">
-              <p className="c7ncd-deploy-detail-label">增加内核能力</p>
-              {capAdd.length
-                ? _.map(capAdd, item => (
-                    <p className="c7ncd-deploy-detail-text">{item}</p>
-                  ))
-                : "n/a"}
-            </div>
-            <div className="c7ncd-deploy-security-item">
-              <p className="c7ncd-deploy-detail-label">移除内核能力</p>
-              {capDrop.length
-                ? _.map(capDrop, item => (
-                    <p className="c7ncd-deploy-detail-text">{item}</p>
-                  ))
-                : "n/a"}
-            </div>
+            {_securityItem("capabilities.add", addArr)}
+            {_securityItem("capabilities.drop", dropArr)}
           </div>
         </Fragment>
       );
@@ -746,20 +543,14 @@ class ExpandRow extends Component {
     const securityContent = (
       <div className="c7ncd-deploy-security-wrap">
         <div className="c7ncd-deploy-security-block">
-          <div className="c7ncd-deploy-security-item">
-            <p className="c7ncd-deploy-detail-label">使用主机的网络</p>
-            <p className="c7ncd-deploy-detail-text">{_textOrNA(hostIPC)}</p>
-          </div>
-          <div className="c7ncd-deploy-security-item">
-            <p className="c7ncd-deploy-detail-label">使用主机的IPC命名空间</p>
-            <p className="c7ncd-deploy-detail-text">{_textOrNA(hostNetwork)}</p>
-          </div>
+          {_securityItem("hostIPC", hostIPC)}
+          {_securityItem("hostNetwork", hostNetwork)}
         </div>
         {securityCtx}
       </div>
     );
 
-    return getLoading ? (
+    return isLoading ? (
       <div className="c7ncd-deploy-spin">
         <Spin />
       </div>
@@ -782,14 +573,22 @@ class ExpandRow extends Component {
     );
 
     const {
-      // getData: { detail },
+      getData: { detail },
       getLoading,
     } = DeploymentStore;
 
-    const detail = DEPLOYMENT_INFO;
-
     let containers = [];
     let volumes = [];
+    let hostIPC = null;
+    let hostNetwork = null;
+    let labels = [];
+    let annotations = [];
+
+    if (detail && detail.metadata) {
+      labels = detail.metadata.labels;
+      annotations = detail.metadata.annotations;
+    }
+
     if (
       detail &&
       detail.spec &&
@@ -798,37 +597,19 @@ class ExpandRow extends Component {
     ) {
       containers = detail.spec.template.spec.containers;
       volumes = detail.spec.template.spec.volumes;
+      hostIPC = detail.spec.template.spec.hostIPC;
+      hostNetwork = detail.spec.template.spec.hostNetwork;
     }
 
     const renderFun = {
-      ports: this.renderPorts.bind(this, containers, getLoading),
-      volume: this.renderVolume.bind(this, containers, volumes, getLoading),
-      health: this.renderHealth.bind(this, containers, getLoading),
-      security: this.renderSecurity,
-      label: this.renderLabel,
-      variables: this.renderVar,
+      ports: () => this.renderPorts(containers, getLoading),
+      volume: () => this.renderVolume(containers, volumes, getLoading),
+      health: () => this.renderHealth(containers, getLoading),
+      variables: () => this.renderVar(containers, getLoading),
+      security: () =>
+        this.renderSecurity(containers, hostIPC, hostNetwork, getLoading),
+      label: () => this.renderLabel(labels, annotations, getLoading),
     };
-
-    const panelContent = visible
-      ? _.map(PANEL_TYPE, item => (
-          <Panel
-            key={item}
-            header={
-              <div className="c7ncd-deploy-panel-header">
-                <div className="c7ncd-deploy-panel-title">
-                  <FormattedMessage id={`ist.deploy.${item}`} />
-                </div>
-                <div className="c7ncd-deploy-panel-text">
-                  <FormattedMessage id={`ist.deploy.${item}.describe`} />
-                </div>
-              </div>
-            }
-            className="c7ncd-deploy-panel"
-          >
-            {renderFun[item]()}
-          </Panel>
-        ))
-      : null;
 
     return (
       <Fragment>
@@ -844,7 +625,12 @@ class ExpandRow extends Component {
         )}
         <Sidebar
           footer={[
-            <Button type="primary" key="back" onClick={this.hideSidebar}>
+            <Button
+              type="primary"
+              funcType="raised"
+              key="close"
+              onClick={this.hideSidebar}
+            >
               <FormattedMessage id="close" />
             </Button>,
           ]}
@@ -861,7 +647,24 @@ class ExpandRow extends Component {
               activeKey={activeKey}
               onChange={this.handlePanelChange}
             >
-              {panelContent}
+              {_.map(PANEL_TYPE, item => (
+                <Panel
+                  key={item}
+                  header={
+                    <div className="c7ncd-deploy-panel-header">
+                      <div className="c7ncd-deploy-panel-title">
+                        <FormattedMessage id={`ist.deploy.${item}`} />
+                      </div>
+                      <div className="c7ncd-deploy-panel-text">
+                        <FormattedMessage id={`ist.deploy.${item}.describe`} />
+                      </div>
+                    </div>
+                  }
+                  className="c7ncd-deploy-panel"
+                >
+                  {visible ? renderFun[item]() : null}
+                </Panel>
+              ))}
             </Collapse>
           </Content>
         </Sidebar>
@@ -974,6 +777,12 @@ function _volumesTemplate(data) {
             columns={columns}
           />
         );
+      } else {
+        itemDom = (
+          <p className="c7ncd-deploy-detail-text">
+            {/* <FormattedMessage id="ist.deploy.none" /> */}
+          </p>
+        );
       }
       template = (
         <div className="c7ncd-deploy-volume-main">
@@ -1015,10 +824,27 @@ function _volumesTemplate(data) {
     <Fragment>
       <div className="c7ncd-deploy-volume-main">
         {_volumesItem("name", name)}
-        {_volumesItem("type", type)}
+        {_volumesItem("volume.type", type)}
       </div>
       {template}
     </Fragment>
+  );
+}
+
+function _securityItem(name, data, type = "") {
+  let content =
+    _.isArray(data) || _.isObject(data) ? (
+      data
+    ) : (
+      <p className="c7ncd-deploy-detail-text">{_textOrNA(data)}</p>
+    );
+  return (
+    <div className={`c7ncd-deploy-security-item${type}`}>
+      <p className="c7ncd-deploy-detail-label">
+        <FormattedMessage id={`ist.deploy.security.${name}`} />
+      </p>
+      {content}
+    </div>
   );
 }
 

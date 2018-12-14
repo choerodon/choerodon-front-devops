@@ -24,260 +24,28 @@ $WIDTH512: 512px;
   line-height: 24px;
 }
 
-.c7n-region .c7n-scroll-content {
-  padding: 16px 24px 0 24px;
-}
-
-.c7n-region section {
-  margin-bottom: 0;
-}
-
-.c7n-region p+p {
-  margin-top: 0;
-}
-
-.c7n-region .c7n-space-first {
-  margin-top: 0 !important;
-}
-
-.c7n-region h1,
-.c7n-region h2,
-.c7n-region h3,
-.c7n-region h4,
-.c7n-region h5,
-.c7n-region h6 {
-  bottom: auto;
-  position: static;
-}
-
-.c7n-region h1 {
+.c7n-space-first {
   color: #000;
-  //font-family: "roboto";
-  font-size: 24px;
-  font-weight: 400;
-  letter-spacing: 0;
-  line-height: 32px;
-}
-
-.c7n-region h5,
-.c7n-region h6 {
-  text-transform: none;
-}
-
-.c7n-region {
-  -webkit-touch-callout: default;
-}
-
-.c7n-region *,
-.c7n-region *::before,
-.c7n-region *::after {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-.c7n-region article,
-aside,
-blockquote,
-body,
-button,
-code,
-dd,
-details,
-div,
-dl,
-dt,
-fieldset,
-figcaption,
-figure,
-footer,
-form,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-header,
-hgroup,
-hr,
-input,
-legend,
-li,
-menu,
-nav,
-ol,
-p,
-pre,
-section,
-td,
-textarea,
-th,
-ul {
-  margin: 0;
-  padding: 0;
-}
-
-.c7n-region b,
-.c7n-region strong {
+  font-size: 20px;
   font-weight: 500;
-}
-
-.c7n-region em {
-  font-style: italic;
-}
-
-.c7n-region abbr {
-  text-transform: none !important;
-}
-
-.c7n-region code,
-.c7n-region pre {
-  //font-family: "roboto mono";
-}
-
-.c7n-region p,
-.c7n-region h1,
-.c7n-region h2,
-.c7n-region h3,
-.c7n-region h4,
-.c7n-region h5,
-.c7n-region h6 {
-  margin: 0;
+  letter-spacing: .005em;
+  line-height: 28px;
+  margin-bottom: 8px;
   max-width: 512px;
   text-rendering: auto;
   word-wrap: break-word;
 }
 
-.c7n-region h2 {
+.c7n-space-first + p {
+  max-width: 512px;
   color: #000;
-  //font-family: "roboto";
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: 0.005em;
-  line-height: 28px;
-  margin-bottom: 8px;
-  margin-top: 32px;
-}
-
-.c7n-region h3 {
-  color: #000;
-  //font-family: "roboto";
-  font-size: 18px;
-  font-weight: 500;
-  letter-spacing: 0.005em;
-  line-height: 24px;
-  margin-bottom: 8px;
-  margin-top: 28px;
-}
-
-.c7n-region h4 {
-  color: #000;
-  //font-family: "roboto";
-  font-size: 18px;
-  font-weight: 400;
-  letter-spacing: 0.005em;
-  line-height: 24px;
-  margin-bottom: 8px;
-  margin-top: 28px;
-}
-
-.c7n-region h5 {
-  color: #000;
-  //font-family: "roboto";
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  line-height: 20px;
-  margin-bottom: 8px;
-  margin-top: 24px;
-}
-
-.c7n-region h6 {
-  color: #000;
-  //font-family: "roboto";
-  font-size: 15px;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  line-height: 20px;
-  margin-bottom: 8px;
-  margin-top: 24px;
-}
-
-.c7n-region p {
-  color: #000;
-  //font-family: "roboto";
   font-size: 13px;
-  font-weight: 400;
-  letter-spacing: 0.01em;
+  letter-spacing: .01em;
   line-height: 20px;
   margin-bottom: 24px;
 }
 
-.c7n-region :focus {
-  outline: 0;
-}
-
-.c7n-region button::-moz-focus-inner {
-  border: 0;
-  padding: 0;
-}
-
-.c7n-region table {
-  border: 0;
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-//.c7n-region a,
-.c7n-region a .c7n-external-link-content {
-  color: #3f51b5 !important;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.c7n-region a .c7n-external-link-content+span {
-  font-size: 13px;
-}
-
-.c7n-region a.c7n-color-primary,
-.c7n-region a.c7n-color-primary .c7n-external-link-content {
-  border-color: rgba(0, 0, 0, 0.54);
-  color: #000;
-}
-
-.c7n-region a.c7n-color-secondary,
-.c7n-region a.c7n-color-secondary .c7n-external-link-content {
-  border-color: rgba(0, 0, 0, 0.54);
-  color: rgba(0, 0, 0, 0.66);
-}
-
-.c7n-region a:hover,
-.c7n-region a:hover .c7n-external-link-content {
-  color: #3f51b5;
-}
-
-.c7n-region a:focus,
-.c7n-region a:focus .c7n-external-link-content {
-  color: #3f51b5 !important;
-}
-
-.c7n-region a:active,
-.c7n-region a:active .c7n-external-link-content,
-.c7n-region a:visited:active,
-.c7n-region a:visited:active .c7n-external-link-content,
-.c7n-region a.mat-tab-link {
-  outline: 0;
-}
-
-.c7n-region a.c7n-external-link {
-  border: 0;
-}
-
-.c7n-region a:focus.c7n-external-link {
-  outline: 0;
-}
-
-.c7n-region .c7n-text-title-1-subtle {
+.c7n-text-title-1-subtle {
   color: #000;
   font-size: 20px;
   font-weight: 400;
@@ -287,7 +55,7 @@ ul {
   margin-top: 32px;
 }
 
-.c7n-region .c7n-text-title-2 {
+.c7n-text-title-2 {
   color: #000;
   font-size: 18px;
   font-weight: 500;
@@ -297,7 +65,7 @@ ul {
   margin-top: 28px;
 }
 
-.c7n-region .c7n-text-title-3 {
+.c7n-text-title-3 {
   color: #000;
   font-size: 18px;
   font-weight: 400;
@@ -307,7 +75,7 @@ ul {
   margin-top: 28px;
 }
 
-.c7n-region .c7n-text-title-4 {
+.c7n-text-title-4 {
   color: #000;
   //font-family: "roboto";
   font-size: 15px;
@@ -318,8 +86,8 @@ ul {
   margin-top: 24px;
 }
 
-.c7n-region .c7n-text-title-5,
-.c7n-region .c7n-text-body-large {
+.c7n-text-title-5,
+.c7n-text-body-large {
   color: #000;
   //font-family: "roboto";
   font-size: 15px;
@@ -350,7 +118,7 @@ table {
   color: rgba(0, 0, 0, 0.26);
 }
 
-.c7n-input-readOnly+.ant-input-border-wrapper {
+.c7n-input-readOnly + .ant-input-border-wrapper {
   .ant-input-border {
     height: 0;
     background: none;
@@ -467,22 +235,23 @@ table {
 // 创建侧边栏的单选
 .c7n-creation-title {
   display: flex;
+  margin-bottom: 10px;
 
-  .icon {
-    line-height: 1.5;
+  i {
+    line-height: 24px;
+    font-size: 16px;
+    padding-right: 5px;
   }
 
   &_disabled {
     color: rgba(0, 0, 0, .36);
   }
 
-  margin-bottom: 16px;
-
   span {
-    display: inline-block;
-    vertical-align: middle;
-    font-size: 13px;
-    margin-left: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    margin-bottom: 10px;
   }
 
   .c7n-tooltip-icon {
