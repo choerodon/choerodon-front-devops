@@ -607,10 +607,10 @@ const zhCN = {
   "network.instance.check.failed": "请移除不可用实例",
   "network.port.check.failed": "端口号必须是数字且在0-65535之间",
   "network.key.check.failed":
-    '由字母，数字，"-"，"_"或"."中的一种或多种组成，并且必须以字母或数字开头和结尾（例如“MyName”，或“my.name”，或“123-abc”）',
+    '由字母，数字，"-"或"."中的一种或多种组成，并且必须以字母或数字开头和结尾（例如“MyName”，或“my.name”，或“123-abc”）',
   "network.key.check.repeat": "关键字不能重复",
   "network.value.check.failed":
-    '由字母，数字，"-"，"_"或"."中的一种或多种组成，并且必须以字母或数字开头和结尾（例如"MyValue"，或"my_value"，或"12345")',
+    '由字母，数字，"-"或"."中的一种或多种组成，并且必须以字母或数字开头和结尾（例如"MyValue"，或"my_value"，或"12345")',
   "network.port.check.repeat": "端口号重复",
   "network.nport.check.repeat": "节点端口号重复",
   "network.tport.check.repeat": "目标端口号重复",
