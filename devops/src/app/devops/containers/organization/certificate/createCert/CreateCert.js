@@ -340,7 +340,7 @@ class CreateCert extends Component {
                       message: formatMessage({ id: "required" }),
                     },
                     {
-                      validator: this.checkName,
+                      validator: showType === 'create' ? this.checkName : null,
                     },
                   ],
                   initialValue: getCert ? getCert.name : '',
@@ -368,7 +368,7 @@ class CreateCert extends Component {
                         message: formatMessage({ id: "required" }),
                       },
                       {
-                        validator: this.checkDomain,
+                        validator: showType === 'create' ? this.checkDomain : null,
                       },
                     ],
                     initialValue: getCert ? getCert.domain : '',
