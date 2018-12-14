@@ -179,7 +179,7 @@ class InstancesDetail extends Component {
     const { InstanceDetailStore } = this.props;
     const event = InstanceDetailStore.getIstEvent;
     let istDom = [];
-    let time = event[0].createTime;
+    let time = event.length ? event[0].createTime : null;
     if (this.state.time !== "") {
       time = this.state.time;
     }
@@ -636,7 +636,7 @@ class InstancesDetail extends Component {
                     onClick={this.showSideBar.bind(
                       this,
                       "deployInfo",
-                      event[0].podEventDTO[0].name
+                      event.length ? event[0].podEventDTO[0].name : undefined
                     )}
                   >
                     <Icon type="find_in_page" />
