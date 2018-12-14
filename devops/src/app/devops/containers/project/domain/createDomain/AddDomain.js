@@ -185,11 +185,13 @@ class CreateDomain extends Component {
         }
         let promise = null;
         const pathList = [];
+        const networkList = store.getNetwork;
         _.forEach(paths, item => {
           const pt = path[item];
           const serviceId = network[item];
           const servicePort = port[item];
-          pathList.push({ path: pt, serviceId, servicePort });
+          const serviceName =  _.filter(networkList, ["id", serviceId])[0].name;
+          pathList.push({ path: pt, serviceId, servicePort, serviceName });
         });
         postData.pathList = pathList;
         if (type === "create") {

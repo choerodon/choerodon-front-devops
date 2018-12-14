@@ -498,7 +498,7 @@ const zhCN = {
   "ist.expand.name": "名称",
   "ist.expand.empty": "暂无部署详细信息",
   "ist.expand.link": "点击查看详情",
-  "ist.expand.date": "创建时间",
+  "ist.expand.date": "更新时间",
   "ist.version.upload": "升级至版本 “{text}”",
   "ist.version.deploy": "部署版本 “{text}”",
   "ist.version.failed": "升级至版本 “{text}” 失败",
