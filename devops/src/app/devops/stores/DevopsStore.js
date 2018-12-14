@@ -85,8 +85,8 @@ class DevopsStore {
 }
 
 /**
- * 判断对象是否为空
- * @param {*} obj
+ * 只能判断对象或null是否为空
+ * @param {object} obj
  * @returns
  */
 function _isEmpty(obj) {
