@@ -87,7 +87,10 @@ class DeploymentAppHome extends Component {
     DeploymentAppStore.setValue(null);
     if (this.state.appId) {
       DeploymentAppStore.loadApps(this.state.appId).then(data => {
-        this.setState({ app: data });
+        this.setState({
+          app: data,
+          istName: `${data.code}-${uuidv1().substring(0, 5)}`,
+        });
       });
       const versionId = parseInt(this.state.versionId, 10);
       if (this.state.is_project) {
