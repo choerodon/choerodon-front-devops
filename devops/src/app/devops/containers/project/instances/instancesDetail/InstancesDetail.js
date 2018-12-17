@@ -22,6 +22,7 @@ import Ace from "../../../../components/yamlAce";
 import "../../../main.scss";
 import "./index.scss";
 import "../../container/containerHome/ContainerHome.scss";
+import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
 const Step = Steps.Step;
 const TabPane = Tabs.TabPane;

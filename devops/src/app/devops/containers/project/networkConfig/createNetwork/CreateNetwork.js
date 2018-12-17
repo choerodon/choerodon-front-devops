@@ -21,6 +21,7 @@ import "../../../main.scss";
 import "./CreateNetwork.scss";
 import EnvOverviewStore from "../../../../stores/project/envOverview";
 import AppName from "../../../../components/appName";
+import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
 /**
  * 生成网络名
@@ -1097,6 +1098,7 @@ class CreateNetwork extends Component {
                 )}
               </FormItem>
             </Form>
+            <InterceptMask visible={submitting} />
           </Content>
         </Sidebar>
       </div>

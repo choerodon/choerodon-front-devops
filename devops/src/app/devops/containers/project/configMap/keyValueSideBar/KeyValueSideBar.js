@@ -7,6 +7,7 @@ import { Button, Form, Select, Input, Modal, Icon, Table, Popover } from 'choero
 import '../../../main.scss';
 import './KeyValueSideBar.scss';
 import EnvOverviewStore from "../../../../stores/project/envOverview";
+import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -610,6 +611,7 @@ class KeyValueSideBar extends Component {
               <FormattedMessage id={`${title}.add`} />
             </Button>
             {warningDisplay ? <div className="c7n-cm-warning">{warningMes}</div> : null}
+            <InterceptMask visible={submitting} />
           </Content>
         </Sidebar>
       </div>

@@ -26,6 +26,7 @@ import StatusIcon from "../../../../components/StatusIcon";
 import RefreshBtn from "../../../../components/refreshBtn";
 import "./TemplateHome.scss";
 import "../../../main.scss";
+import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
 const { AppState } = stores;
 const Option = Select.Option;
@@ -615,6 +616,7 @@ class TemplateHome extends Component {
                     className="sidebar-content"
                   >
                     {formContent}
+                    <InterceptMask visible={submitting} />
                   </Content>
                 </Sidebar>
               )}

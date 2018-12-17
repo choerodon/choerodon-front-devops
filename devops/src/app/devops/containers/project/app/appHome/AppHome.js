@@ -31,6 +31,7 @@ import "../../../main.scss";
 import MouserOverWrapper from "../../../../components/MouseOverWrapper";
 import "../../envPipeline/EnvPipeLineHome.scss";
 import Tips from "../../../../components/Tips/Tips";
+import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -523,12 +524,15 @@ class AppHome extends Component {
               });
             } else {
               this.loadAllData(this.state.page);
-              this.setState({
-                show: false,
-                submitting: false,
-              }, () => {
-                AppStore.setTagKeys([]);
-              });
+              this.setState(
+                {
+                  show: false,
+                  submitting: false,
+                },
+                () => {
+                  AppStore.setTagKeys([]);
+                }
+              );
             }
           });
         }
@@ -986,6 +990,7 @@ class AppHome extends Component {
                     className="sidebar-content"
                   >
                     {formContent}
+                    <InterceptMask visible={submitting} />
                   </Content>
                 </Sidebar>
               )}

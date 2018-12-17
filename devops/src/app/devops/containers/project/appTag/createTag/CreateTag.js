@@ -8,6 +8,7 @@ import MdEditor from '../../../../components/MdEditor';
 import '../../../main.scss';
 import './CreateTag.scss';
 import Tips from "../../../../components/Tips/Tips";
+import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
@@ -225,6 +226,7 @@ class CreateTag extends Component {
           value={release}
           onChange={this.handleNoteChange}
         />
+        <InterceptMask visible={submitting} />
       </Content>
     </Sidebar>);
   }
