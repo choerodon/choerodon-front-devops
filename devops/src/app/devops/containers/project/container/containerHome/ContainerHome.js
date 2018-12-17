@@ -990,6 +990,7 @@ class ContainerHome extends Component {
     } = this.state;
     const envData = EnvOverviewStore.getEnvcard;
     const envId = EnvOverviewStore.getTpEnvId;
+    const backPath = state && state.backPath;
     const { paras } = ContainerStore.getInfo;
     const proPageSize = 10 * selectProPage + 3;
     const pubPageSize = 10 * selectPubPage + 3;
@@ -1003,7 +1004,10 @@ class ContainerHome extends Component {
     const contentDom =
       envData && envData.length && envId ? (
         <React.Fragment>
-          <Header title={<FormattedMessage id="container.header.title" />}>
+          <Header
+            title={<FormattedMessage id="container.header.title" />}
+            backPath={backPath}
+          >
             <Select
               className={`${
                 envId

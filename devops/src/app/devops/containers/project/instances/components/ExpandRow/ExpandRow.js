@@ -8,6 +8,7 @@ import { stores, Content } from "choerodon-front-boot";
 import { Tooltip, Button, Modal, Collapse, Table, Spin } from "choerodon-ui";
 import { formatDate } from "../../../../../utils/index";
 import DeploymentStore from "../../../../../stores/project/instances/DeploymentStore";
+import InstancesStore from "../../../../../stores/project/instances/InstancesStore";
 import "./index.scss";
 
 const { AppState } = stores;
@@ -58,6 +59,10 @@ class ExpandRow extends Component {
 
   handlePanelChange = key => {
     this.setState({ activeKey: key });
+  };
+
+  handleLink = () => {
+    InstancesStore.setIsCache(true);
   };
 
   /**
@@ -164,8 +169,13 @@ class ExpandRow extends Component {
                 search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(
                   projectName
                 )}&organizationId=${organizationId}`,
-                state: { appId, envId },
+                state: {
+                  appId,
+                  envId,
+                  backPath: `/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`,
+                },
               }}
+              onClick={this.handleLink}
             >
               <Tooltip title={<FormattedMessage id="ist.expand.link" />}>
                 {circle}
