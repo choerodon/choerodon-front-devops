@@ -15,6 +15,7 @@ import {
 import "../../../main.scss";
 import "./CreateCert.scss";
 import Tips from "../../../../components/Tips/Tips";
+import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
 const HEIGHT =
   window.innerHeight ||
@@ -521,6 +522,7 @@ class CreateCert extends Component {
                 ) : null}
               </div>
             </Form>
+            <InterceptMask visible={submitting} />
           </Content>
         </Sidebar>
       </div>

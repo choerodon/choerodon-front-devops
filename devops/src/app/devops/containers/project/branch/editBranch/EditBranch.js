@@ -11,6 +11,7 @@ import '../commom.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
 import DevConsoleStore from '../../../../stores/project/devConsole';
+import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -204,6 +205,7 @@ class EditBranch extends Component {
               )}
             </FormItem>
           </Form>
+          <InterceptMask visible={this.state.submitting} />
         </Content>
       </Sidebar>
     );

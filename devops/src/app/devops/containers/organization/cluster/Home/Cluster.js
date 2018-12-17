@@ -11,6 +11,7 @@ import './Cluster.scss';
 import '../../../project/envPipeline/EnvPipeLineHome.scss';
 import '../../../main.scss';
 import '../../../../components/DepPipelineEmpty/DepPipelineEmpty.scss';
+import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
@@ -799,6 +800,7 @@ class Cluster extends Component {
           >
             <Content code={`cluster.${sideType}`} values={{ clsName: titleName }} className="sidebar-content">
               {this.getFormContent()}
+              <InterceptMask visible={submitting} />
             </Content>
           </Sidebar>}
           {loading ? <LoadingBar display /> : (clusters && clusters.length ? <React.Fragment>

@@ -21,6 +21,7 @@ import AppName from "../../../../components/appName";
 import "../../../main.scss";
 import "../createNetwork/CreateNetwork.scss";
 import "./EditNetwork.scss";
+import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -1169,6 +1170,7 @@ class EditNetwork extends Component {
                 </Button>
               </div>
             </Form>
+            <InterceptMask visible={submitting} />
           </Content>
         </Sidebar>
       </div>

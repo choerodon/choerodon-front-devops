@@ -416,7 +416,11 @@ class DomainOverview extends Component {
           title={<FormattedMessage id="domain.header.delete" />}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeRemove}>
+            <Button
+              key="back"
+              onClick={this.closeRemove}
+              disabled={this.submitting}
+            >
               {<FormattedMessage id="cancel" />}
             </Button>,
             <Button

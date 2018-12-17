@@ -19,6 +19,7 @@ import "../../../main.scss";
 import "./CreateDomain.scss";
 import EnvOverviewStore from "../../../../stores/project/envOverview";
 import Tips from "../../../../components/Tips/Tips";
+import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
 const { Option } = Select;
 const { Item: FormItem } = Form;
@@ -910,6 +911,7 @@ class CreateDomain extends Component {
                 </Tooltip>
               </div>
             </Form>
+            <InterceptMask visible={submitting} />
           </Content>
         </Sidebar>
       </div>

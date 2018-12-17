@@ -8,6 +8,7 @@ import { injectIntl, FormattedMessage } from "react-intl";
 import Ace from "../../../components/yamlAce/index";
 import "./Instances.scss";
 import "../../main.scss";
+import InterceptMask from "../../../components/interceptMask/InterceptMask";
 
 const { Sidebar } = Modal;
 const { AppState } = stores;
@@ -206,6 +207,7 @@ class ValueConfig extends Component {
           }
         >
           {sideDom}
+          <InterceptMask visible={loading} />
         </Sidebar>
         <Modal
           visible={isNotChange}

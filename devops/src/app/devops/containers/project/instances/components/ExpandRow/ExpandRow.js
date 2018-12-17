@@ -10,6 +10,7 @@ import { formatDate } from "../../../../../utils/index";
 import DeploymentStore from "../../../../../stores/project/instances/DeploymentStore";
 import InstancesStore from "../../../../../stores/project/instances/InstancesStore";
 import "./index.scss";
+import InterceptMask from "../../../../../components/interceptMask/InterceptMask";
 
 const { AppState } = stores;
 const { Sidebar } = Modal;

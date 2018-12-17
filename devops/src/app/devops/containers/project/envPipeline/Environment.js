@@ -34,6 +34,7 @@ import "../../main.scss";
 import "./EnvPipeLineHome.scss";
 import { scrollTo } from "../../../utils";
 import Tips from "../../../components/Tips/Tips";
+import InterceptMask from "../../../components/interceptMask/InterceptMask";
 
 /**
  * 分页查询单页size
@@ -1297,6 +1298,7 @@ class Environment extends Component {
               className="sidebar-content"
             >
               {formContent}
+              <InterceptMask visible={submitting} />
             </Content>
           </Sidebar>
           <Modal
@@ -1305,7 +1307,7 @@ class Environment extends Component {
             footer={
               enableClick
                 ? [
-                    <Button key="back" onClick={this.closeDisEnvModal}>
+                  <Button key="back" onClick={this.closeDisEnvModal} disabled={this.submitting}>
                       {formatMessage({ id: "return" })}
                     </Button>,
                     <Button

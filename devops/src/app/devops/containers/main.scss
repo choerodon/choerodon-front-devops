@@ -36,7 +36,7 @@ $WIDTH512: 512px;
   word-wrap: break-word;
 }
 
-.c7n-space-first + p {
+.c7n-space-first+p {
   max-width: 512px;
   color: #000;
   font-size: 13px;
@@ -118,7 +118,7 @@ table {
   color: rgba(0, 0, 0, 0.26);
 }
 
-.c7n-input-readOnly + .ant-input-border-wrapper {
+.c7n-input-readOnly+.ant-input-border-wrapper {
   .ant-input-border {
     height: 0;
     background: none;

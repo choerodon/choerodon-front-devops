@@ -9,6 +9,8 @@ import '../commom.scss';
 import IssueDescription from './IssueDescription';
 import LoadingBar from '../../../../components/loadingBar';
 import TimePopover from '../../../../components/timePopover';
+import InterceptMask from "../../../../components/interceptMask/InterceptMask";
+import { Content } from "choerodon-front-boot";
 
 const Sidebar = Modal.Sidebar;
 const QuillDeltaToHtmlConverter = require('quill-delta-to-html');
@@ -341,7 +343,6 @@ class IssueDetail extends Component {
             </div>
           </section>
         </div> }
-
       </Sidebar>
     );
   }

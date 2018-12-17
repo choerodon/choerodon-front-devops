@@ -8,6 +8,7 @@ import _ from 'lodash';
 import Ace from '../../../components/yamlAce/index';
 import './Instances.scss';
 import '../../main.scss';
+import InterceptMask from "../../../components/interceptMask/InterceptMask";
 
 const { Sidebar } = Modal;
 const { AppState } = stores;
@@ -169,6 +170,7 @@ class UpgradeIst extends Component {
       confirmLoading={this.state.loading}
     >
       {sideDom}
+      <InterceptMask visible={this.state.loading} />
     </Sidebar>);
   }
 }
