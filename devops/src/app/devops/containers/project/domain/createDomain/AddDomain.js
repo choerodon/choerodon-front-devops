@@ -190,7 +190,7 @@ class CreateDomain extends Component {
           const pt = path[item];
           const serviceId = network[item];
           const servicePort = port[item];
-          const serviceName =  _.filter(networkList, ["id", serviceId])[0].name;
+          const serviceName = _.filter(networkList, ["id", serviceId])[0].name;
           pathList.push({ path: pt, serviceId, servicePort, serviceName });
         });
         postData.pathList = pathList;
@@ -433,6 +433,7 @@ class CreateDomain extends Component {
    * @param id
    */
   handleSelectNetwork = (data, index, id) => {
+    const { form } = this.props;
     const portArr = [];
     _.forEach(data, item => {
       if (id === item.id) {
@@ -442,6 +443,7 @@ class CreateDomain extends Component {
         _.forEach(ports, p => portArr.push(p.port));
       }
     });
+    form.setFieldsValue({ [`port[${index}]`]: "" });
     const portInNetwork = {
       [index]: portArr,
     };
