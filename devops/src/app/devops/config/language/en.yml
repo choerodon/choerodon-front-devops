@@ -1,9 +1,9 @@
 # 应用管理
-"application-management": "Application Management"
-"application-management.application": "Application"
-"application-management.application-version": "Application Version"
-"application-management.application-release": "Application Release"
-"application-management.application-market": "Application Market"
+"app-management": "Application Management"
+"app-management.application": "Application"
+"app-management.application-version": "Application Version"
+"app-management.application-release": "Application Release"
+"app-management.application-market": "Application Market"
 
 # 开发流水线
 "development-pipeline": "Development Pipeline"
@@ -63,4 +63,9 @@
 #0.11废弃
 "cluster-management": "Cluster Management"
 "cluster-management.cluster": "Cluster"
+"application-management": "Application Management"
+"application-management.application": "Application"
+"application-management.application-version": "Application Version"
+"application-management.application-release": "Application Release"
+"application-management.application-market": "Application Market"
 "application-management.application-template": "Application Template"
