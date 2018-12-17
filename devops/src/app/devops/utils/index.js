@@ -12,7 +12,7 @@ import { Icon, Popover } from "choerodon-ui";
  * @param data
  * @returns {*}
  */
-export function handleProptError(data) {
+function handleProptError(data) {
   if (data && data.failed) {
     Choerodon.prompt(data.message);
     return false;
@@ -35,7 +35,7 @@ function padZero(str) {
  * @param {Date} timestamp
  * @returns {string}
  */
-export function formatDate(timestamp) {
+function formatDate(timestamp) {
   const date = new Date(timestamp);
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
@@ -59,7 +59,7 @@ export function formatDate(timestamp) {
  * @param element
  * @param duration
  */
-export function scrollTo(element, change, duration = 0.5) {
+function scrollTo(element, change, duration = 0.5) {
   const domPosition = element.scrollLeft;
   const startTime = performance.now();
   function easeInOutQuad(t) {
@@ -84,7 +84,7 @@ export function scrollTo(element, change, duration = 0.5) {
  * @param endTime 结束时间 时间戳
  * @returns {string}
  */
-export function getTimeLeft(nowTime, endTime) {
+function getTimeLeft(nowTime, endTime) {
   if (nowTime >= endTime) {
     return "剩余 0 天";
   }
@@ -99,7 +99,7 @@ export function getTimeLeft(nowTime, endTime) {
 /**
  * 返回今天时间的字符串 "YYYY-MM-DD"
  */
-export function getToDayStr() {
+function getToDayStr() {
   const date = new Date();
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
@@ -112,7 +112,7 @@ export function getToDayStr() {
  * YYYY-MM-DD
  * @returns {*[]}
  */
-export function getNear7Day() {
+function getNear7Day() {
   const dateArr = [];
   for (let i = 0; i < 7; i++) {
     dateArr.push(
@@ -132,7 +132,7 @@ export function getNear7Day() {
  * @param oldyAxis 纵坐标数据 {a: [], b: [], ...}
  * @returns {xAixs: [], yAxis: {a: [], b: [], ...}}
  */
-export function getAxis(startTime, endTime, oldxAxis = [], oldyAxis = {}) {
+function getAxis(startTime, endTime, oldxAxis = [], oldyAxis = {}) {
   const xAxis = [];
   for (; startTime <= endTime; startTime += 86400000) {
     const tmp = new Date(startTime);
@@ -164,7 +164,7 @@ export function getAxis(startTime, endTime, oldxAxis = [], oldyAxis = {}) {
  * @param date 时间数组
  * @returns {{}}
  */
-export function dateSplitAndPad(start, end, date) {
+function dateSplitAndPad(start, end, date) {
   start = moment(start, "x");
   end = moment(end, "x");
   if (start > end) {
@@ -200,7 +200,7 @@ export function dateSplitAndPad(start, end, date) {
  * @param obj
  * @returns {*}
  */
-export function pickEntries(obj) {
+function pickEntries(obj) {
   if (Object.prototype.toString.call(obj) !== "[object Object]") {
     return {};
   }
@@ -211,3 +211,16 @@ export function pickEntries(obj) {
     values,
   };
 }
+
+export {
+  handleProptError,
+  padZero,
+  formatDate,
+  scrollTo,
+  getTimeLeft,
+  getToDayStr,
+  getNear7Day,
+  getAxis,
+  dateSplitAndPad,
+  pickEntries,
+};
