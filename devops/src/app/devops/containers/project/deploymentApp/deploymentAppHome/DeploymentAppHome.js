@@ -340,12 +340,28 @@ class DeploymentAppHome extends Component {
     const instances = DeploymentAppStore.currentInstance;
     if (e.target.value === "new") {
       this.setState({ istName: `${app.code}-${uuidv1().substring(0, 5)}` });
+      this.props.form.setFields({
+        name: {
+          value: `${app.code}-${uuidv1().substring(0, 5)}`,
+        },
+      });
     } else if (instanceDto) {
       this.setState({ istName: instanceDto.code });
+      this.props.form.setFields({
+        name: {
+          value: instanceDto.code,
+        },
+      });
     } else {
       this.setState({ istName: instances[0].code });
+      this.props.form.setFields({
+        name: {
+          value: instances[0].code,
+        },
+      });
     }
     this.setState({ mode: e.target.value });
+    this.handleRenderMode();
   };
 
   /**
@@ -792,8 +808,9 @@ class DeploymentAppHome extends Component {
                   rules: [
                     {
                       required: true,
-                      validator: this.checkName,
+                      message: formatMessage({ id: "required" }),
                     },
+                    { validator: this.checkName },
                   ],
                 })(
                   <Input
@@ -815,7 +832,8 @@ class DeploymentAppHome extends Component {
             onClick={this.changeStep.bind(this, 4)}
             disabled={
               !(
-                this.state.mode === "new" ||
+                (this.state.mode === "new" &&
+                  this.state.istName) ||
                 (this.state.mode === "replace" &&
                   (this.state.instanceId ||
                     (instances && instances.length === 1)))
