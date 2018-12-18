@@ -340,12 +340,28 @@ class DeploymentAppHome extends Component {
     const instances = DeploymentAppStore.currentInstance;
     if (e.target.value === "new") {
       this.setState({ istName: `${app.code}-${uuidv1().substring(0, 5)}` });
+      this.props.form.setFields({
+        name: {
+          value: `${app.code}-${uuidv1().substring(0, 5)}`,
+        },
+      });
     } else if (instanceDto) {
       this.setState({ istName: instanceDto.code });
+      this.props.form.setFields({
+        name: {
+          value: instanceDto.code,
+        },
+      });
     } else {
       this.setState({ istName: instances[0].code });
+      this.props.form.setFields({
+        name: {
+          value: instances[0].code,
+        },
+      });
     }
     this.setState({ mode: e.target.value });
+    this.handleRenderMode();
   };
 
   /**
@@ -417,7 +433,7 @@ class DeploymentAppHome extends Component {
       isNotChange,
       instanceName: this.state.istName,
       appId: this.state.appId,
-      appVerisonId: this.state.versionId,
+      appVersionId: this.state.versionId,
       environmentId: this.state.envId,
       values: value,
       type: this.state.mode === "new" ? "create" : "update",
@@ -791,8 +807,10 @@ class DeploymentAppHome extends Component {
                   initialValue: this.state.istName,
                   rules: [
                     {
-                      validator: this.checkName,
+                      required: true,
+                      message: formatMessage({ id: "required" }),
                     },
+                    { validator: this.checkName },
                   ],
                 })(
                   <Input
@@ -814,7 +832,8 @@ class DeploymentAppHome extends Component {
             onClick={this.changeStep.bind(this, 4)}
             disabled={
               !(
-                this.state.mode === "new" ||
+                (this.state.mode === "new" &&
+                  this.state.istName) ||
                 (this.state.mode === "replace" &&
                   (this.state.instanceId ||
                     (instances && instances.length === 1)))

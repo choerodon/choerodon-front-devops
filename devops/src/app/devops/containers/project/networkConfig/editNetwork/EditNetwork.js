@@ -233,9 +233,9 @@ class EditNetwork extends Component {
         if (appInstance && appInstance.length) {
           _.forEach(appInstance, item => {
             const { id: istId, code, instanceStatus } = item;
-            initIst.push(istId);
+            initIst.push(code);
             initIstOption.push(
-              <Option key={istId} value={istId}>
+              <Option key={istId} value={code}>
                 <Tooltip
                   title={
                     instanceStatus ? (
@@ -251,7 +251,7 @@ class EditNetwork extends Component {
               </Option>
             );
             if (instanceStatus !== "running") {
-              deletedInstance.push(istId);
+              deletedInstance.push(code);
             }
           });
         }
@@ -864,7 +864,7 @@ class EditNetwork extends Component {
     const ist = store.getIst;
     // 将默认的选项过滤
     const istOption = _.map(
-      _.filter(ist, item => !_.includes(initIst, item.id)),
+      _.filter(ist, item => !_.includes(initIst, item.code)),
       item => {
         const { id, code } = item;
         return (
