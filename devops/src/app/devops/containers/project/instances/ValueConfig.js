@@ -92,7 +92,7 @@ class ValueConfig extends Component {
       values: val,
       appInstanceId: id,
       environmentId: idArr[0],
-      appVerisonId: idArr[1],
+      appVersionId: idArr[1],
       appId: idArr[2],
       type: "update",
       isNotChange: disabled,

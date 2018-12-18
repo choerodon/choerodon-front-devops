@@ -417,7 +417,7 @@ class DeploymentAppHome extends Component {
       isNotChange,
       instanceName: this.state.istName,
       appId: this.state.appId,
-      appVerisonId: this.state.versionId,
+      appVersionId: this.state.versionId,
       environmentId: this.state.envId,
       values: value,
       type: this.state.mode === "new" ? "create" : "update",
@@ -791,6 +791,7 @@ class DeploymentAppHome extends Component {
                   initialValue: this.state.istName,
                   rules: [
                     {
+                      required: true,
                       validator: this.checkName,
                     },
                   ],
