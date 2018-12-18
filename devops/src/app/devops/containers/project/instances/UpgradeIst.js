@@ -68,7 +68,7 @@ class UpgradeIst extends Component {
       values: value,
       appInstanceId,
       environmentId: idArr[0],
-      appVerisonId: verId,
+      appVersionId: verId,
       appId: idArr[2],
       type: 'update',
     };
