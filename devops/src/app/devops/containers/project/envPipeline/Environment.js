@@ -1018,9 +1018,7 @@ class Environment extends Component {
                         id: "required",
                       }),
                     },
-                    {
-                      validator: this.checkName,
-                    },
+                    // { validator: this.checkName, },
                   ],
                 })(
                   <Input
