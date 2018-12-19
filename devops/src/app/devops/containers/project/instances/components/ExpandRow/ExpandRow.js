@@ -5,12 +5,14 @@ import { withRouter, Link } from "react-router-dom";
 import _ from "lodash";
 import TimeAgo from "timeago-react";
 import { stores, Content } from "choerodon-front-boot";
-import { Tooltip, Button, Modal, Collapse, Table, Spin } from "choerodon-ui";
+import { Tooltip, Button, Modal, Collapse, Spin } from "choerodon-ui";
 import { formatDate } from "../../../../../utils/index";
 import DeploymentStore from "../../../../../stores/project/instances/DeploymentStore";
 import InstancesStore from "../../../../../stores/project/instances/InstancesStore";
-import "./index.scss";
 import InterceptMask from "../../../../../components/interceptMask/InterceptMask";
+import SimpleTable from "./SimpleTable";
+
+import "./index.scss";
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -33,6 +35,7 @@ class ExpandRow extends Component {
       visible: false,
       sideName: "",
       activeKey: [],
+      isAllExpand: false,
     };
     this.renderPorts = this.renderPorts.bind(this);
     this.renderVolume = this.renderVolume.bind(this);
@@ -40,6 +43,12 @@ class ExpandRow extends Component {
     this.renderSecurity = this.renderSecurity.bind(this);
     this.renderLabel = this.renderLabel.bind(this);
     this.renderVar = this.renderVar.bind(this);
+    this.handleExpandAll = this.handleExpandAll.bind(this);
+    this.containerLabel = (
+      <span className="c7ncd-deploy-container-label">
+        {this.props.intl.formatMessage({ id: "ist.deploy.container" })}
+      </span>
+    );
   }
 
   /**
@@ -54,17 +63,25 @@ class ExpandRow extends Component {
   }
 
   hideSidebar = () => {
-    this.setState({ visible: false, activeKey: [] });
+    this.setState({ visible: false, activeKey: [], isExpand: false });
     DeploymentStore.setData([]);
   };
 
   handlePanelChange = key => {
-    this.setState({ activeKey: key });
+    const isExpand = key.length === PANEL_TYPE.length;
+    this.setState({ activeKey: key, isExpand });
   };
 
   handleLink = () => {
     InstancesStore.setIsCache(true);
   };
+
+  handleExpandAll() {
+    this.setState(prev => ({
+      isExpand: !prev.isExpand,
+      activeKey: !prev.isExpand ? PANEL_TYPE : [],
+    }));
+  }
 
   /**
    *
@@ -202,7 +219,6 @@ class ExpandRow extends Component {
         key: item,
         dataIndex: item,
         render: _textOrNA,
-        sorter: true,
       }));
 
       portsContent = _.map(containers, item => {
@@ -213,16 +229,12 @@ class ExpandRow extends Component {
         return (
           <Fragment key={name}>
             <div className="c7ncd-deploy-container-title">
-              <FormattedMessage id="ist.deploy.container" />
               <span className="c7ncd-deploy-container-name">{name}</span>
+              {this.containerLabel}
             </div>
-            <Table
-              filterBar={false}
-              dataSource={ports && ports.slice()}
-              columns={columns}
-              pagination={false}
-              rowKey={record => record.name}
-            />
+            <div className="c7ncd-deploy-container-table">
+              <SimpleTable columns={columns} data={ports && ports.slice()} />
+            </div>
           </Fragment>
         );
       });
@@ -268,8 +280,8 @@ class ExpandRow extends Component {
         return (
           <div key={name} className="c7ncd-deploy-health-wrap">
             <div className="c7ncd-deploy-container-title">
-              <FormattedMessage id="ist.deploy.container" />
               <span className="c7ncd-deploy-container-name">{name}</span>
+              {this.containerLabel}
             </div>
             <div className="c7ncd-deploy-health-content">
               {readDom}
@@ -326,29 +338,21 @@ class ExpandRow extends Component {
       return (
         <Fragment key={name}>
           <div className="c7ncd-deploy-container-title">
-            <FormattedMessage id="ist.deploy.container" />
             <span className="c7ncd-deploy-container-name">{name}</span>
+            {this.containerLabel}
           </div>
-          <Table
-            filterBar={false}
-            dataSource={env && env.slice()}
-            columns={columns}
-            pagination={false}
-            rowKey={record => record.name}
-          />
+          <div className="c7ncd-deploy-container-table">
+            <SimpleTable columns={columns} data={env && env.slice()} />
+          </div>
         </Fragment>
       );
     });
 
     if (!hasEnv) {
       envContent = (
-        <Table
-          key="noDate"
-          filterBar={false}
-          pagination={false}
-          dataSource={[]}
-          columns={columns}
-        />
+        <div className="c7ncd-deploy-empty-table">
+          <SimpleTable columns={columns} data={[]} />
+        </div>
       );
     }
 
@@ -376,12 +380,9 @@ class ExpandRow extends Component {
         }
       }
       return (
-        <Table
-          filterBar={false}
-          pagination={false}
-          dataSource={arr.length ? arr : []}
-          columns={col}
-        />
+        <div className="c7ncd-deploy-container-table">
+          <SimpleTable columns={columns} data={arr} />
+        </div>
       );
     }
 
@@ -423,38 +424,21 @@ class ExpandRow extends Component {
 
     const _volumeType = (vol, mounts) => {
       const vDom = _volumesTemplate(vol);
-      const mountsArr = mounts.length ? mounts : [{}];
-      const mDom = _.map(mountsArr, item => {
-        const mount = {
-          mountPath: item.mountPath,
-          subPath: item.subPath,
-          readOnly: item.readOnly,
-        };
-        return (
-          <div className="c7ncd-deploy-volume-flex">
-            {_.map(mount, (value, key) => (
-              <div
-                className={`c7ncd-deploy-volume-item${
-                  key === "readOnly" ? "_short" : ""
-                }`}
-              >
-                <p className="c7ncd-deploy-detail-label">
-                  <FormattedMessage id={`ist.deploy.volume.${key}`} />
-                </p>
-                <p className="c7ncd-deploy-detail-text">
-                  {_.isBoolean(value) ? value.toString() : value}
-                </p>
-              </div>
-            ))}
-          </div>
-        );
-      });
+      const columnsItem = ["mountPath", "subPath", "readOnly"];
+      const columns = _.map(columnsItem, item => ({
+        title: <FormattedMessage id={`ist.deploy.volume.${item}`} />,
+        key: item,
+        dataIndex: item,
+        width: item === "readOnly" ? "16%" : "42%",
+        render(text) {
+          return _.isBoolean(text) ? text.toString() : text;
+        },
+      }));
 
       return (
         <div key={vol.name} className="c7ncd-deploy-volume-wrap">
           {vDom}
-          <hr className="c7ncd-deploy-volume-line" />
-          {mDom}
+          <SimpleTable columns={columns} data={mounts} />
         </div>
       );
     };
@@ -527,8 +511,8 @@ class ExpandRow extends Component {
       return (
         <Fragment key={name}>
           <div className="c7ncd-deploy-container-title">
-            <FormattedMessage id="ist.deploy.container" />
             <span className="c7ncd-deploy-container-name">{name}</span>
+            {this.containerLabel}
           </div>
           <div className="c7ncd-deploy-security-block">
             {_securityItem("imagePullPolicy", imagePullPolicy, "_flex")}
@@ -577,7 +561,7 @@ class ExpandRow extends Component {
       intl: { formatMessage },
     } = this.props;
 
-    const { visible, sideName, activeKey } = this.state;
+    const { visible, sideName, activeKey, isExpand } = this.state;
 
     const deployContent = _.map(deploymentDTOS, item =>
       this.getContent(item, envId, appId, id, status)
@@ -635,6 +619,7 @@ class ExpandRow extends Component {
           </div>
         )}
         <Sidebar
+          destroyOnClose
           footer={[
             <Button
               type="primary"
@@ -653,6 +638,14 @@ class ExpandRow extends Component {
             values={{ name: sideName }}
             className="sidebar-content"
           >
+            <div className="c7ncd-expand-btn-wrap">
+              <Button
+                className="c7ncd-expand-btn"
+                onClick={this.handleExpandAll}
+              >
+                <FormattedMessage id={isExpand ? "collapseAll" : "expandAll"} />
+              </Button>
+            </div>
             <Collapse
               bordered={false}
               activeKey={activeKey}
@@ -710,7 +703,7 @@ function _returnHealthDom(name, data) {
 
   return (
     <div className="c7ncd-deploy-health-block">
-      <div className="c7ncd-deploy-label">
+      <div className="c7ncd-deploy-health-title">
         <FormattedMessage id={`ist.deploy.health.${name}`} />
       </div>
       <div className="c7ncd-deploy-health-main">
@@ -780,14 +773,7 @@ function _volumesTemplate(data) {
             dataIndex: "path",
           },
         ];
-        itemDom = (
-          <Table
-            filterBar={false}
-            pagination={false}
-            dataSource={items}
-            columns={columns}
-          />
-        );
+        itemDom = <SimpleTable columns={columns} data={items} />;
       } else {
         itemDom = (
           <p className="c7ncd-deploy-detail-text">
