@@ -10,6 +10,7 @@
     "function-parentheses-newline-inside": null,
     "function-max-empty-lines": null,
     "function-whitespace-after": null,
+    "declaration-block-no-duplicate-properties": null,
     "indentation": null,
     "number-leading-zero": null,
     "number-no-trailing-zeros": null,

@@ -431,6 +431,8 @@ const zhCN = {
   key: "键",
   value: "值",
   detailMore: "更多详情",
+  expandAll: "全部展开",
+  collapseAll: "全部折叠",
 
   // 刷新
   refresh: "刷新",
@@ -514,7 +516,7 @@ const zhCN = {
   "ist.deploy.title": "查看实例“{name}”的Deployment详情",
   "ist.deploy.description": "您可在此查看各个实例Deployment的详情。",
   "ist.deploy.link": `${docServer}/user-guide/deployment-pipeline/instance/`,
-  "ist.deploy.container": "容器名称：",
+  "ist.deploy.container": "容器名称",
   "ist.deploy.key": "键",
   "ist.deploy.value": "值",
   "ist.deploy.none": "无",

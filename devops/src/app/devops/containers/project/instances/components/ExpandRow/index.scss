@@ -81,6 +81,12 @@
   color: rgba(0, 0, 0, .65);
 }
 
+.c7ncd-expand-btn-wrap {
+  padding-right: 12px;
+  text-align: right;
+}
+
+.c7ncd-expand-btn,
 .c7ncd-detail-btn {
   padding: 0;
   color: #3f51b5;
@@ -95,10 +101,11 @@
 }
 
 .c7ncd-deploy-panel {
-  background: #fff;
+  background: #f8f8f8;
   border-radius: 0;
   margin-bottom: 24px;
   border: 1px solid rgba(0, 0, 0, .2) !important;
+  border-radius: 2px 2px 1px 1px;
   overflow: hidden;
 
   .c7ncd-deploy-panel-header {
@@ -107,9 +114,11 @@
     max-width: calc(100% - 50px);
 
     .c7ncd-deploy-panel-title {
+      margin-bottom: 4px;
       line-height: 20px;
-      font-size: 15px;
+      font-size: 16px;
       color: #000;
+      font-weight: 500;
     }
 
     .c7ncd-deploy-panel-text {
@@ -120,17 +129,17 @@
   }
 
   .ant-collapse-header {
-    box-shadow: 1px 0 1px 0 rgba(0, 0, 0, .45);
+    background: #fff;
+    box-shadow: 1px 0 1px 0 rgba(0, 0, 0, .4);
   }
 
   .ant-collapse-header:hover {
-    background: rgba(0, 0, 0, .04);
+    background: #f8f8f8;
   }
 
-  &.ant-collapse-item-active {
-    .ant-collapse-header {
-      background: rgba(0, 0, 0, .04);
-    }
+  .ant-collapse-content-box {
+    margin-top: -4px;
+    padding: 0 0 20px;
   }
 
   &.ant-collapse-item {
@@ -153,51 +162,59 @@
   }
 
   .c7ncd-deploy-container-title {
-    margin-top: 16px;
-    // padding-left: 8px;
-    font-size: 16px;
-    color: rgba(0, 0, 0, .45);
+    margin: 20px 0 12px;
 
     .c7ncd-deploy-container-name {
+      margin-top: 16px;
+      margin-right: 8px;
       color: #000;
+      font-size: 16px;
+    }
+
+    .c7ncd-deploy-container-label {
+      display: inline-block;
+      height: 20px;
+      line-height: 16px;
+      padding: 2px 6px;
+      text-align: center;
+      font-size: 12px;
+      color: #fff;
+      background: #5266d4;
+      border-radius: 2px;
     }
   }
 
+  .c7ncd-deploy-container-table {
+    padding: 20px 32px;
+    background: #fff;
+  }
+
   .c7ncd-deploy-label {
-    margin: 16px 0 12px 0;
-    color: rgba(0, 0, 0, .45);
-    font-size: 14px;
+    margin: 20px 0 12px 0;
+    color: #000;
+    font-size: 16px;
   }
 
   .c7ncd-deploy-detail-label {
-    margin-bottom: 3px;
-    font-size: 13px;
-    min-height: 20px;
-    color: rgba(0, 0, 0, .65);
+    margin-bottom: 4px;
+    font-size: 12px;
+    min-height: 18px;
+    color: rgba(0, 0, 0, .54);
   }
 
   .c7ncd-deploy-detail-text {
     width: 100%;
-    min-height: 20px;
-    font-size: 13px;
+    min-height: 22px;
+    font-size: 15px;
     color: #000;
     word-wrap: break-word;
     word-break: break-all;
   }
 
   .c7ncd-deploy-volume-wrap {
-    background: rgba(0, 0, 0, .04);
-    padding: 0 20px 20px;
-    margin-top: 16px;
-
-    .c7ncd-deploy-volume-line {
-      margin: 12px 0;
-      box-sizing: content-box;
-      border: 0;
-      height: 0;
-      border-top: 1px solid #d9d9d9;
-      border-bottom: 1px solid #d9d9d9;
-    }
+    background: #fff;
+    padding: 0 32px 20px;
+    margin-top: 20px;
 
     .c7ncd-deploy-volume-main {
       display: flex;
@@ -207,13 +224,11 @@
         flex: 0 0 50%;
         width: 50%;
         margin-top: 20px;
-        padding: 0 12px;
 
         &_full {
           flex: 0 0 100%;
           width: 100%;
           margin-top: 20px;
-          padding: 0 12px;
         }
       }
     }
@@ -237,14 +252,14 @@
 
   .c7ncd-deploy-security-wrap {
 
-    margin-top: 4px;
+    margin: 20px 0 -12px;
 
     .c7ncd-deploy-security-block {
       display: table;
-      margin-top: 12px;
-      padding: 20px;
+      margin-bottom: 12px;
+      padding: 20px 32px;
       width: 100%;
-      background: rgba(0, 0, 0, .04);
+      background: #fff;
 
       .c7ncd-deploy-security-item {
         display: table-cell;
@@ -261,11 +276,18 @@
     .c7ncd-deploy-health-content {
       display: table;
       width: 100%;
-      background: rgba(0, 0, 0, .04);
+      background: #fff;
 
       .c7ncd-deploy-health-block {
         display: table-cell;
-        padding: 0 20px 20px;
+        padding: 20px 32px;
+
+        .c7ncd-deploy-health-title {
+          margin: 0 0 16px -2px;
+          font-size: 14px;
+          font-weight: 500;
+          color: rgba(0, 0, 0, .87);
+        }
 
         .c7ncd-deploy-health-main {
           margin-top: -10px;
@@ -284,7 +306,6 @@
           .c7ncd-deploy-health-item {
             float: left;
             margin-top: 10px;
-            padding-left: 10px;
             width: 50%;
           }
         }
@@ -292,10 +313,16 @@
     }
   }
 
+  .c7ncd-deploy-empty-table {
+    margin-top: 20px;
+    padding: 20px 32px;
+    background: #fff;
+  }
+
   .c7ncd-deploy-detail-empty {
-    margin-top: 12px;
-    background: rgba(0, 0, 0, .04);
-    padding: 20px;
+    margin-top: 20px;
+    background: #fff;
+    padding: 20px 32px;
     color: rgba(0, 0, 0, .45);
 
     p {
