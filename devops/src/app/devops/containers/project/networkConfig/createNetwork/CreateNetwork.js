@@ -166,9 +166,9 @@ class CreateNetwork extends Component {
           });
         }
 
-        if (endps) {
+        if (endps && endps.length) {
           const endPointsPort = [];
-          _.forEach(endps, item => {
+          _.map(endps, item => {
             if (item || item === 0) {
               const port = {
                 name: portName[item],
@@ -177,7 +177,7 @@ class CreateNetwork extends Component {
               endPointsPort.push(port);
             }
           });
-          endPoints[targetIps ? targetIps.join(",") : null] = endPointsPort;
+          targetIps && (endPoints[targetIps.join(",")] = endPointsPort);
         }
 
         const network = {
@@ -189,7 +189,7 @@ class CreateNetwork extends Component {
           ports,
           label: !_.isEmpty(label) ? label : null,
           type: config,
-          endPoints,
+          endPoints: !_.isEmpty(endPoints) ? endPoints : null,
         };
 
         store
@@ -298,14 +298,13 @@ class CreateNetwork extends Component {
           const list = {
             "targetKeys": ["keywords", "values"],
             "endPoints": ["portName", "targetport"],
-            "instance": ["keywords", "values", "portName", "targetport"],
           };
           this[item] = 0;
           getFieldDecorator(item, { initialValue: [] });
           setFieldsValue({
             [item]: [],
           });
-          resetFields(list[value]);
+          resetFields(list[item]);
         }
       });
     }
@@ -744,7 +743,7 @@ class CreateNetwork extends Component {
       <div key={`endPoints-${k}`} className="network-port-wrap">
         <FormItem
           className={`c7n-select_${
-            endPoints.length > 1 ? portWidthMut : portWidthSingle
+            endPoints.length > 1 ? "portL" : 240
           } network-panel-form network-port-form`}
           {...formItemLayout}
         >
@@ -765,7 +764,7 @@ class CreateNetwork extends Component {
         </FormItem>
         <FormItem
           className={`c7n-select_${
-            endPoints.length > 1 ? portWidthMut : portWidthSingle
+            endPoints.length > 1 ? "portL" : 240
           } network-panel-form network-port-form`}
           {...formItemLayout}
         >

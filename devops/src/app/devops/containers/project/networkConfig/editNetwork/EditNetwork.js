@@ -53,6 +53,7 @@ class EditNetwork extends Component {
       targetKeys: "instance",
       portKeys: "ClusterIP",
       validIp: {},
+      targetIp: {},
       initName: "",
       initApp: "",
       labels: {},
@@ -66,6 +67,7 @@ class EditNetwork extends Component {
     };
     this.portKeys = 1;
     this.targetKeys = 0;
+    this.endPoints = 0;
   }
 
   componentDidMount() {
@@ -77,20 +79,22 @@ class EditNetwork extends Component {
    * 将值放入 externalIps 表单项
    * @param value
    */
-  setIpInSelect = value => {
+  setIpInSelect = (value, type) => {
     const {
       form: { getFieldValue, validateFields, setFieldsValue },
     } = this.props;
-    const ip = getFieldValue("externalIps") || [];
+    const itemType = type || "externalIps";
+    const ip = getFieldValue(itemType) || [];
     if (!ip.includes(value)) {
       ip.push(value);
       setFieldsValue({
-        externalIps: ip,
+        [itemType]: ip,
       });
     }
-    validateFields(["externalIps"]);
-    if (this.ipSelect) {
-      this.ipSelect.setState({
+    validateFields([itemType]);
+    const data = type === "targetIps" ? this.targetIpSelect : this.ipSelect;
+    if (data) {
+      data.setState({
         inputValue: "",
       });
     }
@@ -109,6 +113,10 @@ class EditNetwork extends Component {
           appId,
           appInstance,
           envId,
+          endPoints: endps,
+          targetIps,
+          portName,
+          targetport,
           externalIps,
           portKeys,
           port,
@@ -124,6 +132,7 @@ class EditNetwork extends Component {
           : null;
         const ports = [];
         const label = {};
+        const endPoints = {};
         if (portKeys) {
           _.forEach(portKeys, item => {
             if (item || item === 0) {
@@ -144,10 +153,23 @@ class EditNetwork extends Component {
             }
           });
         }
+        if (endps && endps.length) {
+          const endPointsPort = [];
+          _.map(endps, item => {
+            if (item || item === 0) {
+              const port = {
+                name: portName[item],
+                port: Number(targetport[item]),
+              };
+              endPointsPort.push(port);
+            }
+          });
+          endPoints[targetIps ? targetIps.join(",") : null] = endPointsPort;
+        }
         const {
           name: oldName,
           appId: oldAppId,
-          target: { appInstance: oldAppInstance, labels: oldLabel },
+          target: { appInstance: oldAppInstance, labels: oldLabel, endPoints: oldEndPoints },
           envId: oldEnvId,
           config: { externalIps: oldIps, ports: oldPorts },
           type,
@@ -166,6 +188,7 @@ class EditNetwork extends Component {
           externalIp: oldIps,
           ports: oldPortId,
           label: oldLabel || null,
+          endPoints: oldEndPoints,
           type,
         };
         const newNetwork = {
@@ -176,6 +199,7 @@ class EditNetwork extends Component {
           externalIp: externalIps ? externalIps.join(",") : null,
           ports,
           label: !_.isEmpty(label) ? label : null,
+          endPoints: !_.isEmpty(endPoints) ? endPoints : null,
           type: config,
         };
         if (_.isEqual(oldNetwork, newNetwork)) {
@@ -219,13 +243,13 @@ class EditNetwork extends Component {
       if (data) {
         const { name, type, appId, target, config, envId, envName } = data;
         const targetKeys =
-          (appId && target && target.appInstance.length) ||
-          target.labels === null
+          (appId && target && target.appInstance.length)
             ? "instance"
-            : "param";
+            : (target && target.labels ? "param" : "endPoints");
         let appInstance = [];
         let labels = {};
-        target && ({ appInstance, labels } = target);
+        let endPoints = {};
+        target && ({ appInstance, labels, endPoints } = target);
         const initIst = [];
         // 将默认选项直接生成，避免加载带来的异步问题
         const initIstOption = [];
@@ -269,6 +293,7 @@ class EditNetwork extends Component {
           network: data,
           envId,
           envName,
+          endPoints,
         });
       }
     });
@@ -296,34 +321,56 @@ class EditNetwork extends Component {
         [key]: [0],
       });
       this.setState({ config: {} });
-    } else if (e.target.value === "param") {
-      // 切换到“填写参数”时，生成表单项
-      // 切换到“选择实例”时，清空生成的表单项
-      getFieldDecorator("targetKeys", { initialValue: [0] });
-      this.targetKeys = 1;
-      setFieldsValue({
-        [key]: [0],
+    } else if (e.target.value === "instance") {
+      const list = {
+        "targetKeys": ["keywords", "values"],
+        "endPoints": ["portName", "targetport"],
+      };
+      _.map(["targetKeys", "endPoints"], item => {
+        this[item] = 0;
+        getFieldDecorator(item, {initialValue: []});
+        setFieldsValue({
+          [item]: [],
+        });
+        resetFields(list[item]);
       });
-      this.setState({
-        initApp: "",
-        initIstOption: [],
-        initIst: [],
-        deletedInstance: [],
-      });
-      resetFields(["appInstance"]);
-      store.setIst([]);
-    } else {
-      this.targetKeys = 0;
-      getFieldDecorator("targetKeys", { initialValue: [] });
-      resetFields(["keywords", "values"]);
-      setFieldsValue({
-        [key]: [],
-      });
-      this.setState({ labels: {} });
+      this.setState({ labels: {}, endPoints: {} });
       const app = store.getApp;
       if (!(app && app.length)) {
         store.loadApp(id, Number(envId));
       }
+    } else {
+      // 切换到“填写标签”、“endPoints”时，生成相应表单项并情况应用实例数据
+      const value = e.target.value === "param" ? "targetKeys" : e.target.value;
+      _.map(["targetKeys", "endPoints"], item => {
+        if (value === item) {
+          getFieldDecorator(item, { initialValue: [0] });
+          this[item] = 1;
+          setFieldsValue({
+            [item]: [0],
+          });
+        } else {
+          const list = {
+            "targetKeys": ["keywords", "values"],
+            "endPoints": ["portName", "targetport"],
+          };
+          this[item] = 0;
+          getFieldDecorator(item, { initialValue: [] });
+          setFieldsValue({
+            [item]: [],
+          });
+          resetFields(list[item]);
+          this.setState({ [item === "targetKeys" ? "labels" : item]: {} });
+        }
+        this.setState({
+          initApp: "",
+          initIstOption: [],
+          initIst: [],
+          deletedInstance: [],
+        });
+        resetFields(["appInstance"]);
+        store.setIst([]);
+      });
     }
     this.setState({ [key]: e.target.value });
   };
@@ -355,7 +402,7 @@ class EditNetwork extends Component {
       form: { getFieldValue, setFieldsValue },
     } = this.props;
     const keys = getFieldValue(type);
-    const uuid = type === "portKeys" ? this.portKeys : this.targetKeys;
+    const uuid = this[type];
     const nextKeys = _.concat(keys, uuid);
     this[type] = uuid + 1;
     setFieldsValue({
@@ -468,11 +515,13 @@ class EditNetwork extends Component {
    * @param rule
    * @param value
    * @param callback
+   * @param type
    */
-  checkIP = (rule, value, callback) => {
+  checkIP = (rule, value, callback, type) => {
     const { intl } = this.props;
     const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
     const validIp = {};
+    const data = type === "targetIps" ? "targetIp" : "validIp";
     let errorMsg;
     if (value && value.length) {
       _.forEach(value, (item, index) => {
@@ -481,7 +530,7 @@ class EditNetwork extends Component {
           validIp[item] = true;
         }
       });
-      this.setState({ validIp });
+      this.setState({ [data]: validIp });
       callback(errorMsg);
     } else {
       callback();
@@ -500,32 +549,43 @@ class EditNetwork extends Component {
     const {
       form: { getFieldValue },
     } = this.props;
-    const p = /^[1-9]\d*$/;
+    const p = /^([1-9]\d*|0)$/;
     const count = _.countBy(getFieldValue(type));
-    let typeMsg = "";
+    const data = {
+      typeMsg: "",
+      min: 0,
+      max: 65535,
+      failedMsg: "network.port.check.failed",
+    };
     switch (type) {
       case "tport":
-        typeMsg = "network.tport.check.repeat";
+        data.typeMsg = "network.tport.check.repeat";
         break;
       case "nport":
-        typeMsg = "network.nport.check.repeat";
+        data.typeMsg = "network.nport.check.repeat";
+        data.min = 30000;
+        data.max = 32767;
+        data.failedMsg = "network.nport.check.failed";
+        break;
+      case "targetport":
+        data.typeMsg = "network.tport.check.repeat";
         break;
       default:
-        typeMsg = "network.port.check.repeat";
+        data.typeMsg = "network.port.check.repeat";
     }
     if (value) {
       if (
         p.test(value) &&
-        parseInt(value, 10) >= 1 &&
-        parseInt(value, 10) <= 65535
+        parseInt(value, 10) >=  data.min &&
+        parseInt(value, 10) <= data.max
       ) {
         if (count[value] < 2) {
           callback();
         } else {
-          callback(intl.formatMessage({ id: typeMsg }));
+          callback(intl.formatMessage({ id: data.typeMsg }));
         }
       } else {
-        callback(intl.formatMessage({ id: "network.port.check.failed" }));
+        callback(intl.formatMessage({ id: data.failedMsg }));
       }
     } else {
       callback();
@@ -595,46 +655,50 @@ class EditNetwork extends Component {
    * 处理ip输入的内容并返回给value
    * @param liNode
    * @param value
+   * @param type
    * @returns {*}
    */
-  handleChoiceRender = (liNode, value) =>
+  handleChoiceRender = (liNode, value, type) =>
     React.cloneElement(liNode, {
       className: classnames(liNode.props.className, {
         /* eslint-disable react/destructuring-assignment */
-        "ip-check-error": this.state.validIp[value],
+        "ip-check-error": this.state[type || "validIp"][value],
       }),
     });
 
   /**
    * 删除ip选择框中的标签校验标识
    * @param value
+   * @param type
    */
-  handleChoiceRemove = value => {
+  handleChoiceRemove = (value, type) => {
     const {
       form: { validateFields },
     } = this.props;
-    const { validIp } = this.state;
+    const data = this.state[type || "validIp"];
     // 直接删除
-    if (value in validIp) {
-      delete validIp[value];
+    if (value in data) {
+      delete data[value];
     }
-    validateFields(["externalIps"]);
+    validateFields([type === "targetIp" ? "targetIps" : "externalIps"]);
   };
 
   /**
    * ip选择框监听键盘按下事件
    * @param e
+   * @param type
    */
-  handleInputKeyDown = e => {
+  handleInputKeyDown = (e, type) => {
     const { value } = e.target;
     if (e.keyCode === 13 && !e.isDefaultPrevented() && value) {
-      this.setIpInSelect(value);
+      this.setIpInSelect(value, type);
     }
   };
 
-  ipSelectRef = node => {
+  ipSelectRef = (node, type) => {
+    const data = type === "targetIps" ? "targetIpSelect" : "ipSelect";
     if (node) {
-      this.ipSelect = node.rcSelect;
+      this[data] = node.rcSelect;
     }
   };
 
@@ -652,6 +716,7 @@ class EditNetwork extends Component {
       config,
       envId,
       envName,
+      endPoints: endPointsData,
     } = this.state;
     const { name: menuName, id: projectId } = AppState.currentMenuType;
     const { getFieldDecorator, getFieldValue } = form;
@@ -778,6 +843,85 @@ class EditNetwork extends Component {
             className="network-group-icon"
             type="delete"
             onClick={() => this.removeGroup(k, "portKeys")}
+          />
+        ) : null}
+      </div>
+    ));
+
+    // endPoints生成多组 port
+    const flag =  _.keys(endPointsData)[0];
+    const targetIps = flag? _.split(flag, ',') : undefined;
+    const endport = [];
+    const portName = [];
+    const targetport = [];
+    if (flag) {
+      _.map(endPointsData[flag], (item, index) => {
+        endport.push(index);
+        portName.push(item.name);
+        targetport.push(item.port);
+      });
+      if (this.endPoints === 0) {
+        this.endPoints = endPointsData[flag].length;
+      }
+    }
+    getFieldDecorator("endPoints", { initialValue: endport });
+    const endPoints = getFieldValue("endPoints");
+    const targetPortItems = _.map(endPoints, (k, index) => (
+      <div key={`endPoints-${k}`} className="network-port-wrap">
+        <FormItem
+          className={`c7n-select_${
+            endPoints.length > 1 ? "portL" : 240
+            } network-panel-form network-port-form`}
+          {...formItemLayout}
+        >
+          {getFieldDecorator(`portName[${k}]`, {
+            rules: [
+              {
+                required: true,
+                message: intl.formatMessage({ id: "required" }),
+              },
+            ],
+            initialValue: portName[k],
+          })(
+            <Input
+              type="text"
+              disabled={!getFieldValue("envId")}
+              label={<FormattedMessage id="network.target.portName" />}
+            />
+          )}
+        </FormItem>
+        <FormItem
+          className={`c7n-select_${
+            endPoints.length > 1 ? "portL" : 240
+            } network-panel-form network-port-form`}
+          {...formItemLayout}
+        >
+          {getFieldDecorator(`targetport[${k}]`, {
+            rules: [
+              {
+                required: true,
+                message: intl.formatMessage({ id: "required" }),
+              },
+              {
+                validator: (rule, value, callback) =>
+                  this.checkPort(rule, value, callback, "targetport"),
+              },
+            ],
+            initialValue: targetport[k],
+          })(
+            <Input
+              type="text"
+              maxLength={5}
+              disabled={!getFieldValue("envId")}
+              label={<FormattedMessage id="network.config.targetPort" />}
+            />
+          )}
+        </FormItem>
+        {endPoints.length > 1 ? (
+          <Icon
+            className="network-group-icon"
+            type="delete"
+            onClick={() => this.removeGroup(k, "endPoints")}
           />
         ) : null}
       </div>
@@ -966,13 +1110,13 @@ class EditNetwork extends Component {
                       <Radio value="param">
                         <FormattedMessage id="network.target.param" />
                       </Radio>
-                      <Radio value="Endpoints">Endpoints</Radio>
+                      <Radio value="endPoints">Endpoints</Radio>
                     </RadioGroup>
                   )}
                 </FormItem>
               </div>
               <div className="network-panel">
-                {targetType === "instance" ? (
+                {targetType === "instance" && (
                   <Fragment>
                     <FormItem
                       className="c7n-select_480 network-panel-form"
@@ -1068,7 +1212,8 @@ class EditNetwork extends Component {
                       )}
                     </FormItem>
                   </Fragment>
-                ) : (
+                )}
+                {targetType === "param" && (
                   <Fragment>
                     {targetItems}
                     <Button
@@ -1079,6 +1224,54 @@ class EditNetwork extends Component {
                       icon="add"
                     >
                       <FormattedMessage id="network.config.addtarget" />
+                    </Button>
+                  </Fragment>
+                )}
+                {targetType === "endPoints" && (
+                  <Fragment>
+                    <FormItem
+                      className="c7n-select_480 network-panel-form"
+                      {...formItemLayout}
+                    >
+                      {getFieldDecorator("targetIps", {
+                        rules: [
+                          {
+                            required: true,
+                            message: intl.formatMessage({ id: "required" }),
+                          },
+                          {
+                            validator: (rule, value, callback) =>
+                              this.checkIP(rule, value, callback, "targetIps"),
+                          },
+                        ],
+                        initialValue: targetIps,
+                      })(
+                        <Select
+                          mode="tags"
+                          ref={node => this.ipSelectRef(node, "targetIps")}
+                          disabled={!getFieldValue("envId")}
+                          className="c7n-select_512"
+                          label={<FormattedMessage id="network.target.ip" />}
+                          onInputKeyDown={e => this.handleInputKeyDown(e, "targetIps")}
+                          choiceRender={(liNode, value) => this.handleChoiceRender(liNode, value, "targetIp")}
+                          onChoiceRemove={value => this.handleChoiceRemove(value, "targetIp")}
+                          filterOption={false}
+                          notFoundContent={false}
+                          showNotFindInputItem={false}
+                          showNotFindSelectedItem={false}
+                          allowClear
+                        />
+                      )}
+                    </FormItem>
+                    {targetPortItems}
+                    <Button
+                      disabled={!getFieldValue("envId")}
+                      type="primary"
+                      funcType="flat"
+                      onClick={() => this.addGroup("endPoints")}
+                      icon="add"
+                    >
+                      <FormattedMessage id="network.config.addport" />
                     </Button>
                   </Fragment>
                 )}
