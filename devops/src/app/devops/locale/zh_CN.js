@@ -347,14 +347,14 @@ const pageDetail = {
   "certificate.title": '组织"{name}"的证书',
   "certificate.description":
     "域名证书是受法律认可的证书文件，确定了域名注册者对域名的拥有权与拥有时限。",
-  "certificate.link": `${docServer}/user-guide/devops-management/certificate`,
+  "certificate.link": `${docServer}/user-guide/certificate-management/certificate`,
   "certificate.create.title": '在组织"{name}"中创建证书',
   "certificate.create.description":
     "请在下方输入证书名称，并上传相应的证书文件来创建证书。同时，您可以选择为所创证书配置公开范围，配置后，只有在被勾选的项目下创建证书时，才能选择此证书。",
-  "certificate.create.link": `${docServer}/user-guide/devops-management/certificate`,
+  "certificate.create.link": `${docServer}/user-guide/certificate-management/certificate`,
   "certificate.edit.title": '对证书"{name}"进行修改',
   "certificate.edit.description": "您可在此修改证书的公开范围。",
-  "certificate.edit.link": `${docServer}/user-guide/devops-management/certificate`,
+  "certificate.edit.link": `${docServer}/user-guide/certificate-management/certificate`,
 };
 
 const zhCN = {
@@ -608,6 +608,7 @@ const zhCN = {
     "请输入正确的ip，类似 (0-255).(0-255).(0-255).(0-255)",
   "network.instance.check.failed": "请移除不可用实例",
   "network.port.check.failed": "端口号必须是数字且在0-65535之间",
+  "network.nport.check.failed": "节点端口号必须是数字且在30000-32767之间",
   "network.key.check.failed":
     '由字母，数字，"-"或"."中的一种或多种组成，并且必须以字母或数字开头和结尾（例如“MyName”，或“my.name”，或“123-abc”）',
   "network.key.check.repeat": "关键字不能重复",
@@ -630,6 +631,8 @@ const zhCN = {
   "network.target.param": "填写标签",
   "network.form.app": "应用名称",
   "network.config": "网络配置",
+  "network.target.ip": "目标IP",
+  "network.target.portName": "端口名称",
   "network.config.column": "配置类型",
   "network.config.ip": "外部IP",
   "network.config.addport": "添加端口",

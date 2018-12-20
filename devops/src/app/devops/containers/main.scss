@@ -254,10 +254,13 @@ table {
     margin-bottom: 10px;
   }
 
-  .c7n-tooltip-icon {
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.36);
-    margin-left: 2px;
+  .c7n-table-title-tip {
+    align-items: normal;
+
+    i {
+      font-size: 16px;
+      margin-left: 5px;
+    }
   }
 }
 

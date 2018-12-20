@@ -28,6 +28,9 @@
     transition: opacity .15s ease;
     cursor: pointer;
   }
+  .ant-select-clear {
+    right: 34px;
+  }
 }
 
 .c7n-select-tip {
@@ -35,10 +38,6 @@
   right: 1px;
   top: 19px;
   color: rgba(0, 0, 0, .65);
-}
-
-.ant-select-clear {
-  right: 34px;
 }
 
 .ant-input-rendered-wrapper {

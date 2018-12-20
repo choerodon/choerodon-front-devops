@@ -382,7 +382,7 @@ class InstancesDetail extends Component {
     const options = {
       theme: "neat",
       mode: "yaml",
-      readOnly: "nocursor",
+      readOnly: true,
       lineNumbers: true,
     };
     const logOptions = {
