@@ -783,6 +783,7 @@ class CreateDomain extends Component {
                   initialValue: name || "",
                 })(
                   <Input
+                    autoFocus={type === "create"}
                     disabled={!(getFieldValue("envId") && !name)}
                     maxLength={40}
                     label={formatMessage({ id: "domain.column.name" })}

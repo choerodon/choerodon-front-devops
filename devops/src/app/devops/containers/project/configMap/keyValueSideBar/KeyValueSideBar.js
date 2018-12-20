@@ -518,6 +518,7 @@ class KeyValueSideBar extends Component {
           }],
         })(
           <Input
+            autoFocus={!Boolean(id)}
             disabled={Boolean(id)}
             maxLength={10}
             label={<FormattedMessage id="app.name" />}

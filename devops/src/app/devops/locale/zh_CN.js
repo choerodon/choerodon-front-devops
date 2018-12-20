@@ -627,6 +627,7 @@ const zhCN = {
   "network.env": "环境名称",
   "network.env.placeholder": "请选择环境",
   "network.target": "目标对象",
+  "network.target。type": "目标对象类型",
   "network.target.instance": "选择实例",
   "network.target.param": "填写标签",
   "network.form.app": "应用名称",

@@ -378,6 +378,7 @@ class CreateCert extends Component {
                   ],
                 })(
                   <Input
+                    autoFocus
                     disabled={!getFieldValue("envId")}
                     maxLength={40}
                     type="text"
