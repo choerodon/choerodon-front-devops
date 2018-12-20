@@ -759,7 +759,7 @@ class AppHome extends Component {
           <div className="c7ncd-sidebar-select">
             <FormItem {...formItemLayout}>
               {getFieldDecorator("type", {
-                initialValue: "normal",
+                initialValue: singleData ? singleData.type : "normal",
               })(
                 <Select
                   key="service"
