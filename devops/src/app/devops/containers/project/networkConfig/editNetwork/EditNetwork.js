@@ -706,10 +706,6 @@ class EditNetwork extends Component {
               initialValue: nPort[k],
               rules: [
                 {
-                  required: true,
-                  message: intl.formatMessage({ id: "required" }),
-                },
-                {
                   validator: (rule, value, callback) =>
                     this.checkPort(rule, value, callback, "nport"),
                 },
@@ -970,6 +966,7 @@ class EditNetwork extends Component {
                       <Radio value="param">
                         <FormattedMessage id="network.target.param" />
                       </Radio>
+                      <Radio value="Endpoints">Endpoints</Radio>
                     </RadioGroup>
                   )}
                 </FormItem>
@@ -1118,6 +1115,7 @@ class EditNetwork extends Component {
                     >
                       <Radio value="ClusterIP">ClusterIP</Radio>
                       <Radio value="NodePort">NodePort</Radio>
+                      <Radio value="LoadBalancer">LoadBalancer</Radio>
                     </RadioGroup>
                   )}
                 </FormItem>
