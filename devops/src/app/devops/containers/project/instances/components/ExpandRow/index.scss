@@ -1,13 +1,26 @@
 .c7n-deploy-expanded {
+
+  ul,
+  li {
+    margin: 0;
+    padding: 0;
+  }
+
   width: 90%;
 
   .c7n-deploy-expanded-title {
     margin-bottom: 16px;
-    padding: 6px 0;
     border-bottom: 1px solid rgba(0, 0, 0, .12);
     color: rgba(0, 0, 0, .65);
     line-height: 20px;
-    font-size: 13px;
+    font-size: 15px;
+
+    &>span {
+      display: inline-block;
+      margin-bottom: -1px;
+      padding: 6px 2px;
+      border-bottom: 2px solid #5266d4;
+    }
   }
 
   .c7n-deploy-expanded-item {
@@ -20,26 +33,35 @@
       list-style: none;
       width: 70%;
 
-      .c7n-deploy-expanded-lists {
-        margin-bottom: 6px;
+      &.c7n-deploy-expanded_half {
+        width: 50%;
+      }
+    }
 
-        span {
-          display: inline-block;
-          vertical-align: top;
+    .c7n-deploy-expanded-lists {
+      margin-bottom: 6px;
 
-          &.c7n-deploy-expanded-keys {
-            margin-right: 20px;
-            width: 120px;
-            color: #000;
-          }
+      span {
+        display: inline-block;
+        vertical-align: top;
 
-          &.c7n-deploy-expanded-values {
-            width: calc(100% - 140px);
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            color: rgba(0, 0, 0, .65);
-          }
+        &.c7n-deploy-expanded-keys {
+          margin-right: 20px;
+          width: 120px;
+          color: #000;
+        }
+
+        &.c7n-deploy-expanded-values {
+          width: calc(100% - 140px);
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          color: rgba(0, 0, 0, .65);
+        }
+
+        &.c7n-expanded-text_bold {
+          font-weight: 600;
+          color: #000;
         }
       }
     }

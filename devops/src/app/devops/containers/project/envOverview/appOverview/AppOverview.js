@@ -172,6 +172,84 @@ class AppOverview extends Component {
     });
   };
 
+  getPanelHeader(data) {
+    const { intl } = this.props;
+    const {
+      id: istId,
+      status,
+      code,
+      error,
+      appVersion,
+      appVersionId,
+      id,
+      serviceDTOS,
+      ingressDTOS,
+      commandVersion,
+      commandVersionId,
+      appId,
+      deploymentDTOS,
+    } = data;
+    let uploadIcon = null;
+    if (appVersionId !== commandVersionId) {
+      if (status !== "failed") {
+        uploadIcon = "upload";
+      } else {
+        uploadIcon = "failed";
+      }
+    } else {
+      uploadIcon = "text";
+    }
+    return (
+      <div className="c7n-envow-ist-header-wrap">
+        <Icon type="navigate_next" />
+        <div className="c7n-envow-ist-name">
+          {status === "running" || status === "stopped" ? (
+            <span className="c7n-deploy-istCode">{code}</span>
+          ) : (
+            <div className="c7n-envow-ist-fail">
+              {status === "operating" ? (
+                <div>
+                  <span className="c7n-deploy-istCode">{code}</span>
+                  <Tooltip
+                    title={intl.formatMessage({
+                      id: `ist_${status}`,
+                    })}
+                  >
+                    <Progress type="loading" width={15} />
+                  </Tooltip>
+                </div>
+              ) : (
+                <div>
+                  <span className="c7n-deploy-istCode">{code}</span>
+                  <Tooltip title={`${status}${error ? `：${error}` : ""}`}>
+                    <i className="icon icon-error c7n-deploy-ist-operate" />
+                  </Tooltip>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        <span className="c7n-envow-ist-version">
+          <span className="c7n-envow-version-text">
+            <FormattedMessage id="app.appVersion" />
+            :&nbsp;&nbsp;
+          </span>
+          <UploadIcon
+            istId={istId}
+            status={uploadIcon}
+            text={appVersion}
+            prevText={commandVersion}
+            isDelete={this.isDelete}
+          />
+        </span>
+        <div className="c7n-appow-pod-status">
+          <PodStatus deploymentDTOS={deploymentDTOS} />
+        </div>
+        <div className="c7n-envow-ist-action">{this.columnAction(data)}</div>
+      </div>
+    );
+  }
+
   /**
    * 重新部署
    * @param id
@@ -416,7 +494,7 @@ class AppOverview extends Component {
    * @returns {*}
    */
   panelDom = () => {
-    const { intl, store, envState } = this.props;
+    const { store } = this.props;
     const {
       type,
       id: projectId,
@@ -425,259 +503,49 @@ class AppOverview extends Component {
     } = AppState.currentMenuType;
     const ist = store.getIst;
     if (ist) {
-      if (ist.devopsEnvPreviewAppDTOS.length) {
-        return _.map(ist.devopsEnvPreviewAppDTOS, i => (
-          <div className="c7n-envow-app-wrap" key={i.appName}>
-            <div className="c7n-envow-app">
-              <Icon
-                type={
-                  i.applicationInstanceDTOS[0].projectId ===
-                  parseInt(projectId, 10)
-                    ? "project"
-                    : "apps"
-                }
-              />
-              <span className="c7n-envow-app-name">{i.appName}</span>
-            </div>
-            <Collapse
-              accordion
-              key={`${i.appName}-collapse`}
-              onChange={this.onChange}
-            >
-              {_.map(i.applicationInstanceDTOS, c => {
-                const {
-                  id: istId,
-                  status,
-                  code,
-                  error,
-                  appVersion,
-                  id,
-                  serviceDTOS,
-                  ingressDTOS,
-                  commandVersion,
-                  appId,
-                  deploymentDTOS,
-                } = c;
-                let uploadIcon = null;
-                if (appVersion !== commandVersion) {
-                  if (status !== "failed") {
-                    uploadIcon = "upload";
-                  } else {
-                    uploadIcon = "failed";
+      if (ist.devopsEnvPreviewAppDTOS && ist.devopsEnvPreviewAppDTOS.length) {
+        return _.map(ist.devopsEnvPreviewAppDTOS, previewApp => {
+          const { appName, applicationInstanceDTOS } = previewApp;
+          return (
+            <div className="c7n-envow-app-wrap" key={appName}>
+              <div className="c7n-envow-app">
+                <Icon
+                  type={
+                    applicationInstanceDTOS[0].projectId ===
+                    parseInt(projectId, 10)
+                      ? "project"
+                      : "apps"
                   }
-                } else {
-                  uploadIcon = "text";
-                }
-                return (
+                />
+                <span className="c7n-envow-app-name">{appName}</span>
+              </div>
+              <Collapse
+                accordion
+                key={`${appName}-collapse`}
+                onChange={this.onChange}
+              >
+                {_.map(applicationInstanceDTOS, detail => (
                   <Panel
                     forceRender
                     showArrow={false}
-                    header={
-                      <div className="c7n-envow-ist-header-wrap">
-                        <Icon type="navigate_next" />
-                        <div className="c7n-envow-ist-name">
-                          {status === "running" || status === "stopped" ? (
-                            <span className="c7n-deploy-istCode">{code}</span>
-                          ) : (
-                            <div className="c7n-envow-ist-fail">
-                              {status === "operating" ? (
-                                <div>
-                                  <span className="c7n-deploy-istCode">
-                                    {code}
-                                  </span>
-                                  <Tooltip
-                                    title={intl.formatMessage({
-                                      id: `ist_${status}`,
-                                    })}
-                                  >
-                                    <Progress type="loading" width={15} />
-                                  </Tooltip>
-                                </div>
-                              ) : (
-                                <div>
-                                  <span className="c7n-deploy-istCode">
-                                    {code}
-                                  </span>
-                                  <Tooltip
-                                    title={`${status}${
-                                      error ? `：${error}` : ""
-                                    }`}
-                                  >
-                                    <i className="icon icon-error c7n-deploy-ist-operate" />
-                                  </Tooltip>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                        <span className="c7n-envow-ist-version">
-                          <span className="c7n-envow-version-text">
-                            <FormattedMessage id="app.appVersion" />
-                            :&nbsp;&nbsp;
-                          </span>
-                          <UploadIcon
-                            istId={istId}
-                            status={uploadIcon}
-                            text={appVersion}
-                            prevText={commandVersion}
-                            isDelete={this.isDelete}
-                          />
-                        </span>
-                        <div className="c7n-appow-pod-status">
-                          <PodStatus deploymentDTOS={deploymentDTOS} />
-                        </div>
-                        <div className="c7n-envow-ist-action">
-                          {this.columnAction(c)}
-                        </div>
-                      </div>
-                    }
-                    key={id}
+                    header={this.getPanelHeader(detail)}
+                    key={detail.id}
                   >
-                    <div>
-                      <ExpandRow record={c} />
-                      <div className="c7n-envow-contaners-title">
-                        NETWORKING
-                      </div>
-                      <div className="c7n-envow-contaners-wrap">
-                        <div className="c7n-envow-contaners-left">
-                          <div className="c7n-envow-network-title">
-                            <FormattedMessage id="network.header.title" />：
-                          </div>
-                          {serviceDTOS.length
-                            ? _.map(serviceDTOS, s => (
-                                <div className="c7n-envow-ls-wrap" key={s.name}>
-                                  <div className="c7n-envow-ls">
-                                    <span className="c7n-envow-expanded-keys">
-                                      <FormattedMessage id="network.form.name" />
-                                      ：
-                                    </span>
-                                    <span className="c7n-envow-expanded-values">
-                                      {s.name}
-                                    </span>
-                                  </div>
-                                  <div className="c7n-envow-ls">
-                                    <span className="c7n-envow-expanded-keys">
-                                      <FormattedMessage id="network.form.ip" />
-                                      ：
-                                    </span>
-                                    <span className="c7n-envow-expanded-values">
-                                      {s.clusterIp}
-                                    </span>
-                                  </div>
-                                  <div className="c7n-envow-ls">
-                                    <div className="c7n-envow-ls-arrow-wrap">
-                                      <FormattedMessage id="network.form.port" />
-                                      ：
-                                      <span className="c7n-envow-expanded-values">
-                                        {s.port}
-                                      </span>
-                                      <span className="c7n-envow-ls-arrow">
-                                        →
-                                      </span>
-                                      <FormattedMessage id="network.form.targetPort" />
-                                      ：
-                                      <span className="c7n-envow-expanded-values">
-                                        {s.targetPort}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))
-                            : null}
-                          <Permission
-                            service={["devops-service.devops-service.create"]}
-                            type={type}
-                            projectId={projectId}
-                            organizationId={orgId}
-                          >
-                            <Tooltip
-                              title={
-                                !envState ? (
-                                  <FormattedMessage id="envoverview.envinfo" />
-                                ) : null
-                              }
-                            >
-                              <Button
-                                className="c7n-envow-create-btn"
-                                funcType="flat"
-                                disabled={!envState}
-                                onClick={this.createNetwork.bind(
-                                  this,
-                                  appId,
-                                  id,
-                                  i.appCode
-                                )}
-                              >
-                                <i className="icon-playlist_add icon" />
-                                <span>
-                                  <FormattedMessage id="network.header.create" />
-                                </span>
-                              </Button>
-                            </Tooltip>
-                          </Permission>
-                        </div>
-                        <div className="c7n-envow-contaners-right">
-                          <div className="c7n-envow-network-title">
-                            <FormattedMessage id="domain.header.title" />
-                          </div>
-                          {ingressDTOS.length
-                            ? _.map(ingressDTOS, d => (
-                                <div
-                                  className="c7n-envow-ls-wrap"
-                                  key={d.hosts}
-                                >
-                                  <div className="c7n-envow-ls">
-                                    <Icon type="language" />
-                                    {d.hosts}
-                                  </div>
-                                </div>
-                              ))
-                            : null}
-                          <Permission
-                            service={["devops-service.devops-ingress.create"]}
-                            type={type}
-                            projectId={projectId}
-                            organizationId={orgId}
-                          >
-                            <Tooltip
-                              title={
-                                !envState ? (
-                                  <FormattedMessage id="envoverview.envinfo" />
-                                ) : null
-                              }
-                            >
-                              <Button
-                                funcType="flat"
-                                disabled={!envState}
-                                className="c7n-envow-create-btn"
-                                onClick={this.createDomain.bind(
-                                  this,
-                                  "create",
-                                  ""
-                                )}
-                              >
-                                <i className="icon icon-playlist_add icon" />
-                                <FormattedMessage id="domain.header.create" />
-                              </Button>
-                            </Tooltip>
-                          </Permission>
-                        </div>
-                      </div>
-                    </div>
+                    <ExpandRow record={detail} />
                   </Panel>
-                );
-              })}
-              {/* 处理Safari浏览器下，折叠面板渲染最后一个节点panel卡顿问题 */}
-              <Panel
-                className="c7n-envow-none"
-                forceRender
-                key={`${i.appName}-none`}
-              >
-                none
-              </Panel>
-            </Collapse>
-          </div>
-        ));
+                ))}
+                {/* 处理Safari浏览器下，折叠面板渲染最后一个节点panel卡顿问题 */}
+                <Panel
+                  className="c7n-envow-none"
+                  forceRender
+                  key={`${appName}-none`}
+                >
+                  none
+                </Panel>
+              </Collapse>
+            </div>
+          );
+        });
       }
       return (
         <span className="c7n-none-des">
@@ -706,7 +574,7 @@ class AppOverview extends Component {
     const {
       intl: { formatMessage },
     } = this.props;
-    const { id, status, connect } = record;
+    const { id, status, connect, appVersionId } = record;
     const actionType = {
       detail: {
         service: ["devops-service.application-instance.listResources"],
@@ -758,14 +626,9 @@ class AppOverview extends Component {
         break;
       case "failed":
       case "running":
-        actionItem = [
-          "detail",
-          "change",
-          "restart",
-          "update",
-          "stop",
-          "delete",
-        ];
+        actionItem = appVersionId
+          ? ["detail", "change", "restart", "update", "stop", "delete"]
+          : ["detail", "change", "restart", "update", "delete"];
         break;
       default:
         actionItem = ["detail"];
