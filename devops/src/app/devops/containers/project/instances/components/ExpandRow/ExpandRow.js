@@ -37,6 +37,7 @@ class ExpandRow extends Component {
       activeKey: [],
       isAllExpand: false,
     };
+    this.getExpandContent = this.getExpandContent.bind(this);
     this.renderPorts = this.renderPorts.bind(this);
     this.renderVolume = this.renderVolume.bind(this);
     this.renderHealth = this.renderHealth.bind(this);
@@ -51,40 +52,71 @@ class ExpandRow extends Component {
     );
   }
 
-  /**
-   * 打开Deployment详情侧边栏，并加载数据
-   * @param {*} id
-   * @param {*} name
-   */
-  handleClick(id, name) {
-    const { id: projectId } = AppState.currentMenuType;
-    this.setState({ visible: true, sideName: name });
-    DeploymentStore.loadDeploymentsJson(projectId, id, name);
-  }
+  getExpandContent() {
+    const {
+      record: {
+        persistentVolumeClaimDTOS,
+        deploymentDTOS,
+        serviceDTOS,
+        ingressDTOS,
+        envId,
+        appId,
+        status,
+        id,
+      },
+      intl: { formatMessage },
+    } = this.props;
 
-  hideSidebar = () => {
-    this.setState({ visible: false, activeKey: [], isExpand: false });
-    DeploymentStore.setData([]);
-  };
+    const deployContent = _.map(deploymentDTOS, item =>
+      this.getDeployContent("devopsEnvPodDTOS", item, envId, appId, id, status)
+    );
 
-  handlePanelChange = key => {
-    const isExpand = key.length === PANEL_TYPE.length;
-    this.setState({ activeKey: key, isExpand });
-  };
+    const serviceContent = _.map(serviceDTOS, item =>
+      this.getNoPodContent("service", item)
+    );
 
-  handleLink = () => {
-    InstancesStore.setIsCache(true);
-  };
+    const ingressContent = _.map(ingressDTOS, item =>
+      this.getNoPodContent("ingress", item)
+    );
 
-  handleExpandAll() {
-    this.setState(prev => ({
-      isExpand: !prev.isExpand,
-      activeKey: !prev.isExpand ? PANEL_TYPE : [],
-    }));
+    const pvcContent = _.map(persistentVolumeClaimDTOS, item =>
+      this.getNoPodContent("pvc", item)
+    );
+
+    return (
+      <div className="c7n-deploy-expanded">
+        {deployContent.length ? (
+          <Fragment>
+            <div className="c7n-deploy-expanded-title">
+              <span>Deployments</span>
+            </div>
+            {deployContent}
+          </Fragment>
+        ) : (
+          <div className="c7n-deploy-expanded-empty">
+            <FormattedMessage id="ist.expand.empty" />
+          </div>
+        )}
+        <div className="c7n-deploy-expanded-title">
+          <span>PVC</span>
+          {pvcContent}
+        </div>
+        {serviceContent}
+        <div className="c7n-deploy-expanded-title">
+          <span>Service</span>
+        </div>
+        {serviceContent}
+        <div className="c7n-deploy-expanded-title">
+          <span>Ingress</span>
+        </div>
+        {ingressContent}
+      </div>
+    );
   }
 
   /**
    *
+   * @param {string} podType
    * @param {object} item
    * @param {number} envId
    * @param {number} appId
@@ -93,17 +125,11 @@ class ExpandRow extends Component {
    * @returns
    * @memberof ExpandRow
    */
-  getContent(item, envId, appId, id, status) {
-    const { name, available, age, devopsEnvPodDTOS, current, desired } = item;
-    let correctCount = 0;
-    let errorCount = 0;
-    _.forEach(devopsEnvPodDTOS, p => {
-      if (p.ready) {
-        correctCount += 1;
-      } else {
-        errorCount += 1;
-      }
-    });
+  getDeployContent(podType, item, envId, appId, id, status) {
+    const { name, available, age, current, desired } = item;
+    const count = _.countBy(item[podType], pod => !!pod.ready);
+    const correctCount = count["true"] || 0;
+    const errorCount = count["false"] || 0;
     const sum = correctCount + errorCount;
     const correct = sum > 0 ? (correctCount / sum) * (Math.PI * 2 * 30) : 0;
     const {
@@ -119,7 +145,7 @@ class ExpandRow extends Component {
           cy="35"
           r="30"
           strokeWidth={sum === 0 || sum > correctCount ? 5 : 0}
-          stroke={sum > 0 ? "#FFB100" : "#f3f3f3"}
+          stroke={sum > 0 ? "#ffb100" : "#f3f3f3"}
           className="c7n-pod-circle-error"
         />
         <circle
@@ -137,14 +163,28 @@ class ExpandRow extends Component {
         </text>
       </svg>
     );
+
+    /**
+     * 返回路径
+     * 从实例点过去的返回实例
+     * 从环境总览点过去的返回实力总览
+     */
+    const currentPage = window.location.href.includes("env-overview")
+      ? "env-overview"
+      : "instance";
+    const backPath = `/devops/${currentPage}?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`;
+
     return (
       <div key={name} className="c7n-deploy-expanded-item">
         <ul className="c7n-deploy-expanded-text">
           <li className="c7n-deploy-expanded-lists">
-            <span className="c7n-deploy-expanded-keys">
+            <span className="c7n-deploy-expanded-keys c7n-expanded-text_bold">
               <FormattedMessage id="ist.expand.name" />：
             </span>
-            <span title={name} className="c7n-deploy-expanded-values">
+            <span
+              title={name}
+              className="c7n-deploy-expanded-values c7n-expanded-text_bold"
+            >
               {name}
             </span>
           </li>
@@ -190,7 +230,7 @@ class ExpandRow extends Component {
                 state: {
                   appId,
                   envId,
-                  backPath: `/devops/instance?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`,
+                  backPath,
                 },
               }}
               onClick={this.handleLink}
@@ -205,6 +245,109 @@ class ExpandRow extends Component {
         </div>
       </div>
     );
+  }
+
+  /**
+   * PVC service ingress 三个没有pod圈
+   * @param {string} type
+   * @param {array} data
+   */
+  getNoPodContent = (type, data) => {
+    const TYPE_KEY = {
+      service: {
+        leftItems: ["type", "externalIp", "age"],
+        rightItems: ["clusterIp", "port"],
+      },
+      ingress: {
+        leftItems: ["type", "ports"],
+        rightItems: ["address", "age"],
+      },
+      pvc: {
+        leftItems: ["status", "accessModes"],
+        rightItems: ["capacity", "age"],
+      },
+    };
+    const content = key => {
+      let text = data[key];
+      switch (key) {
+        case "age":
+          text = (
+            <Tooltip title={formatDate(data[key])}>
+              <TimeAgo
+                datetime={data[key]}
+                locale={Choerodon.getMessage("zh_CN", "en")}
+              />
+            </Tooltip>
+          );
+          break;
+        case "status":
+          text = data[key];
+          break;
+        default:
+          break;
+      }
+      return (
+        <li className="c7n-deploy-expanded-lists">
+          <span className="c7n-deploy-expanded-keys">
+            <FormattedMessage id={`ist.expand.net.${key}`} />：
+          </span>
+          <span className="c7n-deploy-expanded-values">{text}</span>
+        </li>
+      );
+    };
+    return (
+      <div key={data.name} className="c7n-deploy-expanded-item">
+        <div className="c7n-deploy-expanded-lists">
+          <span className="c7n-deploy-expanded-keys c7n-expanded-text_bold">
+            <FormattedMessage id="ist.expand.name" />：
+          </span>
+          <span
+            title={data.name}
+            className="c7n-deploy-expanded-values c7n-expanded-text_bold"
+          >
+            {data.name}
+          </span>
+        </div>
+        <ul className="c7n-deploy-expanded-text c7n-deploy-expanded_half">
+          {_.map(TYPE_KEY[type].leftItems, item => content(item))}
+        </ul>
+        <ul className="c7n-deploy-expanded-text c7n-deploy-expanded_half">
+          {_.map(TYPE_KEY[type].rightItems, item => content(item))}
+        </ul>
+      </div>
+    );
+  };
+
+  /**
+   * 打开Deployment详情侧边栏，并加载数据
+   * @param {*} id
+   * @param {*} name
+   */
+  handleClick(id, name) {
+    const { id: projectId } = AppState.currentMenuType;
+    this.setState({ visible: true, sideName: name });
+    DeploymentStore.loadDeploymentsJson(projectId, id, name);
+  }
+
+  hideSidebar = () => {
+    this.setState({ visible: false, activeKey: [], isExpand: false });
+    DeploymentStore.setData([]);
+  };
+
+  handlePanelChange = key => {
+    const isExpand = key.length === PANEL_TYPE.length;
+    this.setState({ activeKey: key, isExpand });
+  };
+
+  handleLink = () => {
+    InstancesStore.setIsCache(true);
+  };
+
+  handleExpandAll() {
+    this.setState(prev => ({
+      isExpand: !prev.isExpand,
+      activeKey: !prev.isExpand ? PANEL_TYPE : [],
+    }));
   }
 
   renderPorts(containers, isLoading) {
@@ -556,16 +699,11 @@ class ExpandRow extends Component {
 
   render() {
     const {
-      record: { deploymentDTOS, envId, appId, status, id },
       url,
       intl: { formatMessage },
     } = this.props;
 
     const { visible, sideName, activeKey, isExpand } = this.state;
-
-    const deployContent = _.map(deploymentDTOS, item =>
-      this.getContent(item, envId, appId, id, status)
-    );
 
     const {
       getData: { detail },
@@ -579,21 +717,19 @@ class ExpandRow extends Component {
     let labels = [];
     let annotations = [];
 
-    if (detail && detail.metadata) {
-      labels = detail.metadata.labels;
-      annotations = detail.metadata.annotations;
-    }
+    if (detail) {
+      if (detail.metadata) {
+        labels = detail.metadata.labels;
+        annotations = detail.metadata.annotations;
+      }
 
-    if (
-      detail &&
-      detail.spec &&
-      detail.spec.template &&
-      detail.spec.template.spec
-    ) {
-      containers = detail.spec.template.spec.containers;
-      volumes = detail.spec.template.spec.volumes;
-      hostIPC = detail.spec.template.spec.hostIPC;
-      hostNetwork = detail.spec.template.spec.hostNetwork;
+      if (detail.spec && detail.spec.template && detail.spec.template.spec) {
+        const spec = detail.spec.template.spec;
+        containers = spec.containers;
+        volumes = spec.volumes;
+        hostIPC = spec.hostIPC;
+        hostNetwork = spec.hostNetwork;
+      }
     }
 
     const renderFun = {
@@ -608,16 +744,7 @@ class ExpandRow extends Component {
 
     return (
       <Fragment>
-        {deploymentDTOS && deploymentDTOS.length ? (
-          <div className="c7n-deploy-expanded">
-            <div className="c7n-deploy-expanded-title">Deployments</div>
-            {deployContent}
-          </div>
-        ) : (
-          <div className="c7n-deploy-expanded-empty">
-            <FormattedMessage id="ist.expand.empty" />
-          </div>
-        )}
+        {this.getExpandContent()}
         <Sidebar
           destroyOnClose
           footer={[

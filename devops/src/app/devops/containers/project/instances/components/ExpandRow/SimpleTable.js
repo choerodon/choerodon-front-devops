@@ -41,7 +41,6 @@ class SimpleTable extends PureComponent {
       border-bottom: none !important;
       font-size: 13px;
       color: #000;
-      font-weight: bold;
       line-height: 20px;
     `;
 
