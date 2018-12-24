@@ -9,13 +9,20 @@
   .network-column-target {
     display: flex;
 
+    &:last-child {
+      margin-top: 5px;
+    }
+
+    .network-column-targetIp {
+      margin-left: 8px;
+    }
+
     .network-column-instance {
       background: rgba(0, 0, 0, 0.08);
       border-radius: 10px;
       padding: 0 12px;
       height: 20px;
       line-height: 20px;
-      font-size: 12px;
       margin-bottom: 8px;
 
       &:last-child {
@@ -52,7 +59,7 @@
 
     .network-config-type {
       line-height: 20px;
-      width: 58px;
+      width: 80px;
     }
 
     .network-config-item {

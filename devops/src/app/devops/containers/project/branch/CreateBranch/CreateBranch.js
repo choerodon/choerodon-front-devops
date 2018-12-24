@@ -230,7 +230,7 @@ class CreateBranch extends Component {
    */
   changeIssue = (value, options) => {
     const key = options.key;
-    const { store } = this.props;
+    const { store, form: { setFieldsValue } } = this.props;
     const issue = store.issue.slice();
     const issueDto = _.filter(issue, i => i.issueId === value)[0];
     let type = "";
@@ -254,6 +254,7 @@ class CreateBranch extends Component {
         type = "custom";
     }
     this.setState({ type, issueDto });
+    setFieldsValue({ type });
   };
 
   /**
