@@ -26,7 +26,7 @@ class AppVersionStore {
   @observable preProId = AppState.currentMenuType.id;
 
   // 打开tab的loading
-  @observable pageInfo = { current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15, };
+  @observable pageInfo = { current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15 };
 
   @action setAppDate(data) {
     this.appData = data;
