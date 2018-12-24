@@ -534,8 +534,10 @@ class DevConsole extends Component {
             this.setState({ versionState: res });
           }
         });
+    } else {
+      this.setState({ versionState: false })
     }
-  }, 10000);
+  }, 1000);
 
   /**
    * 获取流水线
