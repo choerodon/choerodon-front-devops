@@ -189,7 +189,7 @@ class EditableCell extends Component {
                     className="editable-cell-value-wrap"
                     onClick={this.toggleEdit}
                     onFocus={this.toggleEdit}
-                    value={title === 'secret' && dataIndex === 'value' && restProps.children.filter(a => typeof(a) === 'string')[0].length ? '******' : restProps.children.filter(a => typeof(a) === 'string')}
+                    value={title === 'secret' && dataIndex === 'value' && restProps.children.filter(a => typeof(a) === 'string').length ? '******' : restProps.children.filter(a => typeof(a) === 'string')}
                   />
                 )
               );
@@ -259,9 +259,9 @@ class KeyValueSideBar extends Component {
     this.state = {
       dataSource: [{
         keys: '0',
-        key: '',
+        key: null,
         temp: '=',
-        value: '',
+        value: null,
       }],
       count: 1,
       submitting: false,
@@ -343,9 +343,9 @@ class KeyValueSideBar extends Component {
     } else {
       newData.push({
         keys: count,
-        key: '',
+        key: null,
         temp: '=',
-        value: '',
+        value: null,
       })
     }
     const data = _.uniqBy([...dataSource.filter(item => item.keys !== ''), ...newData], 'keys');
@@ -382,10 +382,10 @@ class KeyValueSideBar extends Component {
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ submitting: true, warningDisplay: false });
     const pattern = /[^0-9A-Za-z\.\-\_]/;
-    const noKey = dataSource.filter(item => item.key === '');
-    const hasKey = dataSource.filter(item => item.key !== '');
-    const onlyValue = noKey.filter(item => item.value !== '');
-    const onlyKey = hasKey.filter(item => item.value === '');
+    const noKey = dataSource.filter(item => _.isEmpty(item.key));
+    const hasKey = dataSource.filter(item => !_.isEmpty(item.key));
+    const onlyValue = noKey.filter(item => !_.isEmpty(item.value));
+    const onlyKey = hasKey.filter(item => _.isEmpty(item.value));
     const errLength = onlyKey.concat(onlyValue).length;
 
     if (errLength) {
@@ -407,7 +407,7 @@ class KeyValueSideBar extends Component {
         submitting: false,
       });
     } else {
-      const datas = _.uniqBy([...dataSource.filter(item => item.key !== '')], 'keys');
+      const datas = _.uniqBy([...dataSource.filter(item => !_.isEmpty(item.key))], 'keys');
       form.validateFieldsAndScroll((err, data) => {
         if (!err) {
           const temp = {};
@@ -429,11 +429,13 @@ class KeyValueSideBar extends Component {
                   this.setState({ submitting: false });
                   Choerodon.prompt(res.message);
                 } else {
-                  this.setState({ submitting: false });
                   this.handleClose();
+                  this.setState({ submitting: false });
                 }
               }
             });
+        } else {
+          this.setState({ submitting: false });
         }
       });
     }

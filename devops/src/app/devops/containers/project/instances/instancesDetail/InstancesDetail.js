@@ -83,7 +83,7 @@ class InstancesDetail extends Component {
       podEvent: [],
       activeKey: [],
       log: null,
-      current: false,
+      current: '1',
     };
   }
 
@@ -188,54 +188,54 @@ class InstancesDetail extends Component {
       const content = (
         <table className="c7n-event-ist-popover">
           <tbody>
-            <tr>
-              <td>
-                <FormattedMessage id="ist.deploy.result" />
-                ：&nbsp;
-              </td>
-              <td>
-                <Icon
-                  style={{
-                    color: ICONS_TYPE[e.status]
-                      ? ICONS_TYPE[e.status].color
-                      : "#00bfa5",
-                  }}
-                  type={
-                    ICONS_TYPE[e.status]
-                      ? ICONS_TYPE[e.status].icon
-                      : "check-circle"
-                  }
-                />
-                <FormattedMessage
-                  id={
-                    ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].mes : "success"
-                  }
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <FormattedMessage id="report.deploy-duration.time" />
-                ：&nbsp;
-              </td>
-              <td>{e.createTime}</td>
-            </tr>
-            <tr>
-              <td>
-                <FormattedMessage id="ist.deploy.mbr" />
-                ：&nbsp;
-              </td>
-              <td>
-                {e.userImage ? (
-                  <img src={e.userImage} alt={e.realName} />
-                ) : (
-                  <span className="c7n-event-avatar">
+          <tr>
+            <td>
+              <FormattedMessage id="ist.deploy.result" />
+              ：&nbsp;
+            </td>
+            <td>
+              <Icon
+                style={{
+                  color: ICONS_TYPE[e.status]
+                    ? ICONS_TYPE[e.status].color
+                    : "#00bfa5",
+                }}
+                type={
+                  ICONS_TYPE[e.status]
+                    ? ICONS_TYPE[e.status].icon
+                    : "check-circle"
+                }
+              />
+              <FormattedMessage
+                id={
+                  ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].mes : "success"
+                }
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <FormattedMessage id="report.deploy-duration.time" />
+              ：&nbsp;
+            </td>
+            <td>{e.createTime}</td>
+          </tr>
+          <tr>
+            <td>
+              <FormattedMessage id="ist.deploy.mbr" />
+              ：&nbsp;
+            </td>
+            <td>
+              {e.userImage ? (
+                <img src={e.userImage} alt={e.realName} />
+              ) : (
+                <span className="c7n-event-avatar">
                     {e.realName ? e.realName.slice(0, 1) : "无"}
                   </span>
-                )}
-                {e.loginName}&nbsp;{e.realName}
-              </td>
-            </tr>
+              )}
+              {e.loginName}&nbsp;{e.realName}
+            </td>
+          </tr>
           </tbody>
         </table>
       );
@@ -244,7 +244,7 @@ class InstancesDetail extends Component {
           <div
             className={`c7n-event-ist-card ${
               e.createTime === time ? "c7n-ist-checked" : ""
-            }`}
+              }`}
             onClick={this.loadEvent.bind(this, e)}
           >
             <Icon
@@ -318,65 +318,47 @@ class InstancesDetail extends Component {
 
     const istEventDom = event.length
       ? _.map(podEvent.length ? podEvent : event[0].podEventDTO, e => (
-          <Step
-            key={e.name}
-            title={
-              <React.Fragment>
-                {e.name} &nbsp;&nbsp;
-                {e.log ? (
-                  <Tooltip
-                    title={intl.formatMessage({ id: "ist.log" })}
-                    placement="bottom"
-                  >
-                    <Icon
-                      onClick={this.showSideBar.bind(
-                        this,
-                        "log",
-                        e.name,
-                        e.log
-                      )}
-                      type="find_in_page"
-                    />
-                  </Tooltip>
-                ) : null}
-              </React.Fragment>
-            }
-            description={
-              <React.Fragment>
-                <pre
-                  className={`${
-                    activeKey.indexOf(`${time}-${e.name}`) > -1
-                      ? ""
-                      : "c7n-event-hidden"
-                  }`}
+        <Step
+          key={e.name}
+          title={
+            <React.Fragment>
+              {e.name} &nbsp;&nbsp;
+              {e.log ? (
+                <Tooltip
+                  title={intl.formatMessage({ id: "ist.log" })}
+                  placement="bottom"
                 >
+                  <Icon
+                    onClick={this.showSideBar.bind(this, "log", e.name, e.log)}
+                    type="find_in_page"
+                  />
+                </Tooltip>
+              ) : null}
+            </React.Fragment>
+          }
+          description={
+            <React.Fragment>
+                <pre className={`${activeKey.indexOf(`${time}-${e.name}`) > -1 ? "" : "c7n-event-hidden"}`}>
                   {e.event}
                 </pre>
-                {e.event && e.event.split("\n").length > 4 && (
-                  <a onClick={this.showMore.bind(this, e.name)}>
-                    {activeKey.indexOf(`${time}-${e.name}`) > -1
-                      ? intl.formatMessage({ id: "shrink" })
-                      : intl.formatMessage({ id: "expand" })}
-                  </a>
-                )}
-              </React.Fragment>
-            }
-            icon={
-              e.jobPodStatus === "running" ? (
-                <Progress strokeWidth={10} width={13} type="loading" />
-              ) : (
-                <Icon
-                  style={{
-                    color: ICONS_TYPE[`pod_${e.jobPodStatus}`]
-                      ? ICONS_TYPE[`pod_${e.jobPodStatus}`].color
-                      : "#3f51b5",
-                  }}
-                  type="wait_circle"
-                />
-              )
-            }
-          />
-        ))
+              {e.event && e.event.split("\n").length > 4 && (
+                <a onClick={this.showMore.bind(this, e.name)}>
+                  {activeKey.indexOf(`${time}-${e.name}`) > -1
+                    ? intl.formatMessage({ id: "shrink" })
+                    : intl.formatMessage({ id: "expand" })}
+                </a>
+              )}
+            </React.Fragment>
+          }
+          icon={e.jobPodStatus === "running" ? (<Progress strokeWidth={10} width={13} type="loading" />) : (
+              <Icon
+                style={{ color: ICONS_TYPE[`pod_${e.jobPodStatus}`] ? ICONS_TYPE[`pod_${e.jobPodStatus}`].color : "#00bfa5" }}
+                type="wait_circle"
+              />
+            )
+          }
+        />
+      ))
       : null;
 
     const options = {
@@ -391,8 +373,6 @@ class InstancesDetail extends Component {
       readOnly: true,
       lineNumbers: true,
     };
-
-    const currentKey = current || (this.state.status === "running" ? "1" : "2");
 
     const sidebarContent =
       sideType === "deployInfo" ? (
@@ -450,184 +430,11 @@ class InstancesDetail extends Component {
             <Tabs
               className="c7n-deployDetail-tab"
               onChange={this.currentChange}
-              activeKey={currentKey}
+              activeKey={current}
             >
-              {this.state.status === "running" && (
-                <TabPane
-                  tab={intl.formatMessage({ id: "ist.runDetial" })}
-                  key="1"
-                >
-                  <div className="c7n-deployDetail-card c7n-deployDetail-card-content ">
-                    <h2 className="c7n-space-first">Resources</h2>
-                    {podDTO.length >= 1 && (
-                      <div className="c7n-deployDetail-table-header header-first">
-                        <span className="c7n-deployDetail-table-title">
-                          Pod
-                        </span>
-                        <table className="c7n-deployDetail-table">
-                          <thead>
-                            <tr>
-                              <td>NAME</td>
-                              <td>READY</td>
-                              <td>STATUS</td>
-                              <td>RESTARTS</td>
-                              <td>AGE</td>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {podDTO.map(pod => (
-                              <tr key={Math.random()}>
-                                <td>{pod.name}</td>
-                                <td>{pod.ready}</td>
-                                <td>{pod.status}</td>
-                                <td>{pod.restarts}</td>
-                                <td>
-                                  <TimePopover content={pod.age} />
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                    {serviceDTO.length >= 1 && (
-                      <div className="c7n-deployDetail-table-header">
-                        <span className="c7n-deployDetail-table-title">
-                          Service
-                        </span>
-                        <table className="c7n-deployDetail-table">
-                          <thead>
-                            <tr>
-                              <td>NAME</td>
-                              <td>TYPE</td>
-                              <td>CLUSTER-IP</td>
-                              <td>EXTERNAL-IP</td>
-                              <td>PORT(S)</td>
-                              <td>AGE</td>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {serviceDTO.map(service => (
-                              <tr key={Math.random()}>
-                                <td>{service.name}</td>
-                                <td>{service.type}</td>
-                                <td>{service.clusterIp}</td>
-                                <td>{service.externalIp}</td>
-                                <td>{service.port}</td>
-                                <td>
-                                  <TimePopover content={service.age} />
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                    {depDTO.length >= 1 && (
-                      <div className="c7n-deployDetail-table-header">
-                        <span className="c7n-deployDetail-table-title">
-                          Deployment
-                        </span>
-                        <table className="c7n-deployDetail-table">
-                          <thead>
-                            <tr>
-                              <td>NAME</td>
-                              <td>DESIRED</td>
-                              <td>CURRENT</td>
-                              <td>UP-TO-DATE</td>
-                              <td>AVAILABLE</td>
-                              <td>AGE</td>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {depDTO.map(dep => (
-                              <tr key={Math.random()}>
-                                <td>{dep.name}</td>
-                                <td>{dep.desired}</td>
-                                <td>{dep.current}</td>
-                                <td>{dep.upToDate}</td>
-                                <td>
-                                  {dep.available
-                                    ? intl.formatMessage({ id: "ist.y" })
-                                    : intl.formatMessage({ id: "ist.n" })}
-                                </td>
-                                <td>
-                                  <TimePopover content={dep.age} />
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                    {ingressDTO.length >= 1 && (
-                      <div className="c7n-deployDetail-table-header">
-                        <span className="c7n-deployDetail-table-title">
-                          Ingress
-                        </span>
-                        <table className="c7n-deployDetail-table">
-                          <thead>
-                            <tr>
-                              <td>NAME</td>
-                              <td>HOSTS</td>
-                              <td>ADDRESS</td>
-                              <td>PORTS</td>
-                              <td>AGE</td>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {ingressDTO.map(dep => (
-                              <tr key={Math.random()}>
-                                <td>{dep.name}</td>
-                                <td>{dep.hosts}</td>
-                                <td>{dep.address}</td>
-                                <td>{dep.port}</td>
-                                <td>
-                                  <TimePopover content={dep.age} />
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                    {rsDTO.length >= 1 && (
-                      <div className="c7n-deployDetail-table-header">
-                        <span className="c7n-deployDetail-table-title">
-                          ReplicaSet
-                        </span>
-                        <table className="c7n-deployDetail-table">
-                          <thead>
-                            <tr>
-                              <td>NAME</td>
-                              <td>DESIRED</td>
-                              <td>CURRENT</td>
-                              <td>READY</td>
-                              <td>AGE</td>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {rsDTO.map(dep => (
-                              <tr key={Math.random()}>
-                                <td>{dep.name}</td>
-                                <td>{dep.desired}</td>
-                                <td>{dep.current}</td>
-                                <td>{dep.ready}</td>
-                                <td>
-                                  <TimePopover content={dep.age} />
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                  </div>
-                </TabPane>
-              )}
               <TabPane
                 tab={intl.formatMessage({ id: "deploy.ist.event" })}
-                key="2"
+                key="1"
               >
                 <div className="c7n-deployDetail-versions-wrap">
                   <FormattedMessage id="report.deploy-duration.time" />
@@ -665,6 +472,179 @@ class InstancesDetail extends Component {
                   </div>
                 )}
               </TabPane>
+              {this.state.status === "running" && (
+                <TabPane
+                  tab={intl.formatMessage({ id: "ist.runDetial" })}
+                  key="2"
+                >
+                  <div className="c7n-deployDetail-card c7n-deployDetail-card-content ">
+                    <h2 className="c7n-space-first">Resources</h2>
+                    {podDTO.length >= 1 && (
+                      <div className="c7n-deployDetail-table-header header-first">
+                        <span className="c7n-deployDetail-table-title">
+                          Pod
+                        </span>
+                        <table className="c7n-deployDetail-table">
+                          <thead>
+                          <tr>
+                            <td>NAME</td>
+                            <td>READY</td>
+                            <td>STATUS</td>
+                            <td>RESTARTS</td>
+                            <td>AGE</td>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          {podDTO.map(pod => (
+                            <tr key={Math.random()}>
+                              <td>{pod.name}</td>
+                              <td>{pod.ready}</td>
+                              <td>{pod.status}</td>
+                              <td>{pod.restarts}</td>
+                              <td>
+                                <TimePopover content={pod.age} />
+                              </td>
+                            </tr>
+                          ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                    {serviceDTO.length >= 1 && (
+                      <div className="c7n-deployDetail-table-header">
+                        <span className="c7n-deployDetail-table-title">
+                          Service
+                        </span>
+                        <table className="c7n-deployDetail-table">
+                          <thead>
+                          <tr>
+                            <td>NAME</td>
+                            <td>TYPE</td>
+                            <td>CLUSTER-IP</td>
+                            <td>EXTERNAL-IP</td>
+                            <td>PORT(S)</td>
+                            <td>AGE</td>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          {serviceDTO.map(service => (
+                            <tr key={Math.random()}>
+                              <td>{service.name}</td>
+                              <td>{service.type}</td>
+                              <td>{service.clusterIp}</td>
+                              <td>{service.externalIp}</td>
+                              <td>{service.port}</td>
+                              <td>
+                                <TimePopover content={service.age} />
+                              </td>
+                            </tr>
+                          ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                    {depDTO.length >= 1 && (
+                      <div className="c7n-deployDetail-table-header">
+                        <span className="c7n-deployDetail-table-title">
+                          Deployment
+                        </span>
+                        <table className="c7n-deployDetail-table">
+                          <thead>
+                          <tr>
+                            <td>NAME</td>
+                            <td>DESIRED</td>
+                            <td>CURRENT</td>
+                            <td>UP-TO-DATE</td>
+                            <td>AVAILABLE</td>
+                            <td>AGE</td>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          {depDTO.map(dep => (
+                            <tr key={Math.random()}>
+                              <td>{dep.name}</td>
+                              <td>{dep.desired}</td>
+                              <td>{dep.current}</td>
+                              <td>{dep.upToDate}</td>
+                              <td>
+                                {dep.available
+                                  ? intl.formatMessage({ id: "ist.y" })
+                                  : intl.formatMessage({ id: "ist.n" })}
+                              </td>
+                              <td>
+                                <TimePopover content={dep.age} />
+                              </td>
+                            </tr>
+                          ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                    {ingressDTO.length >= 1 && (
+                      <div className="c7n-deployDetail-table-header">
+                        <span className="c7n-deployDetail-table-title">
+                          Ingress
+                        </span>
+                        <table className="c7n-deployDetail-table">
+                          <thead>
+                          <tr>
+                            <td>NAME</td>
+                            <td>HOSTS</td>
+                            <td>ADDRESS</td>
+                            <td>PORTS</td>
+                            <td>AGE</td>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          {ingressDTO.map(dep => (
+                            <tr key={Math.random()}>
+                              <td>{dep.name}</td>
+                              <td>{dep.hosts}</td>
+                              <td>{dep.address}</td>
+                              <td>{dep.port}</td>
+                              <td>
+                                <TimePopover content={dep.age} />
+                              </td>
+                            </tr>
+                          ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                    {rsDTO.length >= 1 && (
+                      <div className="c7n-deployDetail-table-header">
+                        <span className="c7n-deployDetail-table-title">
+                          ReplicaSet
+                        </span>
+                        <table className="c7n-deployDetail-table">
+                          <thead>
+                          <tr>
+                            <td>NAME</td>
+                            <td>DESIRED</td>
+                            <td>CURRENT</td>
+                            <td>READY</td>
+                            <td>AGE</td>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          {rsDTO.map(dep => (
+                            <tr key={Math.random()}>
+                              <td>{dep.name}</td>
+                              <td>{dep.desired}</td>
+                              <td>{dep.current}</td>
+                              <td>{dep.ready}</td>
+                              <td>
+                                <TimePopover content={dep.age} />
+                              </td>
+                            </tr>
+                          ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                </TabPane>
+              )}
             </Tabs>
           )}
           <Sidebar
@@ -687,4 +667,5 @@ class InstancesDetail extends Component {
     );
   }
 }
+
 export default withRouter(injectIntl(InstancesDetail));

@@ -10,6 +10,7 @@ import CiPipelineStore from '../ciPipelineManage';
 import DevConsoleStore from '../devConsole';
 import ReportsStore from '../reports';
 import DeploymentPipelineStore from '../deploymentPipeline';
+import AppVersionStore from '../applicationVersion';
 
 const { AppState } = stores;
 const START = moment().subtract(6, 'days').format().split('T')[0].replace(/-/g, '/');
@@ -155,6 +156,7 @@ class DevPipelineStore {
                 MergeRequestStore.loadMergeRquest(this.selectedApp, 'merged', 0, 5);
                 MergeRequestStore.loadUrl(projectId, this.selectedApp);
                 ReportsStore.loadCommits(projectId, START, END, [this.selectedApp]);
+                AppVersionStore.loadData(projectId, this.selectedApp);
                 break;
               default:
                 break;

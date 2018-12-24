@@ -3,10 +3,11 @@ import { observer } from 'mobx-react';
 import { withRouter, Link } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-import { Button, Select, Modal, Form, Icon, Collapse, Avatar, Pagination, Tooltip, Menu, Dropdown } from 'choerodon-ui';
+import { Button, Select, Modal, Form, Icon, Collapse, Avatar, Pagination, Tooltip, Menu, Dropdown, Progress } from 'choerodon-ui';
 import ReactMarkdown from 'react-markdown';
 import _ from 'lodash';
 import moment from 'moment';
+import classNames from "classnames";
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import LoadingBar from '../../../../components/loadingBar';
 import TimePopover from '../../../../components/timePopover/index';
@@ -14,24 +15,76 @@ import CreateTag from '../../appTag/createTag';
 import EditTag from '../../appTag/editTag';
 import '../../../main.scss';
 import '../../appTag/appTagHome/AppTagHome.scss';
-import '../../branch/commom.scss';
 import './DevConsole.scss';
+import '../../envPipeline/EnvPipeLineHome.scss';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
 import AppTagStore from '../../../../stores/project/appTag';
 import BranchStore from '../../../../stores/project/branchManage';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import EditBranch from '../../branch/editBranch';
 import CreateBranch from '../../branch/CreateBranch';
+import IssueDetail from '../../branch/issueDetail';
 import MergeRequestStore from '../../../../stores/project/mergeRequest';
 import StatusTags from '../../../../components/StatusTags';
 import ReportsStore from '../../../../stores/project/reports/ReportsStore';
-import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
+import CiPipelineStore from '../../../../stores/project/ciPipelineManage/CiPipelineStore';
+import AppVersionStore from '../../../../stores/project/applicationVersion/AppVersionStore';
+import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
+import CiPipelineTable from '../../ciPipelineManage/ciPipelineTable';
+import AppVersionTable from '../../appVersion/appVersionTable';
 
 const { AppState } = stores;
 const { Option, OptGroup } = Select;
 const { Panel } = Collapse;
 const START = moment().subtract(7, 'days').format().split('T')[0].replace(/-/g, '/');
 const END = moment().format().split('T')[0].replace(/-/g, '/');
+const ICONS = {
+  passed: {
+    icon: 'icon-check_circle',
+    code: 'passed',
+    display: 'Passed',
+  },
+  success: {
+    icon: 'icon-check_circle',
+    code: 'success',
+    display: 'Passed',
+  },
+  pending: {
+    icon: 'icon-pause_circle_outline',
+    code: 'pending',
+    display: 'Pending',
+  },
+  running: {
+    icon: 'icon-timelapse',
+    code: 'running',
+    display: 'Running',
+  },
+  failed: {
+    icon: 'icon-cancel',
+    code: 'failed',
+    display: 'Failed',
+  },
+  canceled: {
+    icon: 'icon-cancle_b',
+    code: 'canceled',
+    display: 'Canceled',
+  },
+  skipped: {
+    icon: 'icon-skipped_b',
+    code: 'skipped',
+    display: 'Skipped',
+  },
+  created: {
+    icon: 'icon-radio_button_checked',
+    code: 'created',
+    display: 'Created',
+  },
+  manual: {
+    icon: 'icon-radio_button_checked',
+    code: 'manual',
+    display: 'Manual',
+  },
+};
 
 @observer
 class DevConsole extends Component {
@@ -40,15 +93,15 @@ class DevConsole extends Component {
     this.state = {
       page: 0,
       pageSize: 10,
-      visible: false,
-      visibleBranch: false,
       deleteLoading: false,
-      tag: null,
-      editTag: null,
-      editRelease: null,
-      creationDisplay: false,
-      editDisplay: false,
+      tagName: null,
+      tagRelease: null,
+      loadingFlag: false,
+      versionState: false,
       appName: null,
+      branchIssue: 'ALL',
+      lineKey: 1,
+      modalDisplay: '',
     };
   }
 
@@ -76,28 +129,31 @@ class DevConsole extends Component {
     this.setState({ page: 0, pageSize: 10, appName: option.props.children });
     DevPipelineStore.setSelectApp(id);
     DevPipelineStore.setRecentApp(id);
-    this.loadTagData();
-    this.loadBranchData();
-    this.loadMergeData();
-    this.loadCommitData();
+    this.handleRefresh();
   };
 
   /**
    * 页面内刷新，选择器变回默认选项
    */
   handleRefresh = () => {
-    const { page, pageSize } = this.state;
+    const { page, pageSize, branchIssue } = this.state;
+    this.setState({ loadingFlag: true });
+    const appId = DevPipelineStore.getSelectApp;
+    const projectId = AppState.currentMenuType.id;
     this.loadTagData(page, pageSize);
     this.loadBranchData();
     this.loadMergeData();
     this.loadCommitData();
+    this.loadPipeline(branchIssue);
+    AppVersionStore.loadData(projectId, appId);
   };
 
   /**
-   * 加载应用信息
+   * 加载数据
    */
   loadInitData = () => {
     DevPipelineStore.queryAppData(AppState.currentMenuType.id, 'all');
+    this.loadPipeline(this.state.branchIssue);
     this.setState({ appName: null });
   };
 
@@ -137,6 +193,26 @@ class DevConsole extends Component {
   };
 
   /**
+   * 获取CI pipeline
+   */
+  loadPipeline = (branch) => {
+    const appId = DevPipelineStore.getSelectApp;
+    if (branch !== 'ALL') {
+      CiPipelineStore.loadPipelinesByBc(appId, branch)
+        .then((res) => {
+          const ciPipelineOne = res.length ? res[0] : null;
+          this.getVerContent(ciPipelineOne);
+        });
+    } else {
+      CiPipelineStore.loadPipelines(true, appId)
+        .then((res) => {
+          const ciPipelineOne = res.length ? res[0] : null;
+          this.getVerContent(ciPipelineOne);
+        });
+    }
+  };
+
+  /**
    * 分页器
    * @param current
    * @param size
@@ -145,20 +221,6 @@ class DevConsole extends Component {
     this.setState({ page: current - 1, pageSize: size });
     this.loadTagData(current - 1, size);
   };
-
-  /**
-   * 打开删除确认框
-   * @param tag
-   */
-  openRemove = (e, tag) => {
-    e.stopPropagation();
-    this.setState({ visible: true, tag });
-  };
-
-  /**
-   * 关闭删除确认框
-   */
-  closeRemove = () => this.setState({ visible: false });
 
   /**
    * 删除tag
@@ -173,7 +235,7 @@ class DevConsole extends Component {
       } else {
         this.loadTagData();
       }
-      this.setState({ deleteLoading: false, visible: false });
+      this.setState({ deleteLoading: false, modalDisplay: 'close' });
     }).catch((error) => {
       this.setState({ deleteLoading: false });
       Choerodon.handleResponseError(error);
@@ -183,25 +245,42 @@ class DevConsole extends Component {
   /**
    * 控制创建窗口显隐
    * @param flag
+   * @param name 名称
+   * @param tagRelease release内容
    */
-  displayCreateModal = flag => this.setState({ creationDisplay: flag });
-
-  /**
-   * 控制编辑窗口
-   * @param flag 显隐
-   * @param tag tag名称
-   * @param res release内容
-   * @param e
-   */
-  displayEditModal = (flag, tag, res, e) => {
-    let editTag = null;
-    let editRelease = null;
-    if (tag) {
-      e.stopPropagation();
-      editTag = tag;
-      editRelease = res;
+  displayModal = (flag, name, tagRelease) => {
+    const { projectId } = AppState.currentMenuType;
+    switch ( flag ) {
+      case 'editTag':
+        this.setState({ tagName: name, tagRelease });
+        break;
+      case 'deleteTag':
+        this.setState({ tagName: name });
+        break;
+      case 'createBranch':
+        BranchStore.loadTagData(projectId);
+        BranchStore.loadBranchData({
+          projectId,
+          size: 3,
+        });
+        BranchStore.setCreateBranchShow('create');
+        break;
+      case 'editBranch':
+        this.setState({ branchName: name });
+        BranchStore.loadBranchByName(projectId, DevPipelineStore.selectedApp, name);
+        BranchStore.setCreateBranchShow('edit');
+        break;
+      case 'deleteBranch':
+        this.setState({ branchName: name });
+        break;
+      case 'closeBranch':
+        BranchStore.setCreateBranchShow(false);
+        BranchStore.setBranch(null);
+        break;
+      default:
+        break;
     }
-    this.setState({ editDisplay: flag, editTag, editRelease });
+    this.setState({ modalDisplay: flag });
   };
 
   /**
@@ -229,17 +308,74 @@ class DevConsole extends Component {
   };
 
   /**
-   * 获取issue的options
-   * @param typeCode
-   * @param issueCode
-   * @param issueName
+   * 删除分支
    */
-  getIssue =(typeCode, issueCode, issueName) => {
+  deleteBranch = () => {
+    const { branchName } = this.state;
+    const { projectId } = AppState.currentMenuType;
+    this.setState({ deleteLoading: true });
+    BranchStore.deleteData(projectId, DevPipelineStore.getSelectApp, branchName)
+      .then((res) => {
+        if (res) {
+          this.loadBranchData();
+          this.setState({ deleteLoading: false, modalDisplay: 'close' });
+        }
+        this.setState({ deleteLoading: false });
+      });
+  };
+
+  /**
+   * 切换分支
+   * @param branchIssue
+   */
+  branchChange = (branchIssue) => {
+    const appId = DevPipelineStore.getSelectApp;
+    const { projectId } = AppState.currentMenuType;
+    this.setState({ branchIssue });
+    if (branchIssue !== 'ALL') {
+      AppVersionStore.loadVerByBc(projectId, appId, branchIssue);
+    } else {
+      AppVersionStore.loadData(projectId, appId);
+    }
+    this.loadPipeline(branchIssue);
+  };
+
+  /**
+   * 流水线卡片点击加载
+   * @param key
+   */
+  cardChecked = (key) => {
+    if (this.state.lineKey === key) {
+      return;
+    }
+    this.setState({ lineKey: key, loadingFlag: false });
+    const { branchIssue } = this.state;
+    const appId = DevPipelineStore.getSelectApp;
+    const projectId = AppState.currentMenuType.id;
+    this.loadBranchData();
+    this.loadMergeData();
+    this.loadCommitData();
+    if (branchIssue !== 'ALL') {
+      this.loadPipeline(branchIssue);
+      AppVersionStore.loadVerByBc(projectId, appId, branchIssue);
+    } else {
+      this.loadPipeline(branchIssue);
+      AppVersionStore.loadData(projectId, appId);
+    }
+  };
+
+  /**
+   * 获取issue的options
+   * @param s
+   * @param type
+   * @returns {*}
+   */
+  getOptionContent = (s, type) => {
     const { formatMessage } = this.props.intl;
     let mes = '';
     let icon = '';
     let color = '';
-    switch (typeCode) {
+    switch (s.typeCode) {
       case 'story':
         mes = formatMessage({ id: 'branch.issue.story' });
         icon = 'agile_story';
@@ -265,86 +401,253 @@ class DevConsole extends Component {
         icon = 'agile_task';
         color = '#4d90fe';
     }
-    return (<span className="c7n-branch-issue">
-      <Tooltip title={mes}>
-        <div style={{ color }} className="c7n-issue-type"><i className={`icon icon-${icon}`} /></div>
-      </Tooltip>
-      <Tooltip title={issueName}>
-        <span className="branch-issue-content"><span>{issueCode}</span></span>
-      </Tooltip>
-    </span>);
+    return (<Fragment>
+        <Tooltip title={mes}>
+          <div style={{ color }} className={`c7n-dc-branch-issue-icon-${type}`}><i className={`icon icon-${icon}`} /></div>
+        </Tooltip>
+        <a onClick={this.showIssue.bind(this, s.issueId, s.branchName)} role="none">
+          <Tooltip title={s.issueName}>{s.issueCode}</Tooltip>
+        </a>
+    </Fragment>);
   };
 
   /**
-   * 修改相关联问题
-   * @param branchName
+   * 加载分支关联问题
+   * @param id
+   * @param name
    */
-  openEditBranch = (branchName) => {
+  showIssue = (id, name) => {
     const { projectId } = AppState.currentMenuType;
-    this.setState({ branchName, editBranch: true });
-    BranchStore.loadBranchByName(projectId, DevPipelineStore.selectedApp, branchName);
-    BranchStore.setCreateBranchShow('edit');
+    this.setState({ branchName: name });
+    BranchStore.loadIssueById(projectId, id);
+    BranchStore.loadIssueTimeById(projectId, id);
+    BranchStore.setCreateBranchShow('detail');
   };
 
   /**
-   * 关闭分支关联问题弹窗
+   * 渲染ci阶段
+   * @param record
+   * @returns {*}
    */
-  closeEditBranch = () => {
-    this.setState({ branchName: '', editBranch: false });
-    BranchStore.setCreateBranchShow(false);
+  renderStages = (record) => {
+    const pipeStage = [];
+    let stages = record ? record.stages : null;
+    if (stages && stages.length) {
+      if (stages.length > 3) {
+        stages = record.stages.slice(record.stages.length - 3, record.stages.length);
+      }
+      for (let i = 0, l = stages.length; i < l; i += 1) {
+        pipeStage.push(<span className="c7n-jobs" key={i}>
+          {i !== 0 ? <span className="c7n-split-before" /> : null}
+          <Tooltip
+            title={(stages[i].name === 'sonarqube' && stages[i].status === 'failed') ? `${stages[i].name} : ${stages[i].description}` : `${stages[i].name} : ${stages[i].status}`}
+          >
+            {stages[i].name === 'sonarqube' ?
+              <i
+                className={`icon ${ICONS[stages[i].status || 'skipped'].icon || ''} c7n-icon-${stages[i].status}`}
+              /> :
+              <a
+                className="" href={record.gitlabUrl ? `${record.gitlabUrl.slice(0, -4)}/-/jobs/${stages[i].id}` : null}
+                target="_blank"
+                rel="nofollow me noopener noreferrer"
+              >
+                <i
+                  className={`icon ${ICONS[stages[i].status || 'skipped'].icon || ''}
+                c7n-icon-${stages[i].status}`}
+                />
+              </a>}
+          </Tooltip>
+        </span>);
+      }
+    } else {
+      pipeStage.push(<span className="c7n-jobs" key="c7n-stage-null">
+        <Icon type="wait_circle" />
+        <span className="c7n-split-before" />
+        <Icon type="wait_circle" />
+        <span className="c7n-split-before" />
+        <Icon type="wait_circle" />
+      </span>);
+    }
+    return (
+      <div className="c7n-jobs">
+        {pipeStage}
+      </div>
+    );
   };
 
   /**
-   * 打开创建分支弹框
+   * 第二阶段卡片内容
+   * @param data
+   * @returns {*}
    */
-  openCreateBranch = (branchName) => {
+  getCardContent(data) {
+    const { intl: { formatMessage } } = this.props;
+    let styles = "";
+    let status = null;
+    if (!data) {
+      styles = "c7n-env-state-unexecuted";
+    } else {
+      status = data.status;
+    }
+    if (status === 'failed') {
+      styles = "c7n-env-state-failed";
+    } else if (status === 'passed') {
+      styles = "c7n-env-state-running";
+    } else if (status === 'running') {
+      styles = "c7n-env-state-creating";
+    } else if (status === 'pending' || status === 'created') {
+      styles = "c7n-env-state-disconnect";
+    } else {
+      styles = "c7n-env-state-unexecuted";
+    }
+    return (
+      <div className="c7n-env-card-content">
+        <div className={classNames("c7n-env-state", styles)}>
+          {formatMessage({ id: `ci_${status || 'unexecuted'}` })}
+        </div>
+        <div className="c7n-env-des-wrap">
+          <div className="c7n-env-des">
+            <div className="c7n-dc-ci">
+              {formatMessage({ id: 'app.stage' })}：
+              {this.renderStages(data)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /**
+   * 第三阶段卡片内容
+   * data
+   * @returns {*}
+   */
+  getVerContent = _.throttle((data) => {
     const { projectId } = AppState.currentMenuType;
-    this.setState({ branchName, createBranch: true });
-    BranchStore.loadTagData(projectId);
-    BranchStore.loadBranchData({
-      projectId,
-      size: 3,
-    });
-    BranchStore.setCreateBranchShow('create');
-  };
+    if(data) {
+      AppVersionStore.loadVerByPipId(projectId, data.pipelineId, data.ref)
+        .then((res) => {
+          if (res && res.failed) {
+            Choerodon.prompt(res.message);
+            this.setState({ versionState: false })
+          } else {
+            this.setState({ versionState: res });
+          }
+        });
+    }
+  }, 10000);
 
   /**
-   * 关闭创建分支弹窗
+   * 获取流水线
+   * @returns {*}
    */
-  closeCreateBranch = () => {
-    this.setState({ branchName: '', createBranch: false });
-    BranchStore.setCreateBranchShow(false);
-  };
+  getDevPipeline = () => {
+    const { type, projectId, organizationId: orgId } = AppState.currentMenuType;
+    const { lineKey, branchIssue, loadingFlag, versionState } = this.state;
+    const { DevConsoleStore, intl: { formatMessage } } = this.props;
+    const branchLoading = DevConsoleStore.getBranchLoading;
+    const { loading: mergeLoading } = MergeRequestStore;
+    const branchList = DevConsoleStore.getBranchList;
+    const ciPipelines = CiPipelineStore.getCiPipelines;
+    const ciPipelineOne = ciPipelines.length ? ciPipelines[0] : null;
+    const branchOption = _.map(branchList, b => <Option key={b.sha} value={b.branchName}>{b.branchName}</Option>);
+    const branchOne = _.filter(branchList, ['branchName', branchIssue]).length ? _.filter(branchList, ['branchName', branchIssue])[0] : {branchName: <FormattedMessage id="devCs.allBranch" />};
+    const issueDom = branchOne && (<div className='c7n-dc-branch-issue'>{branchOne.typeCode ?
+      this.getOptionContent(branchOne, 'line') : null}</div>);
+    const verContent = versionState ? (<div className="c7n-env-card-content">
+      <div className="c7n-env-state c7n-env-state-running">
+        {formatMessage({ id: 'ci_passed' })}
+      </div>
+      <div className="c7n-dc-version-span">
+        <span>{formatMessage({ id: 'devCs.ver' })}</span>
+      </div>
+    </div>) : (<div className="c7n-dc-version-content">
+      <div className="c7n-dc-noVersion"/>
+      <span>{formatMessage({ id: 'report.build-duration.noversion' })}</span>
+    </div>);
 
-  /**
-   * 打开删除分支确认框
-   */
-  openDeleteBranch = (e, branchName) => {
-    e.stopPropagation();
-    this.setState({ visibleBranch: true, branchName });
-  };
-
-  /**
-   * 关闭删除分支确认框
-   */
-  closeDeleteBranch = () => this.setState({ visibleBranch: false });
-
-  /**
-   * 删除分支
-   */
-  deleteBranch = () => {
-    const { branchName } = this.state;
-    const { projectId } = AppState.currentMenuType;
-    this.setState({ deleteLoading: true });
-    BranchStore.deleteData(projectId, DevPipelineStore.getSelectApp, branchName)
-      .then((res) => {
-        if (res) {
-          this.loadBranchData();
-          this.closeDeleteBranch();
-        }
-        this.setState({ deleteLoading: false });
-      });
-  };
+    return (<div className="c7n-dc-card-wrap">
+        <div className="c7n-dc-card-title">
+          <Icon type="assembly_line" />
+          <FormattedMessage id="app.pipeline" />
+        </div>
+        <div className="c7n-dc-line">
+          <div className={lineKey === 1 ? 'c7n-dc-line_card-active' : 'c7n-dc-line_card'} onClick={this.cardChecked.bind(this, 1)}>
+            <div className="c7n-dc-line_card-arrow" />
+            <div className="c7n-dc-line_card-content">
+              <div className="c7n-dc-line_card-title">
+                <FormattedMessage id="app.branchManage" />
+                <Permission
+                  service={['devops-service.devops-git.createBranch']}
+                  type={type}
+                  projectId={projectId}
+                  organizationId={orgId}
+                >
+                  <Tooltip
+                    placement="bottom"
+                    title={<FormattedMessage id="branch.create" />}
+                  >
+                    <Button
+                      icon="branch"
+                      shape="circle"
+                      onClick={this.displayModal.bind(this, 'createBranch')}
+                    />
+                  </Tooltip>
+                </Permission>
+              </div>
+              <Select
+                label={<FormattedMessage id="app.branch.select" />}
+                onChange={this.branchChange}
+                value={branchOne ? branchOne.branchName : null}
+              >
+                {branchOption}
+                <Option key={'ALL'}><FormattedMessage id="devCs.allBranch" /></Option>
+              </Select>
+            </div>
+          </div>
+          <div className="c7n-dc-line-arrow" >
+            {issueDom}
+          </div>
+          <div className={lineKey === 2 ? 'c7n-dc-line_card-active' : 'c7n-dc-line_card'} onClick={this.cardChecked.bind(this, 2)}>
+            <div className="c7n-dc-line_card-arrow" />
+            <div className="c7n-dc-line_card-content">
+              <div className="c7n-dc-line_card-title">
+                <FormattedMessage id="ciPipeline.head" />
+              </div>
+              {CiPipelineStore.loading && loadingFlag ? <Progress className="c7n-dc-card-loading" type="loading" /> : this.getCardContent(ciPipelineOne)}
+            </div>
+          </div>
+          <div className="c7n-dc-line-arrow" />
+          <div className={lineKey === 3 ? 'c7n-dc-line_card-active' : 'c7n-dc-line_card'} onClick={this.cardChecked.bind(this, 3)}>
+            <div className="c7n-dc-line_card-arrow" />
+            <div className="c7n-dc-line_card-content">
+              <div className="c7n-dc-line_card-title">
+                <FormattedMessage id="app.version" />
+              </div>
+              {CiPipelineStore.loading && loadingFlag ? <Progress className="c7n-dc-card-loading" type="loading" /> : verContent}
+            </div>
+          </div>
+        </div>
+      {lineKey === 1 ? <Fragment>{branchLoading && mergeLoading  && loadingFlag ? <LoadingBar display /> : (<Fragment>
+        {this.getBranch()}
+        {this.getMergeRequest()}
+      </Fragment>)}
+      </Fragment> : null}
+      {lineKey === 2 ? <Fragment>{CiPipelineStore.loading  && loadingFlag ? <LoadingBar display /> : (<div className="c7n-dc-branch c7n-ciPipeline">
+          <div className="c7n-dc-card-subtitle">
+            <FormattedMessage id="ciPipeline.head" />
+          </div>
+          <CiPipelineTable store={CiPipelineStore} />
+        </div>)}
+      </Fragment> : null}
+      {lineKey === 3 ? <Fragment>{AppVersionStore.loading  && loadingFlag ? <LoadingBar display /> : (<div className="c7n-dc-branch c7n-ciPipeline">
+          <div className="c7n-dc-card-subtitle">
+            <FormattedMessage id="app.version" />
+          </div>
+          <AppVersionTable store={AppVersionStore} />
+        </div>)}
+      </Fragment> : null}
+    </div>)};
 
   /**
    * 获取分支内容
@@ -355,13 +658,30 @@ class DevConsole extends Component {
     let list = [];
     if (branchList && branchList.length) {
       list = branchList.map((item) => {
-        const { branchName, commitUserName, commitDate, commitUserUrl, commitUrl, issueCode, typeCode, sha, commitContent, issueName } = item;
+        const { branchName, commitUserName, commitDate, commitUserUrl, commitUrl, typeCode, sha, commitContent } = item;
         const { type, projectId, organizationId: orgId } = AppState.currentMenuType;
         return (<div className="c7n-dc-branch-content" key={branchName}>
           <div className="branch-content-title">
             {this.getIcon(branchName)}
-            <div className="branch-name" title={branchName}>{branchName}</div>
-            {typeCode ? this.getIssue(typeCode, issueCode, issueName) : null}
+            <MouserOverWrapper text={branchName} width={0.2}>{branchName}</MouserOverWrapper>
+          </div>
+          <div className="c7n-branch-commit">
+            <i className="icon icon-point branch-column-icon" />
+            <a href={commitUrl} target="_blank" rel="nofollow me noopener noreferrer" className="branch-sha">
+              <span>{sha && sha.slice(0, 8) }</span>
+            </a>
+            <i className="icon icon-schedule branch-col-icon branch-column-icon" />
+            <div className="c7n-branch-time"><TimePopover content={commitDate} /></div>
+            <Tooltip title={commitUserName}>
+              {commitUserUrl
+                ? <Avatar size="small" src={commitUserUrl} className="c7n-branch-avatar" />
+                : <Avatar size="small" className="c7n-branch-avatar">{commitUserName ? commitUserName.toString().slice(0, 1).toUpperCase() : '?'}</Avatar>
+              }
+            </Tooltip>
+            <MouserOverWrapper text={commitContent} width={0.3}>{commitContent}</MouserOverWrapper>
+          </div>
+          <div className="c7n-branch-operate">
+            {typeCode ? this.getOptionContent(item, 'list') : null}
             {branchName !== 'master' ? <div className="c7n-branch-action">
               <Permission
                 projectId={projectId}
@@ -370,7 +690,7 @@ class DevConsole extends Component {
                 service={['devops-service.devops-git.update']}
               >
                 <Tooltip title={<FormattedMessage id="branch.edit" />}>
-                  <Button size="small" shape="circle" icon="mode_edit" onClick={this.openEditBranch.bind(this, branchName)} />
+                  <Button size="small" shape="circle" icon="mode_edit" onClick={this.displayModal.bind(this, 'editBranch', branchName)} />
                 </Tooltip>
               </Permission>
               <Tooltip title={<FormattedMessage id="branch.request" />}>
@@ -389,30 +709,20 @@ class DevConsole extends Component {
                 service={['devops-service.devops-git.delete']}
               >
                 <Tooltip title={<FormattedMessage id="delete" />}>
-                  <Button size="small" shape="circle" icon="delete_forever" onClick={e => this.openDeleteBranch(e, branchName)} />
+                  <Button size="small" shape="circle" icon="delete_forever" onClick={this.displayModal.bind(this, 'deleteBranch', branchName)} />
                 </Tooltip>
               </Permission>
             </div> : null}
           </div>
-          <div className="c7n-branch-commit">
-            <i className="icon icon-point branch-column-icon" />
-            <a href={commitUrl} target="_blank" rel="nofollow me noopener noreferrer" className="branch-sha">
-              <span>{sha && sha.slice(0, 8) }</span>
-            </a>
-            <i className="icon icon-schedule branch-col-icon branch-column-icon" />
-            <div className="c7n-branch-time"><TimePopover content={commitDate} /></div>
-            <Tooltip title={commitUserName}>
-              {commitUserUrl
-                ? <Avatar size="small" src={commitUserUrl} className="c7n-branch-avatar" />
-                : <Avatar size="small" className="c7n-branch-avatar">{commitUserName ? commitUserName.toString().slice(0, 1).toUpperCase() : '?'}</Avatar>
-              }
-            </Tooltip>
-            <MouserOverWrapper text={commitContent} width={0.3}>{commitContent}</MouserOverWrapper>
-          </div>
         </div>);
       });
     }
-    return <div className="c7n-dc-branch">{list}</div>;
+    return (<div className="c7n-dc-branch">
+      <div className="c7n-dc-card-subtitle">
+        <FormattedMessage id="app.branch" />
+      </div>
+      {list}
+      </div>);
   };
 
   /**
@@ -438,50 +748,68 @@ class DevConsole extends Component {
     let list = [];
     if (mergeList && mergeList.length) {
       list = mergeList.map((item) => {
-        const { iid, sourceBranch, targetBranch, title, state } = item;
+        const { iid, sourceBranch, targetBranch, title, state, author, updatedAt } = item;
         const { type, projectId, organizationId: orgId } = AppState.currentMenuType;
         return (<div className="c7n-dc-branch-content" key={iid}>
           <div className="branch-content-title">
             <StatusTags name={state} colorCode={state} />
             <span className="c7n-merge-title">!{iid}</span>
-            <MouserOverWrapper text={title} width={0.25}>{title}</MouserOverWrapper>
+            <MouserOverWrapper text={title} width={0.3}>{title}</MouserOverWrapper>
           </div>
           <div className="c7n-merge-branch">
             <Icon type="branch" className="c7n-merge-icon" />
-            <MouserOverWrapper text={sourceBranch} width={0.12}>{sourceBranch}</MouserOverWrapper>
+            <MouserOverWrapper text={sourceBranch} width={0.15}>{sourceBranch}</MouserOverWrapper>
             <span><Icon type="keyboard_backspace" className="c7n-merge-icon-arrow" /></span>
             <Icon type="branch" className="c7n-merge-icon" />
-            <MouserOverWrapper text={targetBranch} width={0.12}>{targetBranch}</MouserOverWrapper>
-            <div className="c7n-merge-action">
-              <Permission
-                service={['devops-service.devops-git.getMergeRequestList']}
-                organizationId={orgId}
-                projectId={projectId}
-                type={type}
-              >
-                <Tooltip title={<FormattedMessage id="merge.detail" />}>
-                  <Button
-                    size="small"
-                    shape="circle"
-                    icon="find_in_page"
-                    onClick={this.linkToMerge.bind(this, iid)}
-                  />
-                </Tooltip>
-              </Permission>
+            <MouserOverWrapper text={targetBranch} width={0.15}>{targetBranch}</MouserOverWrapper>
+          </div>
+          <div className="c7n-branch-operate">
+            <div className="c7n-merge-branch">
+              <Tooltip title={author ? author.name : null}>
+                {author && author.webUrl
+                  ? <Avatar size="small" src={author.webUrl} className="c7n-branch-avatar" />
+                  : <Avatar size="small" className="c7n-branch-avatar">{author ? author.name.toString().slice(0, 1).toUpperCase() : '?'}</Avatar>
+                }
+              </Tooltip>
+              <span>{author ? author.name : 'unknown'}</span>
+              <i className="icon icon-schedule issue-time" />
+              <div className="issue-time_content">
+                <TimePopover content={updatedAt} />
+              </div>
             </div>
+            <Permission
+              service={['devops-service.devops-git.getMergeRequestList']}
+              organizationId={orgId}
+              projectId={projectId}
+              type={type}
+            >
+              <Tooltip title={<FormattedMessage id="merge.detail" />}>
+                <Button
+                  size="small"
+                  shape="circle"
+                  icon="find_in_page"
+                  onClick={this.linkToMerge.bind(this, iid)}
+                />
+              </Tooltip>
+            </Permission>
           </div>
         </div>);
       });
     } else if (appData && appData.length) {
       list = (<div className="c7n-devCs-nomerge"><FormattedMessage id="devCs.nomerge" /></div>);
     }
-    return <div>{list}</div>;
+    return (<div className="c7n-dc-branch">
+      <div className="c7n-dc-card-subtitle">
+        <FormattedMessage id="merge.head" />
+      </div>
+      {list}
+    </div>);
   };
 
   render() {
     const { intl: { formatMessage } } = this.props;
     const { type, projectId, organizationId: orgId, name } = AppState.currentMenuType;
-    const { visible, deleteLoading, creationDisplay, appName, editDisplay, editTag, editRelease, tag, branchName, editBranch, createBranch, visibleBranch } = this.state;
+    const { modalDisplay, deleteLoading, appName, tagRelease, tagName, branchName } = this.state;
     const appData = DevPipelineStore.getAppData;
     const appId = DevPipelineStore.getSelectApp;
     const tagData = AppTagStore.getTagData;
@@ -492,8 +820,7 @@ class DevConsole extends Component {
     const { DevConsoleStore } = this.props;
     const branchList = DevConsoleStore.getBranchList;
     const { totalCommitsDate } = ReportsStore.getCommits;
-    const branchLoading = DevConsoleStore.getBranchLoading;
-    const { loading: mergeLoading, getCount: { totalCount } } = MergeRequestStore;
+    const { getCount: { totalCount } } = MergeRequestStore;
 
     const titleName = _.find(appData, ['id', appId]) ? _.find(appData, ['id', appId]).name : name;
     const currentApp = _.find(appData, ['id', appId]);
@@ -532,7 +859,7 @@ class DevConsole extends Component {
           >
             <Button
               funcType="flat"
-              onClick={this.openCreateBranch.bind(this, branchName)}
+              onClick={this.displayModal.bind(this, 'createBranch')}
             >
               <FormattedMessage id="branch.create" />
             </Button>
@@ -551,7 +878,7 @@ class DevConsole extends Component {
           >
             <Button
               funcType="flat"
-              onClick={() => this.displayCreateModal(true)}
+              onClick={this.displayModal.bind(this, 'createTag')}
             >
               <FormattedMessage id="apptag.create" />
             </Button>
@@ -622,7 +949,7 @@ class DevConsole extends Component {
                 shape="circle"
                 size="small"
                 icon="mode_edit"
-                onClick={e => this.displayEditModal(true, tagName, release, e)}
+                onClick={this.displayModal.bind(this, 'editTag', tagName, release)}
               />
             </Tooltip>
           </Permission>
@@ -642,7 +969,7 @@ class DevConsole extends Component {
                 shape="circle"
                 size="small"
                 icon="delete_forever"
-                onClick={e => this.openRemove(e, tagName)}
+                onClick={this.displayModal.bind(this, 'deleteTag', tagName)}
               />
             </Tooltip>
           </Permission>
@@ -740,7 +1067,8 @@ class DevConsole extends Component {
           </Button>
         </Header>
         <Content>
-          <div className="c7n-dc-content_1 mb25">
+          {/*page-header*/}
+          <div className="c7n-dc-page-content-header">
             <div className="page-content-header">
               <div className="title">{appData.length && appId ? `应用"${titleName}"的开发控制台` : `项目"${titleName}"的开发控制台`}</div>
               {appData && appData.length ? <Fragment>
@@ -813,28 +1141,15 @@ class DevConsole extends Component {
               }
             </div>
           </div>
-          <div className="c7n-dc-content_1 mb16">
-            <div className="c7n-dc-card-wrap c7n-dc-card-branch">
-              <div className="c7n-dc-card-title">
-                <Icon type="branch" />
-                <FormattedMessage id="app.branchManage" />
-              </div>
-              {branchLoading ? <LoadingBar display /> : (this.getBranch())}
-            </div>
-            <div className="c7n-dc-card-wrap c7n-dc-card-merge">
-              <div className="c7n-dc-card-title">
-                <Icon type="merge_request" />
-                <FormattedMessage id="merge.head" />
-              </div>
-              {mergeLoading ? <LoadingBar display /> : this.getMergeRequest()}
-            </div>
-          </div>
+          {/*dev-pipeline*/}
+          {this.getDevPipeline()}
+          {/*tag card*/}
           <div className="c7n-dc-card-wrap">
             <div className="c7n-dc-card-title">
               <Icon type="local_offer" />
               <FormattedMessage id="apptag.head" />
             </div>
-            {loading || _.isNull(loading) ? <LoadingBar display /> : <Fragment>
+            {(loading || _.isNull(loading)) ? <LoadingBar display /> : <Fragment>
               {tagList.length ? <Fragment>
                 <Collapse className="c7n-dc-collapse-padding" bordered={false}>{tagList}</Collapse>
                 <div className="c7n-tag-pagin">
@@ -854,7 +1169,7 @@ class DevConsole extends Component {
                     <Button
                       type="primary"
                       funcType="raised"
-                      onClick={() => this.displayCreateModal(true, empty)}
+                      onClick={this.displayModal.bind(this, 'createTag')}
                     >
                       <FormattedMessage id="apptag.create" />
                     </Button>
@@ -864,25 +1179,30 @@ class DevConsole extends Component {
             </Fragment>}
           </div>
         </Content>
+          {/*tag delete modal*/}
+          <Modal
+            confirmLoading={deleteLoading}
+            visible={modalDisplay === 'deleteTag'}
+            title={`${formatMessage({ id: 'apptag.action.delete' })}“${tagName}”`}
+            closable={false}
+            footer={[
+              <Button key="back" onClick={this.displayModal.bind(this, 'close')} disabled={deleteLoading}>{<FormattedMessage
+                id="cancel" />}</Button>,
+              <Button key="submit" type="danger" onClick={this.deleteTag} loading={deleteLoading}>
+                {formatMessage({ id: 'delete' })}
+              </Button>,
+            ]}
+          >
+            <div className="c7n-padding-top_8">{formatMessage({ id: 'apptag.delete.tooltip' })}</div>
+          </Modal>
+          {/*branch delete modal*/}
         <Modal
           confirmLoading={deleteLoading}
-          visible={visible}
-          title={`${formatMessage({ id: 'apptag.action.delete' })}“${tag}”`}
-          closable={false}
-          footer={[
-            <Button key="back" onClick={this.closeRemove} disabled={deleteLoading}>{<FormattedMessage id="cancel" />}</Button>,
-            <Button key="submit" type="danger" onClick={this.deleteTag} loading={deleteLoading}>
-              {formatMessage({ id: 'delete' })}
-            </Button>,
-          ]}
-        ><div className="c7n-padding-top_8">{formatMessage({ id: 'apptag.delete.tooltip' })}</div></Modal>
-        <Modal
-          confirmLoading={deleteLoading}
-          visible={visibleBranch}
+          visible={modalDisplay === 'deleteBranch'}
           title={`${formatMessage({ id: 'branch.action.delete' })}“${branchName}”`}
           closable={false}
           footer={[
-            <Button key="back" onClick={this.closeDeleteBranch} disabled={deleteLoading}>{<FormattedMessage id="cancel" />}</Button>,
+            <Button key="back" onClick={this.displayModal.bind(this, 'close')} disabled={deleteLoading}>{<FormattedMessage id="cancel" />}</Button>,
             <Button key="submit" type="danger" onClick={this.deleteBranch} loading={deleteLoading}>
               {formatMessage({ id: 'delete' })}
             </Button>,
@@ -890,36 +1210,43 @@ class DevConsole extends Component {
         >
           <div className="c7n-padding-top_8">{formatMessage({ id: 'branch.delete.tooltip' })}</div>
         </Modal>
-        {creationDisplay ? <CreateTag
+        {modalDisplay === 'createTag' ? <CreateTag
           app={titleName}
           store={AppTagStore}
-          show={creationDisplay}
-          close={this.displayCreateModal}
+          show={modalDisplay === 'createTag'}
+          close={this.displayModal.bind(this, 'close')}
         /> : null}
-        {editDisplay ? <EditTag
+        {modalDisplay === 'editTag' ? <EditTag
           app={currentAppName}
           store={AppTagStore}
-          tag={editTag}
-          release={editRelease}
-          show={editDisplay}
-          close={this.displayEditModal}
+          tag={tagName}
+          release={tagRelease}
+          show={modalDisplay === 'editTag'}
+          close={this.displayModal.bind(this, 'close')}
         /> : null}
-        {createBranch ? <CreateBranch
+        {BranchStore.createBranchShow === 'create' ? <CreateBranch
           name={titleName}
           appId={DevPipelineStore.selectedApp}
           store={BranchStore}
-          visible={createBranch}
-          onClose={this.closeCreateBranch}
+          visible={BranchStore.createBranchShow === 'create'}
+          onClose={this.displayModal.bind(this, 'closeBranch')}
           isDevConsole
         /> : null}
-        {editBranch ? <EditBranch
+        {BranchStore.createBranchShow === 'detail' && <IssueDetail
+          name={branchName}
+          store={BranchStore}
+          visible={BranchStore.createBranchShow === 'detail'}
+          onClose={this.displayModal.bind(this, 'closeBranch')}
+          isDevConsole
+        />}
+        {BranchStore.createBranchShow === 'edit' && <EditBranch
           name={branchName}
           appId={DevPipelineStore.selectedApp}
           store={BranchStore}
-          visible={editBranch}
-          onClose={this.closeEditBranch}
+          visible={BranchStore.createBranchShow === 'edit'}
+          onClose={this.displayModal.bind(this, 'closeBranch')}
           isDevConsole
-        /> : null}</Fragment> : <DepPipelineEmpty title={<FormattedMessage id="devCs.head" />} type="app" />}
+        />}</Fragment> : <DepPipelineEmpty title={<FormattedMessage id="devCs.head" />} type="app" />}
       </Page>
     );
   }

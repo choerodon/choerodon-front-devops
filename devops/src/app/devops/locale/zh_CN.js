@@ -96,7 +96,7 @@ const pageDetail = {
   "container.log.description":
     "您可在此查看该容器的日志进行错误定位和状态监控。",
   "container.term.description":
-    "您可在此选择容器组下的Pod运行命令进行相关信息实时查看。在此命令行窗口中，选中即复制，粘贴操作：Mac端为cmd+v；Windows端为ctrl+shift+v。",
+    "您可在此选择容器组下的Pod运行命令进行相关信息实时查看。在此命令行窗口中，选中即复制，粘贴操作：Mac端为cmd+v；Windows端为ctrl+v。",
 
   // template
   "template.title": '组织"{name}"的应用模板',
@@ -433,6 +433,15 @@ const zhCN = {
   detailMore: "更多详情",
   expandAll: "全部展开",
   collapseAll: "全部折叠",
+  ci_passed: "已完成",
+  ci_running: "进行中",
+  ci_failed: "已失败",
+  ci_canceled: "已取消",
+  ci_unexecuted: "未执行",
+  ci_pending: "等待中",
+  ci_created: "创建中",
+  ci_skipped: "未执行",
+  ci_manual: "未执行",
 
   // 刷新
   refresh: "刷新",
@@ -759,6 +768,7 @@ const zhCN = {
   // app
   "app.head": "应用",
   "app.authority": "应用权限分配",
+  "app.authority.mbr": "已分配权限成员",
   "app.authority.help":
     "此操作用于为此应用配置特定的开发操作人员。一般默认选择为项目下所有成员，即该项目下的所有成员均能对此应用进行开发操作；若选择项目下特定成员，则只有被勾选的项目成员才有权限对此应用进行开发。",
   "app.appDetail": "应用详情",
@@ -795,6 +805,7 @@ const zhCN = {
   "app.branchName": "分支名称",
   "app.branch": "分支",
   "app.branchManage": "分支管理",
+  "app.branch.select": "选择分支",
   "app.branchType": "分支类型",
   "app.commitCode": "提交编码",
   "app.commitDescription": "提交描述",
@@ -1254,7 +1265,7 @@ const zhCN = {
   "report.build-duration.version": "版本",
   "report.build-duration.time": "时间",
   "report.build-duration.duration": "构建时长",
-  "report.build-duration.noversion": "未生成版本",
+  "report.build-duration.noversion": "暂未生成版本",
   "report.build-duration.yAxis": "时长（分）",
   "report.deploy-duration.apps": "每次最多可同时选择5个应用！",
   "report.no-app": "当前项目下无应用",
@@ -1287,6 +1298,8 @@ const zhCN = {
   "devCs.tag.number": "标记数",
   "devCs.nobranch": "暂无分支",
   "devCs.nomerge": "暂无合并请求",
+  "devCs.ver": "版本已生成",
+  "devCs.allBranch": "全部分支",
 
   // Deploy Pipeline
   "depPl.noEnv": "当前项目下暂无环境，请创建环境。",
