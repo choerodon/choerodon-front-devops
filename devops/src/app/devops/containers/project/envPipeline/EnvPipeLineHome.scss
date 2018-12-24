@@ -212,6 +212,11 @@
   &-creating {
     color: #4d90fe;
   }
+
+  &-unexecuted {
+    border-color: rgba(211, 211, 211, 0.54);
+    color: rgba(0, 0, 0, 0.54);
+  }
 }
 
 .c7n-env-state-ban {

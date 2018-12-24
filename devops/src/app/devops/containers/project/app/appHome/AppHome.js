@@ -921,7 +921,7 @@ class AppHome extends Component {
               />
             </div>
             <div className="c7n-env-tag-title">
-              <FormattedMessage id="cluster.authority.project" />
+              <FormattedMessage id="app.authority.mbr" />
             </div>
             <div className="c7n-env-tag-wrap">
               {modeType === "create" ? tagCreateDom : tagDom}

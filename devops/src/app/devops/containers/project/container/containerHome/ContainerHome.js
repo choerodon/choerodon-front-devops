@@ -278,6 +278,7 @@ class ContainerHome extends Component {
     hterm.defaultStorage = new lib.Storage.Memory();
     if (!this.term) {
       this.term = new hterm.Terminal();
+      this.term.prefs_.prefRecords_['ctrl-v-paste'].defaultValue = true;
       this.term.decorate(target);
       this.term.onTerminalReady = this.onTerminalReady.bind(this);
     } else {

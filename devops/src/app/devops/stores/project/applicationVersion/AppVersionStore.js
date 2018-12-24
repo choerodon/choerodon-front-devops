@@ -8,6 +8,8 @@ const ORDER = {
   ascend: 'asc',
   descend: 'desc',
 };
+const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
 const { AppState } = stores;
 
 @store('AppVersionStore')
@@ -24,11 +26,7 @@ class AppVersionStore {
   @observable preProId = AppState.currentMenuType.id;
 
   // 打开tab的loading
-  @observable pageInfo = {
-    current: 0,
-    total: 0,
-    pageSize: 10,
-  };
+  @observable pageInfo = { current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15, };
 
   @action setAppDate(data) {
     this.appData = data;
@@ -92,7 +90,11 @@ class AppVersionStore {
       .catch(err => Choerodon.prompt(err));
   };
 
-  loadData = (proId, app, page, pageSize, sort, filter) => {
+  loadData = (proId, app, page = this.pageInfo.current - 1, pageSize = this.pageInfo.pageSize, sort = { field: "id", order: "descend" },
+              filter = {
+                searchParam: {},
+                param: "",
+              }) => {
     this.changeLoading(true);
     const url = app
       ? `/devops/v1/projects/${proId}/app_versions/list_by_options?appId=${app}&page=${page}&size=${pageSize}&sort=${sort.field || 'id'},${ORDER[sort.order]}`
@@ -108,6 +110,21 @@ class AppVersionStore {
         this.changeLoading(false);
       });
   };
+
+  loadVerByBc = (proId, app, branch) => {
+    this.changeLoading(true);
+    axios.get(`/devops/v1/projects/${proId}/app_versions/list_by_branch?appId=${app}&branch=${branch}`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setAllData(data);
+        }
+        this.changeLoading(false);
+      });
+  };
+
+  loadVerByPipId = (projectId, id, branch) =>
+    axios.get(`devops/v1/projects/${projectId}/app_versions/query_by_pipeline?pipelineId=${id}&branch=${branch}`);
 }
 
 const appVersionStore = new AppVersionStore();

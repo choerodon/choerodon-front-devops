@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
 
 const { AppState } = stores;
@@ -21,9 +21,8 @@ class CiPipelineStore {
   @observable loading = true;
 
   loadPipelines(spin, appId, page = 0, size = this.pagination.pageSize, projectId = AppState.currentMenuType.id) {
-    spin && this.setCiPipelines([]);
     spin && this.setLoading(true);
-    axios.get(`/devops/v1/projects/${projectId}/pipeline/page?appId=${appId}&page=${page}&size=${size}`)
+    return axios.get(`/devops/v1/projects/${projectId}/pipeline/page?appId=${appId}&page=${page}&size=${size}`)
       .then((res) => {
         const response = this.handleProptError(res);
         if (response) {
@@ -35,6 +34,25 @@ class CiPipelineStore {
           this.setCiPipelines(res.content);
         }
         spin && this.setLoading(false);
+        return res.content;
+      });
+  }
+
+  loadPipelinesByBc(appId, branch, page = 0, size = this.pagination.pageSize, projectId = AppState.currentMenuType.id) {
+    this.setLoading(true);
+    return axios.get(`/devops/v1/projects/${projectId}/pipeline/page?appId=${appId}&branch=${branch}&page=${page}&size=${size}`)
+      .then((res) => {
+        const response = this.handleProptError(res);
+        if (response) {
+          this.setPagination({
+            current: res.number + 1,
+            pageSize: res.size,
+            total: res.totalElements,
+          });
+          this.setCiPipelines(res.content);
+        }
+        this.setLoading(false);
+        return res.content;
       });
   }
 
@@ -50,6 +68,10 @@ class CiPipelineStore {
 
   @action setCiPipelines(data) {
     this.ciPipelines = data;
+  }
+
+  @computed get getCiPipelines() {
+    return this.ciPipelines;
   }
 
   @action setCommits(data) {

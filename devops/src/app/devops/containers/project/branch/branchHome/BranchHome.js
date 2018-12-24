@@ -82,14 +82,9 @@ class BranchHome extends Component {
         icon = 'agile_task';
         color = '#4d90fe';
     }
-    return (<span>
-      <Tooltip title={mes}>
+    return (<Tooltip title={mes}>
         <div style={{ color }} className="branch-issue"><i className={`icon icon-${icon}`} /></div>
-      </Tooltip>
-      <Tooltip title={s.summary}>
-        <span className="branch-issue-content"><span>{s.issueNum}</span></span>
-      </Tooltip>
-    </span>);
+      </Tooltip>);
   };
 
   /**
