@@ -143,27 +143,29 @@ class NetworkHome extends Component {
       });
     }
     const content =
-      type === "ClusterIP" ? (
+      type === "NodePort" ? (
         <Fragment>
-          <div className="network-config-wrap">
-            <div className="network-type-title">
-              <FormattedMessage id="network.column.ip" />
-            </div>
-            <div>{externalIps ? iPArr : "-"}</div>
+          <div className="network-config-item">
+            <FormattedMessage id="network.node.port" />
           </div>
+          <div>{portArr}</div>
+        </Fragment>
+      ) : (
+        <Fragment>
+          {type === "ClusterIP" && (
+            <div className="network-config-wrap">
+              <div className="network-type-title">
+                <FormattedMessage id="network.column.ip" />
+              </div>
+              <div>{externalIps ? iPArr : "-"}</div>
+            </div>
+          )}
           <div className="network-config-wrap">
             <div className="network-type-title">
               <FormattedMessage id="network.column.port" />
             </div>
             <div>{portArr}</div>
           </div>
-        </Fragment>
-      ) : (
-        <Fragment>
-          <div className="network-config-item">
-            <FormattedMessage id="network.node.port" />
-          </div>
-          <div>{portArr}</div>
         </Fragment>
       );
     return (
@@ -182,13 +184,41 @@ class NetworkHome extends Component {
   }
 
   /**
+   * 生成 目标对象类型 列
+   * @param record
+   */
+  targetTypeColumn = record => {
+    const { appId, target: { appInstance, labels } } = record;
+    const { intl: { formatMessage } } = this.props;
+    const tergetType =
+      (appId && appInstance && appInstance.length)
+        ? "instance"
+        : (labels ? "param" : "endPoints");
+    let message = "";
+    switch (tergetType) {
+      case "instance":
+        message = formatMessage({ id: "ist.head" });
+        break;
+      case "param":
+        message = formatMessage({ id: "branch.issue.label" });
+        break;
+      case "endPoints":
+        message = "EndPoints";
+        break;
+    }
+    return <div><span>{message}</span></div>
+  };
+
+  /**
    * 生成 目标对象 列
    * @param record
    * @returns {Array}
    */
   targetColumn(record) {
-    const { appInstance, labels } = record.target;
+    const { appInstance, labels, endPoints } = record.target;
     const node = [];
+    const port = [];
+    const len = endPoints ? 2 : 1;
     if (appInstance && appInstance.length) {
       _.forEach(appInstance, item => {
         const { id, code, instanceStatus } = item;
@@ -196,7 +226,6 @@ class NetworkHome extends Component {
           instanceStatus !== "operating" && instanceStatus !== "running"
             ? "c7n-network-status-failed"
             : "";
-        // const status = instanceStatus ? code : <FormattedMessage id="deleted" />;
         if (code) {
           node.push(
             <div className={`network-column-instance ${statusStyle}`} key={id}>
@@ -220,26 +249,51 @@ class NetworkHome extends Component {
     if (!_.isEmpty(labels)) {
       _.forEach(labels, (value, key) =>
         node.push(
-          <div className="network-column-entry" key={key}>
+          <div className="network-column-instance" key={key}>
             <span>{key}</span>=<span>{value}</span>
           </div>
         )
       );
     }
+    if (endPoints) {
+      const targetIps = _.split(_.keys(endPoints)[0], ',');
+      const portList = _.values(endPoints)[0];
+      _.map(targetIps, (item, index) =>
+        node.push(
+          <div className="network-column-instance" key={index}>
+            <span>{item}</span>
+          </div>
+        )
+      );
+      _.map(portList, (item, index) => {
+        port.push(
+          <div className="network-column-instance" key={index}>
+            <span>{item.name}：{item.port}</span>
+          </div>
+        )
+      });
+    }
     return (
-      <div className="network-column-target">
-        {node[0] || null}
-        {node.length > 1 && (
-          <Popover
-            arrowPointAtCenter
-            placement="bottomRight"
-            getPopupContainer={triggerNode => triggerNode.parentNode}
-            content={<Fragment>{node}</Fragment>}
-          >
-            <Icon type="expand_more" className="network-expend-icon" />
-          </Popover>
-        )}
-      </div>
+      <Fragment>
+        {
+          _.map([node, port], (item, index) => (
+            <div className="network-column-target" key={index}>
+              {item[0] || null}
+              {endPoints && (<div className="network-column-targetIp">{item[1] || null}</div>)}
+              {item.length > len && (
+                <Popover
+                  arrowPointAtCenter
+                  placement="bottomRight"
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                  content={<Fragment>{item}</Fragment>}
+                >
+                  <Icon type="expand_more" className="network-expend-icon" />
+                </Popover>
+              )}
+            </div>)
+          )
+        }
+      </Fragment>
     );
   }
 
@@ -419,6 +473,11 @@ class NetworkHome extends Component {
         render: record => (
           <EnvFlag status={record.envStatus} name={record.envName} />
         ),
+      },
+      {
+        title: <FormattedMessage id="network.target.type" />,
+        key: "targetType",
+        render: this.targetTypeColumn,
       },
       {
         title: <FormattedMessage id="network.target" />,
