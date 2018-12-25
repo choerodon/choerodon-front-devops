@@ -182,12 +182,9 @@ class AppOverview extends Component {
       appVersion,
       appVersionId,
       id,
-      serviceDTOS,
-      ingressDTOS,
       commandVersion,
       commandVersionId,
       appId,
-      deploymentDTOS,
     } = data;
     let uploadIcon = null;
     if (appVersionId !== commandVersionId) {
@@ -243,7 +240,7 @@ class AppOverview extends Component {
           />
         </span>
         <div className="c7n-appow-pod-status">
-          <PodStatus deploymentDTOS={deploymentDTOS} />
+          <PodStatus dataSource={data} />
         </div>
         <div className="c7n-envow-ist-action">{this.columnAction(data)}</div>
       </div>
@@ -497,7 +494,7 @@ class AppOverview extends Component {
     const { store } = this.props;
     const {
       type,
-      id: projectId,
+      id: currentProjectId,
       organizationId: orgId,
       name,
     } = AppState.currentMenuType;
@@ -505,14 +502,13 @@ class AppOverview extends Component {
     if (ist) {
       if (ist.devopsEnvPreviewAppDTOS && ist.devopsEnvPreviewAppDTOS.length) {
         return _.map(ist.devopsEnvPreviewAppDTOS, previewApp => {
-          const { appName, applicationInstanceDTOS } = previewApp;
+          const { appName, applicationInstanceDTOS, projectId } = previewApp;
           return (
             <div className="c7n-envow-app-wrap" key={appName}>
               <div className="c7n-envow-app">
                 <Icon
                   type={
-                    applicationInstanceDTOS[0].projectId ===
-                    parseInt(projectId, 10)
+                    projectId === parseInt(currentProjectId, 10)
                       ? "project"
                       : "apps"
                   }
