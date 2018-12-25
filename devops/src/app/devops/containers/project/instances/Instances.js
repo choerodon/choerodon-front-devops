@@ -274,10 +274,12 @@ class Instances extends Component {
    * @param res 是否重新部署需要重载数据
    */
   handleCancelUp = res => {
+    const { InstancesStore } = this.props;
+    const appId = InstancesStore.getAppId;
     this.setState({
       visibleUp: false,
     });
-    res && this.reloadData(true, false);
+    res && this.reloadData(true, false, appId);
   };
 
   /**

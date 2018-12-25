@@ -267,16 +267,14 @@ class ExpandRow extends Component {
               </Tooltip>
             </span>
           </li>
-          {podType === "envPod" && (
-            <li className="c7n-deploy-expanded-lists">
-              <Button
-                className="c7ncd-detail-btn"
-                onClick={this.handleClick.bind(this, id, name)}
-              >
-                <FormattedMessage id="detailMore" />
-              </Button>
-            </li>
-          )}
+          <li className="c7n-deploy-expanded-lists">
+            <Button
+              className="c7ncd-detail-btn"
+              onClick={() => this.handleClick(podType, id, name)}
+            >
+              <FormattedMessage id="detailMore" />
+            </Button>
+          </li>
         </ul>
         <div className="c7n-deploy-expanded-pod">
           {status === "running" ? (
@@ -384,14 +382,15 @@ class ExpandRow extends Component {
 
   /**
    * 打开Deployment详情侧边栏，并加载数据
+   * @param {string} type
    * @param {*} id
    * @param {*} name
    */
-  handleClick(id, name) {
+  handleClick = (type, id, name) => {
     const { id: projectId } = AppState.currentMenuType;
     this.setState({ visible: true, sideName: name });
-    DeploymentStore.loadDeploymentsJson(projectId, id, name);
-  }
+    DeploymentStore.loadDeploymentsJson(type, projectId, id, name);
+  };
 
   hideSidebar = () => {
     this.setState({ visible: false, activeKey: [], isExpand: false });

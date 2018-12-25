@@ -1,23 +1,30 @@
-import { observable, action, computed } from 'mobx';
-import { axios, store, stores } from 'choerodon-front-boot';
-import moment from 'moment';
-import _ from 'lodash';
-import { handleProptError } from '../../../utils';
+import { observable, action, computed } from "mobx";
+import { axios, store, stores } from "choerodon-front-boot";
+import moment from "moment";
+import _ from "lodash";
+import { handleProptError } from "../../../utils";
 
-const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+const HEIGHT =
+  window.innerHeight ||
+  document.documentElement.clientHeight ||
+  document.body.clientHeight;
 const { AppState } = stores;
 
-@store('ReportsStore')
+@store("ReportsStore")
 class ReportsStore {
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
+    current: 1,
+    total: 0,
+    pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
   @observable Info = {
-    filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+    filters: {},
+    sort: { columnKey: "id", order: "descend" },
+    paras: [],
   };
 
-  @observable startTime = moment().subtract(6, 'days');
+  @observable startTime = moment().subtract(6, "days");
 
   @observable startDate = null;
 
@@ -57,7 +64,7 @@ class ReportsStore {
 
   @observable allApps = [];
 
-  @observable proRole = '';
+  @observable proRole = "";
 
   @action setProRole(data) {
     this.proRole = data;
@@ -249,24 +256,26 @@ class ReportsStore {
    * 加载项目下的应用
    * @param proId
    */
-  loadApps = proId => axios.get(`/devops/v1/projects/${proId}/apps/list_all`).then((data) => {
-    const res = handleProptError(data);
-    this.handleAppsDate(res);
-    return res;
-  });
+  loadApps = proId =>
+    axios.get(`/devops/v1/projects/${proId}/apps/list_all`).then(data => {
+      const res = handleProptError(data);
+      this.handleAppsDate(res);
+      return res;
+    });
 
   /**
    * 加载项目下所有应用，代码提交报表使用
    * @param proId
    */
-  loadAllApps = proId => axios.get(`/devops/v1/projects/${proId}/apps`).then((data) => {
-    const res = handleProptError(data);
-    this.handleAppsDate(res);
-    return res;
-  });
+  loadAllApps = proId =>
+    axios.get(`/devops/v1/projects/${proId}/apps`).then(data => {
+      const res = handleProptError(data);
+      this.handleAppsDate(res);
+      return res;
+    });
 
-  handleAppsDate = (data) => {
-    const apps = data ? _.filter(data, ['permission', true]) : [];
+  handleAppsDate = data => {
+    const apps = data ? _.filter(data, ["permission", true]) : [];
     if (apps.length) {
       this.setAllApps(apps);
     } else {
@@ -282,18 +291,21 @@ class ReportsStore {
    */
   judgeRole = () => {
     const { projectId, organizationId, type } = AppState.currentMenuType;
-    const datas = [{
-      code: 'devops-service.devops-environment.create',
-      organizationId,
-      projectId,
-      resourceType: type,
-    }];
-    axios.post('/iam/v1/permissions/checkPermission', JSON.stringify(datas))
-      .then((data) => {
+    const datas = [
+      {
+        code: "devops-service.devops-environment.create",
+        organizationId,
+        projectId,
+        resourceType: type,
+      },
+    ];
+    axios
+      .post("/iam/v1/permissions/checkPermission", JSON.stringify(datas))
+      .then(data => {
         const res = handleProptError(data);
         if (res && res.length) {
           const { approve } = res[0];
-          this.setProRole(approve ? 'owner' : 'member');
+          this.setProRole(approve ? "owner" : "member");
         }
       });
   };
@@ -304,8 +316,11 @@ class ReportsStore {
    */
   loadBuildNumber = (projectId, appId, startTime, endTime) => {
     this.setEchartsLoading(true);
-    return axios.get(`/devops/v1/projects/${projectId}/pipeline/frequency?appId=${appId}&startTime=${startTime}&endTime=${endTime}`)
-      .then((data) => {
+    return axios
+      .get(
+        `/devops/v1/projects/${projectId}/pipeline/frequency?appId=${appId}&startTime=${startTime}&endTime=${endTime}`
+      )
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.setBuildNumber(data);
@@ -320,8 +335,11 @@ class ReportsStore {
    */
   loadBuildDuration = (projectId, appId, startTime, endTime) => {
     this.setEchartsLoading(true);
-    return axios.get(`/devops/v1/projects/${projectId}/pipeline/time?appId=${appId}&startTime=${startTime}&endTime=${endTime}`)
-      .then((data) => {
+    return axios
+      .get(
+        `/devops/v1/projects/${projectId}/pipeline/time?appId=${appId}&startTime=${startTime}&endTime=${endTime}`
+      )
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.setBuildDuration(data);
@@ -334,10 +352,20 @@ class ReportsStore {
    * 加载构建情况表格
    *
    */
-  loadBuildTable = (projectId, appId, startTime, endTime, page = 0, size = this.pageInfo.pageSize) => {
+  loadBuildTable = (
+    projectId,
+    appId,
+    startTime,
+    endTime,
+    page = 0,
+    size = this.pageInfo.pageSize
+  ) => {
     this.changeLoading(true);
-    return axios.get(`/devops/v1/projects/${projectId}/pipeline/page?appId=${appId}&startTime=${startTime}&endTime=${endTime}&page=${page}&size=${size}`)
-      .then((data) => {
+    return axios
+      .get(
+        `/devops/v1/projects/${projectId}/pipeline/page?appId=${appId}&startTime=${startTime}&endTime=${endTime}&page=${page}&size=${size}`
+      )
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.handleData(data);
@@ -348,8 +376,12 @@ class ReportsStore {
 
   loadDeployDurationChart = (projectId, envId, startTime, endTime, appIds) => {
     this.setEchartsLoading(true);
-    return axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/time?envId=${envId}&endTime=${endTime}&startTime=${startTime}`, JSON.stringify(appIds))
-      .then((data) => {
+    return axios
+      .post(
+        `devops/v1/projects/${projectId}/app_instances/env_commands/time?envId=${envId}&endTime=${endTime}&startTime=${startTime}`,
+        JSON.stringify(appIds)
+      )
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.setDdChart(data);
@@ -361,8 +393,12 @@ class ReportsStore {
 
   loadDeployTimesChart = (projectId, appId, startTime, endTime, envIds) => {
     this.setEchartsLoading(true);
-    return axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/frequency?appId=${appId}&endTime=${endTime}&startTime=${startTime}`, JSON.stringify(envIds))
-      .then((data) => {
+    return axios
+      .post(
+        `devops/v1/projects/${projectId}/app_instances/env_commands/frequency?appId=${appId}&endTime=${endTime}&startTime=${startTime}`,
+        JSON.stringify(envIds)
+      )
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.setDtChart(data);
@@ -372,10 +408,22 @@ class ReportsStore {
       });
   };
 
-  loadDeployDurationTable = (projectId, envId, startTime, endTime, appIds, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize) => {
+  loadDeployDurationTable = (
+    projectId,
+    envId,
+    startTime,
+    endTime,
+    appIds,
+    page = this.pageInfo.current - 1,
+    size = this.pageInfo.pageSize
+  ) => {
     this.changeLoading(true);
-    return axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/timeDetail?envId=${envId}&endTime=${endTime}&startTime=${startTime}&page=${page}&size=${size}`, JSON.stringify(appIds))
-      .then((data) => {
+    return axios
+      .post(
+        `devops/v1/projects/${projectId}/app_instances/env_commands/timeDetail?envId=${envId}&endTime=${endTime}&startTime=${startTime}&page=${page}&size=${size}`,
+        JSON.stringify(appIds)
+      )
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.handleData(data);
@@ -383,12 +431,24 @@ class ReportsStore {
         this.changeLoading(false);
         this.changeIsRefresh(false);
       });
-  }
+  };
 
-  loadDeployTimesTable = (projectId, appId, startTime, endTime, envIds, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize) => {
+  loadDeployTimesTable = (
+    projectId,
+    appId,
+    startTime,
+    endTime,
+    envIds,
+    page = this.pageInfo.current - 1,
+    size = this.pageInfo.pageSize
+  ) => {
     this.changeLoading(true);
-    return axios.post(`devops/v1/projects/${projectId}/app_instances/env_commands/frequencyDetail?appId=${appId}&endTime=${endTime}&startTime=${startTime}&page=${page}&size=${size}`, JSON.stringify(envIds))
-      .then((data) => {
+    return axios
+      .post(
+        `devops/v1/projects/${projectId}/app_instances/env_commands/frequencyDetail?appId=${appId}&endTime=${endTime}&startTime=${startTime}&page=${page}&size=${size}`,
+        JSON.stringify(envIds)
+      )
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.handleData(data);
@@ -396,7 +456,7 @@ class ReportsStore {
         this.changeLoading(false);
         this.changeIsRefresh(false);
       });
-  }
+  };
 
   /**
    * 代码提交情况
@@ -407,15 +467,19 @@ class ReportsStore {
    */
   loadCommits = (projectId, start = null, end = null, apps = null) => {
     this.setCommitLoading(true);
-    axios.post(`devops/v1/projects/${projectId}/apps/commits?start_date=${start}&end_date=${end}`, JSON.stringify(apps))
-      .then((data) => {
+    axios
+      .post(
+        `devops/v1/projects/${projectId}/commits?start_date=${start}&end_date=${end}`,
+        JSON.stringify(apps)
+      )
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.setCommits(res);
         }
         this.setCommitLoading(false);
       })
-      .catch((err) => {
+      .catch(err => {
         this.setCommitLoading(false);
         Choerodon.handleResponseError(err);
       });
@@ -429,23 +493,33 @@ class ReportsStore {
    * @param apps
    * @param page
    */
-  loadCommitsRecord = (projectId, start = null, end = null, apps = null, page = 0) => {
+  loadCommitsRecord = (
+    projectId,
+    start = null,
+    end = null,
+    apps = null,
+    page = 0
+  ) => {
     this.setHistoryLoad(true);
-    axios.post(`devops/v1/projects/${projectId}/apps/commits/record?page=${page}&size=5&start_date=${start}&end_date=${end}`, JSON.stringify(apps))
-      .then((data) => {
+    axios
+      .post(
+        `devops/v1/projects/${projectId}/commits/record?page=${page}&size=5&start_date=${start}&end_date=${end}`,
+        JSON.stringify(apps)
+      )
+      .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.setCommitsRecord(res);
         }
         this.setHistoryLoad(false);
       })
-      .catch((err) => {
+      .catch(err => {
         this.setHistoryLoad(false);
         Choerodon.handleResponseError(err);
       });
   };
 
-  handleData = (data) => {
+  handleData = data => {
     this.setAllData(data.content);
     const { number, size, totalElements } = data;
     const page = { number, size, totalElements };
