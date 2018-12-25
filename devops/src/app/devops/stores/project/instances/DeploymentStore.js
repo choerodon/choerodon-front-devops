@@ -26,16 +26,24 @@ class DeploymentStore {
 
   /**
    * 根据实例id获取更多部署详情(Json格式)
+   * @param type 请求类型
    * @param project 项目id
    * @param instance 实例id
    * @param name deployment名称
    * @memberof DeploymentStore
    */
-  loadDeploymentsJson = (project, instance, name) => {
+  loadDeploymentsJson = (type, project, instance, name) => {
     this.setLoading(true);
+    const URL_TYPE = {
+      envPod: `deployment_detail_json?deployment_name=${name}`,
+      stateful: `stateful_set_detail_json?stateful_set_name=${name}`,
+      daemon: `daemon_set_detail_json?daemon_set_name=${name}`,
+    };
     axios
       .get(
-        `devops/v1/projects/${project}/app_instances/${instance}/deployment_detail_json?deployment_name=${name}`
+        `devops/v1/projects/${project}/app_instances/${instance}/${
+          URL_TYPE[type]
+        }`
       )
       .then(data => {
         const res = handleProptError(data);
