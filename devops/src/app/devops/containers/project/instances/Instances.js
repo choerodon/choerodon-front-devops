@@ -648,7 +648,7 @@ class Instances extends Component {
       {
         title: <FormattedMessage id="deploy.pod" />,
         key: "podStatus",
-        render: record => <PodStatus deploymentDTOS={record.deploymentDTOS} />,
+        render: record => <PodStatus dataSource={record} />,
       },
       {
         width: 56,

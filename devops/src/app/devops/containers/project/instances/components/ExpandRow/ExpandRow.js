@@ -57,6 +57,8 @@ class ExpandRow extends Component {
       record: {
         persistentVolumeClaimDTOS,
         deploymentDTOS,
+        statefulSetDTOS,
+        daemonSetDTOS,
         serviceDTOS,
         ingressDTOS,
         envId,
@@ -68,7 +70,15 @@ class ExpandRow extends Component {
     } = this.props;
 
     const deployContent = _.map(deploymentDTOS, item =>
-      this.getDeployContent("devopsEnvPodDTOS", item, envId, appId, id, status)
+      this.getDeployContent("envPod", item, envId, appId, id, status)
+    );
+
+    const statefulContent = _.map(statefulSetDTOS, item =>
+      this.getDeployContent("stateful", item, envId, appId, id, status)
+    );
+
+    const daemonContent = _.map(daemonSetDTOS, item =>
+      this.getDeployContent("daemon", item, envId, appId, id, status)
     );
 
     const serviceContent = _.map(serviceDTOS, item =>
@@ -85,31 +95,63 @@ class ExpandRow extends Component {
 
     return (
       <div className="c7n-deploy-expanded">
-        {deployContent.length ? (
+        {!!deployContent.length && (
           <Fragment>
             <div className="c7n-deploy-expanded-title">
               <span>Deployments</span>
             </div>
             {deployContent}
           </Fragment>
-        ) : (
-          <div className="c7n-deploy-expanded-empty">
-            <FormattedMessage id="ist.expand.empty" />
-          </div>
         )}
-        <div className="c7n-deploy-expanded-title">
-          <span>PVC</span>
-          {pvcContent}
-        </div>
-        {serviceContent}
-        <div className="c7n-deploy-expanded-title">
-          <span>Service</span>
-        </div>
-        {serviceContent}
-        <div className="c7n-deploy-expanded-title">
-          <span>Ingress</span>
-        </div>
-        {ingressContent}
+        {!!statefulContent.length && (
+          <Fragment>
+            <div className="c7n-deploy-expanded-title">
+              <span>Stateful Set</span>
+            </div>
+            {statefulContent}
+          </Fragment>
+        )}
+        {!!daemonContent.length && (
+          <Fragment>
+            <div className="c7n-deploy-expanded-title">
+              <span>Daemon Set</span>
+            </div>
+            {daemonContent}
+          </Fragment>
+        )}
+        {!!pvcContent.length && (
+          <Fragment>
+            <div className="c7n-deploy-expanded-title">
+              <span>PVC</span>
+            </div>
+            {pvcContent}
+          </Fragment>
+        )}
+        {!!serviceContent.length && (
+          <Fragment>
+            <div className="c7n-deploy-expanded-title">
+              <span>Service</span>
+            </div>
+            {serviceContent}
+          </Fragment>
+        )}
+        {!!ingressContent.length && (
+          <Fragment>
+            <div className="c7n-deploy-expanded-title">
+              <span>Ingress</span>
+            </div>
+            {ingressContent}
+          </Fragment>
+        )}
+        {!deployContent.length &&
+          !pvcContent.length &&
+          !serviceContent.length &&
+          !statefulContent.length &&
+          !ingressContent.length && (
+            <div className="c7n-deploy-expanded-empty">
+              <FormattedMessage id="ist.expand.empty" />
+            </div>
+          )}
       </div>
     );
   }
@@ -126,8 +168,16 @@ class ExpandRow extends Component {
    * @memberof ExpandRow
    */
   getDeployContent(podType, item, envId, appId, id, status) {
-    const { name, available, age, current, desired } = item;
-    const count = _.countBy(item[podType], pod => !!pod.ready);
+    const POD_TYPE = {
+      // 确保“当前/需要/可提供”的顺序
+      envPod: ["current", "desired", "available"],
+      daemon: ["currentScheduled", "desiredScheduled", "numberAvailable"],
+      stateful: ["currentReplicas", "desiredReplicas", "readyReplicas"],
+    };
+    const [current, desired, available] = POD_TYPE[podType];
+
+    const { name, age, devopsEnvPodDTOS } = item;
+    const count = _.countBy(devopsEnvPodDTOS, pod => !!pod.ready);
     const correctCount = count["true"] || 0;
     const errorCount = count["false"] || 0;
     const sum = correctCount + errorCount;
@@ -189,13 +239,20 @@ class ExpandRow extends Component {
             </span>
           </li>
           <li className="c7n-deploy-expanded-lists">
-            <span className="c7n-deploy-expanded-keys">ReplicaSet：</span>
+            <span className="c7n-deploy-expanded-keys">
+              {podType === "envPod" ? (
+                "ReplicaSet"
+              ) : (
+                <FormattedMessage id={`ist.expand.net.status`} />
+              )}
+              ：
+            </span>
             <span
-              title={`${available || 0} available / ${current ||
-                0} current / ${desired || 0} desired`}
+              title={`${item[available] || 0} available / ${item[current] ||
+                0} current / ${item[desired] || 0} desired`}
               className="c7n-deploy-expanded-values"
-            >{`${available || 0} available / ${current ||
-              0} current / ${desired || 0} desired`}</span>
+            >{`${item[available] || 0} available / ${item[current] ||
+              0} current / ${item[desired] || 0} desired`}</span>
           </li>
           <li className="c7n-deploy-expanded-lists">
             <span className="c7n-deploy-expanded-keys">
@@ -210,14 +267,16 @@ class ExpandRow extends Component {
               </Tooltip>
             </span>
           </li>
-          <li className="c7n-deploy-expanded-lists">
-            <Button
-              className="c7ncd-detail-btn"
-              onClick={this.handleClick.bind(this, id, name)}
-            >
-              <FormattedMessage id="detailMore" />
-            </Button>
-          </li>
+          {podType === "envPod" && (
+            <li className="c7n-deploy-expanded-lists">
+              <Button
+                className="c7ncd-detail-btn"
+                onClick={this.handleClick.bind(this, id, name)}
+              >
+                <FormattedMessage id="detailMore" />
+              </Button>
+            </li>
+          )}
         </ul>
         <div className="c7n-deploy-expanded-pod">
           {status === "running" ? (
@@ -268,7 +327,7 @@ class ExpandRow extends Component {
       },
     };
     const content = key => {
-      let text = data[key];
+      let text = null;
       switch (key) {
         case "age":
           text = (
@@ -281,9 +340,14 @@ class ExpandRow extends Component {
           );
           break;
         case "status":
-          text = data[key];
+          text = (
+            <span className={`c7n-deploy-pvc c7n-deploy-pvc_${data[key]}`}>
+              {data[key]}
+            </span>
+          );
           break;
         default:
+          text = data[key];
           break;
       }
       return (
