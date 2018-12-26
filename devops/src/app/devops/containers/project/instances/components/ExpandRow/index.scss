@@ -96,30 +96,6 @@
       display: inline-block;
       vertical-align: top;
       width: 30%;
-
-      .c7n-pod-circle {
-        fill: none;
-        stroke: #0bc2a8;
-        stroke-width: 5px;
-        transform: rotate(-90deg);
-        transform-origin: center;
-      }
-
-      .c7n-pod-circle-error {
-        fill: none;
-      }
-
-      .c7n-pod-circle-num {
-        text-anchor: middle;
-        font-size: 16px;
-        stroke: #000;
-      }
-
-      .c7n-pod-circle-text {
-        text-anchor: middle;
-        font-size: 12px;
-        color: rgba(0, 0, 0, .65);
-      }
     }
   }
 }

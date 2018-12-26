@@ -61,12 +61,12 @@ function PodStatus(props) {
         cy="50%"
         r="10"
         fill="none"
-        className="c7n-pod-circle"
+        className="c7n-pod-circle-small"
         strokeWidth="4px"
         stroke="#0bc2a8"
         strokeDasharray={`${correct}, 10000`}
       />
-      <text x="50%" y="16" className="c7n-pod-circle-num">
+      <text x="50%" y="16" className="c7n-pod-circle-num-small">
         {sum}
       </text>
     </svg>

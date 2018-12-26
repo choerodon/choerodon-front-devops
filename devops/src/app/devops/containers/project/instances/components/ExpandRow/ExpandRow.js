@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { FormattedMessage, injectIntl } from "react-intl";
 import { observer, renderReporter } from "mobx-react";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import _ from "lodash";
 import TimeAgo from "timeago-react";
 import { stores, Content } from "choerodon-front-boot";
@@ -11,6 +11,7 @@ import DeploymentStore from "../../../../../stores/project/instances/DeploymentS
 import InstancesStore from "../../../../../stores/project/instances/InstancesStore";
 import InterceptMask from "../../../../../components/interceptMask/InterceptMask";
 import SimpleTable from "./SimpleTable";
+import PodCircle from "./PodCircle";
 
 import "./index.scss";
 
@@ -53,105 +54,65 @@ class ExpandRow extends Component {
   }
 
   getExpandContent() {
+    const content = [];
     const {
-      record: {
-        persistentVolumeClaimDTOS,
-        deploymentDTOS,
-        statefulSetDTOS,
-        daemonSetDTOS,
-        serviceDTOS,
-        ingressDTOS,
-        envId,
-        appId,
-        status,
-        id,
-      },
+      record,
       intl: { formatMessage },
     } = this.props;
 
-    const deployContent = _.map(deploymentDTOS, item =>
-      this.getDeployContent("envPod", item, envId, appId, id, status)
-    );
+    const { envId, appId, status, id } = record;
 
-    const statefulContent = _.map(statefulSetDTOS, item =>
-      this.getDeployContent("stateful", item, envId, appId, id, status)
-    );
+    const getPodContent = dto =>
+      _.map(record[dto], item =>
+        this.getDeployContent(dto, item, envId, appId, id, status)
+      );
 
-    const daemonContent = _.map(daemonSetDTOS, item =>
-      this.getDeployContent("daemon", item, envId, appId, id, status)
-    );
+    const getNoPodContent = dto =>
+      _.map(record[dto], item => this.getNoPodContent(dto, item));
 
-    const serviceContent = _.map(serviceDTOS, item =>
-      this.getNoPodContent("service", item)
-    );
-
-    const ingressContent = _.map(ingressDTOS, item =>
-      this.getNoPodContent("ingress", item)
-    );
-
-    const pvcContent = _.map(persistentVolumeClaimDTOS, item =>
-      this.getNoPodContent("pvc", item)
-    );
+    const contentList = [
+      {
+        title: "Deployments",
+        main: getPodContent("deploymentDTOS"),
+      },
+      {
+        title: "Stateful Set",
+        main: getPodContent("statefulSetDTOS"),
+      },
+      {
+        title: "Daemon Set",
+        main: getPodContent("daemonSetDTOS"),
+      },
+      {
+        title: "PVC",
+        main: getNoPodContent("persistentVolumeClaimDTOS"),
+      },
+      {
+        title: "Service",
+        main: getNoPodContent("serviceDTOS"),
+      },
+      {
+        title: "Ingress",
+        main: getNoPodContent("ingressDTOS"),
+      },
+    ];
 
     return (
       <div className="c7n-deploy-expanded">
-        {!!deployContent.length && (
-          <Fragment>
-            <div className="c7n-deploy-expanded-title">
-              <span>Deployments</span>
-            </div>
-            {deployContent}
-          </Fragment>
-        )}
-        {!!statefulContent.length && (
-          <Fragment>
-            <div className="c7n-deploy-expanded-title">
-              <span>Stateful Set</span>
-            </div>
-            {statefulContent}
-          </Fragment>
-        )}
-        {!!daemonContent.length && (
-          <Fragment>
-            <div className="c7n-deploy-expanded-title">
-              <span>Daemon Set</span>
-            </div>
-            {daemonContent}
-          </Fragment>
-        )}
-        {!!pvcContent.length && (
-          <Fragment>
-            <div className="c7n-deploy-expanded-title">
-              <span>PVC</span>
-            </div>
-            {pvcContent}
-          </Fragment>
-        )}
-        {!!serviceContent.length && (
-          <Fragment>
-            <div className="c7n-deploy-expanded-title">
-              <span>Service</span>
-            </div>
-            {serviceContent}
-          </Fragment>
-        )}
-        {!!ingressContent.length && (
-          <Fragment>
-            <div className="c7n-deploy-expanded-title">
-              <span>Ingress</span>
-            </div>
-            {ingressContent}
-          </Fragment>
-        )}
-        {!deployContent.length &&
-          !pvcContent.length &&
-          !serviceContent.length &&
-          !statefulContent.length &&
-          !ingressContent.length && (
-            <div className="c7n-deploy-expanded-empty">
-              <FormattedMessage id="ist.expand.empty" />
-            </div>
-          )}
+        {_.map(contentList, dto => {
+          const { main, title } = dto;
+          return main.length ? (
+            <Fragment>
+              <div className="c7n-deploy-expanded-title">
+                <span>{title}</span>
+              </div>
+              {main}
+            </Fragment>
+          ) : null;
+        })}
+        <div className="c7n-deploy-expanded-empty">
+          <FormattedMessage id="ist.expand.empty" />
+        </div>
       </div>
     );
   }
@@ -170,49 +131,24 @@ class ExpandRow extends Component {
   getDeployContent(podType, item, envId, appId, id, status) {
     const POD_TYPE = {
       // 确保“当前/需要/可提供”的顺序
-      envPod: ["current", "desired", "available"],
-      daemon: ["currentScheduled", "desiredScheduled", "numberAvailable"],
-      stateful: ["currentReplicas", "desiredReplicas", "readyReplicas"],
+      deploymentDTOS: ["current", "desired", "available"],
+      daemonSetDTOS: [
+        "currentScheduled",
+        "desiredScheduled",
+        "numberAvailable",
+      ],
+      statefulSetDTOS: ["currentReplicas", "desiredReplicas", "readyReplicas"],
     };
     const [current, desired, available] = POD_TYPE[podType];
 
     const { name, age, devopsEnvPodDTOS } = item;
+
+    // 计算 pod 数量和环形图占比
     const count = _.countBy(devopsEnvPodDTOS, pod => !!pod.ready);
     const correctCount = count["true"] || 0;
     const errorCount = count["false"] || 0;
     const sum = correctCount + errorCount;
     const correct = sum > 0 ? (correctCount / sum) * (Math.PI * 2 * 30) : 0;
-    const {
-      id: projectId,
-      name: projectName,
-      organizationId,
-      type,
-    } = AppState.currentMenuType;
-    const circle = (
-      <svg width="70" height="70">
-        <circle
-          cx="35"
-          cy="35"
-          r="30"
-          strokeWidth={sum === 0 || sum > correctCount ? 5 : 0}
-          stroke={sum > 0 ? "#ffb100" : "#f3f3f3"}
-          className="c7n-pod-circle-error"
-        />
-        <circle
-          cx="35"
-          cy="35"
-          r="30"
-          className="c7n-pod-circle"
-          strokeDasharray={`${correct}, 10000`}
-        />
-        <text x="50%" y="32.5" className="c7n-pod-circle-num">
-          {sum}
-        </text>
-        <text x="50%" y="50" className="c7n-pod-circle-text">
-          {sum > 1 ? "pods" : "pod"}
-        </text>
-      </svg>
-    );
 
     /**
      * 返回路径
@@ -222,7 +158,6 @@ class ExpandRow extends Component {
     const currentPage = window.location.href.includes("env-overview")
       ? "env-overview"
       : "instance";
-    const backPath = `/devops/${currentPage}?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`;
 
     return (
       <div key={name} className="c7n-deploy-expanded-item">
@@ -240,7 +175,7 @@ class ExpandRow extends Component {
           </li>
           <li className="c7n-deploy-expanded-lists">
             <span className="c7n-deploy-expanded-keys">
-              {podType === "envPod" ? (
+              {podType === "deploymentDTOS" ? (
                 "ReplicaSet"
               ) : (
                 <FormattedMessage id={`ist.expand.net.status`} />
@@ -277,28 +212,18 @@ class ExpandRow extends Component {
           </li>
         </ul>
         <div className="c7n-deploy-expanded-pod">
-          {status === "running" ? (
-            <Link
-              to={{
-                pathname: "/devops/container",
-                search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(
-                  projectName
-                )}&organizationId=${organizationId}`,
-                state: {
-                  appId,
-                  envId,
-                  backPath,
-                },
-              }}
-              onClick={this.handleLink}
-            >
-              <Tooltip title={<FormattedMessage id="ist.expand.link" />}>
-                {circle}
-              </Tooltip>
-            </Link>
-          ) : (
-            circle
-          )}
+          <PodCircle
+            appId={appId}
+            envId={envId}
+            count={{
+              sum,
+              correct,
+              correctCount,
+            }}
+            linkTo={status === "running"}
+            handleLink={this.handleLink}
+            currentPage={currentPage}
+          />
         </div>
       </div>
     );
@@ -311,15 +236,15 @@ class ExpandRow extends Component {
    */
   getNoPodContent = (type, data) => {
     const TYPE_KEY = {
-      service: {
+      serviceDTOS: {
         leftItems: ["type", "externalIp", "age"],
         rightItems: ["clusterIp", "port"],
       },
-      ingress: {
+      ingressDTOS: {
         leftItems: ["type", "ports"],
         rightItems: ["address", "age"],
       },
-      pvc: {
+      persistentVolumeClaimDTOS: {
         leftItems: ["status", "accessModes"],
         rightItems: ["capacity", "age"],
       },

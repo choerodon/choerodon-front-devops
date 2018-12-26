@@ -803,9 +803,24 @@
 // 修改实例管理中列表的展开箭头
 .c7n-devops-instance-table {
 
-  tr.ant-table-expanded-row,
-  tr.ant-table-expanded-row:hover {
-    background: #fff;
+  .ant-table-tbody {
+    &>tr {
+      &.ant-table-expanded-row {
+        background: #fff;
+
+        &:hover {
+          background: #fff;
+        }
+      }
+
+      &.ant-table-expanded-row-level-1 {
+        &:hover {
+          &>td {
+            background: transparent;
+          }
+        }
+      }
+    }
   }
 
   .ant-table-row-expand-icon-cell {
@@ -868,6 +883,7 @@
     transform: rotate(-90deg);
     transform-origin: center;
   }
+
   .c7n-pod-circle-num {
     text-anchor: middle;
   }
