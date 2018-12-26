@@ -77,7 +77,7 @@ class DeploymentAppHome extends Component {
       loading: false,
       changeYaml: false,
       disabled: false,
-      istNameOk: false,
+      istNameOk: true,
       istName: "",
     };
   }
@@ -698,6 +698,7 @@ class DeploymentAppHome extends Component {
   };
 
   onChange = e => {
+    this.setState({ istNameOk: false });
     this.setState({ istName: e.target.value });
   };
 
@@ -785,7 +786,6 @@ class DeploymentAppHome extends Component {
                   <FormattedMessage id="deploy.step.three.mode.replace.label" />
                 }
                 className="deploy-select"
-                placeholder="Select a person"
                 optionFilterProp="children"
                 filterOption={(input, option) =>
                   option.props.children
@@ -814,7 +814,7 @@ class DeploymentAppHome extends Component {
             <Form layout="vertical">
               <FormItem className="deploy-select" {...formItemLayout}>
                 {getFieldDecorator("name", {
-                  value: this.state.istName,
+                  initialValue: this.state.istName,
                   rules: [
                     {
                       required: true,
