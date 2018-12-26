@@ -35,9 +35,9 @@ class DeploymentStore {
   loadDeploymentsJson = (type, project, instance, name) => {
     this.setLoading(true);
     const URL_TYPE = {
-      envPod: `deployment_detail_json?deployment_name=${name}`,
-      stateful: `stateful_set_detail_json?stateful_set_name=${name}`,
-      daemon: `daemon_set_detail_json?daemon_set_name=${name}`,
+      deploymentDTOS: `deployment_detail_json?deployment_name=${name}`,
+      statefulSetDTOS: `stateful_set_detail_json?stateful_set_name=${name}`,
+      daemonSetDTOS: `daemon_set_detail_json?daemon_set_name=${name}`,
     };
     axios
       .get(
