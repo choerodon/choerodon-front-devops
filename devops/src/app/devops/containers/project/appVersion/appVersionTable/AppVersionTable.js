@@ -45,7 +45,7 @@ class AppVersionTable extends Component {
   };
 
   render() {
-    const { store } = this.props;
+    const { store, loading } = this.props;
     const versionData = store.getAllData;
 
     const columns = [{
@@ -68,7 +68,7 @@ class AppVersionTable extends Component {
     }];
 
     return (<Table
-              loading={store.loading}
+              loading={loading}
               pagination={store.pageInfo}
               columns={columns}
               filterBar={false}

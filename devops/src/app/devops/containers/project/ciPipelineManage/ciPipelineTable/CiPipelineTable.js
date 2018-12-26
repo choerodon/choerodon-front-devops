@@ -92,8 +92,12 @@ class CiPipelineTable extends Component {
   }
 
   get tableCiPipeline() {
-    const { loading, pagination, ciPipelines } = this.props.store;
-    const { intl: { formatMessage } } = this.props;
+    const { pagination, ciPipelines } = this.props.store;
+    const { loading, intl: { formatMessage } } = this.props;
+    let Loading = loading;
+    if (loading === 'undefined') {
+      Loading = this.props.store.loading;
+    }
 
     const ciPipelineColumns = [
       {
@@ -149,7 +153,7 @@ class CiPipelineTable extends Component {
     return (
       <div>
         <Table
-          loading={loading}
+          loading={Loading}
           size="middle"
           pagination={pagination}
           columns={ciPipelineColumns}

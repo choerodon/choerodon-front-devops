@@ -82,8 +82,7 @@ class DeploymentAppStore {
       .then(data => handleProptError(data));
   }
 
-  checkIstName = (projectId, value) => axios.get(`/devops/v1/projects/${projectId}/app_instances/check_name?instance_name=${value}`)
-    .then(data => handleProptError(data));
+  checkIstName = (projectId, value) => axios.get(`/devops/v1/projects/${projectId}/app_instances/check_name?instance_name=${value}`);
 
   @action setApps(data) {
     this.apps = data;
