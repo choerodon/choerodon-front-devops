@@ -109,7 +109,7 @@ class CiPipelineHome extends Component {
           <RefreshBtn name="ci" onFresh={this.handleRefresh} />
         </Header>
         <Content code={appData.length ? 'ciPipeline.app' : 'ciPipeline'} values={{ name: titleName }}>
-          <CiPipelineTable store={CiPipelineStore} />
+          <CiPipelineTable store={CiPipelineStore} loading={CiPipelineStore.loading}/>
         </Content></Fragment> : <DepPipelineEmpty title={<FormattedMessage id="ciPipeline.head" />} type="app" />}
       </Page>
     );

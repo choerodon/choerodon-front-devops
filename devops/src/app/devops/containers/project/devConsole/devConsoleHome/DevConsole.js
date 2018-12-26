@@ -85,6 +85,7 @@ const ICONS = {
     display: 'Manual',
   },
 };
+let count = 0;
 
 @observer
 class DevConsole extends Component {
@@ -195,8 +196,9 @@ class DevConsole extends Component {
   /**
    * 获取CI pipeline
    */
-  loadPipeline = (branch) => {
+  loadPipeline = _.throttle((branch) => {
     const appId = DevPipelineStore.getSelectApp;
+    this.setState({ loadingFlag: false });
     if (branch !== 'ALL') {
       CiPipelineStore.loadPipelinesByBc(appId, branch)
         .then((res) => {
@@ -210,7 +212,7 @@ class DevConsole extends Component {
           this.getVerContent(ciPipelineOne);
         });
     }
-  };
+  }, 2000);
 
   /**
    * 分页器
@@ -481,6 +483,7 @@ class DevConsole extends Component {
    * @returns {*}
    */
   getCardContent(data) {
+    this.loadPipeline(this.state.branchIssue);
     const { intl: { formatMessage } } = this.props;
     let styles = "";
     let status = null;
@@ -488,6 +491,7 @@ class DevConsole extends Component {
       styles = "c7n-env-state-unexecuted";
     } else {
       status = data.status;
+      this.getVerContent(data);
     }
     if (status === 'failed') {
       styles = "c7n-env-state-failed";
@@ -525,6 +529,7 @@ class DevConsole extends Component {
   getVerContent = _.throttle((data) => {
     const { projectId } = AppState.currentMenuType;
     if(data) {
+      // AppVersionStore.loadData(projectId, appId);
       AppVersionStore.loadVerByPipId(projectId, data.pipelineId, data.ref)
         .then((res) => {
           if (res && res.failed) {
@@ -537,7 +542,7 @@ class DevConsole extends Component {
     } else {
       this.setState({ versionState: false })
     }
-  }, 1000);
+  }, 10000);
 
   /**
    * 获取流水线
@@ -639,14 +644,14 @@ class DevConsole extends Component {
           <div className="c7n-dc-card-subtitle">
             <FormattedMessage id="ciPipeline.head" />
           </div>
-          <CiPipelineTable store={CiPipelineStore} />
+          <CiPipelineTable store={CiPipelineStore} loading={CiPipelineStore.loading  && loadingFlag}/>
         </div>)}
       </Fragment> : null}
       {lineKey === 3 ? <Fragment>{AppVersionStore.loading  && loadingFlag ? <LoadingBar display /> : (<div className="c7n-dc-branch c7n-ciPipeline">
           <div className="c7n-dc-card-subtitle">
             <FormattedMessage id="app.version" />
           </div>
-          <AppVersionTable store={AppVersionStore} />
+          <AppVersionTable store={AppVersionStore} loading={AppVersionStore.loading  && loadingFlag} />
         </div>)}
       </Fragment> : null}
     </div>)};
