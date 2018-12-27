@@ -1,6 +1,8 @@
 import { observable, action, computed } from "mobx";
 import { axios, store } from "choerodon-front-boot";
 import { handleProptError } from "../../../utils";
+import EnvOverviewStore from "../envOverview/EnvOverviewStore";
+import InstancesStore from "./InstancesStore";
 
 @store("DeploymentStore")
 class DeploymentStore {
@@ -57,6 +59,28 @@ class DeploymentStore {
         Choerodon.handleResponseError(err);
       });
   };
+
+  operatePodCount(current, projectId, envId, name, num) {
+    const istLoader = {
+      instance() {
+        InstancesStore.loadInstanceAll(false, projectId, { envId });
+      },
+      overview() {
+        EnvOverviewStore.loadIstOverview(false, projectId, envId);
+      },
+    };
+
+    axios
+      .put(
+        `devops/v1/projects/${projectId}/app_instances/operate_pod_count?envId=${envId}&deploymentName=${name}&count=${num}`
+      )
+      .then(() => {
+        setTimeout(istLoader[current], 2000);
+      })
+      .catch(err => {
+        Choerodon.handleResponseError(err);
+      });
+  }
 }
 
 const deploymentStore = new DeploymentStore();
