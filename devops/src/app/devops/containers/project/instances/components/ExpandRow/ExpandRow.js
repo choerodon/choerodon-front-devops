@@ -60,11 +60,11 @@ class ExpandRow extends Component {
       intl: { formatMessage },
     } = this.props;
 
-    const { envId, appId, status, id } = record;
+    const { envId, appId, status, id, connect } = record;
 
     const getPodContent = dto =>
       _.map(record[dto], item =>
-        this.getDeployContent(dto, item, envId, appId, id, status)
+        this.getDeployContent(dto, item, envId, appId, id, status, connect)
       );
 
     const getNoPodContent = dto =>
@@ -97,6 +97,8 @@ class ExpandRow extends Component {
       },
     ];
 
+    const hasContent = _.find(contentList, item => item.main.length);
+
     return (
       <div className="c7n-deploy-expanded">
         {_.map(contentList, dto => {
@@ -110,9 +112,11 @@ class ExpandRow extends Component {
             </Fragment>
           ) : null;
         })}
-        <div className="c7n-deploy-expanded-empty">
-          <FormattedMessage id="ist.expand.empty" />
-        </div>
+        {!hasContent ? (
+          <div className="c7n-deploy-expanded-empty">
+            <FormattedMessage id="ist.expand.empty" />
+          </div>
+        ) : null}
       </div>
     );
   }
@@ -125,10 +129,11 @@ class ExpandRow extends Component {
    * @param {number} appId
    * @param {number} id 实例id
    * @param {string} status
+   * @param {boolean} isConnect 环境是否连接
    * @returns
    * @memberof ExpandRow
    */
-  getDeployContent(podType, item, envId, appId, id, status) {
+  getDeployContent(podType, item, envId, appId, id, status, isConnect) {
     const POD_TYPE = {
       // 确保“当前/需要/可提供”的顺序
       deploymentDTOS: ["current", "desired", "available"],
@@ -213,8 +218,10 @@ class ExpandRow extends Component {
         </ul>
         <div className="c7n-deploy-expanded-pod">
           <PodCircle
+            connect={isConnect}
             appId={appId}
             envId={envId}
+            name={name}
             count={{
               sum,
               correct,
@@ -223,6 +230,7 @@ class ExpandRow extends Component {
             linkTo={status === "running"}
             handleLink={this.handleLink}
             currentPage={currentPage}
+            store={DeploymentStore}
           />
         </div>
       </div>
