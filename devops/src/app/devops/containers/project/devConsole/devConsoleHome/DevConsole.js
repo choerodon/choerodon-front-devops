@@ -575,7 +575,7 @@ class DevConsole extends Component {
 
     return (<div className="c7n-dc-card-wrap">
         <div className="c7n-dc-card-title">
-          <Icon type="assembly_line" />
+          <Icon type="line" />
           <FormattedMessage id="app.pipeline" />
         </div>
         <div className="c7n-dc-line">
@@ -595,7 +595,7 @@ class DevConsole extends Component {
                     title={<FormattedMessage id="branch.create" />}
                   >
                     <Button
-                      icon="branch"
+                      icon="add_branch"
                       shape="circle"
                       onClick={this.displayModal.bind(this, 'createBranch')}
                     />
