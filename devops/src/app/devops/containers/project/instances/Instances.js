@@ -49,8 +49,13 @@ class Instances extends Component {
   }
 
   componentDidMount() {
-    const { id: projectId } = AppState.currentMenuType;
-    EnvOverviewStore.loadActiveEnv(projectId, "instance");
+    const { InstancesStore } = this.props;
+    if (!InstancesStore.getIsCache) {
+      const { id: projectId } = AppState.currentMenuType;
+      EnvOverviewStore.loadActiveEnv(projectId, "instance");
+    } else {
+      InstancesStore.setIsCache(false);
+    }
   }
 
   componentWillUnmount() {

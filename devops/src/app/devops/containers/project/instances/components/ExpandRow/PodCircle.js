@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, injectIntl } from "react-intl";
 import { withRouter, Link } from "react-router-dom";
 import { stores } from "choerodon-front-boot";
 import _ from "lodash";
@@ -9,14 +9,15 @@ import "./PodCircle.scss";
 const { AppState } = stores;
 
 @withRouter
+@injectIntl
 export default class PodCircle extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       targetCount: this.props.count.sum || 0,
-      realCount: this.props.count.sum,
       btnDisable: false,
       visible: false,
+      textDisplay: false,
     };
   }
 
@@ -38,15 +39,18 @@ export default class PodCircle extends PureComponent {
    * @memberof PodCircle
    */
   changeTextDisplay = count => {
-    let { realCount } = this.state;
-    return count !== realCount;
+    let { textDisplay } = this.state;
+    if (!textDisplay) {
+      textDisplay = true;
+    }
+    this.setState({ textDisplay });
   };
 
   handleDecrease = () => {
     let { targetCount, btnDisable } = this.state;
     targetCount -= 1;
+    this.changeTextDisplay();
     if (!btnDisable && targetCount <= 0) {
-      btnDisable = true;
       this.showModal();
     } else {
       this.setState({ targetCount });
@@ -57,6 +61,7 @@ export default class PodCircle extends PureComponent {
   handleIncrease = () => {
     let { targetCount, btnDisable } = this.state;
     targetCount += 1;
+    this.changeTextDisplay();
     if (btnDisable && targetCount > 0) {
       btnDisable = false;
     }
@@ -128,10 +133,27 @@ export default class PodCircle extends PureComponent {
       envId,
       connect,
       name,
+      count: { sum },
+      intl: { formatMessage },
     } = this.props;
-    const { targetCount, btnDisable, visible } = this.state;
-    const textDisplay = this.changeTextDisplay(targetCount);
-    const backPath = `/devops/${currentPage}?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`;
+    const { targetCount, btnDisable, visible, textDisplay } = this.state;
+
+    // 实际pod数和目标数不同
+    // 修改过pod数
+    const show = textDisplay && sum !== targetCount;
+
+    const backPath = `/devops/${currentPage}?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}`;
+    const state =
+      currentPage === "env-overview"
+        ? {
+            envId,
+            backPath,
+          }
+        : {
+            appId,
+            envId,
+            backPath,
+          };
 
     return (
       <Fragment>
@@ -144,11 +166,7 @@ export default class PodCircle extends PureComponent {
                   search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(
                     projectName
                   )}&organizationId=${organizationId}`,
-                  state: {
-                    appId,
-                    envId,
-                    backPath,
-                  },
+                  state,
                 }}
                 onClick={handleLink}
               >
@@ -178,19 +196,23 @@ export default class PodCircle extends PureComponent {
             </div>
           ) : null}
         </div>
-        {textDisplay && connect ? (
+        {show && connect ? (
           <div className="c7ncd-pod-count">
             <FormattedMessage id="ist.expand.count" />
             <span className="c7ncd-pod-count-value">{targetCount}</span>
           </div>
         ) : null}
         <Modal
-          title={name}
+          title={formatMessage({ id: "ist.expand.stop.title" }, { name })}
           visible={visible}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
+          closable={false}
+          maskClosable={false}
         >
-          <p>确认停止该 Deployment 吗？</p>
+          <p>
+            <FormattedMessage id="ist.expand.stop.describe" />
+          </p>
         </Modal>
       </Fragment>
     );

@@ -403,7 +403,7 @@ class EnvOverviewHome extends Component {
       type,
     } = AppState.currentMenuType;
     this.linkToChange(
-      `/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}&envId=${envId}`
+      `/devops/deployment-app?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}&envId=${envId}`
     );
   };
 

@@ -61,6 +61,9 @@ class DeploymentStore {
   };
 
   operatePodCount(current, projectId, envId, name, num) {
+    if (current === "env-overview") {
+      current = "overview";
+    }
     const istLoader = {
       instance() {
         InstancesStore.loadInstanceAll(false, projectId, { envId });

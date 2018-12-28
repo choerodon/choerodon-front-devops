@@ -128,9 +128,7 @@ class EditNetwork extends Component {
           config,
           values,
         } = data;
-        const appIst = appInstance
-          ? _.map(appInstance, item => item)
-          : null;
+        const appIst = appInstance ? _.map(appInstance, item => item) : null;
         const ports = [];
         const label = {};
         const endPoints = {};
@@ -154,23 +152,24 @@ class EditNetwork extends Component {
             }
           });
         }
-        if (endps && endps.length) {
-          const endPointsPort = [];
-          _.map(endps, item => {
-            if (item || item === 0) {
-              const port = {
-                name: portName[item],
-                port: Number(targetport[item]),
-              };
-              endPointsPort.push(port);
-            }
-          });
-          targetIps && (endPoints[targetIps.join(",")] = endPointsPort);
+        if (endps && endps.length && targetIps) {
+          endPoints[targetIps.join(",")] = _.map(
+            _.filter(endps, item => item || item === 0),
+            item => ({
+              name: portName[item],
+              port: Number(targetport[item]),
+            })
+          );
         }
+
         const {
           name: oldName,
           appId: oldAppId,
-          target: { appInstance: oldAppInstance, labels: oldLabel, endPoints: oldEndPoints },
+          target: {
+            appInstance: oldAppInstance,
+            labels: oldLabel,
+            endPoints: oldEndPoints,
+          },
           envId: oldEnvId,
           config: { externalIps: oldIps, ports: oldPorts },
           type,
@@ -203,6 +202,7 @@ class EditNetwork extends Component {
           endPoints: !_.isEmpty(endPoints) ? endPoints : null,
           type: config,
         };
+
         if (_.isEqual(oldNetwork, newNetwork)) {
           this.setState({ submitting: false });
           this.handleClose();
@@ -351,7 +351,7 @@ class EditNetwork extends Component {
     } else if (e.target.value === "instance") {
       _.map(["targetKeys", "endPoints"], item => {
         this[item] = 0;
-        getFieldDecorator(item, {initialValue: []});
+        getFieldDecorator(item, { initialValue: [] });
         setFieldsValue({
           [item]: [],
         });
@@ -615,7 +615,7 @@ class EditNetwork extends Component {
     if (value) {
       if (
         p.test(value) &&
-        parseInt(value, 10) >=  data.min &&
+        parseInt(value, 10) >= data.min &&
         parseInt(value, 10) <= data.max
       ) {
         if (count[value] < 2) {
@@ -888,8 +888,8 @@ class EditNetwork extends Component {
     ));
 
     // endPoints生成多组 port
-    const flag =  _.keys(endPointsData)[0];
-    const targetIps = flag? _.split(flag, ',') : undefined;
+    const flag = _.keys(endPointsData)[0];
+    const targetIps = flag ? _.split(flag, ",") : undefined;
     const endport = [];
     const portName = [];
     const targetport = [];
@@ -910,7 +910,7 @@ class EditNetwork extends Component {
         <FormItem
           className={`c7n-select_${
             endPoints.length > 1 ? "portL" : 240
-            } network-panel-form network-port-form`}
+          } network-panel-form network-port-form`}
           {...formItemLayout}
         >
           {getFieldDecorator(`portName[${k}]`, {
@@ -932,7 +932,7 @@ class EditNetwork extends Component {
         <FormItem
           className={`c7n-select_${
             endPoints.length > 1 ? "portL" : 240
-            } network-panel-form network-port-form`}
+          } network-panel-form network-port-form`}
           {...formItemLayout}
         >
           {getFieldDecorator(`targetport[${k}]`, {
@@ -1291,9 +1291,15 @@ class EditNetwork extends Component {
                           disabled={!getFieldValue("envId")}
                           className="c7n-select_512"
                           label={<FormattedMessage id="network.target.ip" />}
-                          onInputKeyDown={e => this.handleInputKeyDown(e, "targetIps")}
-                          choiceRender={(liNode, value) => this.handleChoiceRender(liNode, value, "targetIp")}
-                          onChoiceRemove={value => this.handleChoiceRemove(value, "targetIp")}
+                          onInputKeyDown={e =>
+                            this.handleInputKeyDown(e, "targetIps")
+                          }
+                          choiceRender={(liNode, value) =>
+                            this.handleChoiceRender(liNode, value, "targetIp")
+                          }
+                          onChoiceRemove={value =>
+                            this.handleChoiceRemove(value, "targetIp")
+                          }
                           filterOption={false}
                           notFoundContent={false}
                           showNotFindInputItem={false}
