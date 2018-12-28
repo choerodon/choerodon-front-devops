@@ -1,5 +1,5 @@
 /* eslint-disable dot-notation */
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { observer } from "mobx-react";
 import { observable, action } from "mobx";
 import { withRouter } from "react-router-dom";
@@ -318,24 +318,33 @@ class ContainerHome extends Component {
       {
         title: <FormattedMessage id="container.status" />,
         key: "status",
-        width: 110,
         sorter: true,
         render: this.getActive,
       },
       {
         title: <FormattedMessage id="container.name" />,
         key: "name",
-        width: "20%",
         dataIndex: "name",
         sorter: true,
         filters: [],
         filterMultiple: false,
         filteredValue: filters.name || [],
         render: (test, record) => (
-          <MouserOverWrapper text={record.name} width={0.2}>
-            {record.name}
-          </MouserOverWrapper>
+          <div className="c7n-containers-list">
+            <Icon
+              type={record.ready ? "check_circle" : "cancel"}
+              className={`c7n-pod-ready-${record.ready ? 'check' : 'cancel'}`}
+            />
+            <MouserOverWrapper text={record.name} width={0.16}>
+              {record.name}
+            </MouserOverWrapper>
+          </div>
         ),
+      },
+      {
+        title: <FormattedMessage id="container.header.title" />,
+        key: "containers",
+        render: record => this.getContainers(record),
       },
       {
         title: <FormattedMessage id="container.app" />,
@@ -348,11 +357,11 @@ class ContainerHome extends Component {
                 name={record.appName}
                 showIcon={!!record.projectId}
                 self={record.projectId === projectId}
-                width={0.18}
+                width={0.14}
               />
             </div>
             <div>
-              <MouserOverWrapper text={record.appVersion} width={0.2}>
+              <MouserOverWrapper text={record.appVersion} width={0.16}>
                 <span className="c7n-deploy-text_gray">
                   {record.appVersion}
                 </span>
@@ -392,33 +401,6 @@ class ContainerHome extends Component {
         filters: [],
         filterMultiple: false,
         filteredValue: filters.ip || [],
-      },
-      {
-        width: 68,
-        title: <FormattedMessage id="container.usable" />,
-        dataIndex: "ready",
-        key: "ready",
-        filters: [
-          {
-            text: formatMessage({ id: "container.usable" }),
-            value: "1",
-          },
-          {
-            text: formatMessage({ id: "container.disable" }),
-            value: "0",
-          },
-        ],
-        filterMultiple: false,
-        filteredValue: filters.ready || [],
-        render: (text, record) => (
-          <div className="c7n-container-table">
-            {record.ready ? (
-              <i className="icon icon-done" />
-            ) : (
-              <i className="icon icon-close" />
-            )}
-          </div>
-        ),
       },
       {
         width: 103,
@@ -537,6 +519,55 @@ class ContainerHome extends Component {
       />
     );
     return el;
+  };
+
+  /**
+   * 获取 容器 列
+   * @param record
+   */
+  getContainers = (record) => {
+    const { containers } = record;
+    const node = [];
+    let item;
+    if (containers && containers.length) {
+      item = containers[0];
+      _.map(containers, (item, index) => {
+        node.push(
+          <div className="c7n-container-mt" key={index}>
+            <Icon
+              type={item.ready ? "check_circle" : "cancel"}
+              className={`c7n-pod-ready-${item.ready ? 'check' : 'cancel'}`}
+            />
+            <span>{item.name}</span>
+          </div>
+        )
+      })
+    }
+    return (
+      <div className="c7n-containers-list">
+        {item && (
+          <Fragment>
+            <Icon
+              type={item.ready ? "check_circle" : "cancel"}
+              className={`c7n-pod-ready-${item.ready ? 'check' : 'cancel'}`}
+            />
+            <MouserOverWrapper text={item.name} width={0.08}>
+              {item.name}
+            </MouserOverWrapper>
+          </Fragment>)
+        }
+        {node.length > 1 && (
+          <Popover
+            arrowPointAtCenter
+            placement="bottomRight"
+            getPopupContainer={triggerNode => triggerNode.parentNode}
+            content={<Fragment>{node}</Fragment>}
+          >
+            <Icon type="expand_more" className="container-expend-icon" />
+          </Popover>
+        )}
+      </div>
+    )
   };
 
   /**

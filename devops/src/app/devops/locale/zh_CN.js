@@ -977,9 +977,9 @@ const zhCN = {
   // container
   "container.header.title": "容器",
   "container.status": "状态",
-  "container.name": "容器名称",
+  "container.name": "Pod名称",
   "container.app": "应用",
-  "container.ip": "容器地址",
+  "container.ip": "Pod IP",
   "container.usable": "可用",
   "container.disable": "不可用",
   "container.createTime": "已创建",

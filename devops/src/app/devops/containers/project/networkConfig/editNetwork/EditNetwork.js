@@ -51,6 +51,7 @@ class EditNetwork extends Component {
     this.state = {
       submitting: false,
       targetKeys: "instance",
+      oldTargetKeys: null,
       portKeys: "ClusterIP",
       validIp: {},
       targetIp: {},
@@ -164,7 +165,7 @@ class EditNetwork extends Component {
               endPointsPort.push(port);
             }
           });
-          endPoints[targetIps ? targetIps.join(",") : null] = endPointsPort;
+          targetIps && (endPoints[targetIps.join(",")] = endPointsPort);
         }
         const {
           name: oldName,
@@ -243,9 +244,9 @@ class EditNetwork extends Component {
       if (data) {
         const { name, type, appId, target, config, envId, envName } = data;
         const targetKeys =
-          (appId && target && target.appInstance.length)
-            ? "instance"
-            : (target && target.labels ? "param" : "endPoints");
+          (target && target.labels)
+            ? "param"
+            : (target && target.endPoints ? "endPoints" : "instance");
         let appInstance = [];
         let labels = {};
         let endPoints = {};
@@ -282,14 +283,16 @@ class EditNetwork extends Component {
         setFieldsValue({ envId: envId || [] });
         this.setState({
           initApp: appId,
-          labels: initIst.length ? {} : labels,
+          labels: labels || {},
           initName: name,
           targetKeys,
+          oldTargetKeys: targetKeys === "param" ? "targetKeys" : targetKeys,
           portKeys: type,
           config,
           initIst,
           initIstOption,
           deletedInstance,
+          oldAppData: { initApp: appId, initIst, initIstOption, deletedInstance},
           network: data,
           envId,
           envName,
@@ -309,23 +312,43 @@ class EditNetwork extends Component {
       form: { getFieldValue, getFieldDecorator, resetFields, setFieldsValue },
       store,
     } = this.props;
-    const { envId } = this.state;
+    const {
+      envId,
+      oldTargetKeys,
+      network: { type, config, target: { labels, endPoints } },
+      oldAppData: { initApp, initIst, initIstOption, deletedInstance},
+    } = this.state;
+
+    // 设置初始数据
+    const oldValue = {};
+    const initKeys = _.keys(labels);
+    const flag =  _.keys(endPoints)[0];
+    oldValue.targetKeys = Array.from({length: initKeys.length}, (v,k) => k);
+    oldValue.endPoints = flag ? Array.from({length: endPoints[flag].length}, (v,k) => k) : [];
+    oldValue.ports = Array.from({length: config.ports.length}, (v,k) => k);
+
+    const list = {
+      "targetKeys": ["keywords", "values"],
+      "endPoints": ["portName", "targetport"],
+    };
     const { id } = AppState.currentMenuType;
     const keys = getFieldValue(key);
     if (key === "portKeys") {
+      if (e.target.value === type) {
+        setFieldsValue({
+          [key]: oldValue.ports,
+        });
+        this.setState({ config });
+      } else {
+        setFieldsValue({
+          [key]: [0],
+        });
+        this.setState({ config: {} });
+        resetFields(["port", "tport", "nport"]);
+      }
       // 清除多组port映射
       this.portKeys = 1;
-      // 清空表单项
-      resetFields(["port", "tport", "nport"]);
-      setFieldsValue({
-        [key]: [0],
-      });
-      this.setState({ config: {} });
     } else if (e.target.value === "instance") {
-      const list = {
-        "targetKeys": ["keywords", "values"],
-        "endPoints": ["portName", "targetport"],
-      };
       _.map(["targetKeys", "endPoints"], item => {
         this[item] = 0;
         getFieldDecorator(item, {initialValue: []});
@@ -339,38 +362,54 @@ class EditNetwork extends Component {
       if (!(app && app.length)) {
         store.loadApp(id, Number(envId));
       }
+      if (oldTargetKeys === "instance") {
+        this.setState({
+          initApp,
+          initIstOption,
+          initIst,
+          deletedInstance,
+        });
+        resetFields(["appInstance"]);
+      }
     } else {
-      // 切换到“填写标签”、“endPoints”时，生成相应表单项并情况应用实例数据
+      // 切换到“填写标签”、“endPoints”时，生成相应表单项并清空应用实例数据
       const value = e.target.value === "param" ? "targetKeys" : e.target.value;
       _.map(["targetKeys", "endPoints"], item => {
+        const oldData = item === "targetKeys" ? "labels" : item;
         if (value === item) {
-          getFieldDecorator(item, { initialValue: [0] });
-          this[item] = 1;
-          setFieldsValue({
-            [item]: [0],
-          });
+          if (oldTargetKeys === item) {
+            this[item] = 0;
+            getFieldDecorator(item, {initialValue: oldValue[item]});
+            setFieldsValue({
+              [item]: oldValue[item],
+            });
+            resetFields(list[item]);
+            this.setState({ [oldData]: item === "targetKeys" ? labels : endPoints })
+          } else {
+            getFieldDecorator(item, {initialValue: [0]});
+            this[item] = 1;
+            setFieldsValue({
+              [item]: [0],
+            });
+          }
         } else {
-          const list = {
-            "targetKeys": ["keywords", "values"],
-            "endPoints": ["portName", "targetport"],
-          };
           this[item] = 0;
           getFieldDecorator(item, { initialValue: [] });
           setFieldsValue({
             [item]: [],
           });
           resetFields(list[item]);
-          this.setState({ [item === "targetKeys" ? "labels" : item]: {} });
+          this.setState({ [oldData]: {} });
         }
-        this.setState({
-          initApp: "",
-          initIstOption: [],
-          initIst: [],
-          deletedInstance: [],
-        });
-        resetFields(["appInstance"]);
-        store.setIst([]);
       });
+      this.setState({
+        initApp: "",
+        initIstOption: [],
+        initIst: [],
+        deletedInstance: [],
+      });
+      resetFields(["appInstance"]);
+      store.setIst([]);
     }
     this.setState({ [key]: e.target.value });
   };
@@ -1038,7 +1077,7 @@ class EditNetwork extends Component {
         >
           <Content
             code="network.update"
-            values={{ name: menuName }}
+            values={{ name: initName }}
             className="c7n-network-create sidebar-content"
           >
             <Form layout="vertical">
