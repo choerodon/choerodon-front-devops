@@ -709,7 +709,7 @@ class CreateDomain extends Component {
         >
           <Content
             code={`domain.${type === "create" ? "create" : "update"}`}
-            values={{ name: menuName }}
+            values={{ name: type === "create" ? menuName : name }}
             className="sidebar-content c7n-domainCreate-wrapper"
           >
             <Form layout="vertical" onSubmit={this.handleSubmit}>

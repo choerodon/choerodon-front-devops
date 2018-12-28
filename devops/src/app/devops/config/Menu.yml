@@ -1,6 +1,6 @@
 "devops-management":
   icon: devops
-  sort: 1
+  sort: 3
   organization:
     - "application-template":
         icon: application_model
