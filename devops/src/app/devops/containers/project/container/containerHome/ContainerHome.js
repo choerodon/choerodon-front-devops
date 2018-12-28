@@ -278,7 +278,7 @@ class ContainerHome extends Component {
     hterm.defaultStorage = new lib.Storage.Memory();
     if (!this.term) {
       this.term = new hterm.Terminal();
-      this.term.prefs_.prefRecords_['ctrl-v-paste'].defaultValue = true;
+      this.term.prefs_.prefRecords_["ctrl-v-paste"].defaultValue = true;
       this.term.decorate(target);
       this.term.onTerminalReady = this.onTerminalReady.bind(this);
     } else {
@@ -932,7 +932,7 @@ class ContainerHome extends Component {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     const { selectProPage, selectPubPage } = this.state;
     let appId = null;
-    if (state) {
+    if (state && state.appId) {
       appId = Number(state.appId);
     }
     ContainerStore.setAppId(appId);

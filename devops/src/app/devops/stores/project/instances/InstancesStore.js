@@ -53,6 +53,9 @@ class InstancesStore {
     return this.appId;
   }
 
+  /**
+   * 只用于实例进入详情
+   */
   @action setIsCache(flag) {
     this.isCache = flag;
   }

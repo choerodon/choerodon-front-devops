@@ -335,10 +335,6 @@ class ExpandRow extends Component {
     this.setState({ activeKey: key, isExpand });
   };
 
-  handleLink = () => {
-    InstancesStore.setIsCache(true);
-  };
-
   handleExpandAll() {
     this.setState(prev => ({
       isExpand: !prev.isExpand,

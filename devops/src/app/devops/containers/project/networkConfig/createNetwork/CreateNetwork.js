@@ -138,9 +138,7 @@ class CreateNetwork extends Component {
           config,
           values,
         } = data;
-        const appIst = appInstance
-          ? _.map(appInstance, item => item)
-          : null;
+        const appIst = appInstance ? _.map(appInstance, item => item) : null;
         const ports = [];
         const label = {};
         const endPoints = {};
@@ -166,18 +164,14 @@ class CreateNetwork extends Component {
           });
         }
 
-        if (endps && endps.length) {
-          const endPointsPort = [];
-          _.map(endps, item => {
-            if (item || item === 0) {
-              const port = {
-                name: portName[item],
-                port: Number(targetport[item]),
-              };
-              endPointsPort.push(port);
-            }
-          });
-          targetIps && (endPoints[targetIps.join(",")] = endPointsPort);
+        if (endps && endps.length && targetIps) {
+          endPoints[targetIps.join(",")] = _.map(
+            _.filter(endps, item => item || item === 0),
+            item => ({
+              name: portName[item],
+              port: Number(targetport[item]),
+            })
+          );
         }
 
         const network = {
@@ -296,8 +290,8 @@ class CreateNetwork extends Component {
           });
         } else {
           const list = {
-            "targetKeys": ["keywords", "values"],
-            "endPoints": ["portName", "targetport"],
+            targetKeys: ["keywords", "values"],
+            endPoints: ["portName", "targetport"],
           };
           this[item] = 0;
           getFieldDecorator(item, { initialValue: [] });
@@ -509,7 +503,7 @@ class CreateNetwork extends Component {
     if (value) {
       if (
         p.test(value) &&
-        parseInt(value, 10) >=  data.min &&
+        parseInt(value, 10) >= data.min &&
         parseInt(value, 10) <= data.max
       ) {
         if (count[value] < 2) {
@@ -1119,9 +1113,15 @@ class CreateNetwork extends Component {
                           disabled={!getFieldValue("envId")}
                           className="c7n-select_512"
                           label={<FormattedMessage id="network.target.ip" />}
-                          onInputKeyDown={e => this.handleInputKeyDown(e, "targetIps")}
-                          choiceRender={(liNode, value) => this.handleChoiceRender(liNode, value, "targetIp")}
-                          onChoiceRemove={value => this.handleChoiceRemove(value, "targetIp")}
+                          onInputKeyDown={e =>
+                            this.handleInputKeyDown(e, "targetIps")
+                          }
+                          choiceRender={(liNode, value) =>
+                            this.handleChoiceRender(liNode, value, "targetIp")
+                          }
+                          onChoiceRemove={value =>
+                            this.handleChoiceRemove(value, "targetIp")
+                          }
                           filterOption={false}
                           notFoundContent={false}
                           showNotFindInputItem={false}

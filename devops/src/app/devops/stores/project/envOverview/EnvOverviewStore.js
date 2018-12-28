@@ -216,22 +216,18 @@ class EnvOverviewStore {
                 const {
                   loadAppNameByEnv,
                   loadInstanceAll,
-                  getIsCache,
                   getAppId,
                 } = InstancesStore;
-                if (!getIsCache) {
-                  const appPageSize =
-                    Math.floor((window.innerWidth - 350) / 200) * 3;
-                  InstancesStore.setAppPageSize(appPageSize);
-                  loadAppNameByEnv(projectId, this.tpEnvId, 0, appPageSize);
-                  loadInstanceAll(true, projectId, {
-                    envId: this.tpEnvId,
-                    appId: getAppId,
-                  }).catch(err => {
-                    InstancesStore.changeLoading(false);
-                  });
-                }
-                InstancesStore.setIsCache(false);
+                const appPageSize =
+                  Math.floor((window.innerWidth - 350) / 200) * 3;
+                InstancesStore.setAppPageSize(appPageSize);
+                loadAppNameByEnv(projectId, this.tpEnvId, 0, appPageSize);
+                loadInstanceAll(true, projectId, {
+                  envId: this.tpEnvId,
+                  appId: getAppId,
+                }).catch(err => {
+                  InstancesStore.changeLoading(false);
+                });
                 break;
               case "configMap":
                 ConfigMapStore.loadConfigMap(true, projectId, this.tpEnvId);

@@ -507,6 +507,8 @@ const zhCN = {
   "ist.startDes": "确定重启该实例吗？",
   "ist.reDeployDes": "确定重新部署该实例吗？",
   "ist.expand.count": "更改pod数至",
+  "ist.expand.stop.title": "停止Deployment {name}",
+  "ist.expand.stop.describe": "确认停止该 Deployment 吗？",
   "ist.expand.name": "名称",
   "ist.expand.empty": "暂无部署详细信息",
   "ist.expand.link": "点击查看详情",
