@@ -26,7 +26,6 @@ import LoadingBar from "../../../../components/loadingBar";
 import CreateNetwork from "../createNetwork";
 import EditNetwork from "../editNetwork";
 import { commonComponent } from "../../../../components/commonFunction";
-import MouserOverWrapper from "../../../../components/MouseOverWrapper";
 import StatusIcon from "../../../../components/StatusIcon";
 import EnvOverviewStore from "../../../../stores/project/envOverview";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
@@ -137,7 +136,7 @@ class NetworkHome extends Component {
         const { nodePort, port, targetPort } = item;
         portArr.push(
           <div key={port} className="network-config-item">
-            {nodePort} {port} {targetPort}
+            {nodePort || (type === "NodePort" && <FormattedMessage id="null" />)} {port} {targetPort}
           </div>
         );
       });

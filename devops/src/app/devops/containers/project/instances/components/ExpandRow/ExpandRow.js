@@ -53,6 +53,10 @@ class ExpandRow extends Component {
     );
   }
 
+  handleLink () {
+    InstancesStore.setIsCache(true);
+  }
+
   getExpandContent() {
     const content = [];
     const {

@@ -130,7 +130,6 @@ export default class PodCircle extends PureComponent {
       handleLink,
       currentPage,
       appId,
-      envId,
       connect,
       name,
       count: { sum },
@@ -143,17 +142,7 @@ export default class PodCircle extends PureComponent {
     const show = textDisplay && sum !== targetCount;
 
     const backPath = `/devops/${currentPage}?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}`;
-    const state =
-      currentPage === "env-overview"
-        ? {
-            envId,
-            backPath,
-          }
-        : {
-            appId,
-            envId,
-            backPath,
-          };
+    const state = { appId, backPath };
 
     return (
       <Fragment>
