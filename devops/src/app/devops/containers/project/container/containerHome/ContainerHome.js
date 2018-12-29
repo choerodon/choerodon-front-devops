@@ -331,10 +331,12 @@ class ContainerHome extends Component {
         filteredValue: filters.name || [],
         render: (test, record) => (
           <div className="c7n-containers-list">
-            <Icon
-              type={record.ready ? "check_circle" : "cancel"}
-              className={`c7n-pod-ready-${record.ready ? 'check' : 'cancel'}`}
-            />
+            <Tooltip title={<FormattedMessage id={`ist.${record.ready ? "y" : "n"}`} />}>
+              <Icon
+                type={record.ready ? "check_circle" : "cancel"}
+                className={`c7n-pod-ready-${record.ready ? 'check' : 'cancel'}`}
+              />
+            </Tooltip>
             <MouserOverWrapper text={record.name} width={0.16}>
               {record.name}
             </MouserOverWrapper>
@@ -366,29 +368,6 @@ class ContainerHome extends Component {
                   {record.appVersion}
                 </span>
               </MouserOverWrapper>
-            </div>
-          </div>
-        ),
-      },
-      {
-        title: <FormattedMessage id="deploy.env" />,
-        key: "envCode",
-        render: record => (
-          <div>
-            <div className="c7n-deploy-col-inside">
-              {record.connect ? (
-                <Tooltip title={<FormattedMessage id="connect" />}>
-                  <span className="c7ncd-status c7ncd-status-success" />
-                </Tooltip>
-              ) : (
-                <Tooltip title={<FormattedMessage id="disconnect" />}>
-                  <span className="c7ncd-status c7ncd-status-disconnect" />
-                </Tooltip>
-              )}
-              <span>{record.envName}</span>
-            </div>
-            <div>
-              <span className="c7n-deploy-text_gray">{record.envCode}</span>
             </div>
           </div>
         ),
@@ -534,10 +513,12 @@ class ContainerHome extends Component {
       _.map(containers, (item, index) => {
         node.push(
           <div className="c7n-container-mt" key={index}>
-            <Icon
-              type={item.ready ? "check_circle" : "cancel"}
-              className={`c7n-pod-ready-${item.ready ? 'check' : 'cancel'}`}
-            />
+            <Tooltip title={<FormattedMessage id={`ist.${item.ready ? "y" : "n"}`} />}>
+              <Icon
+                type={item.ready ? "check_circle" : "cancel"}
+                className={`c7n-pod-ready-${item.ready ? 'check' : 'cancel'}`}
+              />
+            </Tooltip>
             <span>{item.name}</span>
           </div>
         )
@@ -547,10 +528,12 @@ class ContainerHome extends Component {
       <div className="c7n-containers-list">
         {item && (
           <Fragment>
-            <Icon
-              type={item.ready ? "check_circle" : "cancel"}
-              className={`c7n-pod-ready-${item.ready ? 'check' : 'cancel'}`}
-            />
+            <Tooltip title={<FormattedMessage id={`ist.${item.ready ? "y" : "n"}`} />}>
+              <Icon
+                type={item.ready ? "check_circle" : "cancel"}
+                className={`c7n-pod-ready-${item.ready ? 'check' : 'cancel'}`}
+              />
+            </Tooltip>
             <MouserOverWrapper text={item.name} width={0.08}>
               {item.name}
             </MouserOverWrapper>
