@@ -50,11 +50,11 @@ class DEVOPSIndex extends React.Component {
     );
 
     /**
-     * 从实例详情页面跳转到实例页面不重新加载
+     * 从实例详情页面跳转到实例页面或容器不重新加载
      * 从详情页面跳到其他页面需要重新加载
      * isCache 设置一个标志位，true表示不重新加载，否则重新加载
      */
-    const isInstancePage = window.location.href.includes("instance");
+    const isInstancePage = window.location.href.includes("instance") || window.location.href.includes("container");
     if (InstancesStore.getIsCache && !isInstancePage) {
       InstancesStore.setIsCache(false);
       InstancesStore.setAppId(null);

@@ -577,7 +577,6 @@ class ContainerHome extends Component {
   loadLog = followingOK => {
     const {
       namespace,
-      envId,
       logId,
       podName,
       containerName,
@@ -1033,6 +1032,38 @@ class ContainerHome extends Component {
       envData && envData.length && (appProDom.length || appPubDom.length)
         ? ContainerStore.getAppId
         : undefined;
+    let tempApp = null;
+    if (appProDom.filter(i => parseInt(i.key) === initApp).length === 0 && appPubDom.filter(i => parseInt(i.key)=== initApp).length === 0 && initApp) {
+      const appData = ContainerStore.getAppData;
+      const app = appData.filter(item => item.id === initApp)[0];
+      const projectId = parseInt(AppState.currentMenuType.id, 10);
+      tempApp = (<Option key={app.id} value={app.id}>
+        <Popover
+          placement="right"
+          content={
+            <div>
+              <p>
+                <FormattedMessage id="ist.name" />
+                <span>{app.name}</span>
+              </p>
+              <p>
+                <FormattedMessage id="ist.code" />
+                <span>{app.code}</span>
+              </p>
+            </div>
+          }
+        >
+          <div className="c7n-container-option-popover">
+            <i className={`icon ${app.projectId === projectId ? 'icon-project' : 'icon-apps'} c7n-container-icon-publish`} />
+            <MouserOverWrapper text={app.name} width={0.9}>
+              {app.name}
+            </MouserOverWrapper>
+          </div>
+        </Popover>
+      </Option>);
+    } else {
+      tempApp = null;
+    }
     const contentDom =
       envData && envData.length && envId ? (
         <React.Fragment>
@@ -1122,6 +1153,7 @@ class ContainerHome extends Component {
                   </Option>
                 )}
               </OptGroup>
+              {tempApp}
             </Select>
             <Table
               filterBarPlaceholder={formatMessage({ id: "filter" })}

@@ -558,7 +558,7 @@ class EditNetwork extends Component {
    */
   checkIP = (rule, value, callback, type) => {
     const { intl } = this.props;
-    const p = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
+    const p = /^((\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])\.){3}(\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])$/;
     const validIp = {};
     const data = type === "targetIps" ? "targetIp" : "validIp";
     let errorMsg;
