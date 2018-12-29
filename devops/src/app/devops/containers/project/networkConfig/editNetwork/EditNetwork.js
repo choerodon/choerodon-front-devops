@@ -1185,7 +1185,7 @@ class EditNetwork extends Component {
                             triggerNode.parentNode
                           }
                           filterOption={(input, option) =>
-                            option.props.children.props.children[1].props.children
+                            option.props.children.props.children.props.children.props.name
                               .toLowerCase()
                               .indexOf(input.toLowerCase()) >= 0
                           }
