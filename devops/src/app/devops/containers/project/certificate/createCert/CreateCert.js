@@ -480,27 +480,6 @@ class CreateCert extends Component {
                     <FormItem
                       className="c7n-select_480"
                       {...formItemLayout}
-                      label={<FormattedMessage id="certificate.key.content" />}
-                    >
-                      {getFieldDecorator("keyValue",{
-                        rules: [
-                          {
-                            required: true,
-                            message: intl.formatMessage({ id: "required" }),
-                          },
-                        ],
-                      })(
-                        <TextArea
-                          autosize={{
-                            minRows: 2,
-                          }}
-                          label={<FormattedMessage id="certificate.key.content" />}
-                        />
-                      )}
-                    </FormItem>
-                    <FormItem
-                      className="c7n-select_480"
-                      {...formItemLayout}
                       label={<FormattedMessage id="certificate.cert.content" />}
                     >
                       {getFieldDecorator("certValue",{
@@ -516,6 +495,27 @@ class CreateCert extends Component {
                             minRows: 2,
                           }}
                           label={<FormattedMessage id="certificate.cert.content" />}
+                        />
+                      )}
+                    </FormItem>
+                    <FormItem
+                      className="c7n-select_480"
+                      {...formItemLayout}
+                      label={<FormattedMessage id="certificate.key.content" />}
+                    >
+                      {getFieldDecorator("keyValue",{
+                        rules: [
+                          {
+                            required: true,
+                            message: intl.formatMessage({ id: "required" }),
+                          },
+                        ],
+                      })(
+                        <TextArea
+                          autosize={{
+                            minRows: 2,
+                          }}
+                          label={<FormattedMessage id="certificate.key.content" />}
                         />
                       )}
                     </FormItem>
