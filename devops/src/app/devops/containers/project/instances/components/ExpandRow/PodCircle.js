@@ -126,6 +126,7 @@ export default class PodCircle extends PureComponent {
       type,
     } = AppState.currentMenuType;
     const {
+      podType,
       linkTo,
       handleLink,
       currentPage,
@@ -141,7 +142,9 @@ export default class PodCircle extends PureComponent {
     // 修改过pod数
     const show = textDisplay && sum !== targetCount;
 
-    const backPath = `/devops/${currentPage}?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}`;
+    const backPath = `/devops/${currentPage}?type=${type}&id=${projectId}&name=${encodeURIComponent(
+      projectName
+    )}&organizationId=${organizationId}`;
     const state = { appId, backPath };
 
     return (
@@ -167,23 +170,24 @@ export default class PodCircle extends PureComponent {
               this.renderCircle
             )}
           </div>
-          {connect ? (
+          {podType === "deploymentDTOS" && (
             <div className="c7ncd-pod-content c7ncd-pod-btn-wrap">
               <Button
+                disabled={!connect}
                 className="c7ncd-pod-btn"
                 size="small"
                 icon="expand_less"
                 onClick={this.handleIncrease}
               />
               <Button
-                disabled={btnDisable}
+                disabled={btnDisable || !connect}
                 className="c7ncd-pod-btn"
                 size="small"
                 icon="expand_more"
                 onClick={this.handleDecrease}
               />
             </div>
-          ) : null}
+          )}
         </div>
         {show && connect ? (
           <div className="c7ncd-pod-count">
