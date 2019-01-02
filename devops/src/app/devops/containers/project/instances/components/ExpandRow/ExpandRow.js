@@ -53,7 +53,7 @@ class ExpandRow extends Component {
     );
   }
 
-  handleLink () {
+  handleLink() {
     InstancesStore.setIsCache(true);
   }
 
@@ -222,6 +222,7 @@ class ExpandRow extends Component {
         </ul>
         <div className="c7n-deploy-expanded-pod">
           <PodCircle
+            podType={podType}
             connect={isConnect}
             appId={appId}
             envId={envId}
