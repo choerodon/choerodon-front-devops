@@ -18,6 +18,8 @@ class AppStore {
 
   @observable tableLoading = false;
 
+  @observable importBtnLoading = false;
+
   // 打开tab的loading
   @observable singleData = null;
 
@@ -105,6 +107,10 @@ class AppStore {
 
   @action setTableLoading(flag) {
     this.tableLoading = flag;
+  }
+
+  @action setImportBtnLoading(flag) {
+    this.importBtnLoading = flag;
   }
 
   @computed get getTableLoading() {
@@ -214,6 +220,9 @@ class AppStore {
   checkName = (projectId, name) =>
     axios.get(`/devops/v1/projects/${projectId}/apps/check_name?name=${name}`);
 
+  checkUrl = (projectId, type, url, token) =>
+    axios.get(`/devops/v1/projects/${projectId}/apps/url_validation?platform_type=${type}&url=${url}&access_token=${token}`);
+
   updateData = (projectId, data) =>
     axios
       .put(`/devops/v1/projects/${projectId}/apps`, JSON.stringify(data))
@@ -288,6 +297,9 @@ class AppStore {
           this.setTagKeys(data);
         }
       });
+
+  importApp = (projectId, data) =>
+    axios.post(`/devops/v1/projects/${projectId}/apps/import`, JSON.stringify(data));
 
   handleProptError = error => {
     if (error && error.failed) {

@@ -48,3 +48,12 @@
     padding-top: 21px !important;
   }
 }
+
+.c7n-app-select-dropdown {
+  .ant-select-dropdown-menu-item {
+    span {
+      width: 100%;
+      display: inline-block;
+    }
+  }
+}

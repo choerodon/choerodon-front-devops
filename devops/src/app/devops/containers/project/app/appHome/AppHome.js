@@ -665,6 +665,16 @@ class AppHome extends Component {
     AppStore.setTagKeys(s);
   };
 
+  /**
+   * 处理页面跳转
+   */
+  linkToImport = () => {
+    const { type, id: projectId, organizationId: orgId, name } = AppState.currentMenuType;
+    const { history } = this.props;
+    const url = `/devops/app/import?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}`;
+    history.push(url);
+  };
+
   render() {
     const {
       type,
@@ -841,37 +851,24 @@ class AppHome extends Component {
                   ],
                 })(
                   <Select
-                    key="service"
+                    filter
                     allowClear
                     label={<FormattedMessage id="app.chooseTem" />}
-                    filter
-                    dropdownMatchSelectWidth
+                    dropdownClassName="c7n-app-select-dropdown"
                     onSelect={this.selectTemplate}
-                    size="default"
-                    optionFilterProp="children"
                     filterOption={(input, option) =>
-                      option.props.children.props.children.props.children
+                      option.props.children.props.children
                         .toLowerCase()
                         .indexOf(input.toLowerCase()) >= 0
                     }
                   >
-                    {selectData &&
-                      selectData.length > 0 &&
-                      selectData.map(s => (
-                        <Option value={s.id} key={s.id}>
-                          <Tooltip
-                            placement="right"
-                            trigger="hover"
-                            title={<p>{s.description}</p>}
-                          >
-                            <span
-                              style={{ display: "inline-block", width: "100%" }}
-                            >
-                              {s.name}
-                            </span>
-                          </Tooltip>
-                        </Option>
-                      ))}
+                    {selectData.map(s => (
+                      <Option value={s.id} key={s.id}>
+                        <Tooltip placement="right" title={s.description}>
+                          {s.name}
+                        </Tooltip>
+                      </Option>
+                    ))}
                   </Select>
                 )}
               </FormItem>
@@ -950,6 +947,19 @@ class AppHome extends Component {
         ) : (
           <Fragment>
             <Header title={<FormattedMessage id="app.head" />}>
+              <Permission
+                service={["devops-service.application.create"]}
+                type={type}
+                projectId={projectId}
+                organizationId={orgId}
+              >
+                <Button
+                  icon="playlist_add"
+                  onClick={this.linkToImport}
+                >
+                  <FormattedMessage id="app.import" />
+                </Button>
+              </Permission>
               <Permission
                 service={["devops-service.application.create"]}
                 type={type}

@@ -114,8 +114,11 @@ const pageDetail = {
 
   // app
   "app.title": '项目"{name}"的应用',
+  "app.import.title": '在项目"{name}"中进行应用发布',
   "app.description":
     "应用是满足用户某些需求的程序代码的集合。您可在此创建应用、停用应用、启用应用、配置应用权限以及修改应用名称。",
+  "app.import.description":
+    "请在下面选择应用导入的来源，并对相关的操作进行授权，再选择应用模板；平台会为您自动创建对应的git库以便管理该应用代码。同时，您可为此应用分配特定的开发操作人员。",
   "app.create.title": '在项目"{name}"中创建应用',
   "app.create.description":
     "请在下面输入应用编码及名称，也可以选择某个应用模板，快速创建应用。平台会为您自动创建对应的git库以便管理该应用代码。同时，您可为所创应用分配特定的开发操作人员。",
@@ -124,6 +127,7 @@ const pageDetail = {
     "您可在此修改应用名称，同时也可对此应用的权限进行管理。",
   "app.link": `${docServer}/user-guide/application-management/application/`,
   "app.create.link": `${docServer}/user-guide/application-management/application/`,
+  "app.import.link": `${docServer}/user-guide/application-management/application/`,
   "app.edit.link": `${docServer}/user-guide/application-management/application/`,
 
   // branch
@@ -833,6 +837,31 @@ const zhCN = {
     "应用的自定义编码，Gitlab仓库的地址将会使用应用编码作为仓库地址的一段路径，同时此编码在项目下唯一且不可修改。",
   "app.chooseTem.tip":
     "可选择系统预定义模板或组织自定义的模板块。选择模板后，可快速创建初始代码库。目前系统存在三种预定义模板，也可以不选择应用模板。",
+
+  // 应用导入
+  "app.import": "导入应用",
+  "app.import.ok": "导入",
+  "app.import.step1": '选择应用导入来源',
+  "app.import.step2": '选择应用模板',
+  "app.import.step3": '应用权限分配',
+  "app.import.step4": '确认信息',
+  "app.import.step1.des": '您可在此选择导入应用的来源。当前支持从Github和GitLab中导入应用，但Github目前只能从公库导入应用，GitLab公库私库均能使用，且仓库为空时不可导入。',
+  "app.import.step2.des": '您可在此自定义导入应用的编码与名称，同时选择一个应用模板。',
+  "app.import.step3.des": '您可在此为此应用配置特定的开发操作人员。一般默认选择为项目下所有成员，即该项目下的所有成员均能对此应用进行开发操作；若选择项目下特定成员，则只有被勾选的项目成员才有权限对此应用进行开发。',
+  "app.import.step4.des": '您可在此确认应用发布的信息，如需修改请返回相应步骤。',
+  "app.import.github": 'GitHub地址',
+  "app.import.gitlab": 'GitLab地址',
+  "app.import.token": '私有Token',
+  "app.import.template": '选择应用模板',
+  "app.import.repo.required": '请输入代码库地址',
+  "app.import.token.required": '请输入Token',
+  "app.import.name.required": '请输入应用名称',
+  "app.import.code.required": '请输入应用编码',
+  "app.import.template.required": '请选择应用模板',
+  "app.import.source": '应用来源',
+  "app.import.url.err": '仓库地址有误',
+  "app.import.url.null": '仓库为空不可导入',
+  "app.import.url.err1": '仓库地址或私有Token有误',
 
   // 应用版本
   "app.version": "应用版本",
