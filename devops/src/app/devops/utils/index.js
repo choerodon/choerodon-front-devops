@@ -6,6 +6,7 @@ import _ from "lodash";
 import React from "react";
 import { FormattedMessage } from "react-intl";
 import { Icon, Popover } from "choerodon-ui";
+import storage from "./storage";
 
 /**
  * 处理数据请求错误
@@ -223,4 +224,5 @@ export {
   getAxis,
   dateSplitAndPad,
   pickEntries,
+  storage,
 };
