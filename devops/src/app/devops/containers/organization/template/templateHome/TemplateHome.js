@@ -160,7 +160,6 @@ class TemplateHome extends Component {
           service={["devops-service.application-template.delete"]}
         >
           <Tooltip
-            trigger="hover"
             placement="bottom"
             title={<FormattedMessage id="delete" />}
           >
@@ -169,7 +168,6 @@ class TemplateHome extends Component {
                 icon="delete_forever"
                 shape="circle"
                 size="small"
-                funcType="flat"
                 onClick={this.openRemove.bind(this, record.id, record.name)}
               />
             </div>
@@ -182,7 +180,6 @@ class TemplateHome extends Component {
             service={["devops-service.application-template.update"]}
           >
             <Tooltip
-              trigger="hover"
               placement="bottom"
               title={<FormattedMessage id="edit" />}
             >
@@ -287,19 +284,19 @@ class TemplateHome extends Component {
         filteredValue: filters.type || [],
         render: text =>
           text ? (
-            <React.Fragment>
-              <Icon type="brightness_high" />{" "}
+            <Fragment>
+              <Icon type="brightness_high" />
               <span className="c7n-template-column-text">
                 <FormattedMessage id="template.preDefine" />
-              </span>{" "}
-            </React.Fragment>
+              </span>
+            </Fragment>
           ) : (
-            <React.Fragment>
+            <Fragment>
               <Icon type="av_timer" />
               <span className="c7n-template-column-text">
                 <FormattedMessage id="template.perDefine" />
-              </span>{" "}
-            </React.Fragment>
+              </span>
+            </Fragment>
           ),
       },
       {
@@ -439,7 +436,7 @@ class TemplateHome extends Component {
             {getFieldDecorator("code", {
               rules: [
                 {
-                  required: modeType === "create",
+                  required: true,
                   whitespace: true,
                   message: formatMessage({ id: "required" }),
                 },
@@ -452,7 +449,6 @@ class TemplateHome extends Component {
                 autoFocus
                 maxLength={20}
                 label={<FormattedMessage id="template.code" />}
-                size="default"
               />
             )}
           </FormItem>
@@ -474,7 +470,6 @@ class TemplateHome extends Component {
             <Input
               maxLength={20}
               label={<FormattedMessage id="template.name" />}
-              size="default"
             />
           )}
         </FormItem>
@@ -513,34 +508,26 @@ class TemplateHome extends Component {
               <Select
                 label={<FormattedMessage id="template.copy" />}
                 allowClear
-                key="service"
                 filter
                 dropdownMatchSelectWidth
-                size="default"
-                optionFilterProp="children"
                 filterOption={(input, option) =>
                   option.props.children.props.children.props.children
                     .toLowerCase()
                     .indexOf(input.toLowerCase()) >= 0
                 }
               >
-                {selectData &&
-                  selectData.length > 0 &&
+                {
                   selectData.map(s => (
                     <Option value={s.id} key={s.id.toString()}>
                       <Tooltip
                         placement="right"
-                        trigger="hover"
-                        title={<p>{s.description}</p>}
+                        title={s.description}
                       >
-                        <span
-                          style={{ display: "inline-block", width: "100%" }}
-                        >
-                          {s.name}
-                        </span>
+                        <div>{s.name}</div>
                       </Tooltip>
                     </Option>
-                  ))}
+                  ))
+                }
               </Select>
             )}
           </FormItem>
@@ -564,7 +551,7 @@ class TemplateHome extends Component {
         {isRefresh ? (
           <LoadingBar display />
         ) : (
-          <React.Fragment>
+          <Fragment>
             <Header title={<FormattedMessage id="template.head" />}>
               <Permission
                 service={["devops-service.application-template.create"]}
@@ -612,7 +599,7 @@ class TemplateHome extends Component {
                 >
                   <Content
                     code={`template.${modeType}`}
-                    values={{ name }}
+                    values={{ name: singleData ? singleData.name : name }}
                     className="sidebar-content"
                   >
                     {formContent}
@@ -631,7 +618,7 @@ class TemplateHome extends Component {
                 filters={paras.slice()}
               />
             </Content>
-          </React.Fragment>
+          </Fragment>
         )}
         <Modal
           visible={openRemove}
