@@ -168,9 +168,11 @@ class KeyValueTable extends Component {
         sortOrder: columnKey === 'name' && order,
         filters: [],
         filteredValue: filters.name || [],
-        render: record => (<Popover overlayStyle={{ maxWidth: '350px', wordBreak: 'break-word' }} placement="topLeft" content={`${formatMessage({ id: "ist.des" })}${record.description}`}>
+        render: record => (<MouserOverWrapper width={0.3}>
+          <Popover overlayStyle={{ maxWidth: '350px', wordBreak: 'break-word' }} placement="topLeft" content={`${formatMessage({ id: "ist.des" })}${record.description}`}>
             {record.name}
-        </Popover>),
+          </Popover>
+        </MouserOverWrapper>),
       }, {
         title: <FormattedMessage id="configMap.key" />,
         dataIndex: 'key',
