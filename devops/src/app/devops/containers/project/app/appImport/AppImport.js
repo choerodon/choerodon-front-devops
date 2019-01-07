@@ -90,42 +90,6 @@ class AppImport extends Component {
       });
   };
 
-  skipStep = (index) => {
-    const { data } = this.state;
-    const current = parseInt(index);
-    switch ( current ) {
-      case 0:
-        this.setState({ current });
-        break;
-      case 1:
-        if (data.platformType === 'github' && data.repositoryUrl) {
-          this.setState({ current });
-        } else if (data.repositoryUrl && data.accessToken) {
-          this.setState({ current });
-        } else {
-          return;
-        }
-        break;
-      case 2:
-        if (data.name && data.code && data.applicationTemplateId) {
-          this.setState({ current });
-        } else {
-          return;
-        }
-        break;
-      case 3:
-        const { platformType, name, code, applicationTemplateId, isSkipCheckPermission } = data;
-        if (platformType && name && code && applicationTemplateId && isSkipCheckPermission !== undefined) {
-          this.setState({ current });
-        } else {
-          return;
-        }
-        break;
-      default:
-        break;
-    }
-  };
-
   render() {
     const { type, id: projectId, organizationId, name } = AppState.currentMenuType;
     const { current, data } = this.state;
@@ -162,7 +126,7 @@ class AppImport extends Component {
         <Content code="app.import" values={{ name }}>
           <div className="c7n-app-import-wrap">
             <Steps current={current} className="steps-line">
-              {steps.map(item => <Step key={item.key} title={item.title} onClick={this.skipStep.bind(this, item.key.slice(4, 5))} />)}
+              {steps.map(item => <Step key={item.key} title={item.title} />)}
             </Steps>
             <div className="steps-content">{steps[current].content}</div>
           </div>

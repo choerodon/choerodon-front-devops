@@ -954,7 +954,7 @@ class AppHome extends Component {
                 organizationId={orgId}
               >
                 <Button
-                  icon="playlist_add"
+                  icon="get_app"
                   onClick={this.linkToImport}
                 >
                   <FormattedMessage id="app.import" />

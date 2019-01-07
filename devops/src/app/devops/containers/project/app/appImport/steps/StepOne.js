@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import _ from "lodash";
 import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Radio, Form, Input } from 'choerodon-ui';
+import { Button, Radio, Form, Input, message } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import '../AppImport.scss';
 
@@ -47,7 +47,8 @@ class StepOne extends Component {
       store.checkUrl(projectId, platformType, value, token)
         .then((error) => {
           if (error === false) {
-            callback(formatMessage({ id: 'app.import.url.err1' }));
+            message.info(formatMessage({ id: 'app.import.url.err1' }), undefined, undefined, 'bottomLeft');
+            callback('');
           } else if (error === null) {
             callback(formatMessage({ id: 'app.import.url.null' }));
           } else {
@@ -63,14 +64,22 @@ class StepOne extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { onNext } = this.props;
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        values.key = 'step0';
-        values.platformType = this.state.platformType;
-        onNext(values);
-      }
-    });
+    const { onNext, form: { validateFields, isModifiedFields, getFieldsValue } } = this.props;
+    const isModified = isModifiedFields(['repositoryUrl', 'accessToken']);
+    if (isModified) {
+      validateFields((err, values) => {
+        if (!err) {
+          values.key = 'step0';
+          values.platformType = this.state.platformType;
+          onNext(values);
+        }
+      });
+    } else {
+      const values = getFieldsValue();
+      values.key = 'step0';
+      values.platformType = this.state.platformType;
+      onNext(values);
+    }
   };
 
   fromItem() {

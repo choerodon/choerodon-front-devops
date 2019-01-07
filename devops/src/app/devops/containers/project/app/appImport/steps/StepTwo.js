@@ -25,7 +25,7 @@ class StepTwo extends Component {
   constructor() {
     super(...arguments);
     this.state = {
-      template: '',
+      template: this.props.values.template || '',
     }
   }
 
@@ -37,14 +37,22 @@ class StepTwo extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { onNext } = this.props;
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        values.key = 'step1';
-        values.template = this.state.template;
-        onNext(values);
-      }
-    });
+    const { onNext, form: { validateFields, isModifiedFields, getFieldsValue } } = this.props;
+    const isModified = isModifiedFields(['code', 'name', 'applicationTemplateId']);
+    if (isModified) {
+      validateFields((err, values) => {
+        if (!err) {
+          values.key = 'step1';
+          values.template = this.state.template;
+          onNext(values);
+        }
+      });
+    } else {
+      const values = getFieldsValue();
+      values.key = 'step1';
+      values.template = this.state.template;
+      onNext(values);
+    }
   };
 
   /**
@@ -96,6 +104,10 @@ class StepTwo extends Component {
     }
   }, 600);
 
+  /**
+   * 模板切换
+   * @param id
+   */
   onChange = (id) => {
     const { store: { selectData } } = this.props;
     const template = selectData.filter((e) => e.id === parseInt(id))[0].name;
