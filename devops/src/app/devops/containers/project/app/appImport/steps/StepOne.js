@@ -38,23 +38,10 @@ class StepOne extends Component {
    * @param callback
    */
   checkUrl = _.debounce((rule, value, callback) => {
-    const { store, intl: { formatMessage }, values } = this.props;
-    const { id: projectId } = AppState.currentMenuType;
-    const { platformType, accessToken } = this.state;
+    const { intl: { formatMessage } } = this.props;
     const reg = /^(https?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/;
     if (value && reg.test(value) && value.indexOf('.git') !== -1) {
-      const token = platformType === 'gitlab' ? accessToken || values.accessToken : null;
-      store.checkUrl(projectId, platformType, value, token)
-        .then((error) => {
-          if (error === false) {
-            message.info(formatMessage({ id: 'app.import.url.err1' }), undefined, undefined, 'bottomLeft');
-            callback('');
-          } else if (error === null) {
-            callback(formatMessage({ id: 'app.import.url.null' }));
-          } else {
-            callback();
-          }
-        });
+      callback();
     } else if (value && (!reg.test(value) || value.indexOf('.git') === -1)) {
       callback(formatMessage({ id: 'app.import.url.err' }));
     } else {
@@ -64,14 +51,25 @@ class StepOne extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { onNext, form: { validateFields, isModifiedFields, getFieldsValue } } = this.props;
+    const { store, intl: { formatMessage }, onNext, form: { validateFields, isModifiedFields, getFieldsValue } } = this.props;
+    const { platformType } = this.state;
+    const { id: projectId } = AppState.currentMenuType;
     const isModified = isModifiedFields(['repositoryUrl', 'accessToken']);
     if (isModified) {
       validateFields((err, values) => {
         if (!err) {
-          values.key = 'step0';
-          values.platformType = this.state.platformType;
-          onNext(values);
+          store.checkUrl(projectId, platformType, values.repositoryUrl, values.accessToken)
+            .then((error) => {
+              if (error === false) {
+                message.info(formatMessage({ id: 'app.import.url.err1' }), undefined, undefined, 'bottomLeft');
+              } else if (error === null) {
+                message.info(formatMessage({ id: 'app.import.url.null' }), undefined, undefined, 'bottomLeft');
+              } else {
+                values.key = 'step0';
+                values.platformType = platformType;
+                onNext(values);
+              }
+            });
         }
       });
     } else {
@@ -142,11 +140,15 @@ class StepOne extends Component {
   }
 
   onChange = (e) => {
-    this.props.form.resetFields();
     this.setState({
       platformType: e.target.value,
       accessToken: undefined,
       repositoryUrl: undefined,
+    }, () => {
+      this.props.form.setFieldsValue({
+        repositoryUrl: undefined,
+        accessToken: undefined,
+      });
     });
   };
 
@@ -157,12 +159,8 @@ class StepOne extends Component {
   };
 
   onTokenChange = (e) => {
-    const { values } = this.props;
     this.setState({
       accessToken: e.target.value,
-    });
-    this.props.form.setFieldsValue({
-      repositoryUrl: values.repositoryUrl || this.state.repositoryUrl,
     });
   };
 
