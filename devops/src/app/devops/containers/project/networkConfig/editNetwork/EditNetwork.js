@@ -196,7 +196,8 @@ class EditNetwork extends Component {
           appId: appId || null,
           appInstance: appIst,
           envId,
-          externalIp: (externalIps && externalIps.length) ? externalIps.join(",") : null,
+          externalIp:
+            externalIps && externalIps.length ? externalIps.join(",") : null,
           ports,
           label: !_.isEmpty(label) ? label : null,
           endPoints: !_.isEmpty(endPoints) ? endPoints : null,
@@ -244,9 +245,11 @@ class EditNetwork extends Component {
       if (data) {
         const { name, type, appId, target, config, envId, envName } = data;
         const targetKeys =
-          (target && target.labels)
+          target && target.labels
             ? "param"
-            : (target && target.endPoints ? "endPoints" : "instance");
+            : target && target.endPoints
+            ? "endPoints"
+            : "instance";
         let appInstance = [];
         let labels = {};
         let endPoints = {};
@@ -292,7 +295,12 @@ class EditNetwork extends Component {
           initIst,
           initIstOption,
           deletedInstance,
-          oldAppData: { initApp: appId, initIst, initIstOption, deletedInstance},
+          oldAppData: {
+            initApp: appId,
+            initIst,
+            initIstOption,
+            deletedInstance,
+          },
           network: data,
           envId,
           envName,
@@ -315,21 +323,27 @@ class EditNetwork extends Component {
     const {
       envId,
       oldTargetKeys,
-      network: { type, config, target: { labels, endPoints } },
-      oldAppData: { initApp, initIst, initIstOption, deletedInstance},
+      network: {
+        type,
+        config,
+        target: { labels, endPoints },
+      },
+      oldAppData: { initApp, initIst, initIstOption, deletedInstance },
     } = this.state;
 
     // 设置初始数据
     const oldValue = {};
     const initKeys = _.keys(labels);
-    const flag =  _.keys(endPoints)[0];
-    oldValue.targetKeys = Array.from({length: initKeys.length}, (v,k) => k);
-    oldValue.endPoints = flag ? Array.from({length: endPoints[flag].length}, (v,k) => k) : [];
-    oldValue.ports = Array.from({length: config.ports.length}, (v,k) => k);
+    const flag = _.keys(endPoints)[0];
+    oldValue.targetKeys = Array.from({ length: initKeys.length }, (v, k) => k);
+    oldValue.endPoints = flag
+      ? Array.from({ length: endPoints[flag].length }, (v, k) => k)
+      : [];
+    oldValue.ports = Array.from({ length: config.ports.length }, (v, k) => k);
 
     const list = {
-      "targetKeys": ["keywords", "values"],
-      "endPoints": ["portName", "targetport"],
+      targetKeys: ["keywords", "values"],
+      endPoints: ["portName", "targetport"],
     };
     const { id } = AppState.currentMenuType;
     const keys = getFieldValue(key);
@@ -379,14 +393,16 @@ class EditNetwork extends Component {
         if (value === item) {
           if (oldTargetKeys === item) {
             this[item] = 0;
-            getFieldDecorator(item, {initialValue: oldValue[item]});
+            getFieldDecorator(item, { initialValue: oldValue[item] });
             setFieldsValue({
               [item]: oldValue[item],
             });
             resetFields(list[item]);
-            this.setState({ [oldData]: item === "targetKeys" ? labels : endPoints })
+            this.setState({
+              [oldData]: item === "targetKeys" ? labels : endPoints,
+            });
           } else {
-            getFieldDecorator(item, {initialValue: [0]});
+            getFieldDecorator(item, { initialValue: [0] });
             this[item] = 1;
             setFieldsValue({
               [item]: [0],
@@ -777,7 +793,8 @@ class EditNetwork extends Component {
 
     // 生成多组 port
     const { ports, externalIps } = config;
-    const initIp = externalIps || undefined;
+    const trustIps = _.filter(externalIps, item => item);
+    const initIp = trustIps.length ? trustIps : undefined;
     const initPort = [0];
     const nPort = [];
     const pPort = [];

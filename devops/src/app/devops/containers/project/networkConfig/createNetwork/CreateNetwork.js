@@ -179,7 +179,8 @@ class CreateNetwork extends Component {
           appId: appId || null,
           appInstance: appIst,
           envId,
-          externalIp: externalIps ? externalIps.join(",") : null,
+          externalIp:
+            externalIps && externalIps.length ? externalIps.join(",") : null,
           ports,
           label: !_.isEmpty(label) ? label : null,
           type: config,

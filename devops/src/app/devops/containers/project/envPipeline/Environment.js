@@ -974,7 +974,7 @@ class Environment extends Component {
                       filter
                       onSelect={this.handleCluster}
                       filterOption={(input, option) =>
-                        option.props.children
+                        option.props.children[1]
                           .toLowerCase()
                           .indexOf(input.toLowerCase()) >= 0
                       }
