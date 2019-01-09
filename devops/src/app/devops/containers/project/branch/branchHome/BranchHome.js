@@ -110,7 +110,7 @@ class BranchHome extends Component {
    * @returns {*}
    */
   get tableBranch() {
-    const { BranchStore } = this.props;
+    const { BranchStore, intl: { formatMessage } } = this.props;
     const { paras, filters, sort: { columnKey, order } } = this.state;
     const menu = AppState.currentMenuType;
     const { type, organizationId: orgId } = menu;
@@ -259,7 +259,7 @@ class BranchHome extends Component {
         {title}
         <Table
           filters={paras}
-          filterBarPlaceholder={this.props.intl.formatMessage({ id: 'filter' })}
+          filterBarPlaceholder={formatMessage({ id: 'filter' })}
           loading={BranchStore.loading}
           className="c7n-branch-table"
           rowClassName="c7n-branch-tr"
@@ -268,6 +268,7 @@ class BranchHome extends Component {
           dataSource={BranchStore.getBranchList}
           rowKey={record => record.branchName}
           onChange={this.tableChange}
+          locale={{ emptyText: formatMessage({ id: 'branch.empty' }) }}
         />
       </div>
 
