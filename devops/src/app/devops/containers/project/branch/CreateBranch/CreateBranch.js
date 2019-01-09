@@ -171,9 +171,9 @@ class CreateBranch extends Component {
    */
   triggerNameCheck = () => {
     const { getFieldValue, validateFields } = this.props.form;
-    const value = getFieldValue('branchName');
+    const value = getFieldValue("branchName");
     if (value) {
-      validateFields(['branchName'], { force: true });
+      validateFields(["branchName"], { force: true });
     }
   };
 
@@ -195,15 +195,14 @@ class CreateBranch extends Component {
     } else {
       const { appId, store } = this.props;
       const { projectId, type } = this.state;
-      const name = `${type === 'custom' ? '' : `${type}-`}${value}`;
-      store.checkName(projectId, appId, name)
-        .then((data) => {
-          if (data && data.failed) {
-            callback(intl.formatMessage({ id: 'branch.check.existence' }));
-          } else {
-            callback();
-          }
-        });
+      const name = `${type === "custom" ? "" : `${type}-`}${value}`;
+      store.checkName(projectId, appId, name).then(data => {
+        if (data && data.failed) {
+          callback(intl.formatMessage({ id: "branch.check.existence" }));
+        } else {
+          callback();
+        }
+      });
     }
   }, 600);
 
@@ -219,7 +218,7 @@ class CreateBranch extends Component {
    * 切换分支类型
    * @param value
    */
-  changeType =(value) => {
+  changeType = value => {
     this.setState({ type: value }, () => this.triggerNameCheck());
   };
 
@@ -230,7 +229,10 @@ class CreateBranch extends Component {
    */
   changeIssue = (value, options) => {
     const key = options.key;
-    const { store, form: { setFieldsValue } } = this.props;
+    const {
+      store,
+      form: { setFieldsValue },
+    } = this.props;
     const issue = store.issue.slice();
     const issueDto = _.filter(issue, i => i.issueId === value)[0];
     let type = "";
@@ -253,7 +255,7 @@ class CreateBranch extends Component {
       default:
         type = "custom";
     }
-    this.setState({ type, issueDto });
+    this.setState({ type, issueDto }, () => this.triggerNameCheck());
     setFieldsValue({ type });
   };
 

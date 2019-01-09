@@ -640,10 +640,12 @@ class ExportChart extends Component {
                 onClick={() => this.changeStep(0)}
               />
               <Step
+                className={selectedRows.length ? "" : "c7ncd-step-disabled"}
                 title={formatMessage({ id: "deploy.step.one.version.title" })}
                 onClick={selectedRows.length && this.displaySecondPart}
               />
               <Step
+                className={selectedRows.length ? "" : "c7ncd-step-disabled"}
                 title={formatMessage({ id: "appstore.confirm" })}
                 onClick={
                   selectedRows.length &&
