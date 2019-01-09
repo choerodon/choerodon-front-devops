@@ -1129,25 +1129,27 @@ class DevConsole extends Component {
               <div className="c7n-commit-title"><FormattedMessage id="devCs.commit.number" /></div>
             </div>
             <div className="c7n-dc-data-wrap">
-              {
-                _.map(numberData, item => (<tr className="c7n-data-number" key={item.name}>
-                  <td className="c7n-data-number_link">
-                    <Link
-                      to={{
-                        pathname: `/devops/${item.name}`,
-                        search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${orgId}`,
-                        state: { backPath: `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}` },
-                      }}
-                    >
-                      {item.number}
-                    </Link>
-                  </td>
-                  <td>
-                    <Icon type={item.icon} />
-                    <span><FormattedMessage id={item.message} /></span>
-                  </td>
-                </tr>))
-              }
+              <table>
+                {
+                  _.map(numberData, item => (<tr className="c7n-data-number" key={item.name}>
+                    <td className="c7n-data-number_link">
+                      <Link
+                        to={{
+                          pathname: `/devops/${item.name}`,
+                          search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${orgId}`,
+                          state: { backPath: `/devops/dev-console?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}` },
+                        }}
+                      >
+                        {item.number}
+                      </Link>
+                    </td>
+                    <td>
+                      <Icon type={item.icon} />
+                      <FormattedMessage id={item.message} />
+                    </td>
+                  </tr>))
+                }
+              </table>
             </div>
           </div>
           {/*dev-pipeline*/}

@@ -1297,7 +1297,7 @@ class Environment extends Component {
                           : this.disableEnv
                       }
                     >
-                      {formatMessage({ id: "submit" })}
+                      {getIst.length && disEnvConnect ? formatMessage({ id: "submit" }) : formatMessage({ id: "stop" })}
                     </Button>,
                   ]
                 : null

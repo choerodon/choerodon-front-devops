@@ -202,10 +202,9 @@ export default class PodCircle extends PureComponent {
           onCancel={this.handleCancel}
           closable={false}
           maskClosable={false}
+          className="c7ncd-pod-modal"
         >
-          <p>
-            <FormattedMessage id="ist.expand.stop.describe" />
-          </p>
+          <FormattedMessage id="ist.expand.stop.describe" />
         </Modal>
       </Fragment>
     );

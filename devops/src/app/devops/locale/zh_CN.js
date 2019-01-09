@@ -857,7 +857,7 @@ const zhCN = {
   "app.import.token": "私有Token",
   "app.import.template": "选择应用模板",
   "app.import.repo.required": "请输入代码库地址",
-  "app.import.token.required": "请输入Token",
+  "app.import.token.required": "请输入正确的Token",
   "app.import.name.required": "请输入应用名称",
   "app.import.code.required": "请输入应用编码",
   "app.import.template.required": "请选择应用模板",

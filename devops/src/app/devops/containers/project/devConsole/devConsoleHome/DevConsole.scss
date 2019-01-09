@@ -228,7 +228,7 @@
 
 .c7n-dc-page-content-header {
   display: flex;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 
   .c7n-tag-empty {
     box-shadow: none;
@@ -250,6 +250,11 @@
     flex: 2;
     color: rgba(0, 0, 0, 0.65);
 
+    table {
+      border-collapse: separate;
+      border-spacing: 0 4px;
+    }
+
     .commit-number {
       margin: 10px 0 8px 30px;
       font-size: 24px;
@@ -264,7 +269,7 @@
     }
 
     .c7n-data-number {
-      height: 33px;
+      margin-bottom: 14px;
 
       &:last-child {
         margin: 0;
@@ -435,6 +440,7 @@
 }
 
 .c7n-devCs-nomerge {
+  color: rgba(0, 0, 0, 0.65);
   padding: 18px 0 0 30px;
 }
 
