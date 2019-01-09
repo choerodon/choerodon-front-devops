@@ -986,6 +986,7 @@ const zhCN = {
   "branch.issue.bug": "故障",
   "branch.issue.epic": "史诗",
   "branch.issue.subtask": "子任务",
+  "branch.empty": "该应用仓库为空，暂无分支",
 
   // ciPipeline
   "ciPipeline.head": "持续集成",

@@ -586,7 +586,7 @@ class DevConsole extends Component {
             <div className="c7n-dc-line_card-content">
               <div className="c7n-dc-line_card-title">
                 <FormattedMessage id="app.branchManage" />
-                <Permission
+                {branchList && branchList.length ? <Permission
                   service={['devops-service.devops-git.createBranch']}
                   type={type}
                   projectId={projectId}
@@ -602,7 +602,7 @@ class DevConsole extends Component {
                       onClick={this.displayModal.bind(this, 'createBranch')}
                     />
                   </Tooltip>
-                </Permission>
+                </Permission> : null}
               </div>
               <Select
                 label={<FormattedMessage id="app.branch.select" />}
@@ -1057,7 +1057,7 @@ class DevConsole extends Component {
               }
             </OptGroup>
           </Select>
-          {appData && appData.length ? (<div className="c7n-dc-create-select">
+          {branchList && branchList.length ? (<div className="c7n-dc-create-select">
             <Dropdown overlay={menu} trigger={['click']}>
               <a href="#">
                 <Icon type="playlist_add" />
