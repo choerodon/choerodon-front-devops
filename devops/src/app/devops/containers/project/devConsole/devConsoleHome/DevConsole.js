@@ -171,8 +171,10 @@ class DevConsole extends Component {
    * 加载合并请求信息
    */
   loadMergeData = () => {
+    const { projectId } = AppState.currentMenuType;
     MergeRequestStore.loadMergeRquest(DevPipelineStore.getSelectApp, 'opened', 0, 5);
     MergeRequestStore.loadMergeRquest(DevPipelineStore.getSelectApp, 'merged', 0, 5);
+    MergeRequestStore.loadUrl(projectId, DevPipelineStore.getSelectApp);
   };
 
   /**
@@ -229,9 +231,9 @@ class DevConsole extends Component {
    */
   deleteTag = () => {
     const { projectId } = AppState.currentMenuType;
-    const { tag } = this.state;
+    const { tagName } = this.state;
     this.setState({ deleteLoading: true });
-    AppTagStore.deleteTag(projectId, tag).then((data) => {
+    AppTagStore.deleteTag(projectId, tagName).then((data) => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
       } else {

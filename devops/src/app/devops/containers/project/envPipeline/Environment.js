@@ -107,39 +107,6 @@ class Environment extends Component {
     }
   }, 1000);
 
-  /**
-   * 环境名称校验
-   * @param rule 校验规则
-   * @param value name值
-   * @param callback 回调提示
-   */
-  checkName = _.debounce((rule, value, callback) => {
-    const {
-      EnvPipelineStore,
-      intl: { formatMessage },
-    } = this.props;
-    const { id: projectId } = AppState.currentMenuType;
-    const { cluster: clusterId } = this.state;
-    const envData = EnvPipelineStore.getEnvData;
-    const flag = envData ? value !== envData.name : value;
-    const cluster = envData ? envData.clusterId : clusterId;
-    if (cluster && flag) {
-      EnvPipelineStore.checkEnvName(projectId, cluster, value).then(error => {
-        if (error && error.failed) {
-          callback(
-            formatMessage({
-              id: "envPl.name.check.exist",
-            })
-          );
-        } else {
-          callback();
-        }
-      });
-    } else {
-      callback();
-    }
-  }, 1000);
-
   constructor(props) {
     super(props);
     this.state = {
@@ -437,23 +404,31 @@ class Environment extends Component {
       form.validateFieldsAndScroll((err, data) => {
         if (!err) {
           data.userIds = this.state.createSelectedRowKeys;
-          EnvPipelineStore.createEnv(projectId, data).then(res => {
-            if (res && res.failed) {
+          EnvPipelineStore.createEnv(projectId, data)
+            .then(res => {
+              if (res && res.failed) {
+                this.setState({
+                  submitting: false,
+                });
+                Choerodon.prompt(res.message);
+              } else {
+                this.loadEnvs();
+                EnvPipelineStore.setShow(false);
+                this.setState({
+                  submitting: false,
+                  createSelectedRowKeys: [],
+                  createSelected: [],
+                });
+                form.resetFields();
+              }
+            })
+            .catch(error => {
               this.setState({
                 submitting: false,
-              });
-              Choerodon.prompt(res.message);
-            } else {
-              this.loadEnvs();
-              EnvPipelineStore.setShow(false);
-              this.setState({
-                submitting: false,
-                createSelectedRowKeys: [],
-                createSelected: [],
               });
               form.resetFields();
-            }
-          });
+              Choerodon.handleResponseError(error);
+            });
         } else {
           this.setState({
             submitting: false,
@@ -464,7 +439,6 @@ class Environment extends Component {
       form.validateFieldsAndScroll((err, data, modify) => {
         if (modify) {
           if (!err) {
-            // EnvPipelineStore.setShow(false);
             const id = EnvPipelineStore.getEnvData.id;
             EnvPipelineStore.updateEnv(projectId, { ...data, id })
               .then(res => {
@@ -474,19 +448,21 @@ class Environment extends Component {
                   });
                   Choerodon.prompt(res.message);
                 } else if (res) {
-                  this.loadEnvs();
                   EnvPipelineStore.setShow(false);
+                  EnvPipelineStore.setEnvData(null);
                   EnvPipelineStore.setSideType(null);
-                  form.resetFields();
+                  this.loadEnvs();
                   this.setState({
                     submitting: false,
                   });
+                  form.resetFields();
                 }
               })
               .catch(error => {
                 this.setState({
                   submitting: false,
                 });
+                form.resetFields();
                 Choerodon.handleResponseError(error);
               });
           }
@@ -496,7 +472,6 @@ class Environment extends Component {
           });
           EnvPipelineStore.setShow(false);
         }
-        form.resetFields();
       });
     } else {
       const id = EnvPipelineStore.getEnvData.id;
@@ -599,8 +574,11 @@ class Environment extends Component {
     const { EnvPipelineStore } = this.props;
     const { getDisEnvcardPosition: disEnvCard } = EnvPipelineStore;
 
-    const DisEnvLength  = disEnvCard.length ? disEnvCard[0].devopsEnviromentRepDTOs.length : 0;
-    const flag = DisEnvLength * 285 - window.innerWidth + 297 <= domPosition + 300;
+    const DisEnvLength = disEnvCard.length
+      ? disEnvCard[0].devopsEnviromentRepDTOs.length
+      : 0;
+    const flag =
+      DisEnvLength * 285 - window.innerWidth + 297 <= domPosition + 300;
 
     this.setState({
       moveBan: flag,
@@ -846,18 +824,20 @@ class Environment extends Component {
             </div>
             <div className="c7n-env-des-wrap">
               <div className="c7n-env-des" title={env.description}>
-                {env.clusterName && <div>
-                  <span className="c7n-env-des-head">
-                    {formatMessage({ id: "envPl.cluster" })}
-                  </span>
-                  {env.clusterName}
-                </div>}
+                {env.clusterName && (
+                  <div>
+                    <span className="c7n-env-des-head">
+                      {formatMessage({ id: "envPl.cluster" })}
+                    </span>
+                    {env.clusterName}
+                  </div>
+                )}
                 <span className="c7n-env-des-head">
                   {formatMessage({
                     id: "envPl.description",
                   })}
                 </span>
-                {env.description || formatMessage({ id: 'null' })}
+                {env.description || formatMessage({ id: "null" })}
               </div>
             </div>
           </div>
@@ -1004,8 +984,7 @@ class Environment extends Component {
                     disabled={!getFieldValue("clusterId")}
                     maxLength={30}
                     label={<FormattedMessage id="envPl.form.code" />}
-                    suffix={<Tips type="form" data="envPl.envCode.tip" />
-                    }
+                    suffix={<Tips type="form" data="envPl.envCode.tip" />}
                   />
                 )}
               </FormItem>
@@ -1018,7 +997,6 @@ class Environment extends Component {
                         id: "required",
                       }),
                     },
-                    // { validator: this.checkName, },
                   ],
                 })(
                   <Input
@@ -1128,9 +1106,6 @@ class Environment extends Component {
                       message: formatMessage({
                         id: "required",
                       }),
-                    },
-                    {
-                      validator: this.checkName,
                     },
                   ],
                   initialValue: envData ? envData.name : "",
@@ -1305,7 +1280,11 @@ class Environment extends Component {
             footer={
               enableClick
                 ? [
-                  <Button key="back" onClick={this.closeDisEnvModal} disabled={this.submitting}>
+                    <Button
+                      key="back"
+                      onClick={this.closeDisEnvModal}
+                      disabled={this.submitting}
+                    >
                       {formatMessage({ id: "return" })}
                     </Button>,
                     <Button

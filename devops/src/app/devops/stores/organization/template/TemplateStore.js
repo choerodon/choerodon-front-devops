@@ -148,24 +148,14 @@ class TemplateStore {
       });
 
   checkCode = (orgId, code) =>
-    axios
-      .get(
-        `/devops/v1/organizations/${orgId}/app_templates/check_code?code=${code}`
-      )
-      .then(data => {
-        const res = this.handleProptError(data);
-        return res;
-      });
+    axios.get(
+      `/devops/v1/organizations/${orgId}/app_templates/check_code?code=${code}`
+    );
 
   checkName = (orgId, name) =>
-    axios
-      .get(
-        `/devops/v1/organizations/${orgId}/app_templates/check_name?name=${name}`
-      )
-      .then(data => {
-        const res = this.handleProptError(data);
-        return res;
-      });
+    axios.get(
+      `/devops/v1/organizations/${orgId}/app_templates/check_name?name=${name}`
+    );
 
   updateData = (orgId, data) =>
     axios

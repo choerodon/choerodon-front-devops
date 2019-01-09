@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { observer, inject } from "mobx-react";
 import { withRouter } from "react-router-dom";
 import { Button, Select, Steps, Table, Input } from "choerodon-ui";
@@ -16,6 +16,8 @@ import _ from "lodash";
 import MouserOverWrapper from "../../../../components/MouseOverWrapper";
 import "../Importexport.scss";
 import "../../../main.scss";
+import exportChartStore from "../../../../stores/project/appStore/exportChart/ExportChartStore";
+import { handleProptError } from "../../../../utils";
 
 const Option = Select.Option;
 const Step = Steps.Step;
@@ -32,11 +34,13 @@ class ExportChart extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      current: 1,
+      current: 0,
       projectId: AppState.currentMenuType.id,
       0: { versions: [] },
       upDown: [],
       selectedRows: [],
+      versionDate: {},
+      selectedVersion: {},
       exportName: "chart",
     };
   }
@@ -47,20 +51,6 @@ class ExportChart extends Component {
   }
 
   /**
-   * 获取步骤条状态
-   * @param index
-   * @returns {string}
-   */
-  getStatus = index => {
-    const { current } = this.state;
-    let status = index < current ? "finish" : "wait";
-    if (index === current) {
-      status = "process";
-    }
-    return status;
-  };
-
-  /**
    * 改变步骤条
    * @param index
    */
@@ -69,7 +59,7 @@ class ExportChart extends Component {
   };
 
   /**
-   * table app表格搜索
+   * 选择应用部分的表格修改
    * @param pagination 分页
    * @param filters 过滤
    * @param sorter 排序
@@ -77,73 +67,63 @@ class ExportChart extends Component {
   appTableChange = (pagination, filters, sorter, paras) => {
     const { ExportChartStore } = this.props;
     const { projectId } = AppState.currentMenuType;
-    const page = pagination.current - 1;
-    const sort = { field: "id", order: "desc" };
-    if (sorter.column) {
-      sort.field = sorter.field || sorter.columnKey;
-      sort.order = sorter.order === "ascend" ? "asc" : "desc";
-    }
-    let searchParam = {};
-    if (Object.keys(filters).length) {
-      searchParam = filters;
-    }
-    const postData = {
-      searchParam,
+    const { current, pageSize: size } = pagination;
+
+    const page = current - 1;
+    const search = {
+      searchParam: Object.keys(filters).length ? filters : {},
       param: paras.toString(),
     };
+
     ExportChartStore.loadApps({
       projectId,
-      sorter: sort,
-      datas: postData,
+      search,
       page,
-      size: pagination.pageSize,
+      size,
     });
   };
 
   /**
    * 加载应用版本
-   * @param appId 应用id
+   * @param id 应用id
    * @param index 索引号
    */
-  loadVersion = (appId, index) => {
+  loadVersion = id => {
     const { ExportChartStore } = this.props;
     const { projectId } = AppState.currentMenuType;
     this.setState({ isLoading: true });
-    ExportChartStore.loadVersionsByAppId(appId, projectId).then(data => {
+    ExportChartStore.loadVersionsByAppId(id, projectId).then(data => {
       this.setState({ isLoading: false });
-      if (data && data.failed) {
-        Choerodon.prompt(data.message);
-      } else if (data) {
-        this.setState({ [index]: { versions: data ? data.reverse() : [] } });
+      const res = handleProptError(data);
+      if (res) {
+        const { versionDate } = this.state;
+        versionDate[id] = _.reverse(res);
+        this.setState({ versionDate });
       }
     });
   };
 
   /**
    * 选择版本
-   * @param index
    * @param value
+   * @param id
    */
-  handleSelectVersion = (index, value) => {
-    const { selectedRows } = this.state;
-    const version = _.map(value, v => {
-      const { versions, app } = this.state[index];
-      return _.filter(versions, s => s.id === v)[0];
-    });
-    selectedRows[index].versions = version;
-    this.setState({ selectedRows });
+  handleSelectVersion = (value, id) => {
+    const { selectedVersion } = this.state;
+    selectedVersion[id] = value;
+    this.setState({ selectedVersion });
   };
 
   /**
    * 取消选择版本
    * @param index
    */
-  clearVersions = (index, value) => {
-    const { selectedRows } = this.state;
-    const version = selectedRows[index].versions;
-    _.remove(version, v => v.id === parseInt(value, 10));
-    selectedRows[index].versions = version;
-    this.setState({ selectedRows });
+  clearVersions = (value, id) => {
+    const { selectedVersion } = this.state;
+    const versions = _.assign({}, selectedVersion[id]);
+    const aliveVersions = _.remove(versions, item => item === value);
+    versions[id] = aliveVersions;
+    this.setState({ selectedVersion: aliveVersions });
   };
 
   /**
@@ -192,27 +172,92 @@ class ExportChart extends Component {
    * @returns {boolean}
    */
   get checkDisable() {
-    const { selectedRows } = this.state;
-    const disabled = _.find(selectedRows, item => {
-      return (item.versions && !item.versions.length) || !item.versions;
-    });
-    return disabled && !disabled.length;
+    const { selectedVersion } = this.state;
+    let versionIsEmpty = false;
+    const apps = Object.keys(selectedVersion);
+    for (const app of apps) {
+      if (
+        !selectedVersion[app] ||
+        (selectedVersion[app] && !selectedVersion[app].length)
+      ) {
+        versionIsEmpty = true;
+        break;
+      }
+    }
+
+    return versionIsEmpty;
   }
+
+  /**
+   *  显示第二步
+   *
+   * @memberof ExportChart
+   */
+  displaySecondPart = () => {
+    const { selectedRows, selectedVersion } = this.state;
+    const selectedApps = _.map(selectedRows, item => item.id);
+    const aliveVersion = _.assign({}, selectedVersion);
+
+    // 为所有选中的项初始化版本
+    _.forEach(selectedRows, item => {
+      const { id, appVersions } = item;
+      if (!aliveVersion[id] || (aliveVersion[id] && !aliveVersion[id].length)) {
+        aliveVersion[id] = _.last(appVersions) ? [_.last(appVersions).id] : [];
+      }
+    });
+
+    // 去除已经取消的项目的版本
+    for (const key in aliveVersion) {
+      if (
+        aliveVersion.hasOwnProperty(key) &&
+        !selectedApps.includes(Number(key))
+      ) {
+        aliveVersion[key] = [];
+      }
+    }
+
+    this.setState({ selectedVersion: aliveVersion });
+    this.changeStep(1);
+  };
+
+  /**
+   *  导出名修改
+   *
+   * @memberof ExportChart
+   */
+  onChange = e => {
+    this.setState({ exportName: e.target.value });
+  };
 
   /**
    * 导出文件
    */
   handleOk = () => {
     const { ExportChartStore, intl } = this.props;
-    const { selectedRows, projectId, exportName } = this.state;
-    const appVersions = selectedRows.map((s, index) => ({
+    const { selectedRows, projectId, exportName, selectedVersion } = this.state;
+
+    const appVersions = [];
+    _.filter(selectedVersion, (s, index) => ({
       appMarketId: s.id,
       appVersionIds: _.map(s.versions, "id"),
     }));
+
+    for (const key in selectedVersion) {
+      if (selectedVersion.hasOwnProperty(key)) {
+        const element = selectedVersion[key];
+        if (element && element.length) {
+          appVersions.push({
+            appMarketId: key,
+            appVersionIds: element,
+          });
+        }
+      }
+    }
+
     this.setState({ submitting: true });
     ExportChartStore.exportChart(projectId, exportName, appVersions).then(
       res => {
-        // 导出文件名加上后缀，因为 FirFox 无法自动识别文件类型
+        // 导出文件名加上后缀，因为 FirFox 无法自动添加文件后缀
         FileDownload(res, `${exportName}.zip`, "application/zip;charset=utf-8");
         this.setState({ submitting: false });
         Choerodon.prompt(intl.formatMessage({ id: "appstore.exportSucc" }));
@@ -222,27 +267,22 @@ class ExportChart extends Component {
   };
 
   /**
-   * 取所有的版本
+   * 第一步应用表格选择
+   *
+   * @memberof ExportChart
    */
-  handleLoadAllVersion = () => {
-    const { ExportChartStore } = this.props;
-    const { selectedRows, selectedRowKeys } = this.state;
-    for (let i = 0; i < selectedRowKeys.length; i += 1) {
-      ExportChartStore.loadVersionsByAppId(
-        selectedRowKeys[i],
-        this.state.projectId
-      ).then(datas => {
-        if (datas && datas.failed) {
-          Choerodon.prompt(datas.message);
-        } else if (datas.length) {
-          const versions = [datas.reverse()[0]];
-          selectedRows[i].versions =
-            "versions" in selectedRows[i] ? selectedRows[i].versions : versions;
-          this.setState({ [i]: { versions: datas }, selectedRows });
-          this.changeStep(2);
-        }
-      });
-    }
+  onSelectChange = (selectedRowKeys, selectedRows) => {
+    const { selectedRows: oldSelectedRows } = this.state;
+    const allSelectedRows = [...oldSelectedRows, ...selectedRows];
+    const uniqKeys = [];
+    const newSelectedRows = _.filter(
+      allSelectedRows,
+      item =>
+        selectedRowKeys.includes(item.id) &&
+        !uniqKeys.includes(item.id) &&
+        uniqKeys.push(item.id)
+    );
+    this.setState({ selectedRowKeys, selectedRows: newSelectedRows });
   };
 
   /**
@@ -250,7 +290,8 @@ class ExportChart extends Component {
    */
   renderStepOne = () => {
     const { ExportChartStore, intl } = this.props;
-    const data = ExportChartStore.getApp;
+    const { selectedRowKeys, selectedRows } = this.state;
+    const appTableDate = ExportChartStore.getApp;
     const column = [
       {
         title: <FormattedMessage id="app.name" />,
@@ -283,30 +324,9 @@ class ExportChart extends Component {
       },
     ];
     const rowSelection = {
-      selectedRowKeys: this.state.selectedRowKeys || [],
-      onChange: (selectedRowKeys, selectedRows) => {
-        let rows = this.state.selectedRows || [];
-        let selectRow = [];
-        let key = [];
-        rows = rows.concat(selectedRows);
-        if (selectedRowKeys.length && data.length) {
-          key = selectedRowKeys;
-          selectedRowKeys.map((s, indexs) => {
-            const ids = _.map(selectRow, "id");
-            if (!ids.includes(s)) {
-              selectRow.push(_.filter(rows, v => v.id === s)[0]); // 取消勾选
-            }
-            return indexs;
-          });
-        } else {
-          key = [];
-          rows = [];
-          selectRow = [];
-        }
-        this.setState({ selectedRows: selectRow, selectedRowKeys: key });
-      },
+      selectedRowKeys: selectedRowKeys || [],
+      onChange: this.onSelectChange,
     };
-    const selectedRows = this.state.selectedRowKeys || [];
     return (
       <div className="c7n-step-section-wrap">
         <p>
@@ -319,7 +339,7 @@ class ExportChart extends Component {
             pagination={ExportChartStore.pageInfo}
             rowSelection={rowSelection}
             columns={column}
-            dataSource={data}
+            dataSource={appTableDate}
             rowKey={record => record.id}
             onChange={this.appTableChange}
           />
@@ -329,10 +349,10 @@ class ExportChart extends Component {
             type="primary"
             funcType="raised"
             className="c7n-step-button"
-            disabled={selectedRows.length === 0}
-            onClick={this.handleLoadAllVersion}
+            disabled={!selectedRows.length}
+            onClick={this.displaySecondPart}
           >
-            {intl.formatMessage({ id: "next" })}
+            <FormattedMessage id="next" />
           </Button>
           <Button
             funcType="raised"
@@ -350,92 +370,100 @@ class ExportChart extends Component {
    * 渲染第二步
    */
   renderStepTwo = () => {
-    const { selectedRows } = this.state;
+    const {
+      selectedRows,
+      isLoading,
+      versionDate,
+      selectedVersion,
+    } = this.state;
     const {
       intl: { formatMessage },
     } = this.props;
+
+    const selectApp = _.map(selectedRows, (app, index) => {
+      const { id, name, appVersions } = app;
+      const versionOptions = _.map(
+        versionDate[id] || _.reverse(appVersions),
+        item => {
+          const { id: versionId, version } = item;
+          return (
+            <Option key={version} value={versionId}>
+              {version}
+            </Option>
+          );
+        }
+      );
+
+      return (
+        <Fragment key={id}>
+          <div className="c7n-step-section_name">
+            <div className="c7n-step-label">
+              <FormattedMessage id="app.name" />
+            </div>
+            <span>{name}</span>
+          </div>
+          <div className="c7n-step-section">
+            <Select
+              filter
+              showSearch
+              dropdownMatchSelectWidth
+              mode="multiple"
+              className="c7n-step-select"
+              optionFilterProp="children"
+              optionLabelProp="children"
+              label={formatMessage({ id: "network.column.version" })}
+              notFoundContent={formatMessage({ id: "appstore.noVer" })}
+              value={selectedVersion[id]}
+              loading={isLoading}
+              onFocus={() => this.loadVersion(id)}
+              onDeselect={value => this.clearVersions(value, id)}
+              onChange={value => this.handleSelectVersion(value, id)}
+              filterOption={(input, option) =>
+                option.props.children
+                  .toLowerCase()
+                  .indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {versionOptions}
+            </Select>
+          </div>
+        </Fragment>
+      );
+    });
+
     return (
       <div className="c7n-step-section-wrap">
         <p>
           <FormattedMessage id="appstore.exportStep2" />
         </p>
-        {selectedRows.map((app, index) => (
-          <React.Fragment key={app.id}>
-            <div className="c7n-step-section_name">
-              <div className="c7n-step-label">
-                <FormattedMessage id="app.name" />
-              </div>
-              <span>{app.name}</span>
-            </div>
-            <div className="c7n-step-section" key={app.id}>
-              <Select
-                onDeselect={this.clearVersions.bind(this, index)}
-                value={
-                  selectedRows[index].versions &&
-                  selectedRows[index].versions.length
-                    ? _.map(selectedRows[index].versions, "id")
-                    : undefined
-                }
-                onChange={this.handleSelectVersion.bind(this, index)}
-                className="c7n-step-select"
-                loading={this.state.isLoading}
-                onFocus={this.loadVersion.bind(this, app.id, index)}
-                filter
-                label={formatMessage({ id: "network.column.version" })}
-                showSearch
-                mode="multiple"
-                dropdownMatchSelectWidth
-                size="default"
-                optionFilterProp="children"
-                optionLabelProp="children"
-                notFoundContent={formatMessage({ id: "appstore.noVer" })}
-                filterOption={(input, option) =>
-                  option.props.children
-                    .toLowerCase()
-                    .indexOf(input.toLowerCase()) >= 0
-                }
-              >
-                {this.state[index] &&
-                  this.state[index].versions.map(v => (
-                    <Option key={v.version} value={v.id}>
-                      {v.version}
-                    </Option>
-                  ))}
-              </Select>
-            </div>
-          </React.Fragment>
-        ))}
+        {selectApp}
         <div className="c7n-step-section">
           <Button
             type="primary"
             funcType="raised"
             className="c7n-step-button"
             disabled={this.checkDisable}
-            onClick={this.changeStep.bind(this, 3)}
+            onClick={() => this.changeStep(2)}
           >
-            {formatMessage({ id: "next" })}
+            <FormattedMessage id="next" />
           </Button>
           <Button
             funcType="raised"
             className="c7n-step-clear c7n-step-button"
-            onClick={this.changeStep.bind(this, 1)}
+            onClick={() => this.changeStep(0)}
           >
-            {formatMessage({ id: "previous" })}
+            <FormattedMessage id="previous" />
           </Button>
           <Button
             funcType="raised"
             className="c7n-step-clear"
             onClick={this.handleBack}
           >
-            {formatMessage({ id: "cancel" })}
+            <FormattedMessage id="cancel" />
           </Button>
         </div>
       </div>
     );
-  };
-
-  onChange = e => {
-    this.setState({ exportName: e.target.value });
   };
 
   /**
@@ -446,7 +474,23 @@ class ExportChart extends Component {
     const {
       intl: { formatMessage },
     } = this.props;
-    const { upDown } = this.state;
+    const {
+      upDown,
+      selectedRows,
+      exportName,
+      submitting,
+      selectedVersion,
+    } = this.state;
+
+    const tableData = _.map(_.assign({}, selectedRows), item => {
+      const { id, appVersions } = item;
+      item.versions = _.filter(
+        appVersions,
+        cur => selectedVersion[id] && selectedVersion[id].includes(cur.id)
+      );
+      return item;
+    });
+
     const column = [
       {
         title: <FormattedMessage id="app.name" />,
@@ -467,38 +511,35 @@ class ExportChart extends Component {
         ),
       },
       {
-        title: formatMessage({ id: "network.column.version" }),
+        title: <FormattedMessage id="network.column.version" />,
         key: "version",
-        render: record => (
-          <div>
+        render: record => {
+          const { id, versions } = record;
+          return (
             <div
-              className={`c7n-step-table-column col-${record.id}`}
-              onClick={this.handleChangeStatus.bind(
-                this,
-                record.id,
-                record.versions.length
-              )}
+              className={`c7n-step-table-column col-${id}`}
+              onClick={this.handleChangeStatus.bind(this, id, versions.length)}
             >
-              {((HEIGHT <= 900 && record.versions.length > 2) ||
-                (HEIGHT > 900 && record.versions.length > 4)) && (
+              {((HEIGHT <= 900 && versions.length > 2) ||
+                (HEIGHT > 900 && versions.length > 4)) && (
                 <span
                   className={
-                    _.indexOf(upDown, record.id) !== -1
+                    _.indexOf(upDown, id) !== -1
                       ? "icon icon-keyboard_arrow_up c7n-step-table-icon"
                       : "icon icon-keyboard_arrow_down c7n-step-table-icon"
                   }
                 />
               )}
-              <div className={`${record.id}-col-parents`}>
-                {_.map(record.versions, v => (
+              <div className={`${id}-col-parents`}>
+                {_.map(versions, v => (
                   <div key={v.id} className="c7n-step-col-circle">
                     {v.version}
                   </div>
                 ))}
               </div>
             </div>
-          </div>
-        ),
+          );
+        },
       },
     ];
     return (
@@ -509,7 +550,7 @@ class ExportChart extends Component {
         <div className="c7n-step-section c7n-step-section_input">
           <Input
             onChange={this.onChange}
-            value={this.state.exportName}
+            value={exportName}
             maxLength={30}
             label={formatMessage({ id: "appstore.exportName" })}
             size="default"
@@ -520,7 +561,7 @@ class ExportChart extends Component {
             filterBar={false}
             pagination={false}
             columns={column}
-            dataSource={this.state.selectedRows}
+            dataSource={tableData}
             rowKey={record => record.id}
           />
         </div>
@@ -529,7 +570,7 @@ class ExportChart extends Component {
             service={["devops-service.application-market.importApps"]}
           >
             <Button
-              loading={this.state.submitting}
+              loading={submitting}
               type="primary"
               funcType="raised"
               className="c7n-step-button"
@@ -541,16 +582,16 @@ class ExportChart extends Component {
           <Button
             funcType="raised"
             className="c7n-step-clear c7n-step-button"
-            onClick={this.changeStep.bind(this, 2)}
+            onClick={() => this.changeStep(1)}
           >
-            {formatMessage({ id: "previous" })}
+            <FormattedMessage id="previous" />
           </Button>
           <Button
             funcType="raised"
             className="c7n-step-clear"
             onClick={this.handleBack}
           >
-            {formatMessage({ id: "cancel" })}
+            <FormattedMessage id="cancel" />
           </Button>
         </div>
       </div>
@@ -568,6 +609,13 @@ class ExportChart extends Component {
       intl: { formatMessage },
     } = this.props;
     const { current, selectedRows } = this.state;
+
+    const contents = [
+      this.renderStepOne,
+      this.renderStepTwo,
+      this.renderStepThree,
+    ];
+
     return (
       <Page
         service={[
@@ -588,40 +636,25 @@ class ExportChart extends Component {
           >
             <Steps current={current}>
               <Step
-                title={
-                  <span className={current === 1 ? "c7n-step-active" : ""}>
-                    {formatMessage({ id: "deploy.step.one.app" })}
-                  </span>
-                }
-                onClick={this.changeStep.bind(this, 1)}
-                status={this.getStatus(1)}
+                title={formatMessage({ id: "deploy.step.one.app" })}
+                onClick={() => this.changeStep(0)}
               />
               <Step
-                className={`${selectedRows.length ? "" : "c7n-step-disabled"}`}
-                title={
-                  <span className={current === 2 ? "c7n-step-active" : ""}>
-                    {formatMessage({ id: "deploy.step.one.version.title" })}
-                  </span>
-                }
-                onClick={this.changeStep.bind(this, 2)}
-                status={this.getStatus(2)}
+                className={selectedRows.length ? "" : "c7ncd-step-disabled"}
+                title={formatMessage({ id: "deploy.step.one.version.title" })}
+                onClick={selectedRows.length && this.displaySecondPart}
               />
               <Step
-                className={`${this.checkDisable ? "c7n-step-disabled" : ""}`}
-                title={
-                  <span className={current === 3 ? "c7n-step-active" : ""}>
-                    {formatMessage({ id: "appstore.confirm" })}
-                  </span>
-                }
+                className={selectedRows.length ? "" : "c7ncd-step-disabled"}
+                title={formatMessage({ id: "appstore.confirm" })}
                 onClick={
-                  selectedRows.length ? this.changeStep.bind(this, 3) : null
+                  selectedRows.length &&
+                  !this.checkDisable &&
+                  this.changeStep.bind(this, 2)
                 }
-                status={this.getStatus(3)}
               />
             </Steps>
-            {current === 1 && this.renderStepOne()}
-            {current === 2 && this.renderStepTwo()}
-            {current === 3 && this.renderStepThree()}
+            {contents[current]()}
           </div>
         </Content>
       </Page>
