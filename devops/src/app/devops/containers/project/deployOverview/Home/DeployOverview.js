@@ -115,7 +115,7 @@ class DeployOverview extends Component {
     const columns = [
       {
         title: formatMessage({ id: "deploy.app" }),
-        width: 150,
+        width: 152,
         key: "apps",
         fixed: "left",
         render: record => (
