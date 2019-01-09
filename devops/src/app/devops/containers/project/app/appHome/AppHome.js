@@ -140,11 +140,11 @@ class AppHome extends Component {
         filters: [
           {
             text: formatMessage({ id: "app.type.normal" }),
-            value: 0,
+            value: '0',
           },
           {
             text: formatMessage({ id: "app.type.test" }),
-            value: 1,
+            value: '1',
           },
         ],
         filteredValue: filters.type || [],
@@ -202,19 +202,19 @@ class AppHome extends Component {
         filters: [
           {
             text: formatMessage({ id: "app.stop" }),
-            value: 0,
+            value: '0',
           },
           {
             text: formatMessage({ id: "app.run" }),
-            value: 1,
+            value: '1',
           },
           {
             text: formatMessage({ id: "app.failed" }),
-            value: -1,
+            value: '-1',
           },
           {
             text: formatMessage({ id: "app.creating" }),
-            value: 2,
+            value: '2',
           },
         ],
         filteredValue: filters.active || [],

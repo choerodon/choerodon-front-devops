@@ -121,7 +121,6 @@ class StepOne extends Component {
         </FormItem>
         <FormItem
           {...formItemLayout}
-          validateStatus="success"
         >
           {getFieldDecorator('accessToken', {
             rules: [
@@ -166,7 +165,7 @@ class StepOne extends Component {
 
   hasErrors(fieldsError) { return Object.keys(fieldsError).some(field => fieldsError[field]) }
 
-  hasValues(fieldsValue) { return fieldsValue.repositoryUrl === '' }
+  hasValues(fieldsValue) { return _.isEmpty(fieldsValue.repositoryUrl) }
 
   render() {
     const { onCancel } = this.props;

@@ -274,11 +274,11 @@ class TemplateHome extends Component {
         filters: [
           {
             text: intl.formatMessage({ id: "template.preDefine" }),
-            value: 1,
+            value: '1',
           },
           {
             text: intl.formatMessage({ id: "template.perDefine" }),
-            value: 0,
+            value: '0',
           },
         ],
         filteredValue: filters.type || [],
