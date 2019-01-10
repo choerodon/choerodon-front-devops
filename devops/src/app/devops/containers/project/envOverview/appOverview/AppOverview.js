@@ -621,10 +621,19 @@ class AppOverview extends Component {
         actionItem = ["detail", "stop", "delete"];
         break;
       case "failed":
-      case "running":
         actionItem = appVersionId
           ? ["detail", "change", "restart", "update", "stop", "delete"]
           : ["detail", "change", "restart", "update", "delete"];
+        break;
+      case "running":
+        actionItem = [
+          "detail",
+          "change",
+          "restart",
+          "update",
+          "stop",
+          "delete",
+        ];
         break;
       default:
         actionItem = ["detail"];

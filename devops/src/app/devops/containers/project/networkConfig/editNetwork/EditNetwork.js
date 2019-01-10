@@ -138,7 +138,7 @@ class EditNetwork extends Component {
               const node = {
                 port: Number(port[item]),
                 targetPort: Number(tport[item]),
-                nodePort: nport ? Number(nport[item]) : null,
+                nodePort: nport && nport[item] ? Number(nport[item]) : null,
               };
               ports.push(node);
             }
@@ -174,7 +174,7 @@ class EditNetwork extends Component {
           config: { externalIps: oldIps, ports: oldPorts },
           type,
         } = network;
-        const oldIst = _.map(oldAppInstance, item => _.toNumber(item.id));
+        const oldIst = _.map(oldAppInstance, item => item.code);
         const oldPortId = _.map(oldPorts, item => ({
           nodePort: item.nodePort ? _.toNumber(item.nodePort) : null,
           port: item.port ? _.toNumber(item.port) : null,

@@ -443,7 +443,7 @@ class Instances extends Component {
     const {
       intl: { formatMessage },
     } = this.props;
-    const { id, status, connect } = record;
+    const { id, status, connect, appVersionId } = record;
     const actionType = {
       detail: {
         service: ["devops-service.application-instance.listResources"],
@@ -491,6 +491,10 @@ class Instances extends Component {
         actionItem = ["detail", "stop", "delete"];
         break;
       case "failed":
+        actionItem = appVersionId
+          ? ["detail", "change", "restart", "update", "stop", "delete"]
+          : ["detail", "change", "restart", "update", "delete"];
+        break;
       case "running":
         actionItem = [
           "detail",
