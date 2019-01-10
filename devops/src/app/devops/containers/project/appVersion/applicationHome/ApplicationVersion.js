@@ -120,16 +120,12 @@ class ApplicationVersion extends Component {
       key: 'appCode',
       sorter: true,
       sortOrder: columnKey === 'appCode' && order,
-      filters: [],
-      filteredValue: filters.appCode || [],
     }, {
       title: <FormattedMessage id="app.name" />,
       dataIndex: 'appName',
       key: 'appName',
       sorter: true,
       sortOrder: columnKey === 'appName' && order,
-      filters: [],
-      filteredValue: filters.appName || [],
     }, {
       title: <FormattedMessage id="app.createTime" />,
       dataIndex: 'creationDate',
