@@ -14,9 +14,7 @@ export default class PodCircle extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      targetCount: this.props.count.sum || 0,
       btnDisable: false,
-      visible: false,
       textDisplay: false,
     };
   }
@@ -47,26 +45,34 @@ export default class PodCircle extends PureComponent {
   };
 
   handleDecrease = () => {
-    let { targetCount, btnDisable } = this.state;
-    targetCount -= 1;
-    this.changeTextDisplay();
-    if (!btnDisable && targetCount <= 0) {
-      this.showModal();
+    const { targetCount, handleChangeCount, podType, name } = this.props;
+    let { btnDisable } = this.state;
+    if (targetCount <= 1) {
+      return;
     } else {
-      this.setState({ targetCount });
-      this.operatePodCount(targetCount);
+      let count = targetCount - 1;
+      // 最小pod数为1
+      if (count <= 1) {
+        btnDisable = true;
+      }
+      this.changeTextDisplay();
+      this.setState({ btnDisable });
+      this.operatePodCount(count);
+      handleChangeCount({ [`${name}-${podType}`]: count });
     }
   };
 
   handleIncrease = () => {
-    let { targetCount, btnDisable } = this.state;
-    targetCount += 1;
+    const { targetCount, handleChangeCount, podType, name } = this.props;
+    let { btnDisable } = this.state;
+    let count = targetCount + 1;
     this.changeTextDisplay();
-    if (btnDisable && targetCount > 0) {
+    if (btnDisable && count > 1) {
       btnDisable = false;
     }
-    this.setState({ btnDisable, targetCount });
-    this.operatePodCount(targetCount);
+    this.setState({ btnDisable });
+    this.operatePodCount(count);
+    handleChangeCount({ [`${name}-${podType}`]: count });
   };
 
   /**
@@ -105,19 +111,6 @@ export default class PodCircle extends PureComponent {
     );
   }
 
-  showModal = () => {
-    this.setState({ visible: true });
-  };
-
-  handleOk = () => {
-    this.setState({ visible: false, btnDisable: true, targetCount: 0 });
-    this.operatePodCount(0);
-  };
-
-  handleCancel = () => {
-    this.setState({ visible: false });
-  };
-
   render() {
     const {
       id: projectId,
@@ -127,7 +120,7 @@ export default class PodCircle extends PureComponent {
     } = AppState.currentMenuType;
     const {
       podType,
-      linkTo,
+      status,
       handleLink,
       currentPage,
       appId,
@@ -135,12 +128,16 @@ export default class PodCircle extends PureComponent {
       name,
       count: { sum },
       intl: { formatMessage },
+      targetCount,
     } = this.props;
-    const { targetCount, btnDisable, visible, textDisplay } = this.state;
+    const { btnDisable, textDisplay } = this.state;
 
     // 实际pod数和目标数不同
     // 修改过pod数
-    const show = textDisplay && sum !== targetCount;
+    const show =
+      textDisplay && sum !== targetCount && connect && status === "running";
+    const descIsEnable =
+      btnDisable || !connect || targetCount <= 1 || status !== "running";
 
     const backPath = `/devops/${currentPage}?type=${type}&id=${projectId}&name=${encodeURIComponent(
       projectName
@@ -151,7 +148,7 @@ export default class PodCircle extends PureComponent {
       <Fragment>
         <div className="c7ncd-pod-wrap">
           <div className="c7ncd-pod-content">
-            {linkTo ? (
+            {status === "running" ? (
               <Link
                 to={{
                   pathname: "/devops/container",
@@ -173,14 +170,14 @@ export default class PodCircle extends PureComponent {
           {podType === "deploymentDTOS" && (
             <div className="c7ncd-pod-content c7ncd-pod-btn-wrap">
               <Button
-                disabled={!connect}
+                disabled={!(connect && status === "running")}
                 className="c7ncd-pod-btn"
                 size="small"
                 icon="expand_less"
                 onClick={this.handleIncrease}
               />
               <Button
-                disabled={btnDisable || !connect}
+                disabled={descIsEnable}
                 className="c7ncd-pod-btn"
                 size="small"
                 icon="expand_more"
@@ -189,23 +186,12 @@ export default class PodCircle extends PureComponent {
             </div>
           )}
         </div>
-        {show && connect ? (
+        {show ? (
           <div className="c7ncd-pod-count">
             <FormattedMessage id="ist.expand.count" />
             <span className="c7ncd-pod-count-value">{targetCount}</span>
           </div>
         ) : null}
-        <Modal
-          title={formatMessage({ id: "ist.expand.stop.title" }, { name })}
-          visible={visible}
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-          closable={false}
-          maskClosable={false}
-          className="c7ncd-pod-modal"
-        >
-          <FormattedMessage id="ist.expand.stop.describe" />
-        </Modal>
       </Fragment>
     );
   }

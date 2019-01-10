@@ -392,6 +392,11 @@ class Instances extends Component {
     this.setState({
       confirmLoading: true,
     });
+
+    if (status === "stop") {
+      InstancesStore.setTargetCount({});
+    }
+
     changeIstActive(projectId, id, status).then(data => {
       const res = handleProptError(data);
       if (res) {

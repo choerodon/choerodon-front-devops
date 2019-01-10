@@ -57,6 +57,10 @@ class ExpandRow extends Component {
     InstancesStore.setIsCache(true);
   }
 
+  changeTargetCount = count => {
+    InstancesStore.setTargetCount(count);
+  };
+
   getExpandContent() {
     const content = [];
     const {
@@ -64,12 +68,8 @@ class ExpandRow extends Component {
       intl: { formatMessage },
     } = this.props;
 
-    const { envId, appId, status, id, connect } = record;
-
     const getPodContent = dto =>
-      _.map(record[dto], item =>
-        this.getDeployContent(dto, item, envId, appId, id, status, connect)
-      );
+      _.map(record[dto], item => this.getDeployContent(dto, item, record));
 
     const getNoPodContent = dto =>
       _.map(record[dto], item => this.getNoPodContent(dto, item));
@@ -129,15 +129,14 @@ class ExpandRow extends Component {
    *
    * @param {string} podType
    * @param {object} item
-   * @param {number} envId
-   * @param {number} appId
-   * @param {number} id 实例id
-   * @param {string} status
-   * @param {boolean} isConnect 环境是否连接
+   * @param {object} record
    * @returns
    * @memberof ExpandRow
    */
-  getDeployContent(podType, item, envId, appId, id, status, isConnect) {
+  getDeployContent = (podType, item, record) => {
+    const { envId, appId, status, id, connect } = record;
+    const { name, age, devopsEnvPodDTOS } = item;
+
     const POD_TYPE = {
       // 确保“当前/需要/可提供”的顺序
       deploymentDTOS: ["current", "desired", "available"],
@@ -150,7 +149,7 @@ class ExpandRow extends Component {
     };
     const [current, desired, available] = POD_TYPE[podType];
 
-    const { name, age, devopsEnvPodDTOS } = item;
+    const targetCount = InstancesStore.getTargetCount;
 
     // 计算 pod 数量和环形图占比
     const count = _.countBy(devopsEnvPodDTOS, pod => !!pod.ready);
@@ -223,7 +222,7 @@ class ExpandRow extends Component {
         <div className="c7n-deploy-expanded-pod">
           <PodCircle
             podType={podType}
-            connect={isConnect}
+            connect={connect}
             appId={appId}
             envId={envId}
             name={name}
@@ -232,15 +231,17 @@ class ExpandRow extends Component {
               correct,
               correctCount,
             }}
-            linkTo={status === "running"}
+            targetCount={targetCount[`${name}-${podType}`] || sum}
+            status={status}
             handleLink={this.handleLink}
+            handleChangeCount={this.changeTargetCount}
             currentPage={currentPage}
             store={DeploymentStore}
           />
         </div>
       </div>
     );
-  }
+  };
 
   /**
    * PVC service ingress 三个没有pod圈
