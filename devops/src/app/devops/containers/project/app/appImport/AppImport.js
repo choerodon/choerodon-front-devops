@@ -70,7 +70,7 @@ class AppImport extends Component {
 
   importApp = () => {
     const { AppStore, history } = this.props;
-    const { type, id: projectId, organizationId: orgId } = AppState.currentMenuType;
+    const { type, id: projectId, organizationId: orgId, name: proName } = AppState.currentMenuType;
     const { data } = this.state;
     const { platformType, repositoryUrl, accessToken, name, code, applicationTemplateId, isSkipCheckPermission, userIds } = data;
     const value = { platformType, accessToken, repositoryUrl, name, code, applicationTemplateId, userIds };
@@ -83,7 +83,7 @@ class AppImport extends Component {
           Choerodon.prompt(data.message);
           AppStore.setImportBtnLoading(false);
         } else {
-          const url = `/devops/app?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}`;
+          const url = `/devops/app?type=${type}&id=${projectId}&name=${proName}&organizationId=${orgId}`;
           history.push(url);
           AppStore.setImportBtnLoading(false);
         }
