@@ -231,7 +231,7 @@ class ExpandRow extends Component {
               correct,
               correctCount,
             }}
-            targetCount={targetCount[`${name}-${podType}`] || sum}
+            targetCount={targetCount}
             status={status}
             handleLink={this.handleLink}
             handleChangeCount={this.changeTargetCount}
