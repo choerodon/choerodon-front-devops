@@ -45,12 +45,20 @@ export default class PodCircle extends PureComponent {
   };
 
   handleDecrease = () => {
-    const { targetCount, handleChangeCount, podType, name } = this.props;
+    const {
+      targetCount,
+      handleChangeCount,
+      podType,
+      name,
+      count: { sum },
+    } = this.props;
+    const currentPodTargetCount = targetCount[`${name}-${podType}`] || sum;
     let { btnDisable } = this.state;
+
     if (targetCount <= 1) {
       return;
     } else {
-      let count = targetCount - 1;
+      let count = currentPodTargetCount - 1;
       // 最小pod数为1
       if (count <= 1) {
         btnDisable = true;
@@ -58,21 +66,36 @@ export default class PodCircle extends PureComponent {
       this.changeTextDisplay();
       this.setState({ btnDisable });
       this.operatePodCount(count);
-      handleChangeCount({ [`${name}-${podType}`]: count });
+      handleChangeCount(
+        _.assign({}, targetCount, { [`${name}-${podType}`]: count })
+      );
     }
   };
 
   handleIncrease = () => {
-    const { targetCount, handleChangeCount, podType, name } = this.props;
+    const {
+      targetCount,
+      handleChangeCount,
+      podType,
+      name,
+      count: { sum },
+    } = this.props;
+    const currentPodTargetCount = targetCount[`${name}-${podType}`] || sum;
     let { btnDisable } = this.state;
-    let count = targetCount + 1;
+
+    let count = currentPodTargetCount + 1;
+
     this.changeTextDisplay();
+
     if (btnDisable && count > 1) {
       btnDisable = false;
     }
+
     this.setState({ btnDisable });
     this.operatePodCount(count);
-    handleChangeCount({ [`${name}-${podType}`]: count });
+    handleChangeCount(
+      _.assign({}, targetCount, { [`${name}-${podType}`]: count })
+    );
   };
 
   /**
@@ -132,12 +155,20 @@ export default class PodCircle extends PureComponent {
     } = this.props;
     const { btnDisable, textDisplay } = this.state;
 
+    const currentPodTargetCount = targetCount[`${name}-${podType}`] || sum;
+
     // 实际pod数和目标数不同
     // 修改过pod数
     const show =
-      textDisplay && sum !== targetCount && connect && status === "running";
+      textDisplay &&
+      sum !== currentPodTargetCount &&
+      connect &&
+      status === "running";
     const descIsEnable =
-      btnDisable || !connect || targetCount <= 1 || status !== "running";
+      btnDisable ||
+      !connect ||
+      currentPodTargetCount <= 1 ||
+      status !== "running";
 
     const backPath = `/devops/${currentPage}?type=${type}&id=${projectId}&name=${encodeURIComponent(
       projectName
@@ -189,7 +220,9 @@ export default class PodCircle extends PureComponent {
         {show ? (
           <div className="c7ncd-pod-count">
             <FormattedMessage id="ist.expand.count" />
-            <span className="c7ncd-pod-count-value">{targetCount}</span>
+            <span className="c7ncd-pod-count-value">
+              {currentPodTargetCount}
+            </span>
           </div>
         ) : null}
       </Fragment>
