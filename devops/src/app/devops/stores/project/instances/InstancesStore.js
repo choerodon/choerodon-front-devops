@@ -45,6 +45,22 @@ class InstancesStore {
 
   @observable appId = null;
 
+  @observable targetCount = {};
+
+  /**
+   *  设置pod目标数量
+   *
+   * @param {*} count
+   * @memberof InstancesStore
+   */
+  @action setTargetCount(count) {
+    this.targetCount = count;
+  }
+
+  @computed get getTargetCount() {
+    return this.targetCount;
+  }
+
   @action setAppId(id) {
     this.appId = id;
   }
