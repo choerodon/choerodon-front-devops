@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import _ from "lodash";
 import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Form, Input, Select, Tooltip } from 'choerodon-ui';
+import { Button, Form, Input, Select, Tooltip, Icon } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import '../AppImport.scss';
 
@@ -126,6 +126,10 @@ class StepTwo extends Component {
       <Fragment>
         <div className="steps-content-des">
           <FormattedMessage id="app.import.step2.des" />
+          <div>
+            <Icon type="error" />
+            <FormattedMessage id="app.import.step2-1.des" />
+          </div>
         </div>
         <div className="steps-content-section">
           <Form onSubmit={this.handleSubmit}>

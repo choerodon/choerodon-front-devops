@@ -845,9 +845,11 @@ const zhCN = {
   "app.import.step3": "应用权限分配",
   "app.import.step4": "确认信息",
   "app.import.step1.des":
-    "您可在此选择导入应用的来源。当前支持从Github和GitLab中导入应用，但Github目前只能从公库导入应用，GitLab公库私库均能使用，且仓库为空时不可导入。",
-  "app.import.step2.des":
+    "目前GitHub仅支持从公库导入应用。仓库为空时均不可导入。",
+  "app.import.step1-1.des": "导入应用后，仅保留master分支，请确保已将需要的代码合并至master分支。",
+    "app.import.step2.des":
     "您可在此自定义导入应用的编码与名称，同时选择一个应用模板。",
+  "app.import.step2-1.des": "请选择与导入应用的开发语言相对应的应用模板。",
   "app.import.step3.des":
     "您可在此为此应用配置特定的开发操作人员。一般默认选择为项目下所有成员，即该项目下的所有成员均能对此应用进行开发操作；若选择项目下特定成员，则只有被勾选的项目成员才有权限对此应用进行开发。",
   "app.import.step4.des":
