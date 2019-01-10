@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import _ from "lodash";
 import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Radio, Form, Input, message } from 'choerodon-ui';
+import { Button, Radio, Form, Input, message, Icon } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import '../AppImport.scss';
 
@@ -176,6 +176,10 @@ class StepOne extends Component {
       <Fragment>
         <div className="steps-content-des">
           <FormattedMessage id="app.import.step1.des" />
+          <div>
+            <Icon type="error" />
+            <FormattedMessage id="app.import.step1-1.des" />
+          </div>
         </div>
         <div className="steps-content-section">
           <RadioGroup label={<FormattedMessage id="template.type" />} onChange={this.onChange.bind(this)} value={platformType}>
