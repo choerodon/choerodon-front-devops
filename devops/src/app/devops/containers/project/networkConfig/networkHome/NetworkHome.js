@@ -118,7 +118,7 @@ class NetworkHome extends Component {
    * @returns {Array}
    */
   configColumn(record) {
-    const { config, type } = record;
+    const { config, type, loadBalanceIp } = record;
     const { externalIps, ports } = config;
     const iPArr = [];
     const portArr = [];
@@ -165,6 +165,14 @@ class NetworkHome extends Component {
             </div>
             <div>{portArr}</div>
           </div>
+          {loadBalanceIp && (
+            <div className="network-config-wrap">
+              <div className="network-type-title">
+                <span>LoadBalancer IP</span>
+              </div>
+              <div>{loadBalanceIp}</div>
+            </div>
+          )}
         </Fragment>
       );
     return (
