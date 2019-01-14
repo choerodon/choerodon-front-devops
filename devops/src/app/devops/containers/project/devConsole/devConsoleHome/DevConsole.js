@@ -214,7 +214,7 @@ class DevConsole extends Component {
           this.getVerContent(ciPipelineOne);
         });
     }
-  }, 2000);
+  }, 20000);
 
   /**
    * 分页器
@@ -544,7 +544,7 @@ class DevConsole extends Component {
     } else {
       this.setState({ versionState: false })
     }
-  }, 10000);
+  }, 25000);
 
   /**
    * 获取流水线

@@ -114,7 +114,7 @@ const pageDetail = {
 
   // app
   "app.title": '项目"{name}"的应用',
-  "app.import.title": '在项目"{name}"中进行应用发布',
+  "app.import.title": '在项目"{name}"中进行应用导入',
   "app.description":
     "应用是满足用户某些需求的程序代码的集合。您可在此创建应用、停用应用、启用应用、配置应用权限以及修改应用名称。",
   "app.import.description":
