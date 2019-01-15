@@ -11,9 +11,8 @@ import "./yamlCodeMirror.scss";
 require("codemirror/lib/codemirror.css");
 require("codemirror/mode/yaml/yaml");
 require("codemirror/theme/neat.css");
-
 require("codemirror/addon/fold/foldgutter.css");
-/* eslint-disable */
+
 class NewEditor extends Component {
   static propTypes = {
     value: PropTypes.string.isRequired,
@@ -30,6 +29,9 @@ class NewEditor extends Component {
       lineNumbers: true,
       lineWrapping: true,
     },
+    errorLines: [],
+    highlightMarkers: [],
+    isFileError: false,
   };
   constructor(props) {
     super(props);
