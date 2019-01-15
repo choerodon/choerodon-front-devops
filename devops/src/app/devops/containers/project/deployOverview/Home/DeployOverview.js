@@ -267,7 +267,12 @@ class DeployOverview extends Component {
   };
 
   render() {
-    const { name } = AppState.currentMenuType;
+    const {
+      projectId,
+      name,
+      organizationId,
+      type,
+    } = AppState.currentMenuType;
     const envNames = _.filter(DeploymentPipelineStore.getEnvLine, [
       "permission",
       true,
@@ -285,6 +290,14 @@ class DeployOverview extends Component {
         {envNames && envNames.length ? (
           <Fragment>
             <Header title={<FormattedMessage id="dpOverview.head" />}>
+              <Button
+                icon="poll"
+                onClick={this.linkToChange.bind(this,
+                  `/devops/reports/deploy-times?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}&deploy-overview`
+                )}
+              >
+                <FormattedMessage id="dpOverview.reports" />
+              </Button>
               <Button funcType="flat" onClick={this.reload}>
                 <i className="icon-refresh icon" />
                 <FormattedMessage id="refresh" />

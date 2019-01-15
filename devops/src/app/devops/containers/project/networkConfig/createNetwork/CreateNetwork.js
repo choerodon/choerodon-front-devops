@@ -637,7 +637,7 @@ class CreateNetwork extends Component {
     const ist = store.getIst;
     let portWidthSingle = "240";
     let portWidthMut = "portL";
-    if (configType === "NodePort") {
+    if (configType !== "ClusterIP") {
       portWidthSingle = "150";
       portWidthMut = "portS";
     }
@@ -646,7 +646,7 @@ class CreateNetwork extends Component {
     const portKeys = getFieldValue("portKeys");
     const portItems = _.map(portKeys, (k, index) => (
       <div key={`port-${k}`} className="network-port-wrap">
-        {configType === "NodePort" ? (
+        {configType !== "ClusterIP" ? (
           <FormItem
             className={`c7n-select_${
               portKeys.length > 1 ? "portS" : "150"

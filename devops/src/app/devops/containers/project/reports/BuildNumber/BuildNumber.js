@@ -114,6 +114,8 @@ class BuildNumber extends Component {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { dateType } = this.state;
     const { id, name, type, organizationId } = AppState.currentMenuType;
+    const { location: { state } } = history;
+    const backPath = state && state.backPath ? state.backPath : "reports";
     const { getAllApps, appId, echartsLoading, loading, pageInfo, allData, isRefresh } = ReportsStore;
 
     const content = (getAllApps.length ? <React.Fragment>
@@ -164,7 +166,7 @@ class BuildNumber extends Component {
     >
       <Header
         title={formatMessage({ id: 'report.build-number.head' })}
-        backPath={`/devops/reports?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`}
+        backPath={`/devops/${backPath}?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`}
       >
         <ChartSwitch
           history={history}

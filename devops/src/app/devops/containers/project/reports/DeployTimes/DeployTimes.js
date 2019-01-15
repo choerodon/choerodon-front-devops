@@ -411,10 +411,13 @@ class DeployTimes extends Component {
   maxTagNode = (data, value) => <MaxTagPopover dataSource={data} value={value} />;
 
   render() {
-    const { intl: { formatMessage }, history, ReportsStore } = this.props;
+    const { intl: { formatMessage }, history, location: { search }, ReportsStore } = this.props;
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const echartsLoading = ReportsStore.getEchartsLoading;
     const isRefresh = ReportsStore.getIsRefresh;
+    const backPath = search.includes("deploy-overview")
+      ? "deploy-overview"
+      : "reports";
 
     const envDom = this.env.length ? _.map(this.env, d => (<Option key={d.id} value={d.id}>{d.name}</Option>)) : null;
 
@@ -484,7 +487,7 @@ class DeployTimes extends Component {
     >
       <Header
         title={formatMessage({ id: 'report.deploy-times.head' })}
-        backPath={`/devops/reports?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`}
+        backPath={`/devops/${backPath}?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`}
       >
         <ChartSwitch
           history={history}
