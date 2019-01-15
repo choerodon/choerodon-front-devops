@@ -1342,6 +1342,7 @@ const zhCN = {
   "dpOverview.head": "部署总览",
   "dpOverview.update": "可升级",
   "dpOverview.deploy": "快速部署",
+  "dpOverview.reports": "查看部署报表",
 
   // devConsole
   "devCs.head": "开发控制台",
@@ -1353,6 +1354,7 @@ const zhCN = {
   "devCs.nomerge": "暂无合并请求",
   "devCs.ver": "版本已生成",
   "devCs.allBranch": "全部分支",
+  "devCs.build": "查看构建报表",
 
   // Deploy Pipeline
   "depPl.noEnv": "当前项目下暂无环境，请创建环境。",
