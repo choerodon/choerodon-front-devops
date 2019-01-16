@@ -35,7 +35,6 @@ import "./ContainerHome.scss";
 import "./Term.scss";
 import EnvOverviewStore from "../../../../stores/project/envOverview";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
-import ContainerStore from "../../../../stores/project/container";
 
 const Sidebar = Modal.Sidebar;
 const { Option, OptGroup } = Select;
@@ -55,7 +54,7 @@ class ContainerHome extends Component {
       showSide: false,
       showDebug: false,
       following: true,
-      fullscreen: false,
+      fullScreen: false,
       containerArr: [],
       selectPubPage: 0,
       selectProPage: 0,
@@ -940,7 +939,7 @@ class ContainerHome extends Component {
   /**
    *  全屏查看日志
    */
-  setFullscreen = () => {
+  setFullScreen = () => {
     const cm = this.editorLog.getCodeMirror();
     const wrap = cm.getWrapperElement();
     cm.state.fullScreenRestore = {
@@ -951,8 +950,8 @@ class ContainerHome extends Component {
     };
     wrap.style.width = "";
     wrap.style.height = "auto";
-    wrap.className += " CodeMirror-fullscreen";
-    this.setState({ fullscreen: true });
+    wrap.className += " CodeMirror-fullScreen";
+    this.setState({ fullScreen: true });
     document.documentElement.style.overflow = "hidden";
     cm.refresh();
     window.addEventListener("keydown", e => {
@@ -966,8 +965,8 @@ class ContainerHome extends Component {
   setNormal = () => {
     const cm = this.editorLog.getCodeMirror();
     const wrap = cm.getWrapperElement();
-    wrap.className = wrap.className.replace(/\s*CodeMirror-fullscreen\b/, "");
-    this.setState({ fullscreen: false });
+    wrap.className = wrap.className.replace(/\s*CodeMirror-fullScreen\b/, "");
+    this.setState({ fullScreen: false });
     document.documentElement.style.overflow = "";
     const info = cm.state.fullScreenRestore;
     wrap.style.width = info.width;
@@ -990,7 +989,7 @@ class ContainerHome extends Component {
     const {
       showSide,
       following,
-      fullscreen,
+      fullScreen,
       containerName,
       podName,
       containerArr,
@@ -1209,13 +1208,13 @@ class ContainerHome extends Component {
                     funcType="flat"
                     shape="circle"
                     icon="fullscreen"
-                    onClick={this.setFullscreen}
+                    onClick={this.setFullScreen}
                   />
                 </div>
                 {following ? (
                   <div
                     className={`c7n-podLog-action log-following ${
-                      fullscreen ? "f-top" : ""
+                      fullScreen ? "f-top" : ""
                     }`}
                     onClick={this.stopFollowing}
                   >
@@ -1224,7 +1223,7 @@ class ContainerHome extends Component {
                 ) : (
                   <div
                     className={`c7n-podLog-action log-following ${
-                      fullscreen ? "f-top" : ""
+                      fullScreen ? "f-top" : ""
                     }`}
                     onClick={this.loadLog.bind(this, true)}
                   >
@@ -1242,7 +1241,7 @@ class ContainerHome extends Component {
                 />
                 <div
                   className={`c7n-podLog-action log-goTop ${
-                    fullscreen ? "g-top" : ""
+                    fullScreen ? "g-top" : ""
                   }`}
                   onClick={this.goTop}
                 >
