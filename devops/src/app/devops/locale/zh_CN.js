@@ -309,6 +309,10 @@ const pageDetail = {
     "您可在此修改集群的名称、描述以及集群的公开范围。",
   "cluster.edit.link": `${docServer}/user-guide/cluster-management/cluster/`,
 
+  'node.title': '节点"{name}"的详情',
+  'node.description': '您可在此处查看该集群中某个节点的详细信息。',
+  "node.link": `${docServer}/user-guide/cluster-management/cluster`,
+
   // 日志右侧弹窗
   "log.title": '查看"{sidebarName}"的日志',
   "log.description": "您可在此查看该job的日志进行错误定位和状态监控。",
@@ -446,6 +450,7 @@ const zhCN = {
   ci_created: "创建中",
   ci_skipped: "未执行",
   ci_manual: "未执行",
+  status: '状态',
 
   // 刷新
   refresh: "刷新",
@@ -1370,6 +1375,9 @@ const zhCN = {
   "cluster.des": "集群描述",
   "cluster.active": "激活集群",
   "cluster.del": "删除集群",
+  "cluster.node": "节点",
+  "cluster.cpu": "CPU分配",
+  "cluster.memory": "内存分配",
   "cluster.del.confirm": "已执行，删除",
   "cluster.del.title": '删除集群"{clsName}"',
   "cluster.delDes_1": "复制以下代码至Kubernetes运行，来删除该集群的agent",
@@ -1392,6 +1400,18 @@ const zhCN = {
   "cluster.noData.text2": "1. 点击下方按钮进入创建集群页面，填写相关信息；",
   "cluster.noData.text3":
     "2. 点击创建后，会生成创建agent的脚本，复制至对应的k8s平台运行，即可成功激活此集群，进而激活此集群关联项目下的环境。",
+
+  // 节点详情
+  'node.head': '节点详情',
+  'node.res': '资源分配',
+  'node.arv': '请求值',
+  'node.lmv': '限制值',
+  'node.allV': '总量',
+  'node.pods': '节点Pods',
+  'node.podName': 'Pod名称',
+  'node.reTimes': '重启次数',
+  "node.log": "Pod日志",
+  "node.log.header.title": "查看Pod日志",
 
   // 配置映射
   "configMap.head": "配置映射",

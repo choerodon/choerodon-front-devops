@@ -4,11 +4,14 @@ import './StatusTags.scss';
 
 const Color = {
   success: '#00bf96',
+  running: '#00bf96',
   error: '#f44336',
   failed: '#f44336',
   merged: '#4D90FE',
   operating: '#4D90FE',
   opened: '#FFB100',
+  ready: '#57AAF8',
+  unready: 'rgba(0,0,0,0.20)',
 };
 
 class StatusTags extends Component {
@@ -23,7 +26,7 @@ class StatusTags extends Component {
       <div
         className="c7n-status-tags"
         style={{
-          background: color || Color[colorCode] || 'rgba(0, 0, 0, 0.28)',
+          background: color || Color[colorCode.toLocaleLowerCase()] || 'rgba(0, 0, 0, 0.28)',
           ...style,
         }}
       >

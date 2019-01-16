@@ -7,6 +7,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import CopyToBoard from 'react-copy-to-clipboard';
 import LoadingBar from '../../../../components/loadingBar';
+import ClusterList from '../clusterList';
 import './Cluster.scss';
 import '../../../project/envPipeline/EnvPipeLineHome.scss';
 import '../../../main.scss';
@@ -243,84 +244,10 @@ class Cluster extends Component {
       })
   };
 
-  getCluster = () => {
-    const {
-      ClusterStore,
-      intl: { formatMessage },
-    } = this.props;
-    const { organizationId, type } = AppState.currentMenuType;
+  getClusterList = () => {
+    const { ClusterStore  } = this.props;
     const clusters = ClusterStore.getData;
-    return _.map(clusters, c => (
-      <Tooltip key={c.id} placement="bottom" title={c.upgrade ? <FormattedMessage id="cluster.status.update" /> : null}>
-        <div className={`c7n-cls-card ${c.connect ? 'c7n-cls-card-connect' : ''}`}>
-          <div className="c7n-cls-card-head">
-            <div>
-              <div className="c7n-cls-card-head-state">
-                {c.connect ? formatMessage({ id: 'running' }) : formatMessage({ id: 'disconnect' })}
-              </div>
-              <i className="c7n-cls-card-head-state_after" />
-            </div>
-            <div className="c7n-cls-card-head-action">
-              {c.connect ? null : <Permission
-                service={['devops-service.devops-cluster.queryShell']}
-                type={type}
-                organizationId={organizationId}
-              >
-                <Tooltip title={<FormattedMessage id="cluster.active" />}>
-                  <Button
-                    funcType="flat"
-                    shape="circle"
-                    onClick={this.showSideBar.bind(this, 'key', c.id, c.name)}
-                  >
-                    <Icon type="vpn_key" />
-                  </Button>
-                </Tooltip>
-              </Permission>}
-              <Permission
-                service={['devops-service.devops-cluster.update']}
-                type={type}
-                organizationId={organizationId}
-              >
-                <Tooltip title={<FormattedMessage id="cluster.edit" />}>
-                  <Button
-                    funcType="flat"
-                    shape="circle"
-                    onClick={this.showSideBar.bind(this, 'edit', c.id, c.name)}
-                  >
-                    <Icon type="mode_edit" />
-                  </Button>
-                </Tooltip>
-              </Permission>
-              {c.connect ? null : <Permission
-                service={['devops-service.devops-cluster.deleteCluster']}
-                type={type}
-                organizationId={organizationId}
-              >
-                <Tooltip title={<FormattedMessage id="cluster.del" />}>
-                  <Button
-                    funcType="flat"
-                    shape="circle"
-                    onClick={this.delClusterShow.bind(this, c.id, c.name)}
-                  >
-                    <Icon type="delete_forever" />
-                  </Button>
-                </Tooltip>
-              </Permission>}
-            </div>
-          </div>
-          <div className="c7n-cls-card-content">
-            <div className="c7n-cls-card-state">
-              <div className="c7n-cls-icon-wrap">
-                {c.connect ? <Icon type="running" /> : <Icon type="disconnect" />}
-              </div>
-            </div>
-            <div className="c7n-cls-card-des">
-              <div className="c7n-cls-card-des-name">{c.name}</div>
-              <div className="c7n-cls-card-des-des" title={c.description}>{c.description}</div>
-            </div>
-          </div>
-        </div>
-      </Tooltip>))
+    return _.map(clusters, c => (<ClusterList key={c.id} data={c} store={ClusterStore} delClusterShow={this.delClusterShow} showSideBar={this.showSideBar} />));
   };
 
   getFormContent = () => {
@@ -733,10 +660,7 @@ class Cluster extends Component {
   render() {
     const { type, organizationId, name } = AppState.currentMenuType;
     const { show, sideType, submitting, showDel, btnLoading, clsName } = this.state;
-    const {
-      ClusterStore,
-      intl: { formatMessage },
-    } = this.props;
+    const { ClusterStore, intl: { formatMessage } } = this.props;
     const {
       getClsPageInfo: { current, total, pageSize },
       getLoading: loading,
@@ -787,7 +711,7 @@ class Cluster extends Component {
             </Button>
           </Permission>
         </Header>
-        <Content code={clusters && clusters.length ? 'cluster' : ''} values={{ name }}>
+        {clusters && clusters.length ? <Content code={clusters && clusters.length ? 'cluster' : ''} values={{ name }}>
           {show && <Sidebar
             title={this.showTitle(sideType)}
             visible={show}
@@ -803,10 +727,8 @@ class Cluster extends Component {
               <InterceptMask visible={submitting} />
             </Content>
           </Sidebar>}
-          {loading ? <LoadingBar display /> : (clusters && clusters.length ? <React.Fragment>
-            <div className="c7n-cls-card-wrap">
-              {this.getCluster()}
-            </div>
+          {loading ? <LoadingBar display /> : <React.Fragment>
+            {this.getClusterList()}
             {clusters.length > this.state.size ? <div className="c7n-cls-pagination">
               <Pagination
                 tiny={false}
@@ -819,10 +741,12 @@ class Cluster extends Component {
                 onShowSizeChange={this.onPageChange}
               />
             </div> : null}
-          </React.Fragment> : <Card title={formatMessage({ id: 'cluster.create' })} className="c7n-depPi-empty-card">
+          </React.Fragment>}
+        </Content> : <Content>
+          <Card title={formatMessage({ id: 'cluster.create' })} className="c7n-depPi-empty-card">
             <div className="c7n-noEnv-content">
-              <FormattedMessage id="cluster.noData.text1" /><br/>
-              <FormattedMessage id="cluster.noData.text2" /><br/>
+              <FormattedMessage id="cluster.noData.text1" /><br />
+              <FormattedMessage id="cluster.noData.text2" /><br />
               <FormattedMessage id="cluster.noData.text3" />
               <a
                 href={formatMessage({ id: 'cluster.link' })}
@@ -843,8 +767,8 @@ class Cluster extends Component {
             >
               <FormattedMessage id="cluster.create" />
             </Button>
-          </Card>)}
-        </Content>
+          </Card>
+        </Content>}
         <Modal
           className="c7n-cls-del-modal"
           title={<FormattedMessage id="cluster.del.title" values={{ clsName }} />}
