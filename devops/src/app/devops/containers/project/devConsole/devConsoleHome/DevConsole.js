@@ -85,7 +85,6 @@ const ICONS = {
     display: 'Manual',
   },
 };
-let count = 0;
 
 @observer
 class DevConsole extends Component {
@@ -130,7 +129,11 @@ class DevConsole extends Component {
     this.setState({ page: 0, pageSize: 10, appName: option.props.children });
     DevPipelineStore.setSelectApp(id);
     DevPipelineStore.setRecentApp(id);
-    this.handleRefresh();
+    this.setState({
+      branchIssue: 'ALL',
+    }, () => {
+      this.handleRefresh();
+    });
   };
 
   /**
@@ -195,26 +198,30 @@ class DevConsole extends Component {
     AppTagStore.queryTagData(projectId, page, pageSize);
   };
 
-  /**
-   * 获取CI pipeline
-   */
-  loadPipeline = _.throttle((branch) => {
+  loadPipeline = (branch) => {
     const appId = DevPipelineStore.getSelectApp;
     this.setState({ loadingFlag: false });
     if (branch !== 'ALL') {
       CiPipelineStore.loadPipelinesByBc(appId, branch)
         .then((res) => {
           const ciPipelineOne = res.length ? res[0] : null;
-          this.getVerContent(ciPipelineOne);
+          this.setState({ versionState: ciPipelineOne ? ciPipelineOne.version : false })
         });
     } else {
-      CiPipelineStore.loadPipelines(true, appId)
-        .then((res) => {
-          const ciPipelineOne = res.length ? res[0] : null;
-          this.getVerContent(ciPipelineOne);
-        });
+      if (appId) {
+        CiPipelineStore.loadPipelines(true, appId)
+          .then((res) => {
+            const ciPipelineOne = res.length ? res[0] : null;
+            this.setState({ versionState: ciPipelineOne ? ciPipelineOne.version : false });
+          });
+      }
     }
-  }, 20000);
+  };
+
+  /**
+   * 获取CI pipeline
+   */
+  loadPipelineThrottle = _.throttle((branch) => this.loadPipeline(branch), 20000);
 
   /**
    * 分页器
@@ -485,7 +492,7 @@ class DevConsole extends Component {
    * @returns {*}
    */
   getCardContent(data) {
-    this.loadPipeline(this.state.branchIssue);
+    this.loadPipelineThrottle(this.state.branchIssue);
     const { intl: { formatMessage } } = this.props;
     let styles = "";
     let status = null;
@@ -493,7 +500,6 @@ class DevConsole extends Component {
       styles = "c7n-env-state-unexecuted";
     } else {
       status = data.status;
-      this.getVerContent(data);
     }
     if (status === 'failed') {
       styles = "c7n-env-state-failed";
@@ -522,29 +528,6 @@ class DevConsole extends Component {
       </div>
     );
   }
-
-  /**
-   * 第三阶段卡片内容
-   * data
-   * @returns {*}
-   */
-  getVerContent = _.throttle((data) => {
-    const { projectId } = AppState.currentMenuType;
-    if(data) {
-      // AppVersionStore.loadData(projectId, appId);
-      AppVersionStore.loadVerByPipId(projectId, data.pipelineId, data.ref)
-        .then((res) => {
-          if (res && res.failed) {
-            Choerodon.prompt(res.message);
-            this.setState({ versionState: false })
-          } else {
-            this.setState({ versionState: res });
-          }
-        });
-    } else {
-      this.setState({ versionState: false })
-    }
-  }, 25000);
 
   /**
    * 获取流水线

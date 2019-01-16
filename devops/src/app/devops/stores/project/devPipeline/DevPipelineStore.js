@@ -157,6 +157,7 @@ class DevPipelineStore {
                 MergeRequestStore.loadUrl(projectId, this.selectedApp);
                 ReportsStore.loadCommits(projectId, START, END, [this.selectedApp]);
                 AppVersionStore.loadData(projectId, this.selectedApp);
+                CiPipelineStore.loadPipelines(true, this.selectedApp);
                 break;
               default:
                 break;
