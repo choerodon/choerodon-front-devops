@@ -8,46 +8,26 @@ const { AppState } = stores;
 class DeploymentAppStore {
   @observable apps = [];
 
-  @observable currentApp = {};
-
   @observable versions = [];
 
-  @observable currentVersion = {};
-
   @observable envs = [];
-
-  @observable currentEnv = {};
 
   @observable value = null;
 
   @observable currentMode = "new";
 
-  @observable instances = [];
-
-  @observable currentInstance = {};
+  @observable currentInstance = [];
 
   @action setApps(data) {
     this.apps = data;
-  }
-
-  @action setCurrentApp(data) {
-    this.currentApp = data;
   }
 
   @action setVersions(data) {
     this.versions = data;
   }
 
-  @action setCurrentVersion(data) {
-    this.currentVersion = data;
-  }
-
   @action setEnvs(data) {
     this.envs = data;
-  }
-
-  @action setCurrentEnv(data) {
-    this.currentEnv = data;
   }
 
   @action setValue(data) {
@@ -66,12 +46,12 @@ class DeploymentAppStore {
     this.currentMode = data;
   }
 
-  @action setInstances(data) {
-    this.instances = data;
-  }
-
   @action setCurrentInstance(data) {
     this.currentInstance = data;
+  }
+
+  @computed get getCurrentInstance() {
+    return this.currentInstance.slice(0);
   }
 
   @computed get getCurrentStage() {
@@ -88,6 +68,15 @@ class DeploymentAppStore {
       .then(data => handleProptError(data));
   }
 
+  /**
+   *
+   *
+   * @param {*} appId
+   * @param {*} projectId
+   * @param {string} [flag=""] 是否发布
+   * @returns
+   * @memberof DeploymentAppStore
+   */
   loadVersion(appId, projectId, flag = "") {
     return axios
       .get(
