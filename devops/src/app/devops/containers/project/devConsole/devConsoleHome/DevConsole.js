@@ -546,6 +546,22 @@ class DevConsole extends Component {
   };
 
   /**
+   * 跳转至构建次数报表
+   */
+  linkToBuild = () => {
+    const { history } = this.props;
+    const { type, projectId, organizationId: orgId, name } = AppState.currentMenuType;
+    history.push({
+      pathname: "/devops/reports/build-number",
+      search: `?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}`,
+      state: {
+        appId: DevPipelineStore.getSelectApp,
+        backPath: "dev-console",
+      },
+    })
+  };
+
+  /**
    * 获取流水线
    * @returns {*}
    */
