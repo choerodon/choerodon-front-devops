@@ -1,6 +1,5 @@
 import { observable, action, computed } from "mobx";
 import { axios, store } from "choerodon-front-boot";
-import _ from "lodash";
 import { handleProptError } from "../../../utils/index";
 
 const HEIGHT =
@@ -15,11 +14,15 @@ class ClusterStore {
 
   @observable tLoading = false;
 
+  @observable podLoading = false;
+
   @observable proData = [];
 
   @observable shell = '';
 
   @observable clsData = null;
+
+  @observable podData = null;
 
   @observable tagKeys = [];
 
@@ -101,6 +104,14 @@ class ClusterStore {
     this.clsData = data;
   }
 
+  @computed get getPodData() {
+    return this.podData;
+  }
+
+  @action setPodData(data) {
+    this.podData = data;
+  }
+
   @action setInfo(Info) {
     this.Info = Info;
   }
@@ -161,6 +172,35 @@ class ClusterStore {
           const { number, size, totalElements } = data;
           const page = { number, size, totalElements };
           this.setClsPageInfo(page);
+          this.changeLoading(false);
+        }
+      });
+  };
+
+  loadPodTable = (
+    orgId,
+    clusterId,
+    nodeName,
+    page = this.pageInfo.current - 1,
+    size = this.pageInfo.pageSize,
+    sort = { field: "id", order: "desc" },
+    postData = {
+      searchParam: {},
+      param: "",
+    }
+  ) => {
+    this.changeLoading(true);
+    return axios
+      .post('/devops/v1/projects/468/app_pod/list_by_options?page=0&size=15&sort=id,desc&envId=442',
+        JSON.stringify(postData)
+      )
+      .then(data => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setPodData(res.content);
+          const { number, size, totalElements } = data;
+          const page = { number, size, totalElements };
+          this.setPageInfo(page);
           this.changeLoading(false);
         }
       });
