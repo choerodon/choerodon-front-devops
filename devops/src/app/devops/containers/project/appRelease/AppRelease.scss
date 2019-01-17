@@ -15,35 +15,26 @@
     color: #3f51b5;
     float: right;
   }
-}
 
-.c7n-table-512 {
-  width: 512px;
-}
+  .c7ncd-release-item-indent {
+    padding-left: 30px;
 
-.c7n-deployApp-wrapper {
-  // background-color: rgba(0, 0, 0, 0.04);
-
-  .deployApp-card {
-    padding: 32px;
-    background-color: white;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
-    margin-bottom: 32px;
+    .c7ncd-release-tip {
+      margin-top: 24px;
+    }
   }
 
-  .deployApp-card-content {
-    margin-left: 36px;
-    padding-top: 32px;
+  .c7ncd-step-item-tip-icon {
+    margin-right: 5px;
+    padding: 0 !important;
+  }
 
-    p {
-      font-size: 13px;
-      color: rgba(0, 0, 0, 0.65);
-      line-height: 20px;
-      text-align: justify;
-    }
+  .c7ncd-release-info {
+    width: 512px;
 
-    .c7n-appRelease-img-wrap {
-      margin-left: 216px;
+    .c7n-appRelease-img {
+      margin: 0 auto;
+      width: 80px;
     }
 
     .c7n-appRelease-img-title {
@@ -64,14 +55,14 @@
       -moz-background-size: 100% 100%;
 
       &:hover {
-        background-color: rgba(0, 0, 0, 0.288);
+        background-color: rgba(0, 0, 0, .288);
       }
 
       .c7n-appRelease-img-child {
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        background-color: rgba(0, 0, 0, 0.288);
+        background-color: rgba(0, 0, 0, .288);
         padding-top: 11px;
         line-height: 53px;
         text-align: center;
@@ -82,9 +73,63 @@
         color: white;
       }
     }
+  }
+
+  .app-release-title {
+    width: 80px;
+    font-size: 13px;
+    color: #000;
+    line-height: 20px;
+    display: inline-block;
+    margin: 0 0 12px 0;
+
+    span {
+      padding-right: 10px;
+    }
+  }
+
+  .deployApp-text {
+    display: inline-table;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.65);
+    line-height: 20px;
+    padding-left: 15px;
+  }
+
+  .deployApp-value {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.65);
+    text-align: left;
+    line-height: 20px;
+  }
+}
+
+.c7n-table-512 {
+  width: 512px;
+}
+
+.c7n-addRelease-wrapper {
+
+  .deployApp-card {
+    padding: 32px;
+    background-color: white;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .2);
+    margin-bottom: 32px;
+  }
+
+  .deployApp-card-content {
+    margin-left: 36px;
+    padding-top: 32px;
+
+    p {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 20px;
+      text-align: justify;
+    }
 
     .deployAddApp-section {
-      margin: 24px 0 32px  0;
+      margin: 24px 0 32px 0;
       //width: 512px;
 
       &.deployAddApp-section-512 {
@@ -143,36 +188,6 @@
           padding: 0 6px 0 12px;
           color: #f44336;
         }
-      }
-    }
-
-    .deployApp-review {
-      .app-release-title {
-        width: 80px;
-        font-size: 13px;
-        color: #000;
-        line-height: 20px;
-        display: inline-block;
-        margin: 0 0 12px 0;
-
-        span {
-          padding-right: 10px;
-        }
-      }
-
-      .deployApp-text {
-        display: inline-table;
-        font-size: 13px;
-        color: rgba(0, 0, 0, 0.65);
-        line-height: 20px;
-        padding-left: 15px;
-      }
-
-      .deployApp-value {
-        font-size: 13px;
-        color: rgba(0, 0, 0, 0.65);
-        text-align: left;
-        line-height: 20px;
       }
     }
   }

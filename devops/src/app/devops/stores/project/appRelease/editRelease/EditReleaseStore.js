@@ -1,12 +1,14 @@
-import { observable, action, computed } from 'mobx';
-import { axios, store } from 'choerodon-front-boot';
-// import { Observable } from 'rxjs';
-// import { formJS } from 'immutable';
+import { observable, action, computed } from "mobx";
+import { axios, store } from "choerodon-front-boot";
+import { handleProptError } from "../../../../utils";
 
-const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-@store('EditReleaseStore')
+const HEIGHT =
+  window.innerHeight ||
+  document.documentElement.clientHeight ||
+  document.body.clientHeight;
+@store("EditReleaseStore")
 class EditReleaseStore {
-  @observable isRefresh= false;
+  @observable isRefresh = false;
 
   // 页面的loading
   @observable loading = false;
@@ -16,18 +18,22 @@ class EditReleaseStore {
 
   @observable selectData = [];
 
-  @observable apps = [];
+  @observable appTableData = [];
 
-  @observable app = null;
+  @observable appDetailById = null;
 
   @observable show = false;
 
   @observable pageInfo = {
-    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
+    current: 1,
+    total: 0,
+    pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
   @observable versionPage = {
-    current: 1, total: 0, pageSize: HEIGHT <= 900 ? 10 : 15,
+    current: 1,
+    total: 0,
+    pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
   @observable versionData = [];
@@ -35,8 +41,10 @@ class EditReleaseStore {
   @observable type = [];
 
   @observable selectPageInfo = {
-    current: 1, pageSize: 10, total: 0,
-  }
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  };
 
   @action setSelectPageInfo(data) {
     this.selectPageInfo = data;
@@ -57,7 +65,6 @@ class EditReleaseStore {
     this.pageInfo.total = page.totalElements;
     this.pageInfo.pageSize = page.size;
   }
-
 
   @computed get getPageInfo() {
     return this.pageInfo;
@@ -88,8 +95,12 @@ class EditReleaseStore {
     this.versionData = data;
   }
 
-  @action setApps(data) {
-    this.apps = data;
+  @action setAppTableData(data) {
+    this.appTableData = data;
+  }
+
+  @computed get getAppTableData() {
+    return this.appTableData.slice();
   }
 
   @action changeIsRefresh(flag) {
@@ -124,20 +135,35 @@ class EditReleaseStore {
     this.show = flag;
   }
 
-  @action setApp(data) {
-    this.app = data;
+  @action setAppDetailById(data) {
+    this.appDetailById = data;
   }
 
-  loadApps = ({ isRefresh = false, projectId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
-    param: '',
-  } }) => {
+  @computed get getAppDetailById() {
+    return this.appDetailById;
+  }
+
+  loadAppTableData = ({
+    isRefresh = false,
+    projectId,
+    page = this.pageInfo.current - 1,
+    size = this.pageInfo.pageSize,
+    sort = { field: "id", order: "desc" },
+    postData = { searchParam: {}, param: "" },
+  }) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    return axios.post(`/devops/v1/projects/${projectId}/apps/list_unpublish?page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
-      .then((data) => {
-        const res = this.handleProptError(data);
+    return axios
+      .post(
+        `/devops/v1/projects/${projectId}/apps/list_unpublish?page=${page}&size=${size}&sort=${
+          sort.field
+        },${sort.order}`,
+        JSON.stringify(postData)
+      )
+      .then(data => {
+        const res = handleProptError(data);
         if (res) {
           this.handleData(data);
         }
@@ -146,24 +172,37 @@ class EditReleaseStore {
       });
   };
 
-  handleData =(data) => {
+  handleData = data => {
     const { number, size, totalElements } = data;
     const page = { number, size, totalElements };
     this.setPageInfo(page);
-    this.setApps(data.content);
+    this.setAppTableData(data.content);
   };
 
-  loadAllVersion = ({ isRefresh = false, projectId, appId, page = this.pageInfo.current - 1, size = this.pageInfo.pageSize, sort = { field: 'id', order: 'desc' }, postData = { searchParam: {},
-    param: '',
-  }, key = '1' }) => {
+  loadAllVersion = ({
+    isRefresh = false,
+    projectId,
+    appId,
+    page = this.pageInfo.current - 1,
+    size = this.pageInfo.pageSize,
+    sort = { field: "id", order: "desc" },
+    postData = { searchParam: {}, param: "" },
+    key = "1",
+  }) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
     this.changeLoading(true);
-    if (key === '1') {
-      return axios.post(`/devops/v1/projects/${projectId}/app_versions/list_by_options?appId=${appId}&page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
-        .then((data) => {
-          const res = this.handleProptError(data);
+    if (key === "1") {
+      return axios
+        .post(
+          `/devops/v1/projects/${projectId}/app_versions/list_by_options?appId=${appId}&page=${page}&size=${size}&sort=${
+            sort.field
+          },${sort.order}`,
+          JSON.stringify(postData)
+        )
+        .then(data => {
+          const res = handleProptError(data);
           if (res) {
             this.handleVersionData(data);
           }
@@ -171,9 +210,15 @@ class EditReleaseStore {
           this.changeIsRefresh(false);
         });
     } else {
-      return axios.post(`/devops/v1/projects/${projectId}/app_versions/list_by_options?appId=${appId}&page=${page}&size=${size}&sort=${sort.field},${sort.order}`, JSON.stringify(postData))
-        .then((data) => {
-          const res = this.handleProptError(data);
+      return axios
+        .post(
+          `/devops/v1/projects/${projectId}/app_versions/list_by_options?appId=${appId}&page=${page}&size=${size}&sort=${
+            sort.field
+          },${sort.order}`,
+          JSON.stringify(postData)
+        )
+        .then(data => {
+          const res = handleProptError(data);
           if (res) {
             this.handleVersionData(data);
           }
@@ -183,70 +228,83 @@ class EditReleaseStore {
     }
   };
 
-  handleVersionData = (data) => {
+  handleVersionData = data => {
     const { number, size, totalElements } = data;
     const page = { number, size, totalElements };
     this.setVersionPageInfo(page);
     this.setVersionData(data.content);
   };
 
-  loadDataById =(projectId, id) => axios.get(`/devops/v1/projects/${projectId}/apps_market/${id}/detail`).then((data) => {
-    const res = this.handleProptError(data);
-    if (res) {
-      this.setSingleData(data);
-      this.setSelectData(data.appVersions);
-    }
-  });
-
-  updateData = (projectId, id, data) => axios.put(`/devops/v1/projects/${projectId}/apps_market/${id}`, JSON.stringify(data))
-    .then((datas) => {
-      const res = this.handleProptError(datas);
-      return res;
-    });
-
-  addData = (projectId, data, img) => axios.post(`/devops/v1/projects/${projectId}/apps_market`, JSON.stringify(data))
-    .then((datas) => {
-      const res = this.handleProptError(datas);
-      return res;
-    });
-
-  uploadFile = (backName = 'devops-service', fileName, img) => axios.post(`/file/v1/files?bucket_name=${backName}&file_name=${fileName}`, img, {
-    header: { 'Content-Type': 'multipart/form-data' },
-  })
-    .then((datas) => {
-      let url;
-      const res = this.handleProptError(datas);
-      if (res) {
-        const index = datas.indexOf('devops-service');
-        url = res.substr(index, datas.length);
-      }
-      return url;
-    });
-
-  deleteData =(projectId, id) => axios.post(`devops/v1/projects/${projectId}/apps_market/${id}/unpublish`)
-    .then((datas) => {
-      const res = this.handleProptError(datas);
-      return res;
-    });
-
-  loadApp = (projectId, id) => {
-    axios.get(`/devops/v1/projects/${projectId}/apps/${id}/detail`)
-      .then((data) => {
-        const res = this.handleProptError(data);
+  loadDataById = (projectId, id) =>
+    axios
+      .get(`/devops/v1/projects/${projectId}/apps_market/${id}/detail`)
+      .then(data => {
+        const res = handleProptError(data);
         if (res) {
-          this.setApp(data);
+          this.setSingleData(data);
+          this.setSelectData(data.appVersions);
         }
       });
-  }
 
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
-  }
+  updateData = (projectId, id, data) =>
+    axios
+      .put(
+        `/devops/v1/projects/${projectId}/apps_market/${id}`,
+        JSON.stringify(data)
+      )
+      .then(datas => {
+        const res = handleProptError(datas);
+        return res;
+      });
+
+  addData = (projectId, data, img) =>
+    axios
+      .post(
+        `/devops/v1/projects/${projectId}/apps_market`,
+        JSON.stringify(data)
+      )
+      .then(datas => {
+        const res = handleProptError(datas);
+        return res;
+      });
+
+  uploadFile = (backName = "devops-service", fileName, img) =>
+    axios
+      .post(
+        `/file/v1/files?bucket_name=${backName}&file_name=${fileName}`,
+        img,
+        {
+          header: { "Content-Type": "multipart/form-data" },
+        }
+      )
+      .then(datas => {
+        let url;
+        const res = handleProptError(datas);
+        if (res) {
+          const index = datas.indexOf("devops-service");
+          url = res.substr(index, datas.length);
+        }
+        return url;
+      });
+
+  deleteData = (projectId, id) =>
+    axios
+      .post(`devops/v1/projects/${projectId}/apps_market/${id}/unpublish`)
+      .then(datas => {
+        const res = handleProptError(datas);
+        return res;
+      });
+
+  loadAppDetail = (projectId, id) => {
+    axios
+      .get(`/devops/v1/projects/${projectId}/apps/${id}/detail`)
+      .then(data => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setAppDetailById(data);
+        }
+      });
+  };
 }
 
 const editReleaseStore = new EditReleaseStore();

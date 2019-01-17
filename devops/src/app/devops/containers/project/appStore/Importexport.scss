@@ -10,16 +10,6 @@
   padding: 32px;
   background-color: white;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
-
-  .ant-steps-item-icon {
-    cursor: pointer;
-  }
-
-  .c7ncd-step-disabled {
-    .ant-steps-item-icon {
-      cursor: not-allowed;
-    }
-  }
 }
 
 .c7n-step-section_input {
