@@ -530,6 +530,22 @@ class DevConsole extends Component {
   }
 
   /**
+   * 跳转至构建次数报表
+   */
+  linkToBuild = () => {
+    const { history } = this.props;
+    const { type, projectId, organizationId: orgId, name } = AppState.currentMenuType;
+    history.push({
+      pathname: "/devops/reports/build-number",
+      search: `?type=${type}&id=${projectId}&name=${name}&organizationId=${orgId}`,
+      state: {
+        appId: DevPipelineStore.getSelectApp,
+        backPath: "dev-console",
+      },
+    })
+  };
+
+  /**
    * 获取流水线
    * @returns {*}
    */
@@ -605,6 +621,16 @@ class DevConsole extends Component {
             <div className="c7n-dc-line_card-content">
               <div className="c7n-dc-line_card-title">
                 <FormattedMessage id="ciPipeline.head" />
+                <Tooltip
+                  placement="bottom"
+                  title={<FormattedMessage id="devCs.build" />}
+                >
+                  <Button
+                    icon="poll"
+                    shape="circle"
+                    onClick={this.linkToBuild}
+                  />
+                </Tooltip>
               </div>
               {CiPipelineStore.loading && loadingFlag ? <Progress className="c7n-dc-card-loading" type="loading" /> : this.getCardContent(ciPipelineOne)}
             </div>
