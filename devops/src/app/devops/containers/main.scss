@@ -455,8 +455,119 @@ input::-webkit-contacts-auto-fill-button {
   .c7ncd-step-card {
     padding: 32px 4px 0 36px;
 
+    .c7ncd-step-describe {
+      margin: 0;
+      font-size: 13px;
+      color: rgba(0, 0, 0, .65);
+      line-height: 20px;
+    }
+
+    .c7ncd-step-item {
+      margin-top: 32px;
+
+      &.c7ncd-step-item-full {
+        margin-top: 0;
+      }
+
+      .c7ncd-step-item-header {
+        margin-bottom: 16px;
+
+        .c7ncd-step-item-icon {
+          font-size: 18px;
+        }
+
+        .c7ncd-step-item-title {
+          display: inline-block;
+          margin-left: 10px;
+          vertical-align: middle;
+          color: #000;
+        }
+      }
+
+      .c7ncd-step-item-indent {
+        display: flex;
+        flex-wrap: wrap;
+        padding-left: 30px;
+        min-height: 20px;
+        width: 512px;
+
+        .c7ncd-step-input {
+          width: 482px;
+        }
+
+        .c7ncd-detail-btn {
+          vertical-align: middle;
+          padding: 0;
+          height: 20px;
+          line-height: 20px;
+          color: #3f51b5;
+
+          &.c7ncd-detail-btn-right {
+            margin-left: auto;
+          }
+
+          .icon {
+            width: 13px;
+            height: 13px;
+            font-size: 12px;
+          }
+
+          &.ant-btn-flat:hover {
+            background: transparent;
+          }
+
+          .ant-ripple-wrapper {
+            display: none;
+          }
+        }
+      }
+
+      .c7ncd-step-item-tip-icon {
+        vertical-align: middle;
+        font-size: 16px;
+        padding: 0 6px 0 12px;
+        color: #f44336;
+      }
+
+      .c7ncd-step-item-tip-text {
+        vertical-align: middle;
+        color: rgba(0, 0, 0, .65);
+      }
+
+      .c7ncd-step-info-item {
+        margin-bottom: 12px;
+
+        .c7ncd-step-info-item-label {
+          display: inline-block;
+          line-height: 20px;
+
+          .c7ncd-step-info-item-icon {
+            margin-right: 8px;
+            vertical-align: text-bottom;
+          }
+        }
+
+        .c7ncd-step-info-item-value {
+          display: inline-block;
+          padding-left: 25px;
+          color: rgba(3, 3, 3, 0.65);
+
+          .c7ncd-step-info-item-text {
+            text-align: left;
+            line-height: 20px;
+            font-size: 13px;
+            color: rgba(0, 0, 0, .65);
+          }
+        }
+      }
+    }
+
     .c7ncd-step-btn {
       margin-top: 32px;
+
+      .c7ncd-step-cancel-btn {
+        color: #3f51b5;
+      }
 
       button {
         margin-right: 12px;

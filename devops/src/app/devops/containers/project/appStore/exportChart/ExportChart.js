@@ -630,29 +630,13 @@ class ExportChart extends Component {
           backPath={`/devops/app-market?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}`}
         />
         <Content code="appstore.export" values={{ name }}>
-          <div
-            className="c7n-store-card-wrap"
-            style={{ minHeight: window.innerHeight - 277 }}
-          >
+          <div className="c7n-store-card-wrap">
             <Steps current={current}>
+              <Step title={formatMessage({ id: "deploy.step.one.app" })} />
               <Step
-                title={formatMessage({ id: "deploy.step.one.app" })}
-                onClick={() => this.changeStep(0)}
-              />
-              <Step
-                className={selectedRows.length ? "" : "c7ncd-step-disabled"}
                 title={formatMessage({ id: "deploy.step.one.version.title" })}
-                onClick={selectedRows.length && this.displaySecondPart}
               />
-              <Step
-                className={selectedRows.length ? "" : "c7ncd-step-disabled"}
-                title={formatMessage({ id: "appstore.confirm" })}
-                onClick={
-                  selectedRows.length &&
-                  !this.checkDisable &&
-                  this.changeStep.bind(this, 2)
-                }
-              />
+              <Step title={formatMessage({ id: "appstore.confirm" })} />
             </Steps>
             {contents[current]()}
           </div>

@@ -530,18 +530,18 @@ class DeploymentAppHome extends Component {
 
     return (
       <Fragment>
-        <p className="c7n-deploy-describe">
+        <p className="c7ncd-step-describe">
           {formatMessage({ id: "deploy.step.one.description" })}
         </p>
-        <div className="c7n-deploy-item">
-          <div className="c7n-deploy-item-header">
-            <Icon className="c7n-deploy-item-icon" type="widgets" />
-            <span className="c7n-deploy-item-title">
+        <div className="c7ncd-step-item">
+          <div className="c7ncd-step-item-header">
+            <Icon className="c7ncd-step-item-icon" type="widgets" />
+            <span className="c7ncd-step-item-title">
               {formatMessage({ id: "deploy.step.one.app" })}
             </span>
           </div>
-          <div className="c7n-deploy-item-indent">
-            <div className="c7n-deploy-item-app">
+          <div className="c7ncd-step-item-indent">
+            <div className="c7ncd-step-item-app">
               {app && (
                 <AppName
                   width="366px"
@@ -569,17 +569,17 @@ class DeploymentAppHome extends Component {
             </Permission>
           </div>
         </div>
-        <div className="c7n-deploy-item">
-          <div className="c7n-deploy-item-header">
-            <Icon className="c7n-deploy-item-icon" type="version" />
-            <span className="c7n-deploy-item-title">
+        <div className="c7ncd-step-item">
+          <div className="c7ncd-step-item-header">
+            <Icon className="c7ncd-step-item-icon" type="version" />
+            <span className="c7ncd-step-item-title">
               {formatMessage({ id: "deploy.step.one.version.title" })}
             </span>
           </div>
-          <div className="c7n-deploy-item-indent">
+          <div className="c7ncd-step-item-indent">
             <Select
               filter
-              className="c7n-deploy-input"
+              className="c7ncd-step-input"
               label={<FormattedMessage id="deploy.step.one.version" />}
               optionFilterProp="children"
               style={{ width: 482 }}
@@ -608,7 +608,7 @@ class DeploymentAppHome extends Component {
             <FormattedMessage id="next" />
           </Button>
           <Button
-            className="c7n-deploy-cancel-btn"
+            className="c7ncd-step-cancel-btn"
             funcType="raised"
             onClick={this.clearStepOneBack}
           >
@@ -639,9 +639,8 @@ class DeploymentAppHome extends Component {
         : deployValue && deployValue.errorLines === null)
     );
 
-    // <Option value={v.id} key={v.id} disabled={!v.connect || !v.permission}>
     const envOptions = _.map(getEnvcard, v => (
-      <Option value={v.id} key={v.id}>
+      <Option value={v.id} key={v.id} disabled={!v.connect || !v.permission}>
         <span
           className={`c7ncd-status c7ncd-status-${
             v.connect ? "success" : "disconnect"
@@ -653,19 +652,19 @@ class DeploymentAppHome extends Component {
 
     return (
       <Fragment>
-        <p className="c7n-deploy-describe">
+        <p className="c7ncd-step-describe">
           {formatMessage({ id: "deploy.step.two.description" })}
         </p>
-        <div className="c7n-deploy-item">
-          <div className="c7n-deploy-item-header">
-            <Icon className="c7n-deploy-item-icon" type="donut_large" />
-            <span className="c7n-deploy-item-title">
+        <div className="c7ncd-step-item">
+          <div className="c7ncd-step-item-header">
+            <Icon className="c7ncd-step-item-icon" type="donut_large" />
+            <span className="c7ncd-step-item-title">
               {formatMessage({ id: "deploy.step.two.env.title" })}
             </span>
           </div>
-          <div className="c7n-deploy-item-indent">
+          <div className="c7ncd-step-item-indent">
             <Select
-              className="c7n-deploy-input"
+              className="c7ncd-step-input"
               value={activeEnv && activeEnv.length ? activeEnv[0].id : envId}
               label={formatMessage({ id: "deploy.step.two.env" })}
               onSelect={this.handleSelectEnv}
@@ -682,14 +681,14 @@ class DeploymentAppHome extends Component {
             </Select>
           </div>
         </div>
-        <div className="c7n-deploy-item">
-          <div className="c7n-deploy-item-header">
-            <Icon className="c7n-deploy-item-icon" type="description" />
-            <span className="c7n-deploy-item-title">
+        <div className="c7ncd-step-item">
+          <div className="c7ncd-step-item-header">
+            <Icon className="c7ncd-step-item-icon" type="description" />
+            <span className="c7ncd-step-item-title">
               {formatMessage({ id: "deploy.step.two.config" })}
             </span>
-            <Icon className="c7n-deploy-item-tip-icon" type="error" />
-            <span className="c7n-deploy-item-tip-text">
+            <Icon className="c7ncd-step-item-tip-icon" type="error" />
+            <span className="c7ncd-step-item-tip-text">
               {formatMessage({ id: "deploy.step.two.description_1" })}
             </span>
           </div>
@@ -723,7 +722,7 @@ class DeploymentAppHome extends Component {
           </Button>
           <Button
             funcType="raised"
-            className="c7n-deploy-cancel-btn"
+            className="c7ncd-step-cancel-btn"
             onClick={this.clearStepOne}
           >
             <FormattedMessage id="cancel" />
@@ -752,17 +751,17 @@ class DeploymentAppHome extends Component {
 
     return (
       <Fragment>
-        <p className="c7n-deploy-describe">
+        <p className="c7ncd-step-describe">
           {formatMessage({ id: "deploy.step.three.description" })}
         </p>
-        <div className="c7n-deploy-item">
-          <div className="c7n-deploy-item-header">
-            <Icon className="c7n-deploy-item-icon" type="jsfiddle" />
-            <span className="c7n-deploy-item-title">
+        <div className="c7ncd-step-item">
+          <div className="c7ncd-step-item-header">
+            <Icon className="c7ncd-step-item-icon" type="jsfiddle" />
+            <span className="c7ncd-step-item-title">
               {formatMessage({ id: "deploy.step.three.mode.title" })}
             </span>
           </div>
-          <div className="c7n-deploy-item-indent">
+          <div className="c7ncd-step-item-indent">
             <RadioGroup
               onChange={this.handleChangeMode}
               value={mode}
@@ -778,12 +777,12 @@ class DeploymentAppHome extends Component {
               >
                 <FormattedMessage id="deploy.step.three.mode.replace" />
                 <Icon
-                  className="c7n-deploy-item-tip-icon"
+                  className="c7ncd-step-item-tip-icon"
                   style={{ verticalAlign: "text-bottom" }}
                   type="error"
                 />
                 <span
-                  className="c7n-deploy-item-tip-text"
+                  className="c7ncd-step-item-tip-text"
                   style={{ verticalAlign: "unset" }}
                 >
                   {formatMessage({ id: "deploy.step.three.mode.help" })}
@@ -793,7 +792,7 @@ class DeploymentAppHome extends Component {
             {mode === "replace" && (
               <Select
                 filter
-                className="c7n-deploy-input"
+                className="c7ncd-step-input"
                 optionFilterProp="children"
                 onSelect={this.handleSelectInstance}
                 value={
@@ -816,14 +815,14 @@ class DeploymentAppHome extends Component {
             )}
           </div>
         </div>
-        <div className="c7n-deploy-item">
-          <div className="c7n-deploy-item-header">
-            <Icon className="c7n-deploy-item-icon" type="instance_outline" />
-            <span className="c7n-deploy-item-title">
+        <div className="c7ncd-step-item">
+          <div className="c7ncd-step-item-header">
+            <Icon className="c7ncd-step-item-icon" type="instance_outline" />
+            <span className="c7ncd-step-item-title">
               {formatMessage({ id: "deploy.step.three.ist.title" })}
             </span>
           </div>
-          <div className="c7n-deploy-item-indent">
+          <div className="c7ncd-step-item-indent">
             <Form layout="vertical">
               <FormItem className="deploy-select" {...formItemLayout}>
                 {getFieldDecorator("name", {
@@ -837,7 +836,7 @@ class DeploymentAppHome extends Component {
                   ],
                 })(
                   <Input
-                    className="c7n-deploy-input"
+                    className="c7ncd-step-input"
                     onChange={this.handleIstNameChange}
                     disabled={mode !== "new"}
                     maxLength={30}
@@ -870,7 +869,7 @@ class DeploymentAppHome extends Component {
           </Button>
           <Button
             funcType="raised"
-            className="c7n-deploy-cancel-btn"
+            className="c7ncd-step-cancel-btn"
             onClick={this.clearStepOne}
           >
             <FormattedMessage id="cancel" />
@@ -932,7 +931,7 @@ class DeploymentAppHome extends Component {
         value: (
           <Fragment>
             {app ? app.name : null}
-            <span className="c7n-deploy-info-item-text">
+            <span className="c7ncd-step-info-item-text">
               ({app ? app.code : null})
             </span>
           </Fragment>
@@ -949,7 +948,7 @@ class DeploymentAppHome extends Component {
         value: (
           <Fragment>
             {envDto ? envDto.name : null}
-            <span className="c7n-deploy-info-item-text">
+            <span className="c7ncd-step-info-item-text">
               ({envDto ? envDto.code : null})
             </span>
           </Fragment>
@@ -962,7 +961,7 @@ class DeploymentAppHome extends Component {
           <Fragment>
             <FormattedMessage id={`deploy.step.three.mode.${mode}`} />
             {mode === "replace" ? (
-              <span className="c7n-deploy-info-item-text">
+              <span className="c7ncd-step-info-item-text">
                 (
                 {instanceId
                   ? instanceDto.code
@@ -985,13 +984,13 @@ class DeploymentAppHome extends Component {
     const infoDom = _.map(deployInfo, item => {
       const { icon, label, value } = item;
       return (
-        <div className="c7n-deploy-info-item">
-          <div className="c7n-deploy-info-item-label">
-            <Icon type={icon} className="c7n-deploy-info-item-icon" />
+        <div className="c7ncd-step-info-item">
+          <div className="c7ncd-step-info-item-label">
+            <Icon type={icon} className="c7ncd-step-info-item-icon" />
             <FormattedMessage id={label} />：
           </div>
           {value ? (
-            <div className="c7n-deploy-info-item-value">{value}</div>
+            <div className="c7ncd-step-info-item-value">{value}</div>
           ) : null}
         </div>
       );
@@ -1001,7 +1000,7 @@ class DeploymentAppHome extends Component {
 
     return (
       <Fragment>
-        <div className="c7n-deploy-item c7n-deploy-item-full">
+        <div className="c7ncd-step-item c7ncd-step-item-full">
           {infoDom}
           {deployValue && (
             <YamlEditor
@@ -1030,7 +1029,7 @@ class DeploymentAppHome extends Component {
           </Button>
           <Button
             funcType="raised"
-            className="c7n-deploy-cancel-btn"
+            className="c7ncd-step-cancel-btn"
             onClick={this.clearStepOne}
           >
             <FormattedMessage id="cancel" />
@@ -1137,7 +1136,7 @@ class DeploymentAppHome extends Component {
                 dropdownClassName="c7n-header-env_drop"
                 placeholder={formatMessage({ id: "envoverview.noEnv" })}
                 value={envData && envData.length ? getTpEnvId : undefined}
-                // disabled 是限制应用部署时，选定环境后不允许再切换系统
+                // disabled 是限制应用部署时，选定环境后不允许再切换系统环境
                 disabled={disabled || (envData && envData.length === 0)}
                 onChange={this.handleEnvSelect}
               >

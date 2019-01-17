@@ -83,7 +83,7 @@ const pageDetail = {
   "release.editVersion.title": '查看应用"{name}"的版本',
   "release.editVersion.description":
     "您可在此查看未发布及已发布的版本，且可以发布未发布的版本。",
-  "release.addVersion.title": '添加应用"{name}"发布的版本',
+  "release.addVersion.title": `添加应用"{name}"发布的版本`,
   "release.addVersion.description": "您可在此勾选并添加需要发布的版本。",
 
   // container
@@ -309,8 +309,8 @@ const pageDetail = {
     "您可在此修改集群的名称、描述以及集群的公开范围。",
   "cluster.edit.link": `${docServer}/user-guide/cluster-management/cluster/`,
 
-  'node.title': '节点"{name}"的详情',
-  'node.description': '您可在此处查看该集群中某个节点的详细信息。',
+  "node.title": '节点"{name}"的详情',
+  "node.description": "您可在此处查看该集群中某个节点的详细信息。",
   "node.link": `${docServer}/user-guide/cluster-management/cluster`,
 
   // 日志右侧弹窗
@@ -450,7 +450,7 @@ const zhCN = {
   ci_created: "创建中",
   ci_skipped: "未执行",
   ci_manual: "未执行",
-  status: '状态',
+  status: "状态",
 
   // 刷新
   refresh: "刷新",
@@ -851,8 +851,9 @@ const zhCN = {
   "app.import.step4": "确认信息",
   "app.import.step1.des":
     "目前GitHub仅支持从公库导入应用。仓库为空时均不可导入。",
-  "app.import.step1-1.des": "导入应用后，仅保留master分支，请确保已将需要的代码合并至master分支。",
-    "app.import.step2.des":
+  "app.import.step1-1.des":
+    "导入应用后，仅保留master分支，请确保已将需要的代码合并至master分支。",
+  "app.import.step2.des":
     "您可在此自定义导入应用的编码与名称，同时选择一个应用模板。",
   "app.import.step2-1.des": "请选择与导入应用的开发语言相对应的应用模板。",
   "app.import.step3.des":
@@ -1404,14 +1405,14 @@ const zhCN = {
     "2. 点击创建后，会生成创建agent的脚本，复制至对应的k8s平台运行，即可成功激活此集群，进而激活此集群关联项目下的环境。",
 
   // 节点详情
-  'node.head': '节点详情',
-  'node.res': '资源分配',
-  'node.arv': '请求值',
-  'node.lmv': '限制值',
-  'node.allV': '总量',
-  'node.pods': '节点Pods',
-  'node.podName': 'Pod名称',
-  'node.reTimes': '重启次数',
+  "node.head": "节点详情",
+  "node.res": "资源分配",
+  "node.arv": "请求值",
+  "node.lmv": "限制值",
+  "node.allV": "总量",
+  "node.pods": "节点Pods",
+  "node.podName": "Pod名称",
+  "node.reTimes": "重启次数",
   "node.log": "Pod日志",
   "node.log.header.title": "查看Pod日志",
 
