@@ -9,7 +9,6 @@ import TimePopover from '../../../../components/timePopover';
 import './ClusterList.scss';
 
 const { AppState } = stores;
-const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 @observer
 class ClusterList extends Component {
@@ -17,7 +16,7 @@ class ClusterList extends Component {
     super(...arguments);
     this.state = {
       page: 0,
-      size: HEIGHT <= 900 ? 10 : 15,
+      size: 10,
     };
   }
 
@@ -190,7 +189,7 @@ class ClusterList extends Component {
                 <span className="c7n-cls-node-more" onClick={this.showMore.bind(this, data.id)}>
               {activeKey.indexOf(data.id) > -1 ? formatMessage({ id: "shrink" }) : formatMessage({ id: "expand" })}
             </span> : null}
-              {activeKey.indexOf(data.id) > -1 && data.nodes.totalElements > 3 ? <Pagination
+              {activeKey.indexOf(data.id) > -1 && data.nodes.totalElements > 10 ? <Pagination
                 showSizeChanger
                 total={total}
                 current={current}

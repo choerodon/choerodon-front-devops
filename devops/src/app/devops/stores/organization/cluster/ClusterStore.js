@@ -48,7 +48,7 @@ class ClusterStore {
   @observable nodePageInfo = {
     current: 1,
     total: 0,
-    pageSize: HEIGHT <= 900 ? 10 : 15,
+    pageSize: 10,
   };
 
   @observable Info = {
