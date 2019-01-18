@@ -1416,6 +1416,7 @@ const zhCN = {
   'node.podName': 'Pod名称',
   'node.reTimes': '重启次数',
   "node.log": "Pod日志",
+  "node.rTimes": "重启次数",
   "node.log.header.title": "查看Pod日志",
 
   // 配置映射

@@ -43,6 +43,55 @@ class NodeDetail extends Component {
   };
 
   getOption = (data) => {
+    const lmvSeries =  data.total - data.lmv  > 0 ? {
+      type: 'pie',
+      radius: ['40%', '68%'],
+      hoverAnimation: false,
+      label: { show: false },
+      data: [
+        { value: data.lmv,
+          name: 'limitValue',
+          itemStyle: { color: '#57AAF8' },
+        },
+        { value: data.total - data.lmv , name: 'value', itemStyle: { color: 'rgba(0,0,0,0.08)' }},
+      ],
+    } : {
+      type: 'pie',
+      radius: ['40%', '68%'],
+      hoverAnimation: false,
+      label: { show: false },
+      data: [
+        { value: data.lmv,
+          name: 'limitValue',
+          itemStyle: { color: '#57AAF8' },
+        },
+      ],
+    };
+    const rvSeries =  data.total - data.rv  > 0 ? {
+      hoverAnimation: false,
+      type: 'pie',
+      radius: ['75%', '95%'],
+      label: { show: false },
+      data: [
+        {
+          value: data.rv,
+          name: 'requestValue',
+          itemStyle: { color: '#00BFA5' },
+        },
+        { value: data.total - data.rv, name: 'value', itemStyle: { color: 'rgba(0,0,0,0.08)' }},
+      ],
+    } : {
+      type: 'pie',
+      radius: ['75%', '95%'],
+      hoverAnimation: false,
+      label: { show: false },
+      data: [
+        { value: data.rv,
+          name: 'limitValue',
+          itemStyle: { color: '#00BFA5' },
+        },
+      ],
+    };
     return {
       tooltip: {
         show: false,
@@ -51,47 +100,8 @@ class NodeDetail extends Component {
         show: false,
       },
       series: [
-        {
-          type: 'pie',
-          radius: ['30%', '55%'],
-          hoverAnimation: false,
-          label: { show: false },
-          data: [
-            { value: data.lmv,
-              name: 'limitValue',
-              itemStyle: { color: '#57AAF8' },
-              label: {
-                show: true,
-                position: 'inner',
-                formatter: data.limPercent,
-                fontSize: 12,
-                color: 'rgba(0,0,0,0.65)',
-              },
-            },
-            { value: data.total, name: 'value', itemStyle: { color: 'rgba(0,0,0,0.08)' }},
-          ],
-        },
-        {
-          hoverAnimation: false,
-          type: 'pie',
-          radius: ['65%', '90%'],
-          label: { show: false },
-          data: [
-            {
-              value: data.rv,
-              name: 'requestValue',
-              itemStyle: { color: '#00BFA5' },
-              label: {
-                show: true,
-                position: 'inner',
-                formatter: data.resPercent,
-                fontSize: 12,
-                color: 'rgba(0,0,0,0.65)',
-              },
-            },
-            { value: typeof data.total === 'number' ? data.total : 1, name: 'value', itemStyle: { color: 'rgba(0,0,0,0.08)' }},
-          ],
-        },
+        lmvSeries,
+        rvSeries,
       ],
     };
   };
@@ -111,20 +121,13 @@ class NodeDetail extends Component {
         {
           hoverAnimation: false,
           type: 'pie',
-          radius: ['65%', '90%'],
+          radius: ['75%', '95%'],
           label: { show: false },
           data: [
             {
               value: node.podCount,
               name: 'requestValue',
               itemStyle: { color: '#00BFA5' },
-              label: {
-                show: true,
-                position: 'inner',
-                formatter: node.podPercentage,
-                fontSize: 12,
-                color: 'rgba(0,0,0,0.65)',
-              },
             },
             { value: node.podTotal, name: 'value', itemStyle: { color: 'rgba(0,0,0,0.08)' }},
           ],
@@ -175,13 +178,16 @@ class NodeDetail extends Component {
         key: 'name',
         dataIndex: 'name',
         render: name => (<MouserOverWrapper text={name} width={0.2}>{name}</MouserOverWrapper>),
+      },  {
+        title: formatMessage({ id: 'node.rTimes' }),
+        key: 'restartCount',
+        dataIndex: 'restartCount',
       }, {
         key: 'creationDate',
         title: formatMessage({ id: 'ciPipeline.createdAt' }),
         dataIndex: 'creationDate',
         render: creationDate => <TimePopover content={creationDate} />,
-      },
-      {
+      }, {
         align: 'right',
         key: 'action',
         render: record => (
@@ -302,36 +308,52 @@ class NodeDetail extends Component {
     };
     return (<Fragment>
       <div className="c7n-node-pie-block">
+        <div className="c7n-node-pie-percent">
+          {cpuData.resPercent}
+        </div>
         <ReactEcharts
           option={this.getOption(cpuData)}
           notMerge
           lazyUpdate
           style={{ height: '160px', width: '160px' }}
         />
+        <div className="c7n-node-pie-inside-percent">
+          {cpuData.limPercent}
+        </div>
         <div className="c7n-node-pie-title">
           {formatMessage({ id: 'cluster.cpu' })}
         </div>
         {this.pieDes(cpuData)}
       </div>
       <div className="c7n-node-pie-block">
+        <div className="c7n-node-pie-percent">
+          {memoryData.resPercent}
+        </div>
         <ReactEcharts
           option={this.getOption(memoryPieData)}
           notMerge
           lazyUpdate
           style={{ height: '160px', width: '160px' }}
         />
+        <div className="c7n-node-pie-inside-percent">
+          {memoryData.limPercent}
+        </div>
         <div className="c7n-node-pie-title">
           {formatMessage({ id: 'cluster.memory' })}
         </div>
         {this.pieDes(memoryData)}
       </div>
       <div className="c7n-node-pie-block">
+        <div className="c7n-node-pie-percent" />
         <ReactEcharts
           option={this.getPodOption()}
           notMerge
           lazyUpdate
           style={{ height: '160px', width: '160px' }}
         />
+        <div className="c7n-node-pie-pod-percent">
+          {node.podPercentage}
+        </div>
         <div className="c7n-node-pie-title">
           {formatMessage({ id: 'node.pod.allocated' })}
         </div>

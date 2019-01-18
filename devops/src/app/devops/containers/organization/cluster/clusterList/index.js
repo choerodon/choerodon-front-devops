@@ -101,6 +101,10 @@ class ClusterList extends Component {
         </Link>
       ),
     }, {
+      title: formatMessage({ id: 'ist.expand.net.type' }),
+      key: 'type',
+      dataIndex: 'type',
+    }, {
       key: 'cpuAllocatable',
       title: formatMessage({ id: 'cluster.cpu' }),
       render: record => this.renderCm(record, 'cpu'),
