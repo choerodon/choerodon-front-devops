@@ -53,7 +53,7 @@ class NodeDetail extends Component {
       series: [
         {
           type: 'pie',
-          radius: ['35%', '65%'],
+          radius: ['30%', '55%'],
           hoverAnimation: false,
           label: { show: false },
           data: [
@@ -74,7 +74,7 @@ class NodeDetail extends Component {
         {
           hoverAnimation: false,
           type: 'pie',
-          radius: ['70%', '100%'],
+          radius: ['65%', '90%'],
           label: { show: false },
           data: [
             {
@@ -111,7 +111,7 @@ class NodeDetail extends Component {
         {
           hoverAnimation: false,
           type: 'pie',
-          radius: ['70%', '100%'],
+          radius: ['65%', '90%'],
           label: { show: false },
           data: [
             {
