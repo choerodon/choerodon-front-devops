@@ -213,7 +213,7 @@ class LogSiderbar extends Component {
         <Content
           className="sidebar-content"
           code="container.log"
-          values={{ name: data.podNam }}
+          values={{ name: data.podName }}
         >
           <section className="c7n-podLog-section">
             <div className="c7n-podLog-hei-wrap">
