@@ -1,5 +1,6 @@
 import { observable, action, computed } from "mobx";
 import { axios, store } from "choerodon-front-boot";
+import _ from "lodash";
 import { handleProptError } from "../../../utils/index";
 
 const HEIGHT =
@@ -22,9 +23,15 @@ class ClusterStore {
 
   @observable clsData = null;
 
-  @observable podData = null;
+  @observable node = null;
+
+  @observable podData = [];
+
+  @observable nodeData = [];
 
   @observable tagKeys = [];
+
+  @observable activeKey = [];
 
   @observable pageInfo = {
     current: 1,
@@ -35,7 +42,13 @@ class ClusterStore {
   @observable clsPageInfo = {
     current: 1,
     total: 0,
-    pageSize: HEIGHT <= 900 ? 12 : 18,
+    pageSize: HEIGHT <= 900 ? 5 : 8,
+  };
+
+  @observable nodePageInfo = {
+    current: 1,
+    total: 0,
+    pageSize: 10,
   };
 
   @observable Info = {
@@ -52,6 +65,16 @@ class ClusterStore {
 
   @computed get getPageInfo() {
     return this.pageInfo;
+  }
+
+  @action setNodePageInfo(page) {
+    this.nodePageInfo.current = page.number + 1;
+    this.nodePageInfo.total = page.totalElements;
+    this.nodePageInfo.pageSize = page.size;
+  }
+
+  @computed get getNodePageInfo() {
+    return this.nodePageInfo;
   }
 
   @action setClsPageInfo(page) {
@@ -104,12 +127,28 @@ class ClusterStore {
     this.clsData = data;
   }
 
+  @computed get getNode() {
+    return this.node;
+  }
+
+  @action setNode(data) {
+    this.node = data;
+  }
+
   @computed get getPodData() {
     return this.podData;
   }
 
   @action setPodData(data) {
     this.podData = data;
+  }
+
+  @computed get getNodeData() {
+    return this.nodeData;
+  }
+
+  @action setNodeData(data) {
+    this.nodeData = data;
   }
 
   @action setInfo(Info) {
@@ -144,6 +183,14 @@ class ClusterStore {
     this.tagKeys = tagKeys;
   }
 
+  @action setActiveKey(activeKey) {
+    this.activeKey = activeKey;
+  }
+
+  @computed get getActiveKey() {
+    return this.activeKey.slice();
+  }
+
   @computed get getTagKeys() {
     return this.tagKeys.slice();
   }
@@ -168,7 +215,11 @@ class ClusterStore {
       .then(data => {
         const res = handleProptError(data);
         if (res) {
-          this.setData(res.content);
+          const clsSort = _.concat(
+            _.filter(res.content, ["connect", true]),
+            _.filter(res.content, ["connect", false])
+          );
+          this.setData(clsSort);
           const { number, size, totalElements } = data;
           const page = { number, size, totalElements };
           this.setClsPageInfo(page);
@@ -191,9 +242,8 @@ class ClusterStore {
   ) => {
     this.changeLoading(true);
     return axios
-      .post('/devops/v1/projects/468/app_pod/list_by_options?page=0&size=15&sort=id,desc&envId=442',
-        JSON.stringify(postData)
-      )
+      .post(`/devops/v1/organizations/${orgId}/clusters/page_node_pods?cluster_id=${clusterId}&node_name=${nodeName}
+      &page=${page}&size=${size}&sort=${sort.field || "id"},${sort.order}`, JSON.stringify(postData))
       .then(data => {
         const res = handleProptError(data);
         if (res) {
@@ -203,6 +253,31 @@ class ClusterStore {
           this.setPageInfo(page);
           this.changeLoading(false);
         }
+      });
+  };
+
+  loadMoreNode = (
+    orgId,
+    clusterId,
+    page = this.nodePageInfo.current - 1,
+    size = this.nodePageInfo.pageSize,
+    sort = { field: "id", order: "desc" },
+    postData = {
+      searchParam: {},
+      param: "",
+    }
+  ) => {
+    return axios.get(`/devops/v1/organizations/${orgId}/clusters/page_nodes?cluster_id=${clusterId}
+    &page=${page}&size=${size}&sort=${sort.field || "id"},${sort.order}`, JSON.stringify(postData))
+      .then(data => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setNodeData(res.content);
+          const { number, size, totalElements } = data;
+          const page = { number, size, totalElements };
+          this.setNodePageInfo(page);
+        }
+        return data;
       });
   };
 
@@ -234,13 +309,24 @@ class ClusterStore {
   };
 
   loadClsById(orgId, id) {
-    return axios
-      .get(`/devops/v1/organizations/${orgId}/clusters/${id}`)
+    return axios.get(`/devops/v1/organizations/${orgId}/clusters/${id}`)
       .then(data => {
         if (data && data.failed) {
           Choerodon.prompt(data.message);
         } else {
           this.setClsData(data);
+        }
+        return data;
+      });
+  }
+
+  loadNodePie(orgId, id, name) {
+    return axios.get(`/devops/v1/organizations/${orgId}/clusters/nodes?cluster_id=${id}&node_name=${name}`)
+      .then(data => {
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          this.setNode(data);
         }
         return data;
       });
@@ -278,8 +364,7 @@ class ClusterStore {
   }
 
   loadShell = (orgId, id) =>
-    axios
-      .get(`/devops/v1/organizations/${orgId}/clusters/query_shell/${id}`)
+    axios.get(`/devops/v1/organizations/${orgId}/clusters/query_shell/${id}`)
       .then(data => {
         const res = handleProptError(data);
         if (res) {

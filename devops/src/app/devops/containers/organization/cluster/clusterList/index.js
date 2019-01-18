@@ -2,103 +2,117 @@ import React, { Component, Fragment } from 'react';
 import { Link, withRouter } from "react-router-dom";
 import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Tooltip, Icon, Table } from 'choerodon-ui';
+import { Button, Tooltip, Icon, Table, Pagination } from 'choerodon-ui';
 import { Permission, stores } from 'choerodon-front-boot';
 import StatusTags from '../../../../components/StatusTags';
 import TimePopover from '../../../../components/timePopover';
 import './ClusterList.scss';
 
 const { AppState } = stores;
-const podData = [{
-  id: 666,
-  status: 'Unready',
-  node: 'node1',
-  cpu: { a: '请求值：0.81（40.50%）', b: '限制值：0.9 (22.50%)' },
-  memory: { a: '请求值：0.81（40.50%）', b: '限制值：0.9 (22.50%)' },
-  createdAt: '2019-01-14 01:04:30',
-}, {
-  id: 661,
-  status: 'Unready',
-  node: 'node1',
-  cpu: { a: '请求值：0.81（40.50%）', b: '限制值：0.9 (22.50%)' },
-  memory: { a: '请求值：0.81（40.50%）', b: '限制值：0.9 (22.50%)' },
-  createdAt: '2019-01-14 11:04:30',
-}, {
-  id: 662,
-  status: 'Unready',
-  node: 'node1',
-  cpu: { a: '请求值：0.81（40.50%）', b: '限制值：0.9 (22.50%)' },
-  memory: { a: '请求值：0.81（40.50%）', b: '限制值：0.9 (22.50%)' },
-  createdAt: '2019-01-15 11:04:30',
-}];
 
 @observer
 class ClusterList extends Component {
   constructor(props) {
     super(...arguments);
     this.state = {
-      activeKey: [],
+      page: 0,
+      size: 10,
     };
   }
 
-  renderCm = (cpu) => {
+  renderCm = (record, type) => {
+    const { intl: { formatMessage } } = this.props;
+    let request = record.cpuRequest;
+    let limit = record.cpuLimit;
+    let resPercent = record.cpuRequestPercentage;
+    let limPercent = record.cpuLimitPercentage;
+    if(type !== 'cpu') {
+      request = record.memoryRequest;
+      limit = record.memoryLimit;
+      resPercent = record.memoryRequestPercentage;
+      limPercent = record.memoryLimitPercentage;
+    }
     return (<div className="c7n-cls-table-cm">
-      <span className="c7n-cls-up"/>{cpu.a}
-      <span className="c7n-cls-down"/>{cpu.b}
+      <span className="c7n-cls-up"/>{formatMessage({ id: 'node.rv' })}：{request}（{resPercent}）
+      <span className="c7n-cls-down"/>{formatMessage({ id: 'node.lmv' })}：{limit}（{limPercent}）
     </div>);
   };
 
+  /**
+   * table 操作
+   * @param pagination
+   */
+  tableChange = (pagination) => {
+    const { clusterId, tableChange } = this.props;
+    tableChange(pagination, clusterId);
+  };
+
+  /**
+   * 页码改变的回调
+   * @param page
+   * @param size
+   */
+  onPageChange = (page, size) => {
+    const { store, clusterId } = this.props;
+    const { organizationId } = AppState.currentMenuType;
+    this.setState({ page: page - 1, size });
+    store.loadMoreNode(organizationId, clusterId, page - 1, size);
+  };
+
   showMore = id => {
-    let activeKey = this.state.activeKey;
+    const { store, showMore } = this.props;
+    let activeKey = store.getActiveKey;
     activeKey = [...activeKey];
     const index = activeKey.indexOf(id);
     const isActive = index > -1;
     if (isActive) {
       // remove active state
       activeKey.splice(index, 1);
+      store.setNodeData([]);
     } else {
+      showMore(id);
       activeKey.push(id);
     }
-    this.setState({ activeKey });
+    store.setActiveKey(activeKey);
   };
 
   render(){
-    const { store, data, showSideBar, intl: { formatMessage }, delClusterShow } = this.props;
+    const { store, data, tableData, showSideBar, intl: { formatMessage }, delClusterShow } = this.props;
     const { type, organizationId, name } = AppState.currentMenuType;
-    const { activeKey } = this.state;
+    const activeKey = store.getActiveKey;
+    const { getNodePageInfo: { current, total, pageSize } } = store;
+
     const columns = [{
       key: 'status',
       title: formatMessage({ id: 'status' }),
       dataIndex: 'status',
-      render: status => <StatusTags name={status} colorCode={'unReady'} />,
+      render: status => <StatusTags name={status} colorCode={status} />,
     }, {
-      key: 'node',
+      key: 'nodeName',
       title: formatMessage({ id: 'cluster.node' }),
       render: record => (
         <Link
           to={{
-            pathname: `/devops/cluster/${record.id}/node`,
-            search: `?type=${type}&id=${organizationId}&name=${name}&organizationId=${organizationId}&node=${record.node}`,
+            pathname: `/devops/cluster/${data.id}/node`,
+            search: `?type=${type}&id=${organizationId}&name=${name}&organizationId=${organizationId}&node=${record.nodeName}`,
           }}
         >
-          {record.node}
+          {record.nodeName}
         </Link>
       ),
     }, {
-      key: 'cpu',
+      key: 'cpuAllocatable',
       title: formatMessage({ id: 'cluster.cpu' }),
-      dataIndex: 'cpu',
-      render: cpu => this.renderCm(cpu),
+      render: record => this.renderCm(record, 'cpu'),
     }, {
-      key: 'memory',
+      key: 'memoryAllocatable',
       title: formatMessage({ id: 'cluster.memory' }),
-      dataIndex: 'memory',
-      render: memory => this.renderCm(memory),
+      render: record => this.renderCm(record, 'memory'),
     }, {
-      key: 'createdAt',
+      key: 'createTime',
       title: formatMessage({ id: 'ciPipeline.createdAt' }),
-      dataIndex: 'createdAt',
-      render: createdAt => <TimePopover content={createdAt} />,
+      dataIndex: 'createTime',
+      render: createTime => <TimePopover content={createTime} />,
     }];
 
     return (
@@ -159,20 +173,33 @@ class ClusterList extends Component {
               </Permission>}
             </div>
           </div>
-          <Table
-            className="c7n-cls-pod-table"
-            filterBar={false}
-            bordered={false}
-            columns={columns}
-            dataSource={podData}
-            pagination={activeKey.indexOf(data.id) > -1 && store.podPageInfo}
-            loading={store.podLoading}
-            onChange={this.tableChange}
-            rowKey={record => record.key}
-          />
-          {podData.length > 2 ? <div className="c7n-cls-pod-more" onClick={this.showMore.bind(this, data.id)}>
-            {activeKey.indexOf(data.id) > -1 ? formatMessage({ id: "shrink" }) : formatMessage({ id: "expand" })}
-          </div> : null}
+          {data.connect ? <Fragment>
+            {data.nodes.content.length ?
+              <Table
+                className="c7n-cls-node-table"
+                filterBar={false}
+                bordered={false}
+                columns={columns}
+                dataSource={tableData.slice()}
+                pagination={false}
+                rowKey={record => record.nodeName}
+              /> : null}
+            <div className="c7n-cls-node-table-footer">
+              {data.nodes.totalElements > 3 ?
+                <span className="c7n-cls-node-more" onClick={this.showMore.bind(this, data.id)}>
+              {activeKey.indexOf(data.id) > -1 ? formatMessage({ id: "shrink" }) : formatMessage({ id: "expand" })}
+            </span> : null}
+              {activeKey.indexOf(data.id) > -1 && data.nodes.totalElements > 10 ? <Pagination
+                showSizeChanger
+                total={total}
+                current={current}
+                pageSize={pageSize}
+                className="c7n-cls-node-pg"
+                onChange={this.onPageChange}
+                onShowSizeChange={this.onPageChange}
+              /> : null}
+            </div>
+          </Fragment> : null}
         </div>
       </Tooltip>
     );
