@@ -3,16 +3,13 @@ import _ from "lodash";
 import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Modal, Button } from 'choerodon-ui';
-import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { Content } from 'choerodon-front-boot';
 import CodeMirror from "react-codemirror";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/base16-dark.css";
 import './LogSiderbar.scss';
 import '../../../project/container/containerHome/ContainerHome.scss';
-import ContainerStore from "../../../../stores/project/container";
 
-
-const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
 
 @observer
@@ -27,16 +24,19 @@ class LogSiderbar extends Component {
     this.timer = null;
   }
 
+  componentDidMount() {
+    setTimeout(()=>this.loadLog(), 0);
+  }
+
+  componentWillUnmount() {
+    if (this.state.ws) {
+      this.closeSidebar();
+    }
+  }
 
   loadLog = followingOK => {
-    const {
-      namespace,
-      logId,
-      podName,
-      containerName,
-      following,
-      clusterId,
-    } = this.state;
+    const { following } = this.state;
+    const { data } = this.props;
     const authToken = document.cookie.split("=")[1];
     const logs = [];
     let oldLogs = [];
@@ -45,7 +45,7 @@ class LogSiderbar extends Component {
       editor = this.editorLog.getCodeMirror();
       try {
         const ws = new WebSocket(
-          `POD_WEBSOCKET_URL/ws/log?key=cluster:${clusterId}.log:${logId}&env=${namespace}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`
+          `POD_WEBSOCKET_URL/ws/log?key=cluster:${data.clusterId}.log:${data.logId}&env=${data.namespace}&podName=${data.podName}&containerName=${data.containerName}&logId=${data.logId}&token=${authToken}`
         );
         this.setState({ ws, following: true });
         if (!followingOK) {
@@ -192,8 +192,8 @@ class LogSiderbar extends Component {
   };
 
   render() {
-    const { intl: { formatMessage }, visible, onClose } = this.props;
-    const { following, fullScreen, selected } = this.state;
+    const { visible, data } = this.props;
+    const { following, fullScreen } = this.state;
     const options = {
       readOnly: true,
       lineNumbers: true,
@@ -214,7 +214,7 @@ class LogSiderbar extends Component {
         <Content
           className="sidebar-content"
           code="container.log"
-          values={{ name: 'ss' }}
+          values={{ name: data.podNam }}
         >
           <section className="c7n-podLog-section">
             <div className="c7n-podLog-hei-wrap">
@@ -244,7 +244,7 @@ class LogSiderbar extends Component {
                 </div>
               )}
               <CodeMirror
-                ref={editor => {this.editorLog = editor;}}
+                ref={editor => this.editorLog = editor}
                 value="Loading..."
                 className="c7n-podLog-editor"
                 onChange={code => this.props.ChangeCode(code)}

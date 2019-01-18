@@ -90,7 +90,7 @@ $FAL_ICON: #f86300;
   line-height: 20px;
 }
 
-.c7n-cls-pod-table {
+.c7n-cls-node-table {
   padding-left: 25px;
 
   .ant-table-thead > tr > th {
@@ -105,16 +105,19 @@ $FAL_ICON: #f86300;
     color: rgba(0, 0, 0, 0.65);
     border: none;
   }
+}
 
-  .ant-table-pagination.ant-pagination {
+.c7n-cls-node-table-footer {
+  display: flex;
+
+  .c7n-cls-node-pg {
     line-height: 32px;
     margin-top: 10px;
-    position: absolute;
-    right: 0;
+    margin-left: auto;
   }
 }
 
-.c7n-cls-pod-more {
+.c7n-cls-node-more {
   cursor: pointer;
   margin-top: 12px;
   margin-left: 40px;

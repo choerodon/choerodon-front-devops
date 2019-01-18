@@ -105,7 +105,7 @@ class Cluster extends Component {
       delId: null,
       clsName: '',
       page: 0,
-      size: HEIGHT <= 900 ? 12 : 18,
+      size: HEIGHT <= 900 ? 5 : 8,
     };
   }
 
@@ -244,10 +244,32 @@ class Cluster extends Component {
       })
   };
 
+  /**
+   * 展开更多节点
+   * @param id
+   */
+  showMore = (id) => {
+    const { ClusterStore  } = this.props;
+    const { organizationId } = AppState.currentMenuType;
+    ClusterStore.loadMoreNode(organizationId, id);
+  };
+
   getClusterList = () => {
     const { ClusterStore  } = this.props;
     const clusters = ClusterStore.getData;
-    return _.map(clusters, c => (<ClusterList key={c.id} data={c} store={ClusterStore} delClusterShow={this.delClusterShow} showSideBar={this.showSideBar} />));
+    const tableData = ClusterStore.getNodeData.length ? ClusterStore.getNodeData :  false;
+    return _.map(clusters, c => (
+      <ClusterList
+        key={c.id}
+        clusterId={c.id}
+        data={c}
+        tableData={c.connect ? (tableData || c.nodes.content) : []}
+        store={ClusterStore}
+        showMore={this.showMore}
+        delClusterShow={this.delClusterShow}
+        showSideBar={this.showSideBar}
+      />)
+    );
   };
 
   getFormContent = () => {
