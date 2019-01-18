@@ -7,7 +7,6 @@ import { Content } from 'choerodon-front-boot';
 import CodeMirror from "react-codemirror";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/base16-dark.css";
-import './LogSiderbar.scss';
 import '../../../project/container/containerHome/ContainerHome.scss';
 
 const Sidebar = Modal.Sidebar;
