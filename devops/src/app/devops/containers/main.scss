@@ -444,7 +444,13 @@ input::-webkit-contacts-auto-fill-button {
 
 // 分步骤页面卡片公共样式
 .c7ncd-step-page {
-  padding: 20px 24px 48px;
+  padding: 20px 24px 0;
+
+  &::after {
+    display: block;
+    height: 48px;
+    content: " ";
+  }
 }
 
 .c7ncd-step-wrap {

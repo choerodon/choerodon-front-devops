@@ -1,48 +1,47 @@
-/**
- * yaml 编辑框的高亮效果
- */
-import React, { Component } from "react";
-import { injectIntl, FormattedMessage } from "react-intl";
+import React, { Component, Fragment } from "react";
+import { injectIntl } from "react-intl";
 import CodeMirror from "react-codemirror";
 import PropTypes from "prop-types";
 import _ from "lodash";
-import "./yamlCodeMirror.scss";
+import { Icon } from "choerodon-ui";
+import "./index.scss";
+import "./theme-chd.css";
 
+require("./yamlMode");
 require("codemirror/lib/codemirror.css");
-require("codemirror/mode/yaml/yaml");
-require("codemirror/theme/neat.css");
-require("codemirror/addon/fold/foldgutter.css");
 
-class NewEditor extends Component {
+class YamlEditor extends Component {
   static propTypes = {
     value: PropTypes.string.isRequired,
+    readOnly: PropTypes.bool,
     options: PropTypes.object,
     errorLines: PropTypes.array,
     highlightMarkers: PropTypes.array,
-    isFileError: PropTypes.bool,
   };
   static defaultProps = {
-    options: {
-      theme: "neat",
-      mode: "text/x-yaml",
-      readOnly: false,
-      lineNumbers: true,
-      lineWrapping: true,
-    },
+    readOnly: false,
     errorLines: [],
     highlightMarkers: [],
-    isFileError: false,
   };
+
   constructor(props) {
     super(props);
     this.state = {};
+    this.options = {
+      // chd 自定制的主题配色
+      theme: "chd",
+      mode: "text/chd-yaml",
+      readOnly: props.readOnly,
+      lineNumbers: true,
+      lineWrapping: false,
+    };
   }
 
   componentDidMount() {
-    const editor = this.aceEditor.getCodeMirror();
     const { highlightMarkers } = this.props;
+    const editor = this.yamlEditor.getCodeMirror();
     editor.setOption("styleSelectedText", false);
-    editor.setSize("100%", editor.getDoc().size * 19 + 18);
+    editor.setSize("100%", editor.getDoc().size * 24 + 18);
     if (highlightMarkers) {
       this.handleHighLight();
     }
@@ -52,9 +51,9 @@ class NewEditor extends Component {
    * 显示报错行
    */
   onChange = (values, options) => {
-    const editor = this.aceEditor.getCodeMirror();
+    const editor = this.yamlEditor.getCodeMirror();
     const lines = editor.getDoc().size;
-    editor.setSize("100%", lines * 19 + 38);
+    editor.setSize("100%", lines * 24 + 18);
     const prevLineLength = this.state.lines || lines;
     const start = options.from;
     const end = options.to;
@@ -64,28 +63,28 @@ class NewEditor extends Component {
     const to = { line: end.line, ch: ch };
     const lineInfo = editor.lineInfo(from.line).bgClass;
     // 新增行
-    if (options.origin === "+input" && options.text.toString() === ",") {
-      editor.addLineClass(start.line + 1, "background", "newLine-text");
-    } else if (
-      options.origin === "+input" &&
-      options.from.ch === 0 &&
-      options.to.ch === 0
-    ) {
-      editor.addLineClass(start.line, "background", "newLine-text");
-    } else if (lineInfo === "lastModifyLine-line") {
-      editor.addLineClass(start.line, "background", "lastModifyLine-line");
-      editor.markText(from, to, { className: "lastModifyLine-text" });
-    } else if (lineInfo === "newLine-text") {
-      editor.addLineClass(start.line, "background", "newLine-text");
-    } else if (
-      options.origin === "+delete" &&
-      options.removed.toString() === ","
-    ) {
-      const s = "return";
-    } else {
-      editor.addLineClass(start.line, "background", "lastModifyLine-line");
-      editor.markText(from, to, { className: "lastModifyLine-text" });
-    }
+    // if (options.origin === "+input" && options.text.toString() === ",") {
+    //   editor.addLineClass(start.line + 1, "background", "newLine-text");
+    // } else if (
+    //   options.origin === "+input" &&
+    //   options.from.ch === 0 &&
+    //   options.to.ch === 0
+    // ) {
+    //   editor.addLineClass(start.line, "background", "newLine-text");
+    // } else if (lineInfo === "lastModifyLine-line") {
+    //   editor.addLineClass(start.line, "background", "lastModifyLine-line");
+    //   editor.markText(from, to, { className: "lastModifyLine-text" });
+    // } else if (lineInfo === "newLine-text") {
+    //   editor.addLineClass(start.line, "background", "newLine-text");
+    // } else if (
+    //   options.origin === "+delete" &&
+    //   options.removed.toString() === ","
+    // ) {
+    //   const s = "return";
+    // } else {
+    //   editor.addLineClass(start.line, "background", "lastModifyLine-line");
+    //   editor.markText(from, to, { className: "lastModifyLine-text" });
+    // }
     this.handleModifyHighLight(values, options);
   };
   /**
@@ -100,8 +99,8 @@ class NewEditor extends Component {
   handleError = () => {
     const { value, errorLines, change } = this.props;
     const error = errorLines;
-    if (value && this.aceEditor && !change) {
-      const editor = this.aceEditor.getCodeMirror();
+    if (value && this.yamlEditor && !change) {
+      const editor = this.yamlEditor.getCodeMirror();
       editor.setValue(value);
     }
     if (error && error.length) {
@@ -135,8 +134,8 @@ class NewEditor extends Component {
    * 设置高亮
    */
   handleHighLight = () => {
-    const editor = this.aceEditor.getCodeMirror();
-    editor.setSize("100%", editor.getDoc().size * 19 + 38);
+    const editor = this.yamlEditor.getCodeMirror();
+    // editor.setSize("100%", editor.getDoc().size * 19 + 38);
     const sourceData = this.props.value.split("\n");
     this.setState({
       sourceData,
@@ -167,46 +166,50 @@ class NewEditor extends Component {
   };
 
   render() {
-    const { value, totalLine, errorLines, isFileError } = this.props;
-    const { formatMessage } = this.props.intl;
+    const {
+      intl: { formatMessage },
+      readOnly,
+      value,
+      totalLine,
+      errorLines,
+    } = this.props;
     this.handleError();
+
+    const LEGEND_TYPE = ["new", "modify", "error"];
+
+    const legendDom = _.map(LEGEND_TYPE, item => (
+      <span
+        key={item}
+        className={`c7ncd-yaml-legend-item c7ncd-yaml-legend_${item}`}
+      >
+        {formatMessage({ id: `yaml.legend.${item}` })}
+      </span>
+    ));
+
     return (
-      <div>
-        {!this.props.options.readOnly && (
-          <div className="ace-error">
-            <span className="deployApp-config-block deployApp-config-new" />{" "}
-            <span className="deployApp-config-title">
-              {formatMessage({ id: "yaml.new" })}
-            </span>
-            <span className="deployApp-config-block deployApp-config-lastModify" />{" "}
-            <span className="deployApp-config-title">
-              {formatMessage({ id: "yaml.lastModify" })}
-            </span>
-            <span className="deployApp-config-error" />
-            <span className="deployApp-config-title">
-              {formatMessage({ id: "yaml.yaml.error" })}
-            </span>
-          </div>
-        )}
+      <Fragment>
+        {!readOnly ? (
+          <div className="c7ncd-yaml-legend">{legendDom}</div>
+        ) : null}
         <CodeMirror
-          options={this.props.options}
+          options={this.options}
           value={value}
           onChange={this.onChange}
           ref={instance => {
-            this.aceEditor = instance;
-          }} // Let's put things into scope
+            this.yamlEditor = instance;
+          }}
         />
-        {isFileError && (
-          <div className="ace-error-message">
-            <i className="icon icon-error config-icon-error" />{" "}
-            <span className="config-error-mes">
+        {errorLines && errorLines.length ? (
+          <div className="c7ncd-yaml-error">
+            <Icon type="error" className="c7ncd-yaml-error-icon" />
+            <span className="c7ncd-yaml-error-msg">
               {formatMessage({ id: "yaml.error.tooltip" })}
             </span>
           </div>
-        )}
-      </div>
+        ) : null}
+      </Fragment>
     );
   }
 }
 
-export default injectIntl(NewEditor);
+export default injectIntl(YamlEditor);

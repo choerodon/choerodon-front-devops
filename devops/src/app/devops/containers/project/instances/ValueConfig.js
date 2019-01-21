@@ -5,7 +5,7 @@ import { Modal, Button } from "choerodon-ui";
 import { Content, stores } from "choerodon-front-boot";
 import YAML from "yamljs";
 import { injectIntl, FormattedMessage } from "react-intl";
-import Ace from "../../../components/yamlAce/index";
+import YamlEditor from "../../../components/yamlAce";
 import "./Instances.scss";
 import "../../main.scss";
 import InterceptMask from "../../../components/interceptMask/InterceptMask";
@@ -153,7 +153,7 @@ class ValueConfig extends Component {
             <div className="c7n-body-section c7n-border-done">
               <div>
                 {data && (
-                  <Ace
+                  <YamlEditor
                     newLines={data.newLines}
                     isFileError={!!data.errorLines}
                     errorLines={error}
