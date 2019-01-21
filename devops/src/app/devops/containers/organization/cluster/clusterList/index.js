@@ -6,6 +6,7 @@ import { Button, Tooltip, Icon, Table, Pagination } from 'choerodon-ui';
 import { Permission, stores } from 'choerodon-front-boot';
 import StatusTags from '../../../../components/StatusTags';
 import TimePopover from '../../../../components/timePopover';
+import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import './ClusterList.scss';
 
 const { AppState } = stores;
@@ -33,8 +34,14 @@ class ClusterList extends Component {
       limPercent = record.memoryLimitPercentage;
     }
     return (<div className="c7n-cls-table-cm">
-      <span className="c7n-cls-up"/>{formatMessage({ id: 'node.rv' })}：{request}（{resPercent}）
-      <span className="c7n-cls-down"/>{formatMessage({ id: 'node.lmv' })}：{limit}（{limPercent}）
+      <span className="c7n-cls-up"/>
+      <Tooltip title={resPercent}>
+        {formatMessage({ id: 'node.rv' })}：{request}
+      </Tooltip>
+      <span className="c7n-cls-down"/>
+      <Tooltip title={limPercent}>
+        {formatMessage({ id: 'node.lmv' })}：{limit}
+      </Tooltip>
     </div>);
   };
 
@@ -86,6 +93,7 @@ class ClusterList extends Component {
       key: 'status',
       title: formatMessage({ id: 'status' }),
       dataIndex: 'status',
+      width: 90,
       render: status => <StatusTags name={status} colorCode={status} />,
     }, {
       key: 'nodeName',
@@ -97,13 +105,14 @@ class ClusterList extends Component {
             search: `?type=${type}&id=${organizationId}&name=${name}&organizationId=${organizationId}&node=${record.nodeName}`,
           }}
         >
-          {record.nodeName}
+          <MouserOverWrapper text={record.nodeName} width={0.1}>{record.nodeName}</MouserOverWrapper>
         </Link>
       ),
     }, {
       title: formatMessage({ id: 'ist.expand.net.type' }),
       key: 'type',
       dataIndex: 'type',
+      render: type => <MouserOverWrapper text={type} width={0.05}>{type}</MouserOverWrapper>,
     }, {
       key: 'cpuAllocatable',
       title: formatMessage({ id: 'cluster.cpu' }),
