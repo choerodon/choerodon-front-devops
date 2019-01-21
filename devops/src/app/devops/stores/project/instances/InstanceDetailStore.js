@@ -13,6 +13,12 @@ class InstanceDetailStore {
 
   @observable resource = null;
 
+  @observable istLog = [];
+
+  @observable logLoading = false;
+
+  @observable logTotal = 0;
+
   @action changeLogVisible(flag) {
     this.logVisible = flag;
   }
@@ -55,6 +61,40 @@ class InstanceDetailStore {
     return this.istEvent.slice();
   }
 
+  @action
+  setIstLog(value, type = true) {
+    if (type) {
+      this.istLog = value;
+    } else {
+      this.istLog = this.istLog.concat(value);
+    }
+  }
+
+  @computed
+  get getIstLog() {
+    return this.istLog.slice();
+  }
+
+  @action
+  setLogLoading(value) {
+    this.logLoading = value;
+  }
+
+  @computed
+  get getLogLoading() {
+    return this.logLoading;
+  }
+
+  @action
+  setLogTotal(value) {
+    this.logTotal = value;
+  }
+
+  @computed
+  get getLogTotal() {
+    return this.logTotal;
+  }
+
   getInstanceValue = (projectId, id) =>
     axios
       .get(`/devops/v1/projects/${projectId}/app_instances/${id}/value`)
@@ -85,6 +125,27 @@ class InstanceDetailStore {
         }
       });
 
+  loadIstLog = (projectId, id, page=0, size=15, startTime, endTime, flag = true) => {
+    if (flag) {
+      this.setLogLoading(true);
+    }
+    return axios
+      .post(
+        `/devops/v1/projects/${projectId}/app_instances/command_log/${id}?page=${page}&size=${size}${startTime ? `&startTime=${startTime}&endTime=${endTime}` : ""}`
+      )
+      .then(data => {
+        const res = this.handleProptError(data);
+        if (res) {
+          this.setIstLog(data.content, flag);
+          this.setLogTotal(data.totalElements);
+          this.setLogLoading(false);
+          return res;
+        }
+        this.setLogLoading(false);
+      });
+  };
+
+
   loadAllData = (projectId, id) => {
     this.changeLoading(true);
     axios
@@ -92,13 +153,15 @@ class InstanceDetailStore {
         this.getInstanceValue(projectId, id),
         this.getResourceData(projectId, id),
         this.loadIstEvent(projectId, id),
+        this.loadIstLog(projectId, id),
       ])
       .then(
-        axios.spread((value, resource, event) => {
-          if (!(value.failed && resource.failed && event.failed)) {
+        axios.spread((value, resource, event, log) => {
+          if (!(value.failed && resource.failed && event.failed && log.failed)) {
             this.setResource(resource);
             this.setIstEvent(event);
             this.setValue(value);
+            this.setIstLog(log.content, true);
           }
           this.changeLoading(false);
         })
