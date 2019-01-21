@@ -506,6 +506,8 @@ const zhCN = {
   "ist.nolog": "没有日志信息。",
   "ist.noApp": "暂无应用",
   "ist.runDetial": "运行详情",
+  "ist.operation.log": "操作日志",
+  "ist.update": "更新实例",
   "ist.lastVer": "最新版本",
   "ist.noChoose": "请先选择应用和环境",
   "ist.noUpVer": "暂无可升级版本",
