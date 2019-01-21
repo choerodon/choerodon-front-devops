@@ -48,14 +48,6 @@ const formItemLayout = {
 
 const uuidv1 = require("uuid/v1");
 
-const YAML_OPTIONS = {
-  theme: "neat",
-  mode: "text/x-yaml",
-  readOnly: false,
-  lineNumbers: true,
-  lineWrapping: false,
-};
-
 @observer
 class DeploymentAppHome extends Component {
   /**
@@ -694,7 +686,6 @@ class DeploymentAppHome extends Component {
           </div>
           {deployValue && (
             <YamlEditor
-              options={YAML_OPTIONS}
               newLines={deployValue.newLines}
               isFileError={!!deployValue.errorLines}
               totalLine={deployValue.totalLine}
@@ -996,15 +987,13 @@ class DeploymentAppHome extends Component {
       );
     });
 
-    const options = Object.assign({}, YAML_OPTIONS, { readOnly: true });
-
     return (
       <Fragment>
         <div className="c7ncd-step-item c7ncd-step-item-full">
           {infoDom}
           {deployValue && (
             <YamlEditor
-              options={options}
+              readOnly
               newLines={deployValue.newLines}
               readOnly={current === 3}
               value={deployValue.yaml}

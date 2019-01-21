@@ -1151,10 +1151,10 @@ const zhCN = {
   "release.addVersion.btn.confirm": "添加",
 
   // yaml file
-  "yaml.new": "新增",
-  "yaml.lastModify": "修改",
+  "yaml.legend.new": "新增",
+  "yaml.legend.modify": "修改",
+  "yaml.legend.error": "格式错误",
   "yaml.modify": "当前修改",
-  "yaml.yaml.error": "格式错误",
   "yaml.error.tooltip":
     "Values文件yaml格式错误，请在应用代码中修改错误并重新生成正确的应用版本。",
 
