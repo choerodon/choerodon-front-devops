@@ -680,7 +680,7 @@ class Instances extends Component {
           <FormattedMessage id="deploy.app" />
         </div>
         <div>{appNameDom}</div>
-        {getAppNameByEnv.length && total >= pageSize ? (
+        {getAppNameByEnv.length && total > 15 ? (
           <div className="c7n-store-pagination">
             <Pagination
               tiny={false}
