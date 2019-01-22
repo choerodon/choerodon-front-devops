@@ -206,6 +206,11 @@ class Environment extends Component {
       createSelectedRowKeys: [],
       createSelected: [],
     });
+    EnvPipelineStore.setInfo({
+      filters: {},
+      sort: { columnKey: "id", order: "descend" },
+      paras: [],
+    });
     EnvPipelineStore.setShow(false);
     EnvPipelineStore.setEnvData(null);
     resetFields();
@@ -487,6 +492,11 @@ class Environment extends Component {
             submitting: false,
           });
           EnvPipelineStore.setTagKeys([]);
+          EnvPipelineStore.setInfo({
+            filters: {},
+            sort: { columnKey: "id", order: "descend" },
+            paras: [],
+          });
         })
         .catch(error => {
           this.setState({

@@ -471,11 +471,6 @@ class AppHome extends Component {
       createSelectedRowKeys,
     } = this.state;
     const tagKeys = AppStore.getTagKeys;
-    AppStore.setInfo({
-      filters: {},
-      sort: { columnKey: "id", order: "descend" },
-      paras: [],
-    });
     if (type === "create") {
       this.props.form.validateFieldsAndScroll((err, data) => {
         if (!err) {
@@ -494,6 +489,11 @@ class AppHome extends Component {
               });
             } else {
               this.loadAllData(page);
+              AppStore.setMbrInfo({
+                filters: {},
+                sort: { columnKey: "id", order: "descend" },
+                paras: [],
+              });
               this.setState({
                 type: false,
                 show: false,
@@ -523,7 +523,12 @@ class AppHome extends Component {
                 submitting: false,
               });
             } else {
-              this.loadAllData(this.state.page);
+              this.handleRefresh();
+              AppStore.setMbrInfo({
+                filters: {},
+                sort: { columnKey: "id", order: "descend" },
+                paras: [],
+              });
               this.setState(
                 {
                   show: false,
@@ -546,6 +551,11 @@ class AppHome extends Component {
   hideSidebar = () => {
     const { AppStore } = this.props;
     AppStore.setSingleData(null);
+    AppStore.setMbrInfo({
+      filters: {},
+      sort: { columnKey: "id", order: "descend" },
+      paras: [],
+    });
     this.setState({
       createSelectedRowKeys: [],
       createSelected: [],
@@ -793,7 +803,7 @@ class AppHome extends Component {
               {getFieldDecorator("code", {
                 rules: [
                   {
-                    required: true,
+                    required: modeType === "create",
                     whitespace: true,
                     max: 47,
                     message: formatMessage({ id: "required" }),
