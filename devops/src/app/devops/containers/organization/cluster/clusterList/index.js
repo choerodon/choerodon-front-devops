@@ -36,7 +36,9 @@ class ClusterList extends Component {
     return (<div className="c7n-cls-table-cm">
       <span className="c7n-cls-up"/>
       <Tooltip title={resPercent}>
-        {formatMessage({ id: 'node.rv' })}：{request}
+        <span className="c7n-cls-up-rv">
+          {formatMessage({ id: 'node.rv' })}：{request}
+        </span>
       </Tooltip>
       <span className="c7n-cls-down"/>
       <Tooltip title={limPercent}>
