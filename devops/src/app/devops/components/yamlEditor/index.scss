@@ -15,43 +15,31 @@
   background-color: #fdda80;
 }
 
-.modifyLine-line {
-  background-color: rgba(255, 204, 0, 0.25);
-}
-
-.modifyLine-text {
-  background-color: #1b69b6;
-}
-
-.clearLineHeight-line {
-  background-color: #f5f5f5;
-}
-
-.clearLineHeight-text {
-  background-color: #f5f5f5;
+.clear-textMark {
+  .lastModifyLine-text {
+    color: initial !important;
+    background-color: transparent;
+  }
 }
 
 .line_error {
-  background-image: url("error.png");
-  background-repeat: no-repeat;
-  background-position: 2px center;
-}
-
-.CodeMirror-gutter-elt {
-  height: 24px !important;
-  width: 38px !important;
-}
-
-.CodeMirror-selected {
-  background-color: #b3d7fd !important;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJDw4cOCW1/KIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAHElEQVQI12NggIL/DAz/GdA5/xkY/qPKMDAwAADLZwf5rvm+LQAAAABJRU5ErkJggg==");
+  // background: url("./error.png") no-repeat 2px center;
 }
 
 .CodeMirror {
-  font-size: 16px;
-  // height: unset !important;
+  // 让高度随内容改变，不会出现纵向滚动条
+  height: auto !important;
+  font-size: 14px;
+  font-family: inherit !important;
 
-  .CodeMirror-code {
-    font-weight: bold;
+  .CodeMirror-gutter-elt {
+    height: 21px !important;
+    width: 38px !important;
+  }
+
+  .CodeMirror-selected {
+    background-color: #b3d7fd !important;
   }
 
   .CodeMirror-scroll {
@@ -60,6 +48,10 @@
 
   .CodeMirror-gutters {
     background: #ebebeb;
+  }
+
+  .CodeMirror-code {
+    // font-weight: bold;
   }
 }
 
@@ -106,7 +98,10 @@
       top: 1px;
       width: 18px;
       height: 16px;
-      background: url("./error.png") no-repeat 2px center;
+      // background: url("./error.png") no-repeat 2px center;
+      background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAHlBMVEW7AAC7AACxAAC7AAC7AAAAAAC4AAC5AAD///+7AAAUdclpAAAABnRSTlMXnORSiwCK0ZKSAAAATUlEQVR42mWPOQ7AQAgDuQLx/z8csYRmPRIFIwRGnosRrpamvkKi0FTIiMASR3hhKW+hAN6/tIWhu9PDWiTGNEkTtIOucA5Oyr9ckPgAWm0GPBog6v4AAAAASUVORK5CYII=");
+      background-position: left bottom;
+      background-repeat: repeat-x;
     }
   }
 }
