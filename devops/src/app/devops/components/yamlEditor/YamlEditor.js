@@ -118,7 +118,7 @@ class YamlEditor extends Component {
             lineInfo.bgClass !== "newLine-line"
           ) {
             // 单行新增和单行修改
-            operator.addModifyStyle();
+            operator.addModifyStyle(from.line);
             if (newValue === initValue) {
               operator.removeModifyStyle(from.line);
             }
