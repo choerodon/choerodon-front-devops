@@ -25,6 +25,7 @@
     "file-loader": "^2.0.0",
     "hterm-umdjs": "^1.4.1",
     "js-file-download": "^0.4.4",
+    "js-yaml": "^3.12.1",
     "moment": "^2.22.2",
     "quill-delta-to-html": "^0.8.4",
     "rc-table": "^6.4.2",
@@ -52,9 +53,7 @@
     "stylelint-config-standard": "^18.2.0"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx}": [
-      "npm run lint-staged:es"
-    ],
+    "src/**/*.{js,jsx}": [],
     "src/**/*.scss": "stylelint --syntax scss"
   },
   "husky": {

@@ -5,7 +5,7 @@ import { Modal, Button } from "choerodon-ui";
 import { Content, stores } from "choerodon-front-boot";
 import YAML from "yamljs";
 import { injectIntl, FormattedMessage } from "react-intl";
-import YamlEditor from "../../../components/yamlAce";
+import YamlEditor from "../../../components/yamlEditor";
 import "./Instances.scss";
 import "../../main.scss";
 import InterceptMask from "../../../components/interceptMask/InterceptMask";

@@ -41,7 +41,7 @@ class YamlEditor extends Component {
     const { highlightMarkers } = this.props;
     const editor = this.yamlEditor.getCodeMirror();
     editor.setOption("styleSelectedText", false);
-    editor.setSize("100%", editor.getDoc().size * 24 + 18);
+    editor.setSize("100%", editor.getDoc().size * 21 + 18);
     if (highlightMarkers) {
       this.handleHighLight();
     }
@@ -53,7 +53,7 @@ class YamlEditor extends Component {
   onChange = (values, options) => {
     const editor = this.yamlEditor.getCodeMirror();
     const lines = editor.getDoc().size;
-    editor.setSize("100%", lines * 24 + 18);
+    editor.setSize("100%", lines * 21 + 18);
     const prevLineLength = this.state.lines || lines;
     const start = options.from;
     const end = options.to;

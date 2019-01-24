@@ -24,7 +24,7 @@ import _ from "lodash";
 import YAML from "yamljs";
 import "../../../main.scss";
 import "./DeployApp.scss";
-import YamlEditor from "../../../../components/yamlAce";
+import YamlEditor from "../../../../components/yamlEditor";
 import SelectApp from "../selectApp";
 import EnvOverviewStore from "../../../../stores/project/envOverview";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";

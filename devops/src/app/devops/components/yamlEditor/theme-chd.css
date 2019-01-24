@@ -14,7 +14,7 @@
 }
 
 .cm-s-chd span.cm-string {
-  color: #a22;
+  color: #1a1aa6;
 }
 
 .cm-s-chd span.cm-builtin {
@@ -34,10 +34,10 @@
 }
 
 .cm-s-chd span.cm-number {
-  /* color: #0000cd; */
-  color: red;
+  color: #0000cd;
 }
 
+.cm-s-chd span.cm-variable-2,
 .cm-s-chd span.cm-boolean {
   color: #585cf6;
 }

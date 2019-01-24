@@ -213,6 +213,16 @@ function pickEntries(obj) {
   };
 }
 
+/**
+ * 匹配从行首开始的空白字符
+ * @param {string} str
+ * @returns
+ */
+function matchSpaces(str) {
+  const pat = /^\s+/;
+  return str.match(pat);
+}
+
 export {
   handleProptError,
   padZero,
@@ -225,4 +235,5 @@ export {
   dateSplitAndPad,
   pickEntries,
   storage,
+  matchSpaces,
 };

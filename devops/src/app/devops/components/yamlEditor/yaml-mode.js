@@ -85,6 +85,31 @@
           return "meta";
         }
 
+        if (stream.match(/(\w+?)(\s*:(?=\s|$))/)) {
+          return "atom";
+        }
+
+        if (
+          (state.inlineList > 0 || state.inlinePairs > 0) &&
+          stream.match(
+            /(\b|[+\-\.])[\d_]+(?:(?:\.[\d_]*)?(?:[eE][+\-]?[\d_]+)?)(?=[^\d-\w]|$)/
+          )
+        ) {
+          return "number";
+        }
+
+        if (
+          (state.inlineList > 0 || state.inlinePairs > 0) &&
+          stream.match(boolRegex)
+        ) {
+          return "boolean";
+        }
+
+        /* references */
+        if (stream.match(/^\s*(\&|\*)[a-z0-9\._-]+\b/i)) {
+          return "variable-2";
+        }
+
         /* start of value of a pair */
         if (state.pairStart) {
           /* block literals */
@@ -92,13 +117,9 @@
             state.literal = true;
             return "meta";
           }
-          /* references */
-          if (stream.match(/^\s*(\&|\*)[a-z0-9\._-]+\b/i)) {
-            return "variable-2";
-          }
+
           /* float */
           if (
-            state.inlinePairs == 0 &&
             stream.match(
               /(\b|[+\-\.])[\d_]+(?:(?:\.[\d_]*)?(?:[eE][+\-]?[\d_]+)?)(?=[^\d-\w]|$)/
             )
@@ -112,12 +133,7 @@
           ) {
             return "number";
           }
-          if (
-            state.inlinePairs > 0 &&
-            stream.match(/^\s*-?[0-9\.\,]+\s?(?=(,|}))/)
-          ) {
-            return "number";
-          }
+
           /* keywords */
           if (stream.match(keywordRegex)) {
             return "keyword";

@@ -13,7 +13,7 @@ import classnames from "classnames";
 import { injectIntl, FormattedMessage } from "react-intl";
 import CodeMirror from "react-codemirror";
 import _ from "lodash";
-import Ace from "../../../../../components/yamlAce";
+import Ace from "../../../../../components/yamlEditor";
 
 const Step = Steps.Step;
 const Sidebar = Modal.Sidebar;
