@@ -72,8 +72,10 @@ class OperationLog extends Component {
     const endTime = dateString[1].replace(/-/g, '/');
     store.loadIstLog(projectId, id, 0, 15, startTime, endTime)
       .then(data => {
-        const { getIstLog } = store;
-        this.setState({ hasMore: data.totalElements > getIstLog.length})
+        if (data && !data.failed) {
+          const istLog = store.getIstLog;
+          this.setState({ hasMore: data.totalElements > istLog.length });
+        }
       });
     this.setState({ page: 1, startTime, endTime });
   };
@@ -82,19 +84,19 @@ class OperationLog extends Component {
    * 滚动加载更多数据
    */
   loadMore = () => {
-    const {store, id} = this.props;
-    const {page, startTime, endTime} = this.state;
-    const {projectId} = AppState.currentMenuType;
-    this.setState({loading: true});
+    const { store, id } = this.props;
+    const { page, startTime, endTime } = this.state;
+    const { projectId } = AppState.currentMenuType;
+    this.setState({ loading: true });
     store.loadIstLog(projectId, id, page, 15, startTime, endTime, false)
       .then(data => {
         if (data && !data.failed) {
-          const {getIstLog} = store;
-          this.setState({hasMore: data.totalElements > getIstLog.length});
+          const istLog = store.getIstLog;
+          this.setState({ hasMore: data.totalElements > istLog.length });
         }
-        this.setState({loading: false, once: true});
+        this.setState({ loading: false, once: true });
       });
-    this.setState({page: page + 1, once: false});
+    this.setState({ page: page + 1, once: false });
   };
 
   /**

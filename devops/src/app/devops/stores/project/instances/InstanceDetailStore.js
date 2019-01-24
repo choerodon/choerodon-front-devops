@@ -105,25 +105,31 @@ class InstanceDetailStore {
         }
       });
 
-  loadIstEvent = (projectId, id) =>
-    axios
+  loadIstEvent = (projectId, id) => {
+    this.changeLoading(true);
+    return axios
       .get(`/devops/v1/projects/${projectId}/app_instances/${id}/events`)
       .then(event => {
         const res = this.handleProptError(event);
         if (res) {
           this.setIstEvent(event);
         }
+        this.changeLoading(false);
       });
+  };
 
-  getResourceData = (proId, id) =>
-    axios
+  getResourceData = (proId, id) => {
+    this.changeLoading(true);
+    return axios
       .get(`/devops/v1/projects/${proId}/app_instances/${id}/resources`)
       .then(stage => {
         const res = this.handleProptError(stage);
         if (res) {
           this.setResource(stage);
         }
+        this.changeLoading(false);
       });
+  };
 
   loadIstLog = (projectId, id, page=0, size=15, startTime, endTime, flag = true) => {
     if (flag) {
@@ -142,32 +148,6 @@ class InstanceDetailStore {
           return res;
         }
         this.setLogLoading(false);
-      });
-  };
-
-
-  loadAllData = (projectId, id) => {
-    this.changeLoading(true);
-    axios
-      .all([
-        this.getInstanceValue(projectId, id),
-        this.getResourceData(projectId, id),
-        this.loadIstEvent(projectId, id),
-        this.loadIstLog(projectId, id),
-      ])
-      .then(
-        axios.spread((value, resource, event, log) => {
-          if (!(value.failed && resource.failed && event.failed && log.failed)) {
-            this.setResource(resource);
-            this.setIstEvent(event);
-            this.setValue(value);
-            this.setIstLog(log.content, true);
-          }
-          this.changeLoading(false);
-        })
-      )
-      .catch(() => {
-        this.changeLoading(false);
       });
   };
 

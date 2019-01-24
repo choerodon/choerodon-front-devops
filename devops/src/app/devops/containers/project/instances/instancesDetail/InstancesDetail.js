@@ -38,13 +38,30 @@ class InstancesDetail extends Component {
 
   loadAllData = () => {
     const { InstanceDetailStore } = this.props;
-    const { id } = this.state;
+    const { id, current } = this.state;
     const projectId = AppState.currentMenuType.id;
-    InstanceDetailStore.loadAllData(projectId, id);
+    switch (current) {
+      case "1":
+        InstanceDetailStore.loadIstEvent(projectId, id);
+        InstanceDetailStore.getInstanceValue(projectId, id);
+        break;
+      case "2":
+        InstanceDetailStore.getResourceData(projectId, id);
+        break;
+      case "3":
+        InstanceDetailStore.changeLoading(true);
+        InstanceDetailStore.loadIstLog(projectId, id)
+          .then(() => {
+            InstanceDetailStore.changeLoading(false);
+          });
+        break;
+      default:
+        break;
+    }
   };
 
   currentChange = key => {
-    this.setState({ current: key });
+    this.setState({ current: key }, () => this.loadAllData());
   };
 
   render() {
@@ -117,30 +134,30 @@ class InstancesDetail extends Component {
           values={{ name: state ? state.code : projectName }}
           className="page-content"
         >
-          {InstanceDetailStore.isLoading ? (
-            <LoadingBar display />
-          ) : (
-            <Tabs
-              className="c7n-deployDetail-tab"
-              onChange={this.currentChange}
-              activeKey={current}
-            >
-              {
-                _.map(tabPane, item => {
-                  if (item.key !== "2" || status === "running") {
-                    return (
-                      <TabPane
-                        tab={item.title}
-                        key={item.key}
-                      >
-                        {item.content}
-                      </TabPane>
-                    )
-                  }
-                })
-              }
-            </Tabs>
-          )}
+          <Tabs
+            className="c7n-deployDetail-tab"
+            onChange={this.currentChange}
+            activeKey={current}
+          >
+            {
+              _.map(tabPane, item => {
+                if (item.key !== "2" || status === "running") {
+                  return (
+                    <TabPane
+                      tab={item.title}
+                      key={item.key}
+                    >
+                      {InstanceDetailStore.isLoading ? (
+                        <LoadingBar display />
+                      ) : (
+                        current === item.key ? item.content : null)
+                      }
+                    </TabPane>
+                  )
+                }
+              })
+            }
+          </Tabs>
         </Content>
       </Page>
     );
