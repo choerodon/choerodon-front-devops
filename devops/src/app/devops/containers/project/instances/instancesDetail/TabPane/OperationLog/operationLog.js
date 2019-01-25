@@ -7,7 +7,7 @@ import {
   DatePicker,
 } from "choerodon-ui";
 import { stores } from "choerodon-front-boot";
-import { injectIntl } from "react-intl";
+import { injectIntl, FormattedMessage } from "react-intl";
 import _ from "lodash";
 import "./index.scss"
 import LoadingBar from "../../../../../../components/loadingBar/LoadingBar";
@@ -141,12 +141,15 @@ class OperationLog extends Component {
               return (
                 <div className="c7n-operate-log-content" key={index}>
                   <div className="c7n-log-date">
-                    <div className="c7n-date-year">{createTime ? createTime.slice(0, 4) : null}</div>
-                    <div>{createTime ? createTime.slice(5, 16) : null}</div>
+                    <div className="c7n-date-year">{createTime && index ? createTime.slice(0, 4) : null}</div>
+                    <div className={index ? "" : "mg-top-43"}>{createTime ? createTime.slice(5, 16) : null}</div>
                   </div>
-                  <div className="c7n-log-step">
+                  {index ? (<div className="c7n-log-step">
                     <Icon type="wait_circle"/>
-                  </div>
+                  </div>) : (<div className="c7n-date-recent">
+                    <FormattedMessage id="recent"/>
+                  </div>)
+                  }
                   <div className="c7n-log-title">
                     {this.getOperation(type)}
                   </div>
