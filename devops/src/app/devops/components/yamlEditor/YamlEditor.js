@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 import _ from "lodash";
 import { Icon } from "choerodon-ui";
 import JsYaml from "js-yaml";
-import YamlDiff from "./yaml-diff";
 import "./index.scss";
 import "./theme-chd.css";
 
@@ -33,20 +32,20 @@ function parse(values) {
 class YamlEditor extends Component {
   static propTypes = {
     value: PropTypes.string.isRequired,
-    readOnly: PropTypes.bool,
+    handleEnableNext: PropTypes.func,
+    readOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
     options: PropTypes.object,
-    errorLines: PropTypes.array,
-    highlightMarkers: PropTypes.array,
   };
   static defaultProps = {
-    readOnly: false,
-    errorLines: [],
-    highlightMarkers: [],
+    readOnly: true,
+    handleEnableNext: enable => {},
   };
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      errorTip: false,
+    };
     this.options = {
       // chd 自定制的主题配色
       theme: "chd",
@@ -55,8 +54,8 @@ class YamlEditor extends Component {
       lineNumbers: true,
       lineWrapping: true,
       viewportMargin: Infinity,
-      lint: true,
-      gutters: ["CodeMirror-lint-markers"],
+      lint: !props.readOnly,
+      gutters: !props.readOnly ? ["CodeMirror-lint-markers"] : [],
     };
     this.initValueLines = [];
   }
@@ -65,12 +64,56 @@ class YamlEditor extends Component {
     this.initEditor();
   }
 
+  /**
+   * 高亮背景色的添加与删除
+   *
+   * @param {object} editor
+   * @returns
+   * @memberof YamlEditor
+   */
+  operator(editor) {
+    return {
+      addModifyStyle(line) {
+        editor.addLineClass(line, "background", "lastModifyLine-line");
+      },
+      removeModifyStyle(line) {
+        editor.removeLineClass(line, "background", "lastModifyLine-line");
+      },
+      addNewStyle(line) {
+        editor.addLineClass(line, "background", "newLine-line");
+      },
+      removeNewStyle(line) {
+        editor.removeLineClass(line, "background", "newLine-line");
+      },
+    };
+  }
+
+  /**
+   * 校验Yaml格式
+   * 校验规则来源 https://github.com/nodeca/js-yaml
+   * @param {*} values
+   * @memberof YamlEditor
+   */
+  checkYamlFormat(values) {
+    const { handleEnableNext } = this.props;
+    let errorTip = false;
+    // yaml 格式校验结果
+    const formatResult = parse(values);
+    if (formatResult && formatResult.length) {
+      errorTip = true;
+      handleEnableNext(true);
+    } else {
+      errorTip = false;
+      handleEnableNext(false);
+    }
+    this.setState({ errorTip });
+  }
+
   onChange = (values, options) => {
     // 获取codemirror实例
     const editor = this.yamlEditor.getCodeMirror();
     const currentLines = editor.getDoc().size;
-    // yaml 格式校验结果
-    const formatResult = parse(values);
+
     /**
      * form      开始位置坐标
      * - line    行数，从0开始，也就是实际行 - 1
@@ -85,7 +128,7 @@ class YamlEditor extends Component {
      * - cut
      * - undo
      * - redo
-     * 修改文本，则 text 和 removed 都不是空数组
+     * 修改原有文本，则 text 和 removed 都不是空数组
      * text      改变的文本
      * removed   删除的文本
      */
@@ -95,20 +138,7 @@ class YamlEditor extends Component {
     const isComment = _.startsWith(_.trim(newValue), "#");
     const initValue = _.cloneDeep(this.initValueLines)[from.line];
 
-    const operator = {
-      addModifyStyle(line) {
-        editor.addLineClass(line, "background", "lastModifyLine-line");
-      },
-      removeModifyStyle(line) {
-        editor.removeLineClass(line, "background", "lastModifyLine-line");
-      },
-      addNewStyle(line) {
-        editor.addLineClass(line, "background", "newLine-line");
-      },
-      removeNewStyle(line) {
-        editor.removeLineClass(line, "background", "newLine-line");
-      },
-    };
+    const op = this.operator(editor);
 
     switch (origin) {
       case "+input":
@@ -118,77 +148,78 @@ class YamlEditor extends Component {
             lineInfo.bgClass !== "newLine-line"
           ) {
             // 单行新增和单行修改
-            operator.addModifyStyle(from.line);
+            op.addModifyStyle(from.line);
             if (newValue === initValue) {
-              operator.removeModifyStyle(from.line);
+              op.removeModifyStyle(from.line);
             }
           } else {
-            operator.addNewStyle(from.line);
+            op.addNewStyle(from.line);
           }
         } else if (_.toString(text) === ",") {
           if (_.toString(removed) !== "") {
-            operator.addModifyStyle(from.line);
+            op.addModifyStyle(from.line);
           } else if (_.toString(_.trim(newValue)) === "") {
-            operator.addNewStyle(from.line);
+            op.addNewStyle(from.line);
           }
         }
         break;
       case "+delete":
         if (newValue === initValue) {
-          operator.removeModifyStyle(from.line);
+          op.removeModifyStyle(from.line);
         }
         break;
       case "paste":
         if (_.toString(removed) === "") {
           if (_.trim(newValue) === text[0]) {
             for (let line = from.line; line < from.line + text.length; line++) {
-              operator.addNewStyle(line);
+              op.addNewStyle(line);
             }
           } else {
-            operator.addModifyStyle(from.line);
+            op.addModifyStyle(from.line);
 
             for (
               let line = from.line + 1;
               line < from.line + text.length;
               line++
             ) {
-              operator.addNewStyle(line);
+              op.addNewStyle(line);
             }
           }
         } else {
           if (removed.length >= text.length) {
             for (let line = from.line; line < from.line + text.length; line++) {
-              operator.addModifyStyle(line);
+              op.addModifyStyle(line);
             }
           } else {
             for (let line = from.line; line <= to.line; line++) {
-              operator.addModifyStyle(line);
+              op.addModifyStyle(line);
             }
             for (
               let line = to.line;
               line <= to.line + text.length - removed.length;
               line++
             ) {
-              operator.addNewStyle(line);
+              op.addNewStyle(line);
             }
           }
         }
         break;
       case "cut":
         if (!_.isEmpty(newValue)) {
-          operator.addModifyStyle(from.line);
+          op.addModifyStyle(from.line);
         }
         break;
       case "redo":
         break;
       case "undo":
         if (_.trim(newValue) === "") {
-          operator.removeNewStyle(from.line);
+          op.removeNewStyle(from.line);
         }
         break;
       default:
         break;
     }
+    this.checkYamlFormat(values);
   };
 
   /**
@@ -207,11 +238,12 @@ class YamlEditor extends Component {
   }
 
   initEditor() {
-    const { highlightMarkers } = this.props;
+    const { highlightMarkers, value } = this.props;
     const editor = this.yamlEditor.getCodeMirror();
 
     editor.setOption("styleSelectedText", false);
     this.saveInitValue();
+    this.checkYamlFormat(value);
   }
 
   render() {
@@ -219,9 +251,9 @@ class YamlEditor extends Component {
       intl: { formatMessage },
       readOnly,
       value,
-      totalLine,
-      errorLines,
     } = this.props;
+
+    const { errorTip } = this.state;
 
     const LEGEND_TYPE = ["new", "modify", "error"];
 
@@ -239,15 +271,17 @@ class YamlEditor extends Component {
         {!readOnly ? (
           <div className="c7ncd-yaml-legend">{legendDom}</div>
         ) : null}
-        <ReactCodeMirror
-          options={this.options}
-          value={value}
-          onChange={this.onChange}
-          ref={instance => {
-            this.yamlEditor = instance;
-          }}
-        />
-        {errorLines && errorLines.length ? (
+        <div className="c7ncd-yaml-wrapper">
+          <ReactCodeMirror
+            options={this.options}
+            value={value}
+            onChange={this.onChange}
+            ref={instance => {
+              this.yamlEditor = instance;
+            }}
+          />
+        </div>
+        {errorTip ? (
           <div className="c7ncd-yaml-error">
             <Icon type="error" className="c7ncd-yaml-error-icon" />
             <span className="c7ncd-yaml-error-msg">

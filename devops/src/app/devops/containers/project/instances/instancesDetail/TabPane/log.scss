@@ -1,0 +1,16 @@
+.CodeMirror {
+  // 让高度随内容改变，不会出现纵向滚动条
+  height: auto !important;
+  font-size: 14px;
+  font-family: Monaco,
+    Menlo,
+    "Ubuntu Mono",
+    Consolas,
+    source-code-pro,
+    monospace !important;
+
+  .CodeMirror-gutter-elt {
+    height: 21px !important;
+    width: 38px !important;
+  }
+}

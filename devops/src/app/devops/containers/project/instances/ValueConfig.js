@@ -139,13 +139,6 @@ class ValueConfig extends Component {
     if (errorLine !== undefined) {
       error = errorLine;
     }
-    const codeOptions = {
-      theme: "neat",
-      mode: "text/x-yaml",
-      readOnly: false,
-      lineNumbers: true,
-      lineWrapping: false,
-    };
     const sideDom = (
       <div className="c7n-region">
         <Content code="ist.edit" values={{ name }} className="sidebar-content">
@@ -154,17 +147,8 @@ class ValueConfig extends Component {
               <div>
                 {data && (
                   <YamlEditor
-                    newLines={data.newLines}
-                    isFileError={!!data.errorLines}
-                    errorLines={error}
-                    totalLine={data.totalLine}
+                    readOnly={false}
                     value={data.yaml}
-                    options={codeOptions}
-                    highlightMarkers={
-                      data.highlightMarkers && data.highlightMarkers.slice()
-                    }
-                    onChange={this.onChange}
-                    change
                   />
                 )}
               </div>
