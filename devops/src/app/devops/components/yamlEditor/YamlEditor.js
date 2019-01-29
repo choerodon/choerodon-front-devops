@@ -36,6 +36,7 @@ class YamlEditor extends Component {
     readOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
     options: PropTypes.object,
   };
+
   static defaultProps = {
     readOnly: true,
     handleEnableNext: enable => {},
@@ -58,6 +59,7 @@ class YamlEditor extends Component {
       gutters: !props.readOnly ? ["CodeMirror-lint-markers"] : [],
     };
     this.initValueLines = [];
+    this.updateValueLine = [];
   }
 
   componentDidMount() {
@@ -89,12 +91,44 @@ class YamlEditor extends Component {
   }
 
   /**
+   * 处理编辑器添加内容
+   * @param {*} editor
+   * @param {*} options
+   * @param {*} operator
+   * @param {*} value
+   * @param {*} line
+   * @memberof YamlEditor
+   */
+  handleInputChange(editor, options) {
+    const op = this.operator(editor);
+    const { from, to, text, removed } = options;
+
+    const newValue = editor.getLine(from.line);
+    const lineInfo = editor.lineInfo(from.line);
+    const cacheValue = _.cloneDeep(this.updateValueLine)[from.line];
+
+    if (text.length === 1) {
+      op.addModifyStyle(from.line);
+      if (newValue === cacheValue) {
+        op.removeModifyStyle(from.line);
+      }
+    } else if (_.toString(text) === ",") {
+      if (_.toString(removed) !== "") {
+        op.addModifyStyle(from.line);
+      } else if (_.toString(_.trim(newValue)) === "") {
+        op.addNewStyle(from.line);
+      }
+    }
+  }
+
+  /**
    * 校验Yaml格式
    * 校验规则来源 https://github.com/nodeca/js-yaml
    * @param {*} values
    * @memberof YamlEditor
    */
   checkYamlFormat(values) {
+    // handleEnableNext 通知父组件内容格式是否有误
     const { handleEnableNext } = this.props;
     let errorTip = false;
     // yaml 格式校验结果
@@ -112,13 +146,12 @@ class YamlEditor extends Component {
   onChange = (values, options) => {
     // 获取codemirror实例
     const editor = this.yamlEditor.getCodeMirror();
-    const currentLines = editor.getDoc().size;
 
     /**
      * form      开始位置坐标
      * - line    行数，从0开始，也就是实际行 - 1
      * - ch      从行首开始的字符位置（包括空格）
-     * - sticky
+     * - sticky  默认为 null，但可以设置为“before”或“after”，明确该位置是与字符之前还是之后相关
      * - xRel
      * to        结束位置坐标
      * origin    输入类型
@@ -133,39 +166,24 @@ class YamlEditor extends Component {
      * removed   删除的文本
      */
     const { from, to, origin, text, removed } = options;
-    const newValue = editor.getLine(from.line);
-    const lineInfo = editor.lineInfo(from.line);
-    const isComment = _.startsWith(_.trim(newValue), "#");
-    const initValue = _.cloneDeep(this.initValueLines)[from.line];
 
-    const op = this.operator(editor);
+    // const initValue = _.cloneDeep(this.updateValueLine)[from.line];
+    // const newValue = editor.getLine(from.line);
+    // const lineInfo = editor.lineInfo(from.line);
 
-    switch (origin) {
+    // this.updateCacheValue(editor, options, newValue);
+
+    // const op = this.operator(editor);
+
+    /* switch (origin) {
       case "+input":
-        if (text.length === 1) {
-          if (
-            _.toString(_.trim(newValue)) !== "" &&
-            lineInfo.bgClass !== "newLine-line"
-          ) {
-            // 单行新增和单行修改
-            op.addModifyStyle(from.line);
-            if (newValue === initValue) {
-              op.removeModifyStyle(from.line);
-            }
-          } else {
-            op.addNewStyle(from.line);
-          }
-        } else if (_.toString(text) === ",") {
-          if (_.toString(removed) !== "") {
-            op.addModifyStyle(from.line);
-          } else if (_.toString(_.trim(newValue)) === "") {
-            op.addNewStyle(from.line);
-          }
-        }
+        this.handleInputChange(editor, options);
         break;
       case "+delete":
         if (newValue === initValue) {
           op.removeModifyStyle(from.line);
+        } else {
+          op.addModifyStyle(from.line);
         }
         break;
       case "paste":
@@ -218,7 +236,7 @@ class YamlEditor extends Component {
         break;
       default:
         break;
-    }
+    } */
     this.checkYamlFormat(values);
   };
 
@@ -226,23 +244,70 @@ class YamlEditor extends Component {
    * 缓存yaml初始数据
    * @memberof YamlEditor
    */
-  saveInitValue() {
-    const editor = this.yamlEditor.getCodeMirror();
+  initCacheValue(editor) {
     const initLines = editor.getDoc().size;
     const value = [];
     for (let i = 0; i < initLines; i++) {
       const line = editor.getLine(i);
       value.push(line);
     }
-    this.initValueLines = value;
+    this.initValueLines.push(...value);
+    this.updateValueLine.push(...value);
+  }
+
+  /**
+   * 更新value缓存
+   * @param {*} editor
+   * @param {*} options
+   * @memberof YamlEditor
+   */
+  updateCacheValue(editor, options, value) {
+    const { from, to, origin, text, removed } = options;
+
+    const cacheLength = this.updateValueLine.length;
+    const initLength = this.initValueLines.length;
+    const newLength = editor.getDoc().size;
+
+    // 行数增加，更新缓存
+    if (newLength > cacheLength) {
+      // 单行增加
+      if (_.toString(text) === "," && removed.length < 2) {
+        console.log("单行增加");
+        Array.prototype.splice.call(this.updateValueLine, from.line, 0, "");
+      } else if (text.length > 2) {
+        if (!_.toString(_.trim(removed))) {
+          console.log("多行增加");
+          Array.prototype.splice.call(
+            this.updateValueLine,
+            from.line,
+            0,
+            ...text
+          );
+        } else {
+          console.log("有增有减");
+          const input = _.slice(text, removed.length);
+          Array.prototype.splice.call(
+            this.updateValueLine,
+            to.line,
+            0,
+            ...input
+          );
+        }
+      }
+    } else if (newLength <= initLength) {
+      console.log("恢复初始");
+      this.updateValueLine = _.cloneDeep(this.initValueLines);
+    }
   }
 
   initEditor() {
     const { highlightMarkers, value } = this.props;
     const editor = this.yamlEditor.getCodeMirror();
-
     editor.setOption("styleSelectedText", false);
-    this.saveInitValue();
+    console.log("====================================");
+    console.log("编辑器diff效果正在开发中，敬请谅解！");
+    console.log("====================================");
+    this.initCacheValue(editor);
     this.checkYamlFormat(value);
   }
 

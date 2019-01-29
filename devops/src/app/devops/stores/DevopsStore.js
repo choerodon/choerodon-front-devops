@@ -4,6 +4,8 @@ import { storage } from "../utils";
 
 const REFRESH_INTERVAL = 1000 * 10;
 const REFRESH_AGE = 7 * 24 * 60 * 60 * 1000;
+const EMPTY = true;
+const NOT_EMPTY = false;
 
 @store("DevopsStore")
 class DevopsStore {
@@ -93,12 +95,12 @@ function _isEmpty(obj) {
   const hasOwnProperty = Object.prototype.hasOwnProperty;
 
   if (obj === null) {
-    return true;
+    return EMPTY;
   }
 
   for (const key in obj) {
     if (hasOwnProperty.call(obj, key)) {
-      return false;
+      return NOT_EMPTY;
     }
   }
 
