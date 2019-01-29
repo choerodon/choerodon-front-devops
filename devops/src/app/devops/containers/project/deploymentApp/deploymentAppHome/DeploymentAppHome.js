@@ -21,7 +21,6 @@ import {
   axios,
 } from "choerodon-front-boot";
 import _ from "lodash";
-import YAML from "yamljs";
 import "../../../main.scss";
 import "./DeployApp.scss";
 import YamlEditor from "../../../../components/yamlEditor";
@@ -61,13 +60,13 @@ class DeploymentAppHome extends Component {
       intl: { formatMessage },
       DeploymentAppStore,
     } = this.props;
-    const { id } = AppState.currentMenuType;
+    const { id: projectId } = AppState.currentMenuType;
     const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
     if (value && !pattern.test(value)) {
       callback(formatMessage({ id: "network.name.check.failed" }));
       this.setState({ istNameOk: false });
     } else if (value && pattern.test(value)) {
-      DeploymentAppStore.checkIstName(id, value).then(data => {
+      DeploymentAppStore.checkIstName(projectId, value).then(data => {
         if (data && data.failed) {
           callback(formatMessage({ id: "network.name.check.exist" }));
           this.setState({ istNameOk: false });
@@ -108,12 +107,11 @@ class DeploymentAppHome extends Component {
         : undefined,
       mode: "new",
       markers: null,
-      projectId: AppState.currentMenuType.id,
       loading: false,
-      changeYaml: false,
       disabled: false,
       istNameOk: true,
       istName: "",
+      hasEditorError: false,
     };
   }
 
@@ -122,8 +120,9 @@ class DeploymentAppHome extends Component {
       DeploymentAppStore,
       location: { search },
     } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+
     const {
-      projectId,
       current,
       appId,
       is_project,
@@ -175,9 +174,7 @@ class DeploymentAppHome extends Component {
 
         DeploymentAppStore.setValue(null);
         DeploymentAppStore.loadInstances(appId, initEnvId);
-        DeploymentAppStore.loadValue(appId, version, initEnvId).then(data => {
-          this.setState({ errorLine: data.errorLines });
-        });
+        DeploymentAppStore.loadValue(projectId, appId, version, initEnvId);
       });
     }
   }
@@ -187,22 +184,21 @@ class DeploymentAppHome extends Component {
    * @param index
    */
   changeStep = index => {
+    const { id: projectId } = AppState.currentMenuType;
     const { DeploymentAppStore } = this.props;
-    const { appId, versionId, envId: id, mode } = this.state;
+    const {  appId, versionId, envId: id, mode } = this.state;
     const { getEnvcard, getTpEnvId } = EnvOverviewStore;
 
     const env = _.filter(getEnvcard, { connect: true, id: getTpEnvId });
     const envId = env.length ? env[0].id : id;
 
     this.setState({ current: index, disabled: false });
-    this.loadReview();
+    // this.loadReview();
 
     if (index === 1 && appId && versionId && envId) {
       this.setState({ envId, envDto: env[0] });
       DeploymentAppStore.setValue(null);
-      DeploymentAppStore.loadValue(appId, versionId, envId).then(data => {
-        this.setState({ errorLine: data.errorLines });
-      });
+      DeploymentAppStore.loadValue(projectId, appId, versionId, envId);
       DeploymentAppStore.loadInstances(appId, envId);
     }
     if (index === 2 || index === 3) {
@@ -244,9 +240,10 @@ class DeploymentAppHome extends Component {
    */
   handleOk = (app, key) => {
     const { DeploymentAppStore } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
     if (app) {
       if (key === "1") {
-        DeploymentAppStore.loadVersion(app.id, this.state.projectId, "");
+        DeploymentAppStore.loadVersion(app.id, projectId, "");
         this.setState({
           app,
           istName: `${app.code}-${uuidv1().substring(0, 5)}`,
@@ -257,7 +254,7 @@ class DeploymentAppHome extends Component {
           versionDto: null,
         });
       } else {
-        DeploymentAppStore.loadVersion(app.appId, this.state.projectId, true);
+        DeploymentAppStore.loadVersion(app.appId, projectId, true);
         this.setState({
           app,
           istName: `${app.code}-${uuidv1().substring(0, 5)}`,
@@ -278,6 +275,7 @@ class DeploymentAppHome extends Component {
    * @param value
    */
   handleSelectEnv = value => {
+    const { id: projectId } = AppState.currentMenuType;
     const { DeploymentAppStore } = this.props;
     const envs = EnvOverviewStore.getEnvcard;
     EnvOverviewStore.setTpEnvId(value);
@@ -286,16 +284,12 @@ class DeploymentAppHome extends Component {
       envId: value,
       envDto,
       value: null,
-      yaml: null,
-      changeYaml: false,
       mode: "new",
     });
     const { appId, versionId } = this.state;
     DeploymentAppStore.setValue(null);
     this.setState({ value: null, markers: [] });
-    DeploymentAppStore.loadValue(appId, versionId, value).then(data => {
-      this.setState({ errorLine: data.errorLines });
-    });
+    DeploymentAppStore.loadValue(projectId, appId, versionId, value);
     DeploymentAppStore.loadInstances(this.state.appId, value);
   };
 
@@ -335,32 +329,6 @@ class DeploymentAppHome extends Component {
       name: {
         value: instanceDto.code,
       },
-    });
-  };
-
-  /**
-   * 获取values
-   * @param value
-   */
-  handleChangeValue = value => {
-    const { DeploymentAppStore } = this.props;
-    this.setState({ value });
-    DeploymentAppStore.checkYaml(value).then(data => {
-      this.setState({ errorLine: data });
-      const oldYaml = DeploymentAppStore.getValue
-        ? DeploymentAppStore.getValue.yaml
-        : "";
-      const oldvalue = YAML.parse(oldYaml);
-      const newvalue = YAML.parse(value);
-      if (JSON.stringify(oldvalue) === JSON.stringify(newvalue)) {
-        this.setState({
-          changeYaml: false,
-        });
-      } else {
-        this.setState({
-          changeYaml: true,
-        });
-      }
     });
   };
 
@@ -414,11 +382,9 @@ class DeploymentAppHome extends Component {
       envId: undefined,
       envDto: null,
       value: null,
-      yaml: null,
       markers: [],
       mode: "new",
       instanceId: undefined,
-      changeYaml: false,
     });
   };
 
@@ -439,7 +405,7 @@ class DeploymentAppHome extends Component {
   /**
    * 部署应用
    */
-  handleDeploy = isNotChange => {
+  handleDeploy = () => {
     const { DeploymentAppStore } = this.props;
     const {
       istName,
@@ -453,7 +419,6 @@ class DeploymentAppHome extends Component {
     const instances = DeploymentAppStore.currentInstance;
     const deployValue = value || DeploymentAppStore.value.yaml;
     const applicationDeployDTO = {
-      isNotChange,
       instanceName: istName,
       appId,
       appVersionId: versionId,
@@ -484,18 +449,19 @@ class DeploymentAppHome extends Component {
       });
   };
 
-  loadReview = async () => {
-    const { value, versionId, projectId } = this.state;
-    if (value) {
-      const yaml = await axios
-        .post(
-          `/devops/v1/projects/${projectId}/app_instances/previewValue?appVersionId=${versionId}`,
-          { yaml: value }
-        )
-        .then(data => data);
-      this.setState({ yaml });
-    }
-  };
+  // loadReview = async () => {
+  //   const { id: projectId } = AppState.currentMenuType;
+  //   const { value, versionId } = this.state;
+  //   if (value) {
+  //     const yaml = await axios
+  //       .post(
+  //         `/devops/v1/projects/${projectId}/app_instances/previewValue?appVersionId=${versionId}`,
+  //         { yaml: value }
+  //       )
+  //       .then(data => data);
+  //     this.setState({ yaml });
+  //   }
+  // };
 
   /**
    * 第四步新建实例名
@@ -611,6 +577,10 @@ class DeploymentAppHome extends Component {
     );
   };
 
+  handleSecondNextStepEnable = flag => {
+    this.setState({ hasEditorError: flag });
+  };
+
   /**
    * 第二步
    */
@@ -619,16 +589,18 @@ class DeploymentAppHome extends Component {
       DeploymentAppStore: { getValue },
       intl: { formatMessage },
     } = this.props;
-    const { yaml, errorLine, markers, value, envId } = this.state;
+    const {
+      value,
+      envId,
+      hasEditorError,
+    } = this.state;
     const { getEnvcard, getTpEnvId } = EnvOverviewStore;
     const activeEnv = _.filter(getEnvcard, { connect: true, id: getTpEnvId });
-    const deployValue = yaml || getValue;
+    const deployValue = getValue;
     const enableClick = !(
       envId &&
       (value || (deployValue && deployValue.yaml)) &&
-      (errorLine
-        ? errorLine.length === 0
-        : deployValue && deployValue.errorLines === null)
+      !hasEditorError
     );
 
     const envOptions = _.map(getEnvcard, v => (
@@ -686,16 +658,9 @@ class DeploymentAppHome extends Component {
           </div>
           {deployValue && (
             <YamlEditor
-              newLines={deployValue.newLines}
-              isFileError={!!deployValue.errorLines}
-              totalLine={deployValue.totalLine}
-              errorLines={errorLine}
-              errMessage={deployValue.errorMsg}
-              modifyMarkers={markers}
+              readOnly={false}
               value={value || deployValue.yaml}
-              highlightMarkers={deployValue.highlightMarkers}
-              onChange={this.handleChangeValue}
-              change
+              handleEnableNext={this.handleSecondNextStepEnable}
             />
           )}
         </div>
@@ -889,12 +854,9 @@ class DeploymentAppHome extends Component {
       instanceDto,
       instanceId,
       istName,
-      yaml,
-      changeYaml,
-      current,
       loading,
     } = this.state;
-    const deployValue = yaml || getValue;
+    const deployValue =  getValue;
 
     const instanceID =
       instanceId ||
@@ -904,11 +866,6 @@ class DeploymentAppHome extends Component {
 
     const instance =
       instanceDto || _.filter(getCurrentInstance, v => v.id === instanceID)[0];
-
-    const isNotChange =
-      changeYaml || mode === "new"
-        ? false
-        : versionDto.version === instance.appVersion;
 
     const deployInfo = [
       {
@@ -991,15 +948,7 @@ class DeploymentAppHome extends Component {
       <Fragment>
         <div className="c7ncd-step-item c7ncd-step-item-full">
           {infoDom}
-          {deployValue && (
-            <YamlEditor
-              readOnly
-              newLines={deployValue.newLines}
-              readOnly={current === 3}
-              value={deployValue.yaml}
-              highlightMarkers={deployValue.highlightMarkers}
-            />
-          )}
+          {deployValue && <YamlEditor readOnly value={deployValue.yaml} />}
         </div>
         <div className="c7ncd-step-btn">
           <Permission service={["devops-service.application-instance.deploy"]}>
@@ -1007,7 +956,7 @@ class DeploymentAppHome extends Component {
               type="primary"
               funcType="raised"
               disabled={!(app && versionId && envId && mode)}
-              onClick={() => this.handleDeploy(isNotChange)}
+              onClick={this.handleDeploy}
               loading={loading}
             >
               <FormattedMessage id="deploy.btn.deploy" />
@@ -1068,18 +1017,11 @@ class DeploymentAppHome extends Component {
     const data = DeploymentAppStore.value;
     const { name: projectName } = AppState.currentMenuType;
     const {
-      appId,
-      versionId,
-      envId,
-      instanceId,
-      mode,
-      value,
       current,
       disabled,
       show,
       is_project,
       app,
-      errorLine,
     } = this.state;
 
     const { getTpEnvId, getEnvcard: envData } = EnvOverviewStore;

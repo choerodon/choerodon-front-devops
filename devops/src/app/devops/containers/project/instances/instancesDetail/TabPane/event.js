@@ -1,19 +1,13 @@
 import React, { Component, Fragment } from "react";
 import { observer, inject } from "mobx-react";
-import {
-  Steps,
-  Tooltip,
-  Icon,
-  Popover,
-  Modal,
-  Progress,
-} from "choerodon-ui";
+import { Steps, Tooltip, Icon, Popover, Modal, Progress } from "choerodon-ui";
 import { Content, stores } from "choerodon-front-boot";
 import classnames from "classnames";
 import { injectIntl, FormattedMessage } from "react-intl";
 import CodeMirror from "react-codemirror";
 import _ from "lodash";
-import Ace from "../../../../../components/yamlEditor";
+import YamlEditor from "../../../../../components/yamlEditor";
+import "./log.scss";
 
 const Step = Steps.Step;
 const Sidebar = Modal.Sidebar;
@@ -163,54 +157,54 @@ class Event extends Component {
       const content = (
         <table className="c7n-event-ist-popover">
           <tbody>
-          <tr>
-            <td>
-              <FormattedMessage id="ist.deploy.result" />
-              ：&nbsp;
-            </td>
-            <td>
-              <Icon
-                style={{
-                  color: ICONS_TYPE[e.status]
-                    ? ICONS_TYPE[e.status].color
-                    : "#00bfa5",
-                }}
-                type={
-                  ICONS_TYPE[e.status]
-                    ? ICONS_TYPE[e.status].icon
-                    : "check-circle"
-                }
-              />
-              <FormattedMessage
-                id={
-                  ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].mes : "success"
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <FormattedMessage id="report.deploy-duration.time" />
-              ：&nbsp;
-            </td>
-            <td>{e.createTime}</td>
-          </tr>
-          <tr>
-            <td>
-              <FormattedMessage id="ist.deploy.mbr" />
-              ：&nbsp;
-            </td>
-            <td>
-              {e.userImage ? (
-                <img src={e.userImage} alt={e.realName} />
-              ) : (
-                <span className="c7n-event-avatar">
+            <tr>
+              <td>
+                <FormattedMessage id="ist.deploy.result" />
+                ：&nbsp;
+              </td>
+              <td>
+                <Icon
+                  style={{
+                    color: ICONS_TYPE[e.status]
+                      ? ICONS_TYPE[e.status].color
+                      : "#00bfa5",
+                  }}
+                  type={
+                    ICONS_TYPE[e.status]
+                      ? ICONS_TYPE[e.status].icon
+                      : "check-circle"
+                  }
+                />
+                <FormattedMessage
+                  id={
+                    ICONS_TYPE[e.status] ? ICONS_TYPE[e.status].mes : "success"
+                  }
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <FormattedMessage id="report.deploy-duration.time" />
+                ：&nbsp;
+              </td>
+              <td>{e.createTime}</td>
+            </tr>
+            <tr>
+              <td>
+                <FormattedMessage id="ist.deploy.mbr" />
+                ：&nbsp;
+              </td>
+              <td>
+                {e.userImage ? (
+                  <img src={e.userImage} alt={e.realName} />
+                ) : (
+                  <span className="c7n-event-avatar">
                     {e.realName ? e.realName.slice(0, 1) : "无"}
                   </span>
-              )}
-              {e.loginName}&nbsp;{e.realName}
-            </td>
-          </tr>
+                )}
+                {e.loginName}&nbsp;{e.realName}
+              </td>
+            </tr>
           </tbody>
         </table>
       );
@@ -219,7 +213,7 @@ class Event extends Component {
           <div
             className={`c7n-event-ist-card ${
               e.createTime === time ? "c7n-ist-checked" : ""
-              }`}
+            }`}
             onClick={this.loadEvent.bind(this, e)}
           >
             <Icon
@@ -247,13 +241,9 @@ class Event extends Component {
       store,
       intl: { formatMessage },
     } = this.props;
-    const {
-      activeKey,
-      podEvent,
-      time,
-    } = this.state;
+    const { activeKey, podEvent, time } = this.state;
     const event = store.getIstEvent;
-    return (_.map(podEvent.length ? podEvent : event[0].podEventDTO, e => (
+    return _.map(podEvent.length ? podEvent : event[0].podEventDTO, e => (
       <Step
         key={e.name}
         title={
@@ -265,12 +255,7 @@ class Event extends Component {
                 placement="bottom"
               >
                 <Icon
-                  onClick={this.showSideBar.bind(
-                    this,
-                    "log",
-                    e.name,
-                    e.log
-                  )}
+                  onClick={this.showSideBar.bind(this, "log", e.name, e.log)}
                   type="find_in_page"
                 />
               </Tooltip>
@@ -279,15 +264,15 @@ class Event extends Component {
         }
         description={
           <Fragment>
-              <pre
-                className={`${
-                  activeKey.indexOf(`${time}-${e.name}`) > -1
-                    ? ""
-                    : "c7n-event-hidden"
-                  }`}
-              >
-                {e.event}
-              </pre>
+            <pre
+              className={`${
+                activeKey.indexOf(`${time}-${e.name}`) > -1
+                  ? ""
+                  : "c7n-event-hidden"
+              }`}
+            >
+              {e.event}
+            </pre>
             {e.event && e.event.split("\n").length > 4 && (
               <a onClick={this.showMore.bind(this, e.name)}>
                 {activeKey.indexOf(`${time}-${e.name}`) > -1
@@ -312,45 +297,28 @@ class Event extends Component {
           )
         }
       />
-    )))
+    ));
   };
 
   sidebarContent = () => {
-    const {
-      store,
-    } = this.props;
-    const {
-      expand,
-      log,
-      sideType,
-    } = this.state;
+    const { store } = this.props;
+    const { expand, log, sideType } = this.state;
     const valueStyle = classnames({
       "c7n-deployDetail-show": expand,
       "c7n-deployDetail-hidden": !expand,
     });
-    const options = {
-      theme: "neat",
-      mode: "yaml",
-      readOnly: true,
-      lineNumbers: true,
-    };
     const logOptions = {
       theme: "base16-dark",
       mode: "textile",
       readOnly: true,
       lineNumbers: true,
+      lineWrapping: true,
     };
     const sidebarContent =
       sideType === "deployInfo" ? (
         <div className={valueStyle}>
           {store.getValue && (
-            <Ace
-              options={options}
-              ref={instance => {
-                this.codeEditor = instance;
-              }}
-              value={store.getValue.yaml}
-            />
+            <YamlEditor readOnly value={store.getValue.yaml} />
           )}
         </div>
       ) : (
@@ -371,11 +339,7 @@ class Event extends Component {
       store,
       intl: { formatMessage },
     } = this.props;
-    const {
-      sideType,
-      visible,
-      sidebarName,
-    } = this.state;
+    const { sideType, visible, sidebarName } = this.state;
     const event = store.getIstEvent;
 
     return (
@@ -431,7 +395,7 @@ class Event extends Component {
           </Content>
         </Sidebar>
       </Fragment>
-    )
+    );
   }
 }
 

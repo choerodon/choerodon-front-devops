@@ -24,34 +24,20 @@ class UpgradeIst extends Component {
       loading: false,
       oldData: null,
       change: false,
+      hasEditorError: false,
     };
   }
-
-  /**
-   * 事件处理，修改value值后写入store
-   * @param {*} value 修改后的value值
-   */
-  onChange = value => {
-    const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    store.checkYaml(value, projectId).then(data => {
-      this.setState({ errorLine: data });
-    });
-    this.setState({
-      value,
-      change: true,
-    });
-  };
 
   /**
    * 关闭弹窗
    * @param res
    */
   onClose = res => {
+    const { store, onClose } = this.props;
     this.setState({
-      value: this.props.store.getValue,
+      value: store.getValue,
     });
-    this.props.onClose(res);
+    onClose(res);
   };
 
   /**
@@ -60,58 +46,35 @@ class UpgradeIst extends Component {
   handleOk = () => {
     this.setState({ loading: true });
     const { store, appInstanceId, idArr, intl } = this.props;
+    const { value, id } = this.state;
     const projectId = AppState.currentMenuType.id;
-    const value = this.state.value || this.props.store.getValue.yaml;
-    const verValue = this.props.store.getVerValue;
-    const verId = this.state.id || verValue[0].id;
+    const updateValue = value || store.getValue.yaml;
+    const verValue = store.getVerValue;
+    const verId = id || verValue[0].id;
     const data = {
-      values: value,
+      values: updateValue,
       appInstanceId,
       environmentId: idArr[0],
       appVersionId: verId,
       appId: idArr[2],
       type: "update",
     };
-    store.checkYaml(value, projectId).then(datas => {
-      this.setState({ errorLine: datas });
-      if (datas.length === 0) {
-        store.reDeploy(projectId, data).then(res => {
-          if (res && res.failed) {
-            Choerodon.prompt(res.message);
-          } else {
-            this.onClose(res);
-          }
-          this.setState({ loading: false });
-        });
-      } else {
-        Choerodon.prompt(intl.formatMessage({ id: "ist.yamlErr" }));
-        this.setState({ loading: false });
-      }
-    });
+  };
+
+  handleSecondNextStepEnable = flag => {
+    this.setState({ hasEditorError: flag });
   };
 
   aceDom = data => {
     const { errorLine, change } = this.state;
-    if (data) {
-      let error = data.errorLines;
-      if (this.state.errorLine !== undefined) {
-        error = errorLine;
-      }
-      return (
-        <YamlEditor
-          newLines={data.newLines}
-          isFileError={!!data.errorLines}
-          errorLines={error}
-          totalLine={data.totalLine}
-          value={data.yaml}
-          highlightMarkers={
-            data.highlightMarkers && data.highlightMarkers.slice()
-          }
-          onChange={this.onChange}
-          change={change}
-        />
-      );
-    }
+    return data ? (
+      <YamlEditor
+        readOnly={false}
+        value={data.yaml}
+        handleEnableNext={this.handleSecondNextStepEnable}
+        change={change}
+      />
+    ) : null;
   };
 
   handleChange(id) {
@@ -129,7 +92,7 @@ class UpgradeIst extends Component {
 
   render() {
     const { intl, store, name } = this.props;
-    const { oldData } = this.state;
+    const { oldData, loading, id } = this.state;
     const data = oldData || store.getValue;
     const verValue = this.props.store.getVerValue;
     const sideDom = (
@@ -144,10 +107,7 @@ class UpgradeIst extends Component {
               <Select
                 className="c7n-app-select_512"
                 notFoundContent={intl.formatMessage({ id: "ist.noUpVer" })}
-                value={
-                  this.state.id ||
-                  (verValue.length ? verValue[0].id : undefined)
-                }
+                value={id || (verValue.length ? verValue[0].id : undefined)}
                 label={intl.formatMessage({
                   id: "deploy.step.one.version.title",
                 })}
@@ -189,10 +149,10 @@ class UpgradeIst extends Component {
         onCancel={this.onClose.bind(this, false)}
         cancelText={intl.formatMessage({ id: "cancel" })}
         okText={intl.formatMessage({ id: "ist.upgrade" })}
-        confirmLoading={this.state.loading}
+        confirmLoading={loading}
       >
         {sideDom}
-        <InterceptMask visible={this.state.loading} />
+        <InterceptMask visible={loading} />
       </Sidebar>
     );
   }

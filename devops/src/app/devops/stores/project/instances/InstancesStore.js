@@ -289,11 +289,6 @@ class InstancesStore {
         return false;
       });
 
-  checkYaml = (value, projectId) =>
-    axios.post(`/devops/v1/projects/${projectId}/app_instances/value_format`, {
-      yaml: value,
-    });
-
   changeIstActive = (projectId, istId, active) =>
     axios.put(
       `devops/v1/projects/${projectId}/app_instances/${istId}/${active}`

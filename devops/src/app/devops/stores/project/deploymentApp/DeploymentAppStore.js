@@ -103,8 +103,8 @@ class DeploymentAppStore {
       });
   }
 
-  loadValue(appId, verId, envId, projectId = AppState.currentMenuType.id) {
-    return axios
+  loadValue(projectId, appId, verId, envId) {
+    axios
       .get(
         `/devops/v1/projects/${projectId}/app_instances/value?appId=${appId}&appVersionId=${verId}&envId=${envId}`
       )
@@ -113,14 +113,8 @@ class DeploymentAppStore {
         if (res) {
           this.setValue(res);
         }
-        return res;
       });
   }
-
-  checkYaml = (value, projectId = AppState.currentMenuType.id) =>
-    axios.post(`/devops/v1/projects/${projectId}/app_instances/value_format`, {
-      yaml: value,
-    });
 
   loadInstances(appId, envId, projectId = AppState.currentMenuType.id) {
     return axios
