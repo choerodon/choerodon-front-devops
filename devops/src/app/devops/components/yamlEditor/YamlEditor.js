@@ -32,14 +32,16 @@ function parse(values) {
 class YamlEditor extends Component {
   static propTypes = {
     value: PropTypes.string.isRequired,
-    handleEnableNext: PropTypes.func,
     readOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
     options: PropTypes.object,
+    handleEnableNext: PropTypes.func,
+    onValueChange: PropTypes.func,
   };
 
   static defaultProps = {
     readOnly: true,
     handleEnableNext: enable => {},
+    onValueChange: () => {},
   };
 
   constructor(props) {
@@ -130,6 +132,7 @@ class YamlEditor extends Component {
   checkYamlFormat(values) {
     // handleEnableNext 通知父组件内容格式是否有误
     const { handleEnableNext } = this.props;
+
     let errorTip = false;
     // yaml 格式校验结果
     const formatResult = parse(values);
@@ -144,6 +147,9 @@ class YamlEditor extends Component {
   }
 
   onChange = (values, options) => {
+    const { onValueChange } = this.props;
+    onValueChange(values);
+
     // 获取codemirror实例
     const editor = this.yamlEditor.getCodeMirror();
 
@@ -272,11 +278,11 @@ class YamlEditor extends Component {
     if (newLength > cacheLength) {
       // 单行增加
       if (_.toString(text) === "," && removed.length < 2) {
-        console.log("单行增加");
+        // console.log("单行增加");
         Array.prototype.splice.call(this.updateValueLine, from.line, 0, "");
       } else if (text.length > 2) {
         if (!_.toString(_.trim(removed))) {
-          console.log("多行增加");
+          // console.log("多行增加");
           Array.prototype.splice.call(
             this.updateValueLine,
             from.line,
@@ -284,7 +290,7 @@ class YamlEditor extends Component {
             ...text
           );
         } else {
-          console.log("有增有减");
+          // console.log("有增有减");
           const input = _.slice(text, removed.length);
           Array.prototype.splice.call(
             this.updateValueLine,
@@ -295,20 +301,18 @@ class YamlEditor extends Component {
         }
       }
     } else if (newLength <= initLength) {
-      console.log("恢复初始");
+      // console.log("恢复初始");
       this.updateValueLine = _.cloneDeep(this.initValueLines);
     }
   }
 
   initEditor() {
-    const { highlightMarkers, value } = this.props;
+    const { onValueChange, value } = this.props;
     const editor = this.yamlEditor.getCodeMirror();
     editor.setOption("styleSelectedText", false);
-    console.log("====================================");
-    console.log("编辑器diff效果正在开发中，敬请谅解！");
-    console.log("====================================");
     this.initCacheValue(editor);
     this.checkYamlFormat(value);
+    onValueChange(value);
   }
 
   render() {

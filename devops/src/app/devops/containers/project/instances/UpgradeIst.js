@@ -134,9 +134,7 @@ class UpgradeIst extends Component {
             </div>
           )}
           <div className="c7n-ace-section">
-            <div className="c7n-body-section c7n-border-done">
-              {this.aceDom(data)}
-            </div>
+            {this.aceDom(data)}
           </div>
         </Content>
       </div>

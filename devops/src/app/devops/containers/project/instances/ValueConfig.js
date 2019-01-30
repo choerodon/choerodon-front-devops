@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
 import { withRouter } from "react-router-dom";
+import { injectIntl } from "react-intl";
 import { Modal, Button } from "choerodon-ui";
 import { Content, stores } from "choerodon-front-boot";
 import YAML from "yamljs";
-import { injectIntl, FormattedMessage } from "react-intl";
 import YamlEditor from "../../../components/yamlEditor";
+import InterceptMask from "../../../components/interceptMask/InterceptMask";
 import "./Instances.scss";
 import "../../main.scss";
-import InterceptMask from "../../../components/interceptMask/InterceptMask";
 
 const { Sidebar } = Modal;
 const { AppState } = stores;
@@ -18,11 +18,11 @@ class ValueConfig extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: "",
+      value: null,
       loading: false,
       disabled: true,
       isNotChange: false,
-      NotChangeloading: false,
+      NotChangeLoading: false,
     };
   }
 
@@ -33,24 +33,6 @@ class ValueConfig extends Component {
   onChange = value => {
     const { store } = this.props;
     const projectId = AppState.currentMenuType.id;
-    store.checkYaml(value, projectId).then(data => {
-      this.setState({ errorLine: data });
-      const oldYaml = store.getValue ? store.getValue.yaml : "";
-      const oldvalue = YAML.parse(oldYaml);
-      const newvalue = YAML.parse(value);
-      if (JSON.stringify(oldvalue) === JSON.stringify(newvalue)) {
-        this.setState({
-          disabled: true,
-        });
-      } else {
-        this.setState({
-          disabled: false,
-        });
-      }
-    });
-    this.setState({
-      value,
-    });
   };
 
   /**
@@ -58,11 +40,11 @@ class ValueConfig extends Component {
    * @param res
    */
   onClose = res => {
-    const { store } = this.props;
+    const { store, onClose } = this.props;
     this.setState({
       value: store.getValue,
     });
-    this.props.onClose(res);
+    onClose(res);
   };
 
   /**
@@ -97,7 +79,7 @@ class ValueConfig extends Component {
       type: "update",
       isNotChange: disabled,
     };
-    this.setState({ NotChangeloading: true });
+    this.setState({ NotChangeLoading: true });
     store.checkYaml(val, projectId).then(datas => {
       this.setState({ errorLine: datas });
       if (datas.length === 0) {
@@ -110,7 +92,7 @@ class ValueConfig extends Component {
           this.setState({
             loading: false,
             isNotChange: false,
-            NotChangeloading: false,
+            NotChangeLoading: false,
           });
         });
       } else {
@@ -118,7 +100,7 @@ class ValueConfig extends Component {
         this.setState({
           loading: false,
           isNotChange: false,
-          NotChangeloading: false,
+          NotChangeLoading: false,
         });
       }
     });
@@ -133,29 +115,23 @@ class ValueConfig extends Component {
 
   render() {
     const { intl, store, name, visible } = this.props;
-    const { errorLine, loading, isNotChange, NotChangeloading } = this.state;
+    const { errorLine, loading, isNotChange, NotChangeLoading } = this.state;
     const data = store.getValue;
     let error = data && data.errorLines;
     if (errorLine !== undefined) {
       error = errorLine;
     }
     const sideDom = (
-      <div className="c7n-region">
-        <Content code="ist.edit" values={{ name }} className="sidebar-content">
-          <div className="c7n-ace-section">
-            <div className="c7n-body-section c7n-border-done">
-              <div>
-                {data && (
-                  <YamlEditor
-                    readOnly={false}
-                    value={data.yaml}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-        </Content>
-      </div>
+      <Content code="ist.edit" values={{ name }} className="sidebar-content">
+        {data && (
+          <YamlEditor
+            readOnly={false}
+            value={data.yaml}
+            // onValueChange={this.handleChangeValue}
+            // handleEnableNext={this.handleSecondNextStepEnable}
+          />
+        )}
+      </Content>
     );
     return (
       <React.Fragment>
@@ -199,7 +175,7 @@ class ValueConfig extends Component {
           onOk={this.reDeploy}
           onCancel={this.handleCancel}
           closable={false}
-          confirmLoading={NotChangeloading}
+          confirmLoading={NotChangeLoading}
         >
           <div className="c7n-deploy-modal-content">
             {intl.formatMessage({ id: "envOverview.confirm.reDeploy" })}
