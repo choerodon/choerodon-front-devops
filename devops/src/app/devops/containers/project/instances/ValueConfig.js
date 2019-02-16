@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { observer } from "mobx-react";
 import { withRouter } from "react-router-dom";
 import { injectIntl } from "react-intl";
@@ -20,45 +20,26 @@ class ValueConfig extends Component {
     this.state = {
       value: null,
       loading: false,
-      disabled: true,
-      isNotChange: false,
-      NotChangeLoading: false,
+      hasChanged: false,
+      modalDisplay: false,
+      hasEditorError: false,
     };
   }
 
   /**
-   * 事件处理，修改value值后写入store
-   * @param {*} value 修改后的value值
-   */
-  onChange = value => {
-    const { store } = this.props;
-    const projectId = AppState.currentMenuType.id;
-  };
-
-  /**
    * 关闭弹窗
-   * @param res
    */
-  onClose = res => {
-    const { store, onClose } = this.props;
-    this.setState({
-      value: store.getValue,
-    });
-    onClose(res);
-  };
+  onClose = () => this.props.onClose(false);
 
   /**
    * 点击重新部署，判断是否显示弹窗
    */
   handleOk = () => {
-    const { disabled } = this.state;
-    if (disabled) {
-      this.setState({ isNotChange: true });
-    } else {
-      this.setState({
-        loading: true,
-      });
+    const { hasChanged } = this.state;
+    if (hasChanged) {
       this.reDeploy();
+    } else {
+      this.setState({ modalDisplay: true });
     }
   };
 
@@ -66,125 +47,124 @@ class ValueConfig extends Component {
    * 修改配置重新部署
    */
   reDeploy = () => {
-    const { store, id, idArr, intl } = this.props;
-    const { disabled, value } = this.state;
-    const projectId = AppState.currentMenuType.id;
-    const val = value || store.getValue.yaml;
+    const { store, id, idArr, onClose } = this.props;
+    const { value } = this.state;
+    const { id: projectId } = AppState.currentMenuType;
+
     const data = {
-      values: val,
+      ...idArr,
+      values: value,
       appInstanceId: id,
-      environmentId: idArr[0],
-      appVersionId: idArr[1],
-      appId: idArr[2],
       type: "update",
-      isNotChange: disabled,
     };
-    this.setState({ NotChangeLoading: true });
-    store.checkYaml(val, projectId).then(datas => {
-      this.setState({ errorLine: datas });
-      if (datas.length === 0) {
-        store.reDeploy(projectId, data).then(res => {
-          if (res && res.failed) {
-            Choerodon.prompt(res.message);
-          } else {
-            this.onClose(res);
-          }
-          this.setState({
-            loading: false,
-            isNotChange: false,
-            NotChangeLoading: false,
-          });
-        });
+
+    this.setState({ modalDisplay: false, loading: true });
+
+    store.reDeploy(projectId, data).then(res => {
+      if (res && res.failed) {
+        Choerodon.prompt(res.message);
       } else {
-        Choerodon.prompt(intl.formatMessage({ id: "ist.yamlErr" }));
-        this.setState({
-          loading: false,
-          isNotChange: false,
-          NotChangeLoading: false,
-        });
+        onClose(true);
       }
+      this.setState({
+        loading: false,
+      });
     });
   };
 
   /**
-   * 未修改配置取消重新部署
+   * yaml编辑器内容改变
+   * @param value
    */
-  handleCancel = () => {
-    this.setState({ isNotChange: false });
+  handleChangeValue = (value) => {
+    const {store} = this.props;
+    const config = store.getValue;
+    const oldYaml = config ? config.yaml : '';
+
+    try {
+      const oldValue = YAML.parse(oldYaml);
+      const newValue = YAML.parse(value);
+
+      let hasChanged = true;
+      // 实际值变动检测
+      if (JSON.stringify(oldValue) === JSON.stringify(newValue)) {
+        hasChanged = false;
+      }
+      this.setState({value, hasChanged});
+    } catch (e) {
+    }
+
   };
 
+
+  handleEnableNext = flag => this.setState({hasEditorError: flag});
+
+  /**
+   * 未修改配置取消重新部署
+   */
+  handleCancel = () => this.setState({ modalDisplay: false });
+
   render() {
-    const { intl, store, name, visible } = this.props;
-    const { errorLine, loading, isNotChange, NotChangeLoading } = this.state;
-    const data = store.getValue;
-    let error = data && data.errorLines;
-    if (errorLine !== undefined) {
-      error = errorLine;
-    }
+    const { intl: { formatMessage }, store, name, visible } = this.props;
+    const { loading, modalDisplay, hasEditorError } = this.state;
+
+    const yamlConfig = store.getValue;
+
     const sideDom = (
       <Content code="ist.edit" values={{ name }} className="sidebar-content">
-        {data && (
-          <YamlEditor
-            readOnly={false}
-            value={data.yaml}
-            // onValueChange={this.handleChangeValue}
-            // handleEnableNext={this.handleSecondNextStepEnable}
-          />
-        )}
+        <YamlEditor
+          readOnly={false}
+          value={yamlConfig ? yamlConfig.yaml : ''}
+          onValueChange={this.handleChangeValue}
+          handleEnableNext={this.handleEnableNext}
+        />
       </Content>
     );
+
     return (
-      <React.Fragment>
+      <Fragment>
         <Sidebar
-          title={intl.formatMessage({ id: "ist.values" })}
+          title={formatMessage({ id: "ist.values" })}
           visible={visible}
-          onOk={this.handleOk}
-          onCancel={this.onClose.bind(this, false)}
-          cancelText={intl.formatMessage({ id: "cancel" })}
-          okText={intl.formatMessage({ id: "deploy.btn.deploy" })}
           footer={
-            <div className="ant-modal-btns">
-              <Button
-                key="submit"
-                type="primary"
-                funcType="raised"
-                onClick={this.handleOk}
-                loading={loading}
-                className="ant-modal-btn-ok"
-              >
-                {intl.formatMessage({ id: "deploy.btn.deploy" })}
-              </Button>
-              <Button
-                funcType="raised"
-                className="ant-modal-btn-cancel"
-                key="back"
-                onClick={this.onClose.bind(this, false)}
-                disabled={loading}
-              >
-                {intl.formatMessage({ id: "cancel" })}
-              </Button>
-            </div>
+            [<Button
+              key="submit"
+              type="primary"
+              funcType="raised"
+              onClick={this.handleOk}
+              loading={loading}
+              disabled={hasEditorError}
+            >
+              {formatMessage({ id: "deploy.btn.deploy" })}
+            </Button>,
+            <Button
+              funcType="raised"
+              key="back"
+              onClick={this.onClose}
+              disabled={loading}
+                >
+                {formatMessage({ id: "cancel" })}
+            </Button>]
           }
         >
           {sideDom}
           <InterceptMask visible={loading} />
         </Sidebar>
         <Modal
-          visible={isNotChange}
+          visible={modalDisplay}
           width={400}
           onOk={this.reDeploy}
           onCancel={this.handleCancel}
           closable={false}
-          confirmLoading={NotChangeLoading}
         >
           <div className="c7n-deploy-modal-content">
-            {intl.formatMessage({ id: "envOverview.confirm.reDeploy" })}
+            {formatMessage({ id: "envOverview.confirm.reDeploy" })}
           </div>
           <span>
-            {intl.formatMessage({ id: "envOverview.confirm.content.reDeploy" })}
+            {formatMessage({ id: "envOverview.confirm.content.reDeploy" })}
           </span>
         </Modal>
-      </React.Fragment>
+      </Fragment>
     );
   }
 }

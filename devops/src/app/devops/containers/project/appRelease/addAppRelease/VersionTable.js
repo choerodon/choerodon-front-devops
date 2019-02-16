@@ -7,7 +7,7 @@ import { stores, Content } from "choerodon-front-boot";
 import _ from "lodash";
 import TimePopover from "../../../../components/timePopover";
 import "../../../main.scss";
-import "../AppRelease.scss";
+import "./index.scss";
 
 const Sidebar = Modal.Sidebar;
 const { AppState } = stores;

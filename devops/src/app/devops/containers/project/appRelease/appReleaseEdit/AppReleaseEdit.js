@@ -29,7 +29,6 @@ class AppReleaseEdit extends Component {
     this.state = {
       id: props.match.params.id || '',
       projectId: menu.id,
-      isClick: false,
     };
   }
 
@@ -97,7 +96,7 @@ class AppReleaseEdit extends Component {
    * 触发上传按钮
    */
   triggerFileBtn =() => {
-    this.setState({ isClick: true, showBtn: true });
+    this.setState({ showBtn: true });
     const ele = document.getElementById('file');
     ele.click();
   };
@@ -121,7 +120,7 @@ class AppReleaseEdit extends Component {
           });
         }
       });
-    this.setState({ isClick: false, showBtn: false });
+    this.setState({ showBtn: false });
   };
 
   /**
@@ -151,16 +150,16 @@ class AppReleaseEdit extends Component {
               style={{ backgroundImage: SingleData && SingleData.imgUrl !== null ? `url(${Choerodon.fileServer(SingleData.imgUrl)})` : '' }}
               className="c7n-appRelease-img-hover"
               id="img"
-              onMouseLeave={this.state.isClick ? () => {} : this.hideBth}
+              onMouseLeave={this.hideBth}
               onMouseEnter={this.showBth}
               onClick={this.triggerFileBtn}
               role="none"
             >
               {this.state.showBtn && <div className="c7n-appRelease-img-child">
                 <i className="icon icon-photo_camera" />
-                <Input id="file" type="file" onChange={this.selectFile} style={{ display: 'none' }} />
               </div>
               }
+              <Input id="file" type="file" onChange={this.selectFile} style={{ display: 'none' }} />
             </div>
             <span className="c7n-appRelease-img-title">{this.props.intl.formatMessage({ id: 'release.add.step.four.app.icon' })}</span>
           </div>

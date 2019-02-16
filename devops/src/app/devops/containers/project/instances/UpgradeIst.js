@@ -52,11 +52,10 @@ class UpgradeIst extends Component {
     const verValue = store.getVerValue;
     const verId = id || verValue[0].id;
     const data = {
+      ...idArr,
       values: updateValue,
       appInstanceId,
-      environmentId: idArr[0],
       appVersionId: verId,
-      appId: idArr[2],
       type: "update",
     };
   };

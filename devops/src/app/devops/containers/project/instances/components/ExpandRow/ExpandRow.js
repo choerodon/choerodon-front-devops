@@ -108,7 +108,7 @@ class ExpandRow extends Component {
         {_.map(contentList, dto => {
           const { main, title } = dto;
           return main.length ? (
-            <Fragment>
+            <Fragment key={title}>
               <div className="c7n-deploy-expanded-title">
                 <span>{title}</span>
               </div>

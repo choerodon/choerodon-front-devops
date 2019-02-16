@@ -21,7 +21,7 @@ import {
   stores,
 } from "choerodon-front-boot";
 import "../../../main.scss";
-import "../AppRelease.scss";
+import "./index.scss";
 import VersionTable from "./VersionTable";
 import TimePopover from "../../../../components/timePopover";
 
@@ -151,7 +151,7 @@ class AddAppRelease extends Component {
    * 触发上传按钮
    */
   triggerFileBtn = () => {
-    this.setState({ isClick: true, showBtn: true });
+    this.setState({ showBtn: true });
     const ele = document.getElementById("file");
     ele.click();
   };
@@ -179,7 +179,7 @@ class AddAppRelease extends Component {
         });
       }
     });
-    this.setState({ isClick: false, showBtn: false });
+    this.setState({ showBtn: false });
   };
 
   /**
@@ -254,7 +254,7 @@ class AddAppRelease extends Component {
       intl: { formatMessage },
     } = this.props;
 
-    const { isClick, appId } = this.state;
+    const { appId } = this.state;
 
     const column = [
       {
@@ -499,7 +499,6 @@ class AddAppRelease extends Component {
       category,
       contributor,
       imgback,
-      isClick,
       showBtn,
     } = this.state;
     return (
@@ -516,22 +515,20 @@ class AddAppRelease extends Component {
                 }}
                 className="c7n-appRelease-img-hover"
                 id="img"
-                onMouseLeave={isClick ? () => {} : this.hideBth}
+                onMouseLeave={this.hideBth}
                 onMouseEnter={this.showBth}
                 onClick={this.triggerFileBtn}
                 role="none"
               >
-                {showBtn && (
-                  <div className="c7n-appRelease-img-child">
-                    <Icon type="photo_camera" />
-                    <Input
-                      id="file"
-                      type="file"
-                      onChange={this.selectFile}
-                      style={{ display: "none" }}
-                    />
-                  </div>
-                )}
+                {showBtn && (<div className="c7n-appRelease-img-child">
+                  <Icon type="photo_camera" />
+                </div>)}
+                <Input
+                  id="file"
+                  type="file"
+                  onChange={this.selectFile}
+                  style={{ display: "none" }}
+                />
               </div>
               <span className="c7n-appRelease-img-title">
                 {formatMessage({
@@ -750,11 +747,7 @@ class AddAppRelease extends Component {
     const {
       appId,
       appName,
-      mode,
       current,
-      category,
-      description,
-      contributor,
     } = this.state;
 
     const STEP_LIST = ["one", "two", "three", "four", "five"];

@@ -71,15 +71,15 @@ class AppDetail extends Component {
    */
   deployApp = (id, appId) => {
     const { AppStoreStore } = this.props;
+    const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
+
     const app = AppStoreStore.getApp;
-    AppStoreStore.setBackPath(true);
     const { verId } = this.state;
     const verID = verId || app.appVersions[0].id;
-    const projectId = AppState.currentMenuType.id;
-    const projectName = AppState.currentMenuType.name;
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
-    this.linkToChange(`/devops/deployment-app/${appId}/${verID}?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`);
+
+    AppStoreStore.setBackPath(true);
+
+    this.linkToChange(`/devops/deployment-app/store/${appId}/${verID}?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}`);
   };
 
   /**

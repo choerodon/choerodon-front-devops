@@ -10,7 +10,8 @@ const DeploymentApp = asyncRouter(() => import('./deploymentAppHome'), () => imp
 const DeploymentAppIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={DeploymentApp} />
-    <Route exact path={`${match.url}/:appId/:verId`} component={DeploymentApp} />
+    <Route path={`${match.url}/:prevPage/:appId/:verId`} component={DeploymentApp} />
+    <Route path={`${match.url}/:prevPage`} component={DeploymentApp} />
     <Route path="*" component={nomatch} />
   </Switch>
 );

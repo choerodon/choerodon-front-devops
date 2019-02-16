@@ -96,9 +96,6 @@ class YamlEditor extends Component {
    * 处理编辑器添加内容
    * @param {*} editor
    * @param {*} options
-   * @param {*} operator
-   * @param {*} value
-   * @param {*} line
    * @memberof YamlEditor
    */
   handleInputChange(editor, options) {
@@ -127,21 +124,22 @@ class YamlEditor extends Component {
    * 校验Yaml格式
    * 校验规则来源 https://github.com/nodeca/js-yaml
    * @param {*} values
-   * @memberof YamlEditor
    */
   checkYamlFormat(values) {
+    const HAS_ERROR = true;
+    const NO_ERROR = false;
     // handleEnableNext 通知父组件内容格式是否有误
     const { handleEnableNext } = this.props;
 
-    let errorTip = false;
+    let errorTip = NO_ERROR;
     // yaml 格式校验结果
     const formatResult = parse(values);
     if (formatResult && formatResult.length) {
-      errorTip = true;
-      handleEnableNext(true);
+      errorTip = HAS_ERROR;
+      handleEnableNext(HAS_ERROR);
     } else {
-      errorTip = false;
-      handleEnableNext(false);
+      errorTip = NO_ERROR;
+      handleEnableNext(NO_ERROR);
     }
     this.setState({ errorTip });
   }
@@ -316,6 +314,8 @@ class YamlEditor extends Component {
   }
 
   render() {
+    const LEGEND_TYPE = ["new", "modify", "error"];
+
     const {
       intl: { formatMessage },
       readOnly,
@@ -323,8 +323,6 @@ class YamlEditor extends Component {
     } = this.props;
 
     const { errorTip } = this.state;
-
-    const LEGEND_TYPE = ["new", "modify", "error"];
 
     const legendDom = _.map(LEGEND_TYPE, item => (
       <span

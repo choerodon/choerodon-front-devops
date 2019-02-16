@@ -43,6 +43,7 @@ class Instances extends Component {
       deleteIst: {},
       confirmType: "",
       confirmLoading: false,
+      idArr: {},
     };
     this.columnAction = this.columnAction.bind(this);
     this.renderVersion = this.renderVersion.bind(this);
@@ -168,13 +169,19 @@ class Instances extends Component {
    * 修改配置实例信息
    */
   updateConfig = record => {
+    const { InstancesStore } = this.props;
     const { code, id, envId, commandVersionId, appId } = record;
     const { id: projectId } = AppState.currentMenuType;
-    const { InstancesStore } = this.props;
+
     this.setState({
-      idArr: [envId, commandVersionId, appId],
+      idArr: {
+        environmentId: envId,
+        appVersionId: commandVersionId,
+        appId,
+      },
       name: code,
     });
+
     InstancesStore.loadValue(projectId, id, commandVersionId).then(data => {
       const res = handleProptError(data);
       if (res) {
@@ -226,12 +233,13 @@ class Instances extends Component {
    * 升级配置实例信息
    */
   upgradeIst = record => {
-    const { code, id, envId, appVersionId, commandVersionId, appId } = record;
+    const { code, id, envId, commandVersionId, appId } = record;
     const { id: projectId } = AppState.currentMenuType;
     const {
       InstancesStore: { loadUpVersion, loadValue },
       intl,
     } = this.props;
+
     loadUpVersion(projectId, commandVersionId)
       .then(data => {
         const res = handleProptError(data);
@@ -240,7 +248,11 @@ class Instances extends Component {
             Choerodon.prompt(intl.formatMessage({ id: "ist.noUpVer" }));
           } else {
             this.setState({
-              idArr: [envId, res[0].id, appId],
+              idArr: {
+                environmentId: envId,
+                appVersionId: res[0].id,
+                appId,
+              },
               id,
               name: code,
             });
@@ -263,9 +275,9 @@ class Instances extends Component {
 
   /**
    * 关闭滑块
-   * @param res 是否重新部署需要重载数据
+   * @param res 是否重载数据
    */
-  handleCancel = res => {
+  closeConfigSidebar = res => {
     const { InstancesStore } = this.props;
     const appId = InstancesStore.getAppId;
     this.setState({
@@ -792,7 +804,7 @@ class Instances extends Component {
                   name={name}
                   id={id}
                   idArr={idArr}
-                  onClose={this.handleCancel}
+                  onClose={this.closeConfigSidebar}
                 />
               )}
               {visibleUp && (
