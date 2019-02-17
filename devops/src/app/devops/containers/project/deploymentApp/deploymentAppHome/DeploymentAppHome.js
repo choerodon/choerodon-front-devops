@@ -441,13 +441,13 @@ class DeploymentAppHome extends Component {
     };
     this.setState({loading: true});
     DeploymentAppStore.deploymentApp(applicationDeployDTO)
-      .then(datas => {
-        if (datas) {
-          this.openAppDeployment();
-        }
+      .then(data => {
         this.setState({
           loading: false,
         });
+        if (data) {
+          this.openAppDeployment();
+        }
       })
       .catch(error => {
         Choerodon.handleResponseError(error);
@@ -455,6 +455,36 @@ class DeploymentAppHome extends Component {
           loading: false,
         });
       });
+  };
+
+  /**
+   * 返回到上一个页面
+   */
+  openAppDeployment = () => {
+    const {
+      history,
+      match: {
+        params: {prevPage},
+      },
+    } = this.props;
+
+    const {name, id, type, organizationId} = AppState.currentMenuType;
+
+    let url = "instance";
+
+    switch (prevPage) {
+      case "envOverview":
+        url = "env-overview";
+        break;
+      case "deployOverview":
+        url = "deploy-overview";
+        break;
+      default:
+    }
+
+    history.push(
+      `/devops/${url}?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`
+    );
   };
 
 
@@ -974,28 +1004,6 @@ class DeploymentAppHome extends Component {
       </Fragment>
     );
   };
-
-  /**
-   * 返回到上一个页面
-   */
-  openAppDeployment() {
-    const {history} = this.props;
-    const {
-      match: {
-        params: {prevPage},
-      },
-    } = history;
-    const {name, id, type, organizationId} = AppState.currentMenuType;
-    let url = "instance";
-    if (prevPage === "envOverview") {
-      url = "env-overview";
-    } else if (prevPage === "deployOverview") {
-      url = "deploy-overview";
-    }
-    history.push(
-      `/devops/${url}?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`
-    );
-  }
 
   /**
    * 环境选择请求函数

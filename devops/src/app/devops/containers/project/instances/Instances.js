@@ -16,20 +16,19 @@ import _ from "lodash";
 import { handleProptError } from "../../../utils";
 import ValueConfig from "./ValueConfig";
 import UpgradeIst from "./UpgradeIst";
-import DelIst from "./components/DelIst";
 import ExpandRow from "./components/ExpandRow";
 import StatusIcon from "../../../components/StatusIcon";
 import UploadIcon from "./components/UploadIcon";
 import AppName from "../../../components/appName";
-import "./Instances.scss";
-import "../../main.scss";
-import EnvOverviewStore from "../../../stores/project/envOverview";
 import DepPipelineEmpty from "../../../components/DepPipelineEmpty/DepPipelineEmpty";
-import InstancesStore from "../../../stores/project/instances/InstancesStore";
 import Tips from "../../../components/Tips/Tips";
 import RefreshBtn from "../../../components/refreshBtn";
-import DevopsStore from "../../../stores/DevopsStore";
 import PodStatus from "./components/PodStatus/PodStatus";
+import DevopsStore from "../../../stores/DevopsStore";
+import InstancesStore from "../../../stores/project/instances/InstancesStore";
+import EnvOverviewStore from "../../../stores/project/envOverview";
+import "../../main.scss";
+import "./Instances.scss";
 
 const Option = Select.Option;
 const { AppState } = stores;
@@ -39,8 +38,10 @@ class Instances extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      visibleUp: false,
+      upgradeVisible: false,
+      changeVisible: false,
       deleteIst: {},
+      deleteLoading: false,
       confirmType: "",
       confirmLoading: false,
       idArr: {},
@@ -186,7 +187,7 @@ class Instances extends Component {
       const res = handleProptError(data);
       if (res) {
         this.setState({
-          visible: true,
+          changeVisible: true,
           id,
         });
       }
@@ -260,7 +261,7 @@ class Instances extends Component {
               const val = handleProptError(value);
               if (val) {
                 this.setState({
-                  visibleUp: true,
+                  upgradeVisible: true,
                 });
               }
             });
@@ -274,29 +275,22 @@ class Instances extends Component {
   };
 
   /**
-   * 关闭滑块
+   * 修改配置信息&升级侧边栏
    * @param res 是否重载数据
    */
   closeConfigSidebar = res => {
-    const { InstancesStore } = this.props;
-    const appId = InstancesStore.getAppId;
-    this.setState({
-      visible: false,
-    });
-    res && this.reloadData(true, false, appId);
-  };
+    const {
+      InstancesStore: {
+        getAppId,
+      },
+    } = this.props;
 
-  /**
-   * 关闭升级滑块
-   * @param res 是否重新部署需要重载数据
-   */
-  handleCancelUp = res => {
-    const { InstancesStore } = this.props;
-    const appId = InstancesStore.getAppId;
     this.setState({
-      visibleUp: false,
+      changeVisible: false,
+      upgradeVisible: false,
     });
-    res && this.reloadData(true, false, appId);
+
+    res && this.reloadData(res, !res, getAppId);
   };
 
   /**
@@ -308,18 +302,23 @@ class Instances extends Component {
   reloadData = (spin, clear, appId = false) => {
     const { id: projectId } = AppState.currentMenuType;
     const { InstancesStore } = this.props;
+
     const envId = EnvOverviewStore.getTpEnvId;
+
     InstancesStore.loadInstanceAll(spin, projectId, { envId, appId }).catch(
       err => {
         InstancesStore.changeLoading(false);
         Choerodon.handleResponseError(err);
       }
     );
+
     clear && InstancesStore.setIstTableFilter(null);
   };
 
   /**
-   * 刷新按钮
+   * 点击刷新
+   * @param spin 是否出现加载动画
+   * @param clear 是否清空筛选条件
    */
   reload = (spin = true, clear = false) => {
     const { id: projectId } = AppState.currentMenuType;
@@ -332,26 +331,33 @@ class Instances extends Component {
       },
     } = this.props;
     const envId = EnvOverviewStore.getTpEnvId;
+
     loadAppNameByEnv(projectId, envId, getAppPage - 1, getAppPageSize);
+
     this.reloadData(spin, clear, getAppId);
   };
 
   /**
-   * 删除数据
+   * 删除实例
    */
   handleDelete = id => {
     const { id: projectId } = AppState.currentMenuType;
+
     const { InstancesStore } = this.props;
+    const { deleteIst: oldDeleteIst } = this.state;
+
     const { loadInstanceAll, deleteInstance, getAppId } = InstancesStore;
     const envId = EnvOverviewStore.getTpEnvId;
-    const { deleteIst } = this.state;
-    deleteIst[id] = true;
+
+    const deleteIst = _.assign({}, oldDeleteIst, {[id]: true});
+
     this.setState({
-      loading: true,
+      deleteLoading: true,
       deleteIst,
     });
     deleteInstance(projectId, id)
       .then(data => {
+        const { deleteIst: prevDeleteIst } = this.state;
         const res = handleProptError(data);
         if (res) {
           InstancesStore.setIstTableFilter(null);
@@ -361,20 +367,24 @@ class Instances extends Component {
             Choerodon.handleResponseError(err);
           });
         }
-        this.state.deleteIst[id] = false;
+        const deleteIst = _.assign({}, prevDeleteIst, {[id]: false});
+
         this.setState({
           openRemove: false,
-          loading: false,
-          deleteIst: this.state.deleteIst,
+          deleteLoading: false,
+          deleteIst,
         });
       })
       .catch(error => {
+        const { deleteIst: prevDeleteIst } = this.state;
+        const deleteIst = _.assign({}, prevDeleteIst, {[id]: false});
+
         this.state.deleteIst[id] = false;
         this.setState({
-          loading: false,
-          deleteIst: this.state.deleteIst,
+          deleteLoading: false,
+          deleteIst,
         });
-        Choerodon.handleResponseError(err);
+        Choerodon.handleResponseError(error);
       });
     InstancesStore.setIstTableFilter(null);
   };
@@ -382,11 +392,13 @@ class Instances extends Component {
   /**
    * 关闭删除数据的模态框
    */
-  handleClose(id) {
-    this.state.deleteIst[id] = false;
+  closeDeleteModal(id) {
+    const { deleteIst: oldDeleteIst } = this.state;
+    const deleteIst = _.assign({}, oldDeleteIst, {[id]: false});
+
     this.setState({
       openRemove: false,
-      deleteIst: this.state.deleteIst,
+      deleteIst,
     });
   }
 
@@ -428,9 +440,8 @@ class Instances extends Component {
 
   /**
    * 打开确认框
-   * @param id 实例ID
+   * @param record
    * @param type 类型：重新部署或启停实例
-   * @param status 状态：启动或停止实例
    */
   openConfirm = (record, type) => {
     const { id, code } = record;
@@ -609,12 +620,12 @@ class Instances extends Component {
     } = InstancesStore;
     const {
       name,
-      visible,
-      visibleUp,
+      changeVisible,
+      upgradeVisible,
       idArr,
       openRemove,
       id,
-      loading,
+      deleteLoading,
       confirmType,
       confirmLoading,
     } = this.state;
@@ -797,33 +808,52 @@ class Instances extends Component {
                 </div>
               </div>
               {detailDom}
-              {visible && (
+              {changeVisible && (
                 <ValueConfig
                   store={InstancesStore}
-                  visible={visible}
+                  visible={changeVisible}
                   name={name}
                   id={id}
                   idArr={idArr}
                   onClose={this.closeConfigSidebar}
                 />
               )}
-              {visibleUp && (
+              {upgradeVisible && (
                 <UpgradeIst
                   store={InstancesStore}
-                  visible={visibleUp}
+                  visible={upgradeVisible}
                   name={name}
                   appInstanceId={id}
                   idArr={idArr}
-                  onClose={this.handleCancelUp}
+                  onClose={this.closeConfigSidebar}
                 />
               )}
-              <DelIst
-                open={openRemove}
-                handleCancel={this.handleClose.bind(this, id)}
-                handleConfirm={this.handleDelete.bind(this, id)}
-                confirmLoading={loading}
-                name={name}
-              />
+              <Modal
+                title={`${formatMessage({ id: 'ist.del' })}“${name}”`}
+                visible={openRemove}
+                closable={false}
+                footer={[
+                  <Button
+                    key="back"
+                    onClick={this.closeDeleteModal.bind(this, id)}
+                    disabled={deleteLoading}
+                  >
+                    <FormattedMessage id="cancel" />
+                  </Button>,
+                  <Button
+                    key="submit"
+                    type="danger"
+                    loading={deleteLoading}
+                    onClick={this.handleDelete.bind(this, id)}
+                  >
+                    <FormattedMessage id="delete" />
+                  </Button>,
+                ]}
+              >
+                <div className="c7n-padding-top_8">
+                  <FormattedMessage id="ist.delDes" />
+                </div>
+              </Modal>
               <Modal
                 title={`${formatMessage({ id: "ist.reDeploy" })}“${name}”`}
                 visible={confirmType === "reDeploy"}

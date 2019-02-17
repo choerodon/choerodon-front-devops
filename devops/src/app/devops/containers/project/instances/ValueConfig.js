@@ -48,11 +48,12 @@ class ValueConfig extends Component {
    */
   reDeploy = () => {
     const { store, id, idArr, onClose } = this.props;
-    const { value } = this.state;
+    const { value, hasChanged } = this.state;
     const { id: projectId } = AppState.currentMenuType;
 
     const data = {
       ...idArr,
+      isNotChange: !hasChanged,
       values: value,
       appInstanceId: id,
       type: "update",
@@ -77,23 +78,23 @@ class ValueConfig extends Component {
    * @param value
    */
   handleChangeValue = (value) => {
-    const {store} = this.props;
-    const config = store.getValue;
-    const oldYaml = config ? config.yaml : '';
+    const {store: {getValue}} = this.props;
+    const oldYaml = getValue ? getValue.yaml : '';
+
+    let hasChanged = true;
 
     try {
       const oldValue = YAML.parse(oldYaml);
       const newValue = YAML.parse(value);
 
-      let hasChanged = true;
       // 实际值变动检测
       if (JSON.stringify(oldValue) === JSON.stringify(newValue)) {
         hasChanged = false;
       }
-      this.setState({value, hasChanged});
     } catch (e) {
     }
 
+    this.setState({value, hasChanged});
   };
 
 
@@ -105,16 +106,20 @@ class ValueConfig extends Component {
   handleCancel = () => this.setState({ modalDisplay: false });
 
   render() {
-    const { intl: { formatMessage }, store, name, visible } = this.props;
+    const {
+      intl: { formatMessage },
+      store: {getValue},
+      name,
+      visible,
+    } = this.props;
     const { loading, modalDisplay, hasEditorError } = this.state;
 
-    const yamlConfig = store.getValue;
 
     const sideDom = (
       <Content code="ist.edit" values={{ name }} className="sidebar-content">
         <YamlEditor
           readOnly={false}
-          value={yamlConfig ? yamlConfig.yaml : ''}
+          value={getValue ? getValue.yaml : ''}
           onValueChange={this.handleChangeValue}
           handleEnableNext={this.handleEnableNext}
         />
