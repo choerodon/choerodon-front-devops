@@ -19,7 +19,6 @@ import {
   stores,
 } from "choerodon-front-boot";
 import "../../../main.scss";
-import "../AppRelease.scss";
 import editReleaseStore from "../../../../stores/project/appRelease/editRelease";
 import AppVersionStore from "../../../../stores/project/applicationVersion";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
@@ -347,13 +346,13 @@ class AppReleaseHome extends Component {
           "devops-service.application-market.updateVersions",
           "devops-service.application-market.update",
         ]}
-        className="c7n-region app-release-wrapper"
+        className="c7n-region"
       >
         {appData && appData.length ? (
           <Fragment>
             <Header title={<FormattedMessage id="release.home.header.title" />}>
               <Button onClick={this.handleRefresh}>
-                <i className="icon-refresh icon" />
+                <Icon type="refresh" />
                 <FormattedMessage id="refresh" />
               </Button>
             </Header>

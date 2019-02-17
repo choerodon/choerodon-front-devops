@@ -74,16 +74,9 @@ class DeployOverview extends Component {
       organizationId,
       type,
     } = AppState.currentMenuType;
-    const isProject = proId === Number(projectId);
-    if (isProject) {
-      this.linkToChange(
-        `/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}&appId=${appId}&verId=${verId}`
-      );
-    } else {
-      this.linkToChange(
-        `/devops/deployment-app?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}&isProject&appId=${appId}&verId=${verId}`
-      );
-    }
+
+    const baseUrl = `/devops/deployment-app/deployOverview/${appId}/${verId}?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`;
+    this.linkToChange(`${baseUrl}${proId !== Number(projectId) ? '&notLocalApp' : ''}`);
   };
 
   /**

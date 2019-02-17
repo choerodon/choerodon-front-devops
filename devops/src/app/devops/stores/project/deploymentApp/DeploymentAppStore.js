@@ -116,7 +116,7 @@ class DeploymentAppStore {
       });
   }
 
-  loadInstances(appId, envId, projectId = AppState.currentMenuType.id) {
+  loadInstances(projectId, appId, envId) {
     return axios
       .get(
         `/devops/v1/projects/${projectId}/app_instances/listByAppIdAndEnvId?envId=${envId}&appId=${appId}`

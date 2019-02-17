@@ -294,6 +294,12 @@ class InstancesStore {
       `devops/v1/projects/${projectId}/app_instances/${istId}/${active}`
     );
 
+  /**
+   * 修改配置信息、重新部署
+   * @param projectId
+   * @param data
+   * @returns {*}
+   */
   reDeploy = (projectId, data) =>
     axios.post(
       `devops/v1/projects/${projectId}/app_instances`,

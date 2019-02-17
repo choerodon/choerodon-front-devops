@@ -21,7 +21,6 @@ import "codemirror/lib/codemirror.css";
 import "codemirror/theme/base16-dark.css";
 import ValueConfig from "../../instances/ValueConfig";
 import UpgradeIst from "../../instances/UpgradeIst";
-import DelIst from "../../instances/components/DelIst";
 import "../EnvOverview.scss";
 import "../../instances/Instances.scss";
 import "../../../main.scss";
@@ -56,7 +55,7 @@ class AppOverview extends Component {
 
   @observable ist = {};
 
-  @observable idArr = [];
+  @observable idArr = {};
 
   @observable name = "";
 
@@ -280,7 +279,11 @@ class AppOverview extends Component {
         this.visible = true;
         this.id = id;
         this.name = code;
-        this.idArr = [envId, commandVersionId, appId];
+        this.idArr = {
+          environmentId: envId,
+          appVersionId: commandVersionId,
+          appId,
+        };
       }
     });
   };
@@ -301,7 +304,11 @@ class AppOverview extends Component {
       } else {
         this.id = id;
         this.name = code;
-        this.idArr = [envId, val[0].id, appId];
+        this.idArr = {
+          environmentId: envId,
+          appVersionId: val[0].id,
+          appId,
+        };
         InstancesStore.loadValue(projectId, id, val[0].id).then(res => {
           if (res && res.failed) {
             Choerodon.prompt(res.message);
@@ -720,13 +727,32 @@ class AppOverview extends Component {
                 onClose={this.handleCancelUp}
               />
             )}
-            <DelIst
-              open={this.openRemove}
-              handleCancel={this.closeDeleteModal.bind(this, this.id)}
-              handleConfirm={this.handleDelete.bind(this, this.id)}
-              confirmLoading={this.loading}
-              name={this.istName}
-            />
+            <Modal
+              title={`${formatMessage({ id: 'ist.del' })}“${this.istName}”`}
+              visible={this.openRemove}
+              closable={false}
+              footer={[
+                <Button
+                  key="back"
+                  onClick={this.closeDeleteModal.bind(this, this.id)}
+                  disabled={this.loading}
+                >
+                  <FormattedMessage id="cancel" />
+                </Button>,
+                <Button
+                  key="submit"
+                  type="danger"
+                  loading={this.loading}
+                  onClick={this.handleDelete.bind(this, this.id)}
+                >
+                  <FormattedMessage id="delete" />
+                </Button>,
+              ]}
+            >
+              <div className="c7n-padding-top_8">
+                <FormattedMessage id="ist.delDes" />
+              </div>
+            </Modal>
             <Modal
               title={`${formatMessage({ id: "ist.reDeploy" })}“${
                 this.istName
