@@ -95,9 +95,10 @@ class EditNetwork extends Component {
     validateFields([itemType]);
     const data = type === "targetIps" ? this.targetIpSelect : this.ipSelect;
     if (data) {
-      data.setState({
-        inputValue: "",
-      });
+      // react-component 内置方法
+      // 用于将当前输入值填入组件的标签后，清空当前输入
+      // 另一个功能：重复值不会生成新的标签
+      data.setInputValue("");
     }
   };
 
