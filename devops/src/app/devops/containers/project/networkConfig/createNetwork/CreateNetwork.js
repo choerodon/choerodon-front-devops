@@ -106,9 +106,7 @@ class CreateNetwork extends Component {
     validateFields([itemType]);
     const data = type === "targetIps" ? this.targetIpSelect : this.ipSelect;
     if (data) {
-      data.setState({
-        inputValue: "",
-      });
+      data.setInputValue("");
     }
   };
 
@@ -186,7 +184,7 @@ class CreateNetwork extends Component {
           type: config,
           endPoints: !_.isEmpty(endPoints) ? endPoints : null,
         };
-
+        
         store
           .createNetwork(id, network)
           .then(res => {
