@@ -40,14 +40,12 @@ class Instances extends Component {
     this.state = {
       upgradeVisible: false,
       changeVisible: false,
-      deleteIst: {},
       deleteLoading: false,
       confirmType: "",
       confirmLoading: false,
       idArr: {},
     };
     this.columnAction = this.columnAction.bind(this);
-    this.renderVersion = this.renderVersion.bind(this);
   }
 
   componentDidMount() {
@@ -344,20 +342,16 @@ class Instances extends Component {
     const { id: projectId } = AppState.currentMenuType;
 
     const { InstancesStore } = this.props;
-    const { deleteIst: oldDeleteIst } = this.state;
 
     const { loadInstanceAll, deleteInstance, getAppId } = InstancesStore;
     const envId = EnvOverviewStore.getTpEnvId;
 
-    const deleteIst = _.assign({}, oldDeleteIst, {[id]: true});
 
     this.setState({
       deleteLoading: true,
-      deleteIst,
     });
     deleteInstance(projectId, id)
       .then(data => {
-        const { deleteIst: prevDeleteIst } = this.state;
         const res = handleProptError(data);
         if (res) {
           InstancesStore.setIstTableFilter(null);
@@ -367,22 +361,16 @@ class Instances extends Component {
             Choerodon.handleResponseError(err);
           });
         }
-        const deleteIst = _.assign({}, prevDeleteIst, {[id]: false});
 
         this.setState({
           openRemove: false,
           deleteLoading: false,
-          deleteIst,
         });
       })
       .catch(error => {
-        const { deleteIst: prevDeleteIst } = this.state;
-        const deleteIst = _.assign({}, prevDeleteIst, {[id]: false});
 
-        this.state.deleteIst[id] = false;
         this.setState({
           deleteLoading: false,
-          deleteIst,
         });
         Choerodon.handleResponseError(error);
       });
@@ -393,12 +381,8 @@ class Instances extends Component {
    * 关闭删除数据的模态框
    */
   closeDeleteModal(id) {
-    const { deleteIst: oldDeleteIst } = this.state;
-    const deleteIst = _.assign({}, oldDeleteIst, {[id]: false});
-
     this.setState({
       openRemove: false,
-      deleteIst,
     });
   }
 
@@ -553,33 +537,6 @@ class Instances extends Component {
     return <StatusIcon name={code} status={status || ""} error={error || ""} />;
   }
 
-  renderVersion(record) {
-    const {
-      intl: { formatMessage },
-    } = this.props;
-    const { id, appVersion, commandVersion, status } = record;
-    const { deleteIst } = this.state;
-    let uploadIcon = null;
-    if (appVersion !== commandVersion) {
-      if (status !== "failed") {
-        uploadIcon = "upload";
-      } else {
-        uploadIcon = "failed";
-      }
-    } else {
-      uploadIcon = "text";
-    }
-    return (
-      <UploadIcon
-        istId={id}
-        isDelete={deleteIst}
-        status={uploadIcon}
-        text={appVersion}
-        prevText={commandVersion}
-      />
-    );
-  }
-
   renderAppName(record) {
     const { id: currentProject } = AppState.currentMenuType;
     const { projectId, appName } = record;
@@ -675,7 +632,7 @@ class Instances extends Component {
         key: "version",
         filters: [],
         filteredValue: filters.version || [],
-        render: this.renderVersion,
+        render: record => <UploadIcon dataSource={record}/>,
       },
       {
         title: <FormattedMessage id="deploy.app" />,

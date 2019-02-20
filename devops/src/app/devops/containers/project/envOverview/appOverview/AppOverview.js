@@ -87,8 +87,6 @@ class AppOverview extends Component {
 
   @observable istName = "";
 
-  @observable isDelete = {};
-
   @observable confirmType = "";
 
   @observable confirmLoading = false;
@@ -174,27 +172,27 @@ class AppOverview extends Component {
   getPanelHeader(data) {
     const { intl } = this.props;
     const {
-      id: istId,
+      // id: istId,
       status,
       code,
       error,
-      appVersion,
-      appVersionId,
-      id,
-      commandVersion,
-      commandVersionId,
-      appId,
+      // appVersion,
+      // appVersionId,
+      // id,
+      // commandVersion,
+      // commandVersionId,
+      // appId,
     } = data;
-    let uploadIcon = null;
-    if (appVersionId !== commandVersionId) {
-      if (status !== "failed") {
-        uploadIcon = "upload";
-      } else {
-        uploadIcon = "failed";
-      }
-    } else {
-      uploadIcon = "text";
-    }
+    // let uploadIcon = null;
+    // if (appVersionId !== commandVersionId) {
+    //   if (status !== "failed") {
+    //     uploadIcon = "upload";
+    //   } else {
+    //     uploadIcon = "failed";
+    //   }
+    // } else {
+    //   uploadIcon = "text";
+    // }
     return (
       <div className="c7n-envow-ist-header-wrap">
         <Icon type="navigate_next" />
@@ -230,13 +228,8 @@ class AppOverview extends Component {
             <FormattedMessage id="app.appVersion" />
             :&nbsp;&nbsp;
           </span>
-          <UploadIcon
-            istId={istId}
-            status={uploadIcon}
-            text={appVersion}
-            prevText={commandVersion}
-            isDelete={this.isDelete}
-          />
+
+          <UploadIcon dataSource={data}/>
         </span>
         <div className="c7n-appow-pod-status">
           <PodStatus dataSource={data} />
@@ -403,13 +396,15 @@ class AppOverview extends Component {
    * @param res 是否重新部署需要重载数据
    */
   @action
-  handleCancelUp = () => {
+  handleCancelUp = (res) => {
     this.visibleUp = false;
+    if (res) {
+      this.loadIstOverview();
+    }
   };
 
   closeDeleteModal(id) {
     this.openRemove = false;
-    this.isDelete[id] = false;
   }
 
   /**
@@ -430,7 +425,6 @@ class AppOverview extends Component {
   handleDelete = id => {
     const projectId = parseInt(AppState.currentMenuType.id, 10);
     this.loading = true;
-    this.isDelete[id] = true;
     InstancesStore.deleteInstance(projectId, id)
       .then(res => {
         if (res && res.failed) {
@@ -441,11 +435,9 @@ class AppOverview extends Component {
           this.loading = false;
           this.loadIstOverview();
         }
-        this.isDelete[id] = false;
       })
       .catch(error => {
         this.loading = false;
-        this.isDelete[id] = false;
         Choerodon.handleResponseError(error);
       });
   };
