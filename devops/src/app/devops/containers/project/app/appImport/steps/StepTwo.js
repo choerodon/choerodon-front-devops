@@ -32,7 +32,7 @@ class StepTwo extends Component {
   componentDidMount() {
     const { store } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    store.loadSelectData(projectId);
+    store.loadSelectData(projectId, true);
   }
 
   handleSubmit = (e) => {
