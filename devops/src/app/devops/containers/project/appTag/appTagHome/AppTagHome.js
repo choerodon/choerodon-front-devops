@@ -62,6 +62,7 @@ class AppTagHome extends Component {
   handleRefresh = () => {
     const { page, pageSize } = this.state;
     this.loadTagData(page, pageSize);
+    DevPipelineStore.queryAppData(AppState.currentMenuType.id);
   };
 
   /**
