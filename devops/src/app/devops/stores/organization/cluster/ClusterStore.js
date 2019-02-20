@@ -363,6 +363,10 @@ class ClusterStore {
     return axios.delete(`/devops/v1/organizations/${orgId}/clusters/${id}`);
   }
 
+  clusterWithEnc(orgId, id) {
+    return axios.get(`/devops/v1/organizations/${orgId}/clusters/${id}/connect_envs`);
+  }
+
   loadShell = (orgId, id) =>
     axios.get(`/devops/v1/organizations/${orgId}/clusters/query_shell/${id}`)
       .then(data => {

@@ -207,11 +207,21 @@ class Cluster extends Component {
   };
 
   delClusterShow = (id, name) => {
-    this.setState({
-      showDel: true,
-      delId: id,
-      clsName: name,
-    })
+    const { ClusterStore } = this.props;
+    const { organizationId } = AppState.currentMenuType;
+    ClusterStore.clusterWithEnc(organizationId, id)
+      .then((data) => {
+        console.log(data)
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          this.setState({
+            delId: id,
+            showDel: true,
+            clsName: name,
+          })
+        }
+      });
   };
 
   delCluster = () => {
