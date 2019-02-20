@@ -125,7 +125,6 @@ class CreateNetwork extends Component {
           envId,
           endPoints: endps,
           targetIps,
-          portName,
           targetport,
           externalIps,
           portKeys,
@@ -167,7 +166,7 @@ class CreateNetwork extends Component {
           endPoints[targetIps.join(",")] = _.map(
             _.filter(endps, item => item || item === 0),
             item => ({
-              name: portName[item],
+              name: null,
               port: Number(targetport[item]),
             })
           );
@@ -291,7 +290,7 @@ class CreateNetwork extends Component {
         } else {
           const list = {
             targetKeys: ["keywords", "values"],
-            endPoints: ["portName", "targetport"],
+            endPoints: ["targetport"],
           };
           this[item] = 0;
           getFieldDecorator(item, { initialValue: [] });
@@ -738,30 +737,7 @@ class CreateNetwork extends Component {
     const targetPortItems = _.map(endPoints, (k, index) => (
       <div key={`endPoints-${k}`} className="network-port-wrap">
         <FormItem
-          className={`c7n-select_${
-            endPoints.length > 1 ? "portL" : 240
-          } network-panel-form network-port-form`}
-          {...formItemLayout}
-        >
-          {getFieldDecorator(`portName[${k}]`, {
-            rules: [
-              {
-                required: true,
-                message: intl.formatMessage({ id: "required" }),
-              },
-            ],
-          })(
-            <Input
-              type="text"
-              disabled={!getFieldValue("envId")}
-              label={<FormattedMessage id="network.target.portName" />}
-            />
-          )}
-        </FormItem>
-        <FormItem
-          className={`c7n-select_${
-            endPoints.length > 1 ? "portL" : 240
-          } network-panel-form network-port-form`}
+          className={`c7n-select_480 network-panel-form network-port-form`}
           {...formItemLayout}
         >
           {getFieldDecorator(`targetport[${k}]`, {
