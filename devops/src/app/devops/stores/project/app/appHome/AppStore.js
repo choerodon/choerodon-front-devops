@@ -195,13 +195,16 @@ class AppStore {
     this.setPageInfo(page);
   };
 
-  loadSelectData = projectId =>
-    axios.get(`/devops/v1/projects/${projectId}/apps/template`).then(data => {
+  loadSelectData = (projectId, isPredefined) => {
+    const url = isPredefined ? `/devops/v1/projects/${projectId}/apps/template?isPredefined=${isPredefined}` :
+      `/devops/v1/projects/${projectId}/apps/template`;
+    axios.get(url).then(data => {
       const res = this.handleProptError(data);
       if (res) {
         this.setSelectData(res);
       }
     });
+  };
 
   loadDataById = (projectId, id) =>
     axios
