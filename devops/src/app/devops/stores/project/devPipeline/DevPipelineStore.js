@@ -84,8 +84,9 @@ class DevPipelineStore {
     } else if (localStorage.recentApp) {
       recents = JSON.parse(localStorage.recentApp);
     }
-    return recents.filter(
-      value => findDataIndex(this.appData, value) !== -1,
+    const permissionApp = this.appData.filter(value => value.permission === true);
+    return permissionApp.filter(
+      value => findDataIndex(recents, value) !== -1,
     );
   }
 

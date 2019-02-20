@@ -306,6 +306,7 @@ class BranchHome extends Component {
     const pagination = BranchStore.getPageInfo;
     const { filters, paras, sort } = this.state;
     this.tableChange(pagination, filters, sort, paras);
+    DevPipelineStore.queryAppData(AppState.currentMenuType.id);
   };
 
   /**

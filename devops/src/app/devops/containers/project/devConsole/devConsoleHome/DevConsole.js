@@ -150,6 +150,7 @@ class DevConsole extends Component {
     this.loadCommitData();
     this.loadPipeline(branchIssue);
     AppVersionStore.loadData(projectId, appId);
+    DevPipelineStore.queryAppData(projectId);
   };
 
   /**

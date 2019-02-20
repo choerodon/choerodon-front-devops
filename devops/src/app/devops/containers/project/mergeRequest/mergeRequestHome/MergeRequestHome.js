@@ -47,6 +47,7 @@ class MergeRequestHome extends Component {
       MergeRequestStore.pageInfo.current - 1,
       MergeRequestStore.pageInfo.pageSize,
     );
+    DevPipelineStore.queryAppData(AppState.currentMenuType.id);
   };
 
   tabChange = (key) => {
