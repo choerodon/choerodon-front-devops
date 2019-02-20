@@ -22,7 +22,7 @@ import "../../../main.scss";
 import "../createNetwork/CreateNetwork.scss";
 import "./EditNetwork.scss";
 import InterceptMask from "../../../../components/interceptMask/InterceptMask";
-import Tips from "../createNetwork/CreateNetwork";
+import Tips from "../../../../components/Tips/Tips";
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -118,7 +118,6 @@ class EditNetwork extends Component {
           envId,
           endPoints: endps,
           targetIps,
-          portName,
           targetport,
           externalIps,
           portKeys,
@@ -158,7 +157,7 @@ class EditNetwork extends Component {
           endPoints[targetIps.join(",")] = _.map(
             _.filter(endps, item => item || item === 0),
             item => ({
-              name: portName[item],
+              name: null,
               port: Number(targetport[item]),
             })
           );
@@ -345,7 +344,7 @@ class EditNetwork extends Component {
 
     const list = {
       targetKeys: ["keywords", "values"],
-      endPoints: ["portName", "targetport"],
+      endPoints: ["targetport"],
     };
     const { id } = AppState.currentMenuType;
     const keys = getFieldValue(key);
@@ -911,12 +910,10 @@ class EditNetwork extends Component {
     const flag = _.keys(endPointsData)[0];
     const targetIps = flag ? _.split(flag, ",") : undefined;
     const endport = [];
-    const portName = [];
     const targetport = [];
     if (flag) {
       _.map(endPointsData[flag], (item, index) => {
         endport.push(index);
-        portName.push(item.name);
         targetport.push(item.port);
       });
       if (this.endPoints === 0) {
@@ -928,31 +925,7 @@ class EditNetwork extends Component {
     const targetPortItems = _.map(endPoints, (k, index) => (
       <div key={`endPoints-${k}`} className="network-port-wrap">
         <FormItem
-          className={`c7n-select_${
-            endPoints.length > 1 ? "portL" : 240
-          } network-panel-form network-port-form`}
-          {...formItemLayout}
-        >
-          {getFieldDecorator(`portName[${k}]`, {
-            rules: [
-              {
-                required: true,
-                message: intl.formatMessage({ id: "required" }),
-              },
-            ],
-            initialValue: portName[k],
-          })(
-            <Input
-              type="text"
-              disabled={!getFieldValue("envId")}
-              label={<FormattedMessage id="network.target.portName" />}
-            />
-          )}
-        </FormItem>
-        <FormItem
-          className={`c7n-select_${
-            endPoints.length > 1 ? "portL" : 240
-          } network-panel-form network-port-form`}
+          className={`c7n-select_480 network-panel-form network-port-form`}
           {...formItemLayout}
         >
           {getFieldDecorator(`targetport[${k}]`, {

@@ -275,7 +275,7 @@ class NetworkHome extends Component {
       _.map(portList, (item, index) => {
         port.push(
           <div className="network-column-instance" key={index}>
-            <span>{item.name}：{item.port}</span>
+            <span>{item.port}</span>
           </div>
         )
       });
