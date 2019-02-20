@@ -165,10 +165,19 @@ class DeploymentAppHome extends Component {
       const topEnvId = EnvOverviewStore.getTpEnvId;
 
       EnvOverviewStore.loadActiveEnv(projectId).then(data => {
+        // 当前系统中活跃的环境
+        // 从部署总览进入应用部署会默认选择环境进行加载配置文件
+        // 防止系统环境未连接时，跳转后加载未连接环境的配置文件
+        const activeEnvs = _.filter(data, item => item.connect);
+        const activeEnv = activeEnvs.length ? activeEnvs[0].id : undefined;
+
+        // 系统环境是否连接
         const properEnv = _.find(data, {connect: true, id: topEnvId});
 
+        const initEnvId = properEnv ? properEnv.id : activeEnv;
+
         this.setState({
-          envId: properEnv ? properEnv.id : data[0].id,
+          envId: initEnvId,
           envDto: properEnv || data[0],
         });
 

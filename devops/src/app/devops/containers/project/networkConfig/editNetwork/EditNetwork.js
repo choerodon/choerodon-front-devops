@@ -22,6 +22,7 @@ import "../../../main.scss";
 import "../createNetwork/CreateNetwork.scss";
 import "./EditNetwork.scss";
 import InterceptMask from "../../../../components/interceptMask/InterceptMask";
+import Tips from "../createNetwork/CreateNetwork";
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -659,17 +660,18 @@ class EditNetwork extends Component {
     const {
       form: { getFieldValue },
     } = this.props;
-    const p = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
+    const p = /^((?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\/)*([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/;
+
     const keyCount = _.countBy(getFieldValue("keywords"));
     if (value) {
       if (p.test(value)) {
         if (keyCount[value] < 2) {
           callback();
         } else {
-          callback(intl.formatMessage({ id: "network.key.check.repeat" }));
+          callback(intl.formatMessage({ id: "network.label.check.repeat" }));
         }
       } else {
-        callback(intl.formatMessage({ id: "network.key.check.failed" }));
+        callback(intl.formatMessage({ id: "network.label.check.failed" }));
       }
     } else {
       callback();
@@ -1018,6 +1020,7 @@ class EditNetwork extends Component {
               type="text"
               disabled={!getFieldValue("envId")}
               label={<FormattedMessage id="network.config.keyword" />}
+              suffix={<Tips type="form" data="network.label.key.rule" />}
             />
           )}
         </FormItem>
@@ -1044,6 +1047,7 @@ class EditNetwork extends Component {
               type="text"
               disabled={!getFieldValue("envId")}
               label={<FormattedMessage id="network.config.value" />}
+              suffix={<Tips type="form" data="network.label.value.rule" />}
             />
           )}
         </FormItem>

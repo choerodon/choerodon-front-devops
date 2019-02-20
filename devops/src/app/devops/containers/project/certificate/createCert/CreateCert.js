@@ -173,7 +173,7 @@ class CreateCert extends Component {
     const { getFieldValue } = form;
     let p = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)+)$/;
     if (type === 'choose') {
-      p = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)?)$/
+      p = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)$/
     }
     const keyCount = _.countBy(getFieldValue("domains"));
     if (p.test(value)) {
