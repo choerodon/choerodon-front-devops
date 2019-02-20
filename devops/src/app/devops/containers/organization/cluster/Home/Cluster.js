@@ -744,21 +744,6 @@ class Cluster extends Component {
           </Permission>
         </Header>
         {clusters && clusters.length ? <Content code={clusters && clusters.length ? 'cluster' : ''} values={{ name }}>
-          {show && <Sidebar
-            title={this.showTitle(sideType)}
-            visible={show}
-            onOk={(sideType === 'token' || sideType === 'key') ? this.handleCancelFun : this.handleSubmit}
-            onCancel={this.handleCancelFun.bind(this)}
-            confirmLoading={submitting}
-            okCancel={showBtns}
-            cancelText={<FormattedMessage id="cancel" />}
-            okText={this.okText(sideType)}
-          >
-            <Content code={`cluster.${sideType}`} values={{ clsName: titleName }} className="sidebar-content">
-              {this.getFormContent()}
-              <InterceptMask visible={submitting} />
-            </Content>
-          </Sidebar>}
           {loading ? <LoadingBar display /> : <React.Fragment>
             {this.getClusterList()}
             {clusters.length > this.state.size ? <div className="c7n-cls-pagination">
@@ -801,6 +786,21 @@ class Cluster extends Component {
             </Button>
           </Card>
         </Content>}
+        {show && <Sidebar
+          title={this.showTitle(sideType)}
+          visible={show}
+          onOk={(sideType === 'token' || sideType === 'key') ? this.handleCancelFun : this.handleSubmit}
+          onCancel={this.handleCancelFun.bind(this)}
+          confirmLoading={submitting}
+          okCancel={showBtns}
+          cancelText={<FormattedMessage id="cancel" />}
+          okText={this.okText(sideType)}
+        >
+          <Content code={`cluster.${sideType}`} values={{ clsName: titleName }} className="sidebar-content">
+            {this.getFormContent()}
+            <InterceptMask visible={submitting} />
+          </Content>
+        </Sidebar>}
         <Modal
           className="c7n-cls-del-modal"
           title={<FormattedMessage id="cluster.del.title" values={{ clsName }} />}
