@@ -104,13 +104,31 @@ class EditNetwork extends Component {
   };
 
   handleSubmit = e => {
+
     e.preventDefault();
+
     const { form, store, netId } = this.props;
     const { network } = this.state;
     const { id } = AppState.currentMenuType;
+
+    let enableSubmit = true;
+
+    const _changeStatus = (flag) => {
+      enableSubmit = flag;
+    };
+
+    const _pushUnRecordIp = (ips, ip) => {
+      if (ip) {
+        ips.push(ip);
+      }
+    };
+
+    const _unInputIp = this.checkUnRecordIp(this.ipSelect, _changeStatus);
+    const _unInputEndIp = this.checkUnRecordIp(this.targetIpSelect, _changeStatus);
+
     this.setState({ submitting: true });
     form.validateFields((err, data) => {
-      if (!err) {
+      if (!err && enableSubmit) {
         const {
           name,
           appId,
@@ -129,10 +147,17 @@ class EditNetwork extends Component {
           config,
           values,
         } = data;
+
+        const _externalIps = externalIps || [];
+        const _targetIps = targetIps || [];
+        _pushUnRecordIp(_externalIps, _unInputIp);
+        _pushUnRecordIp(_targetIps, _unInputEndIp);
+
         const appIst = appInstance ? _.map(appInstance, item => item) : null;
         const ports = [];
         const label = {};
         const endPoints = {};
+
         if (portKeys) {
           _.forEach(portKeys, item => {
             if (item || item === 0) {
@@ -145,6 +170,7 @@ class EditNetwork extends Component {
             }
           });
         }
+
         if (targetKeys) {
           _.forEach(targetKeys, item => {
             if (item || item === 0) {
@@ -153,8 +179,9 @@ class EditNetwork extends Component {
             }
           });
         }
-        if (endps && endps.length && targetIps) {
-          endPoints[targetIps.join(",")] = _.map(
+
+        if (endps && endps.length && _targetIps) {
+          endPoints[_targetIps.join(",")] = _.map(
             _.filter(endps, item => item || item === 0),
             item => ({
               name: null,
@@ -175,12 +202,14 @@ class EditNetwork extends Component {
           config: { externalIps: oldIps, ports: oldPorts },
           type,
         } = network;
+
         const oldIst = _.map(oldAppInstance, item => item.code);
         const oldPortId = _.map(oldPorts, item => ({
           nodePort: item.nodePort ? _.toNumber(item.nodePort) : null,
           port: item.port ? _.toNumber(item.port) : null,
           targetPort: item.targetPort ? _.toNumber(item.targetPort) : null,
         }));
+
         const oldNetwork = {
           name: oldName,
           appId: oldAppId || null,
@@ -197,8 +226,7 @@ class EditNetwork extends Component {
           appId: appId || null,
           appInstance: appIst,
           envId,
-          externalIp:
-            externalIps && externalIps.length ? externalIps.join(",") : null,
+          externalIp: _externalIps.length ? _externalIps.join(",") : null,
           ports,
           label: !_.isEmpty(label) ? label : null,
           endPoints: !_.isEmpty(endPoints) ? endPoints : null,
@@ -591,6 +619,34 @@ class EditNetwork extends Component {
     } else {
       callback();
     }
+  };
+
+  /**
+   * 校验 form 组件无法记录的 ip
+   * @param ref 组件的引用
+   * @param callback 改变提交状态
+   * @returns {*}
+   */
+  checkUnRecordIp = (ref, callback) => {
+    const IP_EXPR = /^((\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])\.){3}(\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])$/;
+    const ENABLE_SUBMIT = true;
+    const ipInputValue = ref.state.inputValue;
+    let unInputIp = null;
+
+    if (ref && ipInputValue) {
+      const ipValue = ref.state.value;
+
+      if (IP_EXPR.test(ipInputValue)) {
+        if (!ipValue.includes(ipInputValue)) {
+          unInputIp = ipInputValue;
+        }
+        callback(ENABLE_SUBMIT);
+      } else {
+        callback(!ENABLE_SUBMIT);
+      }
+    }
+
+    return unInputIp;
   };
 
   /**
