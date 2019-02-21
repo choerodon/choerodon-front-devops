@@ -88,7 +88,7 @@ class EditableCell extends Component {
         return;
       }
       this.toggleEdit();
-      if (values.key === '') {
+      if (values.key === '' || values.key === null) {
         record.keys = '';
       }
       handleSave({ ...record, ...values });
@@ -105,7 +105,7 @@ class EditableCell extends Component {
     const { handleAdd } = this.props;
     const { oldValue, pasting } = this.state;
     if (pasting) {
-      const value = oldValue !== '' ? (e.target.value.split(oldValue)[1] || e.target.value) : e.target.value;
+      const value = oldValue !== '' ? (e.target.value.substring(oldValue.length) || e.target.value) : e.target.value;
       if (value.indexOf('=') > -1) {
         const kVlaue = [];
         _.map(value.split('\n'), s => {
