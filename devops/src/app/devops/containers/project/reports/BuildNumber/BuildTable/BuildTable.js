@@ -5,11 +5,10 @@ import { withRouter } from 'react-router-dom';
 import { Button, Tooltip, Table, Popover } from 'choerodon-ui';
 import { Permission, stores } from 'choerodon-front-boot';
 import TimeAgo from 'timeago-react';
-import moment from 'moment';
-import MouserOverWrapper from '../../../../components/MouseOverWrapper';
-import CiPipelineStore from '../../../../stores/project/ciPipelineManage';
-import ReportsStore from '../../../../stores/project/reports';
-import '../../ciPipelineManage/ciPipelineHome/CiPipelineHome.scss';
+import MouserOverWrapper from '../../../../../components/MouseOverWrapper/index';
+import CiPipelineStore from '../../../../../stores/project/ciPipelineManage/index';
+import ReportsStore from '../../../../../stores/project/reports/index';
+import '../../../ciPipelineManage/ciPipelineHome/CiPipelineHome.scss';
 import './BuildTable.scss';
 
 const { AppState } = stores;
@@ -310,15 +309,12 @@ class BuildTable extends Component {
   };
 
   handleAction(record) {
-    const { loadDatas } = this.props;
     if (record.status === 'running' || record.status === 'pending') {
       CiPipelineStore.cancelPipeline(record.gitlabProjectId, record.pipelineId);
     } else {
       CiPipelineStore.retryPipeline(record.gitlabProjectId, record.pipelineId);
     }
-    ReportsStore.setStartTime(moment().subtract(6, 'days'));
-    ReportsStore.setEndTime(moment());
-    loadDatas();
+    this.tableChange(ReportsStore.pageInfo)
   }
 
   /**
@@ -334,15 +330,15 @@ class BuildTable extends Component {
   };
 
   render() {
-    const { loading, dataSource, pagination } = this.props;
+    const { loading, pageInfo, allData } = ReportsStore;
     return (
       <Table
         onChange={this.tableChange}
         loading={loading}
         columns={this.getColumns()}
         className="c7n-buildTable-table"
-        dataSource={dataSource}
-        pagination={pagination}
+        dataSource={allData}
+        pagination={pageInfo}
         filterBar={false}
         rowKey={record => record.pipelineId}
       />

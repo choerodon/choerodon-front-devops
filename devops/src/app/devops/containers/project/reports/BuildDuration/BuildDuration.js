@@ -10,7 +10,7 @@ import ChartSwitch from '../Component/ChartSwitch';
 import './BuildDuration.scss';
 import TimePicker from '../Component/TimePicker';
 import NoChart from '../Component/NoChart';
-import BuildTable from '../BuildTable/BuildTable';
+import BuildTable from '../BuildNumber/BuildTable/BuildTable';
 import LoadingBar from '../../../../components/loadingBar/LoadingBar';
 
 
@@ -247,7 +247,7 @@ class BuildDuration extends Component {
     const { intl: { formatMessage }, history, ReportsStore } = this.props;
     const { dateType } = this.state;
     const { id, name, type, organizationId } = AppState.currentMenuType;
-    const { getAllApps, appId, echartsLoading, loading, pageInfo, allData, isRefresh } = ReportsStore;
+    const { getAllApps, appId, echartsLoading, isRefresh } = ReportsStore;
 
     const content = (getAllApps && getAllApps.length ? <React.Fragment>
       <div className="c7n-buildDuration-select">
@@ -284,7 +284,7 @@ class BuildDuration extends Component {
       <Spin spinning={echartsLoading}>
         <ReactEcharts className="c7n-buildDuration-echarts" option={this.getOption()} />
       </Spin>
-      <BuildTable loading={loading} dataSource={allData} pagination={pageInfo} loadDatas={this.loadDatas} />
+      <BuildTable />
     </React.Fragment> : <NoChart type="app" />);
 
     return (<Page

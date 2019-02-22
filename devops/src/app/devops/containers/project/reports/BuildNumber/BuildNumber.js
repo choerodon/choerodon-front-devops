@@ -9,7 +9,7 @@ import ChartSwitch from '../Component/ChartSwitch';
 import './BuildNumber.scss';
 import TimePicker from '../Component/TimePicker';
 import NoChart from '../Component/NoChart';
-import BuildTable from '../BuildTable/BuildTable';
+import BuildTable from './BuildTable/BuildTable';
 import LoadingBar from '../../../../components/loadingBar/LoadingBar';
 import BuildChart from './BuildChart';
 
@@ -116,7 +116,7 @@ class BuildNumber extends Component {
     const { id, name, type, organizationId } = AppState.currentMenuType;
     const { location: { state } } = history;
     const backPath = state && state.backPath ? state.backPath : "reports";
-    const { getAllApps, appId, echartsLoading, loading, pageInfo, allData, isRefresh } = ReportsStore;
+    const { getAllApps, appId, echartsLoading, isRefresh } = ReportsStore;
 
     const content = (getAllApps.length ? <React.Fragment>
       <div className="c7n-buildNumber-select">
@@ -151,7 +151,7 @@ class BuildNumber extends Component {
         />
       </div>
       <BuildChart echartsLoading={echartsLoading} height="400px" top="15%" languageType="report" />
-      <BuildTable loading={loading} dataSource={allData} pagination={pageInfo} loadDatas={this.loadDatas} />
+      <BuildTable />
     </React.Fragment> : <NoChart type="app" />);
 
     return (<Page
