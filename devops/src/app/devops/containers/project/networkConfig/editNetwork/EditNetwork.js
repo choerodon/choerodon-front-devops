@@ -630,11 +630,11 @@ class EditNetwork extends Component {
   checkUnRecordIp = (ref, callback) => {
     const IP_EXPR = /^((\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])\.){3}(\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])$/;
     const ENABLE_SUBMIT = true;
-    const ipInputValue = ref.state.inputValue;
     let unInputIp = null;
 
-    if (ref && ipInputValue) {
+    if (ref && ref.state.inputValue) {
       const ipValue = ref.state.value;
+      const ipInputValue = ref.state.inputValue;
 
       if (IP_EXPR.test(ipInputValue)) {
         if (!ipValue.includes(ipInputValue)) {

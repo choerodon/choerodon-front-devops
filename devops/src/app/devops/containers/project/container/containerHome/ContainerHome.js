@@ -1012,8 +1012,7 @@ class ContainerHome extends Component {
     const projectName = AppState.currentMenuType.name;
     const initApp =
       envData && envData.length && (appProDom.length || appPubDom.length)
-        ? ContainerStore.getAppId
-        : undefined;
+        ? ContainerStore.getAppId || undefined : undefined;
     let tempApp = null;
     if (appProDom.filter(i => parseInt(i.key) === initApp).length === 0 && appPubDom.filter(i => parseInt(i.key)=== initApp).length === 0 && initApp) {
       const appData = ContainerStore.getAppData;

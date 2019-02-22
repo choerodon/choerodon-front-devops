@@ -47,8 +47,7 @@ class DeployAppHome extends Component {
    */
   onPageChange =(page, size) => {
     const { activeTab, projectId } = this.state;
-    const key = activeTab;
-    if (key === '1') {
+    if (activeTab === '1') {
       SelectAppStore.loadData({
         projectId,
         page: page - 1,
@@ -292,6 +291,7 @@ class DeployAppHome extends Component {
     this.clearInputValue(key);
     this.setState({
       activeTab: key,
+      app: undefined,
     });
   };
 
@@ -366,7 +366,7 @@ class DeployAppHome extends Component {
                             <div
                               key={card.id}
                               role="none"
-                              className={`c7n-store-card ${app && app.id === card.id && !isMarket && 'c7n-card-active'}`}
+                              className={`c7n-store-card ${app && app.id === card.id && !isMarket ? 'c7n-card-active' : ''}`}
                               onClick={this.handleSelectApp.bind(this, card)}
                             >
                               {app && !isMarket && app.id === card.id && <span className="span-icon-check"><i className="icon icon-check" /></span> }
@@ -425,7 +425,7 @@ class DeployAppHome extends Component {
                             <div
                               key={card.id}
                               role="none"
-                              className={`c7n-store-card ${app && isMarket && app.appId === card.appId && 'c7n-card-active'}`}
+                              className={`c7n-store-card ${app && isMarket && app.appId === card.appId ? 'c7n-card-active' : ''}`}
                               onClick={this.handleSelectApp.bind(this, card)}
                             >
                               {app && app.appId === card.appId && isMarket && <span className="span-icon-check"><i className="icon icon-check " /></span> }

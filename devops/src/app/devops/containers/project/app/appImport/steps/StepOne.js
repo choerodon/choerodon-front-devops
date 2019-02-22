@@ -67,7 +67,7 @@ class StepOne extends Component {
               } else {
                 values.key = 'step0';
                 values.platformType = platformType;
-                onNext(values);
+                onNext(values, 1);
               }
             });
         }
@@ -76,7 +76,7 @@ class StepOne extends Component {
       const values = getFieldsValue();
       values.key = 'step0';
       values.platformType = this.state.platformType;
-      onNext(values);
+      onNext(values, 1);
     }
   };
 

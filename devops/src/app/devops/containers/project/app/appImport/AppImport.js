@@ -21,8 +21,7 @@ class AppImport extends Component {
     };
   }
 
-  next = (values) => {
-    const current = this.state.current + 1;
+  next = (values, current) => {
     const data = this.state.data;
     switch ( values.key ) {
       case 'step0':

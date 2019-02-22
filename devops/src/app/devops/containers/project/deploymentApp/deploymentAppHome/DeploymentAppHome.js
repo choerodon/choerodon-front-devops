@@ -512,6 +512,7 @@ class DeploymentAppHome extends Component {
    * 渲染第一步
    */
   handleRenderApp = () => {
+    const {id: projectId, type, organizationId} = AppState.currentMenuType;
     const {
       DeploymentAppStore,
       intl: {formatMessage},
@@ -548,6 +549,9 @@ class DeploymentAppHome extends Component {
               )}
             </div>
             <Permission
+              organizationId={organizationId}
+              projectId={projectId}
+              type={type}
               service={[
                 "devops-service.application.pageByOptions",
                 "devops-service.application-market.listAllApp",

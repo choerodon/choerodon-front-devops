@@ -44,14 +44,14 @@ class StepTwo extends Component {
         if (!err) {
           values.key = 'step1';
           values.template = this.state.template;
-          onNext(values);
+          onNext(values, 2);
         }
       });
     } else {
       const values = getFieldsValue();
       values.key = 'step1';
       values.template = this.state.template;
-      onNext(values);
+      onNext(values, 2);
     }
   };
 

@@ -82,7 +82,7 @@ class StepThree extends Component {
       userIds: selectedRowKeys,
       membersInfo: selected,
     };
-    onNext(values);
+    onNext(values, 3);
   };
 
   render() {

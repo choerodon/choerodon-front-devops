@@ -142,13 +142,13 @@ class OperationLog extends Component {
                 <div className="c7n-operate-log-content" key={index}>
                   <div className="c7n-log-date">
                     <div className="c7n-date-year">{createTime && index ? createTime.slice(0, 4) : null}</div>
-                    <div className={index ? "" : "mg-top-43"}>{createTime ? createTime.slice(5, 16) : null}</div>
+                    <div className={index === 0 && istLog.length > 1 ? "mg-top-43" : ""}>{createTime ? createTime.slice(5, 16) : null}</div>
                   </div>
                   {index ? (<div className="c7n-log-step">
                     <Icon type="wait_circle"/>
-                  </div>) : (<div className="c7n-date-recent">
+                  </div>) : (istLog.length > 1 ? (<div className="c7n-date-recent">
                     <FormattedMessage id="recent"/>
-                  </div>)
+                  </div>) : null)
                   }
                   <div className="c7n-log-title">
                     {this.getOperation(type)}
