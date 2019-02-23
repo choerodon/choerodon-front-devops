@@ -50,7 +50,7 @@ function UploadIcon (props) {
         <Icon type="error" className="c7n-instance-upload-failed" />
       </Tooltip> : null}
     </Fragment>),
-    normal: (ac, cv) => (<span className="c7n-instance-upload-text">{cv || av}</span>),
+    normal: (av, cv) => (<span className="c7n-instance-upload-text">{cv || av}</span>),
   };
 
   let type = "normal";
