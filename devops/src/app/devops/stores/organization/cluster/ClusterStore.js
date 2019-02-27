@@ -7,6 +7,7 @@ const HEIGHT =
   window.innerHeight ||
   document.documentElement.clientHeight ||
   document.body.clientHeight;
+
 @store("ClusterStore")
 class ClusterStore {
   @observable clusterData = [];
@@ -27,7 +28,7 @@ class ClusterStore {
 
   @observable podData = [];
 
-  @observable nodeData = [];
+  @observable nodeData = {};
 
   @observable tagKeys = [];
 
@@ -45,11 +46,7 @@ class ClusterStore {
     pageSize: HEIGHT <= 900 ? 5 : 8,
   };
 
-  @observable nodePageInfo = {
-    current: 1,
-    total: 0,
-    pageSize: 10,
-  };
+  @observable nodePageInfo = {};
 
   @observable Info = {
     filters: {},
@@ -67,14 +64,25 @@ class ClusterStore {
     return this.pageInfo;
   }
 
-  @action setNodePageInfo(page) {
-    this.nodePageInfo.current = page.number + 1;
-    this.nodePageInfo.total = page.totalElements;
-    this.nodePageInfo.pageSize = page.size;
+  @action setNodePageInfo(id, pagination) {
+    const tableInfo = {
+      current: pagination.number + 1,
+      total: pagination.totalElements,
+      pageSize: pagination.size,
+    };
+    this.nodePageInfo = _.assign({}, this.nodePageInfo, { [id]: tableInfo });
   }
 
   @computed get getNodePageInfo() {
     return this.nodePageInfo;
+  }
+
+  @computed get getNodeData() {
+    return this.nodeData;
+  }
+
+  @action setNodeData(id, data) {
+    this.nodeData = _.assign({}, this.nodeData, { [id]: data });
   }
 
   @action setClsPageInfo(page) {
@@ -143,14 +151,6 @@ class ClusterStore {
     this.podData = data;
   }
 
-  @computed get getNodeData() {
-    return this.nodeData;
-  }
-
-  @action setNodeData(data) {
-    this.nodeData = data;
-  }
-
   @action setInfo(Info) {
     this.Info = Info;
   }
@@ -183,8 +183,8 @@ class ClusterStore {
     this.tagKeys = tagKeys;
   }
 
-  @action setActiveKey(activeKey) {
-    this.activeKey = activeKey;
+  @action setActiveKey(key) {
+    this.activeKey = key;
   }
 
   @computed get getActiveKey() {
@@ -203,21 +203,21 @@ class ClusterStore {
     postData = {
       searchParam: {},
       param: "",
-    }
+    },
   ) => {
     this.changeLoading(true);
     return axios
       .post(
         `/devops/v1/organizations/${orgId}/clusters/page_cluster?page=${page}&size=${size}&sort=${sort.field ||
-          "id"},${sort.order}`,
-        JSON.stringify(postData)
+        "id"},${sort.order}`,
+        JSON.stringify(postData),
       )
       .then(data => {
         const res = handleProptError(data);
         if (res) {
           const clsSort = _.concat(
             _.filter(res.content, ["connect", true]),
-            _.filter(res.content, ["connect", false])
+            _.filter(res.content, ["connect", false]),
           );
           this.setData(clsSort);
           const { number, size, totalElements } = data;
@@ -238,7 +238,7 @@ class ClusterStore {
     postData = {
       searchParam: {},
       param: "",
-    }
+    },
   ) => {
     this.changeLoading(true);
     return axios
@@ -259,27 +259,21 @@ class ClusterStore {
   loadMoreNode = (
     orgId,
     clusterId,
-    page = this.nodePageInfo.current - 1,
-    size = this.nodePageInfo.pageSize,
-    sort = { field: "id", order: "desc" },
-    postData = {
-      searchParam: {},
-      param: "",
-    }
-  ) => {
-    return axios.get(`/devops/v1/organizations/${orgId}/clusters/page_nodes?cluster_id=${clusterId}
-    &page=${page}&size=${size}&sort=${sort.field || "id"},${sort.order}`, JSON.stringify(postData))
-      .then(data => {
-        const res = handleProptError(data);
-        if (res) {
-          this.setNodeData(res.content);
-          const { number, size, totalElements } = data;
-          const page = { number, size, totalElements };
-          this.setNodePageInfo(page);
-        }
-        return data;
-      });
-  };
+    page = 0,
+    size = 10,
+  ) => axios.get(`/devops/v1/organizations/${orgId}/clusters/page_nodes?cluster_id=${clusterId}&page=${page}&size=${size}&sort=id,desc`)
+    .then(data => {
+
+      const res = handleProptError(data);
+      if (res) {
+        const { number, size, totalElements, content } = data;
+
+        this.setNodeData(clusterId, content);
+        this.setNodePageInfo(clusterId, { number, size, totalElements });
+      }
+      return data;
+
+    });
 
   loadPro = (
     orgId,
@@ -287,14 +281,14 @@ class ClusterStore {
     page = this.pageInfo.current - 1,
     size = this.pageInfo.pageSize,
     sort = { field: "id", order: "desc" },
-    postData = []
+    postData = [],
   ) => {
     this.tableLoading(true);
     const url = clusterId
       ? `/devops/v1/organizations/${orgId}/clusters/page_projects?clusterId=${clusterId}&page=${page}&size=${size}&sort=${sort.field ||
-          "id"},${sort.order}`
+      "id"},${sort.order}`
       : `/devops/v1/organizations/${orgId}/clusters/page_projects?page=${page}&size=${size}&sort=${sort.field ||
-          "id"},${sort.order}`;
+      "id"},${sort.order}`;
     return axios.post(url, JSON.stringify(postData)).then(data => {
       if (data && data.failed) {
         Choerodon.prompt(data.message);
@@ -335,7 +329,7 @@ class ClusterStore {
   loadTagKeys = (orgId, id) =>
     axios
       .get(
-        `/devops/v1/organizations/${orgId}/clusters/list_cluster_projects/${id}`
+        `/devops/v1/organizations/${orgId}/clusters/list_cluster_projects/${id}`,
       )
       .then(data => {
         if (data && data.failed) {
@@ -348,14 +342,14 @@ class ClusterStore {
   createCluster(orgId, data) {
     return axios.post(
       `/devops/v1/organizations/${orgId}/clusters`,
-      JSON.stringify(data)
+      JSON.stringify(data),
     );
   }
 
   updateCluster(orgId, id, data) {
     return axios.put(
       `/devops/v1/organizations/${orgId}/clusters?clusterId=${id}`,
-      JSON.stringify(data)
+      JSON.stringify(data),
     );
   }
 
@@ -377,10 +371,10 @@ class ClusterStore {
       });
 
   checkCode(orgId, code) {
-   return axios.get(`/devops/v1/organizations/${orgId}/clusters/check_code?code=${code}`);
+    return axios.get(`/devops/v1/organizations/${orgId}/clusters/check_code?code=${code}`);
   }
 
-  checkName(orgId, name){
+  checkName(orgId, name) {
     return axios.get(`/devops/v1/organizations/${orgId}/clusters/check_name?name=${name}`);
   }
 }

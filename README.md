@@ -49,7 +49,7 @@ The following is the main directory structure:
  │               │   ├── organization
  │               │   └── project
  │               └── utils
- │                   └── index.js
+ │                   └── ClusterList.js
  └── favicon.jpg
 
 ```
