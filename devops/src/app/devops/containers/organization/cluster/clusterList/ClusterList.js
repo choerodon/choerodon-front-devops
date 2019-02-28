@@ -55,6 +55,7 @@ class ClusterList extends Component {
       // remove active state
       _.pull(activeKey, id);
       store.setNodeData(id, []);
+      store.setNodePageInfo(id, null);
     } else {
       showMore(id);
       activeKey.push(id);
@@ -91,12 +92,15 @@ class ClusterList extends Component {
       delClusterShow,
     } = this.props;
     const { type, organizationId, name: OrgName } = AppState.currentMenuType;
-    const { getNodePageInfo, getActiveKey } = store;
+    const { getNodePageInfo, getActiveKey, getMoreLoading } = store;
 
-    const { current, total, pageSize } = getNodePageInfo[clusterId] || {
-      current: nodes.number + 1,
-      total: nodes.totalElements,
-      pageSize: nodes.size,
+    // numberOfElements 表示当前页数的数据条数
+    // 当前页数 >= 3 总页数 > 3 ，显示展开与收起的按钮
+    const { current, total, pageSize, numberOfElements } = getNodePageInfo[clusterId] || {
+      current: nodes ? nodes.number + 1 : 1,
+      total: nodes ? nodes.totalElements : 0,
+      pageSize: nodes ? nodes.size : 10,
+      numberOfElements: nodes ? nodes.numberOfElements : 0,
     };
 
     const columns = [{
@@ -200,9 +204,10 @@ class ClusterList extends Component {
             </div >
           </div >
           {connect ? <Fragment >
-            {nodes.content.length ?
+            {nodes && nodes.content.length ?
               <Table
                 className="c7n-cls-node-table"
+                loading={!!getMoreLoading[clusterId]}
                 filterBar={false}
                 bordered={false}
                 columns={columns}
@@ -211,11 +216,15 @@ class ClusterList extends Component {
                 rowKey={record => record.nodeName}
               /> : null}
             <div className="c7n-cls-node-table-footer" >
-              {total > 3 ?
-                <span className="c7n-cls-node-more" onClick={this.showMore.bind(this, id)} >
-              {getActiveKey.indexOf(id) > -1 ? formatMessage({ id: "shrink" }) : formatMessage({ id: "expand" })}
-            </span > : null}
-              {getActiveKey.indexOf(id) > -1 && total > 10 ? <Pagination
+              {numberOfElements >= 3 && total > 3 ?
+                <Button
+                  disabled={!!getMoreLoading[clusterId]}
+                  className="c7n-cls-node-more"
+                  onClick={this.showMore.bind(this, id)}
+                >
+                  {getActiveKey.includes(id) ? formatMessage({ id: "shrink" }) : formatMessage({ id: "expand" })}
+                </Button > : null}
+              {getActiveKey.includes(id) && total > 10 ? <Pagination
                 showSizeChanger
                 total={total}
                 current={current}

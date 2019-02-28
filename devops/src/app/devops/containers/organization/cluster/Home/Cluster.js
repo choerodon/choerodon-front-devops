@@ -278,7 +278,7 @@ class Cluster extends Component {
 
     return _.map(clusters, (cluster) => {
       const { id, connect, nodes } = cluster;
-      const nodeData = nodes.content ? nodes.content.slice() : [];
+      const nodeData = nodes && nodes.content ? nodes.content.slice() : [];
       const tableData = getNodeData[id] && getNodeData[id].length ? getNodeData[id].slice() : nodeData;
 
       return <ClusterList
