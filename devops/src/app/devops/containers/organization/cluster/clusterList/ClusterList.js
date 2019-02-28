@@ -60,8 +60,9 @@ class ClusterList extends Component {
     if (activeKey.includes(id)) {
       // remove active state
       _.pull(activeKey, id);
-      store.setNodeData(id, []);
-      store.setNodePageInfo(id, null);
+
+      const displayNodes = _.slice(store.getNodeData[id], 0, 3);
+      store.setNodeData(id, displayNodes);
     } else {
       showMore(id);
       activeKey.push(id);
