@@ -22,6 +22,12 @@ class ClusterList extends Component {
     };
   }
 
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    const { clusterId, tableData } = this.props;
+    const { clusterId: nextClusterId, tableData: nextTableData } = nextProps;
+    return !(nextClusterId === clusterId && _.isEqual(nextTableData, tableData));
+  }
+
   /**
    * table 操作
    * @param pagination
