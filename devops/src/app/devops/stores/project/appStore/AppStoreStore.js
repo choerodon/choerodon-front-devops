@@ -45,8 +45,7 @@ class AppStoreStore {
     return this.appCards;
   }
 
-  @action
-  setApp(app) {
+  @action setApp(app) {
     this.app = app;
   }
 
@@ -183,7 +182,7 @@ class AppStoreStore {
       Choerodon.prompt(error.message);
     });
 
-  handleData =(data) => {
+  handleData = (data) => {
     this.setAppCards(data.content);
     const { number, size, totalElements } = data;
     const page = { number, size, totalElements };

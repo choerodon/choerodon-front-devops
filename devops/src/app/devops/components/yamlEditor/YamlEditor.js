@@ -314,7 +314,7 @@ class YamlEditor extends Component {
   }
 
   render() {
-    const LEGEND_TYPE = ["new", "modify", "error"];
+    // const LEGEND_TYPE = ["new", "modify", "error"];
 
     const {
       intl: { formatMessage },
@@ -324,20 +324,20 @@ class YamlEditor extends Component {
 
     const { errorTip } = this.state;
 
-    const legendDom = _.map(LEGEND_TYPE, item => (
-      <span
-        key={item}
-        className={`c7ncd-yaml-legend-item c7ncd-yaml-legend_${item}`}
-      >
-        {formatMessage({ id: `yaml.legend.${item}` })}
-      </span>
-    ));
+    // const legendDom = _.map(LEGEND_TYPE, item => (
+    //   <span
+    //     key={item}
+    //     className={`c7ncd-yaml-legend-item c7ncd-yaml-legend_${item}`}
+    //   >
+    //     {formatMessage({ id: `yaml.legend.${item}` })}
+    //   </span>
+    // ));
 
     return (
       <Fragment>
-        {!readOnly ? (
+        {/* !readOnly ? (
           <div className="c7ncd-yaml-legend">{legendDom}</div>
-        ) : null}
+        ) : null */}
         <div className="c7ncd-yaml-wrapper">
           <ReactCodeMirror
             options={this.options}

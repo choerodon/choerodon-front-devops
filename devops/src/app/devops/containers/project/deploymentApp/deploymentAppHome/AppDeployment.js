@@ -5,7 +5,7 @@ import { withRouter } from "react-router-dom";
 import { Select, Button, Radio, Steps, Icon, Tooltip, Input, Form } from "choerodon-ui";
 import { Content, Header, Page, Permission, stores } from "choerodon-front-boot";
 import _ from "lodash";
-import "./DeployApp.scss";
+import "./DeploymentApp.scss";
 
 class AppDeployment extends Component {
 

@@ -500,32 +500,6 @@ input::-webkit-contacts-auto-fill-button {
         .c7ncd-step-input {
           width: 482px;
         }
-
-        .c7ncd-detail-btn {
-          vertical-align: middle;
-          padding: 0;
-          height: 20px;
-          line-height: 20px;
-          color: #3f51b5;
-
-          &.c7ncd-detail-btn-right {
-            margin-left: auto;
-          }
-
-          .icon {
-            width: 13px;
-            height: 13px;
-            font-size: 12px;
-          }
-
-          &.ant-btn-flat:hover {
-            background: transparent;
-          }
-
-          .ant-ripple-wrapper {
-            display: none;
-          }
-        }
       }
 
       .c7ncd-step-item-tip-icon {
@@ -583,5 +557,50 @@ input::-webkit-contacts-auto-fill-button {
         }
       }
     }
+  }
+}
+
+// 实例和环境总览中查看详情的按钮样式
+.c7ncd-detail-btn {
+  vertical-align: middle;
+  padding: 0;
+  height: 20px;
+  line-height: 20px;
+  color: #3f51b5;
+
+  &.c7ncd-detail-btn-right {
+    margin-left: auto;
+  }
+
+  .icon {
+    width: 13px;
+    height: 13px;
+    font-size: 12px;
+  }
+
+  &.ant-btn-flat:hover {
+    background: transparent;
+  }
+
+  .ant-ripple-wrapper {
+    display: none;
+  }
+  & > div.btn-loading > span {
+    background: #3f51b5;
+    border-color: #3f51b5;
+  }
+}
+
+// 放在下拉选择器选项中的加载更多的按钮
+// 需要将完全填充选项，防止触发选项
+.c7ncd-more-btn-wrap {
+  padding: 0 !important;
+
+  .c7ncd-more-btn {
+    @extend .c7ncd-detail-btn;
+    padding: 4px 12px;
+    width: 100%;
+    height: 28px;
+    text-align: left;
   }
 }
