@@ -66,20 +66,22 @@ class AppDetail extends Component {
 
   /**
    * 条件部署应用
-   * @param id 应用市场ID
-   * @param appId 应用ID
+   * @param app 应用详细数据
    */
-  deployApp = (id, appId) => {
+  deployApp = (app) => {
     const { AppStoreStore } = this.props;
-    const { id: projectId, name: projectName, organizationId, type } = AppState.currentMenuType;
-
-    const app = AppStoreStore.getApp;
     const { verId } = this.state;
-    const verID = verId || app.appVersions[0].id;
-
+    const { appId, appVersions } = app;
+    const {
+      id: projectId,
+      name: projectName,
+      organizationId,
+      type,
+    } = AppState.currentMenuType;
     AppStoreStore.setBackPath(true);
 
-    this.linkToChange(`/devops/deployment-app/store/${appId}/${verID}?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}`);
+    const versionId = verId || appVersions[0].id;
+    this.linkToChange(`/devops/deployment-app/store/${appId}/${versionId}?type=${type}&id=${projectId}&name=${encodeURIComponent(projectName)}&organizationId=${organizationId}&notLocalApp`);
   };
 
   /**
@@ -175,7 +177,7 @@ class AppDetail extends Component {
                       className="c7n-store-deploy"
                       type="primary"
                       funcType="raised"
-                      onClick={this.deployApp.bind(this, app.id, app.appId)}
+                      onClick={this.deployApp.bind(this, app)}
                     >
                       <FormattedMessage id="appstore.deploy" />
                     </Button>

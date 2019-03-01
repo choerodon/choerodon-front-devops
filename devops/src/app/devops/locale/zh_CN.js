@@ -652,6 +652,7 @@ const zhCN = {
   "network.tport.check.repeat": "目标端口号重复",
   "network.form.version.null": "请先选择一个版本",
   "network.form.version.disable": "请先选择应用",
+  "network.form.version.notFount": "未查询到版本",
   "network.form.version.checked": "该应用下没有多余的可用版本",
   "network.form.app.disable": "请先选择环境",
   "network.form.instance.disable": "暂无可用实例",
