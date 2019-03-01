@@ -1,28 +1,12 @@
-import React, {Component, Fragment} from "react";
-import {observer} from "mobx-react";
-import {injectIntl, FormattedMessage} from "react-intl";
-import {withRouter} from "react-router-dom";
-import {
-  Select,
-  Button,
-  Radio,
-  Steps,
-  Icon,
-  Tooltip,
-  Input,
-  Form,
-} from "choerodon-ui";
-import {
-  Content,
-  Header,
-  Page,
-  Permission,
-  stores,
-  axios,
-} from "choerodon-front-boot";
+import React, { Component, Fragment } from "react";
+import { observer } from "mobx-react";
+import { injectIntl, FormattedMessage } from "react-intl";
+import { withRouter } from "react-router-dom";
+import { Select, Button, Radio, Steps, Icon, Tooltip, Input, Form } from "choerodon-ui";
+import { Content, Header, Page, Permission, stores, axios } from "choerodon-front-boot";
 import _ from "lodash";
 import "../../../main.scss";
-import "./DeployApp.scss";
+import "./DeploymentApp.scss";
 import YamlEditor from "../../../../components/yamlEditor";
 import SelectApp from "../selectApp";
 import EnvOverviewStore from "../../../../stores/project/envOverview";
@@ -31,17 +15,17 @@ import AppName from "../../../../components/appName";
 
 const RadioGroup = Radio.Group;
 const Step = Steps.Step;
-const {AppState} = stores;
+const { AppState } = stores;
 const Option = Select.Option;
-const {Item: FormItem} = Form;
+const { Item: FormItem } = Form;
 const formItemLayout = {
   labelCol: {
-    xs: {span: 24},
-    sm: {span: 100},
+    xs: { span: 24 },
+    sm: { span: 100 },
   },
   wrapperCol: {
-    xs: {span: 24},
-    sm: {span: 26},
+    xs: { span: 24 },
+    sm: { span: 26 },
   },
 };
 
@@ -57,47 +41,61 @@ class DeploymentAppHome extends Component {
    */
   checkName = _.debounce((rule, value, callback) => {
     const {
-      intl: {formatMessage},
+      intl: { formatMessage },
       DeploymentAppStore,
     } = this.props;
 
-    const {id: projectId} = AppState.currentMenuType;
+    const { id: projectId } = AppState.currentMenuType;
 
     const pattern = /^[a-z]([-a-z0-9]*[a-z0-9])?$/;
 
     if (value && !pattern.test(value)) {
 
-      callback(formatMessage({id: "network.name.check.failed"}));
-      this.setState({istNameOk: false});
+      callback(formatMessage({ id: "network.name.check.failed" }));
+      this.setState({ istNameOk: false });
 
     } else if (value && pattern.test(value)) {
 
       DeploymentAppStore.checkIstName(projectId, value).then(data => {
         if (data && data.failed) {
-          callback(formatMessage({id: "network.name.check.exist"}));
-          this.setState({istNameOk: false});
+          callback(formatMessage({ id: "network.name.check.exist" }));
+          this.setState({ istNameOk: false });
         } else {
-          this.setState({istNameOk: true});
+          this.setState({ istNameOk: true });
           callback();
         }
       });
 
     } else {
 
-      this.setState({istNameOk: true});
+      this.setState({ istNameOk: true });
       callback();
 
     }
   }, 1000);
+
+  /**
+   * 搜索版本
+   * 防抖时间 500ms
+   */
+  handleVersionSearch = _.debounce(value => {
+    const { appId, isLocalProject } = this.state;
+
+    if (appId) {
+      const isPublic = !isLocalProject;
+      this.setState({ versionSearchParam: value, versionPageNum: 1 });
+      this.handleLoadVersion(appId, isPublic, value, value === '');
+    }
+  }, 500);
 
   constructor(props) {
     super(props);
     const {
       match: {
         // 路由传参
-        params: {appId, verId},
+        params: { appId, verId },
       },
-      location: {search},
+      location: { search },
     } = props;
 
     this.state = {
@@ -117,103 +115,110 @@ class DeploymentAppHome extends Component {
       // 下面是和yaml编辑器相关的状态
       hasEditorError: false,
       changedValue: null,
+      versions: [],
+      versionOptions: [],
+      versionPageNum: 1,
+      versionSearchParam: '',
+      versionLoading: false,
     };
+
+    const step = ["One", "Two", "Three", "Four"];
+    _.forEach(step, (item, index) => {
+      this[`jumpToStep${item}`] = () => this.changeStep(index);
+    });
   }
 
+
   componentDidMount() {
-    const {DeploymentAppStore} = this.props;
-    const {id: projectId} = AppState.currentMenuType;
+    const { DeploymentAppStore } = this.props;
 
     const {
-      currentStep,
       appId,
       isLocalProject,
-      versionId,
     } = this.state;
 
-    EnvOverviewStore.loadActiveEnv(projectId);
+    this.loadActiveEnv();
     DeploymentAppStore.setValue(null);
 
     // 如果是从部署总览或环境总览跳转进来
     if (appId) {
-      const isPublic = !isLocalProject || "";
+      const isPublic = !isLocalProject;
+
+      this.handleLoadVersion(appId, isPublic, '', true);
+      this.handleLoadApps(appId);
+
       // 应用市场和本地应用的版本号可能不同
-      const selectVersion = isLocalProject ? versionId : undefined;
-
-      Promise.all([
-        DeploymentAppStore.loadApps(appId),
-        DeploymentAppStore.loadVersion(appId, projectId, isPublic),
-      ]).then(data => {
-
-        const istName = data[0] ? `${data[0].code}-${uuidv1().substring(0, 5)}` : "";
-        const versionDto = _.filter(data[1], v => v.id === versionId)[0];
-
-        this.setState({
-          app: data[0],
-          istName,
-          versionDto,
-          versionId: selectVersion,
-        });
-
-      });
-    } else {
-      DeploymentAppStore.setVersions([]);
-    }
-
-    if (currentStep === 1) {
-      // 系统当前环境id
-      const topEnvId = EnvOverviewStore.getTpEnvId;
-
-      EnvOverviewStore.loadActiveEnv(projectId).then(data => {
-        // 当前系统中活跃的环境
-        // 从部署总览进入应用部署会默认选择环境进行加载配置文件
-        // 防止系统环境未连接时，跳转后加载未连接环境的配置文件
-        const activeEnvs = _.filter(data, item => item.connect);
-        const activeEnv = activeEnvs.length ? activeEnvs[0].id : undefined;
-
-        // 系统环境是否连接
-        const properEnv = _.find(data, {connect: true, id: topEnvId});
-
-        const initEnvId = properEnv ? properEnv.id : activeEnv;
-
-        this.setState({
-          envId: initEnvId,
-          envDto: properEnv || data[0],
-        });
-
-        DeploymentAppStore.setValue(null);
-        DeploymentAppStore.loadInstances(projectId, appId, initEnvId);
-        DeploymentAppStore.loadValue(projectId, appId, versionId, initEnvId);
-      });
+      // this.setState({versionId: isLocalProject ? versionId : undefined})
     }
   }
+
+  /**
+   * 加载项目下的所已连接的环境
+   */
+  loadActiveEnv() {
+    const { DeploymentAppStore } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    const {
+      currentStep,
+      appId,
+      versionId,
+    } = this.state;
+
+    EnvOverviewStore.loadActiveEnv(projectId)
+      .then(data => {
+        if (data && currentStep === 1) {
+          const topEnvId = EnvOverviewStore.getTpEnvId;
+
+          // 系统环境是否连接
+          const properEnv = _.find(data, { connect: true, id: topEnvId });
+          let initEnvId;
+          if (!properEnv) {
+            // 当前系统中活跃的环境
+            // 从部署总览进入应用部署会默认选择环境进行加载配置文件
+            // 防止系统环境未连接时，跳转后加载未连接环境的配置文件
+            const activeEnvs = _.filter(data, item => item.connect);
+            initEnvId = activeEnvs.length ? activeEnvs[0].id : undefined;
+          } else {
+            initEnvId = properEnv.id;
+          }
+
+          this.setState({
+            envId: initEnvId,
+            envDto: properEnv || data[0],
+          });
+
+          DeploymentAppStore.loadInstances(projectId, appId, initEnvId);
+          DeploymentAppStore.loadValue(projectId, appId, versionId, initEnvId);
+        }
+      });
+  };
 
   /**
    * 改变步骤条
    * @param index
    */
   changeStep = index => {
-    this.setState({currentStep: index, disabledChangeTopEnv: false});
+    this.setState({ currentStep: index, disabledChangeTopEnv: false });
 
-    const {id: projectId} = AppState.currentMenuType;
-    const {DeploymentAppStore} = this.props;
-    const {appId, versionId, envId: id, mode} = this.state;
+    const { id: projectId } = AppState.currentMenuType;
+    const { DeploymentAppStore } = this.props;
+    const { appId, versionId, envId: id } = this.state;
 
-    const {getEnvcard, getTpEnvId} = EnvOverviewStore;
-    const env = _.filter(getEnvcard, {connect: true, id: getTpEnvId});
+    const { getEnvcard, getTpEnvId } = EnvOverviewStore;
+    const env = _.filter(getEnvcard, { connect: true, id: getTpEnvId });
     const envId = env.length ? env[0].id : id;
 
     const page = document.getElementsByClassName("page-content");
 
     if (index === 1 && appId && versionId && envId) {
-      this.setState({envId, envDto: env[0]});
+      this.setState({ envId, envDto: env[0] });
       DeploymentAppStore.setValue(null);
       DeploymentAppStore.loadValue(projectId, appId, versionId, envId);
       DeploymentAppStore.loadInstances(projectId, appId, envId);
     }
 
     if (index === 2 || index === 3) {
-      this.setState({disabledChangeTopEnv: true});
+      this.setState({ disabledChangeTopEnv: true });
     }
 
     if (page && page.length) {
@@ -221,80 +226,193 @@ class DeploymentAppHome extends Component {
     }
   };
 
-  jumpToStepOne = () => this.changeStep(0);
-  jumpToStepTwo = () => this.changeStep(1);
-  jumpToStepThree = () => this.changeStep(2);
-  jumpToStepFour = () => this.changeStep(3);
-
   /**
-   * 展开选择应用的弹框
+   * 展开选择应用侧边栏
    */
   showSideBar = () => {
-    const {
-      match: {
-        params: {appId},
-      },
-    } = this.props;
-    let { versionId, versionDto } = this.state;
-    if (!appId) {
-      versionDto = null;
-      versionId = undefined;
-    }
-    this.setState({show: true, versionId, versionDto});
+    this.setState({ show: true });
   };
 
   /**
-   * 关闭弹框
+   * 关闭选择应用侧边栏
    */
   handleCancel = () => {
-    this.setState({show: false});
+    this.setState({ show: false });
   };
 
   /**
-   * 弹框确定
+   * 确认选择APP
    * @param app 选择的数据
    * @param key 标明是项目应用还是应用市场应用
    */
-  handleOk = (app, key) => {
-    const {DeploymentAppStore} = this.props;
-    const {id: projectId} = AppState.currentMenuType;
+  handleSelectApp = (app, key) => {
     if (app) {
-      if (key === "1") {
-        DeploymentAppStore.loadVersion(app.id, projectId, "");
-        this.setState({
-          app,
-          istName: `${app.code}-${uuidv1().substring(0, 5)}`,
-          appId: app.id,
-          show: false,
-          isLocalProject: true,
-          versionId: undefined,
-          versionDto: null,
-        });
-      } else {
-        DeploymentAppStore.loadVersion(app.appId, projectId, true);
-        this.setState({
-          app,
-          istName: `${app.code}-${uuidv1().substring(0, 5)}`,
-          appId: app.appId,
-          show: false,
-          isLocalProject: false,
-          versionId: undefined,
-          versionDto: null,
-        });
-      }
+      const isLocalProject = key === "1";
+      const appId = isLocalProject ? app.id : app.appId;
+
+      this.setState({
+        app,
+        appId,
+        isLocalProject,
+        show: false,
+        versionDto: null,
+        versionId: undefined,
+        istName: `${app.code}-${uuidv1().substring(0, 5)}`,
+        versions: [],
+        versionOptions: [],
+        versionPageNum: 1,
+        versionSearchParam: '',
+      });
+
+      this.handleLoadVersion(appId, !isLocalProject);
     } else {
-      this.setState({show: false});
+      this.setState({ show: false });
     }
   };
+
+  /**
+   * 加载应用
+   * @param id
+   */
+  handleLoadApps = (id) => {
+    const { DeploymentAppStore } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+
+    DeploymentAppStore.loadApps(projectId, id)
+      .then(data => {
+
+        if (data) {
+          const istName = data ? `${data.code}-${uuidv1().substring(0, 5)}` : "";
+
+          this.setState({
+            app: data,
+            istName,
+          });
+        }
+
+      });
+  };
+
+  /**
+   * 加载版本
+   * @param id
+   * @param isPublic
+   * @param search
+   * @param init
+   */
+  handleLoadVersion = async (id, isPublic, search = '', init) => {
+    const { DeploymentAppStore, intl: { formatMessage } } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    const { versionId } = this.state;
+
+    let initValue = '';
+    if (init) {
+      initValue = versionId;
+    }
+
+    try {
+      this.setState({ versionLoading: true });
+      let isNotEnable = true;
+      const data = await DeploymentAppStore.loadVersion(projectId, id, isPublic, 0, search, initValue);
+      if (data) {
+        const { totalPages, content } = data;
+
+        // 被选中的版本的详细信息
+        const versionDto = _.filter(content, v => v.id === versionId)[0];
+        const versionOptions = this.renderVersionOptions(content);
+
+        if (totalPages > 1) {
+          // 在选项最后置入一个加载更多按钮
+          isNotEnable = false;
+          versionOptions.push(<Option
+            disabled
+            className="c7ncd-more-btn-wrap"
+            key="btn_load_more"
+          >
+            <Button
+              type="default"
+              className="c7ncd-more-btn"
+              disabled={isNotEnable}
+              onClick={this.handleLoadMoreVersion}
+            >
+              {formatMessage({ id: "ist.more" })}
+            </Button >
+          </Option >);
+        }
+
+        this.setState({ versionOptions, versionDto, versions: content, versionLoading: false });
+      }
+    } catch (e) {
+      this.setState({ versionLoading: false });
+    }
+  };
+
+  /**
+   * 点击加载更多
+   * @param e
+   */
+  handleLoadMoreVersion = async (e) => {
+    e.stopPropagation();
+
+    const { DeploymentAppStore } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    const {
+      versionId,
+      versionOptions,
+      versions,
+      appId,
+      isLocalProject,
+      versionPageNum,
+      versionSearchParam,
+    } = this.state;
+
+    this.setState({ versionLoading: true });
+
+    try {
+      const data = await DeploymentAppStore.loadVersion(projectId, appId, !isLocalProject, versionPageNum, versionSearchParam);
+      if (data) {
+        const { totalPages, content } = data;
+
+        const moreVersion = _.filter(content, item => item.id !== versionId);
+
+        const options = this.renderVersionOptions(moreVersion);
+        const newVersionOpt = _.concat(
+          _.initial(versionOptions),
+          options,
+          versionPageNum + 1 < totalPages ? _.last(versionOptions) : [],
+        );
+        const newVersions = _.concat(versions, content);
+
+        this.setState({
+          versionOptions: newVersionOpt,
+          versions: newVersions,
+          versionLoading: false,
+          versionPageNum: versionPageNum + 1,
+        });
+      }
+    } catch (e) {
+      this.setState({ versionLoading: false });
+    }
+  };
+
+  /**
+   * 生成版本选项
+   * @param versions
+   */
+  renderVersionOptions = versions => _.map(versions, version => (
+    <Option key={version.id} value={version.id} >
+      {version.version}
+    </Option >
+  ));
 
   /**
    * 选择环境
    * @param value
    */
   handleSelectEnv = value => {
-    const {id: projectId} = AppState.currentMenuType;
-    const {DeploymentAppStore} = this.props;
-    const {appId, versionId} = this.state;
+    const { id: projectId } = AppState.currentMenuType;
+    const { DeploymentAppStore } = this.props;
+    const { appId, versionId } = this.state;
     const envs = EnvOverviewStore.getEnvcard;
     EnvOverviewStore.setTpEnvId(value);
     DeploymentAppStore.setValue(null);
@@ -316,17 +434,17 @@ class DeploymentAppHome extends Component {
    * @param value
    */
   handleSelectVersion = value => {
-    const {DeploymentAppStore} = this.props;
-    const versions = DeploymentAppStore.versions;
+    const { DeploymentAppStore } = this.props;
+    const { envId, versions } = this.state;
     const versionDto = _.filter(versions, v => v.id === value)[0];
     DeploymentAppStore.setValue(null);
     this.setState(
-      {versionId: value, versionDto, value: null, markers: []},
+      { versionId: value, versionDto, value: null, markers: [] },
       () => {
-        if (this.state.envId) {
-          this.handleSelectEnv(this.state.envId);
+        if (envId) {
+          this.handleSelectEnv(envId);
         }
-      }
+      },
     );
   };
 
@@ -335,7 +453,7 @@ class DeploymentAppHome extends Component {
    * @param value
    */
   handleSelectInstance = value => {
-    const {DeploymentAppStore} = this.props;
+    const { DeploymentAppStore } = this.props;
     const instance = DeploymentAppStore.currentInstance;
     const instanceDto = _.filter(instance, v => v.id === value)[0];
     this.setState({
@@ -355,32 +473,32 @@ class DeploymentAppHome extends Component {
    * @param e
    */
   handleChangeMode = e => {
-    const {DeploymentAppStore, form} = this.props;
-    const {app, instanceDto} = this.state;
+    const { DeploymentAppStore, form } = this.props;
+    const { app, instanceDto } = this.state;
     const instances = DeploymentAppStore.currentInstance;
     if (e.target.value === "new") {
-      this.setState({istName: `${app.code}-${uuidv1().substring(0, 5)}`});
+      this.setState({ istName: `${app.code}-${uuidv1().substring(0, 5)}` });
       form.setFields({
         name: {
           value: `${app.code}-${uuidv1().substring(0, 5)}`,
         },
       });
     } else if (instanceDto) {
-      this.setState({istName: instanceDto.code});
+      this.setState({ istName: instanceDto.code });
       form.setFields({
         name: {
           value: instanceDto.code,
         },
       });
     } else {
-      this.setState({istName: instances[0].code});
+      this.setState({ istName: instances[0].code });
       form.setFields({
         name: {
           value: instances[0].code,
         },
       });
     }
-    this.setState({mode: e.target.value});
+    this.setState({ mode: e.target.value });
     this.handleRenderMode();
   };
 
@@ -392,11 +510,10 @@ class DeploymentAppHome extends Component {
       DeploymentAppStore,
       history,
       match: {
-        params: {prevPage},
+        params: { prevPage },
       },
     } = this.props;
 
-    DeploymentAppStore.setVersions([]);
     DeploymentAppStore.setValue(null);
 
     const newState = {
@@ -411,6 +528,7 @@ class DeploymentAppHome extends Component {
       mode: "new",
       instanceId: undefined,
       changedValue: null,
+      versionOptions: [],
     };
 
     if (prevPage) {
@@ -424,7 +542,7 @@ class DeploymentAppHome extends Component {
    * 部署应用
    */
   handleDeploy = () => {
-    const {DeploymentAppStore} = this.props;
+    const { DeploymentAppStore } = this.props;
     const {
       istName,
       changedValue,
@@ -448,7 +566,7 @@ class DeploymentAppHome extends Component {
           : instanceId ||
           (instances && instances.length === 1 && instances[0].id),
     };
-    this.setState({loading: true});
+    this.setState({ loading: true });
     DeploymentAppStore.deploymentApp(applicationDeployDTO)
       .then(data => {
         this.setState({
@@ -473,11 +591,11 @@ class DeploymentAppHome extends Component {
     const {
       history,
       match: {
-        params: {prevPage},
+        params: { prevPage },
       },
     } = this.props;
 
-    const {name, id, type, organizationId} = AppState.currentMenuType;
+    const { name, id, type, organizationId } = AppState.currentMenuType;
 
     let url = "instance";
 
@@ -492,7 +610,7 @@ class DeploymentAppHome extends Component {
     }
 
     history.push(
-      `/devops/${url}?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`
+      `/devops/${url}?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`,
     );
   };
 
@@ -501,44 +619,42 @@ class DeploymentAppHome extends Component {
    * 第四步新建实例名
    */
   handleIstNameChange = e => {
-    this.setState({istNameOk: false, istName: e.target.value});
+    this.setState({ istNameOk: false, istName: e.target.value });
   };
 
   handleChangeValue = (value) => {
-    this.setState({changedValue: value});
+    this.setState({ changedValue: value });
   };
 
   /**
    * 渲染第一步
    */
   handleRenderApp = () => {
-    const {id: projectId, type, organizationId} = AppState.currentMenuType;
+    const { id: projectId, type, organizationId } = AppState.currentMenuType;
+    const { intl: { formatMessage } } = this.props;
     const {
-      DeploymentAppStore,
-      intl: {formatMessage},
-    } = this.props;
-    const {app, isLocalProject, versionId, appId} = this.state;
-
-    const versionOptions = _.map(DeploymentAppStore.versions, v => (
-      <Option key={v.id} value={v.id}>
-        {v.version}
-      </Option>
-    ));
+      app,
+      isLocalProject,
+      versionId,
+      appId,
+      versionOptions,
+      versionLoading,
+    } = this.state;
 
     return (
-      <Fragment>
-        <p className="c7ncd-step-describe">
-          {formatMessage({id: "deploy.step.one.description"})}
-        </p>
-        <div className="c7ncd-step-item">
-          <div className="c7ncd-step-item-header">
-            <Icon className="c7ncd-step-item-icon" type="widgets"/>
-            <span className="c7ncd-step-item-title">
-              {formatMessage({id: "deploy.step.one.app"})}
-            </span>
-          </div>
-          <div className="c7ncd-step-item-indent">
-            <div className="c7ncd-step-item-app">
+      <Fragment >
+        <p className="c7ncd-step-describe" >
+          {formatMessage({ id: "deploy.step.one.description" })}
+        </p >
+        <div className="c7ncd-step-item" >
+          <div className="c7ncd-step-item-header" >
+            <Icon className="c7ncd-step-item-icon" type="widgets" />
+            <span className="c7ncd-step-item-title" >
+              {formatMessage({ id: "deploy.step.one.app" })}
+            </span >
+          </div >
+          <div className="c7ncd-step-item-indent" >
+            <div className="c7ncd-step-item-app" >
               {app && (
                 <AppName
                   width="366px"
@@ -547,7 +663,7 @@ class DeploymentAppHome extends Component {
                   self={isLocalProject}
                 />
               )}
-            </div>
+            </div >
             <Permission
               organizationId={organizationId}
               projectId={projectId}
@@ -558,69 +674,63 @@ class DeploymentAppHome extends Component {
               ]}
             >
               <Button
-                className={`c7ncd-detail-btn ${
-                  app ? "c7ncd-detail-btn-right" : ""
-                  }`}
+                className={`c7ncd-detail-btn ${app ? "c7ncd-detail-btn-right" : ""}`}
                 onClick={this.showSideBar}
               >
-                <FormattedMessage id="deploy.app.add"/>
-                <Icon type="open_in_new"/>
-              </Button>
-            </Permission>
-          </div>
-        </div>
-        <div className="c7ncd-step-item">
-          <div className="c7ncd-step-item-header">
-            <Icon className="c7ncd-step-item-icon" type="version"/>
-            <span className="c7ncd-step-item-title">
-              {formatMessage({id: "deploy.step.one.version.title"})}
-            </span>
-          </div>
-          <div className="c7ncd-step-item-indent">
+                <FormattedMessage id="deploy.app.add" />
+                <Icon type="open_in_new" />
+              </Button >
+            </Permission >
+          </div >
+        </div >
+        <div className="c7ncd-step-item" >
+          <div className="c7ncd-step-item-header" >
+            <Icon className="c7ncd-step-item-icon" type="version" />
+            <span className="c7ncd-step-item-title" >
+              {formatMessage({ id: "deploy.step.one.version.title" })}
+            </span >
+          </div >
+          <div className="c7ncd-step-item-indent" >
             <Select
               filter
               className="c7ncd-step-input"
-              label={<FormattedMessage id="deploy.step.one.version"/>}
+              label={<FormattedMessage id="deploy.step.one.version" />}
               optionFilterProp="children"
-              style={{width: 482}}
+              style={{ width: 482 }}
               onSelect={this.handleSelectVersion}
+              onSearch={this.handleVersionSearch}
               value={versionId}
-              notFoundContent={formatMessage({
-                id: "network.form.version.disable",
-              })}
-              filterOption={(input, option) =>
-                option.props.children
-                  .toLowerCase()
-                  .indexOf(input.toLowerCase()) >= 0
-              }
+              loading={versionLoading}
+              notFoundContent={formatMessage({ id: "network.form.version.notFount" })}
+              filterOption={false}
             >
               {versionOptions}
-            </Select>
-          </div>
-        </div>
-        <div className="c7ncd-step-btn">
+            </Select >
+          </div >
+        </div >
+        <div className="c7ncd-step-btn" >
           <Button
             disabled={!(appId && versionId)}
             type="primary"
             funcType="raised"
             onClick={this.jumpToStepTwo}
           >
-            <FormattedMessage id="next"/>
-          </Button>
+            <FormattedMessage id="next" />
+          </Button >
           <Button
             className="c7ncd-step-cancel-btn"
             funcType="raised"
             onClick={this.handleStepCancel}
           >
-            <FormattedMessage id="cancel"/>
-          </Button>
-        </div>
-      </Fragment>
+            <FormattedMessage id="cancel" />
+          </Button >
+        </div >
+      </Fragment >
     );
   };
 
   handleSecondNextStepEnable = flag => {
-    this.setState({hasEditorError: flag});
+    this.setState({ hasEditorError: flag });
   };
 
   /**
@@ -628,16 +738,16 @@ class DeploymentAppHome extends Component {
    */
   handleRenderEnv = () => {
     const {
-      DeploymentAppStore: {getValue},
-      intl: {formatMessage},
+      DeploymentAppStore: { getValue },
+      intl: { formatMessage },
     } = this.props;
     const {
       changedValue,
       envId,
       hasEditorError,
     } = this.state;
-    const {getEnvcard, getTpEnvId} = EnvOverviewStore;
-    const activeEnv = _.filter(getEnvcard, {connect: true, id: getTpEnvId});
+    const { getEnvcard, getTpEnvId } = EnvOverviewStore;
+    const activeEnv = _.filter(getEnvcard, { connect: true, id: getTpEnvId });
     const enableClick = !(
       envId &&
       (changedValue || (getValue && getValue.yaml)) &&
@@ -645,35 +755,35 @@ class DeploymentAppHome extends Component {
     );
 
     const envOptions = _.map(getEnvcard, v => (
-      <Option value={v.id} key={v.id} disabled={!v.connect || !v.permission}>
+      <Option value={v.id} key={v.id} disabled={!v.connect || !v.permission} >
         <span
           className={`c7ncd-status c7ncd-status-${
             v.connect ? "success" : "disconnect"
             }`}
         />
         {v.name}
-      </Option>
+      </Option >
     ));
 
     return (
-      <Fragment>
-        <p className="c7ncd-step-describe">
-          {formatMessage({id: "deploy.step.two.description"})}
-        </p>
-        <div className="c7ncd-step-item">
-          <div className="c7ncd-step-item-header">
-            <Icon className="c7ncd-step-item-icon" type="donut_large"/>
-            <span className="c7ncd-step-item-title">
-              {formatMessage({id: "deploy.step.two.env.title"})}
-            </span>
-          </div>
-          <div className="c7ncd-step-item-indent">
+      <Fragment >
+        <p className="c7ncd-step-describe" >
+          {formatMessage({ id: "deploy.step.two.description" })}
+        </p >
+        <div className="c7ncd-step-item" >
+          <div className="c7ncd-step-item-header" >
+            <Icon className="c7ncd-step-item-icon" type="donut_large" />
+            <span className="c7ncd-step-item-title" >
+              {formatMessage({ id: "deploy.step.two.env.title" })}
+            </span >
+          </div >
+          <div className="c7ncd-step-item-indent" >
             <Select
               className="c7ncd-step-input"
               value={activeEnv.length ? activeEnv[0].id : envId}
-              label={formatMessage({id: "deploy.step.two.env"})}
+              label={formatMessage({ id: "deploy.step.two.env" })}
               onSelect={this.handleSelectEnv}
-              style={{width: 482}}
+              style={{ width: 482 }}
               optionFilterProp="children"
               filterOption={(input, option) =>
                 option.props.children[1]
@@ -683,20 +793,20 @@ class DeploymentAppHome extends Component {
               filter
             >
               {envOptions}
-            </Select>
-          </div>
-        </div>
-        <div className="c7ncd-step-item">
-          <div className="c7ncd-step-item-header">
-            <Icon className="c7ncd-step-item-icon" type="description"/>
-            <span className="c7ncd-step-item-title">
-              {formatMessage({id: "deploy.step.two.config"})}
-            </span>
-            <Icon className="c7ncd-step-item-tip-icon" type="error"/>
-            <span className="c7ncd-step-item-tip-text">
-              {formatMessage({id: "deploy.step.two.description_1"})}
-            </span>
-          </div>
+            </Select >
+          </div >
+        </div >
+        <div className="c7ncd-step-item" >
+          <div className="c7ncd-step-item-header" >
+            <Icon className="c7ncd-step-item-icon" type="description" />
+            <span className="c7ncd-step-item-title" >
+              {formatMessage({ id: "deploy.step.two.config" })}
+            </span >
+            <Icon className="c7ncd-step-item-tip-icon" type="error" />
+            <span className="c7ncd-step-item-tip-text" >
+              {formatMessage({ id: "deploy.step.two.description_1" })}
+            </span >
+          </div >
           {getValue ? (
             <YamlEditor
               readOnly={false}
@@ -705,28 +815,28 @@ class DeploymentAppHome extends Component {
               handleEnableNext={this.handleSecondNextStepEnable}
             />
           ) : null}
-        </div>
-        <div className="c7ncd-step-btn">
+        </div >
+        <div className="c7ncd-step-btn" >
           <Button
             type="primary"
             funcType="raised"
             onClick={this.jumpToStepThree}
             disabled={enableClick}
           >
-            <FormattedMessage id="next"/>
-          </Button>
-          <Button onClick={this.jumpToStepOne} funcType="raised">
-            <FormattedMessage id="previous"/>
-          </Button>
+            <FormattedMessage id="next" />
+          </Button >
+          <Button onClick={this.jumpToStepOne} funcType="raised" >
+            <FormattedMessage id="previous" />
+          </Button >
           <Button
             funcType="raised"
             className="c7ncd-step-cancel-btn"
             onClick={this.handleStepCancel}
           >
-            <FormattedMessage id="cancel"/>
-          </Button>
-        </div>
-      </Fragment>
+            <FormattedMessage id="cancel" />
+          </Button >
+        </div >
+      </Fragment >
     );
   };
 
@@ -735,58 +845,58 @@ class DeploymentAppHome extends Component {
    */
   handleRenderMode = () => {
     const {
-      DeploymentAppStore: {getCurrentInstance},
-      intl: {formatMessage},
-      form: {getFieldDecorator},
+      DeploymentAppStore: { getCurrentInstance },
+      intl: { formatMessage },
+      form: { getFieldDecorator },
     } = this.props;
-    const {mode, instanceId, istName, istNameOk} = this.state;
+    const { mode, instanceId, istName, istNameOk } = this.state;
 
     const existedInstance = _.map(getCurrentInstance, v => (
-      <Option value={v.id} key={v.id}>
+      <Option value={v.id} key={v.id} >
         {v.code}
-      </Option>
+      </Option >
     ));
 
     return (
-      <Fragment>
-        <p className="c7ncd-step-describe">
-          {formatMessage({id: "deploy.step.three.description"})}
-        </p>
-        <div className="c7ncd-step-item">
-          <div className="c7ncd-step-item-header">
-            <Icon className="c7ncd-step-item-icon" type="jsfiddle"/>
-            <span className="c7ncd-step-item-title">
-              {formatMessage({id: "deploy.step.three.mode.title"})}
-            </span>
-          </div>
-          <div className="c7ncd-step-item-indent">
+      <Fragment >
+        <p className="c7ncd-step-describe" >
+          {formatMessage({ id: "deploy.step.three.description" })}
+        </p >
+        <div className="c7ncd-step-item" >
+          <div className="c7ncd-step-item-header" >
+            <Icon className="c7ncd-step-item-icon" type="jsfiddle" />
+            <span className="c7ncd-step-item-title" >
+              {formatMessage({ id: "deploy.step.three.mode.title" })}
+            </span >
+          </div >
+          <div className="c7ncd-step-item-indent" >
             <RadioGroup
               onChange={this.handleChangeMode}
               value={mode}
-              label={<FormattedMessage id="deploy.step.three.mode"/>}
+              label={<FormattedMessage id="deploy.step.three.mode" />}
             >
-              <Radio className="deploy-radio" value="new">
-                <FormattedMessage id="deploy.step.three.mode.new"/>
-              </Radio>
+              <Radio className="deploy-radio" value="new" >
+                <FormattedMessage id="deploy.step.three.mode.new" />
+              </Radio >
               <Radio
                 className="deploy-radio"
                 value="replace"
                 disabled={getCurrentInstance.length === 0}
               >
-                <FormattedMessage id="deploy.step.three.mode.replace"/>
+                <FormattedMessage id="deploy.step.three.mode.replace" />
                 <Icon
                   className="c7ncd-step-item-tip-icon"
-                  style={{verticalAlign: "text-bottom"}}
+                  style={{ verticalAlign: "text-bottom" }}
                   type="error"
                 />
                 <span
                   className="c7ncd-step-item-tip-text"
-                  style={{verticalAlign: "unset"}}
+                  style={{ verticalAlign: "unset" }}
                 >
-                  {formatMessage({id: "deploy.step.three.mode.help"})}
-                </span>
-              </Radio>
-            </RadioGroup>
+                  {formatMessage({ id: "deploy.step.three.mode.help" })}
+                </span >
+              </Radio >
+            </RadioGroup >
             {mode === "replace" && (
               <Select
                 filter
@@ -800,7 +910,7 @@ class DeploymentAppHome extends Component {
                     getCurrentInstance[0].id)
                 }
                 label={
-                  <FormattedMessage id="deploy.step.three.mode.replace.label"/>
+                  <FormattedMessage id="deploy.step.three.mode.replace.label" />
                 }
                 filterOption={(input, option) =>
                   option.props.children
@@ -809,28 +919,28 @@ class DeploymentAppHome extends Component {
                 }
               >
                 {existedInstance}
-              </Select>
+              </Select >
             )}
-          </div>
-        </div>
-        <div className="c7ncd-step-item">
-          <div className="c7ncd-step-item-header">
-            <Icon className="c7ncd-step-item-icon" type="instance_outline"/>
-            <span className="c7ncd-step-item-title">
-              {formatMessage({id: "deploy.step.three.ist.title"})}
-            </span>
-          </div>
-          <div className="c7ncd-step-item-indent">
-            <Form layout="vertical">
+          </div >
+        </div >
+        <div className="c7ncd-step-item" >
+          <div className="c7ncd-step-item-header" >
+            <Icon className="c7ncd-step-item-icon" type="instance_outline" />
+            <span className="c7ncd-step-item-title" >
+              {formatMessage({ id: "deploy.step.three.ist.title" })}
+            </span >
+          </div >
+          <div className="c7ncd-step-item-indent" >
+            <Form layout="vertical" >
               <FormItem {...formItemLayout}>
                 {getFieldDecorator("name", {
                   initialValue: istName,
                   rules: [
                     {
                       required: true,
-                      message: formatMessage({id: "required"}),
+                      message: formatMessage({ id: "required" }),
                     },
-                    {validator: this.checkName},
+                    { validator: this.checkName },
                   ],
                 })(
                   <Input
@@ -838,15 +948,15 @@ class DeploymentAppHome extends Component {
                     onChange={this.handleIstNameChange}
                     disabled={mode !== "new"}
                     maxLength={30}
-                    label={formatMessage({id: "deploy.instance"})}
+                    label={formatMessage({ id: "deploy.instance" })}
                     size="default"
-                  />
+                  />,
                 )}
-              </FormItem>
-            </Form>
-          </div>
-        </div>
-        <div className="c7ncd-step-btn">
+              </FormItem >
+            </Form >
+          </div >
+        </div >
+        <div className="c7ncd-step-btn" >
           <Button
             type="primary"
             funcType="raised"
@@ -858,21 +968,21 @@ class DeploymentAppHome extends Component {
                   (instanceId ||
                     (getCurrentInstance && getCurrentInstance.length === 1)))
               )
-            }>
-            <FormattedMessage id="next"/>
-          </Button>
-          <Button funcType="raised" onClick={this.jumpToStepTwo}>
-            <FormattedMessage id="previous"/>
-          </Button>
+            } >
+            <FormattedMessage id="next" />
+          </Button >
+          <Button funcType="raised" onClick={this.jumpToStepTwo} >
+            <FormattedMessage id="previous" />
+          </Button >
           <Button
             funcType="raised"
             className="c7ncd-step-cancel-btn"
             onClick={this.handleStepCancel}
           >
-            <FormattedMessage id="cancel"/>
-          </Button>
-        </div>
-      </Fragment>
+            <FormattedMessage id="cancel" />
+          </Button >
+        </div >
+      </Fragment >
     );
   };
 
@@ -882,8 +992,8 @@ class DeploymentAppHome extends Component {
    */
   handleRenderReview = () => {
     const {
-      DeploymentAppStore: {getCurrentInstance, getValue},
-      intl: {formatMessage},
+      DeploymentAppStore: { getCurrentInstance, getValue },
+      intl: { formatMessage },
     } = this.props;
     const {
       app,
@@ -918,12 +1028,12 @@ class DeploymentAppHome extends Component {
         icon: "widgets",
         label: "deploy.step.four.app",
         value: (
-          <Fragment>
+          <Fragment >
             {app ? app.name : null}
-            <span className="c7ncd-step-info-item-text">
+            <span className="c7ncd-step-info-item-text" >
               ({app ? app.code : null})
-            </span>
-          </Fragment>
+            </span >
+          </Fragment >
         ),
       },
       {
@@ -935,22 +1045,22 @@ class DeploymentAppHome extends Component {
         icon: "donut_large",
         label: "deploy.step.two.env.title",
         value: (
-          <Fragment>
+          <Fragment >
             {envDto ? envDto.name : null}
-            <span className="c7ncd-step-info-item-text">
+            <span className="c7ncd-step-info-item-text" >
               ({envDto ? envDto.code : null})
-            </span>
-          </Fragment>
+            </span >
+          </Fragment >
         ),
       },
       {
         icon: "jsfiddle",
         label: "deploy.step.three.mode",
         value: (
-          <Fragment>
-            <FormattedMessage id={`deploy.step.three.mode.${mode}`}/>
+          <Fragment >
+            <FormattedMessage id={`deploy.step.three.mode.${mode}`} />
             {mode === "replace" ? (
-              <span className="c7ncd-step-info-item-text">
+              <span className="c7ncd-step-info-item-text" >
                 (
                 {instanceId
                   ? instanceDto.code
@@ -958,9 +1068,9 @@ class DeploymentAppHome extends Component {
                   getCurrentInstance.length === 1 &&
                   getCurrentInstance[0].code}
                 )
-              </span>
+              </span >
             ) : null}
-          </Fragment>
+          </Fragment >
         ),
       },
       {
@@ -971,28 +1081,28 @@ class DeploymentAppHome extends Component {
     ];
 
     const infoDom = _.map(deployInfo, item => {
-      const {icon, label, value} = item;
+      const { icon, label, value } = item;
       return (
-        <div key={label} className="c7ncd-step-info-item">
-          <div className="c7ncd-step-info-item-label">
-            <Icon type={icon} className="c7ncd-step-info-item-icon"/>
-            <FormattedMessage id={label}/>：
-          </div>
+        <div key={label} className="c7ncd-step-info-item" >
+          <div className="c7ncd-step-info-item-label" >
+            <Icon type={icon} className="c7ncd-step-info-item-icon" />
+            <FormattedMessage id={label} />：
+          </div >
           {value ? (
-            <div className="c7ncd-step-info-item-value">{value}</div>
+            <div className="c7ncd-step-info-item-value" >{value}</div >
           ) : null}
-        </div>
+        </div >
       );
     });
 
     return (
-      <Fragment>
-        <div className="c7ncd-step-item c7ncd-step-item-full">
+      <Fragment >
+        <div className="c7ncd-step-item c7ncd-step-item-full" >
           {infoDom}
-          <YamlEditor readOnly value={changedValue}/>
-        </div>
-        <div className="c7ncd-step-btn">
-          <Permission service={["devops-service.application-instance.deploy"]}>
+          <YamlEditor readOnly value={changedValue} />
+        </div >
+        <div className="c7ncd-step-btn" >
+          <Permission service={["devops-service.application-instance.deploy"]} >
             <Button
               type="primary"
               funcType="raised"
@@ -1000,21 +1110,21 @@ class DeploymentAppHome extends Component {
               onClick={this.handleDeploy}
               loading={loading}
             >
-              <FormattedMessage id="deploy.btn.deploy"/>
-            </Button>
-          </Permission>
-          <Button funcType="raised" onClick={this.jumpToStepThree}>
-            <FormattedMessage id="previous"/>
-          </Button>
+              <FormattedMessage id="deploy.btn.deploy" />
+            </Button >
+          </Permission >
+          <Button funcType="raised" onClick={this.jumpToStepThree} >
+            <FormattedMessage id="previous" />
+          </Button >
           <Button
             funcType="raised"
             className="c7ncd-step-cancel-btn"
             onClick={this.handleStepCancel}
           >
-            <FormattedMessage id="cancel"/>
-          </Button>
-        </div>
-      </Fragment>
+            <FormattedMessage id="cancel" />
+          </Button >
+        </div >
+      </Fragment >
     );
   };
 
@@ -1023,9 +1133,9 @@ class DeploymentAppHome extends Component {
    * @param value
    */
   handleEnvSelect = value => {
-    const {currentStep} = this.state;
+    const { currentStep } = this.state;
     const envs = EnvOverviewStore.getEnvcard;
-    const env = _.filter(envs, {connect: true, id: value});
+    const env = _.filter(envs, { connect: true, id: value });
     EnvOverviewStore.setTpEnvId(value);
     if (currentStep === 1 && env && env.length) {
       this.handleSelectEnv(value);
@@ -1035,10 +1145,10 @@ class DeploymentAppHome extends Component {
   render() {
     const {
       DeploymentAppStore,
-      intl: {formatMessage},
+      intl: { formatMessage },
     } = this.props;
     const data = DeploymentAppStore.value;
-    const {name: projectName} = AppState.currentMenuType;
+    const { name: projectName } = AppState.currentMenuType;
     const {
       currentStep,
       disabledChangeTopEnv,
@@ -1047,11 +1157,11 @@ class DeploymentAppHome extends Component {
       app,
     } = this.state;
 
-    const {getTpEnvId, getEnvcard: envData} = EnvOverviewStore;
+    const { getTpEnvId, getEnvcard: envData } = EnvOverviewStore;
 
     const STEP_LIST = ["one", "two", "three", "four"];
     const stepDom = _.map(STEP_LIST, item => (
-      <Step key={item} title={formatMessage({id: `deploy.step.${item}.title`})}/>
+      <Step key={item} title={formatMessage({ id: `deploy.step.${item}.title` })} />
     ));
 
     const stepRender = [
@@ -1077,10 +1187,10 @@ class DeploymentAppHome extends Component {
     ];
 
     return (
-      <Page service={permission}>
+      <Page service={permission} >
         {hasEnvAndPermission ? (
-          <Fragment>
-            <Header title={<FormattedMessage id="deploy.header.title"/>}>
+          <Fragment >
+            <Header title={<FormattedMessage id="deploy.header.title" />} >
               <Select
                 className={`${
                   getTpEnvId
@@ -1088,7 +1198,7 @@ class DeploymentAppHome extends Component {
                     : "c7n-header-select c7n-select_min100"
                   }`}
                 dropdownClassName="c7n-header-env_drop"
-                placeholder={formatMessage({id: "envoverview.noEnv"})}
+                placeholder={formatMessage({ id: "envoverview.noEnv" })}
                 value={envData && envData.length ? getTpEnvId : undefined}
                 disabled={disabledChangeTopEnv || (envData && envData.length === 0)}
                 onChange={this.handleEnvSelect}
@@ -1100,49 +1210,49 @@ class DeploymentAppHome extends Component {
                     disabled={!e.permission}
                     title={e.name}
                   >
-                    <Tooltip placement="right" title={e.name}>
-                      <span className="c7n-ib-width_100">
+                    <Tooltip placement="right" title={e.name} >
+                      <span className="c7n-ib-width_100" >
                         {e.connect ? (
-                          <span className="c7ncd-status c7ncd-status-success"/>
+                          <span className="c7ncd-status c7ncd-status-success" />
                         ) : (
-                          <span className="c7ncd-status c7ncd-status-disconnect"/>
+                          <span className="c7ncd-status c7ncd-status-disconnect" />
                         )}
                         {e.name}
-                      </span>
-                    </Tooltip>
-                  </Option>
+                      </span >
+                    </Tooltip >
+                  </Option >
                 ))}
-              </Select>
-            </Header>
+              </Select >
+            </Header >
             <Content
               className="c7n-deploy-wrapper c7ncd-step-page"
               code="deploy"
-              values={{name: projectName}}
+              values={{ name: projectName }}
             >
-              <div className="c7ncd-step-wrap">
-                <Steps className="c7ncd-step-bar" current={currentStep}>
+              <div className="c7ncd-step-wrap" >
+                <Steps className="c7ncd-step-bar" current={currentStep} >
                   {stepDom}
-                </Steps>
-                <div className="c7ncd-step-card">{stepRender[currentStep]()}</div>
-              </div>
+                </Steps >
+                <div className="c7ncd-step-card" >{stepRender[currentStep]()}</div >
+              </div >
               {show && (
                 <SelectApp
                   isMarket={!isLocalProject}
                   app={app}
                   show={show}
                   handleCancel={this.handleCancel}
-                  handleOk={this.handleOk}
+                  handleOk={this.handleSelectApp}
                 />
               )}
-            </Content>
-          </Fragment>
+            </Content >
+          </Fragment >
         ) : (
           <DepPipelineEmpty
-            title={<FormattedMessage id="deploy.header.title"/>}
+            title={<FormattedMessage id="deploy.header.title" />}
             type="env"
           />
         )}
-      </Page>
+      </Page >
     );
   }
 }

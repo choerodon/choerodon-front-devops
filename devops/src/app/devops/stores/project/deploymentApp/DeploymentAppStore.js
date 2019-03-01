@@ -6,9 +6,6 @@ const { AppState } = stores;
 
 @store("DeploymentAppStore")
 class DeploymentAppStore {
-  @observable apps = [];
-
-  @observable versions = [];
 
   @observable envs = [];
 
@@ -17,14 +14,6 @@ class DeploymentAppStore {
   @observable currentMode = "new";
 
   @observable currentInstance = [];
-
-  @action setApps(data) {
-    this.apps = data;
-  }
-
-  @action setVersions(data) {
-    this.versions = data;
-  }
 
   @action setEnvs(data) {
     this.envs = data;
@@ -36,10 +25,6 @@ class DeploymentAppStore {
 
   @action setShowArr(data) {
     this.showArr = data;
-  }
-
-  @action setLoadingArr(data) {
-    this.loadingArr = data;
   }
 
   @action setCurrentMode(data) {
@@ -62,34 +47,23 @@ class DeploymentAppStore {
     return this.value;
   }
 
-  loadApps(id, projectId = AppState.currentMenuType.id) {
-    return axios
-      .get(`/devops/v1/projects/${projectId}/apps/${id}/detail`)
+  loadApps = (projectId, id) =>
+    axios.get(`/devops/v1/projects/${projectId}/apps/${id}/detail`)
       .then(data => handleProptError(data));
-  }
 
   /**
-   *
-   *
-   * @param {*} appId
-   * @param {*} projectId
-   * @param {string} [flag=""] 是否发布
-   * @returns
-   * @memberof DeploymentAppStore
+   * 根据应用查询版本
+   * @param projectId
+   * @param appId
+   * @param flag 应用是否发布到应用市场
+   * @param page 加载页
+   * @param param 搜索值
+   * @param id 返回的数据中必须包含的版本
+   * @param size
    */
-  loadVersion(appId, projectId, flag = "") {
-    return axios
-      .get(
-        `/devops/v1/projects/${projectId}/app_versions/list_by_app/${appId}?is_publish=${flag}`
-      )
-      .then(data => {
-        const res = handleProptError(data);
-        if (res) {
-          this.setVersions(res);
-        }
-        return res;
-      });
-  }
+  loadVersion = (projectId, appId, flag, page, param='', id='', size=15) =>
+    axios.get(`/devops/v1/projects/${projectId}/app_versions/list_by_app/${appId}?is_publish=${flag || ''}&page=${page}&app_version_id=${id}&version=${param}&size=${size}`)
+      .then(data => handleProptError(data));
 
   loadEnv(projectId = AppState.currentMenuType.id) {
     return axios

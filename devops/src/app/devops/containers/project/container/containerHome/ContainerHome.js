@@ -1109,28 +1109,34 @@ class ContainerHome extends Component {
               <OptGroup label={formatMessage({ id: "project" })} key="proGroup">
                 {appProDom}
                 {proPageSize < appProLength && (
-                  <Option key="more">
-                    <div
-                      role="none"
+                  <Option
+                    disabled
+                    className="c7ncd-more-btn-wrap"
+                    key="pro_more"
+                  >
+                    <Button
+                      className="c7ncd-more-btn"
                       onClick={this.appDomMore.bind(this, "pro")}
-                      className="c7n-container-option-popover c7n-dom-more"
                     >
-                      {formatMessage({ id: "ist.more" })}
-                    </div>
+                      {formatMessage({id: "ist.more"})}
+                    </Button>
                   </Option>
                 )}
               </OptGroup>
               <OptGroup label={formatMessage({ id: "market" })} key="pubGroup">
                 {appPubDom}
                 {pubPageSize < appPubLength && (
-                  <Option key="pubMore">
-                    <div
-                      role="none"
+                  <Option
+                    disabled
+                    className="c7ncd-more-btn-wrap"
+                    key="pub_more"
+                  >
+                    <Button
+                      className="c7ncd-more-btn"
                       onClick={this.appDomMore.bind(this, "pub")}
-                      className="c7n-container-option-popover c7n-dom-more"
                     >
-                      {formatMessage({ id: "ist.more" })}
-                    </div>
+                      {formatMessage({id: "ist.more"})}
+                    </Button>
                   </Option>
                 )}
               </OptGroup>
