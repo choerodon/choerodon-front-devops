@@ -39,6 +39,7 @@ const Reports = asyncRouter(() => import("./project/reports"));
 const DevConsole = asyncRouter(() => import("./project/devConsole"));
 const ConfigMap = asyncRouter(() => import("./project/configMap"));
 const Secret = asyncRouter(() => import("./project/secret"));
+const AutoDeploy = asyncRouter(() => import("./project/autoDeploy"));
 
 @inject("AppState")
 class DEVOPSIndex extends React.Component {
@@ -103,6 +104,7 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/dev-console`} component={DevConsole} />
           <Route path={`${match.url}/config-map`} component={ConfigMap} />
           <Route path={`${match.url}/secret`} component={Secret} />
+          <Route path={`${match.url}/auto-deploy`} component={AutoDeploy} />
           <Route
             path={`${match.url}/certificate-manage`}
             component={CertificateManage}

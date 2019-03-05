@@ -1,0 +1,48 @@
+.c7n-autodDeploy-create {
+
+  .c7n-autoDeploy-config {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.87);
+    line-height: 24px;
+    font-weight: 500;
+    margin-bottom: 16px;
+
+    .c7n-table-title-tip i {
+      font-size: 16px;
+      margin-left: 9px;
+    }
+  }
+
+  .autoDeploy-type-tips {
+    width: 512px;
+
+    .ant-select-tags.ant-select-allow-clear .ant-select-selection__rendered .ant-select-clear {
+      right: 20px;
+      top: -3px;
+    }
+  }
+  .c7n-autoDeploy-radio {
+
+    .c7n-autoDeploy-replace-tip-icon {
+      color: #f44336;
+      margin: 0 5px 0 10px;
+    }
+
+    .c7n-autoDeploy-replace-tip-text {
+      color: rgba(0, 0, 0, 0.54);
+    }
+
+    .ant-radio-wrapper {
+      display: block;
+      margin-bottom: 10px;
+
+      &:last-child {
+        margin-bottom: 16px;
+      }
+    }
+  }
+}
+
+.c7n-autoDeploy-sidebar-cancel {
+  color: #3f51b5;
+}

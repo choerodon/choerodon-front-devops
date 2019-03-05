@@ -151,7 +151,7 @@ const pageDetail = {
   "ist.title.project": '项目"{name}"的实例',
   "ist.title.env": '环境"{name}"的实例',
   "ist.description":
-    "实例是一次应用部署生成的应用实体。您可在此用三种视图查看该项目的实例情况及相关应用、环境信息。",
+    "实例是一次应用部署生成的应用实体。您可在此查看此环境中各个应用对应的实例情况。",
   "ist.edit.title": '对"{name}"进行修改',
   "ist.edit.description": "对实例配置信息进行修改后重新部署。",
   "ist.upgrade.title": '对"{name}"进行修改',
@@ -363,6 +363,24 @@ const pageDetail = {
   "certificate.edit.title": '对证书"{name}"进行修改',
   "certificate.edit.description": "您可在此修改证书的公开范围。",
   "certificate.edit.link": `${docServer}/user-guide/certificate-management/certificate`,
+
+  // 自动部署
+  "autoDeploy.title": '项目"{name}"的自动部署任务',
+  "autoDeploy.description":
+    "自动部署是一种实现部署流程自动化的方法，您可在此创建自动部署任务，以此来简化部署操作。",
+  "autoDeploy.link": "自动部署链接",
+  "autoDeploy.record.title": '项目"{name}"的自动部署记录',
+  "autoDeploy.record.description":
+    "您可在此查看该项目下所有自动化部署任务的执行记录。",
+  "autoDeploy.record.link": "自动部署记录链接",
+  "autoDeploy.create.title": '在项目"{name}"中创建自动部署任务',
+  "autoDeploy.create.description":
+    "您可在此设置应用、版本类型、对应的环境以及配置信息来创建自动部署的任务。",
+  "autoDeploy.create.link": "创建自动部署链接",
+  "autoDeploy.edit.title": '对自动部署任务"{name}"进行修改',
+  "autoDeploy.edit.description":
+    "您可在此修改所设置的应用、版本类型、环境以及配置信息。只是重新选择应用或环境后，下方的配置信息将会重置。",
+  "autoDeploy.edit.link": "编辑自动部署链接",
 };
 
 const zhCN = {
@@ -1460,6 +1478,35 @@ const zhCN = {
     "此操作用于为此证书在该组织下配置公开范围。一般默认选择为组织下所有项目，即该证书可在所有项目下创建证书时使用；若选择组织下特定项目，则只有在被勾选项目下创建证书时才有权限选择此证书。",
   "certificate.public": "证书公开范围",
   "ctf.sidebar.edit": "编辑证书",
+
+  // 自动部署
+  "autoDeploy.header": "自动部署",
+  "autoDeploy.record.header": "自动部署执行记录",
+  "autoDeploy.create.header": "创建自动部署任务",
+  "autoDeploy.edit.header": "修改自动部署任务",
+  "autoDeploy.create": "创建自动部署",
+  "autoDeploy.record": "自动部署记录总览",
+  "autoDeploy.task.name": "任务名称",
+  "autoDeploy.version.type": "版本类型",
+  "autoDeploy.delete": "删除自动部署任务",
+  "autoDeploy.delete.tooltip": "确定要删除此任务吗？",
+  "autoDeploy.record.instance": "生成实例",
+  "task.name.check.failed": "不能包含空格",
+  "task.name.exist": "名称已存在",
+  "autoDeploy.create.type.tips":
+    "您可在此输入或选择自动部署的应用版本类型，若想自动部署所选应用的所有版本，则不必填写此栏。",
+  "autoDeploy.chooseTask": "选择任务",
+  "autoDeploy.mode": "选择部署模式",
+  "autoDeploy.mode.tip":
+    "若选择新建实例，那么在第一次执行该条自动部署任务时，会在所选环境中新建一个实例，而后续执行该条自动部署任务时，均会默认在此实例上进行升级或更新；若选择替换实例，首先需要满足所选应用在所选环境中存在实例，而选中要替换的目标实例后，后续的自动部署便会直接在此实例上进行升级或更新。",
+  "autoDeploy.replace.instance.tips":
+    "替换实例会更新该实例的镜像及配置信息，请确认要替换的实例选择无误。",
+  "autoDeploy.status.deleted": "已删除",
+  "autoDeploy.status.running": "执行中",
+  "autoDeploy.status.failed": "失败",
+  "autoDeploy.status.finished": "已执行",
+  "autoDeploy.stop.tooltip": "确定要停用此任务吗？",
+  "autoDeploy.active.tooltip": "确定要启用此任务吗？",
 
   ...pageDetail,
 };

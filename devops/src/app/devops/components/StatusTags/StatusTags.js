@@ -12,6 +12,8 @@ const Color = {
   opened: '#FFB100',
   ready: '#57AAF8',
   unready: 'rgba(0,0,0,0.20)',
+  deleted: 'rgba(0,0,0,0.36)',
+  finished: '#00bf96',
 };
 
 class StatusTags extends Component {
