@@ -178,7 +178,7 @@
         Routes: /devops/auto-deploy
         sort: 3
         permission:
-          - "devops-service.devops-auto-deploy.pageByOptions",
+          - "devops-service.devops-auto-deploy.pageByOptions"
     - "application-deployment":
         icon: jsfiddle
         Routes: /devops/deployment-app
