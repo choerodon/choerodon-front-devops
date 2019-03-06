@@ -269,7 +269,7 @@ class AutoDeployHome extends Component {
                 />
               </Tooltip>
             </Permission>
-            <Permission
+            {!record.isEnabled ? <Permission
               type={type}
               projectId={projectId}
               organizationId={organizationId}
@@ -285,7 +285,7 @@ class AutoDeployHome extends Component {
                   onClick={this.showSidebar.bind(this, 'delete', record.id, record.taskName)}
                 />
               </Tooltip>
-            </Permission>
+            </Permission> : null}
           </div>
         ),
       },

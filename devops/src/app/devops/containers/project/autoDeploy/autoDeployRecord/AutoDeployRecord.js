@@ -186,8 +186,12 @@ class AutoDeployRecord extends Component {
         dataIndex: "instanceName",
         key: "instanceName",
         render: (text, record) => {
-          const { appId, envId } = record;
-          return (
+          const { appId, envId, instanceStatus } = record;
+          return (instanceStatus === "deleted" ? (
+            <div className="c7n-autodDeploy-record-deleted">
+              <FormattedMessage id="deleted" />
+            </div>
+          ) : (
             <Link
               to={{
                 pathname: `/devops/instance`,
@@ -197,11 +201,11 @@ class AutoDeployRecord extends Component {
             >
               <span>{text}</span>
             </Link>
-          )
+          ))
         },
       },
       {
-        title: <FormattedMessage id="ist.expand.date" />,
+        title: <FormattedMessage id="autoDeploy.execute.date" />,
         dataIndex: "lastUpdateDate",
         key: "lastUpdateDate",
         render: text => <TimePopover content={text} />,
@@ -274,7 +278,7 @@ class AutoDeployRecord extends Component {
           <Select
             className="c7n-autoDeploy-select"
             label={formatMessage({ id: "chooseApp" })}
-            value={appId}
+            value={appId || undefined}
             optionFilterProp="children"
             onChange={ value => this.handleSelect(value, 'appId')}
             filter
@@ -299,7 +303,7 @@ class AutoDeployRecord extends Component {
           <Select
             className="c7n-autoDeploy-select"
             label={formatMessage({ id: "container.chooseEnv" })}
-            value={envId}
+            value={envId || undefined}
             optionFilterProp="children"
             onChange={value => this.handleSelect(value, 'envId')}
             filter
@@ -330,7 +334,7 @@ class AutoDeployRecord extends Component {
           <Select
             className="c7n-autoDeploy-select"
             label={formatMessage({ id: "autoDeploy.chooseTask" })}
-            value={taskName}
+            value={taskName || undefined}
             optionFilterProp="children"
             onChange={value => this.handleSelect(value, 'taskName')}
             filter
