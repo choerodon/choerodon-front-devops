@@ -1507,6 +1507,7 @@ const zhCN = {
   "autoDeploy.status.finished": "已执行",
   "autoDeploy.stop.tooltip": "确定要停用此任务吗？",
   "autoDeploy.active.tooltip": "确定要启用此任务吗？",
+  "autoDeploy.execute.date": "执行时间",
 
   ...pageDetail,
 };

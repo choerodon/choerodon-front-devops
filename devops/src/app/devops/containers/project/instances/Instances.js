@@ -33,6 +33,8 @@ import "./Instances.scss";
 const Option = Select.Option;
 const { AppState } = stores;
 
+const HEIGHT = window.screen.height;
+
 @observer
 class Instances extends Component {
   constructor(props) {
@@ -50,17 +52,29 @@ class Instances extends Component {
 
   componentDidMount() {
     const { InstancesStore } = this.props;
-    if (!InstancesStore.getIsCache) {
-      const { id: projectId } = AppState.currentMenuType;
-      EnvOverviewStore.loadActiveEnv(projectId, "instance");
-    } else {
-      InstancesStore.setIsCache(false);
+    if (!InstancesStore.getIsCache.isCache) {
+      const {id: projectId} = AppState.currentMenuType;
+      const {history: {location: {state}}} = this.props;
+      if (state) {
+        const {envId, appId} = state;
+        InstancesStore.loadAppNameByEnv(projectId, envId, 0, HEIGHT < 900 ? 10 : 15, appId);
+        EnvOverviewStore.loadActiveEnv(projectId)
+          .then(res => {
+            if (res && !res.failed) {
+              EnvOverviewStore.setTpEnvId(envId);
+            }
+          });
+        this.loadDetail(appId);
+        InstancesStore.setIsCache({appId})
+      } else {
+        EnvOverviewStore.loadActiveEnv(projectId, "instance");
+      }
     }
   }
 
   componentWillUnmount() {
     const { InstancesStore } = this.props;
-    if (!InstancesStore.getIsCache) {
+    if (!InstancesStore.getIsCache.isCache) {
       InstancesStore.setAppId(null);
       InstancesStore.setAppNameByEnv([]);
       InstancesStore.setIstAll([]);
@@ -105,7 +119,7 @@ class Instances extends Component {
   linkDeployDetail = record => {
     const { id, status, code } = record;
     const { InstancesStore } = this.props;
-    InstancesStore.setIsCache(true);
+    InstancesStore.setIsCache({ isCache: true });
     const { history } = this.props;
     const {
       id: projectId,
@@ -326,11 +340,12 @@ class Instances extends Component {
         loadAppNameByEnv,
         getAppPage,
         getAppId,
+        getIsCache,
       },
     } = this.props;
     const envId = EnvOverviewStore.getTpEnvId;
 
-    loadAppNameByEnv(projectId, envId, getAppPage - 1, getAppPageSize);
+    loadAppNameByEnv(projectId, envId, getAppPage - 1, getAppPageSize, getIsCache.appId);
 
     this.reloadData(spin, clear, getAppId);
   };
@@ -561,10 +576,11 @@ class Instances extends Component {
   render() {
     DevopsStore.initAutoRefresh("ist", this.reload);
 
-    const { id: projectId, name: projectName } = AppState.currentMenuType;
+    const { id: projectId, name: projectName, type, organizationId } = AppState.currentMenuType;
     const {
       InstancesStore,
       intl: { formatMessage },
+      history: { location: { state } },
     } = this.props;
     const {
       getIstAll,
@@ -713,7 +729,13 @@ class Instances extends Component {
       >
         {envData && envData.length && envId ? (
           <Fragment>
-            <Header title={<FormattedMessage id="ist.head" />}>
+            <Header
+              title={<FormattedMessage id="ist.head" />}
+              backPath={state ?
+                `/devops/auto-deploy/record?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`
+                : null
+              }
+            >
               <Select
                 className={`${
                   envId

@@ -41,7 +41,7 @@ class InstancesStore {
 
   @observable envId = null;
 
-  @observable isCache = false;
+  @observable isCache = { isCache: false, appId: null };
 
   @observable appId = null;
 
@@ -72,8 +72,10 @@ class InstancesStore {
   /**
    * 只用于实例进入详情
    */
-  @action setIsCache(flag) {
-    this.isCache = flag;
+  @action setIsCache(data) {
+    _.forEach(data, (value, key) => {
+      this.isCache[key] = value;
+    });
   }
 
   @computed get getIsCache() {
@@ -243,10 +245,10 @@ class InstancesStore {
     this.changeLoading(false);
   };
 
-  loadAppNameByEnv = (projectId, envId, page, appPageSize) =>
+  loadAppNameByEnv = (projectId, envId, page, appPageSize, appId) =>
     axios
       .get(
-        `devops/v1/projects/${projectId}/apps/pages?env_id=${envId}&page=${page}&size=${appPageSize}`
+        `devops/v1/projects/${projectId}/apps/pages?env_id=${envId}${appId ? `&app_id=${appId}` : ''}&page=${page}&size=${appPageSize}`
       )
       .then(data => {
         const res = handleProptError(data);

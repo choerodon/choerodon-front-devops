@@ -56,8 +56,8 @@ class DEVOPSIndex extends React.Component {
      * isCache 设置一个标志位，true表示不重新加载，否则重新加载
      */
     const isInstancePage = window.location.href.includes("instance") || window.location.href.includes("container");
-    if (InstancesStore.getIsCache && !isInstancePage) {
-      InstancesStore.setIsCache(false);
+    if (InstancesStore.getIsCache.isCache && !isInstancePage) {
+      InstancesStore.setIsCache({ isCache: false, appId: null });
       InstancesStore.setAppId(null);
       InstancesStore.setAppNameByEnv([]);
       InstancesStore.setIstAll([]);

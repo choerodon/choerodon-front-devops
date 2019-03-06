@@ -54,7 +54,7 @@ class ExpandRow extends Component {
   }
 
   handleLink() {
-    InstancesStore.setIsCache(true);
+    InstancesStore.setIsCache({ isCache: true });
   }
 
   changeTargetCount = count => {

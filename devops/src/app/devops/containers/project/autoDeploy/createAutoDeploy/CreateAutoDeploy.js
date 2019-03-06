@@ -147,6 +147,7 @@ class CreateAutoDeploy extends Component {
     const { store } = this.props;
     store.setValue(null);
     store.setSingleTask(null);
+    store.setInstanceList([])
   }
 
   /**
@@ -173,7 +174,7 @@ class CreateAutoDeploy extends Component {
       if (!err) {
         data.value = changedValue || getValue || value;
         data.instanceName = instanceName;
-        data.instanceId = instanceId ? parseInt(instanceId) : null;
+        data.instanceId = instanceId;
         if (sidebarType === 'edit') {
           data.id = id;
           data.objectVersionNumber = objectVersionNumber;
@@ -258,21 +259,7 @@ class CreateAutoDeploy extends Component {
       instanceId: istId,
       instanceName: istName,
       value: val,
-    },
-      () => newMode === "new" ?
-        this.setFormValue(istName) : this.setFormValue(istId, false)
-    );
-  };
-
-
-  setFormValue = (value, flag = true) => {
-    const { form } = this.props;
-    if (flag) {
-      form.setFieldsValue({ instanceName: value });
-      form.validateFields(["instanceName"]);
-    } else {
-      form.setFieldsValue({ instanceId: value })
-    }
+    });
   };
 
   /**
@@ -304,14 +291,11 @@ class CreateAutoDeploy extends Component {
       const appData = store.getHasVersionApp;
       const appCode = (_.find(appData, app => app.id === appId)).code;
       const istName = `${appCode}-${uuidv1().substring(0, 5)}`;
-      this.setState(
-        {
-          instanceName: istName,
-          instanceId: null,
-          mode: value,
-        },
-        () => this.setFormValue(istName)
-      );
+      this.setState({
+        instanceName: istName,
+        instanceId: null,
+        mode: value,
+      });
     } else {
       this.setState({ mode: value, instanceName: null });
     }
@@ -324,7 +308,7 @@ class CreateAutoDeploy extends Component {
   handleChangeIst = value => {
     const { store } = this.props;
     const instanceList = store.getInstanceList;
-    const instanceName = (_.find(instanceList, item => item.id === value)).code;
+    const instanceName = (_.find(instanceList, item => parseInt(item.id) === value)).code;
     this.setState({ instanceId: value, instanceName });
   };
 
@@ -374,17 +358,20 @@ class CreateAutoDeploy extends Component {
       singleTask,
       hasEditorError,
       mode,
+      instanceId,
+      instanceName,
+      appId,
+      envId,
     } = this.state;
     const {
       getFieldDecorator,
     } =form;
     const {
       taskName,
-      appId,
-      envId,
       triggerVersion,
-      instanceId,
-      instanceName,
+      instanceId: istId,
+      appId: app,
+      envId: env,
     } = singleTask;
     const appData = store.getHasVersionApp;
     const envData = store.getEnvData;
@@ -565,7 +552,7 @@ class CreateAutoDeploy extends Component {
                 >
                   <Radio
                     value="new"
-                    disabled={instanceId}
+                    disabled={instanceId && (appId === app && envId === env && istId)}
                   >
                     <FormattedMessage id="deploy.step.three.mode.new"/>
                   </Radio>
@@ -639,8 +626,8 @@ class CreateAutoDeploy extends Component {
                     >
                       {_.map(instanceList, item => (
                         <Option
-                          value={item.id}
-                          key={item.id}
+                          value={parseInt(item.id)}
+                          key={parseInt(item.id)}
                         >
                           {item.code}
                         </Option>))
