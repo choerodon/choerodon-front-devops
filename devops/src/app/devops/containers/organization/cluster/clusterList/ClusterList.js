@@ -158,9 +158,9 @@ class ClusterList extends Component {
           <div className={`c7n-cls-head ${connect ? '' : 'c7n-cls-disconnect'}`} >
             <span className="c7n-cls-status-line" />
             <span className="c7n-cls-head-name" >{name}</span >
-            <span className="c7n-cls-status-tag" >
-              {connect ? formatMessage({ id: 'running' }) : formatMessage({ id: 'disconnect' })}
-            </span >
+            <div className="c7n-cls-status-tag" >
+              <div>{connect ? formatMessage({ id: 'running' }) : formatMessage({ id: 'disconnect' })}</div>
+            </div >
             <span className="c7n-cls-head-des" >{description}</span >
             <div className="c7n-cls-head-action" >
               {connect ? null : <Permission
