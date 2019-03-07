@@ -39,7 +39,7 @@ const formItemLayout = {
     sm: { span: 26 },
   },
 };
-const VERSIONTYPE = ['feature', 'bugfix', 'release', 'hotfix'];
+const VERSIONTYPE = ['master', 'feature', 'bugfix', 'release', 'hotfix'];
 
 @observer
 class CreateAutoDeploy extends Component {
@@ -297,7 +297,12 @@ class CreateAutoDeploy extends Component {
         mode: value,
       });
     } else {
-      this.setState({ mode: value, instanceName: null });
+      const instance = (store.getInstanceList)[0];
+      this.setState({
+        mode: value,
+        instanceName: instance.code,
+        instanceId: parseInt(instance.id),
+      });
     }
   };
 
