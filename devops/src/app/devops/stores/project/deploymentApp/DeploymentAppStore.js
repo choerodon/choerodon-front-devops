@@ -11,8 +11,6 @@ class DeploymentAppStore {
 
   @observable value = null;
 
-  @observable currentMode = "new";
-
   @observable currentInstance = [];
 
   @action setEnvs(data) {
@@ -25,10 +23,6 @@ class DeploymentAppStore {
 
   @action setShowArr(data) {
     this.showArr = data;
-  }
-
-  @action setCurrentMode(data) {
-    this.currentMode = data;
   }
 
   @action setCurrentInstance(data) {
@@ -104,12 +98,9 @@ class DeploymentAppStore {
       });
   }
 
-  deploymentApp(applicationDeployDTO, projectId = AppState.currentMenuType.id) {
+  submitDeployment(projectId, applicationDeployDTO) {
     return axios
-      .post(
-        `/devops/v1/projects/${projectId}/app_instances`,
-        applicationDeployDTO
-      )
+      .post(`/devops/v1/projects/${projectId}/app_instances`, JSON.stringify(applicationDeployDTO))
       .then(data => handleProptError(data));
   }
 

@@ -1171,9 +1171,11 @@ const zhCN = {
   "release.addVersion.btn.confirm": "添加",
 
   // yaml file
-  "yaml.legend.new": "新增",
-  "yaml.legend.modify": "修改",
-  "yaml.legend.error": "格式错误",
+  "editor.legend.new": "新增",
+  "editor.legend.modify": "修改",
+  "editor.legend.delete": "删除",
+  "editor.legend.error": "格式错误",
+  "editor.mode.changer": "切换编辑器模式",
   "yaml.modify": "当前修改",
   "yaml.error.tooltip":
     "Values文件yaml格式错误，请在应用代码中修改错误并重新生成正确的应用版本。",

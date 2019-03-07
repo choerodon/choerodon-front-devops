@@ -1,9 +1,9 @@
 /* eslint-disable react/sort-comp */
-import React, { Component } from "react";
-import { observer } from "mobx-react";
-import { observable, action } from "mobx";
-import { withRouter } from "react-router-dom";
-import { injectIntl, FormattedMessage } from "react-intl";
+import React, { Component } from 'react';
+import { observer } from 'mobx-react';
+import { observable, action } from 'mobx';
+import { withRouter } from 'react-router-dom';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import {
   Button,
   Form,
@@ -14,25 +14,26 @@ import {
   Modal,
   Progress,
   Select,
-} from "choerodon-ui";
-import { Permission, Content, Action, stores } from "choerodon-front-boot";
-import _ from "lodash";
-import "codemirror/lib/codemirror.css";
-import "codemirror/theme/base16-dark.css";
-import ValueConfig from "../../instances/ValueConfig";
-import UpgradeIst from "../../instances/UpgradeIst";
-import "../EnvOverview.scss";
-import "../../instances/Instances.scss";
-import "../../../main.scss";
-import InstancesStore from "../../../../stores/project/instances/InstancesStore";
-import DomainStore from "../../../../stores/project/domain";
-import CreateDomain from "../../domain/createDomain";
-import CreateNetwork from "../../networkConfig/createNetwork";
-import NetworkConfigStore from "../../../../stores/project/networkConfig";
-import LoadingBar from "../../../../components/loadingBar";
-import ExpandRow from "../../instances/components/ExpandRow";
-import UploadIcon from "../../instances/components/UploadIcon";
-import PodStatus from "../../instances/components/PodStatus/PodStatus";
+} from 'choerodon-ui';
+import { Permission, Content, Action, stores } from 'choerodon-front-boot';
+import _ from 'lodash';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/base16-dark.css';
+import ValueConfig from '../../instances/ValueConfig';
+import UpgradeIst from '../../instances/UpgradeIst';
+import '../EnvOverview.scss';
+import '../../instances/Instances.scss';
+import '../../../main.scss';
+import InstancesStore from '../../../../stores/project/instances/InstancesStore';
+import DomainStore from '../../../../stores/project/domain';
+import CreateDomain from '../../domain/createDomain';
+import CreateNetwork from '../../networkConfig/createNetwork';
+import NetworkConfigStore from '../../../../stores/project/networkConfig';
+import LoadingBar from '../../../../components/loadingBar';
+import ExpandRow from '../../instances/components/ExpandRow';
+import UploadIcon from '../../instances/components/UploadIcon';
+import PodStatus from '../../instances/components/PodStatus/PodStatus';
+import { handleProptError } from '../../../../utils';
 
 const { AppState } = stores;
 const Sidebar = Modal.Sidebar;
@@ -57,15 +58,15 @@ class AppOverview extends Component {
 
   @observable idArr = {};
 
-  @observable name = "";
+  @observable name = '';
 
   @observable showSide = false;
 
-  @observable containerName = "";
+  @observable containerName = '';
 
   @observable containerArr = [];
 
-  @observable podName = "";
+  @observable podName = '';
 
   @observable activeKey = [];
 
@@ -79,15 +80,15 @@ class AppOverview extends Component {
 
   @observable istId = null;
 
-  @observable appName = "";
+  @observable appName = '';
 
-  @observable domainType = "";
+  @observable domainType = '';
 
-  @observable domainTitle = "";
+  @observable domainTitle = '';
 
-  @observable istName = "";
+  @observable istName = '';
 
-  @observable confirmType = "";
+  @observable confirmType = '';
 
   @observable confirmLoading = false;
 
@@ -97,6 +98,10 @@ class AppOverview extends Component {
     if (refresh) {
       this.emitEmpty();
     }
+  }
+
+  componentWillMount() {
+    InstancesStore.setValue(null);
   }
 
   /**
@@ -163,7 +168,7 @@ class AppOverview extends Component {
     history.push({
       pathname: `/devops/instance/${id}/${status}/detail`,
       search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(
-        projectName
+        projectName,
       )}&organizationId=${organizationId}&overview`,
       state: { code },
     });
@@ -197,11 +202,11 @@ class AppOverview extends Component {
       <div className="c7n-envow-ist-header-wrap">
         <Icon type="navigate_next" />
         <div className="c7n-envow-ist-name">
-          {status === "running" || status === "stopped" ? (
+          {status === 'running' || status === 'stopped' ? (
             <span className="c7n-deploy-istCode">{code}</span>
           ) : (
             <div className="c7n-envow-ist-fail">
-              {status === "operating" ? (
+              {status === 'operating' ? (
                 <div>
                   <span className="c7n-deploy-istCode">{code}</span>
                   <Tooltip
@@ -215,7 +220,7 @@ class AppOverview extends Component {
               ) : (
                 <div>
                   <span className="c7n-deploy-istCode">{code}</span>
-                  <Tooltip title={`${status}${error ? `：${error}` : ""}`}>
+                  <Tooltip title={`${status}${error ? `：${error}` : ''}`}>
                     <i className="icon icon-error c7n-deploy-ist-operate" />
                   </Tooltip>
                 </div>
@@ -229,7 +234,7 @@ class AppOverview extends Component {
             :&nbsp;&nbsp;
           </span>
 
-          <UploadIcon dataSource={data}/>
+          <UploadIcon dataSource={data} />
         </span>
         <div className="c7n-appow-pod-status">
           <PodStatus dataSource={data} />
@@ -261,63 +266,63 @@ class AppOverview extends Component {
    * 修改配置实例信息
    */
   @action
-  updateConfig = (record, e) => {
-    // e.stopPropagation();
+  updateConfig = async (record) => {
     const { code, id, envId, commandVersionId, appId } = record;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    InstancesStore.loadValue(projectId, id, commandVersionId).then(res => {
-      if (res && res.failed) {
-        Choerodon.prompt(res.message);
-      } else {
-        this.visible = true;
-        this.id = id;
-        this.name = code;
-        this.idArr = {
-          environmentId: envId,
-          appVersionId: commandVersionId,
-          appId,
-        };
-      }
-    });
+    this.id = id;
+    this.name = code;
+    this.idArr = {
+      environmentId: envId,
+      appVersionId: commandVersionId,
+      appId,
+    };
+    InstancesStore.setValue(null);
+    const result = await InstancesStore.loadValue(projectId, id, commandVersionId);
+    if (result) {
+      this.visible = true;
+    }
   };
 
   /**
    * 升级配置实例信息
    */
   @action
-  upgradeIst = record => {
+  upgradeIst = async record => {
     const { intl } = this.props;
-    const { code, id, envId, appVersionId, commandVersionId, appId } = record;
+    const { code, id, envId, commandVersionId, appId } = record;
     const projectId = parseInt(AppState.currentMenuType.id, 10);
-    InstancesStore.loadUpVersion(projectId, commandVersionId).then(val => {
-      if (val && val.failed) {
-        Choerodon.prompt(val.message);
-      } else if (val.length === 0) {
-        Choerodon.prompt(intl.formatMessage({ id: "ist.noUpVer" }));
-      } else {
-        this.id = id;
-        this.name = code;
-        this.idArr = {
-          environmentId: envId,
-          appVersionId: val[0].id,
-          appId,
-        };
-        InstancesStore.loadValue(projectId, id, val[0].id).then(res => {
-          if (res && res.failed) {
-            Choerodon.prompt(res.message);
-          } else {
-            this.visibleUp = true;
+
+    InstancesStore.setValue(null);
+    try {
+      const update = await InstancesStore.loadUpVersion(projectId, commandVersionId);
+      const result = handleProptError(update);
+      if (result) {
+        if (result.length === 0) {
+          Choerodon.prompt(intl.formatMessage({ id: 'ist.noUpVer' }));
+        } else {
+          this.id = id;
+          this.name = code;
+          this.idArr = {
+            environmentId: envId,
+            appVersionId: val[0].id,
+            appId,
+          };
+          const res = await InstancesStore.loadValue(projectId, id, result[0].id);
+          if (res) {
+            this.setState({ visibleUp: true });
           }
-        });
+        }
       }
-    });
+    } catch (e) {
+      InstancesStore.changeLoading(false);
+      Choerodon.handleResponseError(e);
+    }
   };
 
   /**
    * 打开确认框
-   * @param id 实例ID
-   * @param type 类型：重新部署或启停实例
-   * @param status 状态：启动或停止实例
+   * @param record
+   * @param type
    */
   @action
   openConfirm = (record, type) => {
@@ -332,7 +337,7 @@ class AppOverview extends Component {
    */
   @action
   closeConfirm = () => {
-    this.confirmType = "";
+    this.confirmType = '';
   };
 
   /**
@@ -364,7 +369,7 @@ class AppOverview extends Component {
     this.showNetwork = false;
     if (isLoad) {
       this.loadIstOverview();
-      store.setTabKey("network");
+      store.setTabKey('network');
     }
   };
 
@@ -446,17 +451,17 @@ class AppOverview extends Component {
    *打开域名创建弹框
    */
   @action
-  createDomain = (type, id = "") => {
+  createDomain = (type, id = '') => {
     this.props.form.resetFields();
-    if (type === "create") {
+    if (type === 'create') {
       this.domainTitle = this.props.intl.formatMessage({
-        id: "domain.header.create",
+        id: 'domain.header.create',
       });
       this.domainType = type;
       this.domainId = id;
     } else {
       this.domainTitle = this.props.intl.formatMessage({
-        id: "domain.header.update",
+        id: 'domain.header.update',
       });
       this.domainType = type;
       this.domainId = id;
@@ -468,7 +473,7 @@ class AppOverview extends Component {
    * 打开创建网络
    */
   @action
-  createNetwork = (appId = null, istId = null, appCode = "") => {
+  createNetwork = (appId = null, istId = null, appCode = '') => {
     this.appId = appId;
     this.istId = istId;
     this.appCode = appCode;
@@ -481,7 +486,7 @@ class AppOverview extends Component {
   @action
   emitEmpty = () => {
     const { store } = this.props;
-    store.setVal("");
+    store.setVal('');
     this.onSearch();
   };
 
@@ -508,8 +513,8 @@ class AppOverview extends Component {
                 <Icon
                   type={
                     projectId === parseInt(currentProjectId, 10)
-                      ? "project"
-                      : "apps"
+                      ? 'project'
+                      : 'apps'
                   }
                 />
                 <span className="c7n-envow-app-name">{appName}</span>
@@ -572,73 +577,73 @@ class AppOverview extends Component {
     const { id, status, connect, appVersionId } = record;
     const actionType = {
       detail: {
-        service: ["devops-service.application-instance.listResources"],
-        text: formatMessage({ id: "ist.detail" }),
+        service: ['devops-service.application-instance.listResources'],
+        text: formatMessage({ id: 'ist.detail' }),
         action: this.linkDeployDetail.bind(this, record),
       },
       change: {
-        service: ["devops-service.application-instance.queryValues"],
-        text: formatMessage({ id: "ist.values" }),
+        service: ['devops-service.application-instance.queryValues'],
+        text: formatMessage({ id: 'ist.values' }),
         action: this.updateConfig.bind(this, record),
       },
       restart: {
-        service: ["devops-service.application-instance.restart"],
-        text: formatMessage({ id: "ist.reDeploy" }),
-        action: this.openConfirm.bind(this, record, "reDeploy"),
+        service: ['devops-service.application-instance.restart'],
+        text: formatMessage({ id: 'ist.reDeploy' }),
+        action: this.openConfirm.bind(this, record, 'reDeploy'),
       },
       update: {
-        service: ["devops-service.application-version.getUpgradeAppVersion"],
-        text: formatMessage({ id: "ist.upgrade" }),
+        service: ['devops-service.application-version.getUpgradeAppVersion'],
+        text: formatMessage({ id: 'ist.upgrade' }),
         action: this.upgradeIst.bind(this, record),
       },
       stop: {
         service: [
-          "devops-service.application-instance.start",
-          "devops-service.application-instance.stop",
+          'devops-service.application-instance.start',
+          'devops-service.application-instance.stop',
         ],
         text:
-          status !== "stopped"
-            ? formatMessage({ id: "ist.stop" })
-            : formatMessage({ id: "ist.run" }),
+          status !== 'stopped'
+            ? formatMessage({ id: 'ist.stop' })
+            : formatMessage({ id: 'ist.run' }),
         action:
-          status !== "stopped"
-            ? this.openConfirm.bind(this, record, "stop")
-            : this.openConfirm.bind(this, record, "start"),
+          status !== 'stopped'
+            ? this.openConfirm.bind(this, record, 'stop')
+            : this.openConfirm.bind(this, record, 'start'),
       },
       delete: {
-        service: ["devops-service.application-instance.delete"],
-        text: formatMessage({ id: "ist.del" }),
+        service: ['devops-service.application-instance.delete'],
+        text: formatMessage({ id: 'ist.del' }),
         action: this.handleOpen.bind(this, record),
       },
     };
     let actionItem = [];
     switch (status) {
-      case "operating" || !connect:
-        actionItem = ["detail"];
+      case 'operating' || !connect:
+        actionItem = ['detail'];
         break;
-      case "stopped":
-        actionItem = ["detail", "stop", "delete"];
+      case 'stopped':
+        actionItem = ['detail', 'stop', 'delete'];
         break;
-      case "failed":
+      case 'failed':
         actionItem = appVersionId
-          ? ["detail", "change", "restart", "update", "stop", "delete"]
-          : ["detail", "change", "restart", "update", "delete"];
+          ? ['detail', 'change', 'restart', 'update', 'stop', 'delete']
+          : ['detail', 'change', 'restart', 'update', 'delete'];
         break;
-      case "running":
+      case 'running':
         actionItem = [
-          "detail",
-          "change",
-          "restart",
-          "update",
-          "stop",
-          "delete",
+          'detail',
+          'change',
+          'restart',
+          'update',
+          'stop',
+          'delete',
         ];
         break;
       default:
-        actionItem = ["detail"];
+        actionItem = ['detail'];
     }
     if (!connect) {
-      actionItem = ["detail"];
+      actionItem = ['detail'];
     }
     const actionData = _.map(actionItem, item => ({
       projectId,
@@ -677,7 +682,7 @@ class AppOverview extends Component {
       lineNumbers: true,
       autofocus: true,
       lineWrapping: true,
-      theme: "base16-dark",
+      theme: 'base16-dark',
     };
 
     return (
@@ -688,7 +693,7 @@ class AppOverview extends Component {
           <React.Fragment>
             <div className="c7n-envow-search">
               <Input
-                placeholder={formatMessage({ id: "envoverview.search" })}
+                placeholder={formatMessage({ id: 'envoverview.search' })}
                 value={val}
                 prefix={prefix}
                 suffix={suffix}
@@ -746,10 +751,10 @@ class AppOverview extends Component {
               </div>
             </Modal>
             <Modal
-              title={`${formatMessage({ id: "ist.reDeploy" })}“${
+              title={`${formatMessage({ id: 'ist.reDeploy' })}“${
                 this.istName
-              }”`}
-              visible={this.confirmType === "reDeploy"}
+                }”`}
+              visible={this.confirmType === 'reDeploy'}
               onOk={this.reStart.bind(this, this.id)}
               onCancel={this.closeConfirm}
               confirmLoading={this.confirmLoading}
@@ -761,10 +766,10 @@ class AppOverview extends Component {
             </Modal>
             <Modal
               title={`${formatMessage({
-                id: `${this.confirmType === "stop" ? "ist.stop" : "ist.run"}`,
+                id: `${this.confirmType === 'stop' ? 'ist.stop' : 'ist.run'}`,
               })}“${this.istName}”`}
               visible={
-                this.confirmType === "stop" || this.confirmType === "start"
+                this.confirmType === 'stop' || this.confirmType === 'start'
               }
               onOk={this.activeIst.bind(this, this.id, this.confirmType)}
               onCancel={this.closeConfirm}

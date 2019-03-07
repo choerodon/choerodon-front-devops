@@ -1,10 +1,11 @@
-import { observable, action, computed } from "mobx";
-import { axios, store } from "choerodon-front-boot";
-import _ from "lodash";
-import { handleProptError } from "../../../utils/index";
+import { observable, action, computed } from 'mobx';
+import { axios, store } from 'choerodon-front-boot';
+import _ from 'lodash';
+import { handleProptError } from '../../../utils/index';
 
 const height = window.screen.height;
-@store("InstancesStore")
+
+@store('InstancesStore')
 class InstancesStore {
   @observable isLoading = true;
 
@@ -212,7 +213,7 @@ class InstancesStore {
   loadInstanceAll = (fresh = true, projectId, info = {}) => {
     this.changeLoading(fresh);
     // 拼接url
-    let search = "";
+    let search = '';
     _.forEach(info, (value, key) => {
       if (value) {
         search = search.concat(`&${key}=${value}`);
@@ -223,7 +224,7 @@ class InstancesStore {
     return axios
       .post(
         `devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page}&size=${pageSize}${search}`,
-        JSON.stringify({ searchParam: filters, param: String(param) })
+        JSON.stringify({ searchParam: filters, param: String(param) }),
       )
       .then(data => {
         const res = handleProptError(data);
@@ -254,7 +255,7 @@ class InstancesStore {
         const res = handleProptError(data);
         if (res) {
           this.setAppNameByEnv(data.content);
-          if (this.appId && !_.find(data.content, ["id", this.appId])) {
+          if (this.appId && !_.find(data.content, ['id', this.appId])) {
             this.setAppId(null);
           }
           const { number, size, totalElements } = data;
@@ -277,23 +278,23 @@ class InstancesStore {
         }
       });
 
-  loadValue = (projectId, id, verId) =>
-    axios
-      .get(
-        `devops/v1/projects/${projectId}/app_instances/${id}/appVersion/${verId}/value`
-      )
-      .then(data => {
-        const res = handleProptError(data);
-        if (res) {
-          this.setValue(data);
-          return res;
-        }
-        return false;
-      });
+  async loadValue(projectId, id, verId) {
+    try {
+      const data = await axios.get(`devops/v1/projects/${projectId}/app_instances/${id}/appVersion/${verId}/value`);
+      const result = handleProptError(data);
+      if (result) {
+        this.setValue(result);
+      }
+      return result;
+    } catch (e) {
+      // Choerodon.prompt(e);
+      return false;
+    }
+  }
 
   changeIstActive = (projectId, istId, active) =>
     axios.put(
-      `devops/v1/projects/${projectId}/app_instances/${istId}/${active}`
+      `devops/v1/projects/${projectId}/app_instances/${istId}/${active}`,
     );
 
   /**
@@ -305,12 +306,12 @@ class InstancesStore {
   reDeploy = (projectId, data) =>
     axios.post(
       `devops/v1/projects/${projectId}/app_instances`,
-      JSON.stringify(data)
+      JSON.stringify(data),
     );
 
   deleteInstance = (projectId, istId) =>
     axios.delete(
-      `devops/v1/projects/${projectId}/app_instances/${istId}/delete`
+      `devops/v1/projects/${projectId}/app_instances/${istId}/delete`,
     );
 
   reStarts = (projectId, id) =>
@@ -319,7 +320,7 @@ class InstancesStore {
   loadUpVersion = (projectId, verId) =>
     axios
       .get(
-        `devops/v1/projects/${projectId}/app_versions/version/${verId}/upgrade_version`
+        `devops/v1/projects/${projectId}/app_versions/version/${verId}/upgrade_version`,
       )
       .then(data => {
         if (data) {

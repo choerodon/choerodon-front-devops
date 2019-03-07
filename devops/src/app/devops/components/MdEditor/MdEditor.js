@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
-import CodeMirror from 'react-codemirror';
+import ReactCodeMirror from 'react-codemirror';
 import ReactMarkdown from 'react-markdown';
 import { Tabs, Button } from 'choerodon-ui';
 import 'codemirror/lib/codemirror.css';
@@ -67,7 +67,7 @@ class MdEditor extends Component {
         >
           <TabPane tab={formatMessage({ id: 'write' })} key="write">
             <div className="c7n-md-placeholder">{formatMessage({ id: 'md.placeholder' })}</div>
-            <CodeMirror
+            <ReactCodeMirror
               options={this.options}
               value={value}
               onChange={onChange}

@@ -20,7 +20,7 @@ import {
   Permission,
   stores,
 } from "choerodon-front-boot";
-import CodeMirror from "react-codemirror";
+import ReactCodeMirror from "react-codemirror";
 import _ from "lodash";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/base16-dark.css";
@@ -1235,7 +1235,7 @@ class ContainerHome extends Component {
                     Start Following
                   </div>
                 )}
-                <CodeMirror
+                <ReactCodeMirror
                   ref={editor => {
                     this.editorLog = editor;
                   }}

@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "choerodon-front-boot": "^0.10.3",
+    "diff-match-patch": "^1.0.4",
     "echarts": "^4.1.0",
     "echarts-for-react": "^2.0.12",
     "file-loader": "^2.0.0",
