@@ -50,26 +50,25 @@ class ValueConfig extends Component {
     const { store, id, idArr, onClose } = this.props;
     const { value, hasChanged } = this.state;
     const { id: projectId } = AppState.currentMenuType;
-
     const data = {
       ...idArr,
       isNotChange: !hasChanged,
-      values: value,
+      values: value || oldValue,
       appInstanceId: id,
       type: "update",
     };
 
-    this.setState({ modalDisplay: false, loading: true });
+    const oldValue = store.getValue ? store.getValue.yaml : '';
 
+    this.setState({ modalDisplay: false, loading: true });
     store.reDeploy(projectId, data).then(res => {
       if (res && res.failed) {
+        this.setState({ loading: false });
         Choerodon.prompt(res.message);
       } else {
+        this.setState({ loading: false });
         onClose(true);
       }
-      this.setState({
-        loading: false,
-      });
     });
   };
 
@@ -78,11 +77,9 @@ class ValueConfig extends Component {
    * @param value
    */
   handleChangeValue = (value) => {
-    const {store: {getValue}} = this.props;
+    const { store: { getValue } } = this.props;
     const oldYaml = getValue ? getValue.yaml : '';
-
     let hasChanged = true;
-
     try {
       const oldValue = YAML.parse(oldYaml);
       const newValue = YAML.parse(value);
@@ -94,11 +91,11 @@ class ValueConfig extends Component {
     } catch (e) {
     }
 
-    this.setState({value, hasChanged});
+    this.setState({ value, hasChanged });
   };
 
 
-  handleEnableNext = flag => this.setState({hasEditorError: flag});
+  handleEnableNext = flag => this.setState({ hasEditorError: flag });
 
   /**
    * 未修改配置取消重新部署
@@ -108,18 +105,20 @@ class ValueConfig extends Component {
   render() {
     const {
       intl: { formatMessage },
-      store: {getValue},
+      store: { getValue },
       name,
       visible,
     } = this.props;
     const { loading, modalDisplay, hasEditorError } = this.state;
 
+    const configValue = getValue ? getValue.yaml : '';
 
     const sideDom = (
       <Content code="ist.edit" values={{ name }} className="sidebar-content">
         <YamlEditor
           readOnly={false}
-          value={getValue ? getValue.yaml : ''}
+          value={configValue}
+          originValue={configValue}
           onValueChange={this.handleChangeValue}
           handleEnableNext={this.handleEnableNext}
         />
@@ -142,14 +141,14 @@ class ValueConfig extends Component {
             >
               {formatMessage({ id: "deploy.btn.deploy" })}
             </Button>,
-            <Button
-              funcType="raised"
-              key="back"
-              onClick={this.onClose}
-              disabled={loading}
-                >
+              <Button
+                funcType="raised"
+                key="back"
+                onClick={this.onClose}
+                disabled={loading}
+              >
                 {formatMessage({ id: "cancel" })}
-            </Button>]
+              </Button>]
           }
         >
           {sideDom}

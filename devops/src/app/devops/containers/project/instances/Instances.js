@@ -1,34 +1,26 @@
-import React, { Component, Fragment } from "react";
-import { observer, inject } from "mobx-react";
-import { withRouter } from "react-router-dom";
-import { injectIntl, FormattedMessage } from "react-intl";
-import {
-  Table,
-  Select,
-  Tooltip,
-  Pagination,
-  Button,
-  Icon,
-  Modal,
-} from "choerodon-ui";
-import { Action, stores, Content, Header, Page } from "choerodon-front-boot";
-import _ from "lodash";
-import { handleProptError } from "../../../utils";
-import ValueConfig from "./ValueConfig";
-import UpgradeIst from "./UpgradeIst";
-import ExpandRow from "./components/ExpandRow";
-import StatusIcon from "../../../components/StatusIcon";
-import UploadIcon from "./components/UploadIcon";
-import AppName from "../../../components/appName";
-import DepPipelineEmpty from "../../../components/DepPipelineEmpty/DepPipelineEmpty";
-import Tips from "../../../components/Tips/Tips";
-import RefreshBtn from "../../../components/refreshBtn";
-import PodStatus from "./components/PodStatus/PodStatus";
-import DevopsStore from "../../../stores/DevopsStore";
-import InstancesStore from "../../../stores/project/instances/InstancesStore";
-import EnvOverviewStore from "../../../stores/project/envOverview";
-import "../../main.scss";
-import "./Instances.scss";
+import React, { Component, Fragment } from 'react';
+import { observer, inject } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
+import { injectIntl, FormattedMessage } from 'react-intl';
+import { Table, Select, Tooltip, Pagination, Button, Icon, Modal } from 'choerodon-ui';
+import { Action, stores, Content, Header, Page } from 'choerodon-front-boot';
+import _ from 'lodash';
+import { handleProptError } from '../../../utils';
+import ValueConfig from './ValueConfig';
+import UpgradeIst from './UpgradeIst';
+import ExpandRow from './components/ExpandRow';
+import StatusIcon from '../../../components/StatusIcon';
+import UploadIcon from './components/UploadIcon';
+import AppName from '../../../components/appName';
+import DepPipelineEmpty from '../../../components/DepPipelineEmpty/DepPipelineEmpty';
+import Tips from '../../../components/Tips/Tips';
+import RefreshBtn from '../../../components/refreshBtn';
+import PodStatus from './components/PodStatus/PodStatus';
+import DevopsStore from '../../../stores/DevopsStore';
+import InstancesStore from '../../../stores/project/instances/InstancesStore';
+import EnvOverviewStore from '../../../stores/project/envOverview';
+import '../../main.scss';
+import './Instances.scss';
 
 const Option = Select.Option;
 const { AppState } = stores;
@@ -43,7 +35,7 @@ class Instances extends Component {
       upgradeVisible: false,
       changeVisible: false,
       deleteLoading: false,
-      confirmType: "",
+      confirmType: '',
       confirmLoading: false,
       idArr: {},
     };
@@ -81,6 +73,7 @@ class Instances extends Component {
       InstancesStore.setIstTableFilter(null);
       InstancesStore.setIstPage(null);
     }
+    InstancesStore.setValue(null);
     DevopsStore.clearAutoRefresh();
   }
 
@@ -100,7 +93,6 @@ class Instances extends Component {
 
   /**
    * 选择应用后获取实例列表
-   * @param envId
    * @param appId
    */
   loadDetail = appId => {
@@ -130,7 +122,7 @@ class Instances extends Component {
     history.push({
       pathname: `/devops/instance/${id}/${status}/detail`,
       search: `?type=${type}&id=${projectId}&name=${encodeURIComponent(
-        projectName
+        projectName,
       )}&organizationId=${organizationId}`,
       state: { code },
     });
@@ -181,10 +173,10 @@ class Instances extends Component {
   /**
    * 修改配置实例信息
    */
-  updateConfig = record => {
+  updateConfig = async (record) => {
     const { InstancesStore } = this.props;
-    const { code, id, envId, commandVersionId, appId } = record;
     const { id: projectId } = AppState.currentMenuType;
+    const { code, id, envId, commandVersionId, appId } = record;
 
     this.setState({
       idArr: {
@@ -194,16 +186,11 @@ class Instances extends Component {
       },
       name: code,
     });
-
-    InstancesStore.loadValue(projectId, id, commandVersionId).then(data => {
-      const res = handleProptError(data);
-      if (res) {
-        this.setState({
-          changeVisible: true,
-          id,
-        });
-      }
-    });
+    InstancesStore.setValue(null);
+    let res = await InstancesStore.loadValue(projectId, id, commandVersionId);
+    if (res) {
+      this.setState({ changeVisible: true, id });
+    }
   };
 
   /**
@@ -245,49 +232,39 @@ class Instances extends Component {
   /**
    * 升级配置实例信息
    */
-  upgradeIst = record => {
-    const { code, id, envId, commandVersionId, appId } = record;
+  upgradeIst = async (record) => {
+    const { InstancesStore, intl } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    const {
-      InstancesStore: { loadUpVersion, loadValue },
-      intl,
-    } = this.props;
+    const { code, id, envId, commandVersionId, appId } = record;
 
-    loadUpVersion(projectId, commandVersionId)
-      .then(data => {
-        const res = handleProptError(data);
-        if (res) {
-          if (res.length === 0) {
-            Choerodon.prompt(intl.formatMessage({ id: "ist.noUpVer" }));
-          } else {
-            this.setState({
-              idArr: {
-                environmentId: envId,
-                appVersionId: res[0].id,
-                appId,
-              },
-              id,
-              name: code,
-            });
-            loadValue(projectId, id, res[0].id).then(value => {
-              const val = handleProptError(value);
-              if (val) {
-                this.setState({
-                  upgradeVisible: true,
-                });
-              }
-            });
+    InstancesStore.setValue(null);
+    try {
+      const update = await InstancesStore.loadUpVersion(projectId, commandVersionId);
+      const result = handleProptError(update);
+      if (result) {
+        if (result.length === 0) {
+          Choerodon.prompt(intl.formatMessage({ id: 'ist.noUpVer' }));
+        } else {
+          const idArr = {
+            appId,
+            environmentId: envId,
+            appVersionId: result[0].id,
+          };
+          this.setState({ idArr, id, name: code });
+          const res = await InstancesStore.loadValue(projectId, id, result[0].id);
+          if (res) {
+            this.setState({ upgradeVisible: true });
           }
         }
-      })
-      .catch(err => {
-        InstancesStore.changeLoading(false);
-        Choerodon.handleResponseError(err);
-      });
+      }
+    } catch (e) {
+      InstancesStore.changeLoading(false);
+      Choerodon.handleResponseError(e);
+    }
   };
 
   /**
-   * 修改配置信息&升级侧边栏
+   * 修改&升级配置信息侧边栏
    * @param res 是否重载数据
    */
   closeConfigSidebar = res => {
@@ -321,7 +298,7 @@ class Instances extends Component {
       err => {
         InstancesStore.changeLoading(false);
         Choerodon.handleResponseError(err);
-      }
+      },
     );
 
     clear && InstancesStore.setIstTableFilter(null);
@@ -416,7 +393,7 @@ class Instances extends Component {
       confirmLoading: true,
     });
 
-    if (status === "stop") {
+    if (status === 'stop') {
       InstancesStore.setTargetCount({});
     }
 
@@ -456,7 +433,7 @@ class Instances extends Component {
    */
   closeConfirm = () => {
     this.setState({
-      confirmType: "",
+      confirmType: '',
     });
   };
 
@@ -473,70 +450,70 @@ class Instances extends Component {
     const { id, status, connect, appVersionId } = record;
     const actionType = {
       detail: {
-        service: ["devops-service.application-instance.listResources"],
-        text: formatMessage({ id: "ist.detail" }),
+        service: ['devops-service.application-instance.listResources'],
+        text: formatMessage({ id: 'ist.detail' }),
         action: this.linkDeployDetail.bind(this, record),
       },
       change: {
-        service: ["devops-service.application-instance.queryValues"],
-        text: formatMessage({ id: "ist.values" }),
+        service: ['devops-service.application-instance.queryValues'],
+        text: formatMessage({ id: 'ist.values' }),
         action: this.updateConfig.bind(this, record),
       },
       restart: {
-        service: ["devops-service.application-instance.restart"],
-        text: formatMessage({ id: "ist.reDeploy" }),
-        action: this.openConfirm.bind(this, record, "reDeploy"),
+        service: ['devops-service.application-instance.restart'],
+        text: formatMessage({ id: 'ist.reDeploy' }),
+        action: this.openConfirm.bind(this, record, 'reDeploy'),
       },
       update: {
-        service: ["devops-service.application-version.getUpgradeAppVersion"],
-        text: formatMessage({ id: "ist.upgrade" }),
+        service: ['devops-service.application-version.getUpgradeAppVersion'],
+        text: formatMessage({ id: 'ist.upgrade' }),
         action: this.upgradeIst.bind(this, record),
       },
       stop: {
         service: [
-          "devops-service.application-instance.start",
-          "devops-service.application-instance.stop",
+          'devops-service.application-instance.start',
+          'devops-service.application-instance.stop',
         ],
         text:
-          status !== "stopped"
-            ? formatMessage({ id: "ist.stop" })
-            : formatMessage({ id: "ist.run" }),
+          status !== 'stopped'
+            ? formatMessage({ id: 'ist.stop' })
+            : formatMessage({ id: 'ist.run' }),
         action:
-          status !== "stopped"
-            ? this.openConfirm.bind(this, record, "stop")
-            : this.openConfirm.bind(this, record, "start"),
+          status !== 'stopped'
+            ? this.openConfirm.bind(this, record, 'stop')
+            : this.openConfirm.bind(this, record, 'start'),
       },
       delete: {
-        service: ["devops-service.application-instance.delete"],
-        text: formatMessage({ id: "ist.del" }),
+        service: ['devops-service.application-instance.delete'],
+        text: formatMessage({ id: 'ist.del' }),
         action: this.handleOpen.bind(this, record),
       },
     };
     let actionItem = [];
     switch (status) {
-      case "stopped":
-        actionItem = ["detail", "stop", "delete"];
+      case 'stopped':
+        actionItem = ['detail', 'stop', 'delete'];
         break;
-      case "failed":
+      case 'failed':
         actionItem = appVersionId
-          ? ["detail", "change", "restart", "update", "stop", "delete"]
-          : ["detail", "change", "restart", "update", "delete"];
+          ? ['detail', 'change', 'restart', 'update', 'stop', 'delete']
+          : ['detail', 'change', 'restart', 'update', 'delete'];
         break;
-      case "running":
+      case 'running':
         actionItem = [
-          "detail",
-          "change",
-          "restart",
-          "update",
-          "stop",
-          "delete",
+          'detail',
+          'change',
+          'restart',
+          'update',
+          'stop',
+          'delete',
         ];
         break;
       default:
-        actionItem = ["detail"];
+        actionItem = ['detail'];
     }
     if (!connect) {
-      actionItem = ["detail"];
+      actionItem = ['detail'];
     }
     const actionData = _.map(actionItem, item => ({
       projectId,
@@ -549,7 +526,7 @@ class Instances extends Component {
 
   renderStatus(record) {
     const { code, status, error } = record;
-    return <StatusIcon name={code} status={status || ""} error={error || ""} />;
+    return <StatusIcon name={code} status={status || ''} error={error || ''} />;
   }
 
   renderAppName(record) {
@@ -574,7 +551,7 @@ class Instances extends Component {
   }
 
   render() {
-    DevopsStore.initAutoRefresh("ist", this.reload);
+    DevopsStore.initAutoRefresh('ist', this.reload);
 
     const { id: projectId, name: projectName, type, organizationId } = AppState.currentMenuType;
     const {
@@ -606,15 +583,15 @@ class Instances extends Component {
     const envData = EnvOverviewStore.getEnvcard;
     const envId = EnvOverviewStore.getTpEnvId;
 
-    const title = _.find(envData, ["id", envId]);
+    const title = _.find(envData, ['id', envId]);
 
     const appNameDom = getAppNameByEnv.length ? (
       _.map(getAppNameByEnv, d => (
         <div
           role="none"
           className={`c7n-deploy-single_card ${
-            Number(getAppId) === d.id ? "c7n-deploy-single_card-active" : ""
-          }`}
+            Number(getAppId) === d.id ? 'c7n-deploy-single_card-active' : ''
+            }`}
           onClick={this.loadDetail.bind(this, d.id)}
           key={`${d.id}-${d.projectId}`}
         >
@@ -638,34 +615,34 @@ class Instances extends Component {
     const columns = [
       {
         title: <FormattedMessage id="deploy.instance" />,
-        key: "code",
+        key: 'code',
         filters: [],
         filteredValue: filters.code || [],
         render: this.renderStatus,
       },
       {
         title: <Tips type="title" data="deploy.ver" />,
-        key: "version",
+        key: 'version',
         filters: [],
         filteredValue: filters.version || [],
-        render: record => <UploadIcon dataSource={record}/>,
+        render: record => <UploadIcon dataSource={record} />,
       },
       {
         title: <FormattedMessage id="deploy.app" />,
-        key: "appName",
+        key: 'appName',
         filters: [],
         filteredValue: filters.appName || [],
         render: this.renderAppName,
       },
       {
         title: <FormattedMessage id="deploy.pod" />,
-        key: "podStatus",
+        key: 'podStatus',
         render: record => <PodStatus dataSource={record} />,
       },
       {
         width: 56,
-        className: "c7n-operate-icon",
-        key: "action",
+        className: 'c7n-operate-icon',
+        key: 'action',
         render: this.columnAction,
       },
     ];
@@ -695,7 +672,7 @@ class Instances extends Component {
         </div>
         <Table
           className="c7n-devops-instance-table"
-          filterBarPlaceholder={formatMessage({ id: "filter" })}
+          filterBarPlaceholder={formatMessage({ id: 'filter' })}
           onChange={this.tableChange}
           dataSource={getIstAll}
           loading={getIsLoading}
@@ -712,19 +689,19 @@ class Instances extends Component {
       <Page
         className="c7n-region"
         service={[
-          "devops-service.application-instance.pageByOptions",
-          "devops-service.application.pageByEnvIdAndStatus",
-          "devops-service.application-instance.listResources",
-          "devops-service.devops-environment.listByProjectIdAndActive",
-          "devops-service.application-version.getUpgradeAppVersion",
-          "devops-service.application-instance.listByAppId",
-          "devops-service.application-instance.queryValues",
-          "devops-service.application-instance.formatValue",
-          "devops-service.application-instance.stop",
-          "devops-service.application-instance.start",
-          "devops-service.application-instance.deploy",
-          "devops-service.application-instance.delete",
-          "devops-service.application-instance.restart",
+          'devops-service.application-instance.pageByOptions',
+          'devops-service.application.pageByEnvIdAndStatus',
+          'devops-service.application-instance.listResources',
+          'devops-service.devops-environment.listByProjectIdAndActive',
+          'devops-service.application-version.getUpgradeAppVersion',
+          'devops-service.application-instance.listByAppId',
+          'devops-service.application-instance.queryValues',
+          'devops-service.application-instance.formatValue',
+          'devops-service.application-instance.stop',
+          'devops-service.application-instance.start',
+          'devops-service.application-instance.deploy',
+          'devops-service.application-instance.delete',
+          'devops-service.application-instance.restart',
         ]}
       >
         {envData && envData.length && envId ? (
@@ -739,11 +716,11 @@ class Instances extends Component {
               <Select
                 className={`${
                   envId
-                    ? "c7n-header-select"
-                    : "c7n-header-select c7n-select_min100"
-                }`}
+                    ? 'c7n-header-select'
+                    : 'c7n-header-select c7n-select_min100'
+                  }`}
                 dropdownClassName="c7n-header-env_drop"
-                placeholder={formatMessage({ id: "envoverview.noEnv" })}
+                placeholder={formatMessage({ id: 'envoverview.noEnv' })}
                 value={envData && envData.length ? envId : undefined}
                 disabled={envData && envData.length === 0}
                 onChange={this.handleEnvSelect}
@@ -774,14 +751,14 @@ class Instances extends Component {
               <div className="c7n-instance-header">
                 <div className="c7n-instance-title">
                   {formatMessage(
-                    { id: "ist.title.env" },
-                    { name: title ? title.name : projectName }
+                    { id: 'ist.title.env' },
+                    { name: title ? title.name : projectName },
                   )}
                 </div>
                 <div className="c7n-instance-describe">
-                  {formatMessage({ id: "ist.description" })}
-                  <a href={formatMessage({ id: "ist.link" })}>
-                    {formatMessage({ id: "learnmore" })}
+                  {formatMessage({ id: 'ist.description' })}
+                  <a href={formatMessage({ id: 'ist.link' })}>
+                    {formatMessage({ id: 'learnmore' })}
                     <Icon type="open_in_new" />
                   </a>
                 </div>
@@ -834,8 +811,8 @@ class Instances extends Component {
                 </div>
               </Modal>
               <Modal
-                title={`${formatMessage({ id: "ist.reDeploy" })}“${name}”`}
-                visible={confirmType === "reDeploy"}
+                title={`${formatMessage({ id: 'ist.reDeploy' })}“${name}”`}
+                visible={confirmType === 'reDeploy'}
                 onOk={this.reStart.bind(this, id)}
                 onCancel={this.closeConfirm}
                 confirmLoading={confirmLoading}
@@ -847,9 +824,9 @@ class Instances extends Component {
               </Modal>
               <Modal
                 title={`${formatMessage({
-                  id: `${confirmType === "stop" ? "ist.stop" : "ist.run"}`,
+                  id: `${confirmType === 'stop' ? 'ist.stop' : 'ist.run'}`,
                 })}“${name}”`}
-                visible={confirmType === "stop" || confirmType === "start"}
+                visible={confirmType === 'stop' || confirmType === 'start'}
                 onOk={this.activeIst.bind(this, id, confirmType)}
                 onCancel={this.closeConfirm}
                 confirmLoading={confirmLoading}

@@ -7,6 +7,7 @@ import { injectIntl, FormattedMessage } from "react-intl";
 import _ from "lodash";
 import YamlEditor from "../../../components/yamlEditor";
 import InterceptMask from "../../../components/interceptMask/InterceptMask";
+import LoadingBar from "../../../components/loadingBar";
 import "./Instances.scss";
 import "../../main.scss";
 
@@ -22,31 +23,25 @@ class UpgradeIst extends Component {
       versionId: undefined,
       values: null,
       loading: false,
+      submitting: false,
       hasEditorError: false,
     };
   }
 
   handleNextStepEnable = flag => this.setState({ hasEditorError: flag });
-  handleChangeValue = values => this.setState({values});
+  handleChangeValue = values => this.setState({ values });
 
-  onClose = () => {
-    const { onClose } = this.props;
-    onClose(false);
-  };
+  onClose = () => this.props.onClose(false);
 
   /**
    * 修改配置升级实例
    */
   handleOk = () => {
-
-    const {id: projectId} = AppState.currentMenuType;
+    const { id: projectId } = AppState.currentMenuType;
     const { store, appInstanceId, idArr, onClose } = this.props;
     const { values, versionId } = this.state;
-
     const verValue = store.getVerValue;
-
     const verId = versionId || verValue[0].id;
-
     const data = {
       ...idArr,
       values,
@@ -55,16 +50,15 @@ class UpgradeIst extends Component {
       type: "update",
     };
 
-    this.setState({ loading: true });
+    this.setState({ submitting: true });
     store.reDeploy(projectId, data).then(res => {
-
       if (res && res.failed) {
+        this.setState({ submitting: false });
         Choerodon.prompt(res.message);
       } else {
+        this.setState({ submitting: false });
         onClose(true);
       }
-
-      this.setState({ loading: false });
     });
   };
 
@@ -74,36 +68,33 @@ class UpgradeIst extends Component {
    * @param id
    */
   handleVersionChange = (id) => {
-    const { store, appInstanceId, idArr } = this.props;
-    const {id: projectId} = AppState.currentMenuType;
-
-    store.loadValue(projectId, appInstanceId, id)
-      .then(res => {
-        if (res) {
-          this.setState({ values: res.yaml, versionId: id });
-        }
-      })
-      .catch(error => {
-        Choerodon.handleResponseError(error);
-      });
+    const { store, appInstanceId } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    this.setState({ versionId: id, values: null, loading: true });
+    store.setValue(null);
+    store.loadValue(projectId, appInstanceId, id).then(() => {
+      this.setState({ loading: false });
+    })
   };
 
   render() {
     const {
-      intl: {formatMessage},
+      intl: { formatMessage },
       store: {
         getValue,
         getVerValue,
       },
       name,
     } = this.props;
-    const { values, loading, versionId } = this.state;
+    const { values, submitting, loading, versionId } = this.state;
 
     const versionOptions = _.map(getVerValue, app => (
       <Option key={app.id} value={app.id}>
         {app.version}
       </Option>
     ));
+
+    const initValue = getValue ? getValue.yaml : '';
 
     return (
       <Sidebar
@@ -113,7 +104,7 @@ class UpgradeIst extends Component {
         onCancel={this.onClose}
         cancelText={formatMessage({ id: "cancel" })}
         okText={formatMessage({ id: "ist.upgrade" })}
-        confirmLoading={loading}
+        confirmLoading={submitting}
       >
         <Content
           code="ist.upgrade"
@@ -123,7 +114,7 @@ class UpgradeIst extends Component {
           <Select
             filter
             className="c7n-app-select_512"
-            label={formatMessage({id: "deploy.step.one.version.title"})}
+            label={formatMessage({ id: "deploy.step.one.version.title" })}
             notFoundContent={formatMessage({ id: "ist.noUpVer" })}
             filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             onChange={this.handleVersionChange}
@@ -140,16 +131,18 @@ class UpgradeIst extends Component {
           ) : null}
 
           <div className="c7n-config-section">
-            <YamlEditor
+            {getValue ? <YamlEditor
               readOnly={false}
-              value={values || (getValue ? getValue.yaml : '')}
+              value={values || initValue}
+              originValue={initValue}
               handleEnableNext={this.handleNextStepEnable}
               onValueChange={this.handleChangeValue}
-            />
+            /> : null}
           </div>
+          <LoadingBar display={loading} />
         </Content>
 
-        <InterceptMask visible={loading} />
+        <InterceptMask visible={submitting} />
       </Sidebar>
     );
   }
