@@ -46,28 +46,26 @@ class DomainOverview extends Component {
   handleDelete = () => {
     const { store, envId } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    const lastDatas = store.getPageInfo.total % 10;
-    const page = store.getPageInfo.current;
-    const totalPage = Math.ceil(
-      store.getPageInfo.total / store.getPageInfo.pageSize
-    );
+    const { total, current, pageSize } = store.getPageInfo;
+    const lastDatas = total % pageSize;
+    const totalPage = Math.ceil(total / pageSize);
     this.submitting = true;
     DomainStore.deleteData(projectId, this.id)
       .then(() => {
         this.submitting = false;
-        if (lastDatas === 1 && page === totalPage) {
+        if (lastDatas === 1 && current === totalPage && current > 1) {
           store.loadDomain(
             true,
             projectId,
             envId,
-            store.getPageInfo.current - 2
+            current - 2
           );
         } else {
           store.loadDomain(
             true,
             projectId,
             envId,
-            store.getPageInfo.current - 1
+            current - 1
           );
         }
         this.closeRemove();
