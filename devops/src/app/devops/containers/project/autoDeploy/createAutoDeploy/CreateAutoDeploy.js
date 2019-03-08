@@ -297,11 +297,12 @@ class CreateAutoDeploy extends Component {
         mode: value,
       });
     } else {
-      const instance = (store.getInstanceList)[0];
+      const instances = _.filter(store.getInstanceList, item => item.isEnabled === 1);
+      const instance = instances && instances.length ? instances[0] : null;
       this.setState({
         mode: value,
-        instanceName: instance.code,
-        instanceId: parseInt(instance.id),
+        instanceName: instance ? instance.code : null,
+        instanceId: instance ? parseInt(instance.id) : null,
       });
     }
   };
@@ -624,7 +625,7 @@ class CreateAutoDeploy extends Component {
                       onSelect={value => this.handleChangeIst(value)}
                       label={formatMessage({ id: "deploy.step.three.mode.replace.label" })}
                       filterOption={(input, option) =>
-                        option.props.children
+                        option.props.children.props.children.props.children
                           .toLowerCase()
                           .indexOf(input.toLowerCase()) >= 0
                       }
@@ -633,8 +634,17 @@ class CreateAutoDeploy extends Component {
                         <Option
                           value={parseInt(item.id)}
                           key={parseInt(item.id)}
+                          disabled={item.isEnabled === 0 && parseInt(item.id) !== istId}
                         >
-                          {item.code}
+                          <Tooltip
+                            title={
+                              item.isEnabled === 0 && parseInt(item.id) !== istId ?
+                                formatMessage({ id: "autoDeploy-instance-tooltip" }) : ''
+                            }
+                            placement="right"
+                          >
+                            <span>{item.code}</span>
+                          </Tooltip>
                         </Option>))
                       }
                     </Select>)

@@ -318,7 +318,7 @@ class AutoDeployStore {
   loadInstances = (projectId,envId, appId) =>
     axios
       .get(
-        `/devops/v1/projects/${projectId}/app_instances/listByAppIdAndEnvId?envId=${envId}&appId=${appId}`
+        `/devops/v1/projects/${projectId}/app_instances/getByAppIdAndEnvId?envId=${envId}&appId=${appId}`
       )
       .then(data => {
         const res = handleProptError(data);

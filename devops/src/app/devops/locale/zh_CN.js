@@ -1510,6 +1510,7 @@ const zhCN = {
   "autoDeploy.stop.tooltip": "确定要停用此任务吗？",
   "autoDeploy.active.tooltip": "确定要启用此任务吗？",
   "autoDeploy.execute.date": "执行时间",
+  "autoDeploy-instance-tooltip": "该实例已存在对应的自动部署任务",
 
   ...pageDetail,
 };
