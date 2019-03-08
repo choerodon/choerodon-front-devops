@@ -37,7 +37,7 @@ class AutoDeployStore {
   @observable envData = [];
 
   @observable Info = {
-    filters: {}, sort: { columnKey: 'id', order: 'descend' }, paras: [],
+    filters: {}, sort: { columnKey: '', order: 'descend' }, paras: [],
   };
 
   @observable recordInfo = {
@@ -178,7 +178,7 @@ class AutoDeployStore {
       appId,
       page = 0,
       size = HEIGHT <= 900 ? 10 : 15,
-      sort = { field: "id", order: "desc" },
+      sort = { field: "", order: "desc" },
       postData = {
         searchParam: {},
         param: "",
@@ -191,7 +191,7 @@ class AutoDeployStore {
         url = `${url}${key}=${value}&`;
       }
     });
-    return axios.post(`/devops/v1/${projectId}/auto_deploy/list_by_options?${url}page=${page}&size=${size}&sort=${sort.field},${sort.order}`
+    return axios.post(`/devops/v1/${projectId}/auto_deploy/list_by_options?${url}page=${page}&size=${size}${sort.field !== "" ? `&sort=${sort.field},${sort.order}` : ''}`
       , JSON.stringify(postData)
     )
       .then((data) => {
@@ -203,6 +203,10 @@ class AutoDeployStore {
         }
         this.changeLoading(false);
       })
+      .catch(error => {
+        this.changeLoading(false);
+        Choerodon.handleResponseError(error);
+      });
   };
 
   /**
@@ -262,6 +266,10 @@ class AutoDeployStore {
           this.setRecordList(content);
         }
         this.changeRecordLoading(false);
+      })
+      .catch(error => {
+        this.changeRecordLoading(false);
+        Choerodon.handleResponseError(error);
       });
   };
 

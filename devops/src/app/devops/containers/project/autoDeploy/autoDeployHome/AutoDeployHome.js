@@ -88,7 +88,7 @@ class AutoDeployHome extends Component {
       const { envId, appId } = this.state;
       AutoDeployStore.setInfo({
         filters: {},
-        sort: { columnKey: "id", order: "descend" },
+        sort: { columnKey: "", order: "descend" },
         paras: [],
       });
       AutoDeployStore.loadTaskList({ projectId, envId, appId });
@@ -126,7 +126,7 @@ class AutoDeployHome extends Component {
     } = AppState.currentMenuType;
     const { appId, envId } = this.state;
     AutoDeployStore.setInfo({ filters, sort: sorter, paras });
-    const sort = { field: "id", order: "desc" };
+    const sort = { field: "", order: "desc" };
     if (sorter.column) {
       sort.field = sorter.field || sorter.columnKey;
       if (sorter.order === "ascend") {
@@ -318,7 +318,7 @@ class AutoDeployHome extends Component {
       total: 0,
       pageSize: HEIGHT <= 900 ? 10 : 15,
     };
-    const sort = { columnKey: "id", order: "descend" };
+    const sort = { columnKey: "", order: "descend" };
     this.setState({ [type]: value }, () => this.tableChange(pageInfo, {}, sort, []) );
   };
 
