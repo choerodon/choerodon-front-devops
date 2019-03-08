@@ -332,6 +332,7 @@ class CreateAutoDeploy extends Component {
       <YamlEditor
         readOnly={false}
         value={changedValue || getValue || value || ""}
+        originValue={getValue || value}
         onValueChange={this.handleChangeValue}
         handleEnableNext={this.handleEnableNext}
       /> : null
