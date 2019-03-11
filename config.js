@@ -36,10 +36,9 @@ const config = {
   // server: "http://api.alpha.saas.hand-china.com",
   clientid: "localhost",
   fileServer: "http://minio.staging.saas.hand-china.com",
-  titlename: "Choerodon", // html title
-  favicon: "favicon.ico", // page favicon
+  titlename: "Choerodon",
+  favicon: "favicon.ico",
   theme: {
-    // less/sass modify vars
     "primary-color": "#3F51B5",
     "icon-font-size-base": "16px"
   },

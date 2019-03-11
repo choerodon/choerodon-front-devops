@@ -41,6 +41,10 @@
 "devops-management.application-template": "Application Template"
 "devops-management.certificate-manage": "Certificate Management"
 
+# 项目设置
+"prosetting": "Project Manage"
+"prosetting.element-settings": "Element Setting"
+
 # 0.8废弃
 "application-market": "Application Market"
 "application-market.application-market": "Application Market"

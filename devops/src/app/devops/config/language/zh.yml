@@ -41,6 +41,10 @@
 "devops-management.application-template": "应用模板"
 "devops-management.certificate-manage": "证书管理"
 
+# 项目设置
+"prosetting": "项目设置"
+"prosetting.element-settings": "组件设置"
+
 # 0.8版本废弃项
 "application-market": "应用市场"
 "application-market.application-market": "应用市场"
