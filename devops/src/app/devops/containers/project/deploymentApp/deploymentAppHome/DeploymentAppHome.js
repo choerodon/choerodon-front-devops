@@ -5,7 +5,6 @@ import { withRouter } from 'react-router-dom';
 import { Select, Button, Radio, Steps, Icon, Tooltip, Input, Form } from 'choerodon-ui';
 import { Content, Header, Page, Permission, stores, axios } from 'choerodon-front-boot';
 import _ from 'lodash';
-import YAML from 'yamljs';
 import '../../../main.scss';
 import './DeploymentApp.scss';
 import YamlEditor from '../../../../components/yamlEditor';
@@ -631,23 +630,10 @@ class DeploymentAppHome extends Component {
   /**
    * value 编辑器内容修改
    * @param value
+   * @param changed 有效值有无改动
    */
-  handleChangeValue = value => {
-    const { DeploymentAppStore: { getValue } } = this.props;
-    const oldYaml = getValue ? getValue.yaml : '';
-    let isChangedYaml = true;
-    try {
-      const oldValue = YAML.parse(oldYaml);
-      const newValue = YAML.parse(value);
-
-      // 实际值变动检测
-      if (JSON.stringify(oldValue) === JSON.stringify(newValue)) {
-        isChangedYaml = false;
-      }
-    } catch (e) {
-    }
-
-    this.setState({ configValue: value, isChangedYaml });
+  handleChangeValue = (value, changed = false) => {
+    this.setState({ configValue: value, isChangedYaml: changed });
   };
 
   /**
@@ -918,14 +904,14 @@ class DeploymentAppHome extends Component {
               label={<FormattedMessage id="deploy.step.three.mode" />}
             >
               <Radio className="deploy-radio" value="create">
-                <FormattedMessage id="deploy.step.three.mode.new" />
+                <FormattedMessage id="deploy.step.three.mode.create" />
               </Radio>
               <Radio
                 className="deploy-radio"
                 value="update"
                 disabled={!getCurrentInstance.length}
               >
-                <FormattedMessage id="deploy.step.three.mode.replace" />
+                <FormattedMessage id="deploy.step.three.mode.update" />
                 <Icon
                   className="c7ncd-step-item-tip-icon"
                   style={{ verticalAlign: 'text-bottom' }}
@@ -1027,8 +1013,7 @@ class DeploymentAppHome extends Component {
     const instance = instanceDto || _.filter(getCurrentInstance, v => v.id === instanceId || currentInstanceId)[0];
 
     // 改变配置信息/替换模式且版本不同
-    const isNotChanged = !(isChangedYaml || (mode !== 'create' && versionDto.version !== instance.appVersion));
-
+    const isNotChanged = !isChangedYaml && (mode === 'update' && versionDto.version === instance.appVersion);
     const deployInfo = [
       {
         icon: 'instance_outline',

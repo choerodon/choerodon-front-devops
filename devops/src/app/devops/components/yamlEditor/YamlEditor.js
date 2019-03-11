@@ -3,6 +3,7 @@ import { injectIntl } from "react-intl";
 import PropTypes from "prop-types";
 import { Icon } from "choerodon-ui";
 import JsYaml from "js-yaml";
+import YAML from "yamljs";
 import "codemirror/addon/merge/merge.css";
 import "codemirror/lib/codemirror.css";
 import "codemirror/addon/lint/lint.css"
@@ -29,6 +30,27 @@ function parse(values) {
   }
 
   return result;
+}
+
+/**
+ * 有意义的值的改动检测
+ * @param old
+ * @param value
+ * @returns {boolean}
+ */
+function changedValue(old, value) {
+  let hasChanged = true;
+  try {
+    const oldValue = YAML.parse(old);
+    const newValue = YAML.parse(value);
+    // 实际值变动检测
+    if (JSON.stringify(oldValue) === JSON.stringify(newValue)) {
+      hasChanged = false;
+    }
+  } catch (e) {
+    throw new Error(`格式错误：${e}`);
+  }
+  return hasChanged;
 }
 
 class YamlEditor extends Component {
@@ -76,9 +98,13 @@ class YamlEditor extends Component {
   }
 
   onChange = value => {
-    const { onValueChange } = this.props;
-    this.checkYamlFormat(value);
-    onValueChange(value);
+    const { onValueChange, originValue } = this.props;
+    const hasError = this.checkYamlFormat(value);
+    let changed = false;
+    if (!hasError) {
+      changed = changedValue(originValue, value);
+    }
+    onValueChange(value, changed);
     this.setState({ yamlValue: value });
   };
 
@@ -90,8 +116,6 @@ class YamlEditor extends Component {
   checkYamlFormat(values) {
     const HAS_ERROR = true;
     const NO_ERROR = false;
-
-    // 通知父组件内容格式是否有误
     const { handleEnableNext } = this.props;
 
     let errorTip = NO_ERROR;
@@ -107,6 +131,7 @@ class YamlEditor extends Component {
 
     // 显示编辑器下方的错误 tips
     this.setState({ errorTip });
+    return errorTip;
   }
 
   render() {
