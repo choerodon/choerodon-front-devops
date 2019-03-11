@@ -21,3 +21,7 @@
     line-height: 20px;
   }
 }
+
+.CodeMirror-lint-tooltip {
+  z-index: 1000 !important;
+}

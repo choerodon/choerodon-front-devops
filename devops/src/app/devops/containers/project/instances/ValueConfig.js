@@ -4,7 +4,6 @@ import { withRouter } from "react-router-dom";
 import { injectIntl } from "react-intl";
 import { Modal, Button } from "choerodon-ui";
 import { Content, stores } from "choerodon-front-boot";
-import YAML from "yamljs";
 import YamlEditor from "../../../components/yamlEditor";
 import InterceptMask from "../../../components/interceptMask/InterceptMask";
 import "./Instances.scss";
@@ -50,6 +49,7 @@ class ValueConfig extends Component {
     const { store, id, idArr, onClose } = this.props;
     const { value, hasChanged } = this.state;
     const { id: projectId } = AppState.currentMenuType;
+    const oldValue = store.getValue ? store.getValue.yaml : '';
     const data = {
       ...idArr,
       isNotChange: !hasChanged,
@@ -57,8 +57,6 @@ class ValueConfig extends Component {
       appInstanceId: id,
       type: "update",
     };
-
-    const oldValue = store.getValue ? store.getValue.yaml : '';
 
     this.setState({ modalDisplay: false, loading: true });
     store.reDeploy(projectId, data).then(res => {
@@ -74,27 +72,15 @@ class ValueConfig extends Component {
 
   /**
    * yaml编辑器内容改变
-   * @param value
+   * @param value 内容改变
+   * @param changed 有效值的变动
    */
-  handleChangeValue = (value) => {
-    const { store: { getValue } } = this.props;
-    const oldYaml = getValue ? getValue.yaml : '';
-    let hasChanged = true;
-    try {
-      const oldValue = YAML.parse(oldYaml);
-      const newValue = YAML.parse(value);
+  handleChangeValue = (value, changed=false) => this.setState({ value, hasChanged: changed });
 
-      // 实际值变动检测
-      if (JSON.stringify(oldValue) === JSON.stringify(newValue)) {
-        hasChanged = false;
-      }
-    } catch (e) {
-    }
-
-    this.setState({ value, hasChanged });
-  };
-
-
+  /**
+   * 可以进行下一步操作
+   * @param flag
+   */
   handleEnableNext = flag => this.setState({ hasEditorError: flag });
 
   /**
@@ -110,9 +96,7 @@ class ValueConfig extends Component {
       visible,
     } = this.props;
     const { loading, modalDisplay, hasEditorError } = this.state;
-
     const configValue = getValue ? getValue.yaml : '';
-
     const sideDom = (
       <Content code="ist.edit" values={{ name }} className="sidebar-content">
         <YamlEditor
