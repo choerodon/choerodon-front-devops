@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-import { Select, Icon, Button, Table, Tooltip } from 'choerodon-ui';
+import { Icon, Button, Table, Tooltip } from 'choerodon-ui';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import _ from 'lodash';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper/index';
@@ -13,7 +13,6 @@ import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelin
 import DevPipelineStore from "../../../../stores/project/devPipeline";
 
 const { AppState } = stores;
-const { Option, OptGroup } = Select;
 const repoColor = [
   '#45A3FC',
   '#FFB100',
@@ -197,9 +196,9 @@ class RepositoryHome extends Component {
         {flag && flag.length ? <Fragment>
           <Header title={<FormattedMessage id="repository.head" />}>
             <Button
+              icon='refresh'
               onClick={this.handleRefresh}
             >
-              <i className="icon-refresh icon" />
               <FormattedMessage id="refresh" />
             </Button>
           </Header>

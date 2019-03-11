@@ -1,3 +1,4 @@
+# 组织层Devops管理
 "devops-management":
   icon: devops
   sort: 3
@@ -22,6 +23,8 @@
         sort: 3
         permission:
           - "devops-service.org-certification.listOrgCert"
+
+# 项目层应用管理
 "app-management":
   icon: apps
   sort: 1
@@ -58,6 +61,8 @@
           - "devops-service.application-market.importApps"
           - "devops-service.application-market.deleteZip"
           - "devops-service.application-market.queryAppVersionReadme"
+
+# 开发流水线
 "development-pipeline":
   icon: wrench
   sort: 2
@@ -131,6 +136,8 @@
         sort: 6
         permission:
           - "devops-service.application-version.pageByOptions"
+
+# 部署流水线
 "deployment-pipeline":
   icon: cloud_upload
   sort: 3
@@ -266,6 +273,20 @@
           - "devops-service.devops-secret.querySecret"
           - "devops-service.devops-secret.deleteSecret"
           - "devops-service.devops-secret.listByOption"
+
+# 项目设置
+"prosetting":
+  icon: IAM
+  sort: 6
+  project:
+    - "element-settings":
+        icon: games
+        Routes: /devops/elements
+        sort: 4
+        permission:
+         - "devops-service.application.listByActive"
+
+# 项目层报表
 "platform-reports":
   icon: bar_chart
   sort: 99
@@ -287,18 +308,6 @@
           - "devops-service.application-instance.pageDeployFrequencyDetail"
           - "devops-service.devops-gitlab-pipeline.listPipelineFrequency"
           - "devops-service.devops-gitlab-pipeline.pagePipeline"
-"cluster-management":
-  icon: cluster
-  sort: 4
-  delete: true
-  organization:
-    - "cluster":
-        icon: kubernetes_cluster
-        Routes: /devops/cluster
-        sort: 1
-        delete: true
-        permission:
-          - "devops-service.devops-cluster.listCluster"
 
 # 要删除的菜单
 "application-market":
@@ -327,6 +336,19 @@
           - "devops-service.application-market.importApps"
           - "devops-service.application-market.deleteZip"
           - "devops-service.application-market.queryAppVersionReadme"
+
+"cluster-management":
+  icon: cluster
+  sort: 4
+  delete: true
+  organization:
+    - "cluster":
+        icon: kubernetes_cluster
+        Routes: /devops/cluster
+        sort: 1
+        delete: true
+        permission:
+          - "devops-service.devops-cluster.listCluster"
 
 "devops":
   icon: devops

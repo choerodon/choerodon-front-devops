@@ -381,6 +381,12 @@ const pageDetail = {
   "autoDeploy.edit.description":
     "您可在此修改所设置的应用、版本类型、环境以及配置信息。只是重新选择应用或环境后，下方的配置信息将会重置。",
   "autoDeploy.edit.link": "编辑自动部署链接",
+
+  // 组件设置
+  "elements.title": '项目"{name}"的组件设置',
+  "elements.description":
+    "组件设置",
+  "elements.link": `${docServer}/user-guide/system-configuration/project/elements-settings`,
 };
 
 const zhCN = {
@@ -1511,6 +1517,9 @@ const zhCN = {
   "autoDeploy.active.tooltip": "确定要启用此任务吗？",
   "autoDeploy.execute.date": "执行时间",
   "autoDeploy-instance-tooltip": "该实例已存在对应的自动部署任务",
+
+  // 组件设置
+  "elements.head": "组件设置",
 
   ...pageDetail,
 };

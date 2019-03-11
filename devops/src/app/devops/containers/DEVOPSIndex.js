@@ -1,53 +1,54 @@
-import React from "react";
-import { Route, Switch } from "react-router-dom";
-import { inject } from "mobx-react";
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
+import { inject } from 'mobx-react';
 import {
   asyncRouter,
   nomatch,
   asyncLocaleProvider,
-} from "choerodon-front-boot";
-import InstancesStore from "../stores/project/instances/InstancesStore";
+} from 'choerodon-front-boot';
+import InstancesStore from '../stores/project/instances/InstancesStore';
 
 // organization
-const Template = asyncRouter(() => import("./organization/template"));
-const Cluster = asyncRouter(() => import("./organization/cluster"));
+const Template = asyncRouter(() => import('./organization/template'));
+const Cluster = asyncRouter(() => import('./organization/cluster'));
 const CertificateManage = asyncRouter(() =>
-  import("./organization/certificate")
+  import('./organization/certificate'),
 );
 // project
-const EnvPipelineIndex = asyncRouter(() => import("./project/envPipeline"));
+const EnvPipelineIndex = asyncRouter(() => import('./project/envPipeline'));
 const CiPipelineManageIndex = asyncRouter(() =>
-  import("./project/ciPipelineManage")
+  import('./project/ciPipelineManage'),
 );
-const AppVersion = asyncRouter(() => import("./project/appVersion"));
-const App = asyncRouter(() => import("./project/app"));
-const AppStore = asyncRouter(() => import("./project/appStore"));
-const InstancesIndex = asyncRouter(() => import("./project/instances"));
-const DeploymentApp = asyncRouter(() => import("./project/deploymentApp"));
-const NetworkConfig = asyncRouter(() => import("./project/networkConfig"));
-const Domain = asyncRouter(() => import("./project/domain"));
-const Container = asyncRouter(() => import("./project/container"));
-const AppRelease = asyncRouter(() => import("./project/appRelease"));
-const Branch = asyncRouter(() => import("./project/branch"));
-const MergeRequest = asyncRouter(() => import("./project/mergeRequest"));
-const AppTag = asyncRouter(() => import("./project/appTag"));
-const Repository = asyncRouter(() => import("./project/repository"));
-const EnvOverview = asyncRouter(() => import("./project/envOverview"));
-const DeployOverview = asyncRouter(() => import("./project/deployOverview"));
-const Certificate = asyncRouter(() => import("./project/certificate"));
-const Reports = asyncRouter(() => import("./project/reports"));
-const DevConsole = asyncRouter(() => import("./project/devConsole"));
-const ConfigMap = asyncRouter(() => import("./project/configMap"));
-const Secret = asyncRouter(() => import("./project/secret"));
-const AutoDeploy = asyncRouter(() => import("./project/autoDeploy"));
+const AppVersion = asyncRouter(() => import('./project/appVersion'));
+const App = asyncRouter(() => import('./project/app'));
+const AppStore = asyncRouter(() => import('./project/appStore'));
+const InstancesIndex = asyncRouter(() => import('./project/instances'));
+const DeploymentApp = asyncRouter(() => import('./project/deploymentApp'));
+const NetworkConfig = asyncRouter(() => import('./project/networkConfig'));
+const Domain = asyncRouter(() => import('./project/domain'));
+const Container = asyncRouter(() => import('./project/container'));
+const AppRelease = asyncRouter(() => import('./project/appRelease'));
+const Branch = asyncRouter(() => import('./project/branch'));
+const MergeRequest = asyncRouter(() => import('./project/mergeRequest'));
+const AppTag = asyncRouter(() => import('./project/appTag'));
+const Repository = asyncRouter(() => import('./project/repository'));
+const EnvOverview = asyncRouter(() => import('./project/envOverview'));
+const DeployOverview = asyncRouter(() => import('./project/deployOverview'));
+const Certificate = asyncRouter(() => import('./project/certificate'));
+const Reports = asyncRouter(() => import('./project/reports'));
+const DevConsole = asyncRouter(() => import('./project/devConsole'));
+const ConfigMap = asyncRouter(() => import('./project/configMap'));
+const Secret = asyncRouter(() => import('./project/secret'));
+const AutoDeploy = asyncRouter(() => import('./project/autoDeploy'));
+const Elements = asyncRouter(() => import('./project/elements'));
 
-@inject("AppState")
+@inject('AppState')
 class DEVOPSIndex extends React.Component {
   render() {
     const { match, AppState } = this.props;
     const langauge = AppState.currentLanguage;
     const IntlProviderAsync = asyncLocaleProvider(langauge, () =>
-      import(`../locale/${langauge}`)
+      import(`../locale/${langauge}`),
     );
 
     /**
@@ -55,7 +56,7 @@ class DEVOPSIndex extends React.Component {
      * 从详情页面跳到其他页面需要重新加载
      * isCache 设置一个标志位，true表示不重新加载，否则重新加载
      */
-    const isInstancePage = window.location.href.includes("instance") || window.location.href.includes("container");
+    const isInstancePage = window.location.href.includes('instance') || window.location.href.includes('container');
     if (InstancesStore.getIsCache.isCache && !isInstancePage) {
       InstancesStore.setIsCache({ isCache: false, appId: null });
       InstancesStore.setAppId(null);
@@ -68,29 +69,17 @@ class DEVOPSIndex extends React.Component {
     return (
       <IntlProviderAsync>
         <Switch>
-          <Route
-            path={`${match.url}/env-pipeline`}
-            component={EnvPipelineIndex}
-          />
+          <Route path={`${match.url}/env-pipeline`} component={EnvPipelineIndex} />
           <Route path={`${match.url}/env-overview`} component={EnvOverview} />
-          <Route
-            path={`${match.url}/deploy-overview`}
-            component={DeployOverview}
-          />
-          <Route
-            path={`${match.url}/ci-pipeline`}
-            component={CiPipelineManageIndex}
-          />
+          <Route path={`${match.url}/deploy-overview`} component={DeployOverview} />
+          <Route path={`${match.url}/ci-pipeline`} component={CiPipelineManageIndex} />
           <Route path={`${match.url}/template`} component={Template} />
           <Route path={`${match.url}/cluster`} component={Cluster} />
           <Route path={`${match.url}/app-version`} component={AppVersion} />
           <Route path={`${match.url}/app`} component={App} />
           <Route path={`${match.url}/app-market`} component={AppStore} />
           <Route path={`${match.url}/instance`} component={InstancesIndex} />
-          <Route
-            path={`${match.url}/deployment-app`}
-            component={DeploymentApp}
-          />
+          <Route path={`${match.url}/deployment-app`} component={DeploymentApp} />
           <Route path={`${match.url}/service`} component={NetworkConfig} />
           <Route path={`${match.url}/ingress`} component={Domain} />
           <Route path={`${match.url}/container`} component={Container} />
@@ -105,10 +94,8 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/config-map`} component={ConfigMap} />
           <Route path={`${match.url}/secret`} component={Secret} />
           <Route path={`${match.url}/auto-deploy`} component={AutoDeploy} />
-          <Route
-            path={`${match.url}/certificate-manage`}
-            component={CertificateManage}
-          />
+          <Route path={`${match.url}/elements`} component={Elements} />
+          <Route path={`${match.url}/certificate-manage`} component={CertificateManage} />
           <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>
