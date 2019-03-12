@@ -384,9 +384,14 @@ const pageDetail = {
 
   // 组件设置
   "elements.title": '项目"{name}"的组件设置',
-  "elements.description":
-    "组件设置",
+  "elements.description": "组件设置页面用于管理项目下所有的组件配置，目前包括了Helm仓库与Docker仓库。您在此创建的组件配置可用于当前项目下所有的应用。",
   "elements.link": `${docServer}/user-guide/system-configuration/project/elements-settings`,
+  "elements.create.title": '项目"{name}"的组件设置',
+  "elements.create.description": "您可在此填入相关信息来创建对应的组件配置，且只有测试通过后才能创建成功。",
+  "elements.create.link": `${docServer}/user-guide/system-configuration/project/elements-settings`,
+  "elements.edit.title": '项目"{name}"的组件设置',
+  "elements.edit.description": "您可在此修改组件配置的所有信息，但只有测试成功后才能保存。",
+  "elements.edit.link": `${docServer}/user-guide/system-configuration/project/elements-settings`,
 };
 
 const zhCN = {
@@ -1520,6 +1525,20 @@ const zhCN = {
 
   // 组件设置
   "elements.head": "组件设置",
+  "elements.name": "名称",
+  "elements.url": "地址",
+  "elements.resource": "来源",
+  "elements.user": "登录名",
+  "elements.password": "密码",
+  "elements.type.columns": "组件配置类型",
+  "elements.type.form": "选择组件配置类型",
+  "elements.header.create": "创建组件配置",
+  "elements.header.edit": "修改组件配置",
+  "elements.type.harbor": "Docker 仓库",
+  "elements.type.chart": "Helm 仓库",
+  "elements.test": "测试连接",
+  testAndCreate: "测试并创建",
+  testAndSave: "测试并保存",
 
   ...pageDetail,
 };

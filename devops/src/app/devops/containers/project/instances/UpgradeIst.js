@@ -85,6 +85,7 @@ class UpgradeIst extends Component {
         getVerValue,
       },
       name,
+      visible,
     } = this.props;
     const { values, submitting, loading, versionId } = this.state;
 
@@ -99,7 +100,7 @@ class UpgradeIst extends Component {
     return (
       <Sidebar
         title={formatMessage({ id: "ist.upgrade" })}
-        visible={this.props.visible}
+        visible={visible}
         onOk={this.handleOk}
         onCancel={this.onClose}
         cancelText={formatMessage({ id: "cancel" })}

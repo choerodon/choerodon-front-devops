@@ -177,27 +177,11 @@ class AppOverview extends Component {
   getPanelHeader(data) {
     const { intl } = this.props;
     const {
-      // id: istId,
       status,
       code,
       error,
-      // appVersion,
-      // appVersionId,
-      // id,
-      // commandVersion,
-      // commandVersionId,
-      // appId,
     } = data;
-    // let uploadIcon = null;
-    // if (appVersionId !== commandVersionId) {
-    //   if (status !== "failed") {
-    //     uploadIcon = "upload";
-    //   } else {
-    //     uploadIcon = "failed";
-    //   }
-    // } else {
-    //   uploadIcon = "text";
-    // }
+
     return (
       <div className="c7n-envow-ist-header-wrap">
         <Icon type="navigate_next" />
@@ -268,7 +252,8 @@ class AppOverview extends Component {
   @action
   updateConfig = async (record) => {
     const { code, id, envId, commandVersionId, appId } = record;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    const { id: projectId } = AppState.currentMenuType;
+
     this.id = id;
     this.name = code;
     this.idArr = {
@@ -290,7 +275,7 @@ class AppOverview extends Component {
   upgradeIst = async record => {
     const { intl } = this.props;
     const { code, id, envId, commandVersionId, appId } = record;
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
+    const { id: projectId } = AppState.currentMenuType;
 
     InstancesStore.setValue(null);
     try {
@@ -304,12 +289,12 @@ class AppOverview extends Component {
           this.name = code;
           this.idArr = {
             environmentId: envId,
-            appVersionId: val[0].id,
+            appVersionId: result[0].id,
             appId,
           };
           const res = await InstancesStore.loadValue(projectId, id, result[0].id);
           if (res) {
-            this.setState({ visibleUp: true });
+            this.visibleUp = true;
           }
         }
       }

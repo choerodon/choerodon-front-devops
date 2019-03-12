@@ -1,3 +1,3 @@
-import Elements from './Elements';
+import elementsIndex from './ElementsIndex';
 
-export default Elements;
+export default elementsIndex;
