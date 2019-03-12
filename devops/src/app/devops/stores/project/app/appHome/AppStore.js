@@ -1,5 +1,6 @@
 import { observable, action, computed } from "mobx";
 import { axios, store, stores } from "choerodon-front-boot";
+import { handleProptError } from '../../../../utils';
 
 const { AppState } = stores;
 const HEIGHT =
@@ -179,7 +180,7 @@ class AppStore {
         JSON.stringify(postData)
       )
       .then(data => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           this.handleData(data);
         }
@@ -199,7 +200,7 @@ class AppStore {
     const url = isPredefined ? `/devops/v1/projects/${projectId}/apps/template?isPredefined=${isPredefined}` :
       `/devops/v1/projects/${projectId}/apps/template`;
     axios.get(url).then(data => {
-      const res = this.handleProptError(data);
+      const res = handleProptError(data);
       if (res) {
         this.setSelectData(res);
       }
@@ -210,7 +211,7 @@ class AppStore {
     axios
       .get(`/devops/v1/projects/${projectId}/apps/${id}/detail`)
       .then(data => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           this.setSingleData(data);
         }
@@ -230,7 +231,7 @@ class AppStore {
     axios
       .put(`/devops/v1/projects/${projectId}/apps`, JSON.stringify(data))
       .then(datas => {
-        const res = this.handleProptError(datas);
+        const res = handleProptError(datas);
         return res;
       });
 
@@ -238,7 +239,7 @@ class AppStore {
     axios
       .post(`/devops/v1/projects/${projectId}/apps`, JSON.stringify(data))
       .then(datas => {
-        const res = this.handleProptError(datas);
+        const res = handleProptError(datas);
         return res;
       });
 
@@ -246,13 +247,13 @@ class AppStore {
     axios
       .put(`/devops/v1/projects/${projectId}/apps/${id}?active=${status}`)
       .then(datas => {
-        const res = this.handleProptError(datas);
+        const res = handleProptError(datas);
         return res;
       });
 
   deleteApps = (projectId, id) =>
     axios.delete(`/devops/v1/projects/${projectId}/apps/${id}`).then(datas => {
-      const res = this.handleProptError(datas);
+      const res = handleProptError(datas);
       return res;
     });
 
@@ -303,17 +304,6 @@ class AppStore {
 
   importApp = (projectId, data) =>
     axios.post(`/devops/v1/projects/${projectId}/apps/import`, JSON.stringify(data));
-
-  handleProptError = error => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      this.changeLoading(false);
-      this.changeIsRefresh(false);
-      return false;
-    } else {
-      return error;
-    }
-  };
 }
 
 const appStore = new AppStore();

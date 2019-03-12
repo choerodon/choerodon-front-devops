@@ -367,7 +367,7 @@ class EnvPipelineStore {
           this.setCluster(res);
         }
       })
-      .catch(error => Choerodon.handleResponseError(err));
+      .catch(error => Choerodon.handleResponseError(error));
   };
 
   loadGroup = projectId =>

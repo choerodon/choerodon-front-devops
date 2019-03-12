@@ -1,5 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
+import { handleProptError } from "../../../utils";
 
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
@@ -118,13 +119,14 @@ class SelectAppStore {
     this.changeLoading(true);
     return axios.post(`/devops/v1/projects/${projectId}/apps/list_by_options?active=true&page=${page}&size=${size}&sort=${sort.field},${sort.order}&has_version=true&type=normal`, JSON.stringify(postData))
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           if (this.searchValue === '' || this.searchValue === postData.param) {
             this.handleData(data, 'local');
           }
         }
         this.changeLoading(false);
+        this.changeIsRefresh(false);
       });
   };
 
@@ -140,13 +142,14 @@ class SelectAppStore {
     this.changeLoading(true);
     return axios.post(`devops/v1/projects/${projectId}/apps_market/list_all?page=${page}&size=${size}`, JSON.stringify(postData))
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           if (this.searchValue === '' || this.searchValue === postData.param) {
             this.handleData(data, 'store');
           }
         }
         this.changeLoading(false);
+        this.changeIsRefresh(false);
       });
   };
 
@@ -167,17 +170,6 @@ class SelectAppStore {
       this.setStorePageInfo({ number, size, totalElements });
     }
   };
-
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      this.changeLoading(false);
-      this.changeIsRefresh(false);
-      return false;
-    } else {
-      return error;
-    }
-  }
 }
 
 const selectAppStore = new SelectAppStore();

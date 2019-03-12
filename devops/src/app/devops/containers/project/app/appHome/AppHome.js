@@ -425,13 +425,18 @@ class AppHome extends Component {
     const { AppStore } = this.props;
     const { projectId } = this.state;
     this.setState({ submitting: true });
-    AppStore.deleteApps(projectId, id).then(() => {
-      this.loadAllData(this.state.page);
-      this.setState({
-        submitting: false,
-        openRemove: false,
+    AppStore.deleteApps(projectId, id)
+      .then(() => {
+        this.loadAllData(this.state.page);
+        this.setState({
+          submitting: false,
+          openRemove: false,
+        });
+      })
+      .catch(err => {
+        this.setState({ submitting: false });
+        Choerodon.handleResponseError(err);
       });
-    });
   };
 
   /**
@@ -502,6 +507,9 @@ class AppHome extends Component {
                 createSelected: [],
               });
             }
+          }).catch(err => {
+            this.setState({ submitting: false });
+            Choerodon.handleResponseError(err);
           });
         }
       });
@@ -539,6 +547,9 @@ class AppHome extends Component {
                 }
               );
             }
+          }).catch(err => {
+            this.setState({ submitting: false });
+            Choerodon.handleResponseError(err);
           });
         }
       });

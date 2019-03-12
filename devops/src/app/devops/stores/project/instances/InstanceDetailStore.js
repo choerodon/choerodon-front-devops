@@ -1,5 +1,6 @@
 import { observable, action, computed } from "mobx";
 import { axios, store } from "choerodon-front-boot";
+import { handleProptError } from '../../../utils';
 
 @store("InstanceDetailStore")
 class InstanceDetailStore {
@@ -99,7 +100,7 @@ class InstanceDetailStore {
     axios
       .get(`/devops/v1/projects/${projectId}/app_instances/${id}/value`)
       .then(stage => {
-        const res = this.handleProptError(stage);
+        const res = handleProptError(stage);
         if (res) {
           this.setValue(stage);
         }
@@ -110,7 +111,7 @@ class InstanceDetailStore {
     return axios
       .get(`/devops/v1/projects/${projectId}/app_instances/${id}/events`)
       .then(event => {
-        const res = this.handleProptError(event);
+        const res = handleProptError(event);
         if (res) {
           this.setIstEvent(event);
         }
@@ -123,7 +124,7 @@ class InstanceDetailStore {
     return axios
       .get(`/devops/v1/projects/${proId}/app_instances/${id}/resources`)
       .then(stage => {
-        const res = this.handleProptError(stage);
+        const res = handleProptError(stage);
         if (res) {
           this.setResource(stage);
         }
@@ -140,7 +141,7 @@ class InstanceDetailStore {
         `/devops/v1/projects/${projectId}/app_instances/command_log/${id}?page=${page}&size=${size}${startTime ? `&startTime=${startTime}&endTime=${endTime}` : ""}`
       )
       .then(data => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           this.setIstLog(data.content, flag);
           this.setLogTotal(data.totalElements);
@@ -149,15 +150,6 @@ class InstanceDetailStore {
         }
         this.setLogLoading(false);
       });
-  };
-
-  handleProptError = error => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
   };
 }
 

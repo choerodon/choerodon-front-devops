@@ -362,6 +362,10 @@ class AutoDeployHome extends Component {
         }
         this.setState({ isEnabledLoading: false })
       })
+      .catch(error => {
+        this.setState({ isEnabledLoading: false });
+        Choerodon.handleResponseError(error);
+      });
   };
 
   render() {

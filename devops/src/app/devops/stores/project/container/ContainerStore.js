@@ -1,5 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
+import _ from 'lodash';
 import { handleProptError } from '../../../utils';
 
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
@@ -175,18 +176,14 @@ class ContainerStore {
     }
     this.changeLoading(true);
     let api = '';
-    if (envId) {
-      if (appId) {
-        api = `&envId=${envId}&appId=${appId}`;
-      } else {
-        api = `&envId=${envId}`;
+    _.forEach({envId, appId}, (value, key) => {
+      if (value) {
+        api = `${api}&${key}=${value}`;
       }
-    } else if (appId) {
-      api = `&appId=${appId}`;
-    }
+    });
     return axios.post(`/devops/v1/projects/${proId}/app_pod/list_by_options?page=${page}&size=${size}&sort=${sort.field || 'id'},${sort.order}${api}`, JSON.stringify(datas))
       .then((data) => {
-        const res = this.handleProptError(datas);
+        const res = handleProptError(datas);
         if (res) {
           this.handleData(data);
         }
@@ -203,16 +200,7 @@ class ContainerStore {
   };
 
   loadPodParam = (projectId, id, type) => axios.get(`devops/v1/projects/${projectId}/app_pod/${id}/containers/logs${type ? `/${type}` : ''}`)
-    .then(data => this.handleProptError(data));
-
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
-  }
+    .then(data => handleProptError(data));
 }
 
 const containerStore = new ContainerStore();

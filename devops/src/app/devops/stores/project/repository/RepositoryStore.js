@@ -68,9 +68,10 @@ class RepositoryStore {
           this.setPageInfo(pageInfo);
         }
         this.setLoading(false);
-      }).catch((err) => {
+      })
+      .catch((err) => {
         this.setLoading(false);
-        Choerodon.prompt(err);
+        Choerodon.handleResponseError(err);
       });
   }
 }

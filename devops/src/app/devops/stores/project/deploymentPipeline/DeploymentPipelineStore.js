@@ -1,6 +1,7 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
+import { handleProptError } from "../../../utils";
 
 const { AppState } = stores;
 
@@ -39,7 +40,7 @@ class DeploymentPipelineStore {
     }];
     axios.post('/iam/v1/permissions/checkPermission', JSON.stringify(datas))
       .then((data) => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res && res.length) {
           const { approve } = res[0];
           this.setProRole(flag, approve ? 'owner' : 'member');
@@ -51,7 +52,7 @@ class DeploymentPipelineStore {
    * 获取可用环境
    */
   loadActiveEnv = projectId => axios.get(`devops/v1/projects/${projectId}/envs?active=true`).then((data) => {
-    const res = this.handleProptError(data);
+    const res = handleProptError(data);
     if (res) {
       this.setEnvLine(res);
       const env = _.filter(res, ['permission', true]);
@@ -62,15 +63,6 @@ class DeploymentPipelineStore {
     }
     return false;
   });
-
-  handleProptError = (error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
-  }
 }
 
 const deploymentPipelineStore = new DeploymentPipelineStore();

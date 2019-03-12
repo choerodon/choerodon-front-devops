@@ -1,5 +1,6 @@
 import { observable, action, computed } from "mobx";
 import { axios, store } from "choerodon-front-boot";
+import { handleProptError } from "../../../utils";
 
 const HEIGHT =
   window.innerHeight ||
@@ -113,7 +114,7 @@ class TemplateStore {
         JSON.stringify(datas)
       )
       .then(data => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           this.handleData(data);
           spin && this.changeLoading(false);
@@ -131,7 +132,7 @@ class TemplateStore {
 
   loadSelectData = orgId =>
     axios.get(`/devops/v1/organizations/${orgId}/app_templates`).then(data => {
-      const res = this.handleProptError(data);
+      const res = handleProptError(data);
       if (res) {
         this.setSelectData(data);
       }
@@ -141,7 +142,7 @@ class TemplateStore {
     axios
       .get(`/devops/v1/organizations/${orgId}/app_templates/${id}`)
       .then(data => {
-        const res = this.handleProptError(data);
+        const res = handleProptError(data);
         if (res) {
           this.setSingleData(data);
         }
@@ -164,7 +165,7 @@ class TemplateStore {
         JSON.stringify(data)
       )
       .then(datas => {
-        const res = this.handleProptError(datas);
+        const res = handleProptError(datas);
         return res;
       });
 
@@ -175,7 +176,7 @@ class TemplateStore {
         JSON.stringify(data)
       )
       .then(datas => {
-        const res = this.handleProptError(datas);
+        const res = handleProptError(datas);
         return res;
       });
 
@@ -183,20 +184,9 @@ class TemplateStore {
     axios
       .delete(`/devops/v1/organizations/${orgId}/app_templates/${id}`)
       .then(datas => {
-        const res = this.handleProptError(datas);
+        const res = handleProptError(datas);
         return res;
       });
-
-  handleProptError = error => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      this.changeLoading(false);
-      this.changeIsRefresh(false);
-      return false;
-    } else {
-      return error;
-    }
-  };
 }
 
 const templateStore = new TemplateStore();

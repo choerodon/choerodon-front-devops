@@ -1,5 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { axios, store, stores } from 'choerodon-front-boot';
+import { handleProptError } from "../../../utils";
 
 const { AppState } = stores;
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
@@ -24,7 +25,7 @@ class CiPipelineStore {
     spin && this.setLoading(true);
     return axios.get(`/devops/v1/projects/${projectId}/pipeline/page?appId=${appId}&page=${page}&size=${size}`)
       .then((res) => {
-        const response = this.handleProptError(res);
+        const response = handleProptError(res);
         if (response) {
           this.setPagination({
             current: res.number + 1,
@@ -42,7 +43,7 @@ class CiPipelineStore {
     this.setLoading(true);
     return axios.get(`/devops/v1/projects/${projectId}/pipeline/page?appId=${appId}&branch=${branch}&page=${page}&size=${size}`)
       .then((res) => {
-        const response = this.handleProptError(res);
+        const response = handleProptError(res);
         if (response) {
           this.setPagination({
             current: res.number + 1,
@@ -58,12 +59,12 @@ class CiPipelineStore {
 
   cancelPipeline(gitlabProjectId, pipelineId) {
     return axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/gitlab_projects/${gitlabProjectId}/pipelines/${pipelineId}/cancel`)
-      .then(datas => this.handleProptError(datas));
+      .then(datas => handleProptError(datas));
   }
 
   retryPipeline(gitlabProjectId, pipelineId) {
     return axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/gitlab_projects/${gitlabProjectId}/pipelines/${pipelineId}/retry`)
-      .then(datas => this.handleProptError(datas));
+      .then(datas => handleProptError(datas));
   }
 
   @action setCiPipelines(data) {
@@ -84,15 +85,6 @@ class CiPipelineStore {
 
   @action setLoading(data) {
     this.loading = data;
-  }
-
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
   }
 }
 
