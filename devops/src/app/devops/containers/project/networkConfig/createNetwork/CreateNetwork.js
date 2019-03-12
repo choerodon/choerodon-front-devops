@@ -943,9 +943,7 @@ class CreateNetwork extends Component {
                     ref={this.envSelectRef}
                     className="c7n-select_512"
                     label={<FormattedMessage id="network.env" />}
-                    placeholder={intl.formatMessage({
-                      id: "network.env.placeholder",
-                    })}
+                    placeholder={intl.formatMessage({ id: "network.env.placeholder" })}
                     optionFilterProp="children"
                     onSelect={this.handleEnvSelect}
                     getPopupContainer={triggerNode => triggerNode.parentNode}

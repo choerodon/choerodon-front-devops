@@ -287,7 +287,7 @@ class InstancesStore {
       }
       return result;
     } catch (e) {
-      // Choerodon.prompt(e);
+      Choerodon.prompt(e);
       return false;
     }
   }

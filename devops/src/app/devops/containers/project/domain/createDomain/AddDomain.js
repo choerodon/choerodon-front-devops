@@ -1,25 +1,15 @@
-import React, { Component } from "react";
-import { observer } from "mobx-react";
-import { withRouter } from "react-router-dom";
-import {
-  Button,
-  Form,
-  Select,
-  Input,
-  Modal,
-  Tooltip,
-  Icon,
-  Radio,
-  Popover,
-} from "choerodon-ui";
-import { injectIntl, FormattedMessage } from "react-intl";
-import { stores, Content } from "choerodon-front-boot";
-import _ from "lodash";
-import "../../../main.scss";
-import "./CreateDomain.scss";
-import EnvOverviewStore from "../../../../stores/project/envOverview";
-import Tips from "../../../../components/Tips/Tips";
-import InterceptMask from "../../../../components/interceptMask/InterceptMask";
+import React, { Component } from 'react';
+import { observer } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
+import { Button, Form, Select, Input, Modal, Tooltip, Icon, Radio } from 'choerodon-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
+import { stores, Content } from 'choerodon-front-boot';
+import _ from 'lodash';
+import '../../../main.scss';
+import './CreateDomain.scss';
+import EnvOverviewStore from '../../../../stores/project/envOverview';
+import Tips from '../../../../components/Tips/Tips';
+import InterceptMask from '../../../../components/interceptMask/InterceptMask';
 
 const { Option } = Select;
 const { Item: FormItem } = Form;
@@ -56,7 +46,7 @@ class CreateDomain extends Component {
     if (name && name === value) {
       callback();
     } else if (p.test(value)) {
-      const envId = getFieldValue("envId");
+      const envId = getFieldValue('envId');
       if (envId) {
         store
           .checkName(this.state.projectId, value, envId)
@@ -64,15 +54,15 @@ class CreateDomain extends Component {
             if (data) {
               callback();
             } else {
-              callback(intl.formatMessage({ id: "domain.name.check.exist" }));
+              callback(intl.formatMessage({ id: 'domain.name.check.exist' }));
             }
           })
           .catch(() => callback());
       } else {
-        callback(intl.formatMessage({ id: "network.form.app.disable" }));
+        callback(intl.formatMessage({ id: 'network.form.app.disable' }));
       }
     } else {
-      callback(intl.formatMessage({ id: "domain.name.check.failed" }));
+      callback(intl.formatMessage({ id: 'domain.name.check.failed' }));
     }
   }, 1000);
 
@@ -83,7 +73,7 @@ class CreateDomain extends Component {
       projectId: menu.id,
       deletedService: {},
       portInNetwork: {},
-      protocol: "normal",
+      protocol: 'normal',
       selectEnv: null,
       pathCountChange: false,
       singleData: {},
@@ -101,13 +91,13 @@ class CreateDomain extends Component {
       form: { setFieldsValue, setFields },
     } = this.props;
     const { projectId } = this.state;
-    if (id && type === "edit") {
+    if (id && type === 'edit') {
       store.loadDataById(projectId, id).then(data => {
         const { pathList, envId: domainEnv, certId, certName, domain } = data;
         const deletedService = [];
         _.forEach(pathList, (item, index) => {
           const { serviceStatus, serviceName, serviceId } = item;
-          if (serviceStatus !== "running") {
+          if (serviceStatus !== 'running') {
             deletedService[index] = {
               name: serviceName,
               id: serviceId,
@@ -120,7 +110,7 @@ class CreateDomain extends Component {
         this.setState({
           deletedService,
           singleData: data || {},
-          protocol: certId ? "secret" : "normal",
+          protocol: certId ? 'secret' : 'normal',
           selectEnv: domainEnv,
         });
         if (certId && domain && domainEnv) {
@@ -132,7 +122,7 @@ class CreateDomain extends Component {
               certId: {
                 value: null,
                 errors: [
-                  new Error(formatMessage({ id: "domain.cert.delete" })),
+                  new Error(formatMessage({ id: 'domain.cert.delete' })),
                 ],
               },
             });
@@ -191,11 +181,11 @@ class CreateDomain extends Component {
           const pt = path[item];
           const serviceId = network[item];
           const servicePort = port[item];
-          const serviceName = _.filter(networkList, ["id", serviceId])[0].name;
+          const serviceName = _.filter(networkList, ['id', serviceId])[0].name;
           pathList.push({ path: pt, serviceId, servicePort, serviceName });
         });
         postData.pathList = pathList;
-        if (type === "create") {
+        if (type === 'create') {
           promise = store.addData(projectId, postData);
         } else {
           postData.domainId = id;
@@ -228,7 +218,7 @@ class CreateDomain extends Component {
 
   addPath = () => {
     const { getFieldValue, setFieldsValue } = this.props.form;
-    const keys = getFieldValue("paths");
+    const keys = getFieldValue('paths');
     const uuid = this.pathKeys;
     const nextKeys = _.concat(keys, uuid);
     this.pathKeys = uuid + 1;
@@ -240,7 +230,7 @@ class CreateDomain extends Component {
 
   removePath = k => {
     const { getFieldValue, setFieldsValue } = this.props.form;
-    const keys = getFieldValue("paths");
+    const keys = getFieldValue('paths');
     if (keys.length === 1) {
       return;
     }
@@ -297,29 +287,29 @@ class CreateDomain extends Component {
     const { projectId, selectEnv } = this.state;
     if (value) {
       const p = /^\/(\S)*$/;
-      const count = _.countBy(getFieldValue("path"));
-      const domain = getFieldValue("domain");
-      const domainError = getFieldError("domain");
+      const count = _.countBy(getFieldValue('path'));
+      const domain = getFieldValue('domain');
+      const domainError = getFieldError('domain');
       if (p.test(value)) {
         // 重复检查
         if (count[value] < 2) {
           // 如果域名校验不通过，则不发起域名路径组合校验
           if (!domainError) {
             let checkPromise = null;
-            if (type === "edit") {
+            if (type === 'edit') {
               checkPromise = store.checkPath(
                 projectId,
                 domain,
                 selectEnv,
                 encodeURIComponent(value),
-                id
+                id,
               );
             } else {
               checkPromise = store.checkPath(
                 projectId,
                 domain,
                 selectEnv,
-                encodeURIComponent(value)
+                encodeURIComponent(value),
               );
             }
             this.handleCheckResponse(checkPromise, callback);
@@ -327,13 +317,13 @@ class CreateDomain extends Component {
             callback();
           }
         } else {
-          callback(intl.formatMessage({ id: "domain.path.check.exist" }));
+          callback(intl.formatMessage({ id: 'domain.path.check.exist' }));
         }
       } else {
-        callback(intl.formatMessage({ id: "domain.path.check.failed" }));
+        callback(intl.formatMessage({ id: 'domain.path.check.failed' }));
       }
     } else {
-      callback(intl.formatMessage({ id: "domain.path.check.notSet" }));
+      callback(intl.formatMessage({ id: 'domain.path.check.notSet' }));
     }
   };
 
@@ -350,7 +340,7 @@ class CreateDomain extends Component {
           if (data) {
             callback();
           } else {
-            callback(intl.formatMessage({ id: "domain.path.check.exist" }));
+            callback(intl.formatMessage({ id: 'domain.path.check.exist' }));
           }
         })
         .catch(err => {
@@ -372,13 +362,13 @@ class CreateDomain extends Component {
     } = this.props;
     const pattern = /^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)+)$/;
     if (pattern.test(value)) {
-      const paths = getFieldValue("paths");
+      const paths = getFieldValue('paths');
       const fields = [];
       _.forEach(paths, item => fields.push(`path[${item}]`));
       this.triggerPathCheck();
       callback();
     } else {
-      callback(intl.formatMessage({ id: "domain.domain.check.failed" }));
+      callback(intl.formatMessage({ id: 'domain.domain.check.failed' }));
     }
   }, 1000);
 
@@ -387,7 +377,7 @@ class CreateDomain extends Component {
    */
   triggerPathCheck = () => {
     const { getFieldValue, validateFields } = this.props.form;
-    const paths = getFieldValue("paths");
+    const paths = getFieldValue('paths');
     const fields = [];
     _.forEach(paths, item => fields.push(`path[${item}]`));
     validateFields(fields, { force: true });
@@ -403,14 +393,14 @@ class CreateDomain extends Component {
   checkService = (rule, value, callback) => {
     const { type, intl } = this.props;
     const { deletedService } = this.state;
-    if (type === "create") {
+    if (type === 'create') {
       callback();
     } else {
       // network[xxx]
       const index = parseInt(rule.field.slice(8, -1), 10);
       const del = deletedService[index];
       if (del && del.id && del.id === value) {
-        callback(intl.formatMessage({ id: "domain.network.check.failed" }));
+        callback(intl.formatMessage({ id: 'domain.network.check.failed' }));
       } else {
         callback();
       }
@@ -420,7 +410,7 @@ class CreateDomain extends Component {
   checkPorts = (ports, rule, value, callback) => {
     if (ports && !ports.includes(value)) {
       callback(
-        this.props.intl.formatMessage({ id: "domain.network.check.failed" })
+        this.props.intl.formatMessage({ id: 'domain.network.check.failed' }),
       );
     } else {
       callback();
@@ -444,7 +434,7 @@ class CreateDomain extends Component {
         _.forEach(ports, p => portArr.push(p.port));
       }
     });
-    form.setFieldsValue({ [`port[${index}]`]: "" });
+    form.setFieldsValue({ [`port[${index}]`]: '' });
     const portInNetwork = {
       [index]: portArr,
     };
@@ -464,8 +454,8 @@ class CreateDomain extends Component {
 
     this.setState({ protocol });
 
-    const domain = getFieldValue("domain");
-    if (domain && !getFieldError("domain")) {
+    const domain = getFieldValue('domain');
+    if (domain && !getFieldError('domain')) {
       this.loadCertByDomain(domain, protocol);
     }
   };
@@ -485,11 +475,11 @@ class CreateDomain extends Component {
     const value = e.target ? e.target.value : e;
     const type = p || protocol;
 
-    if (isModifiedField("domain")) {
-      resetFields("certId");
+    if (isModifiedField('domain')) {
+      resetFields('certId');
     }
 
-    if (type === "secret" && selectEnv) {
+    if (type === 'secret' && selectEnv) {
       store.loadCertByEnv(projectId, selectEnv, value);
     }
   };
@@ -523,8 +513,8 @@ class CreateDomain extends Component {
         this.pathKeys = pathList.length;
       }
     }
-    getFieldDecorator("paths", { initialValue: initPaths });
-    const paths = getFieldValue("paths");
+    getFieldDecorator('paths', { initialValue: initPaths });
+    const paths = getFieldValue('paths');
     // 是否还存在校验未通过的path值
     const pathsError = getFieldsError(_.map(paths, item => `path[${item}]`));
     let hasPathError = true;
@@ -554,7 +544,7 @@ class CreateDomain extends Component {
       const hasServerInit = pathList && pathList.length && pathList[k];
       const initPort = hasServerInit ? pathList[k].servicePort : undefined;
       const initNetwork = hasServerInit ? pathList[k].serviceId : undefined;
-      const initPath = hasServerInit ? pathList[k].path : "/";
+      const initPath = hasServerInit ? pathList[k].path : '/';
       // 网络拥有的端口
       const portWithNetwork = {};
       _.forEach(network, item => {
@@ -568,14 +558,14 @@ class CreateDomain extends Component {
       });
       // 生成端口选项
       const portOption =
-        type === "edit" && !portInNetwork[k] && hasServerInit
+        type === 'edit' && !portInNetwork[k] && hasServerInit
           ? portWithNetwork[pathList[k].serviceId]
           : portInNetwork[k];
       // 生成网络选项
       const networkOption = network.map(item => (
         <Option value={item.id} key={`${item.id}-network`}>
           <div className="c7n-domain-create-status c7n-domain-create-status_running">
-            <div>{formatMessage({ id: "running" })}</div>
+            <div>{formatMessage({ id: 'running' })}</div>
           </div>
           <Tooltip title={item.name}>{item.name}</Tooltip>
         </Option>
@@ -596,11 +586,11 @@ class CreateDomain extends Component {
             })(
               <Input
                 onChange={() => this.setState({ pathCountChange: true })}
-                disabled={!getFieldValue("domain")}
+                disabled={!getFieldValue('domain')}
                 maxLength={30}
-                label={formatMessage({ id: "domain.column.path" })}
+                label={formatMessage({ id: 'domain.column.path' })}
                 size="default"
-              />
+              />,
             )}
           </FormItem>
           <FormItem
@@ -611,7 +601,7 @@ class CreateDomain extends Component {
               rules: [
                 {
                   required: true,
-                  message: formatMessage({ id: "required" }),
+                  message: formatMessage({ id: 'required' }),
                 },
                 {
                   validator: this.checkService,
@@ -621,9 +611,9 @@ class CreateDomain extends Component {
             })(
               <Select
                 getPopupContainer={triggerNode => triggerNode.parentNode}
-                disabled={!getFieldValue("envId")}
+                disabled={!getFieldValue('envId')}
                 filter
-                label={formatMessage({ id: "domain.column.network" })}
+                label={formatMessage({ id: 'domain.column.network' })}
                 showSearch
                 dropdownMatchSelectWidth
                 onSelect={this.handleSelectNetwork.bind(this, network, k)}
@@ -638,7 +628,7 @@ class CreateDomain extends Component {
               >
                 {delNetOption}
                 {networkOption}
-              </Select>
+              </Select>,
             )}
           </FormItem>
           <FormItem
@@ -646,11 +636,11 @@ class CreateDomain extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator(`port[${k}]`, {
-              trigger: ["onChange", "onSubmit"],
+              trigger: ['onChange', 'onSubmit'],
               rules: [
                 {
                   required: true,
-                  message: formatMessage({ id: "required" }),
+                  message: formatMessage({ id: 'required' }),
                 },
                 {
                   validator: this.checkPorts.bind(this, portOption),
@@ -661,7 +651,7 @@ class CreateDomain extends Component {
               <Select
                 getPopupContainer={triggerNode => triggerNode.parentNode}
                 disabled={!getFieldValue(`network[${k}]`)}
-                label={formatMessage({ id: "domain.column.port" })}
+                label={formatMessage({ id: 'domain.column.port' })}
                 showSearch
                 dropdownMatchSelectWidth
                 size="default"
@@ -672,7 +662,7 @@ class CreateDomain extends Component {
                     {item}
                   </Option>
                 ))}
-              </Select>
+              </Select>,
             )}
           </FormItem>
           {paths.length > 1 ? (
@@ -694,22 +684,22 @@ class CreateDomain extends Component {
         <Sidebar
           destroyOnClose
           okText={
-            type === "create"
-              ? formatMessage({ id: "create" })
-              : formatMessage({ id: "save" })
+            type === 'create'
+              ? formatMessage({ id: 'create' })
+              : formatMessage({ id: 'save' })
           }
-          cancelText={formatMessage({ id: "cancel" })}
+          cancelText={formatMessage({ id: 'cancel' })}
           visible={visible}
           title={formatMessage({
-            id: `domain.${type === "create" ? "create" : "update"}.head`,
+            id: `domain.${type === 'create' ? 'create' : 'update'}.head`,
           })}
           onCancel={this.handleClose.bind(this, false)}
           onOk={this.handleSubmit}
           confirmLoading={submitting}
         >
           <Content
-            code={`domain.${type === "create" ? "create" : "update"}`}
-            values={{ name: type === "create" ? menuName : name }}
+            code={`domain.${type === 'create' ? 'create' : 'update'}`}
+            values={{ name: type === 'create' ? menuName : name }}
             className="sidebar-content c7n-domainCreate-wrapper"
           >
             <Form layout="vertical" onSubmit={this.handleSubmit}>
@@ -717,11 +707,11 @@ class CreateDomain extends Component {
                 className="c7n-domain-formItem c7n-select_512"
                 {...formItemLayout}
               >
-                {getFieldDecorator("envId", {
+                {getFieldDecorator('envId', {
                   rules: [
                     {
                       required: true,
-                      message: formatMessage({ id: "required" }),
+                      message: formatMessage({ id: 'required' }),
                     },
                   ],
                   initialValue: env.length ? envId : undefined,
@@ -731,11 +721,11 @@ class CreateDomain extends Component {
                     className="c7n-select_512"
                     label={<FormattedMessage id="network.env" />}
                     placeholder={formatMessage({
-                      id: "network.env.placeholder",
+                      id: 'network.env.placeholder',
                     })}
                     optionFilterProp="children"
                     onSelect={this.handleSelectEnv}
-                    disabled={type === "edit"}
+                    disabled={type === 'edit'}
                     getPopupContainer={triggerNode => triggerNode.parentNode}
                     filterOption={(input, option) =>
                       option.props.children[1]
@@ -762,33 +752,33 @@ class CreateDomain extends Component {
                         </Option>
                       );
                     })}
-                  </Select>
+                  </Select>,
                 )}
               </FormItem>
               <FormItem
                 className="c7n-domain-formItem c7n-select_512"
                 {...formItemLayout}
               >
-                {getFieldDecorator("name", {
+                {getFieldDecorator('name', {
                   rules: [
                     {
                       required: true,
                       whitespace: true,
-                      message: formatMessage({ id: "required" }),
+                      message: formatMessage({ id: 'required' }),
                     },
                     {
                       validator: this.checkName,
                     },
                   ],
-                  initialValue: name || "",
+                  initialValue: name || '',
                 })(
                   <Input
-                    autoFocus={type === "create"}
-                    disabled={!(getFieldValue("envId") && !name)}
+                    autoFocus={type === 'create'}
+                    disabled={!(getFieldValue('envId') && !name)}
                     maxLength={40}
-                    label={formatMessage({ id: "domain.column.name" })}
+                    label={formatMessage({ id: 'domain.column.name' })}
                     size="default"
-                  />
+                  />,
                 )}
               </FormItem>
               <div className="c7n-creation-title">
@@ -804,11 +794,11 @@ class CreateDomain extends Component {
                   label={<FormattedMessage id="ctf.target.type" />}
                   {...formItemLayout}
                 >
-                  {getFieldDecorator("type", {
+                  {getFieldDecorator('type', {
                     initialValue: protocol,
                   })(
                     <RadioGroup
-                      disabled={!getFieldValue("envId")}
+                      disabled={!getFieldValue('envId')}
                       name="type"
                       onChange={this.handleTypeChange}
                     >
@@ -818,7 +808,7 @@ class CreateDomain extends Component {
                       <Radio value="secret">
                         <FormattedMessage id="domain.protocol.secret" />
                       </Radio>
-                    </RadioGroup>
+                    </RadioGroup>,
                   )}
                 </FormItem>
               </div>
@@ -827,39 +817,39 @@ class CreateDomain extends Component {
                   className="c7n-select_480 creation-form-item"
                   {...formItemLayout}
                 >
-                  {getFieldDecorator("domain", {
+                  {getFieldDecorator('domain', {
                     rules: [
                       {
                         required: true,
                         whitespace: true,
-                        message: formatMessage({ id: "required" }),
+                        message: formatMessage({ id: 'required' }),
                       },
                       {
                         validator: this.checkDomain,
                       },
                     ],
-                    initialValue: domain || "",
+                    initialValue: domain || '',
                   })(
                     <Input
-                      disabled={!getFieldValue("envId")}
+                      disabled={!getFieldValue('envId')}
                       maxLength={50}
                       type="text"
-                      label={formatMessage({ id: "domain.form.domain" })}
+                      label={formatMessage({ id: 'domain.form.domain' })}
                       size="default"
                       onBlur={this.loadCertByDomain}
-                    />
+                    />,
                   )}
                 </FormItem>
-                {protocol === "secret" ? (
+                {protocol === 'secret' ? (
                   <FormItem
                     className="c7n-select_480 creation-form-item"
                     {...formItemLayout}
                   >
-                    {getFieldDecorator("certId", {
+                    {getFieldDecorator('certId', {
                       rules: [
                         {
                           required: true,
-                          message: formatMessage({ id: "required" }),
+                          message: formatMessage({ id: 'required' }),
                         },
                       ],
                     })(
@@ -886,7 +876,7 @@ class CreateDomain extends Component {
                             {item.certName}
                           </Option>
                         ))}
-                      </Select>
+                      </Select>,
                     )}
                   </FormItem>
                 ) : null}
@@ -895,19 +885,19 @@ class CreateDomain extends Component {
               <div className="c7n-domain-btn-wrapper">
                 <Tooltip
                   title={
-                    hasPathError || !getFieldValue("domain")
-                      ? formatMessage({ id: "domain.path.isnull" })
-                      : ""
+                    hasPathError || !getFieldValue('domain')
+                      ? formatMessage({ id: 'domain.path.isnull' })
+                      : ''
                   }
                 >
                   <Button
                     className="c7n-domain-btn"
                     onClick={this.addPath}
                     type="primary"
-                    disabled={hasPathError || !getFieldValue("domain")}
+                    disabled={hasPathError || !getFieldValue('domain')}
                     icon="add"
                   >
-                    {formatMessage({ id: "domain.path.add" })}
+                    {formatMessage({ id: 'domain.path.add' })}
                   </Button>
                 </Tooltip>
               </div>
