@@ -71,7 +71,7 @@ class TemplateHome extends Component {
           }
         })
         .catch(error => {
-          Choerodon.prompt(error.response.data.message);
+          Choerodon.handleResponseError(error);
         });
     } else {
       callback(formatMessage({ id: "template.checkCodeReg" }));
@@ -100,7 +100,7 @@ class TemplateHome extends Component {
           }
         })
         .catch(error => {
-          Choerodon.prompt(error.response.data.message);
+          Choerodon.handleResponseError(error);
         });
     } else {
       callback();
@@ -313,7 +313,7 @@ class TemplateHome extends Component {
    */
   handleSubmit = e => {
     e.preventDefault();
-    const { TemplateStore } = this.props;
+    const { TemplateStore, form } = this.props;
     const { organizationId, id, type, page, copyFrom } = this.state;
     TemplateStore.setInfo({
       filters: {},
@@ -321,7 +321,7 @@ class TemplateHome extends Component {
       paras: [],
     });
     if (type === "create") {
-      this.props.form.validateFieldsAndScroll((err, data) => {
+      form.validateFieldsAndScroll((err, data) => {
         if (!err) {
           const postData = data;
           postData.organizationId = organizationId;
@@ -339,7 +339,7 @@ class TemplateHome extends Component {
               });
             })
             .catch(error => {
-              Choerodon.prompt(error.response.data.message);
+              Choerodon.handleResponseError(error);
               this.setState({
                 submitting: false,
               });
@@ -347,7 +347,7 @@ class TemplateHome extends Component {
         }
       });
     } else if (type === "edit") {
-      this.props.form.validateFieldsAndScroll((err, data, modify) => {
+      form.validateFieldsAndScroll((err, data, modify) => {
         if (!err && modify) {
           const formData = data;
           formData.id = id;
@@ -367,7 +367,7 @@ class TemplateHome extends Component {
               }
             })
             .catch(error => {
-              Choerodon.prompt(error.response.data.message);
+              Choerodon.handleResponseError(error);
               this.setState({
                 submitting: false,
               });

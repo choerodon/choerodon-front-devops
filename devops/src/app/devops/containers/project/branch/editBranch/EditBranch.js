@@ -114,7 +114,7 @@ class EditBranch extends Component {
             this.setState({ submitting: false });
           })
           .catch((error) => {
-            Choerodon.prompt(error.response.data.message);
+            Choerodon.handleResponseError(error);
             this.setState({ submitting: false });
           });
       } else if (!modify) {

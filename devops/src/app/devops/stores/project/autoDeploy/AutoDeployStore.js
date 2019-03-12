@@ -365,15 +365,6 @@ class AutoDeployStore {
    */
   checkIstName = (projectId, name) =>
     axios.get(`/devops/v1/projects/${projectId}/app_instances/check_name?instance_name=${name}`);
-
-  handleProptError =(error) => {
-    if (error && error.failed) {
-      Choerodon.prompt(error.message);
-      return false;
-    } else {
-      return error;
-    }
-  }
 }
 
 const autoDeployStore = new AutoDeployStore();
