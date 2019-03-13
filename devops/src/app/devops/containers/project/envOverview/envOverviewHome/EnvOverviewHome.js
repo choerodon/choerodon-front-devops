@@ -31,7 +31,7 @@ import NetworkOverview from "../networkOverview";
 import CertTable from "../../certificate/certTable";
 import CreateDomain from "../../domain/createDomain";
 import CreateNetwork from "../../networkConfig/createNetwork";
-import CreateCert from "../../certificate/createCert";
+import CertificateCreate from "../../certificate/certificateCreate";
 import DomainStore from "../../../../stores/project/domain";
 import NetworkConfigStore from "../../../../stores/project/networkConfig";
 import CertificateStore from "../../../../stores/project/certificate";
@@ -866,7 +866,7 @@ class EnvOverviewHome extends Component {
           />
         )}
         {createDisplay ? (
-          <CreateCert
+          <CertificateCreate
             visible={createDisplay}
             envId={envId}
             store={CertificateStore}
