@@ -12,9 +12,8 @@ import {
 import { Select, Button, Tooltip } from "choerodon-ui";
 import _ from "lodash";
 import "../../../main.scss";
-import "./CertificateHome.scss";
 import CertTable from "../certTable";
-import CreateCert from "../createCert";
+import CertificateCreate from "../certificateCreate";
 import EnvOverviewStore from "../../../../stores/project/envOverview";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 import RefreshBtn from "../../../../components/refreshBtn";
@@ -24,7 +23,7 @@ const { AppState } = stores;
 const { Option } = Select;
 
 @observer
-class CertificateHome extends Component {
+class Certificate extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -185,7 +184,7 @@ class CertificateHome extends Component {
           />
         )}
         {createDisplay && (
-          <CreateCert
+          <CertificateCreate
             visible={createDisplay}
             store={CertificateStore}
             envId={envId}
@@ -197,4 +196,4 @@ class CertificateHome extends Component {
   }
 }
 
-export default withRouter(injectIntl(CertificateHome));
+export default withRouter(injectIntl(Certificate));

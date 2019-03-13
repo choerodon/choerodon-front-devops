@@ -20,8 +20,8 @@ import {
 import _ from "lodash";
 import TimePopover from "../../../../components/timePopover";
 import '../../../main.scss';
-import './AutoDeployHome.scss';
-import CreateAutoDeploy from "../createAutoDeploy/CreateAutoDeploy";
+import './AutoDeploy.scss';
+import AutoDeployCreate from "../autoDeployCreate/AutoDeployCreate";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 import DeploymentPipelineStore from "../../../../stores/project/deploymentPipeline";
 
@@ -30,7 +30,7 @@ const { AppState } = stores;
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 @observer
-class AutoDeployHome extends Component {
+class AutoDeploy extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -538,7 +538,7 @@ class AutoDeployHome extends Component {
           />
         )}
         {(sidebarType === 'create' || sidebarType === 'edit') &&
-          <CreateAutoDeploy
+          <AutoDeployCreate
             sidebarType={sidebarType}
             store={AutoDeployStore}
             onClose={this.handClose}
@@ -550,4 +550,4 @@ class AutoDeployHome extends Component {
   }
 }
 
-export default withRouter(injectIntl(AutoDeployHome));
+export default withRouter(injectIntl(AutoDeploy));

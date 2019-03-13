@@ -13,7 +13,7 @@ import {
   Radio,
 } from "choerodon-ui";
 import "../../../main.scss";
-import "./CreateCert.scss";
+import "./CertificateCreate.scss";
 import Tips from "../../../../components/Tips/Tips";
 import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
@@ -39,7 +39,7 @@ const formItemLayout = {
   },
 };
 @observer
-class CreateCert extends Component {
+class CertificateCreate extends Component {
   /**
    * 与域名相同的校验
    */
@@ -531,4 +531,4 @@ class CreateCert extends Component {
   }
 }
 
-export default Form.create({})(injectIntl(CreateCert));
+export default Form.create({})(injectIntl(CertificateCreate));

@@ -8,10 +8,10 @@ import ReactMarkdown from 'react-markdown';
 import _ from 'lodash';
 import LoadingBar from '../../../../components/loadingBar';
 import TimePopover from '../../../../components/timePopover/index';
-import CreateTag from '../createTag';
-import EditTag from '../editTag';
+import AppTagCreate from '../appTagCreate';
+import AppTagEdit from '../appTagEdit';
 import '../../../main.scss';
-import './AppTagHome.scss';
+import './AppTag.scss';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 
@@ -20,7 +20,7 @@ const { Option, OptGroup } = Select;
 const { Panel } = Collapse;
 
 @observer
-class AppTagHome extends Component {
+class AppTag extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -382,13 +382,13 @@ class AppTagHome extends Component {
             </Button>,
           ]}
         ><div className="c7n-padding-top_8">{formatMessage({ id: 'apptag.delete.tooltip' })}</div></Modal>
-        {creationDisplay ? <CreateTag
+        {creationDisplay ? <AppTagCreate
           app={titleName}
           store={AppTagStore}
           show={creationDisplay}
           close={this.displayCreateModal}
         /> : null}
-        {editDisplay ? <EditTag
+        {editDisplay ? <AppTagEdit
           app={currentAppName}
           store={AppTagStore}
           tag={editTag}
@@ -401,4 +401,4 @@ class AppTagHome extends Component {
   }
 }
 
-export default Form.create({})(withRouter(injectIntl(AppTagHome)));
+export default Form.create({})(withRouter(injectIntl(AppTag)));

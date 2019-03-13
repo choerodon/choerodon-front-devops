@@ -5,7 +5,7 @@ import { Modal, Form, Progress, Icon } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import './Issue.scss';
-import '../commom.scss';
+import '../index.scss';
 import IssueDescription from './IssueDescription';
 import LoadingBar from '../../../../components/loadingBar';
 import TimePopover from '../../../../components/timePopover';

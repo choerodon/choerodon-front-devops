@@ -11,7 +11,7 @@ const { AppState } = stores;
 const { Sidebar } = Modal;
 
 @observer
-class EditTag extends Component {
+class AppTagEdit extends Component {
   constructor(props) {
     super(props);
     const { release } = this.props;
@@ -84,4 +84,4 @@ class EditTag extends Component {
   }
 }
 
-export default injectIntl(EditTag);
+export default injectIntl(AppTagEdit);

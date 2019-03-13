@@ -1,3 +1,3 @@
-import CertificateHome from './CertificateHome';
+import Certificate from './Certificate';
 
-export default CertificateHome;
+export default Certificate;

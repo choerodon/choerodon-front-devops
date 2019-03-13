@@ -6,12 +6,12 @@ import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot'
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import '../../../main.scss';
-import './BranchHome.scss';
-import CreateBranch from '../CreateBranch';
+import './Branch.scss';
+import BranchCreate from '../branchCreate';
 import TimePopover from '../../../../components/timePopover';
-import EditBranch from '../editBranch';
+import BranchEdit from '../branchEdit';
 import IssueDetail from '../issueDetail';
-import '../commom.scss';
+import '../index.scss';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
@@ -20,7 +20,7 @@ const { AppState } = stores;
 const { Option, OptGroup } = Select;
 
 @observer
-class BranchHome extends Component {
+class Branch extends Component {
   constructor(props) {
     super(props);
     const menu = AppState.currentMenuType;
@@ -506,14 +506,14 @@ class BranchHome extends Component {
         <Content code={apps.length ? 'branch.app' : 'branch'} values={{ name: titleName }} className="page-content">
           {this.tableBranch}
         </Content>
-        {BranchStore.createBranchShow === 'create' && <CreateBranch
+        {BranchStore.createBranchShow === 'create' && <BranchCreate
           name={_.filter(apps, app => app.id === DevPipelineStore.selectedApp)[0].name}
           appId={DevPipelineStore.selectedApp}
           store={BranchStore}
           visible={BranchStore.createBranchShow === 'create'}
           onClose={this.hideSidebar}
         /> }
-        {BranchStore.createBranchShow === 'edit' && <EditBranch
+        {BranchStore.createBranchShow === 'edit' && <BranchEdit
           name={branchName}
           appId={DevPipelineStore.selectedApp}
           store={BranchStore}
@@ -545,4 +545,4 @@ class BranchHome extends Component {
   }
 }
 
-export default withRouter(injectIntl(BranchHome));
+export default withRouter(injectIntl(Branch));

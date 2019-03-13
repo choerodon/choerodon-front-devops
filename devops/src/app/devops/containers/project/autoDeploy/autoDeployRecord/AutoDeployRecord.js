@@ -20,7 +20,7 @@ import {
 import _ from "lodash";
 import TimePopover from "../../../../components/timePopover";
 import '../../../main.scss';
-import '../autoDeployHome/AutoDeployHome.scss';
+import '../autoDeployHome/AutoDeploy.scss';
 import StatusTags from "../../../../components/StatusTags/StatusTags";
 
 const { Option } = Select;

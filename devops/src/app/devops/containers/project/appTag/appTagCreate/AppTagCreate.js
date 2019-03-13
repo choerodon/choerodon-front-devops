@@ -6,7 +6,7 @@ import { Select, Modal, Form, Input, Icon } from 'choerodon-ui';
 import _ from 'lodash';
 import MdEditor from '../../../../components/MdEditor';
 import '../../../main.scss';
-import './CreateTag.scss';
+import './AppTagCreate.scss';
 import Tips from "../../../../components/Tips/Tips";
 import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
@@ -27,7 +27,7 @@ const formItemLayout = {
 };
 
 @observer
-class CreateTag extends Component {
+class AppTagCreate extends Component {
   /**
    * 标记名称的校验规则：\d+(\.\d+){2}
    */
@@ -232,4 +232,4 @@ class CreateTag extends Component {
   }
 }
 
-export default Form.create({})(injectIntl(CreateTag));
+export default Form.create({})(injectIntl(AppTagCreate));
