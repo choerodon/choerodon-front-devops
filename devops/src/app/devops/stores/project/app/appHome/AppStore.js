@@ -1,5 +1,5 @@
-import { observable, action, computed } from "mobx";
-import { axios, store, stores } from "choerodon-front-boot";
+import { observable, action, computed } from 'mobx';
+import { axios, store, stores } from 'choerodon-front-boot';
 import { handleProptError } from '../../../../utils';
 
 const { AppState } = stores;
@@ -8,7 +8,7 @@ const HEIGHT =
   document.documentElement.clientHeight ||
   document.body.clientHeight;
 
-@store("AppStore")
+@store('AppStore')
 class AppStore {
   @observable allData = [];
 
@@ -44,15 +44,35 @@ class AppStore {
 
   @observable Info = {
     filters: {},
-    sort: { columnKey: "id", order: "descend" },
+    sort: { columnKey: 'id', order: 'descend' },
     paras: [],
   };
 
   @observable mbrInfo = {
     filters: {},
-    sort: { columnKey: "id", order: "descend" },
+    sort: { columnKey: 'id', order: 'descend' },
     paras: [],
   };
+
+  @observable chartList = [];
+
+  @observable harborList = [];
+
+  @action setChartList(data) {
+    this.chartList = data;
+  }
+
+  @action setHarborList(data) {
+    this.harborList = data;
+  }
+
+  @computed get getChartList() {
+    return this.chartList.slice();
+  }
+
+  @computed get getHarborList() {
+    return this.harborList.slice();
+  }
 
   @action setPageInfo(page) {
     this.pageInfo.current = page.number + 1;
@@ -165,19 +185,19 @@ class AppStore {
     envId,
     page = this.pageInfo.current - 1,
     size = this.pageInfo.pageSize,
-    sort = { field: "", order: "desc" },
-    postData = { searchParam: {}, param: "" }
+    sort = { field: '', order: 'desc' },
+    postData = { searchParam: {}, param: '' },
   ) => {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
     let url =
-      sort.field !== "" ? `${url}&sort=${sort.field},${sort.order}` : "";
+      sort.field !== '' ? `${url}&sort=${sort.field},${sort.order}` : '';
     spin && this.changeLoading(true);
     return axios
       .post(
         `/devops/v1/projects/${projectId}/apps/list_by_options?page=${page}&size=${size}${url}`,
-        JSON.stringify(postData)
+        JSON.stringify(postData),
       )
       .then(data => {
         const res = handleProptError(data);
@@ -269,14 +289,14 @@ class AppStore {
     projectId,
     page = 0,
     size = 10,
-    sort = { field: "", order: "desc" },
-    postData = { searchParam: {}, param: "" }
+    sort = { field: '', order: 'desc' },
+    postData = { searchParam: {}, param: '' },
   ) => {
     this.setTableLoading(true);
     return axios
       .post(
         `/devops/v1/projects/${projectId}/envs/list?page=${page}&size=${size}`,
-        JSON.stringify(postData)
+        JSON.stringify(postData),
       )
       .then(data => {
         if (data && data.failed) {
@@ -304,6 +324,32 @@ class AppStore {
 
   importApp = (projectId, data) =>
     axios.post(`/devops/v1/projects/${projectId}/apps/import`, JSON.stringify(data));
+
+  /**
+   * 查询Harbor 或 Chart 仓库
+   * @param projectId
+   * @param type
+   * @returns {Promise<void>}
+   */
+  queryConfig = async (projectId, type) => await axios.get(`/devops/v1/projects/${projectId}/project_config/type?type=${type}`);
+
+  /**
+   * 同时查询 Harbor 和 Chart
+   * @param projectId
+   * @returns {Promise<void>}
+   */
+  async loadConfig(projectId) {
+    try {
+      const requests = [this.queryConfig(projectId, 'harbor'), this.queryConfig(projectId, 'chart')];
+      const data = await Promise.all(requests);
+      const harbor = handleProptError(data[0]);
+      const chart = handleProptError(data[1]);
+      harbor && this.setHarborList(harbor);
+      chart && this.setChartList(chart);
+    } catch (e) {
+      Choerodon.handleResponseError(e);
+    }
+  }
 }
 
 const appStore = new AppStore();

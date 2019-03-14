@@ -23,7 +23,7 @@ class AppImport extends Component {
 
   next = (values, current) => {
     const data = this.state.data;
-    switch ( values.key ) {
+    switch (values.key) {
       case 'step0':
         data.repositoryUrl = values.repositoryUrl;
         data.platformType = values.platformType;
@@ -39,6 +39,10 @@ class AppImport extends Component {
         break;
       case 'step2':
         data.isSkipCheckPermission = values.isSkipCheckPermission;
+        data.harborConfigId = values.harborConfigId;
+        data.chartConfigId = values.chartConfigId;
+        data.harborName = values.harborName;
+        data.chartName = values.chartName;
         if (values.isSkipCheckPermission === 'part') {
           data.userIds = values.userIds;
           data.membersInfo = values.membersInfo;
@@ -71,8 +75,19 @@ class AppImport extends Component {
     const { AppStore, history } = this.props;
     const { type, id: projectId, organizationId: orgId, name: proName } = AppState.currentMenuType;
     const { data } = this.state;
-    const { platformType, repositoryUrl, accessToken, name, code, applicationTemplateId, isSkipCheckPermission, userIds } = data;
-    const value = { platformType, accessToken, repositoryUrl, name, code, applicationTemplateId, userIds };
+    const { platformType, repositoryUrl, accessToken, name, code, applicationTemplateId, isSkipCheckPermission, userIds, harborConfigId, chartConfigId } = data;
+    const value = {
+      platformType,
+      accessToken,
+      repositoryUrl,
+      name,
+      code,
+      applicationTemplateId,
+      userIds,
+      harborConfigId,
+      chartConfigId,
+    };
+    console.log(data);
     value.isSkipCheckPermission = isSkipCheckPermission !== 'part';
     value.type = 'normal';
     AppStore.setImportBtnLoading(true);
@@ -101,15 +116,18 @@ class AppImport extends Component {
     }, {
       key: 'step1',
       title: <FormattedMessage id="app.import.step2" />,
-      content: <Step1 onNext={this.next} onPrevious={this.prev} onCancel={this.cancel} store={AppStore} values={data} />,
+      content: <Step1 onNext={this.next} onPrevious={this.prev} onCancel={this.cancel} store={AppStore}
+                      values={data} />,
     }, {
       key: 'step2',
       title: <FormattedMessage id="app.import.step3" />,
-      content: <Step2 onNext={this.next} onPrevious={this.prev} onCancel={this.cancel} store={AppStore} values={data} />,
+      content: <Step2 onNext={this.next} onPrevious={this.prev} onCancel={this.cancel} store={AppStore}
+                      values={data} />,
     }, {
       key: 'step3',
       title: <FormattedMessage id="app.import.step4" />,
-      content: <Step3 onImport={this.importApp} onPrevious={this.prev} onCancel={this.cancel} store={AppStore} values={data} />,
+      content: <Step3 onImport={this.importApp} onPrevious={this.prev} onCancel={this.cancel} store={AppStore}
+                      values={data} />,
     }];
 
     return (
@@ -121,7 +139,8 @@ class AppImport extends Component {
           'devops-service.application-market.update',
         ]}
       >
-        <Header title={<FormattedMessage id="app.import" />} backPath={`/devops/app?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}`} />
+        <Header title={<FormattedMessage id="app.import" />}
+                backPath={`/devops/app?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}`} />
         <Content code="app.import" values={{ name }}>
           <div className="c7n-app-import-wrap">
             <Steps current={current} className="steps-line">

@@ -1,13 +1,27 @@
 import React, { Component, Fragment } from 'react';
-import _ from "lodash";
+import _ from 'lodash';
 import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Radio, Table, Tag } from 'choerodon-ui';
+import { Button, Radio, Table, Tag, Popover, Icon, Select, Form } from 'choerodon-ui';
 import { stores } from 'choerodon-front-boot';
 import '../AppImport.scss';
+import '../../index.scss';
 
 const RadioGroup = Radio.Group;
+const FormItem = Form.Item;
+const { Option } = Select;
 const { AppState } = stores;
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 100 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 26 },
+  },
+};
+
 
 @observer
 class StepThree extends Component {
@@ -18,13 +32,16 @@ class StepThree extends Component {
       selectedTemp: [],
       selectedRowKeys: this.props.values.userIds || [],
       selected: this.props.values.membersInfo || [],
-    }
+      harborId: undefined,
+      chartId: undefined,
+    };
   }
 
   componentDidMount() {
     const { store } = this.props;
     const { id: projectId } = AppState.currentMenuType;
     store.loadPrm(projectId);
+    store.loadConfig(projectId);
   }
 
   onChange = e => this.setState({ checked: e.target.value });
@@ -34,12 +51,29 @@ class StepThree extends Component {
     const a = this.state.selectedTemp.concat(selected);
     this.setState({ selectedTemp: a });
     _.map(keys, o => {
-      if (_.filter(a, ["iamUserId", o]).length) {
-        s.push(_.filter(a, ["iamUserId", o])[0]);
+      if (_.filter(a, ['iamUserId', o]).length) {
+        s.push(_.filter(a, ['iamUserId', o])[0]);
       }
     });
     this.setState({ selectedRowKeys: keys, selected: s });
   };
+
+  /**
+   * 高级设置-Docker仓库选择
+   * @param value
+   */
+  selectChart = value => {
+    this.setState({ chartId: value });
+  };
+
+  /**
+   * 高级设置-Helm仓库选择
+   * @param value
+   */
+  selectHarbor = value => {
+    this.setState({ harborId: value });
+  };
+
 
   /**
    * table 操作
@@ -52,13 +86,13 @@ class StepThree extends Component {
     const { store } = this.props;
     const { id } = AppState.currentMenuType;
     store.setMbrInfo({ filters, sort: sorter, paras });
-    let sort = { field: "", order: "desc" };
+    let sort = { field: '', order: 'desc' };
     if (sorter.column) {
       sort.field = sorter.field || sorter.columnKey;
-      if (sorter.order === "ascend") {
-        sort.order = "asc";
-      } else if (sorter.order === "descend") {
-        sort.order = "desc";
+      if (sorter.order === 'ascend') {
+        sort.order = 'asc';
+      } else if (sorter.order === 'descend') {
+        sort.order = 'desc';
       }
     }
     let searchParam = {};
@@ -74,15 +108,32 @@ class StepThree extends Component {
   };
 
   next = () => {
-    const { onNext } = this.props;
+    const {
+      onNext, store: {
+        getHarborList,
+        getChartList,
+      },
+      form,
+    } = this.props;
     const { checked, selectedRowKeys, selected } = this.state;
-    const values = {
-      key: 'step2',
-      isSkipCheckPermission: checked,
-      userIds: selectedRowKeys,
-      membersInfo: selected,
-    };
-    onNext(values, 3);
+    form.validateFields((err, data) => {
+      if (!err) {
+        const { harborConfigId, chartConfigId } = data;
+        const harborName = _.find(getHarborList, ['id', harborConfigId]).name;
+        const chartName = _.find(getChartList, ['id', chartConfigId]).name;
+        const values = {
+          key: 'step2',
+          isSkipCheckPermission: checked,
+          userIds: selectedRowKeys,
+          membersInfo: selected,
+          harborConfigId,
+          chartConfigId,
+          harborName,
+          chartName,
+        };
+        onNext(values, 3);
+      }
+    });
   };
 
   render() {
@@ -94,10 +145,13 @@ class StepThree extends Component {
         getTableLoading: tableLoading,
         getMbr,
         getMbrInfo: { filters, paras: mbrParas },
+        getHarborList,
+        getChartList,
       },
       intl: { formatMessage },
+      form: { getFieldDecorator },
     } = this.props;
-    const { checked, selectedRowKeys, selected } = this.state;
+    const { checked, selectedRowKeys, selected, harborId, chartId } = this.state;
     const tagDom = _.map(selected, t => (
       <Tag className="c7n-import-tag" key={t.iamUserId}>
         {t.loginName} {t.realName}
@@ -107,24 +161,27 @@ class StepThree extends Component {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
+    const initHarbor = harborId || getHarborList.length ? getHarborList[0].id : undefined;
+    const initChart = chartId || getChartList.length ? getChartList[0].id : undefined;
+
     const columns = [
       {
-        key: "loginName",
+        key: 'loginName',
         filters: [],
         filteredValue: filters.loginName || [],
         title: formatMessage({
-          id: "envPl.loginName",
+          id: 'envPl.loginName',
         }),
-        dataIndex: "loginName",
+        dataIndex: 'loginName',
       },
       {
-        key: "realName",
+        key: 'realName',
         filters: [],
         filteredValue: filters.realName || [],
         title: formatMessage({
-          id: "envPl.userName",
+          id: 'envPl.userName',
         }),
-        dataIndex: "realName",
+        dataIndex: 'realName',
       },
     ];
 
@@ -156,7 +213,7 @@ class StepThree extends Component {
                   rowSelection={rowSelection}
                   columns={columns}
                   dataSource={getMbr}
-                  filterBarPlaceholder={formatMessage({ id: "filter" })}
+                  filterBarPlaceholder={formatMessage({ id: 'filter' })}
                   pagination={getMbrPageInfo}
                   loading={tableLoading}
                   onChange={this.mbrTableChange}
@@ -172,6 +229,84 @@ class StepThree extends Component {
               </div>
             </div>
           )}
+        </div>
+        <div className="c7n-env-tag-title">
+          <FormattedMessage id="app.config" />
+          <Popover
+            overlayStyle={{ maxWidth: '350px' }}
+            content={formatMessage({ id: 'app.config.help' })}
+          >
+            <Icon type="help" />
+          </Popover>
+        </div>
+        <div className="c7n-app-config-panel">
+          <Form layout="vertical" className="c7n-sidebar-form">
+            <FormItem
+              className="c7n-select_480"
+              {...formItemLayout}
+            >
+              {getFieldDecorator('harborConfigId', {
+                initialValue: initHarbor,
+                rules: [
+                  {
+                    required: true,
+                    message: formatMessage({ id: 'required' }),
+                  },
+                ],
+              })(
+                <Select
+                  filter
+                  showSearch
+                  className="c7n-select_480"
+                  optionFilterProp="children"
+                  label={<FormattedMessage id="app.form.selectDocker" />}
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                  // onChange={this.selectHarbor}
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {_.map(getHarborList, item => (<Option value={item.id} key={item.id}>
+                    {item.name}
+                  </Option>))}
+                </Select>,
+              )}
+            </FormItem>
+            <FormItem
+              className="c7n-select_480"
+              {...formItemLayout}
+            >
+              {getFieldDecorator('chartConfigId', {
+                initialValue: initChart,
+                rules: [
+                  {
+                    required: true,
+                    message: formatMessage({ id: 'required' }),
+                  },
+                ],
+              })(
+                <Select
+                  filter
+                  className="c7n-select_480"
+                  optionFilterProp="children"
+                  label={<FormattedMessage id="app.form.selectHelm" />}
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                  // onChange={this.selectChart}
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {_.map(getChartList, item => (<Option value={item.id} key={item.id}>
+                    {item.name}
+                  </Option>))}
+                </Select>,
+              )}
+            </FormItem>
+          </Form>
+        </div>
+        <div className="c7n-app-config-warn">
+          <Icon type="error" className="c7n-app-config-warn-icon" />
+          <FormattedMessage id="app.config.warn" />
         </div>
         <div className="steps-content-section">
           <Button
@@ -197,8 +332,8 @@ class StepThree extends Component {
           </Button>
         </div>
       </Fragment>
-    )
+    );
   }
 }
 
-export default injectIntl(StepThree);
+export default Form.create({})(injectIntl(StepThree));

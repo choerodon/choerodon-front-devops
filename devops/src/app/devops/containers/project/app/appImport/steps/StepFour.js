@@ -60,6 +60,18 @@ class StepFour extends Component {
           </div>
           <div className="tag-wrap">{tagDom}</div>
         </div> : null}
+        <div className="steps-content-list">
+          <div className="steps-content-list-title">
+            <FormattedMessage id="elements.type.harbor" />：
+          </div>
+          <div>{values.harborName}</div>
+        </div>
+        <div className="steps-content-list">
+          <div className="steps-content-list-title">
+            <FormattedMessage id="elements.type.chart" />：
+          </div>
+          <div>{values.chartName}</div>
+        </div>
       </div>
       <div className="steps-content-section">
         <Permission
