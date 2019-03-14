@@ -874,6 +874,11 @@ const zhCN = {
     "应用的自定义编码，Gitlab仓库的地址将会使用应用编码作为仓库地址的一段路径，同时此编码在项目下唯一且不可修改。",
   "app.chooseTem.tip":
     "可选择系统预定义模板或组织自定义的模板块。选择模板后，可快速创建初始代码库。目前系统存在三种预定义模板，也可以不选择应用模板。",
+  "app.config": "高级设置",
+  "app.config.help": "您可在高级设置中按需更改预置的Docker仓库或Helm仓库为项目中自定义的其他仓库。若无实质需求，请勿使用高级设置！",
+  "app.form.selectDocker": "选择Docker仓库",
+  "app.form.selectHelm": "选择Helm仓库",
+  "app.config.warn": "操作高级设置存在一定风险，若无实质需求，请勿使用！",
 
   // 应用导入
   "app.import": "导入应用",
