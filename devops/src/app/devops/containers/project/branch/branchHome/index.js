@@ -1,3 +1,3 @@
-import BranchHome from './BranchHome';
+import Branch from './Branch';
 
-export default BranchHome;
+export default Branch;

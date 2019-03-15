@@ -368,19 +368,19 @@ const pageDetail = {
   "autoDeploy.title": '项目"{name}"的自动部署任务',
   "autoDeploy.description":
     "自动部署是一种实现部署流程自动化的方法，您可在此创建自动部署任务，以此来简化部署操作。",
-  "autoDeploy.link": "自动部署链接",
+  "autoDeploy.link": `${docServer}/user-guide/deployment-pipeline/auto-deploy/`,
   "autoDeploy.record.title": '项目"{name}"的自动部署记录',
   "autoDeploy.record.description":
     "您可在此查看该项目下所有自动化部署任务的执行记录。",
-  "autoDeploy.record.link": "自动部署记录链接",
+  "autoDeploy.record.link": `${docServer}/user-guide/deployment-pipeline/auto-deploy/`,
   "autoDeploy.create.title": '在项目"{name}"中创建自动部署任务',
   "autoDeploy.create.description":
     "您可在此设置应用、版本类型、对应的环境以及配置信息来创建自动部署的任务。",
-  "autoDeploy.create.link": "创建自动部署链接",
+  "autoDeploy.create.link": `${docServer}/user-guide/deployment-pipeline/auto-deploy/`,
   "autoDeploy.edit.title": '对自动部署任务"{name}"进行修改',
   "autoDeploy.edit.description":
     "您可在此修改所设置的应用、版本类型、环境以及配置信息。只是重新选择应用或环境后，下方的配置信息将会重置。",
-  "autoDeploy.edit.link": "编辑自动部署链接",
+  "autoDeploy.edit.link": `${docServer}/user-guide/deployment-pipeline/auto-deploy/`,
 
   // 组件设置
   "elements.title": '项目"{name}"的组件设置',
@@ -1526,7 +1526,9 @@ const zhCN = {
   "autoDeploy.stop.tooltip": "确定要停用此任务吗？",
   "autoDeploy.active.tooltip": "确定要启用此任务吗？",
   "autoDeploy.execute.date": "执行时间",
-  "autoDeploy-instance-tooltip": "该实例已存在对应的自动部署任务",
+  "autoDeploy.instance.create": "新建实例",
+  "autoDeploy.instance.update": "替换实例",
+  "autoDeploy.instance.tooltip": "该实例已存在对应的自动部署任务",
 
   // 组件设置
   "elements.head": "组件设置",

@@ -6,8 +6,8 @@ import { Content, stores } from "choerodon-front-boot";
 import { injectIntl, FormattedMessage } from "react-intl";
 import _ from "lodash";
 import "../../../main.scss";
-import "./CreateBranch.scss";
-import "../commom.scss";
+import "./BranchCreate.scss";
+import "../index.scss";
 import MouserOverWrapper from "../../../../components/MouseOverWrapper";
 import DevPipelineStore from "../../../../stores/project/devPipeline";
 import DevConsoleStore from "../../../../stores/project/devConsole";
@@ -28,7 +28,7 @@ const formItemLayout = {
   },
 };
 @observer
-class CreateBranch extends Component {
+class BranchCreate extends Component {
   constructor(props) {
     const menu = AppState.currentMenuType;
     super(props);
@@ -504,4 +504,4 @@ class CreateBranch extends Component {
     );
   }
 }
-export default Form.create({})(withRouter(injectIntl(CreateBranch)));
+export default Form.create({})(withRouter(injectIntl(BranchCreate)));

@@ -1,3 +1,3 @@
-import AutoDeployHome from './AutoDeployHome';
+import AutoDeploy from './AutoDeploy';
 
-export default AutoDeployHome;
+export default AutoDeploy;

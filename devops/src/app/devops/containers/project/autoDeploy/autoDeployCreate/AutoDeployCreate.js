@@ -20,7 +20,7 @@ import {
 import _ from "lodash";
 import uuidv1 from "uuid/v1";
 import '../../../main.scss';
-import './CreateAutoDeploy.scss';
+import './AutoDeployCreate.scss';
 import YamlEditor from "../../../../components/yamlEditor/YamlEditor";
 import Tips from "../../../../components/Tips/Tips";
 
@@ -42,7 +42,7 @@ const formItemLayout = {
 const VERSIONTYPE = ['master', 'feature', 'bugfix', 'release', 'hotfix'];
 
 @observer
-class CreateAutoDeploy extends Component {
+class AutoDeployCreate extends Component {
   /**
    * 任务名称唯一性校验
    */
@@ -561,13 +561,13 @@ class CreateAutoDeploy extends Component {
                     value="new"
                     disabled={instanceId && (appId === app && envId === env && istId)}
                   >
-                    <FormattedMessage id="deploy.step.three.mode.new"/>
+                    <FormattedMessage id="autoDeploy.instance.create"/>
                   </Radio>
                   <Radio
                     value="replace"
                     disabled={!instanceList || instanceList.length === 0}
                   >
-                    <FormattedMessage id="deploy.step.three.mode.replace"/>
+                    <FormattedMessage id="autoDeploy.instance.update"/>
                     <Icon
                       className="c7n-autoDeploy-replace-tip-icon"
                       type="error"
@@ -640,7 +640,7 @@ class CreateAutoDeploy extends Component {
                           <Tooltip
                             title={
                               item.isEnabled === 0 && parseInt(item.id) !== istId ?
-                                formatMessage({ id: "autoDeploy-instance-tooltip" }) : ''
+                                formatMessage({ id: "autoDeploy.instance.tooltip" }) : ''
                             }
                             placement="right"
                           >
@@ -664,4 +664,4 @@ class CreateAutoDeploy extends Component {
   }
 }
 
-export default Form.create({})(withRouter(injectIntl(CreateAutoDeploy)));
+export default Form.create({})(withRouter(injectIntl(AutoDeployCreate)));

@@ -7,7 +7,7 @@ import { asyncRouter, nomatch } from 'choerodon-front-boot';
 
 const AutoDeploy = asyncRouter(
   () => import('./autoDeployHome'),
-  () => import('../../../stores/project/autoDeploy/')
+  () => import('../../../stores/project/autoDeploy')
 );
 const AutoDeployRecord = asyncRouter(
   () => import('./autoDeployRecord'),

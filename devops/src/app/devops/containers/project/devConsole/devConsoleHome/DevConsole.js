@@ -11,18 +11,18 @@ import classNames from "classnames";
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import LoadingBar from '../../../../components/loadingBar';
 import TimePopover from '../../../../components/timePopover/index';
-import CreateTag from '../../appTag/createTag';
-import EditTag from '../../appTag/editTag';
+import AppTagCreate from '../../appTag/appTagCreate';
+import AppTagEdit from '../../appTag/appTagEdit';
 import '../../../main.scss';
-import '../../appTag/appTagHome/AppTagHome.scss';
+import '../../appTag/appTagHome/AppTag.scss';
 import './DevConsole.scss';
 import '../../envPipeline/EnvPipeLineHome.scss';
 import DevPipelineStore from '../../../../stores/project/devPipeline';
 import AppTagStore from '../../../../stores/project/appTag';
 import BranchStore from '../../../../stores/project/branchManage';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
-import EditBranch from '../../branch/editBranch';
-import CreateBranch from '../../branch/CreateBranch';
+import BranchEdit from '../../branch/branchEdit';
+import BranchCreate from '../../branch/branchCreate';
 import IssueDetail from '../../branch/issueDetail';
 import MergeRequestStore from '../../../../stores/project/mergeRequest';
 import StatusTags from '../../../../components/StatusTags';
@@ -1231,13 +1231,13 @@ class DevConsole extends Component {
         >
           <div className="c7n-padding-top_8">{formatMessage({ id: 'branch.delete.tooltip' })}</div>
         </Modal>
-        {modalDisplay === 'createTag' ? <CreateTag
+        {modalDisplay === 'createTag' ? <AppTagCreate
           app={titleName}
           store={AppTagStore}
           show={modalDisplay === 'createTag'}
           close={this.displayModal.bind(this, 'close')}
         /> : null}
-        {modalDisplay === 'editTag' ? <EditTag
+        {modalDisplay === 'editTag' ? <AppTagEdit
           app={currentAppName}
           store={AppTagStore}
           tag={tagName}
@@ -1245,7 +1245,7 @@ class DevConsole extends Component {
           show={modalDisplay === 'editTag'}
           close={this.displayModal.bind(this, 'close')}
         /> : null}
-        {BranchStore.createBranchShow === 'create' ? <CreateBranch
+        {BranchStore.createBranchShow === 'create' ? <BranchCreate
           name={titleName}
           appId={DevPipelineStore.selectedApp}
           store={BranchStore}
@@ -1260,7 +1260,7 @@ class DevConsole extends Component {
           onClose={this.displayModal.bind(this, 'closeBranch')}
           isDevConsole
         />}
-        {BranchStore.createBranchShow === 'edit' && <EditBranch
+        {BranchStore.createBranchShow === 'edit' && <BranchEdit
           name={branchName}
           appId={DevPipelineStore.selectedApp}
           store={BranchStore}
