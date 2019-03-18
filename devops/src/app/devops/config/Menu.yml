@@ -284,7 +284,7 @@
         Routes: /devops/elements
         sort: 4
         permission:
-         - "devops-service.application.listByActive"
+         - "devops-service.devops-project-config.pageByOptions"
 
 # 项目层报表
 "platform-reports":

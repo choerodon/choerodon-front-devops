@@ -4,12 +4,17 @@ import { Content, stores } from 'choerodon-front-boot';
 import { Button, Form, Select, Input, Modal, Tooltip, Icon } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
-import Password from '../components/Password';
 import InterceptMask from '../../../../components/interceptMask';
 import '../../../main.scss';
 import './ElementsCreate.scss';
+import { handleCheckerProptError, handleProptError } from '../../../../utils';
+import Tips from '../../../../components/Tips';
 
-const REPO_TYPE = ['harbor', 'chart'];
+const REPO_TYPE = ['chart', 'harbor'];
+const LINK_TEST_ICON = {
+  pass: 'check_circle',
+  failed: 'cancel',
+};
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -29,38 +34,168 @@ const formItemLayout = {
 @injectIntl
 @observer
 class ElementsCreate extends Component {
-  checkName = _.debounce(value => {
-    console.log(value);
-  }, 500);
+  checkName = _.debounce((rule, value, callback) => {
+    const { store, intl: { formatMessage }, form: { isModifiedField } } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    const reg = /^\S+$/;
+    const emojiMatch = /\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/g;
+    const isModify = isModifiedField('name');
+
+    if (value && isModify) {
+      if (reg.test(value) && !emojiMatch.test(value)) {
+        store.checkName(projectId, value).then(data => {
+          if (data && data.failed) {
+            callback(formatMessage({ id: 'checkNameExist' }));
+          } else {
+            callback();
+          }
+        });
+      } else {
+        callback(formatMessage({ id: 'formatError' }));
+      }
+    } else {
+      callback();
+    }
+  }, 600);
 
   constructor(props) {
     super(props);
     this.state = {
       submitting: false,
-      type: undefined,
+      type: 'chart',
+      showLengthInfo: false,
     };
   }
 
-  checkUrl = value => {
-    console.log(value);
+  componentDidMount() {
+    const { store, isEditMode, id } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    isEditMode && store.queryConfigById(projectId, id);
+  }
+
+  /**
+   * 输入框显示已输入字数，无内容不显示
+   */
+  handleInputName = () => {
+    const { showLengthInfo } = this.state;
+    if (!showLengthInfo) {
+      this.setState({
+        showLengthInfo: true,
+      });
+    }
   };
 
+  /**
+   * 切换仓库类型
+   * @param type
+   */
   handleTypeChange = type => {
+    const { store } = this.props;
     this.setState({ type });
+    store.setTestResult('');
   };
 
-  handleSubmit = () => {
+  /**
+   * 测试地址连接
+   */
+  handleTestClick = () => {
+    const { form: { validateFields }, store } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    const { type: currentType } = store.getConfig;
+    const type = currentType || this.state.type;
+
+    const validateFieldsList = type === 'harbor' ? ['url', 'userName', 'password', 'project', 'email'] : ['url'];
+
+    validateFields(validateFieldsList, (err, values) => {
+      if (!err) {
+        store.checkRepoLink(projectId, values, type);
+      }
+    });
   };
 
-  handleClose = () => {
-    this.props.onClose();
+  checkUrl = (rule, value, callback) => {
+    const { intl: { formatMessage } } = this.props;
+    const reg = /^(https?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/;
+    if (value) {
+      if (reg.test(value)) {
+        callback();
+      } else {
+        callback(formatMessage({ id: 'formatError' }));
+      }
+    } else {
+      callback();
+    }
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    const { form: { validateFieldsAndScroll }, store, isEditMode } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    const { type: currentType } = store.getConfig;
+    const type = currentType || this.state.type;
+
+    this.setState({ submitting: true });
+    validateFieldsAndScroll(async (err, values) => {
+      store.setTestResult('');
+      store.setTestLoading(true);
+      if (!err) {
+        try {
+          const response = await store.checkRepoLinkRequest(projectId, values, type);
+          const result = handleCheckerProptError(response);
+          if (result) {
+            store.setTestLoading(false);
+            store.setTestResult('pass');
+            const submitResponse = await store.submitConfig(projectId, values, isEditMode);
+            this.setState({ submitting: false });
+            const submitResult = handleProptError(submitResponse);
+            if (submitResult) {
+              this.handleClose(null, true, isEditMode);
+            }
+          } else {
+            this.setState({ submitting: false });
+            store.setTestLoading(false);
+            store.setTestResult('failed');
+          }
+        } catch (e) {
+          this.setState({ submitting: false });
+          store.setTestLoading(false);
+          Choerodon.handleResponseError(e);
+        }
+      } else {
+        this.setState({ submitting: false });
+        store.setTestLoading(false);
+      }
+    });
+  };
+
+  /**
+   * 关闭侧边栏后，表格的刷新
+   * @param e 点击取消按钮传入的复合事件
+   * @param reload 是否重新刷新
+   * @param isEdit 编辑or创建
+   */
+  handleClose = (e, reload = false, isEdit) => {
+    this.props.onClose(reload, isEdit);
   };
 
   render() {
-    const { name } = AppState.currentMenuType;
-    const { form, visible, isEditMode, intl: { formatMessage } } = this.props;
+    const { name: projectName } = AppState.currentMenuType;
+    const {
+      form,
+      visible,
+      isEditMode,
+      intl: { formatMessage },
+      store: {
+        getTestLoading,
+        getTestResult,
+        getConfig,
+      },
+    } = this.props;
     const { getFieldDecorator } = form;
-    const { submitting, type } = this.state;
+    const { submitting, type, showLengthInfo } = this.state;
+    const config = getConfig.config || {};
+
+    const currentType = getConfig.type || type;
 
     const typeOption = _.map(REPO_TYPE, item => (
       <Option key={item}><FormattedMessage id={`elements.type.${item}`} /></Option>));
@@ -68,17 +203,32 @@ class ElementsCreate extends Component {
     return (
       <Sidebar
         destroyOnClose
-        cancelText={<FormattedMessage id="cancel" />}
-        okText={<FormattedMessage id={isEditMode ? 'testAndSave' : 'testAndCreate'} />}
         title={<FormattedMessage id={`elements.header.${isEditMode ? 'edit' : 'create'}`} />}
         visible={visible}
-        onOk={this.handleSubmit}
-        onCancel={this.handleClose}
-        confirmLoading={submitting}
+        footer={
+          [<Button
+            key="submit"
+            type="primary"
+            funcType="raised"
+            onClick={this.handleSubmit}
+            loading={submitting}
+            disabled={getTestLoading}
+          >
+            <FormattedMessage id={isEditMode ? 'testAndSave' : 'testAndCreate'} />
+          </Button>,
+            <Button
+              key="cancel"
+              funcType="raised"
+              onClick={this.handleClose}
+              disabled={submitting}
+            >
+              <FormattedMessage id="cancel" />
+            </Button>]
+        }
       >
         <Content
           code="elements.create"
-          values={{ name }}
+          values={{ name: projectName }}
           className="sidebar-content"
         >
           <Form layout="vertical">
@@ -87,16 +237,17 @@ class ElementsCreate extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('type', {
+                initialValue: currentType || 'chart',
                 rules: [{
                   required: true,
                   message: formatMessage({ id: 'required' }),
                 }],
               })(
                 <Select
+                  disabled={isEditMode}
                   className="c7n-select_512"
                   label={<FormattedMessage id="elements.type.form" />}
                   getPopupContainer={triggerNode => triggerNode.parentNode}
-                  disabled={isEditMode}
                   onChange={this.handleTypeChange}
                 >
                   {typeOption}
@@ -108,21 +259,23 @@ class ElementsCreate extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('name', {
-                // initialValue: initName,
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'required' }),
-                  },
-                  {
-                    validator: this.checkName,
-                  },
-                ],
+                initialValue: getConfig.name,
+                rules: [{
+                  required: true,
+                  message: formatMessage({ id: 'required' }),
+                }, {
+                  validator: this.checkName,
+                }, {
+                  whitespace: true,
+                  message: formatMessage({ id: 'nameCanNotBeEmpty' }),
+                }],
               })(
                 <Input
                   type="text"
-                  maxLength={30}
+                  maxLength={10}
+                  showLengthInfo={showLengthInfo}
                   label={<FormattedMessage id="elements.name" />}
+                  onChange={this.handleInputName}
                 />,
               )}
             </FormItem>
@@ -131,7 +284,7 @@ class ElementsCreate extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('url', {
-                // initialValue: initName,
+                initialValue: config.url,
                 rules: [
                   {
                     required: true,
@@ -148,20 +301,17 @@ class ElementsCreate extends Component {
                 />,
               )}
             </FormItem>
-            {type === 'harbor' && <Fragment>
+            {currentType === 'harbor' && <Fragment>
               <FormItem
                 className="c7n-select_512"
                 {...formItemLayout}
               >
-                {getFieldDecorator('user', {
-                  // initialValue: initName,
+                {getFieldDecorator('userName', {
+                  initialValue: config.userName,
                   rules: [
                     {
                       required: true,
                       message: formatMessage({ id: 'required' }),
-                    },
-                    {
-                      // validator: this.checkUrl,
                     },
                   ],
                 })(
@@ -176,32 +326,71 @@ class ElementsCreate extends Component {
                 {...formItemLayout}
               >
                 {getFieldDecorator('password', {
-                  // initialValue: initName,
+                  initialValue: config.password,
                   rules: [
                     {
                       required: true,
                       message: formatMessage({ id: 'required' }),
                     },
-                    {
-                      // validator: this.checkUrl,
-                    },
                   ],
                 })(
-                  <Password
+                  <Input
                     type="password"
+                    showPasswordEye
                     label={<FormattedMessage id="elements.password" />}
+                  />,
+                )}
+              </FormItem>
+              <FormItem
+                className="c7n-select_512"
+                {...formItemLayout}
+              >
+                {getFieldDecorator('email', {
+                  initialValue: config.email,
+                  rules: [{
+                    type: 'email',
+                    message: formatMessage({ id: 'checkEmailError' }),
+                  }, {
+                    required: true,
+                    message: formatMessage({ id: 'required' }),
+                  }],
+                })(
+                  <Input label={<FormattedMessage id="elements.email" />} />,
+                )}
+              </FormItem>
+              <FormItem
+                className="c7n-select_512"
+                {...formItemLayout}
+              >
+                {getFieldDecorator('project', {
+                  initialValue: config.project,
+                })(
+                  <Input
+                    type="text"
+                    label={<FormattedMessage id="elements.project" />}
+                    suffix={<Tips type="form" data="elements.project.help" />}
                   />,
                 )}
               </FormItem>
             </Fragment>}
           </Form>
           <div className="c7ncd-elements-test">
-            <Button>
+            <Button
+              funcType="raised"
+              className="c7ncd-elements-test-button"
+              onClick={this.handleTestClick}
+              loading={getTestLoading}
+            >
               <FormattedMessage id="elements.test" />
             </Button>
+            {getTestResult && <div className="c7ncd-elements-test-result">
+              <Icon type={LINK_TEST_ICON[getTestResult]}
+                    className={`c7ncd-elements-test-icon c7ncd-elements-test-icon_${getTestResult}`} />
+              <FormattedMessage id={`elements.link.${getTestResult}`} />
+            </div>}
           </div>
         </Content>
-        <InterceptMask visible={submitting} />
+        <InterceptMask visible={submitting || getTestLoading} />
       </Sidebar>
     );
   }

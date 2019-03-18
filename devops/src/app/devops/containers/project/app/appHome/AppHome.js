@@ -605,22 +605,6 @@ class AppHome extends Component {
     this.setState({ copyFrom: option.key });
   };
 
-  // /**
-  //  * 高级设置-Docker仓库选择
-  //  * @param value
-  //  */
-  // selectChart = value => {
-  //   this.setState({ chartId: value });
-  // };
-  //
-  // /**
-  //  * 高级设置-Helm仓库选择
-  //  * @param value
-  //  */
-  // selectHarbor = value => {
-  //   this.setState({ harborId: value });
-  // };
-
   cbChange = e => {
     this.setState({ checked: e.target.value });
   };
