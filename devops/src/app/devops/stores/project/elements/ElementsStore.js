@@ -182,6 +182,10 @@ class ElementsStore {
     return axios.get(`/devops/v1/projects/${projectId}/project_config/check_name?name=${name}`);
   }
 
+  deleteConfirm(projectId, id) {
+    return axios.get(`/devops/v1/projects/${projectId}/project_config/${id}/check`);
+  }
+
   deleteConfig(projectId, id) {
     return axios.delete(`/devops/v1/projects/${projectId}/project_config/${id}`);
   }
