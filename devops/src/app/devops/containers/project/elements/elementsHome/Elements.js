@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
-import { Button, Table, Tooltip, Modal } from 'choerodon-ui';
+import { Button, Table, Tooltip, Modal, Spin } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import ElementsCreate from '../elementsCreate';
 import { handleCheckerProptError } from '../../../../utils';
+import './Element.scss';
 
 const { AppState } = stores;
 const EDIT_MODE = true;
@@ -34,6 +35,8 @@ class Elements extends Component {
         columnKey: 'id',
         order: 'descend',
       },
+      enableDeleteLoading: false,
+      enableDelete: false,
     };
   }
 
@@ -116,8 +119,31 @@ class Elements extends Component {
     this.setState({ showCreation: false, editMode: false, eleIdForEdit: undefined });
   };
 
-  openRemove(id, name) {
-    this.setState({ deleteId: id, deleteName: name, showDelete: true });
+  async openRemove(id, name) {
+    const { ElementsStore } = this.props;
+    const { id: projectId } = AppState.currentMenuType;
+    this.setState({
+      showDelete: true,
+      enableDeleteLoading: true,
+      enableDelete: false,
+      deleteName: name,
+    });
+    // 检测组件配置是否为可删除的
+    const result = await ElementsStore.deleteConfirm(projectId, id).catch(e => {
+      this.setState({ enableDeleteLoading: false, enableDelete: false });
+    });
+    if (result) {
+      this.setState({
+        deleteId: id,
+        enableDeleteLoading: false,
+        enableDelete: true,
+      });
+    } else {
+      this.setState({
+        enableDeleteLoading: false,
+        enableDelete: false,
+      });
+    }
   }
 
   closeRemove = () => {
@@ -240,7 +266,17 @@ class Elements extends Component {
       organizationId,
       name,
     } = AppState.currentMenuType;
-    const { showCreation, editMode, eleIdForEdit, param, showDelete, deleteLoading, deleteName } = this.state;
+    const {
+      showCreation,
+      editMode,
+      eleIdForEdit,
+      param,
+      showDelete,
+      deleteLoading,
+      deleteName,
+      enableDeleteLoading,
+      enableDelete,
+    } = this.state;
 
     return (
       <Page
@@ -302,23 +338,28 @@ class Elements extends Component {
           visible={showDelete}
           title={`${formatMessage({ id: 'elements.delete' })}“${deleteName}”`}
           closable={false}
-          footer={[
+          footer={!enableDeleteLoading ? [
             <Button key="back" onClick={this.closeRemove} disabled={deleteLoading}>
               {<FormattedMessage id="cancel" />}
             </Button>,
             <Button
               key="submit"
               type="danger"
-              onClick={this.handleDelete}
+              onClick={enableDelete ? this.handleDelete : this.closeRemove}
               loading={deleteLoading}
             >
-              {formatMessage({ id: 'delete' })}
+              {formatMessage({ id: enableDelete ? 'delete' : 'close' })}
             </Button>,
-          ]}
+          ] : null}
         >
-          <div className="c7n-padding-top_8">
-            {formatMessage({ id: 'elements.delete.tooltip' })}
-          </div>
+          {enableDeleteLoading
+            ? <div className="c7ncd-elements-spin">
+              <Spin />
+            </div>
+            : <div className="c7n-padding-top_8">
+              {formatMessage({ id: `elements.delete.${enableDelete ? 'enable' : 'disable'}` })}
+            </div>
+          }
         </Modal>)}
       </Page>
     );
