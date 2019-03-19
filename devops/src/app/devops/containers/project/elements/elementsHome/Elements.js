@@ -290,6 +290,7 @@ class Elements extends Component {
           'devops-service.application.checkChart',
           'devops-service.devops-project-config.queryByPrimaryKey',
           'devops-service.devops-project-config.deleteByProjectConfigId',
+          'devops-service.devops-project-config.checkIsUsed',
         ]}
       >
         <Header title={<FormattedMessage id="elements.head" />}>

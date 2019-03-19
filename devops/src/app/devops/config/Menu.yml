@@ -292,6 +292,7 @@
          - 'devops-service.application.checkChart'
          - 'devops-service.devops-project-config.queryByPrimaryKey'
          - 'devops-service.devops-project-config.deleteByProjectConfigId'
+         - 'devops-service.devops-project-config.checkIsUsed'
 
 # 项目层报表
 "platform-reports":

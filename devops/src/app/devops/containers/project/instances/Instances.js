@@ -293,6 +293,7 @@ class Instances extends Component {
     const { InstancesStore } = this.props;
 
     const envId = EnvOverviewStore.getTpEnvId;
+    clear && InstancesStore.setIstTableFilter(null);
 
     InstancesStore.loadInstanceAll(spin, projectId, { envId, appId }).catch(
       err => {
@@ -300,8 +301,6 @@ class Instances extends Component {
         Choerodon.handleResponseError(err);
       },
     );
-
-    clear && InstancesStore.setIstTableFilter(null);
   };
 
   /**

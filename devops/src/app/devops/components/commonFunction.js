@@ -143,7 +143,7 @@ export const commonComponent = storeName => {
           }
         }
         let searchParam = {};
-        let page = pagination.current - 1;
+        const { current, pageSize } = pagination;
         if (Object.keys(filters).length) {
           searchParam = filters;
         }
@@ -156,8 +156,8 @@ export const commonComponent = storeName => {
           false,
           id,
           envId,
-          page,
-          pagination.pageSize,
+          current - 1,
+          pageSize,
           sort,
           postData
         );
