@@ -154,7 +154,7 @@ class Elements extends Component {
     const _renderName = record => (<FormattedMessage id={`elements.type.${record.type}`} />);
     const _renderOrigin = record => (<FormattedMessage id={`elements.origin.${record.origin}`} />);
     const _renderAction = (record) => {
-      return (<Permission
+      return record.origin === 'project' ? (<Permission
         service={[
           'devops-service.devops-project-config.update',
           'devops-service.devops-project-config.deleteByProjectConfigId',
@@ -189,7 +189,7 @@ class Elements extends Component {
             onClick={() => this.openRemove(record.id, record.name)}
           />
         </Tooltip>
-      </Permission>);
+      </Permission>) : null;
     };
     return [{
       title: <FormattedMessage id="elements.type.columns" />,
@@ -240,7 +240,6 @@ class Elements extends Component {
       organizationId,
       name,
     } = AppState.currentMenuType;
-
     const { showCreation, editMode, eleIdForEdit, param, showDelete, deleteLoading, deleteName } = this.state;
 
     return (

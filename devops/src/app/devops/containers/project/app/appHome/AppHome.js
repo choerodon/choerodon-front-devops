@@ -784,10 +784,12 @@ class AppHome extends Component {
       },
     ];
 
-    const initHarbor = (singleData && singleData.harborConfigId)
-    || getHarborList.length ? getHarborList[0].id : undefined;
-    const initChart = (singleData && singleData.chartConfigId)
-    || getChartList.length ? getChartList[0].id : undefined;
+    let initHarbor = getHarborList.length ? getHarborList[0].id : undefined;
+    let initChart = getChartList.length ? getChartList[0].id : undefined;
+    if (singleData) {
+      initHarbor = singleData.harborConfigId;
+      initChart = singleData.chartConfigId;
+    }
 
     const formContent = (
       <React.Fragment>
@@ -931,7 +933,6 @@ class AppHome extends Component {
                 optionFilterProp="children"
                 label={<FormattedMessage id="app.form.selectDocker" />}
                 getPopupContainer={triggerNode => triggerNode.parentNode}
-                // onChange={this.selectHarbor}
                 filterOption={(input, option) =>
                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
@@ -961,7 +962,6 @@ class AppHome extends Component {
                 optionFilterProp="children"
                 label={<FormattedMessage id="app.form.selectHelm" />}
                 getPopupContainer={triggerNode => triggerNode.parentNode}
-                // onChange={this.selectChart}
                 filterOption={(input, option) =>
                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }

@@ -87,7 +87,6 @@ class AppImport extends Component {
       harborConfigId,
       chartConfigId,
     };
-    console.log(data);
     value.isSkipCheckPermission = isSkipCheckPermission !== 'part';
     value.type = 'normal';
     AppStore.setImportBtnLoading(true);
@@ -101,6 +100,10 @@ class AppImport extends Component {
           history.push(url);
           AppStore.setImportBtnLoading(false);
         }
+      })
+      .catch(e => {
+        Choerodon.prompt(e);
+        AppStore.setImportBtnLoading(false);
       });
   };
 
