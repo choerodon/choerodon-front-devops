@@ -32,8 +32,6 @@ class StepThree extends Component {
       selectedTemp: [],
       selectedRowKeys: this.props.values.userIds || [],
       selected: this.props.values.membersInfo || [],
-      harborId: undefined,
-      chartId: undefined,
     };
   }
 
@@ -57,23 +55,6 @@ class StepThree extends Component {
     });
     this.setState({ selectedRowKeys: keys, selected: s });
   };
-
-  /**
-   * 高级设置-Docker仓库选择
-   * @param value
-   */
-  selectChart = value => {
-    this.setState({ chartId: value });
-  };
-
-  /**
-   * 高级设置-Helm仓库选择
-   * @param value
-   */
-  selectHarbor = value => {
-    this.setState({ harborId: value });
-  };
-
 
   /**
    * table 操作
@@ -109,7 +90,8 @@ class StepThree extends Component {
 
   next = () => {
     const {
-      onNext, store: {
+      onNext,
+      store: {
         getHarborList,
         getChartList,
       },
@@ -150,8 +132,12 @@ class StepThree extends Component {
       },
       intl: { formatMessage },
       form: { getFieldDecorator },
+      values: {
+        harborConfigId,
+        chartConfigId,
+      },
     } = this.props;
-    const { checked, selectedRowKeys, selected, harborId, chartId } = this.state;
+    const { checked, selectedRowKeys, selected } = this.state;
     const tagDom = _.map(selected, t => (
       <Tag className="c7n-import-tag" key={t.iamUserId}>
         {t.loginName} {t.realName}
@@ -161,8 +147,8 @@ class StepThree extends Component {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
-    const initHarbor = harborId || getHarborList.length ? getHarborList[0].id : undefined;
-    const initChart = chartId || getChartList.length ? getChartList[0].id : undefined;
+    const defaultHarbor = getHarborList.length ? getHarborList[0].id : undefined;
+    const defaultChart = getChartList.length ? getChartList[0].id : undefined;
 
     const columns = [
       {
@@ -246,7 +232,7 @@ class StepThree extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('harborConfigId', {
-                initialValue: initHarbor,
+                initialValue: harborConfigId || defaultHarbor,
                 rules: [
                   {
                     required: true,
@@ -261,7 +247,6 @@ class StepThree extends Component {
                   optionFilterProp="children"
                   label={<FormattedMessage id="app.form.selectDocker" />}
                   getPopupContainer={triggerNode => triggerNode.parentNode}
-                  // onChange={this.selectHarbor}
                   filterOption={(input, option) =>
                     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
@@ -277,7 +262,7 @@ class StepThree extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('chartConfigId', {
-                initialValue: initChart,
+                initialValue: chartConfigId || defaultChart,
                 rules: [
                   {
                     required: true,
@@ -291,7 +276,6 @@ class StepThree extends Component {
                   optionFilterProp="children"
                   label={<FormattedMessage id="app.form.selectHelm" />}
                   getPopupContainer={triggerNode => triggerNode.parentNode}
-                  // onChange={this.selectChart}
                   filterOption={(input, option) =>
                     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
