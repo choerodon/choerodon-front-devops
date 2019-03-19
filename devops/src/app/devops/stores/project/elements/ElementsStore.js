@@ -117,30 +117,33 @@ class ElementsStore {
    * 组件配置信息
    * @param projectId
    * @param data
-   * @param mode 创建or编辑
-   * @returns {Req | IDBRequest<IDBValidKey> | Promise<void>}
+   * @param isEdit 创建or编辑
+   * @returns {IDBRequest<IDBValidKey> | Promise<void>}
    */
-  submitConfig(projectId, data, mode) {
+  submitConfig(projectId, data, isEdit) {
     const URL = `/devops/v1/projects/${projectId}/project_config`;
+    const { url, type, userName, password, email, project, name, id, objectVersionNumber } = data;
 
     let config = {
-      url: data.url,
+      url,
     };
     if (data.type === 'harbor') {
       config = {
         ...config,
-        userName: data.userName,
-        password: data.password,
-        email: data.email,
-        project: data.project || null,
+        userName,
+        password,
+        email,
+        project: project || null,
       };
     }
     const body = {
-      name: data.name,
-      type: data.type,
-      config: config,
+      name,
+      type,
+      config,
+      ...(isEdit ? { id, objectVersionNumber } : {}),
     };
-    return !mode ? axios.post(URL, JSON.stringify(body)) : axios.put(URL, JSON.stringify(body));
+
+    return !isEdit ? axios.post(URL, JSON.stringify(body)) : axios.put(URL, JSON.stringify(body));
   }
 
   checkRepoLinkRequest(projectId, data, type) {
