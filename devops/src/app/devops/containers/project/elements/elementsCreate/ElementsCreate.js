@@ -129,9 +129,9 @@ class ElementsCreate extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form: { validateFieldsAndScroll }, store, isEditMode } = this.props;
+    const { form: { validateFieldsAndScroll }, store, isEditMode, id } = this.props;
     const { id: projectId } = AppState.currentMenuType;
-    const { type: currentType } = store.getConfig;
+    const { type: currentType, objectVersionNumber } = store.getConfig;
     const type = currentType || this.state.type;
 
     this.setState({ submitting: true });
@@ -145,7 +145,12 @@ class ElementsCreate extends Component {
           if (result) {
             store.setTestLoading(false);
             store.setTestResult('pass');
-            const submitResponse = await store.submitConfig(projectId, values, isEditMode);
+            const config = {
+              ...values,
+              id,
+              objectVersionNumber,
+            };
+            const submitResponse = await store.submitConfig(projectId, config, isEditMode);
             this.setState({ submitting: false });
             const submitResult = handleProptError(submitResponse);
             if (submitResult) {

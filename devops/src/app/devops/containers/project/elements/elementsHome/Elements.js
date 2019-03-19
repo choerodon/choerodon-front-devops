@@ -155,7 +155,10 @@ class Elements extends Component {
     const _renderOrigin = record => (<FormattedMessage id={`elements.origin.${record.origin}`} />);
     const _renderAction = (record) => {
       return (<Permission
-        service={['devops-service.devops-project-config.pageByOptions']}
+        service={[
+          'devops-service.devops-project-config.update',
+          'devops-service.devops-project-config.deleteByProjectConfigId',
+        ]}
         type={type}
         projectId={projectId}
         organizationId={organizationId}
@@ -243,12 +246,21 @@ class Elements extends Component {
     return (
       <Page
         className="c7n-region"
-        service={['devops-service.devops-project-config.pageByOptions']}
+        service={[
+          'devops-service.devops-project-config.pageByOptions',
+          'devops-service.devops-project-config.update',
+          'devops-service.devops-project-config.create',
+          'devops-service.devops-project-config.checkName',
+          'devops-service.application.checkHarbor',
+          'devops-service.application.checkChart',
+          'devops-service.devops-project-config.queryByPrimaryKey',
+          'devops-service.devops-project-config.deleteByProjectConfigId',
+        ]}
       >
         <Header title={<FormattedMessage id="elements.head" />}>
 
           <Permission
-            service={['devops-service.devops-project-config.pageByOptions']}
+            service={['devops-service.devops-project-config.create']}
             type={type}
             projectId={projectId}
             organizationId={organizationId}
@@ -261,19 +273,12 @@ class Elements extends Component {
               <FormattedMessage id="elements.header.create" />
             </Button>
           </Permission>
-          <Permission
-            service={['devops-service.devops-project-config.pageByOptions']}
-            type={type}
-            projectId={projectId}
-            organizationId={organizationId}
+          <Button
+            icon='refresh'
+            onClick={this.handleRefresh}
           >
-            <Button
-              icon='refresh'
-              onClick={this.handleRefresh}
-            >
-              <FormattedMessage id="refresh" />
-            </Button>
-          </Permission>
+            <FormattedMessage id="refresh" />
+          </Button>
         </Header>
         <Content code="elements" values={{ name }}>
           <Table
