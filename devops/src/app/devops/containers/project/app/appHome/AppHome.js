@@ -241,7 +241,7 @@ class AppHome extends Component {
                 </a>
               </Tooltip>
             ) : null}
-            {!record.fail ? (
+            {!record.fail && (
               <Fragment>
                 <Permission
                   type={type}
@@ -338,25 +338,6 @@ class AppHome extends Component {
                   </Tooltip>
                 </Permission>
               </Fragment>
-            ) : (
-              <Permission
-                type={type}
-                projectId={projectId}
-                organizationId={orgId}
-                service={['devops-service.application.deleteByAppId']}
-              >
-                <Tooltip
-                  placement="bottom"
-                  title={<FormattedMessage id="delete" />}
-                >
-                  <Button
-                    icon="delete_forever"
-                    shape="circle"
-                    size="small"
-                    onClick={this.openRemove.bind(this, record.id, record.name)}
-                  />
-                </Tooltip>
-              </Permission>
             )}
           </Fragment>
         ),
@@ -416,28 +397,6 @@ class AppHome extends Component {
         this.loadAllData(this.state.page);
       }
     });
-  };
-
-  /**
-   * 删除应用
-   * @param id
-   */
-  deleteApp = id => {
-    const { AppStore } = this.props;
-    const { projectId } = this.state;
-    this.setState({ submitting: true });
-    AppStore.deleteApps(projectId, id)
-      .then(() => {
-        this.loadAllData(this.state.page);
-        this.setState({
-          submitting: false,
-          openRemove: false,
-        });
-      })
-      .catch(err => {
-        this.setState({ submitting: false });
-        Choerodon.handleResponseError(err);
-      });
   };
 
   /**
@@ -725,8 +684,6 @@ class AppHome extends Component {
       type: modeType,
       show,
       submitting,
-      openRemove,
-      name: delName,
       id,
       checked,
       createSelectedRowKeys,
@@ -1121,29 +1078,6 @@ class AppHome extends Component {
             </Content>
           </Fragment>
         )}
-        <Modal
-          confirmLoading={submitting}
-          visible={openRemove}
-          title={`${formatMessage({ id: 'app.delete' })}“${delName}”`}
-          closable={false}
-          footer={[
-            <Button key="back" onClick={this.closeRemove} disabled={submitting}>
-              {<FormattedMessage id="cancel" />}
-            </Button>,
-            <Button
-              key="submit"
-              type="danger"
-              onClick={this.deleteApp.bind(this, id)}
-              loading={submitting}
-            >
-              {formatMessage({ id: 'delete' })}
-            </Button>,
-          ]}
-        >
-          <div className="c7n-padding-top_8">
-            {formatMessage({ id: 'app.delete.tooltip' })}
-          </div>
-        </Modal>
       </Page>
     );
   }
