@@ -787,8 +787,11 @@ class AppHome extends Component {
     let initHarbor = getHarborList.length ? getHarborList[0].id : undefined;
     let initChart = getChartList.length ? getChartList[0].id : undefined;
     if (singleData) {
-      initHarbor = singleData.harborConfigId;
-      initChart = singleData.chartConfigId;
+      const { harborConfigId, chartConfigId } = singleData;
+      const hasHarbor = _.find(getHarborList, ['id', harborConfigId]);
+      const hasChart = _.find(getChartList, ['id', chartConfigId]);
+      initHarbor = hasHarbor ? harborConfigId : undefined;
+      initChart = hasChart ? chartConfigId : undefined;
     }
 
     const formContent = (
