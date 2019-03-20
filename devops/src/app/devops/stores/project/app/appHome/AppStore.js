@@ -273,12 +273,6 @@ class AppStore {
         return res;
       });
 
-  deleteApps = (projectId, id) =>
-    axios.delete(`/devops/v1/projects/${projectId}/apps/${id}`).then(datas => {
-      const res = handleProptError(datas);
-      return res;
-    });
-
   /**
    * 分页查询项目下用户权限
    * @param projectId
