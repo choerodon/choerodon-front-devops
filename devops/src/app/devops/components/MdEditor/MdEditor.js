@@ -6,7 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import { Tabs, Button } from 'choerodon-ui';
 import 'codemirror/lib/codemirror.css';
 import './MdEditor.scss';
-import './default.css';
+import './preview.css';
 
 require('codemirror/mode/markdown/markdown');
 
@@ -32,8 +32,24 @@ class MdEditor extends Component {
 
   options = {
     lineNumbers: false,
+    lineWrapping: true,
     readOnly: false,
     mode: 'markdown',
+  };
+
+  onChange = (values) => {
+    const { onChange } = this.props;
+    onChange(values);
+
+    try {
+      const editor = this.mdEditor.getCodeMirror();
+      const height = editor.getDoc().height;
+      setTimeout(() => {
+        editor.setSize('100%', height);
+      }, 0);
+    } catch (e) {
+      throw new Error(e);
+    }
   };
 
   /**
@@ -46,10 +62,15 @@ class MdEditor extends Component {
    * 编辑框尺寸
    * @param flag
    */
-  handleBoxSize = flag => this.setState({ isExpand: flag });
+  handleBoxSize = flag => {
+    this.setState({ isExpand: flag }, () => {
+      const editor = this.mdEditor.getCodeMirror();
+      editor.setSize('100%', editor.getDoc().height);
+    });
+  };
 
   render() {
-    const { intl: { formatMessage }, value, onChange } = this.props;
+    const { intl: { formatMessage }, value } = this.props;
     const { isExpand, tabKey } = this.state;
     const operations = <Button
       icon={isExpand ? 'first_page' : 'last_page'}
@@ -68,9 +89,12 @@ class MdEditor extends Component {
           <TabPane tab={formatMessage({ id: 'write' })} key="write">
             <div className="c7n-md-placeholder">{formatMessage({ id: 'md.placeholder' })}</div>
             <ReactCodeMirror
+              ref={cm => {
+                this.mdEditor = cm;
+              }}
               options={this.options}
               value={value}
-              onChange={onChange}
+              onChange={this.onChange}
             />
           </TabPane>
           <TabPane tab={formatMessage({ id: 'preview' })} key="preview">

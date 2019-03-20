@@ -9,7 +9,7 @@ import _ from 'lodash';
 import LoadingBar from '../../../../components/loadingBar';
 import './AppDetail.scss';
 import '../../../main.scss';
-import '../../../../components/MdEditor/default.css';
+import '../../../../components/MdEditor/preview.css';
 
 const Option = Select.Option;
 

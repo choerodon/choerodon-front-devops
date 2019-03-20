@@ -237,14 +237,17 @@ class AutoDeployCreate extends Component {
     if (!appId) {
       return;
     }
-    let istName = null;
     let istId = null;
     let newMode = "new";
     let val = null;
+
     const appData = store.getHasVersionApp;
-    const appCode = (_.find(appData, app => app.id === appId)).code;
-    istName = `${appCode}-${uuidv1().substring(0, 5)}`;
+    const currentApp = _.find(appData, app => app.id === appId);
+    const appCode = currentApp ? currentApp.code : '';
+    let istName = appCode ? `${appCode.substring(0, 24)}-${uuidv1().substring(0, 5)}` : uuidv1().substring(0, 30);
+
     (app !== appId || env !== envId) && store.loadValue(projectId, appId);
+
     if (appId && envId) {
       store.loadInstances(projectId, envId, appId);
       if (env === envId && app === appId) {
@@ -289,8 +292,10 @@ class AutoDeployCreate extends Component {
     const { appId } = this.state;
     if (value === "new") {
       const appData = store.getHasVersionApp;
-      const appCode = (_.find(appData, app => app.id === appId)).code;
-      const istName = `${appCode}-${uuidv1().substring(0, 5)}`;
+      const currentApp = _.find(appData, app => app.id === appId);
+      const appCode = currentApp ? currentApp.code : '';
+      const istName = appCode ? `${appCode.substring(0, 24)}-${uuidv1().substring(0, 5)}` : uuidv1().substring(0, 30);
+
       this.setState({
         instanceName: istName,
         instanceId: null,

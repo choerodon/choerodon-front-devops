@@ -397,7 +397,7 @@ class AutoDeploy extends Component {
       <Page
         className="c7n-region"
         service={[
-          "devops-service.devops-auto-deploy.create",
+          "devops-service.devops-auto-deploy.createOrUpdate",
           "devops-service.devops-auto-deploy.pageByOptions",
           "devops-service.devops-auto-deploy.deleteById",
           "devops-service.devops-environment.listByProjectIdAndActive",
@@ -413,10 +413,10 @@ class AutoDeploy extends Component {
             title={<FormattedMessage id="autoDeploy.header" />}
           >
             <Permission
-              service={["devops-service.devops-auto-deploy.create"]}
-              type={type}
-              projectId={projectId}
+              service={["devops-service.devops-auto-deploy.createOrUpdate"]}
               organizationId={orgId}
+              projectId={projectId}
+              type={type}
             >
               <Button
                 onClick={this.showSidebar.bind(this, 'create')}

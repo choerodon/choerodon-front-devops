@@ -585,7 +585,7 @@ class AppHome extends Component {
     if (type === 'create') {
       AppStore.setSingleData(null);
       AppStore.loadSelectData(projectId);
-      this.setState({ show: true, type });
+      this.setState({ checked: true, show: true, type });
     } else {
       AppStore.loadDataById(projectId, id).then(data => {
         if (data && data.failed) {
