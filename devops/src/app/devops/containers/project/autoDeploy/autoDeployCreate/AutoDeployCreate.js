@@ -164,7 +164,7 @@ class AutoDeployCreate extends Component {
     const { projectId } = AppState.currentMenuType;
     const {
       changedValue,
-      singleTask: { value, objectVersionNumber },
+      singleTask: { value, objectVersionNumber, isEnabled },
       instanceId,
       instanceName,
     } = this.state;
@@ -177,6 +177,7 @@ class AutoDeployCreate extends Component {
         data.instanceId = instanceId;
         if (sidebarType === 'edit') {
           data.id = id;
+          data.isEnabled = isEnabled;
           data.objectVersionNumber = objectVersionNumber;
         }
         const promise = store.createData(projectId, data);
