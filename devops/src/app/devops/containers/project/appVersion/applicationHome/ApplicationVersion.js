@@ -30,7 +30,7 @@ class ApplicationVersion extends Component {
         columnKey: 'id',
         order: 'descend',
       },
-      appId: null,
+      appId: undefined,
     };
   }
 
@@ -158,8 +158,9 @@ class ApplicationVersion extends Component {
               value={appId}
               label={this.props.intl.formatMessage({ id: 'chooseApp' })}
               filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-              filter
               onChange={this.handleAppSelect}
+              allowClear
+              filter
             >
               {
                 _.map(appData, app =>
