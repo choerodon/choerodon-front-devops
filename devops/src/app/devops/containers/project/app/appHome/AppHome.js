@@ -743,7 +743,7 @@ class AppHome extends Component {
 
     let initHarbor = getHarborList.length ? getHarborList[0].id : undefined;
     let initChart = getChartList.length ? getChartList[0].id : undefined;
-    if (singleData) {
+    if (singleData && singleData.gitlabProjectId) {
       const { harborConfigId, chartConfigId } = singleData;
       const hasHarbor = _.find(getHarborList, ['id', harborConfigId]);
       const hasChart = _.find(getChartList, ['id', chartConfigId]);
@@ -863,80 +863,82 @@ class AppHome extends Component {
             </div>
           )}
         </Form>
-        <div className="c7n-env-tag-title">
-          <FormattedMessage id="app.config" />
-          <Popover
-            overlayStyle={{ maxWidth: '350px' }}
-            content={formatMessage({ id: 'app.config.help' })}
-          >
-            <Icon type="help" />
-          </Popover>
-        </div>
-        <div className="c7n-app-config-panel">
-          <FormItem
-            className="c7n-select_480"
-            {...formItemLayout}
-          >
-            {getFieldDecorator('harborConfigId', {
-              initialValue: initHarbor,
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage({ id: 'required' }),
-                },
-              ],
-            })(
-              <Select
-                filter
-                showSearch
-                className="c7n-select_480"
-                optionFilterProp="children"
-                label={<FormattedMessage id="app.form.selectDocker" />}
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-                filterOption={(input, option) =>
-                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
-              >
-                {_.map(getHarborList, item => (<Option value={item.id} key={item.id}>
-                  {item.name}
-                </Option>))}
-              </Select>,
-            )}
-          </FormItem>
-          <FormItem
-            className="c7n-select_480"
-            {...formItemLayout}
-          >
-            {getFieldDecorator('chartConfigId', {
-              initialValue: initChart,
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage({ id: 'required' }),
-                },
-              ],
-            })(
-              <Select
-                filter
-                className="c7n-select_480"
-                optionFilterProp="children"
-                label={<FormattedMessage id="app.form.selectHelm" />}
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-                filterOption={(input, option) =>
-                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
-              >
-                {_.map(getChartList, item => (<Option value={item.id} key={item.id}>
-                  {item.name}
-                </Option>))}
-              </Select>,
-            )}
-          </FormItem>
-        </div>
-        <div className="c7n-app-config-warn">
-          <Icon type="error" className="c7n-app-config-warn-icon" />
-          <FormattedMessage id="app.config.warn" />
-        </div>
+        {(singleData && singleData.gitlabProjectId || modeType === 'create') ? (<Fragment>
+          <div className="c7n-env-tag-title">
+            <FormattedMessage id="app.config" />
+            <Popover
+              overlayStyle={{ maxWidth: '350px' }}
+              content={formatMessage({ id: 'app.config.help' })}
+            >
+              <Icon type="help" />
+            </Popover>
+          </div>
+          <div className="c7n-app-config-panel">
+            <FormItem
+              className="c7n-select_480"
+              {...formItemLayout}
+            >
+              {getFieldDecorator('harborConfigId', {
+                initialValue: initHarbor,
+                rules: [
+                  {
+                    required: true,
+                    message: formatMessage({ id: 'required' }),
+                  },
+                ],
+              })(
+                <Select
+                  filter
+                  showSearch
+                  className="c7n-select_480"
+                  optionFilterProp="children"
+                  label={<FormattedMessage id="app.form.selectDocker" />}
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {_.map(getHarborList, item => (<Option value={item.id} key={item.id}>
+                    {item.name}
+                  </Option>))}
+                </Select>,
+              )}
+            </FormItem>
+            <FormItem
+              className="c7n-select_480"
+              {...formItemLayout}
+            >
+              {getFieldDecorator('chartConfigId', {
+                initialValue: initChart,
+                rules: [
+                  {
+                    required: true,
+                    message: formatMessage({ id: 'required' }),
+                  },
+                ],
+              })(
+                <Select
+                  filter
+                  className="c7n-select_480"
+                  optionFilterProp="children"
+                  label={<FormattedMessage id="app.form.selectHelm" />}
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {_.map(getChartList, item => (<Option value={item.id} key={item.id}>
+                    {item.name}
+                  </Option>))}
+                </Select>,
+              )}
+            </FormItem>
+          </div>
+          <div className="c7n-app-config-warn">
+            <Icon type="error" className="c7n-app-config-warn-icon" />
+            <FormattedMessage id="app.config.warn" />
+          </div>
+        </Fragment>) : null}
         <div className="c7n-env-tag-title">
           <FormattedMessage id="app.authority" />
           <Popover

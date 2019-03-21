@@ -465,7 +465,7 @@ class NetworkHome extends Component {
         render: record => (
           <StatusIcon
             name={record.name}
-            status={record.commandStatus || ""}
+            status={record.status || ""}
             error={record.error || ""}
           />
         ),
