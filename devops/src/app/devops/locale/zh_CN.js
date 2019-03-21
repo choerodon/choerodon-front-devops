@@ -1523,6 +1523,8 @@ const zhCN = {
     "若选择新建实例，那么在第一次执行该条自动部署任务时，会在所选环境中新建一个实例，而后续执行该条自动部署任务时，均会默认在此实例上进行升级或更新；若选择替换实例，首先需要满足所选应用在所选环境中存在实例，而选中要替换的目标实例后，后续的自动部署便会直接在此实例上进行升级或更新。",
   "autoDeploy.replace.instance.tips":
     "替换实例会更新该实例的镜像及配置信息，请确认要替换的实例选择无误。",
+  "autoDeploy.task.status": "任务状态",
+  "autoDeploy.no.instance": "未生成实例",
   "autoDeploy.status.deleted": "已删除",
   "autoDeploy.status.running": "执行中",
   "autoDeploy.status.failed": "失败",
