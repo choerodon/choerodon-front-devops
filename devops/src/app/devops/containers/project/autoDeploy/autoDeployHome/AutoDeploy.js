@@ -48,9 +48,10 @@ class AutoDeploy extends Component {
   componentDidMount() {
     const { AutoDeployStore } = this.props;
     const { projectId } = AppState.currentMenuType;
+    const { id: userId } = AppState.userInfo;
     DeploymentPipelineStore.loadActiveEnv(projectId);
     AutoDeployStore.loadAppData(projectId);
-    AutoDeployStore.loadTaskList({ projectId });
+    AutoDeployStore.loadTaskList({ projectId, userId });
   }
 
   componentWillUnmount() {
@@ -85,13 +86,14 @@ class AutoDeploy extends Component {
     if (flag) {
       const { AutoDeployStore } = this.props;
       const { projectId } = AppState.currentMenuType;
+      const { id: userId } = AppState.userInfo;
       const { envId, appId } = this.state;
       AutoDeployStore.setInfo({
         filters: {},
         sort: { columnKey: "", order: "descend" },
         paras: [],
       });
-      AutoDeployStore.loadTaskList({ projectId, envId, appId });
+      AutoDeployStore.loadTaskList({ projectId, userId, envId, appId });
     }
     this.setState({ type: null, id: null, name: null });
   };
@@ -124,6 +126,7 @@ class AutoDeploy extends Component {
     const {
       projectId,
     } = AppState.currentMenuType;
+    const { id: userId } = AppState.userInfo;
     const { appId, envId } = this.state;
     AutoDeployStore.setInfo({ filters, sort: sorter, paras });
     const sort = { field: "", order: "desc" };
@@ -145,6 +148,7 @@ class AutoDeploy extends Component {
     };
     AutoDeployStore.loadTaskList({
       projectId,
+      userId,
       envId,
       appId,
       page: pagination.current - 1,
@@ -239,7 +243,7 @@ class AutoDeploy extends Component {
               type={type}
               projectId={projectId}
               organizationId={organizationId}
-              service={['devops-service.devops-auto-deploy.create']}>
+              service={['devops-service.devops-auto-deploy.createOrUpdate']}>
               <Tooltip
                 placement="bottom"
                 title={<FormattedMessage id="edit" />}
