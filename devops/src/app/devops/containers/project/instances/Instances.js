@@ -50,13 +50,9 @@ class Instances extends Component {
       const {history: {location: {state}}} = this.props;
       if (state) {
         const {envId, appId} = state;
+        EnvOverviewStore.setTpEnvId(envId);
         InstancesStore.loadAppNameByEnv(projectId, envId, 0, HEIGHT < 900 ? 10 : 15, appId);
         EnvOverviewStore.loadActiveEnv(projectId)
-          .then(res => {
-            if (res && !res.failed) {
-              EnvOverviewStore.setTpEnvId(envId);
-            }
-          });
         this.loadDetail(appId);
         InstancesStore.setIsCache({appId})
       } else {

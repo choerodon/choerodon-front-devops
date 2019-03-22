@@ -11,6 +11,7 @@ import {
   Form,
   Input,
   Radio,
+  Spin
 } from "choerodon-ui";
 import {
   Content,
@@ -164,7 +165,7 @@ class AutoDeployCreate extends Component {
     const { projectId } = AppState.currentMenuType;
     const {
       changedValue,
-      singleTask: { value, objectVersionNumber },
+      singleTask: { value, objectVersionNumber, isEnabled },
       instanceId,
       instanceName,
     } = this.state;
@@ -177,6 +178,7 @@ class AutoDeployCreate extends Component {
         data.instanceId = instanceId;
         if (sidebarType === 'edit') {
           data.id = id;
+          data.isEnabled = isEnabled;
           data.objectVersionNumber = objectVersionNumber;
         }
         const promise = store.createData(projectId, data);
@@ -388,6 +390,7 @@ class AutoDeployCreate extends Component {
     const appData = store.getHasVersionApp;
     const envData = store.getEnvData;
     const instanceList = store.getInstanceList;
+    const loading = store.getValueLoading;
 
     return (
       <div className="c7n-region">
@@ -401,7 +404,7 @@ class AutoDeployCreate extends Component {
               funcType="raised"
               onClick={this.handleSubmit}
               loading={submitting}
-              disabled={hasEditorError}
+              disabled={hasEditorError || loading}
             >
               {sidebarType === "create"
                 ? formatMessage({ id: "create" })
@@ -660,7 +663,7 @@ class AutoDeployCreate extends Component {
               <div className="c7n-autoDeploy-config">
                 <FormattedMessage id="deploy.step.two.config" />
               </div>
-              {this.getYaml()}
+              {loading ? <Spin /> : this.getYaml()}
             </Form>
           </Content>
         </Sidebar>

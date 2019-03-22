@@ -148,7 +148,7 @@ class AutoDeployRecord extends Component {
         filteredValue: filters.taskName || [],
       },
       {
-        title: <FormattedMessage id="status" />,
+        title: <FormattedMessage id="autoDeploy.task.status" />,
         key: "status",
         dataIndex: "status",
         render: text => (
@@ -191,10 +191,8 @@ class AutoDeployRecord extends Component {
         key: "instanceName",
         render: (text, record) => {
           const { appId, envId, instanceStatus } = record;
-          return (instanceStatus === "deleted" ? (
-            <div className="c7n-autodDeploy-record-deleted">
-              <FormattedMessage id="deleted" />
-            </div>
+          return (instanceStatus ? (instanceStatus === "deleted" ? (
+            <FormattedMessage id="network.ist.deleted" />
           ) : (
             <Link
               to={{
@@ -205,7 +203,7 @@ class AutoDeployRecord extends Component {
             >
               <span>{text}</span>
             </Link>
-          ))
+          )) : (<FormattedMessage id="autoDeploy.no.instance" />))
         },
       },
       {
