@@ -214,7 +214,7 @@ class CiPipelineTable extends Component {
   };
 
   renderSign = (id, record) => (
-    <div className="c7n-sign">
+    <div className="c7n-cipip-sign">
       <div className="c7n-des-sign">
         <span>
           <a

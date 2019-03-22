@@ -21,6 +21,7 @@ import InstancesStore from '../../../stores/project/instances/InstancesStore';
 import EnvOverviewStore from '../../../stores/project/envOverview';
 import '../../main.scss';
 import './Instances.scss';
+import { commonComponent } from '../../../components/commonFunction';
 
 const Option = Select.Option;
 const { AppState } = stores;
@@ -239,6 +240,8 @@ class Instances extends Component {
 
     InstancesStore.setValue(null);
     try {
+      // 升级失败仍要传入 commandVersionId，勿修改
+      // 升级失败，但是新版本的逻辑已经存在于后端
       const update = await InstancesStore.loadUpVersion(projectId, commandVersionId);
       const result = handleProptError(update);
       if (result) {

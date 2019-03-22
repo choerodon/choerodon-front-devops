@@ -25,7 +25,13 @@ function findDataIndex(collection, value) {
   ) : -1;
 }
 
-// 保留多少recent内容,更新最新顺序
+/**
+ * 置顶最近使用过的数据项
+ * @param collection 所有数据
+ * @param value 当前数据项
+ * @param number 显示最近使用的条数
+ * @returns {*[]}
+ */
 function saveRecent(collection = [], value, number) {
   const index = findDataIndex(collection, value);
   if (index !== -1) {
@@ -84,9 +90,13 @@ class DevPipelineStore {
     } else if (localStorage.recentApp) {
       recents = JSON.parse(localStorage.recentApp);
     }
-    const permissionApp = this.appData.filter(value => value.permission === true);
-    return permissionApp.filter(
-      value => findDataIndex(recents, value) !== -1,
+    const permissionApp = _.filter(
+      this.appData,
+      value => value.permission === true
+    );
+    return _.filter(
+      permissionApp,
+      value => findDataIndex(recents, value) !== -1
     );
   }
 
