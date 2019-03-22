@@ -98,7 +98,7 @@ class MdEditor extends Component {
             />
           </TabPane>
           <TabPane tab={formatMessage({ id: 'preview' })} key="preview">
-            <div className="c7n-md-parse c7n-md-preview">
+            <div className="c7n-md-parse c7n-md-preview c7n-md-preview-box">
               <ReactMarkdown
                 source={value || formatMessage({ id: 'noContent' })}
                 skipHtml={false}

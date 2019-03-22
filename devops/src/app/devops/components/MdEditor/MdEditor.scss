@@ -29,7 +29,10 @@
   margin-bottom: -30px;
   padding-left: 10px;
   padding-bottom: 30px;
-  min-height: 330px;
+
+  &.c7n-md-preview-box {
+    min-height: 330px;
+  }
 
   p {
     margin-top: 0;
