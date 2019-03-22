@@ -341,3 +341,15 @@
 .c7n-md-parse table tr:nth-child(2n) {
   background: #f6f8fa;
 }
+
+.c7n-md-parse ul {
+  list-style: disc;
+}
+
+.c7n-md-parse ul ul {
+  list-style: circle;
+}
+
+.c7n-md-parse ul ul ul {
+  list-style: square;
+}
