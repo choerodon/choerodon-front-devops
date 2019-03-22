@@ -18,6 +18,8 @@ class AutoDeployStore {
 
   @observable recordLoading = false;
 
+  @observable valueLoading = false;
+
   @observable value = null;
 
   @observable pageInfo = {
@@ -110,6 +112,14 @@ class AutoDeployStore {
 
   @computed get getRecordLoading() {
     return this.recordLoading;
+  }
+
+  @action changeValueLoading(flag) {
+    this.valueLoading = flag;
+  }
+
+  @computed get getValueLoading() {
+    return this.valueLoading;
   }
 
   @action setValue(data) {
@@ -313,14 +323,17 @@ class AutoDeployStore {
   /**
    ** 查询配置信息
    */
-  loadValue = (projectId, appId) =>
-    axios.get(`/devops/v1/projects/${projectId}/app_versions/value?app_id=${appId}`)
+  loadValue = (projectId, appId) => {
+    this.changeValueLoading(true);
+    return axios.get(`/devops/v1/projects/${projectId}/app_versions/value?app_id=${appId}`)
       .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.setValue(res);
         }
+        this.changeValueLoading(false);
       });
+  };
 
   /**
    ** 查询应用在该环境中运行或失败的实例
