@@ -12,7 +12,7 @@ import './Cluster.scss';
 import '../../../project/envPipeline/EnvPipeLineHome.scss';
 import '../../../main.scss';
 import '../../../../components/DepPipelineEmpty/DepPipelineEmpty.scss';
-import InterceptMask from "../../../../components/interceptMask/InterceptMask";
+import InterceptMask from '../../../../components/interceptMask/InterceptMask';
 
 const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
@@ -129,7 +129,7 @@ class Cluster extends Component {
     this.setState({ createSelectedTemp: a });
     _.map(keys, o => {
       if (_.filter(a, ['id', o]).length) {
-        s.push(_.filter(a, ['id', o])[0])
+        s.push(_.filter(a, ['id', o])[0]);
       }
     });
     this.setState({
@@ -153,7 +153,7 @@ class Cluster extends Component {
     this.setState({ selected: a });
     _.map(keys, o => {
       if (_.filter(a, ['id', o]).length) {
-        s.push(_.filter(a, ['id', o])[0])
+        s.push(_.filter(a, ['id', o])[0]);
       }
     });
     ClusterStore.setTagKeys(s);
@@ -219,7 +219,7 @@ class Cluster extends Component {
           Choerodon.prompt(data.message);
           this.setState({
             btnLoading: false,
-          })
+          });
         } else {
           this.setState({
             delId: null,
@@ -231,9 +231,9 @@ class Cluster extends Component {
             } else {
               this.loadCluster(this.state.page, this.state.size);
             }
-          })
+          });
         }
-      })
+      });
   };
 
   /**
@@ -267,14 +267,14 @@ class Cluster extends Component {
           delId: id,
           showDel: true,
           clsName: name,
-        })
+        });
       }
     });
   };
 
   getClusterList = () => {
     const { ClusterStore } = this.props;
-    const  { getData: clusters, getNodeData } = ClusterStore;
+    const { getData: clusters, getNodeData } = ClusterStore;
 
     return _.map(clusters, (cluster) => {
       const { id, connect, nodes } = cluster;
@@ -290,7 +290,7 @@ class Cluster extends Component {
         showMore={this.showMore}
         delClusterShow={this.delClusterShow}
         showSideBar={this.showSideBar}
-      />
+      />;
     });
   };
 
@@ -318,27 +318,27 @@ class Cluster extends Component {
       selectedRowKeys: _.map(tagKeys, s => s.id),
       onChange: this.onSelectChange,
     };
-    const tagCreateDom = _.map(createSelected, t => <Tag className="c7n-env-tag" key={t.id} >{t.name} {t.code}</Tag >);
+    const tagCreateDom = _.map(createSelected, t => <Tag className="c7n-env-tag" key={t.id}>{t.name} {t.code}</Tag>);
     const tagDom = _.map(tagKeys, (t) => {
       if (t) {
-        return <Tag className="c7n-env-tag" key={t.id} >{t.name} {t.code}</Tag >;
+        return <Tag className="c7n-env-tag" key={t.id}>{t.name} {t.code}</Tag>;
       }
       return null;
     });
-    const suffix = (<Tooltip placement="right" trigger="hover" title={copyMsg} >
-      <div onMouseEnter={this.mouseEnter} >
-        <CopyToBoard text={token} onCopy={this.handleCopy} >
+    const suffix = (<Tooltip placement="right" trigger="hover" title={copyMsg}>
+      <div onMouseEnter={this.mouseEnter}>
+        <CopyToBoard text={token} onCopy={this.handleCopy}>
           <i className="icon icon-library_books" />
-        </CopyToBoard >
-      </div >
-    </Tooltip >);
-    const suffix_key = (<Tooltip placement="right" trigger="hover" title={copyMsg} >
-      <div onMouseEnter={this.mouseEnter} >
-        <CopyToBoard text={shell} onCopy={this.handleCopy} >
+        </CopyToBoard>
+      </div>
+    </Tooltip>);
+    const suffix_key = (<Tooltip placement="right" trigger="hover" title={copyMsg}>
+      <div onMouseEnter={this.mouseEnter}>
+        <CopyToBoard text={shell} onCopy={this.handleCopy}>
           <i className="icon icon-library_books" />
-        </CopyToBoard >
-      </div >
-    </Tooltip >);
+        </CopyToBoard>
+      </div>
+    </Tooltip>);
     const columns = [{
       key: 'name',
       title: formatMessage({ id: 'cluster.project.name' }),
@@ -352,8 +352,8 @@ class Cluster extends Component {
     let formContent = null;
     switch (sideType) {
       case 'create':
-        formContent = (<div >
-          <Form className="c7n-sidebar-form" layout="vertical" >
+        formContent = (<div>
+          <Form className="c7n-sidebar-form" layout="vertical">
             <FormItem
               {...formItemLayout}
             >
@@ -370,7 +370,7 @@ class Cluster extends Component {
                   label={<FormattedMessage id="cluster.code" />}
                 />,
               )}
-            </FormItem >
+            </FormItem>
             <FormItem
               {...formItemLayout}
             >
@@ -387,7 +387,7 @@ class Cluster extends Component {
                   label={<FormattedMessage id="cluster.name" />}
                 />,
               )}
-            </FormItem >
+            </FormItem>
             <FormItem
               {...formItemLayout}
             >
@@ -398,26 +398,26 @@ class Cluster extends Component {
                   label={<FormattedMessage id="cluster.des" />}
                 />,
               )}
-            </FormItem >
-          </Form >
-          <div className="c7n-env-tag-title" >
+            </FormItem>
+          </Form>
+          <div className="c7n-env-tag-title">
             <FormattedMessage id="cluster.authority" />
             <Popover
               overlayStyle={{ maxWidth: '350px' }}
               content={formatMessage({ id: 'cluster.authority.help' })}
             >
               <Icon type="help" />
-            </Popover >
-          </div >
-          <div className="c7n-cls-radio" >
+            </Popover>
+          </div>
+          <div className="c7n-cls-radio">
             <RadioGroup label={<FormattedMessage id="cluster.public" />}
-                        onChange={this.cbChange} value={checked} >
-              <Radio value={true} ><FormattedMessage id="cluster.project.all" /></Radio >
-              <Radio value={false} ><FormattedMessage id="cluster.project.part" /></Radio >
-            </RadioGroup >
-          </div >
-          {checked ? null : <div >
-            <div className="c7n-sidebar-form" >
+                        onChange={this.cbChange} value={checked}>
+              <Radio value={true}><FormattedMessage id="cluster.project.all" /></Radio>
+              <Radio value={false}><FormattedMessage id="cluster.project.part" /></Radio>
+            </RadioGroup>
+          </div>
+          {checked ? null : <div>
+            <div className="c7n-sidebar-form">
               <Table
                 rowSelection={rowCreateSelection}
                 columns={columns}
@@ -429,19 +429,19 @@ class Cluster extends Component {
                 rowKey={record => record.id}
                 filters={paras.slice()}
               />
-            </div >
-            <div className="c7n-env-tag-title" >
+            </div>
+            <div className="c7n-env-tag-title">
               <FormattedMessage id="cluster.authority.project" />
-            </div >
-            <div className="c7n-env-tag-wrap" >
+            </div>
+            <div className="c7n-env-tag-wrap">
               {tagCreateDom}
-            </div >
-          </div >}
-        </div >);
+            </div>
+          </div>}
+        </div>);
         break;
       case 'token':
-        formContent = (<div className="c7n-env-token c7n-sidebar-form" >
-          <div className="c7n-env-shell-wrap" >
+        formContent = (<div className="c7n-env-token c7n-sidebar-form">
+          <div className="c7n-env-shell-wrap">
             <TextArea
               label={<FormattedMessage id="envPl.token" />}
               className="c7n-input-readOnly"
@@ -450,13 +450,13 @@ class Cluster extends Component {
               readOnly
               value={token || ''}
             />
-            <span className="c7n-env-copy" >{suffix}</span >
-          </div >
-        </div >);
+            <span className="c7n-env-copy">{suffix}</span>
+          </div>
+        </div>);
         break;
       case 'key':
-        formContent = (<div className="c7n-env-token c7n-sidebar-form" >
-          <div className="c7n-env-shell-wrap" >
+        formContent = (<div className="c7n-env-token c7n-sidebar-form">
+          <div className="c7n-env-shell-wrap">
             <TextArea
               label={<FormattedMessage id="envPl.token" />}
               className="c7n-input-readOnly"
@@ -465,13 +465,13 @@ class Cluster extends Component {
               readOnly
               value={shell || ''}
             />
-            <span className="c7n-env-copy" >{suffix_key}</span >
-          </div >
-        </div >);
+            <span className="c7n-env-copy">{suffix_key}</span>
+          </div>
+        </div>);
         break;
       case 'edit':
-        formContent = (<div >
-          <Form className="c7n-sidebar-form" >
+        formContent = (<div>
+          <Form className="c7n-sidebar-form">
             <FormItem
               {...formItemLayout}
             >
@@ -489,7 +489,7 @@ class Cluster extends Component {
                   label={<FormattedMessage id="cluster.name" />}
                 />,
               )}
-            </FormItem >
+            </FormItem>
             <FormItem
               {...formItemLayout}
             >
@@ -502,26 +502,26 @@ class Cluster extends Component {
                   label={<FormattedMessage id="cluster.des" />}
                 />,
               )}
-            </FormItem >
-          </Form >
-          <div className="c7n-env-tag-title" >
+            </FormItem>
+          </Form>
+          <div className="c7n-env-tag-title">
             <FormattedMessage id="cluster.authority" />
             <Popover
               overlayStyle={{ maxWidth: '350px' }}
               content={formatMessage({ id: 'cluster.authority.help' })}
             >
               <Icon type="help" />
-            </Popover >
-          </div >
-          <div className="c7n-cls-radio" >
+            </Popover>
+          </div>
+          <div className="c7n-cls-radio">
             <RadioGroup label={<FormattedMessage id="cluster.public" />}
-                        onChange={this.cbChange} value={checked} >
-              <Radio value={true} ><FormattedMessage id="cluster.project.all" /></Radio >
-              <Radio value={false} ><FormattedMessage id="cluster.project.part" /></Radio >
-            </RadioGroup >
-          </div >
-          {checked ? null : <div >
-            <div className="c7n-sidebar-form" >
+                        onChange={this.cbChange} value={checked}>
+              <Radio value={true}><FormattedMessage id="cluster.project.all" /></Radio>
+              <Radio value={false}><FormattedMessage id="cluster.project.part" /></Radio>
+            </RadioGroup>
+          </div>
+          {checked ? null : <div>
+            <div className="c7n-sidebar-form">
               <Table
                 rowSelection={rowSelection}
                 columns={columns}
@@ -533,15 +533,15 @@ class Cluster extends Component {
                 rowKey={record => record.id}
                 filters={paras.slice()}
               />
-            </div >
-            <div className="c7n-env-tag-title" >
+            </div>
+            <div className="c7n-env-tag-title">
               <FormattedMessage id="cluster.authority.project" />
-            </div >
-            <div className="c7n-env-tag-wrap" >
+            </div>
+            <div className="c7n-env-tag-wrap">
               {tagDom}
-            </div >
-          </div >}
-        </div >);
+            </div>
+          </div>}
+        </div>);
         break;
       default:
         formContent = null;
@@ -727,7 +727,7 @@ class Cluster extends Component {
         ]}
         className="c7n-region"
       >
-        <Header title={<FormattedMessage id="cluster.head" />} >
+        <Header title={<FormattedMessage id="cluster.head" />}>
           <Permission
             service={['devops-service.devops-cluster.create']}
             type={type}
@@ -739,8 +739,8 @@ class Cluster extends Component {
               onClick={this.showSideBar.bind(this, 'create')}
             >
               <FormattedMessage id="cluster.create" />
-            </Button >
-          </Permission >
+            </Button>
+          </Permission>
           <Permission
             service={['devops-service.devops-cluster.listCluster']}
             type={type}
@@ -752,13 +752,13 @@ class Cluster extends Component {
               onClick={this.handleRefresh}
             >
               <FormattedMessage id="refresh" />
-            </Button >
-          </Permission >
-        </Header >
-        {clusters && clusters.length ? <Content code={clusters && clusters.length ? 'cluster' : ''} values={{ name }} >
-          {loading ? <LoadingBar display /> : <React.Fragment >
+            </Button>
+          </Permission>
+        </Header>
+        {clusters && clusters.length ? <Content code={clusters && clusters.length ? 'cluster' : ''} values={{ name }}>
+          {loading ? <LoadingBar display /> : <React.Fragment>
             {this.getClusterList()}
-            {clusters.length > this.state.size ? <div className="c7n-cls-pagination" >
+            {clusters.length && (<div className="c7n-cls-pagination">
               <Pagination
                 tiny={false}
                 showSizeChanger
@@ -769,11 +769,11 @@ class Cluster extends Component {
                 onChange={this.onPageChange}
                 onShowSizeChange={this.onPageChange}
               />
-            </div > : null}
-          </React.Fragment >}
-        </Content > : <Content >
-          <Card title={formatMessage({ id: 'cluster.create' })} className="c7n-depPi-empty-card" >
-            <div className="c7n-noEnv-content" >
+            </div>)}
+          </React.Fragment>}
+        </Content> : <Content>
+          <Card title={formatMessage({ id: 'cluster.create' })} className="c7n-depPi-empty-card">
+            <div className="c7n-noEnv-content">
               <FormattedMessage id="cluster.noData.text1" /><br />
               <FormattedMessage id="cluster.noData.text2" /><br />
               <FormattedMessage id="cluster.noData.text3" />
@@ -783,21 +783,21 @@ class Cluster extends Component {
                 target="_blank"
               >
                 <FormattedMessage id="depPl.more" /><Icon type="open_in_new" />
-              </a >
-              <div className="c7n-cluster-notice" >
+              </a>
+              <div className="c7n-cluster-notice">
                 <Icon type="error" />
                 <FormattedMessage id="cluster.notice" />
-              </div >
-            </div >
+              </div>
+            </div>
             <Button
               type="primary"
               funcType="raised"
               onClick={this.showSideBar.bind(this, 'create')}
             >
               <FormattedMessage id="cluster.create" />
-            </Button >
-          </Card >
-        </Content >}
+            </Button>
+          </Card>
+        </Content>}
         {show && <Sidebar
           title={this.showTitle(sideType)}
           visible={show}
@@ -808,11 +808,11 @@ class Cluster extends Component {
           cancelText={<FormattedMessage id="cancel" />}
           okText={this.okText(sideType)}
         >
-          <Content code={`cluster.${sideType}`} values={{ clsName: titleName }} className="sidebar-content" >
+          <Content code={`cluster.${sideType}`} values={{ clsName: titleName }} className="sidebar-content">
             {this.getFormContent()}
             <InterceptMask visible={submitting} />
-          </Content >
-        </Sidebar >}
+          </Content>
+        </Sidebar>}
         <Modal
           className="c7n-cls-del-modal"
           title={<FormattedMessage id="cluster.del.title" values={{ clsName }} />}
@@ -825,13 +825,13 @@ class Cluster extends Component {
                     disabled={btnLoading}
             >
               <FormattedMessage id="cancel" />
-            </Button >,
-            <Button key="submit" type="danger" loading={btnLoading} onClick={this.delCluster} >
+            </Button>,
+            <Button key="submit" type="danger" loading={btnLoading} onClick={this.delCluster}>
               <FormattedMessage id="cluster.del.confirm" />
-            </Button >,
+            </Button>,
           ]}
         >
-          <div className="c7n-padding-top_8" >
+          <div className="c7n-padding-top_8">
             <FormattedMessage id="cluster.delDes_1" />
             <div
               className="c7n-cls-shell-input"
@@ -841,13 +841,13 @@ class Cluster extends Component {
                 readOnly
                 copy
               />
-            </div >
-            <div className="c7n-notice-wrap_error" >
+            </div>
+            <div className="c7n-notice-wrap_error">
               <Icon type="error" /><FormattedMessage id="cluster.delDes_2" />
-            </div >
-          </div >
-        </Modal >
-      </Page >
+            </div>
+          </div>
+        </Modal>
+      </Page>
     );
   }
 }
