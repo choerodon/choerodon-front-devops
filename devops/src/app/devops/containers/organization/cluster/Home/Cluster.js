@@ -758,7 +758,7 @@ class Cluster extends Component {
         {clusters && clusters.length ? <Content code={clusters && clusters.length ? 'cluster' : ''} values={{ name }} >
           {loading ? <LoadingBar display /> : <React.Fragment >
             {this.getClusterList()}
-            {clusters.length > this.state.size ? <div className="c7n-cls-pagination" >
+            {clusters.length && <div className="c7n-cls-pagination" >
               <Pagination
                 tiny={false}
                 showSizeChanger
@@ -769,7 +769,7 @@ class Cluster extends Component {
                 onChange={this.onPageChange}
                 onShowSizeChange={this.onPageChange}
               />
-            </div > : null}
+            </div >}
           </React.Fragment >}
         </Content > : <Content >
           <Card title={formatMessage({ id: 'cluster.create' })} className="c7n-depPi-empty-card" >
