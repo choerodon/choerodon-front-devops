@@ -255,8 +255,9 @@ class BranchCreate extends Component {
       default:
         type = "custom";
     }
-    this.setState({ type, issueDto }, () => this.triggerNameCheck());
-    setFieldsValue({ type });
+    this.setState({ type });
+    setFieldsValue({ type, branchName: issueDto ? issueDto.issueNum : '' });
+    this.triggerNameCheck()
   };
 
   /**
@@ -484,9 +485,6 @@ class BranchCreate extends Component {
                     validator: this.checkName,
                   },
                 ],
-                initialValue: this.state.issueDto
-                  ? this.state.issueDto.issueNum
-                  : "",
               })(
                 <Input
                   maxLength={50}

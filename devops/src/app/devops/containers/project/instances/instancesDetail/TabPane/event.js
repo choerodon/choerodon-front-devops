@@ -322,14 +322,15 @@ class Event extends Component {
         )}
       </div>
     ) : (
-      <ReactCodeMirror
-        className="c7n-deployDetail-pre1"
-        value={log}
-        options={logOptions}
-        ref={editor => {
-          this.editorLog = editor;
-        }}
-      />
+      <div className="c7n-deployDetail-log">
+        <ReactCodeMirror
+          value={log}
+          options={logOptions}
+          ref={editor => {
+            this.editorLog = editor;
+          }}
+        />
+      </div>
     );
   };
 

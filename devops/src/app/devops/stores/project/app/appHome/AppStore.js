@@ -191,12 +191,14 @@ class AppStore {
     if (isRefresh) {
       this.changeIsRefresh(true);
     }
-    let url =
-      sort.field !== '' ? `${url}&sort=${sort.field},${sort.order}` : '';
+
+    const sortParam = sort.field !== '' ? `&sort=${sort.field},${sort.order}` : '';
+
     spin && this.changeLoading(true);
+
     return axios
       .post(
-        `/devops/v1/projects/${projectId}/apps/list_by_options?page=${page}&size=${size}${url}`,
+        `/devops/v1/projects/${projectId}/apps/list_by_options?page=${page}&size=${size}${sortParam}`,
         JSON.stringify(postData),
       )
       .then(data => {
@@ -270,12 +272,6 @@ class AppStore {
         const res = handleProptError(datas);
         return res;
       });
-
-  deleteApps = (projectId, id) =>
-    axios.delete(`/devops/v1/projects/${projectId}/apps/${id}`).then(datas => {
-      const res = handleProptError(datas);
-      return res;
-    });
 
   /**
    * 分页查询项目下用户权限

@@ -36,7 +36,6 @@ import PodStatus from '../../instances/components/PodStatus/PodStatus';
 import { handleProptError } from '../../../../utils';
 
 const { AppState } = stores;
-const Sidebar = Modal.Sidebar;
 const Option = Select.Option;
 const Panel = Collapse.Panel;
 
@@ -482,10 +481,8 @@ class AppOverview extends Component {
   panelDom = () => {
     const { store } = this.props;
     const {
-      type,
       id: currentProjectId,
       organizationId: orgId,
-      name,
     } = AppState.currentMenuType;
     const ist = store.getIst;
     if (ist) {

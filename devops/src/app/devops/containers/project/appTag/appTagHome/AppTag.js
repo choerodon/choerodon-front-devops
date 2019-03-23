@@ -248,7 +248,7 @@ class AppTag extends Component {
         header={header}
         key={tagName}
       >
-        <div className="c7n-tag-release">{release ? <div className="c7n-md-parse">
+        <div className="c7n-tag-release">{release ? <div className="c7n-md-parse c7n-md-preview">
           <ReactMarkdown
             source={release.description !== 'empty' ? release.description : formatMessage({ id: 'apptag.release.empty' })}
             skipHtml={false}

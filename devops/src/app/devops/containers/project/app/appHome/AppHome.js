@@ -241,7 +241,7 @@ class AppHome extends Component {
                 </a>
               </Tooltip>
             ) : null}
-            {!record.fail ? (
+            {!record.fail && (
               <Fragment>
                 <Permission
                   type={type}
@@ -338,25 +338,6 @@ class AppHome extends Component {
                   </Tooltip>
                 </Permission>
               </Fragment>
-            ) : (
-              <Permission
-                type={type}
-                projectId={projectId}
-                organizationId={orgId}
-                service={['devops-service.application.deleteByAppId']}
-              >
-                <Tooltip
-                  placement="bottom"
-                  title={<FormattedMessage id="delete" />}
-                >
-                  <Button
-                    icon="delete_forever"
-                    shape="circle"
-                    size="small"
-                    onClick={this.openRemove.bind(this, record.id, record.name)}
-                  />
-                </Tooltip>
-              </Permission>
             )}
           </Fragment>
         ),
@@ -416,28 +397,6 @@ class AppHome extends Component {
         this.loadAllData(this.state.page);
       }
     });
-  };
-
-  /**
-   * 删除应用
-   * @param id
-   */
-  deleteApp = id => {
-    const { AppStore } = this.props;
-    const { projectId } = this.state;
-    this.setState({ submitting: true });
-    AppStore.deleteApps(projectId, id)
-      .then(() => {
-        this.loadAllData(this.state.page);
-        this.setState({
-          submitting: false,
-          openRemove: false,
-        });
-      })
-      .catch(err => {
-        this.setState({ submitting: false });
-        Choerodon.handleResponseError(err);
-      });
   };
 
   /**
@@ -585,7 +544,7 @@ class AppHome extends Component {
     if (type === 'create') {
       AppStore.setSingleData(null);
       AppStore.loadSelectData(projectId);
-      this.setState({ show: true, type });
+      this.setState({ checked: true, show: true, type });
     } else {
       AppStore.loadDataById(projectId, id).then(data => {
         if (data && data.failed) {
@@ -725,8 +684,6 @@ class AppHome extends Component {
       type: modeType,
       show,
       submitting,
-      openRemove,
-      name: delName,
       id,
       checked,
       createSelectedRowKeys,
@@ -786,9 +743,12 @@ class AppHome extends Component {
 
     let initHarbor = getHarborList.length ? getHarborList[0].id : undefined;
     let initChart = getChartList.length ? getChartList[0].id : undefined;
-    if (singleData) {
-      initHarbor = singleData.harborConfigId;
-      initChart = singleData.chartConfigId;
+    if (singleData && singleData.gitlabProjectId) {
+      const { harborConfigId, chartConfigId } = singleData;
+      const hasHarbor = _.find(getHarborList, ['id', harborConfigId]);
+      const hasChart = _.find(getChartList, ['id', chartConfigId]);
+      initHarbor = hasHarbor ? harborConfigId : undefined;
+      initChart = hasChart ? chartConfigId : undefined;
     }
 
     const formContent = (
@@ -903,80 +863,82 @@ class AppHome extends Component {
             </div>
           )}
         </Form>
-        <div className="c7n-env-tag-title">
-          <FormattedMessage id="app.config" />
-          <Popover
-            overlayStyle={{ maxWidth: '350px' }}
-            content={formatMessage({ id: 'app.config.help' })}
-          >
-            <Icon type="help" />
-          </Popover>
-        </div>
-        <div className="c7n-app-config-panel">
-          <FormItem
-            className="c7n-select_480"
-            {...formItemLayout}
-          >
-            {getFieldDecorator('harborConfigId', {
-              initialValue: initHarbor,
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage({ id: 'required' }),
-                },
-              ],
-            })(
-              <Select
-                filter
-                showSearch
-                className="c7n-select_480"
-                optionFilterProp="children"
-                label={<FormattedMessage id="app.form.selectDocker" />}
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-                filterOption={(input, option) =>
-                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
-              >
-                {_.map(getHarborList, item => (<Option value={item.id} key={item.id}>
-                  {item.name}
-                </Option>))}
-              </Select>,
-            )}
-          </FormItem>
-          <FormItem
-            className="c7n-select_480"
-            {...formItemLayout}
-          >
-            {getFieldDecorator('chartConfigId', {
-              initialValue: initChart,
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage({ id: 'required' }),
-                },
-              ],
-            })(
-              <Select
-                filter
-                className="c7n-select_480"
-                optionFilterProp="children"
-                label={<FormattedMessage id="app.form.selectHelm" />}
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-                filterOption={(input, option) =>
-                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
-              >
-                {_.map(getChartList, item => (<Option value={item.id} key={item.id}>
-                  {item.name}
-                </Option>))}
-              </Select>,
-            )}
-          </FormItem>
-        </div>
-        <div className="c7n-app-config-warn">
-          <Icon type="error" className="c7n-app-config-warn-icon" />
-          <FormattedMessage id="app.config.warn" />
-        </div>
+        {(singleData && singleData.gitlabProjectId || modeType === 'create') ? (<Fragment>
+          <div className="c7n-env-tag-title">
+            <FormattedMessage id="app.config" />
+            <Popover
+              overlayStyle={{ maxWidth: '350px' }}
+              content={formatMessage({ id: 'app.config.help' })}
+            >
+              <Icon type="help" />
+            </Popover>
+          </div>
+          <div className="c7n-app-config-panel">
+            <FormItem
+              className="c7n-select_480"
+              {...formItemLayout}
+            >
+              {getFieldDecorator('harborConfigId', {
+                initialValue: initHarbor,
+                rules: [
+                  {
+                    required: true,
+                    message: formatMessage({ id: 'required' }),
+                  },
+                ],
+              })(
+                <Select
+                  filter
+                  showSearch
+                  className="c7n-select_480"
+                  optionFilterProp="children"
+                  label={<FormattedMessage id="app.form.selectDocker" />}
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {_.map(getHarborList, item => (<Option value={item.id} key={item.id}>
+                    {item.name}
+                  </Option>))}
+                </Select>,
+              )}
+            </FormItem>
+            <FormItem
+              className="c7n-select_480"
+              {...formItemLayout}
+            >
+              {getFieldDecorator('chartConfigId', {
+                initialValue: initChart,
+                rules: [
+                  {
+                    required: true,
+                    message: formatMessage({ id: 'required' }),
+                  },
+                ],
+              })(
+                <Select
+                  filter
+                  className="c7n-select_480"
+                  optionFilterProp="children"
+                  label={<FormattedMessage id="app.form.selectHelm" />}
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {_.map(getChartList, item => (<Option value={item.id} key={item.id}>
+                    {item.name}
+                  </Option>))}
+                </Select>,
+              )}
+            </FormItem>
+          </div>
+          <div className="c7n-app-config-warn">
+            <Icon type="error" className="c7n-app-config-warn-icon" />
+            <FormattedMessage id="app.config.warn" />
+          </div>
+        </Fragment>) : null}
         <div className="c7n-env-tag-title">
           <FormattedMessage id="app.authority" />
           <Popover
@@ -1118,29 +1080,6 @@ class AppHome extends Component {
             </Content>
           </Fragment>
         )}
-        <Modal
-          confirmLoading={submitting}
-          visible={openRemove}
-          title={`${formatMessage({ id: 'app.delete' })}“${delName}”`}
-          closable={false}
-          footer={[
-            <Button key="back" onClick={this.closeRemove} disabled={submitting}>
-              {<FormattedMessage id="cancel" />}
-            </Button>,
-            <Button
-              key="submit"
-              type="danger"
-              onClick={this.deleteApp.bind(this, id)}
-              loading={submitting}
-            >
-              {formatMessage({ id: 'delete' })}
-            </Button>,
-          ]}
-        >
-          <div className="c7n-padding-top_8">
-            {formatMessage({ id: 'app.delete.tooltip' })}
-          </div>
-        </Modal>
       </Page>
     );
   }

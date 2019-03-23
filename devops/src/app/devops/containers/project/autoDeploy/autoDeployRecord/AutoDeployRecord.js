@@ -44,14 +44,15 @@ class AutoDeployRecord extends Component {
       history: { location: { state }},
     } = this.props;
     const { projectId } = AppState.currentMenuType;
+    const { id: userId } = AppState.userInfo;
     const envId = state ? state.envId : null;
     const appId = state ? state.appId : null;
     const taskName = state ? state.taskName : null;
     AutoDeployStore.loadEnvData(projectId);
     AutoDeployStore.loadAppData(projectId);
-    AutoDeployStore.loadAllTask(projectId);
+    AutoDeployStore.loadAllTask(projectId, userId);
     this.setState({ envId, appId, taskName });
-    AutoDeployStore.loadRecord({ projectId, envId, appId, taskName });
+    AutoDeployStore.loadRecord({ projectId, userId, envId, appId, taskName });
   }
 
   componentWillUnmount() {
@@ -64,11 +65,12 @@ class AutoDeployRecord extends Component {
   handleRefresh = () => {
     const { AutoDeployStore } = this.props;
     const { projectId } = AppState.currentMenuType;
+    const { id: userId } = AppState.userInfo;
     const pageInfo = AutoDeployStore.getRecordPageInfo;
     const { filters, sort, paras } = AutoDeployStore.getRecordInfo;
     AutoDeployStore.loadEnvData(projectId);
     AutoDeployStore.loadAppData(projectId);
-    AutoDeployStore.loadAllTask(projectId);
+    AutoDeployStore.loadAllTask(projectId, userId);
     this.tableChange(pageInfo, filters, sort, paras);
   };
 
@@ -84,6 +86,7 @@ class AutoDeployRecord extends Component {
     const {
       projectId,
     } = AppState.currentMenuType;
+    const { id: userId } = AppState.userInfo;
     const { appId, envId, taskName } = this.state;
     AutoDeployStore.setRecordInfo({ filters, sort: sorter, paras });
     const sort = { field: "id", order: "desc" };
@@ -105,6 +108,7 @@ class AutoDeployRecord extends Component {
     };
     AutoDeployStore.loadRecord({
       projectId,
+      userId,
       envId,
       appId,
       taskName,
@@ -144,7 +148,7 @@ class AutoDeployRecord extends Component {
         filteredValue: filters.taskName || [],
       },
       {
-        title: <FormattedMessage id="status" />,
+        title: <FormattedMessage id="autoDeploy.task.status" />,
         key: "status",
         dataIndex: "status",
         render: text => (
@@ -187,10 +191,8 @@ class AutoDeployRecord extends Component {
         key: "instanceName",
         render: (text, record) => {
           const { appId, envId, instanceStatus } = record;
-          return (instanceStatus === "deleted" ? (
-            <div className="c7n-autodDeploy-record-deleted">
-              <FormattedMessage id="deleted" />
-            </div>
+          return (instanceStatus ? (instanceStatus === "deleted" ? (
+            <FormattedMessage id="network.ist.deleted" />
           ) : (
             <Link
               to={{
@@ -201,7 +203,7 @@ class AutoDeployRecord extends Component {
             >
               <span>{text}</span>
             </Link>
-          ))
+          )) : (<FormattedMessage id="autoDeploy.no.instance" />))
         },
       },
       {

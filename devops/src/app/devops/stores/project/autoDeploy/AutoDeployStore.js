@@ -18,6 +18,8 @@ class AutoDeployStore {
 
   @observable recordLoading = false;
 
+  @observable valueLoading = false;
+
   @observable value = null;
 
   @observable pageInfo = {
@@ -112,6 +114,14 @@ class AutoDeployStore {
     return this.recordLoading;
   }
 
+  @action changeValueLoading(flag) {
+    this.valueLoading = flag;
+  }
+
+  @computed get getValueLoading() {
+    return this.valueLoading;
+  }
+
   @action setValue(data) {
     this.value = data;
   }
@@ -174,6 +184,7 @@ class AutoDeployStore {
   loadTaskList = (
     {
       projectId,
+      userId,
       envId,
       appId,
       page = 0,
@@ -191,7 +202,7 @@ class AutoDeployStore {
         url = `${url}${key}=${value}&`;
       }
     });
-    return axios.post(`/devops/v1/${projectId}/auto_deploy/list_by_options?${url}page=${page}&size=${size}${sort.field !== "" ? `&sort=${sort.field},${sort.order}` : ''}`
+    return axios.post(`/devops/v1/${projectId}/auto_deploy/list_by_options?${url}user_id=${userId}&page=${page}&size=${size}${sort.field !== "" ? `&sort=${sort.field},${sort.order}` : ''}`
       , JSON.stringify(postData)
     )
       .then((data) => {
@@ -212,8 +223,8 @@ class AutoDeployStore {
   /**
    ** 查询所有自动部署任务
    */
-  loadAllTask = projectId =>
-    axios.get(`/devops/v1/${projectId}/auto_deploy/list`)
+  loadAllTask = (projectId, userId) =>
+    axios.get(`/devops/v1/${projectId}/auto_deploy/list?user_id=${userId}`)
       .then((data) => {
         const res = handleProptError(data);
         if (res) {
@@ -237,6 +248,7 @@ class AutoDeployStore {
   loadRecord = (
     {
       projectId,
+      userId,
       envId,
       appId,
       taskName,
@@ -255,7 +267,7 @@ class AutoDeployStore {
         url = `${url}${key}=${value}&`;
       }
     });
-    return axios.post(`/devops/v1/${projectId}/auto_deploy/list_record_options?${url}page=${page}&size=${size}&sort=${sort.field},${sort.order}`
+    return axios.post(`/devops/v1/${projectId}/auto_deploy/list_record_options?${url}user_id=${userId}&page=${page}&size=${size}&sort=${sort.field},${sort.order}`
       , JSON.stringify(postData)
     )
       .then((data) => {
@@ -311,14 +323,17 @@ class AutoDeployStore {
   /**
    ** 查询配置信息
    */
-  loadValue = (projectId, appId) =>
-    axios.get(`/devops/v1/projects/${projectId}/app_versions/value?app_id=${appId}`)
+  loadValue = (projectId, appId) => {
+    this.changeValueLoading(true);
+    return axios.get(`/devops/v1/projects/${projectId}/app_versions/value?app_id=${appId}`)
       .then(data => {
         const res = handleProptError(data);
         if (res) {
           this.setValue(res);
         }
+        this.changeValueLoading(false);
       });
+  };
 
   /**
    ** 查询应用在该环境中运行或失败的实例

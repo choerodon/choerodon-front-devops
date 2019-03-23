@@ -21,6 +21,7 @@ import InstancesStore from '../../../stores/project/instances/InstancesStore';
 import EnvOverviewStore from '../../../stores/project/envOverview';
 import '../../main.scss';
 import './Instances.scss';
+import { commonComponent } from '../../../components/commonFunction';
 
 const Option = Select.Option;
 const { AppState } = stores;
@@ -49,13 +50,9 @@ class Instances extends Component {
       const {history: {location: {state}}} = this.props;
       if (state) {
         const {envId, appId} = state;
+        EnvOverviewStore.setTpEnvId(envId);
         InstancesStore.loadAppNameByEnv(projectId, envId, 0, HEIGHT < 900 ? 10 : 15, appId);
         EnvOverviewStore.loadActiveEnv(projectId)
-          .then(res => {
-            if (res && !res.failed) {
-              EnvOverviewStore.setTpEnvId(envId);
-            }
-          });
         this.loadDetail(appId);
         InstancesStore.setIsCache({appId})
       } else {
@@ -239,6 +236,8 @@ class Instances extends Component {
 
     InstancesStore.setValue(null);
     try {
+      // 升级失败仍要传入 commandVersionId，勿修改
+      // 升级失败，但是新版本的逻辑已经存在于后端
       const update = await InstancesStore.loadUpVersion(projectId, commandVersionId);
       const result = handleProptError(update);
       if (result) {
@@ -293,6 +292,7 @@ class Instances extends Component {
     const { InstancesStore } = this.props;
 
     const envId = EnvOverviewStore.getTpEnvId;
+    clear && InstancesStore.setIstTableFilter(null);
 
     InstancesStore.loadInstanceAll(spin, projectId, { envId, appId }).catch(
       err => {
@@ -300,8 +300,6 @@ class Instances extends Component {
         Choerodon.handleResponseError(err);
       },
     );
-
-    clear && InstancesStore.setIstTableFilter(null);
   };
 
   /**

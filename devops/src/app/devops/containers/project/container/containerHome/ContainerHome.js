@@ -577,17 +577,17 @@ class ContainerHome extends Component {
         );
         this.setState({ ws, following: true });
         if (!followingOK) {
-          editor.setValue("Loading...");
+          editor.setValue("Loading...\n");
         }
         ws.onopen = () => {
-          editor.setValue("Loading...");
+          editor.setValue("Loading...\n");
         };
         ws.onerror = e => {
           if (this.timer) {
             clearInterval(this.timer);
             this.timer = null;
           }
-          logs.push("连接出错，请重新打开");
+          logs.push("连接出错，请重新打开\n");
           editor.setValue(_.join(logs, ""));
           editor.execCommand("goDocEnd");
         };
@@ -597,7 +597,7 @@ class ContainerHome extends Component {
             this.timer = null;
           }
           if (following) {
-            logs.push("连接已断开");
+            logs.push("连接已断开\n");
             editor.setValue(_.join(logs, ""));
           }
           editor.execCommand("goDocEnd");
@@ -628,11 +628,11 @@ class ContainerHome extends Component {
               oldLogs = _.cloneDeep(logs);
             }
           } else if (!followingOK) {
-            editor.setValue("Loading...");
+            editor.setValue("Loading...\n");
           }
         });
       } catch (e) {
-        editor.setValue("连接失败");
+        editor.setValue("连接失败\n");
       }
     }
   };

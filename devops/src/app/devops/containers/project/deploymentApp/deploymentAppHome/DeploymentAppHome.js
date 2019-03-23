@@ -491,10 +491,12 @@ class DeploymentAppHome extends Component {
     const { app, instanceDto } = this.state;
     const instances = DeploymentAppStore.currentInstance;
     if (e.target.value === 'create') {
-      this.setState({ istName: `${app.code}-${uuidv1().substring(0, 5)}` });
+      const randomString = uuidv1();
+      const istName = app.code ? `${app.code.substring(0, 24)}-${randomString.substring(0, 5)}` : randomString.substring(0, 30);
+      this.setState({ istName });
       form.setFields({
         name: {
-          value: `${app.code}-${uuidv1().substring(0, 5)}`,
+          value: istName,
         },
       });
     } else if (instanceDto) {
