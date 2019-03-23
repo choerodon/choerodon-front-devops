@@ -11,12 +11,12 @@ ENV PRO_HTTP http
 ENV PRO_FILE_SERVER choerodon.com.cn
 
 RUN echo "Asia/shanghai" > /etc/timezone;
-ADD dist /usr/share/nginx/html
-COPY devops-structure/devops-enterpoint.sh /usr/share/nginx/html
+ADD devops/dist /usr/share/nginx/html
+COPY devops/devops-structure/devops-enterpoint.sh /usr/share/nginx/html
 COPY menu.yml /usr/share/nginx/html/menu.yml
 COPY dashboard.yml /usr/share/nginx/html/dashboard.yml
-COPY structure/menu /usr/share/nginx/html/menu
-COPY structure/dashboard /usr/share/nginx/html/dashboard
+COPY devops/node_modules/choerodon-front-boot/structure/menu /usr/share/nginx/html/menu
+COPY devops/node_modules/choerodon-front-boot/structure/dashboard /usr/share/nginx/html/dashboard
 RUN chmod 777 /usr/share/nginx/html/devops-enterpoint.sh
 ENTRYPOINT ["/usr/share/nginx/html/devops-enterpoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
