@@ -206,7 +206,7 @@ class LogSiderbar extends Component {
         visible={visible}
         title={<FormattedMessage id="container.log.header.title" />}
         onOk={this.closeSidebar}
-        className="c7n-podLog-content c7n-region"
+        className="c7n-container-sidebar c7n-region"
         okText={<FormattedMessage id="close" />}
         okCancel={false}
       >

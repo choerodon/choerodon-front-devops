@@ -23,7 +23,6 @@
     "echarts": "^4.1.0",
     "echarts-for-react": "^2.0.12",
     "file-loader": "^2.0.0",
-    "hterm-umdjs": "^1.4.1",
     "js-file-download": "^0.4.4",
     "js-yaml": "^3.12.1",
     "moment": "^2.22.2",
@@ -43,11 +42,13 @@
     "uuid": "^3.3.2",
     "webpack": "^3.7.0",
     "webpack-dev-server": "^2.9.1",
+    "xterm": "^3.12.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "stylelint": "^9.5.0",
-    "stylelint-config-standard": "^18.2.0"
+    "stylelint-config-standard": "^18.2.0",
+    "webpack-bundle-analyzer": "^3.1.0"
   },
   "lint-staged": {
     "src/**/*.{js,jsx}": [],

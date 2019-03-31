@@ -27,6 +27,8 @@ const config = {
   webpackConfig(configs) {
     const webpack = require("./devops/node_modules/webpack");
     configs.plugins.push(new webpack.DefinePlugin(env));
+    // const BundleAnalyzerPlugin = require('./devops/node_modules/webpack-bundle-analyzer').BundleAnalyzerPlugin;
+    // configs.plugins.push(new BundleAnalyzerPlugin());
     return configs;
   },
   entryName: "index",
