@@ -148,99 +148,6 @@ class YamlEditor extends Component {
     const { onValueChange } = this.props;
     onValueChange(values);
 
-    // 获取codemirror实例
-    const editor = this.yamlEditor.getCodeMirror();
-
-    /**
-     * form      开始位置坐标
-     * - line    行数，从0开始，也就是实际行 - 1
-     * - ch      从行首开始的字符位置（包括空格）
-     * - sticky  默认为 null，但可以设置为“before”或“after”，明确该位置是与字符之前还是之后相关
-     * - xRel
-     * to        结束位置坐标
-     * origin    输入类型
-     * - +input
-     * - +delete
-     * - paste
-     * - cut
-     * - undo
-     * - redo
-     * 修改原有文本，则 text 和 removed 都不是空数组
-     * text      改变的文本
-     * removed   删除的文本
-     */
-    const { from, to, origin, text, removed } = options;
-
-    // const initValue = _.cloneDeep(this.updateValueLine)[from.line];
-    // const newValue = editor.getLine(from.line);
-    // const lineInfo = editor.lineInfo(from.line);
-
-    // this.updateCacheValue(editor, options, newValue);
-
-    // const op = this.operator(editor);
-
-    /* switch (origin) {
-      case "+input":
-        this.handleInputChange(editor, options);
-        break;
-      case "+delete":
-        if (newValue === initValue) {
-          op.removeModifyStyle(from.line);
-        } else {
-          op.addModifyStyle(from.line);
-        }
-        break;
-      case "paste":
-        if (_.toString(removed) === "") {
-          if (_.trim(newValue) === text[0]) {
-            for (let line = from.line; line < from.line + text.length; line++) {
-              op.addNewStyle(line);
-            }
-          } else {
-            op.addModifyStyle(from.line);
-
-            for (
-              let line = from.line + 1;
-              line < from.line + text.length;
-              line++
-            ) {
-              op.addNewStyle(line);
-            }
-          }
-        } else {
-          if (removed.length >= text.length) {
-            for (let line = from.line; line < from.line + text.length; line++) {
-              op.addModifyStyle(line);
-            }
-          } else {
-            for (let line = from.line; line <= to.line; line++) {
-              op.addModifyStyle(line);
-            }
-            for (
-              let line = to.line;
-              line <= to.line + text.length - removed.length;
-              line++
-            ) {
-              op.addNewStyle(line);
-            }
-          }
-        }
-        break;
-      case "cut":
-        if (!_.isEmpty(newValue)) {
-          op.addModifyStyle(from.line);
-        }
-        break;
-      case "redo":
-        break;
-      case "undo":
-        if (_.trim(newValue) === "") {
-          op.removeNewStyle(from.line);
-        }
-        break;
-      default:
-        break;
-    } */
     this.checkYamlFormat(values);
   };
 
@@ -318,26 +225,13 @@ class YamlEditor extends Component {
 
     const {
       intl: { formatMessage },
-      readOnly,
       value,
     } = this.props;
 
     const { errorTip } = this.state;
 
-    const legendDom = _.map(LEGEND_TYPE, item => (
-      <span
-        key={item}
-        className={`c7ncd-yaml-legend-item c7ncd-yaml-legend_${item}`}
-      >
-        {formatMessage({ id: `yaml.legend.${item}` })}
-      </span>
-    ));
-
     return (
       <Fragment>
-        {!readOnly ? (
-          <div className="c7ncd-yaml-legend">{legendDom}</div>
-        ) : null}
         <div className="c7ncd-yaml-wrapper">
           <ReactCodeMirror
             options={this.options}
