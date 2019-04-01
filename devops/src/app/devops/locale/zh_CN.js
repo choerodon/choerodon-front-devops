@@ -96,7 +96,7 @@ const pageDetail = {
   "container.log.description":
     "您可在此查看该容器的日志进行错误定位和状态监控。",
   "container.term.description":
-    "您可在此选择容器组下的Pod运行命令进行相关信息实时查看。在此命令行窗口中，选中即复制，粘贴操作：Mac端为cmd+v；Windows端为ctrl+v。",
+    "您可在此选择容器组下的Pod运行命令进行相关信息实时查看。",
 
   // template
   "template.title": '组织"{name}"的应用模板',
@@ -1562,6 +1562,10 @@ const zhCN = {
   "elements.delete": "删除组件配置",
   "elements.delete.enable": "确定删除该组件配置吗？",
   "elements.delete.disable": "不能删除该组件配置。您仅能删除没有关联应用的自定义组件配置。",
+
+  // terminal
+  "devops.term.close": "连接已关闭",
+  "devops.term.error": "连接错误，请重新打开",
 
   ...pageDetail,
 };

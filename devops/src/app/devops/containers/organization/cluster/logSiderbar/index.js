@@ -5,6 +5,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Modal, Button } from 'choerodon-ui';
 import { Content } from 'choerodon-front-boot';
 import ReactCodeMirror from "react-codemirror";
+
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/base16-dark.css";
 import '../../../project/container/containerHome/ContainerHome.scss';
@@ -206,7 +207,7 @@ class LogSiderbar extends Component {
         visible={visible}
         title={<FormattedMessage id="container.log.header.title" />}
         onOk={this.closeSidebar}
-        className="c7n-podLog-content c7n-region"
+        className="c7n-container-sidebar c7n-region"
         okText={<FormattedMessage id="close" />}
         okCancel={false}
       >
@@ -245,7 +246,7 @@ class LogSiderbar extends Component {
               <ReactCodeMirror
                 ref={editor => this.editorLog = editor}
                 value="Loading..."
-                className="c7n-podLog-editor"
+                className="c7n-log-editor"
                 onChange={code => this.props.ChangeCode(code)}
                 options={options}
               />
