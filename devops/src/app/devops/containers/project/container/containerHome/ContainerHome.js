@@ -1,28 +1,10 @@
-/* eslint-disable dot-notation */
 import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import {
-  Table,
-  Button,
-  Modal,
-  Tooltip,
-  Icon,
-  Select,
-  Popover,
-} from 'choerodon-ui';
-import {
-  Content,
-  Header,
-  Page,
-  Permission,
-  stores,
-} from 'choerodon-front-boot';
-import ReactCodeMirror from 'react-codemirror';
+import { Table, Button, Tooltip, Icon, Select, Popover } from 'choerodon-ui';
+import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import _ from 'lodash';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/base16-dark.css';
 import TimePopover from '../../../../components/timePopover';
 import LoadingBar from '../../../../components/loadingBar';
 import MouserOverWrapper from '../../../../components/MouseOverWrapper';
@@ -30,12 +12,13 @@ import StatusTags from '../../../../components/StatusTags';
 import AppName from '../../../../components/appName';
 import EnvOverviewStore from '../../../../stores/project/envOverview';
 import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
+import { SORTER_MAP } from '../../../../common/Constant';
+import LogSidebar from '../logSidebar';
 import TermSidebar from '../termSidebar';
 
 import '../../../main.scss';
 import './ContainerHome.scss';
 
-const Sidebar = Modal.Sidebar;
 const { Option, OptGroup } = Select;
 const { AppState } = stores;
 
@@ -44,13 +27,10 @@ class ContainerHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showSide: false,
+      showLog: false,
       showTerm: false,
       // 当前打开的 term 的pod信息
       currentPod: null,
-      following: true,
-      fullScreen: false,
-      containerArr: [],
       selectPubPage: 0,
       selectProPage: 0,
       appPubLength: 0,
@@ -58,7 +38,6 @@ class ContainerHome extends Component {
       appPubDom: [],
       appProDom: [],
     };
-    this.timer = null;
   }
 
   componentDidMount() {
@@ -67,166 +46,31 @@ class ContainerHome extends Component {
 
   componentWillUnmount() {
     const { ContainerStore } = this.props;
-    if (this.state.ws) {
-      this.closeSidebar();
-    }
     ContainerStore.setEnvCard([]);
     ContainerStore.setAllData([]);
     ContainerStore.setAppId();
     ContainerStore.setEnvId();
   }
 
-
   /**
-   * 切换container日志
-   * @param value
-   */
-  containerChange = value => {
-    const { ws, logId } = this.state;
-    if (logId !== value.split('+')[0]) {
-      if (ws) {
-        ws.close();
-      }
-      this.setState({
-        containerName: value.split('+')[1],
-        logId: value.split('+')[0],
-      });
-      setTimeout(() => {
-        this.loadLog();
-      }, 1000);
-    }
-  };
-
-  /**
-   * 日志go top
-   */
-  goTop = () => {
-    const editor = this.editorLog.getCodeMirror();
-    editor.execCommand('goDocStart');
-  };
-
-  /**
-   * top log following
-   */
-  stopFollowing = () => {
-    const { ws } = this.state;
-    if (ws) {
-      ws.close();
-    }
-    if (this.timer) {
-      clearInterval(this.timer);
-      this.timer = null;
-    }
-    this.setState({
-      following: false,
-    });
-  };
-
-  /**
-   *  全屏查看日志
-   */
-  setFullScreen = () => {
-    const cm = this.editorLog.getCodeMirror();
-    const wrap = cm.getWrapperElement();
-    cm.state.fullScreenRestore = {
-      scrollTop: window.pageYOffset,
-      scrollLeft: window.pageXOffset,
-      width: wrap.style.width,
-      height: wrap.style.height,
-    };
-    wrap.style.width = '';
-    wrap.style.height = 'auto';
-    wrap.className += ' CodeMirror-fullScreen';
-    this.setState({ fullScreen: true });
-    document.documentElement.style.overflow = 'hidden';
-    cm.refresh();
-    window.addEventListener('keydown', e => {
-      this.setNormal(e.which);
-    });
-  };
-
-  /**
-   * 任意键退出全屏查看
-   */
-  setNormal = () => {
-    const cm = this.editorLog.getCodeMirror();
-    const wrap = cm.getWrapperElement();
-    wrap.className = wrap.className.replace(/\s*CodeMirror-fullScreen\b/, '');
-    this.setState({ fullScreen: false });
-    document.documentElement.style.overflow = '';
-    const info = cm.state.fullScreenRestore;
-    wrap.style.width = info.width;
-    wrap.style.height = info.height;
-    window.scrollTo(info.scrollLeft, info.scrollTop);
-    cm.refresh();
-    window.removeEventListener('keydown', e => {
-      this.setNormal(e.which);
-    });
-  };
-
-  /**
-   * 显示日志
-   * @param record 容器record
-   */
-  showLog = record => {
-    const { ContainerStore } = this.props;
-    const projectId = AppState.currentMenuType.id;
-    ContainerStore.loadPodParam(projectId, record.id).then(data => {
-      if (data && data.length) {
-        this.setState({
-          envId: record.envId,
-          clusterId: record.clusterId,
-          namespace: record.namespace,
-          containerArr: data,
-          podName: data[0].podName,
-          containerName: data[0].containerName,
-          logId: data[0].logId,
-          showSide: true,
-        });
-      }
-      this.loadLog();
-    });
-  };
-
-  /**
-   * 关闭日志
-   */
-  closeSidebar = () => {
-    const editor = this.editorLog.getCodeMirror();
-    const { ws } = this.state;
-    clearInterval(this.timer);
-    this.timer = null;
-    if (ws) {
-      ws.close();
-    }
-    this.setState(
-      {
-        showSide: false,
-        containerArr: [],
-      },
-      () => {
-        editor.setValue('');
-      },
-    );
-  };
-
-  /**
-   * 打开命令行侧边栏
+   * 打开侧边栏
    * @param record
+   * @param type 侧边栏类型
    */
-  openTerm(record) {
+  openSidebar(record, type) {
     this.setState({
-      showTerm: true,
+      [type]: true,
       currentPod: record,
     });
   };
 
   /**
-   * 关闭 Term
+   * 关闭侧边栏
    */
-  closeTerm = () => {
+  closeSidebar = () => {
     this.setState({
       showTerm: false,
+      showLog: false,
       currentPod: null,
     });
   };
@@ -240,6 +84,7 @@ class ContainerHome extends Component {
     const pagination = ContainerStore.getPageInfo;
     const { projectId } = AppState.currentMenuType;
     const envId = EnvOverviewStore.getTpEnvId;
+
     ContainerStore.loadAppDataByEnv(projectId, envId);
     this.tableChange(pagination, filters, sort, paras);
   };
@@ -254,15 +99,15 @@ class ContainerHome extends Component {
   tableChange = (pagination, filters, sorter, paras) => {
     const { ContainerStore } = this.props;
     const { id } = AppState.currentMenuType;
+    const envId = EnvOverviewStore.getTpEnvId;
+    const appId = ContainerStore.getAppId;
+
     ContainerStore.setInfo({ filters, sort: sorter, paras });
+
     const sort = { field: '', order: 'desc' };
     if (sorter.column) {
       sort.field = sorter.field || sorter.columnKey;
-      if (sorter.order === 'ascend') {
-        sort.order = 'asc';
-      } else if (sorter.order === 'descend') {
-        sort.order = 'desc';
-      }
+      sort.order = SORTER_MAP[sorter.order];
     }
     let searchParam = {};
     const page = pagination.current - 1;
@@ -273,8 +118,7 @@ class ContainerHome extends Component {
       searchParam,
       param: paras.toString(),
     };
-    const envId = EnvOverviewStore.getTpEnvId;
-    const appId = ContainerStore.getAppId;
+
     ContainerStore.loadData(
       false,
       id,
@@ -291,13 +135,8 @@ class ContainerHome extends Component {
    * 获取行
    */
   getColumn = () => {
-    const projectId = parseInt(AppState.currentMenuType.id, 10);
-    const organizationId = AppState.currentMenuType.organizationId;
-    const type = AppState.currentMenuType.type;
-    const {
-      ContainerStore,
-      intl: { formatMessage },
-    } = this.props;
+    const { type, organizationId, projectId } = AppState.currentMenuType;
+    const { ContainerStore } = this.props;
     const {
       filters,
       sort: { columnKey, order },
@@ -340,25 +179,24 @@ class ContainerHome extends Component {
         title: <FormattedMessage id="container.app" />,
         dataIndex: 'app',
         key: 'app',
-        render: (text, record) => (
-          <div>
-            <div className="c7n-container-col-inside">
-              <AppName
-                name={record.appName}
-                showIcon={!!record.projectId}
-                self={record.projectId === projectId}
-                width={0.14}
-              />
-            </div>
-            <div>
-              <MouserOverWrapper text={record.appVersion} width={0.16}>
+        render: (text, record) => ([<div
+          className="c7n-container-col-inside"
+          key="app-name"
+        >
+          <AppName
+            name={record.appName}
+            showIcon={!!record.projectId}
+            self={record.projectId === Number(projectId)}
+            width={0.14}
+          />
+        </div>,
+          <div key="app-version">
+            <MouserOverWrapper text={record.appVersion} width={0.16}>
                 <span className="c7n-deploy-text_gray">
                   {record.appVersion}
                 </span>
-              </MouserOverWrapper>
-            </div>
-          </div>
-        ),
+            </MouserOverWrapper>
+          </div>]),
       },
       {
         title: <FormattedMessage id="container.ip" />,
@@ -381,46 +219,42 @@ class ContainerHome extends Component {
       {
         width: 80,
         key: 'action',
-        render: (test, record) => (
-          <div>
-            <Permission
-              service={[
-                'devops-service.devops-env-pod-container.queryLogByPod',
-              ]}
-              organizationId={organizationId}
-              projectId={projectId}
-              type={type}
-            >
-              <Tooltip title={<FormattedMessage id="container.log" />}>
-                <Button
-                  size="small"
-                  shape="circle"
-                  onClick={this.showLog.bind(this, record)}
-                >
-                  <Icon type="insert_drive_file" />
-                </Button>
-              </Tooltip>
-            </Permission>
-            <Permission
-              service={[
-                'devops-service.devops-env-pod-container.handleShellByPod',
-              ]}
-              organizationId={organizationId}
-              projectId={projectId}
-              type={type}
-            >
-              <Tooltip title={<FormattedMessage id="container.term" />}>
-                <Button
-                  size="small"
-                  shape="circle"
-                  onClick={this.openTerm.bind(this, record)}
-                >
-                  <Icon type="debug" />
-                </Button>
-              </Tooltip>
-            </Permission>
-          </div>
-        ),
+        render: (test, record) => ([<Permission
+          service={[
+            'devops-service.devops-env-pod-container.queryLogByPod',
+          ]}
+          organizationId={organizationId}
+          projectId={projectId}
+          type={type}
+          key="log"
+        >
+          <Tooltip title={<FormattedMessage id="container.log" />}>
+            <Button
+              size="small"
+              shape="circle"
+              icon="insert_drive_file"
+              onClick={this.openSidebar.bind(this, record, 'showLog')}
+            />
+          </Tooltip>
+        </Permission>,
+          <Permission
+            key="term"
+            service={[
+              'devops-service.devops-env-pod-container.handleShellByPod',
+            ]}
+            organizationId={organizationId}
+            projectId={projectId}
+            type={type}
+          >
+            <Tooltip title={<FormattedMessage id="container.term" />}>
+              <Button
+                size="small"
+                shape="circle"
+                icon="debug"
+                onClick={this.openSidebar.bind(this, record, 'showTerm')}
+              />
+            </Tooltip>
+          </Permission>]),
       },
     ];
   };
@@ -433,8 +267,6 @@ class ContainerHome extends Component {
    */
   getActive = (text, record) => {
     const { status } = record;
-    let dom = null;
-    let el = null;
     const statusStyle = {
       textOverflow: 'ellipsis',
       width: '100%',
@@ -446,46 +278,22 @@ class ContainerHome extends Component {
       width: 54,
       verticalAlign: 'bottom',
     };
-    switch (status) {
-      case 'Completed':
-        dom = {
-          wrap: true,
-          color: '#00bf96',
-        };
-        break;
-      case 'Running':
-        dom = {
-          wrap: false,
-          color: '#00bf96',
-        };
-        break;
-      case 'Error':
-        dom = {
-          wrap: false,
-          color: '#f44336',
-        };
-        break;
-      case 'Pending':
-        dom = {
-          wrap: false,
-          color: '#ff9915',
-        };
-        break;
-      default:
-        dom = {
-          wrap: true,
-          color: 'rgba(0, 0, 0, 0.36)',
-        };
-    }
-    el = (
-      <StatusTags
-        ellipsis={dom && dom.wrap ? statusStyle : null}
-        color={dom.color}
-        name={status}
-        style={wrapStyle}
-      />
-    );
-    return el;
+
+    const statusMap = {
+      Completed: [true, '#00bf96'],
+      Running: [false, '#00bf96'],
+      Error: [false, '#f44336'],
+      Pending: [false, '#ff9915'],
+    };
+
+    const [wrap, color] = statusMap[status] || [true, 'rgba(0, 0, 0, 0.36)'];
+
+    return <StatusTags
+      ellipsis={wrap ? statusStyle : null}
+      color={color}
+      name={status}
+      style={wrapStyle}
+    />;
   };
 
   /**
@@ -542,90 +350,6 @@ class ContainerHome extends Component {
   };
 
   /**
-   * 加载日志
-   */
-  loadLog = followingOK => {
-    const {
-      namespace,
-      logId,
-      podName,
-      containerName,
-      following,
-      clusterId,
-    } = this.state;
-    const authToken = document.cookie.split('=')[1];
-    const logs = [];
-    let oldLogs = [];
-    let editor = null;
-    if (this.editorLog) {
-      editor = this.editorLog.getCodeMirror();
-      try {
-        const ws = new WebSocket(
-          `POD_WEBSOCKET_URL/ws/log?key=cluster:${clusterId}.log:${logId}&env=${namespace}&podName=${podName}&containerName=${containerName}&logId=${logId}&token=${authToken}`,
-        );
-        this.setState({ ws, following: true });
-        if (!followingOK) {
-          editor.setValue('Loading...\n');
-        }
-        ws.onopen = () => {
-          editor.setValue('Loading...\n');
-        };
-        ws.onerror = e => {
-          if (this.timer) {
-            clearInterval(this.timer);
-            this.timer = null;
-          }
-          logs.push('连接出错，请重新打开\n');
-          editor.setValue(_.join(logs, ''));
-          editor.execCommand('goDocEnd');
-        };
-        ws.onclose = e => {
-          if (this.timer) {
-            clearInterval(this.timer);
-            this.timer = null;
-          }
-          if (following) {
-            logs.push('连接已断开\n');
-            editor.setValue(_.join(logs, ''));
-          }
-          editor.execCommand('goDocEnd');
-        };
-        ws.onmessage = e => {
-          if (e.data.size) {
-            const reader = new FileReader();
-            reader.readAsText(e.data, 'utf-8');
-            reader.onload = () => {
-              if (reader.result !== '') {
-                logs.push(reader.result);
-              }
-            };
-          }
-          if (!logs.length) {
-            const logString = _.join(logs, '');
-            editor.setValue(logString);
-          }
-        };
-
-        this.timer = setInterval(() => {
-          if (logs.length > 0) {
-            if (!_.isEqual(logs, oldLogs)) {
-              const logString = _.join(logs, '');
-              editor.setValue(logString);
-              editor.execCommand('goDocEnd');
-              // 如果没有返回数据，则不进行重新赋值给编辑器
-              oldLogs = _.cloneDeep(logs);
-            }
-          } else if (!followingOK) {
-            editor.setValue('Loading...\n');
-          }
-        });
-      } catch (e) {
-        editor.setValue('连接失败\n');
-      }
-    }
-  };
-
-  /**
    * 环境选择
    * @param value
    * @param option
@@ -672,6 +396,7 @@ class ContainerHome extends Component {
   /**
    * 展开更多
    * @param type
+   * @param e
    */
   appDomMore = (type, e) => {
     e.stopPropagation();
@@ -839,14 +564,9 @@ class ContainerHome extends Component {
       },
     } = this.props;
     const {
-      showSide,
+      showLog,
       showTerm,
       currentPod,
-      following,
-      fullScreen,
-      containerName,
-      podName,
-      containerArr,
       selectProPage,
       selectPubPage,
       appProDom,
@@ -939,9 +659,11 @@ class ContainerHome extends Component {
                 </Option>
               ))}
             </Select>
-            <Button onClick={this.handleRefresh}>
-              <i className="icon-refresh icon" />
-              <span>{<FormattedMessage id="refresh" />}</span>
+            <Button
+              icon="refresh"
+              onClick={this.handleRefresh}
+            >
+              <FormattedMessage id="refresh" />
             </Button>
           </Header>
           <Content
@@ -1015,22 +737,6 @@ class ContainerHome extends Component {
         />
       );
 
-    const containerOptions =
-      containerArr.length &&
-      _.map(containerArr, c => (
-        <Option key={c.logId} value={`${c.logId}+${c.containerName}`}>
-          {c.containerName}
-        </Option>
-      ));
-
-    const options = {
-      readOnly: true,
-      lineNumbers: true,
-      lineWrapping: true,
-      autofocus: true,
-      theme: 'base16-dark',
-    };
-
     return (
       <Page
         className="c7n-region"
@@ -1041,73 +747,14 @@ class ContainerHome extends Component {
         ]}
       >
         {ContainerStore.isRefresh ? <LoadingBar display /> : contentDom}
-        <Sidebar
-          visible={showSide}
-          title={<FormattedMessage id="container.log.header.title" />}
-          onOk={this.closeSidebar}
-          className="c7n-container-sidebar c7n-region"
-          okText={<FormattedMessage id="close" />}
-          okCancel={false}
-        >
-          <Content
-            className="sidebar-content"
-            code="container.log"
-            values={{ name: podName }}
-          >
-            <section className="c7n-podLog-section">
-              <div className="c7n-podLog-hei-wrap">
-                <div className="c7n-podShell-title">
-                  <FormattedMessage id="container.term.log" />
-                  &nbsp;
-                  <Select value={containerName} onChange={this.containerChange}>
-                    {containerOptions}
-                  </Select>
-                  <Button
-                    type="primary"
-                    funcType="flat"
-                    shape="circle"
-                    icon="fullscreen"
-                    onClick={this.setFullScreen}
-                  />
-                </div>
-                {following ? (
-                  <div
-                    className={`c7n-podLog-action log-following ${
-                      fullScreen ? 'f-top' : ''
-                      }`}
-                    onClick={this.stopFollowing}
-                  >
-                    Stop Following
-                  </div>
-                ) : (
-                  <div
-                    className={`c7n-podLog-action log-following ${fullScreen ? 'f-top' : ''}`}
-                    onClick={this.loadLog.bind(this, true)}
-                  >
-                    Start Following
-                  </div>
-                )}
-                <ReactCodeMirror
-                  ref={editor => {
-                    this.editorLog = editor;
-                  }}
-                  value="Loading..."
-                  className="c7n-podLog-editor"
-                  onChange={code => this.props.ChangeCode(code)}
-                  options={options}
-                />
-                <div
-                  className={`c7n-podLog-action log-goTop ${fullScreen ? 'g-top' : ''}`}
-                  onClick={this.goTop}
-                >
-                  Go Top
-                </div>
-              </div>
-            </section>
-          </Content>
-        </Sidebar>
+        {showLog && <LogSidebar
+          onClose={this.closeSidebar}
+          current={currentPod}
+          visible={showLog}
+          store={ContainerStore}
+        />}
         {showTerm && <TermSidebar
-          onClose={this.closeTerm}
+          onClose={this.closeSidebar}
           current={currentPod}
           visible={showTerm}
           store={ContainerStore}

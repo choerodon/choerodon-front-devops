@@ -6,14 +6,12 @@ import { Button, Table, Tooltip, Modal, Spin } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import ElementsCreate from '../elementsCreate';
 import { handleCheckerProptError } from '../../../../utils';
+import { SORTER_MAP } from '../../../../common/Constant';
+
 import './Element.scss';
 
 const { AppState } = stores;
 const EDIT_MODE = true;
-const SORTER_MAP = {
-  ascend: 'asc',
-  descend: 'desc',
-};
 
 @injectIntl
 @withRouter

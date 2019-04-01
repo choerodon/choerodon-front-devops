@@ -113,6 +113,7 @@ export default class Term extends PureComponent {
     if (this.term) {
       this.term.write(intl.formatMessage({ id: 'devops.term.close' }));
       this.term.writeln('');
+      this.term.setOption('disableStdin', true);
     }
   };
 
@@ -121,6 +122,7 @@ export default class Term extends PureComponent {
     if (this.term) {
       this.term.write(intl.formatMessage({ id: 'devops.term.error' }));
       this.term.writeln('');
+      this.term.setOption('disableStdin', true);
     } else {
       Choerodon.prompt(intl.formatMessage({ id: 'devops.term.error' }));
     }

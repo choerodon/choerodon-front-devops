@@ -130,7 +130,7 @@
   color: rgba(0, 0, 0, 0.36);
 }
 
-.c7n-podLog-editor {
+.c7n-log-editor {
   height: 100%;
   display: flex;
   flex: 1;
@@ -288,6 +288,7 @@
     height: 100%;
   }
 
+  .c7n-container-sidebar-content_full,
   .c7n-container-sidebar-content {
     position: relative;
     overflow: hidden;
@@ -304,6 +305,15 @@
       font-size: 14px;
       font-weight: 400;
 
+      .c7n-term-fullscreen {
+        margin-left: auto;
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        font-size: 18px;
+        font-weight: bolder;
+      }
+
       .ant-select {
         line-height: 22px;
       }
@@ -319,8 +329,31 @@
       }
     }
 
+    .c7n-term-following {
+      top: 36px;
+      right: 10px;
+      &_full {
+        top: 0;
+      }
+    }
+
+    .c7n-term-totop {
+      bottom: 1px;
+      right: 10px;
+      &_full {
+        bottom: 0;
+      }
+    }
+
     .c7n-term-wrap {
       height: calc(100% - 36px);
     }
+  }
+
+  .c7n-container-sidebar-content_full {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
   }
 }

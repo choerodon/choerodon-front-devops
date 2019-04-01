@@ -30,7 +30,7 @@ export default class TermSidebar extends Component {
       store,
       current: { id },
     } = this.props;
-    const projectId = AppState.currentMenuType.id;
+    const { projectId } = AppState.currentMenuType;
 
     store.loadPodParam(projectId, id, 'shell').then(data => {
       if (data && data.length) {
