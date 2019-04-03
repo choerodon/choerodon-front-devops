@@ -63,7 +63,9 @@ export default class Term extends PureComponent {
           this.socket.close();
           this.socket = null;
         }
-        this.createConnect();
+        setTimeout(() => {
+          this.createConnect();
+        }, 0);
       }
     }
   }
@@ -74,29 +76,29 @@ export default class Term extends PureComponent {
       terminalContainer.removeChild(terminalContainer.children[0]);
     }
     const term = new Terminal({
-      rendererType: 'dom',
+      // rendererType: 'dom',
       bellStyle: 'sound',
     });
+    this.term = term;
+
     term.open(terminalContainer);
     term.fit();
     term.focus();
-    this.term = term;
-    if (!this.socket) {
-      this.createConnect();
-    }
-    this.runFakeTerminal();
+    setTimeout(() => {
+      if (!this.socket) {
+        this.createConnect();
+      }
+    }, 0);
   }
 
   createConnect() {
     const { url } = this.props;
     try {
-      if (!this.socket) {
-        const socket = new WebSocket(url);
-        this.socket = socket;
-        socket.onopen = this.runRealTerminal;
-        socket.onclose = this.stopTerminal;
-        socket.onerror = this.errorTerminal;
-      }
+      const socket = new WebSocket(url);
+      this.socket = socket;
+      socket.onopen = this.runRealTerminal;
+      socket.onclose = this.stopTerminal;
+      socket.onerror = this.errorTerminal;
     } catch (e) {
       this.errorTerminal();
     }
@@ -104,6 +106,7 @@ export default class Term extends PureComponent {
 
   runRealTerminal = () => {
     this.term.clear();
+    this.term.setOption('disableStdin', false);
     this.term.attach(this.socket);
     this.term._initialized = true;
   };
@@ -126,26 +129,6 @@ export default class Term extends PureComponent {
     } else {
       Choerodon.prompt(intl.formatMessage({ id: 'devops.term.error' }));
     }
-  };
-
-  runFakeTerminal = () => {
-    if (this.term._initialized) {
-      return;
-    }
-
-    this.term._initialized = true;
-
-    this.term.on('key', function (key, ev) {
-      const printable =
-        !ev.altKey && !ev.altGraphKey && !ev.ctrlKey && !ev.metaKey;
-      if (printable) {
-        this.write(key);
-      }
-    });
-
-    this.term.on('paste', function (data, ev) {
-      this.write(data);
-    });
   };
 
   render() {
