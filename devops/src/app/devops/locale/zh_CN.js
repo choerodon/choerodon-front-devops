@@ -18,7 +18,7 @@ const pageDetail = {
   "network.update.link": `${docServer}/user-guide/deployment-pipeline/service/`,
 
   // 环境
-  "env.title": '项目"{name}"的环境流水线',
+  "env.title": '项目"{name}"的环境管理',
   "env.description":
     "环境是指一个应用可以被部署的地方。常见环境有开发测试环境，预生产环境，生产环境等。平台自动为您的项目生成一条环境流水线，您可在下方拖拽需要调整顺序的环境至目标位置。",
   "env.link": `${docServer}/user-guide/deployment-pipeline/environment-pipeline/`,
@@ -767,7 +767,7 @@ const zhCN = {
   "deploy.ist.event.empty": "暂无实例事件",
 
   // envPipeline
-  "envPl.head": "环境流水线",
+  "envPl.head": "环境管理",
   "envPl.create": "创建环境",
   "envPl.group.create": "创建分组",
   "envPl.group.edit": "编辑分组",
@@ -871,7 +871,7 @@ const zhCN = {
   "app.stage": "阶段",
   "app.creator": "创建者",
   "app.commitTime": "提交时间",
-  "app.pipeline": "流水线",
+  "app.pipeline": "工作台",
   "app.status": "服务状态",
   "app.quality": "代码质量",
   "app.code.tooltip":

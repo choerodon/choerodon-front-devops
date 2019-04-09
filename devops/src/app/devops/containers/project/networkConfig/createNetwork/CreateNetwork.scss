@@ -84,6 +84,22 @@
         &_150 {
           width: 149px;
         }
+
+        &_110 {
+          width: 110px;
+        }
+
+        &_100 {
+          width: 100px;
+        }
+      }
+
+      .ant-select-selection-label {
+        margin-top: 0;
+      }
+
+      .ant-select-selection__rendered {
+        margin-bottom: 0;
       }
 
       .network-port-form {

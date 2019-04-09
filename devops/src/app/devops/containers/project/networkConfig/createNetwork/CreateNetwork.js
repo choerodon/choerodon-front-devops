@@ -153,6 +153,7 @@ class CreateNetwork extends Component {
           port,
           tport,
           nport,
+          protocol,
           targetKeys,
           keywords,
           config,
@@ -176,6 +177,7 @@ class CreateNetwork extends Component {
                 targetPort: Number(tport[item]),
                 nodePort: nport ? Number(nport[item]) : null,
               };
+              config === 'NodePort' && (node.protocol = protocol[item]);
               ports.push(node);
             }
           });
@@ -303,7 +305,7 @@ class CreateNetwork extends Component {
       // 清除多组port映射
       this.portKeys = 1;
       // 清空表单项
-      resetFields(["port", "tport", "nport"]);
+      resetFields(["port", "tport", "nport", "protocol"]);
       setFieldsValue({
         [key]: [0],
       });
@@ -696,8 +698,8 @@ class CreateNetwork extends Component {
     let portWidthSingle = "240";
     let portWidthMut = "portL";
     if (configType !== "ClusterIP") {
-      portWidthSingle = "150";
-      portWidthMut = "portS";
+      portWidthSingle = configType === "LoadBalancer" ? "150" : "110";
+      portWidthMut = configType === "LoadBalancer" ? "portS" : "100";
     }
     // 生成多组 port
     getFieldDecorator("portKeys", { initialValue: [0] });
@@ -707,7 +709,7 @@ class CreateNetwork extends Component {
         {configType !== "ClusterIP" ? (
           <FormItem
             className={`c7n-select_${
-              portKeys.length > 1 ? "portS" : "150"
+              portKeys.length > 1 ? portWidthMut : portWidthSingle
             } network-panel-form network-port-form`}
             {...formItemLayout}
           >
@@ -779,6 +781,34 @@ class CreateNetwork extends Component {
             />
           )}
         </FormItem>
+        {configType === "NodePort" ? (
+          <FormItem
+            className={`c7n-select_${
+              portKeys.length > 1 ? portWidthMut : portWidthSingle
+              } network-panel-form network-port-form`}
+            {...formItemLayout}
+          >
+            {getFieldDecorator(`protocol[${k}]`, {
+              rules: [
+                {
+                  required: true,
+                  message: intl.formatMessage({ id: "required" }),
+                },
+              ],
+            })(
+              <Select
+                className="c7n-select_110"
+                label={<FormattedMessage id="ist.deploy.ports.protocol" />}
+              >
+                {_.map(['TCP', 'UDP'], item => (
+                  <Option value={item} key={item}>
+                    {item}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </FormItem>
+        ) : null}
         {portKeys.length > 1 ? (
           <Icon
             className="network-group-icon"

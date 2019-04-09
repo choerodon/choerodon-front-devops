@@ -18,7 +18,7 @@
 
 # 部署流水线
 "deployment-pipeline": "Deployment Pipeline"
-"deployment-pipeline.environment-pipeline": "Environment Pipeline"
+"deployment-pipeline.environment-pipeline": "Environment Management"
 "deployment-pipeline.auto-deploy": "Auto Deploy"
 "deployment-pipeline.deployment-overview": "Deployment Overview"
 "deployment-pipeline.application-deployment": "Application Deployment"

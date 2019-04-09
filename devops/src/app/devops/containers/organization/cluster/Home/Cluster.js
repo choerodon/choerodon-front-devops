@@ -587,6 +587,10 @@ class Cluster extends Component {
                 }
               }
             });
+        } else {
+          this.setState({
+            submitting: false,
+          });
         }
       });
     } else if (sideType === 'edit') {
@@ -609,6 +613,10 @@ class Cluster extends Component {
                 this.setState({ show: false, submitting: false });
               }
             });
+        } else {
+          this.setState({
+            submitting: false,
+          });
         }
       });
     }

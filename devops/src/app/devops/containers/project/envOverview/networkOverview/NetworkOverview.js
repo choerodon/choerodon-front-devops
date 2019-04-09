@@ -144,7 +144,7 @@ class NetworkOverview extends Component {
    * @returns {Array}
    */
   configColumn = record => {
-    const { config, type } = record;
+    const { config, type, loadBalanceIp } = record;
     const { externalIps, ports } = config;
     const iPArr = [];
     const portArr = [];
@@ -187,10 +187,18 @@ class NetworkOverview extends Component {
           )}
           <div className="network-config-wrap">
             <div className="network-type-title">
-              <FormattedMessage id="network.column.port" />
+              <FormattedMessage id="network.node.port" />
             </div>
             <div>{portArr}</div>
           </div>
+          {loadBalanceIp && (
+            <div className="network-config-wrap">
+              <div className="network-type-title">
+                <span>LoadBalancer IP</span>
+              </div>
+              <div>{loadBalanceIp}</div>
+            </div>
+          )}
         </Fragment>
       );
     return (
