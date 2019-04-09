@@ -161,7 +161,7 @@ class NetworkHome extends Component {
           )}
           <div className="network-config-wrap">
             <div className="network-type-title">
-              <FormattedMessage id="network.column.port" />
+              <FormattedMessage id="network.node.port" />
             </div>
             <div>{portArr}</div>
           </div>

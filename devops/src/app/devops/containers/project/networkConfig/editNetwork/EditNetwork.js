@@ -142,6 +142,7 @@ class EditNetwork extends Component {
           port,
           tport,
           nport,
+          protocol,
           targetKeys,
           keywords,
           config,
@@ -166,6 +167,7 @@ class EditNetwork extends Component {
                 targetPort: Number(tport[item]),
                 nodePort: nport && nport[item] ? Number(nport[item]) : null,
               };
+              config === 'NodePort' && (node.protocol = protocol[item]);
               ports.push(node);
             }
           });
@@ -208,6 +210,7 @@ class EditNetwork extends Component {
           nodePort: item.nodePort ? _.toNumber(item.nodePort) : null,
           port: item.port ? _.toNumber(item.port) : null,
           targetPort: item.targetPort ? _.toNumber(item.targetPort) : null,
+          protocol: item.protocol || null,
         }));
 
         const oldNetwork = {
@@ -387,7 +390,7 @@ class EditNetwork extends Component {
           [key]: [0],
         });
         this.setState({ config: {} });
-        resetFields(["port", "tport", "nport"]);
+        resetFields(["port", "tport", "nport", "protocol"]);
       }
       // 清除多组port映射
       this.portKeys = 1;
@@ -845,8 +848,8 @@ class EditNetwork extends Component {
     let portWidthSingle = "240";
     let portWidthMut = "portL";
     if (configType !== "ClusterIP") {
-      portWidthSingle = "150";
-      portWidthMut = "portS";
+      portWidthSingle = configType === "LoadBalancer" ? "150" : "110";
+      portWidthMut = configType === "LoadBalancer" ? "portS" : "100";
     }
 
     // 生成多组 port
@@ -857,14 +860,16 @@ class EditNetwork extends Component {
     const nPort = [];
     const pPort = [];
     const tPort = [];
+    const protocol = [];
     if (ports && ports.length) {
       initPort.pop();
       _.forEach(ports, (item, index) => {
-        const { nodePort, port, targetPort } = item;
+        const { nodePort, port, targetPort, protocol: oldProtocol } = item;
         initPort.push(index);
         nPort.push(nodePort);
         pPort.push(port);
         tPort.push(targetPort);
+        protocol.push(oldProtocol);
       });
       if (initPort.length !== 1 && this.portKeys === 1) {
         this.portKeys = ports.length;
@@ -877,7 +882,7 @@ class EditNetwork extends Component {
         {configType !== "ClusterIP" ? (
           <FormItem
             className={`c7n-select_${
-              portKeys.length > 1 ? "portS" : "150"
+              portKeys.length > 1 ? portWidthMut : portWidthSingle
             } network-panel-form network-port-form`}
             {...formItemLayout}
           >
@@ -952,6 +957,35 @@ class EditNetwork extends Component {
             />
           )}
         </FormItem>
+        {configType === "NodePort" ? (
+          <FormItem
+            className={`c7n-select_${
+              portKeys.length > 1 ? portWidthMut : portWidthSingle
+              } network-panel-form network-port-form`}
+            {...formItemLayout}
+          >
+            {getFieldDecorator(`protocol[${k}]`, {
+              rules: [
+                {
+                  required: true,
+                  message: intl.formatMessage({ id: "required" }),
+                },
+              ],
+              initialValue: protocol[k],
+            })(
+              <Select
+                className="c7n-select_110"
+                label={<FormattedMessage id="ist.deploy.ports.protocol" />}
+              >
+                {_.map(['TCP', 'UDP'], item => (
+                  <Option value={item} key={item}>
+                    {item}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </FormItem>
+        ) : null}
         {portKeys.length > 1 ? (
           <Icon
             className="network-group-icon"
