@@ -699,7 +699,7 @@ class CreateNetwork extends Component {
     let portWidthMut = "portL";
     if (configType !== "ClusterIP") {
       portWidthSingle = configType === "LoadBalancer" ? "150" : "110";
-      portWidthMut = configType === "LoadBalancer" ? "portS" : "100";
+      portWidthMut = configType === "LoadBalancer" ? "portS" : "portXS";
     }
     // 生成多组 port
     getFieldDecorator("portKeys", { initialValue: [0] });
