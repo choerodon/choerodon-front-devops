@@ -41,14 +41,16 @@ const ConfigMap = asyncRouter(() => import('./project/configMap'));
 const Secret = asyncRouter(() => import('./project/secret'));
 const AutoDeploy = asyncRouter(() => import('./project/autoDeploy'));
 const Elements = asyncRouter(() => import('./project/elements'));
+const PipelineIndex = asyncRouter(() => import('./project/pipeline'));
+const PipelineDetialIndex = asyncRouter(() => import('./project/pipelineDetail'));
 
 @inject('AppState')
 class DEVOPSIndex extends React.Component {
   render() {
     const { match, AppState } = this.props;
-    const langauge = AppState.currentLanguage;
-    const IntlProviderAsync = asyncLocaleProvider(langauge, () =>
-      import(`../locale/${langauge}`),
+    const language = AppState.currentLanguage;
+    const IntlProviderAsync = asyncLocaleProvider(language, () =>
+      import(`../locale/${language}`),
     );
 
     /**
@@ -96,6 +98,8 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/auto-deploy`} component={AutoDeploy} />
           <Route path={`${match.url}/elements`} component={Elements} />
           <Route path={`${match.url}/certificate-manage`} component={CertificateManage} />
+          <Route path={`${match.url}/pipeline`} component={PipelineIndex}/>
+          <Route path={`${match.url}/pipeline-detail`} component={PipelineDetialIndex}/>
           <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>

@@ -1,14 +1,15 @@
 import React, { Component, Fragment } from 'react';
-import { observer } from 'mobx-react';
-import { Content, stores } from 'choerodon-front-boot';
-import { Button, Form, Select, Input, Modal, Tooltip, Icon } from 'choerodon-ui';
+import { observer, inject } from 'mobx-react';
+import { Content } from 'choerodon-front-boot';
+import { Button, Form, Select, Input, Modal, Icon, Spin } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import InterceptMask from '../../../../components/interceptMask';
-import '../../../main.scss';
-import './ElementsCreate.scss';
 import { handleCheckerProptError, handleProptError } from '../../../../utils';
 import Tips from '../../../../components/Tips';
+
+import '../../../main.scss';
+import './ElementsCreate.scss';
 
 const REPO_TYPE = ['chart', 'harbor'];
 const LINK_TEST_ICON = {
@@ -16,7 +17,6 @@ const LINK_TEST_ICON = {
   failed: 'cancel',
 };
 
-const { AppState } = stores;
 const { Sidebar } = Modal;
 const { Item: FormItem } = Form;
 const { Option } = Select;
@@ -31,12 +31,20 @@ const formItemLayout = {
   },
 };
 
+@Form.create({})
 @injectIntl
+@inject('AppState')
 @observer
-class ElementsCreate extends Component {
+export default class ElementsCreate extends Component {
   checkName = _.debounce((rule, value, callback) => {
-    const { store, intl: { formatMessage }, form: { isModifiedField } } = this.props;
-    const { id: projectId } = AppState.currentMenuType;
+    const {
+      store,
+      intl: { formatMessage },
+      form: { isModifiedField },
+      AppState: {
+        currentMenuType: { id: projectId },
+      },
+    } = this.props;
     const reg = /^\S+$/;
     const emojiMatch = /\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/g;
     const isModify = isModifiedField('name');
@@ -68,8 +76,14 @@ class ElementsCreate extends Component {
   }
 
   componentDidMount() {
-    const { store, isEditMode, id } = this.props;
-    const { id: projectId } = AppState.currentMenuType;
+    const {
+      store,
+      isEditMode,
+      id,
+      AppState: {
+        currentMenuType: { id: projectId },
+      },
+    } = this.props;
     isEditMode && store.queryConfigById(projectId, id);
   }
 
@@ -99,8 +113,13 @@ class ElementsCreate extends Component {
    * 测试地址连接
    */
   handleTestClick = () => {
-    const { form: { validateFields }, store } = this.props;
-    const { id: projectId } = AppState.currentMenuType;
+    const {
+      form: { validateFields },
+      store,
+      AppState: {
+        currentMenuType: { id: projectId },
+      },
+    } = this.props;
     const { type: currentType } = store.getConfig;
     const type = currentType || this.state.type;
 
@@ -129,8 +148,15 @@ class ElementsCreate extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form: { validateFieldsAndScroll }, store, isEditMode, id } = this.props;
-    const { id: projectId } = AppState.currentMenuType;
+    const {
+      form: { validateFieldsAndScroll },
+      store,
+      isEditMode,
+      id,
+      AppState: {
+        currentMenuType: { id: projectId },
+      },
+    } = this.props;
     const { type: currentType, objectVersionNumber } = store.getConfig;
     const type = currentType || this.state.type;
 
@@ -184,7 +210,6 @@ class ElementsCreate extends Component {
   };
 
   render() {
-    const { name: projectName } = AppState.currentMenuType;
     const {
       form,
       visible,
@@ -194,6 +219,10 @@ class ElementsCreate extends Component {
         getTestLoading,
         getTestResult,
         getConfig,
+        getDetailLoading,
+      },
+      AppState: {
+        currentMenuType: { name: projectName },
       },
     } = this.props;
     const { getFieldDecorator } = form;
@@ -236,169 +265,171 @@ class ElementsCreate extends Component {
           values={{ name: projectName }}
           className="sidebar-content"
         >
-          <Form layout="vertical">
-            <FormItem
-              className="c7n-select_512"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('type', {
-                initialValue: currentType || 'chart',
-                rules: [{
-                  required: true,
-                  message: formatMessage({ id: 'required' }),
-                }],
-              })(
-                <Select
-                  disabled={isEditMode}
-                  className="c7n-select_512"
-                  label={<FormattedMessage id="elements.type.form" />}
-                  getPopupContainer={triggerNode => triggerNode.parentNode}
-                  onChange={this.handleTypeChange}
-                >
-                  {typeOption}
-                </Select>,
-              )}
-            </FormItem>
-            <FormItem
-              className="c7n-select_512"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('name', {
-                initialValue: getConfig.name,
-                rules: [{
-                  required: true,
-                  message: formatMessage({ id: 'required' }),
-                }, {
-                  validator: this.checkName,
-                }, {
-                  whitespace: true,
-                  message: formatMessage({ id: 'nameCanNotBeEmpty' }),
-                }],
-              })(
-                <Input
-                  type="text"
-                  maxLength={10}
-                  showLengthInfo={showLengthInfo}
-                  label={<FormattedMessage id="elements.name" />}
-                  onChange={this.handleInputName}
-                />,
-              )}
-            </FormItem>
-            <FormItem
-              className="c7n-select_512"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('url', {
-                initialValue: config.url,
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'required' }),
-                  },
-                  {
-                    validator: this.checkUrl,
-                  },
-                ],
-              })(
-                <Input
-                  type="text"
-                  label={<FormattedMessage id="elements.url" />}
-                />,
-              )}
-            </FormItem>
-            {currentType === 'harbor' && <Fragment>
+          <div className={isEditMode && getDetailLoading ? 'c7ncd-sidebar-spin-blur' : ''}>
+            <Form layout="vertical">
               <FormItem
                 className="c7n-select_512"
                 {...formItemLayout}
               >
-                {getFieldDecorator('userName', {
-                  initialValue: config.userName,
-                  rules: [
-                    {
-                      required: true,
-                      message: formatMessage({ id: 'required' }),
-                    },
-                  ],
-                })(
-                  <Input
-                    type="text"
-                    label={<FormattedMessage id="elements.user" />}
-                  />,
-                )}
-              </FormItem>
-              <FormItem
-                className="c7n-select_512 c7ncd-elements-password"
-                {...formItemLayout}
-              >
-                {getFieldDecorator('password', {
-                  initialValue: config.password,
-                  rules: [
-                    {
-                      required: true,
-                      message: formatMessage({ id: 'required' }),
-                    },
-                  ],
-                })(
-                  <Input
-                    type="password"
-                    showPasswordEye
-                    label={<FormattedMessage id="elements.password" />}
-                  />,
-                )}
-              </FormItem>
-              <FormItem
-                className="c7n-select_512"
-                {...formItemLayout}
-              >
-                {getFieldDecorator('email', {
-                  initialValue: config.email,
+                {getFieldDecorator('type', {
+                  initialValue: currentType || 'chart',
                   rules: [{
-                    type: 'email',
-                    message: formatMessage({ id: 'checkEmailError' }),
-                  }, {
                     required: true,
                     message: formatMessage({ id: 'required' }),
                   }],
                 })(
-                  <Input label={<FormattedMessage id="elements.email" />} />,
+                  <Select
+                    disabled={isEditMode}
+                    className="c7n-select_512"
+                    label={<FormattedMessage id="elements.type.form" />}
+                    getPopupContainer={triggerNode => triggerNode.parentNode}
+                    onChange={this.handleTypeChange}
+                  >
+                    {typeOption}
+                  </Select>,
                 )}
               </FormItem>
               <FormItem
                 className="c7n-select_512"
                 {...formItemLayout}
               >
-                {getFieldDecorator('project', {
-                  initialValue: config.project,
+                {getFieldDecorator('name', {
+                  initialValue: getConfig.name,
+                  rules: [{
+                    required: true,
+                    message: formatMessage({ id: 'required' }),
+                  }, {
+                    validator: this.checkName,
+                  }, {
+                    whitespace: true,
+                    message: formatMessage({ id: 'nameCanNotBeEmpty' }),
+                  }],
                 })(
                   <Input
                     type="text"
-                    label={<FormattedMessage id="elements.project" />}
-                    suffix={<Tips type="form" data="elements.project.help" />}
+                    maxLength={10}
+                    showLengthInfo={showLengthInfo}
+                    label={<FormattedMessage id="elements.name" />}
+                    onChange={this.handleInputName}
                   />,
                 )}
               </FormItem>
-            </Fragment>}
-          </Form>
-          <div className="c7ncd-elements-test">
-            <Button
-              funcType="raised"
-              className="c7ncd-elements-test-button"
-              onClick={this.handleTestClick}
-              loading={getTestLoading}
-            >
-              <FormattedMessage id="elements.test" />
-            </Button>
-            {getTestResult && <div className="c7ncd-elements-test-result">
-              <Icon type={LINK_TEST_ICON[getTestResult]}
-                    className={`c7ncd-elements-test-icon c7ncd-elements-test-icon_${getTestResult}`} />
-              <FormattedMessage id={`elements.link.${getTestResult}`} />
-            </div>}
+              <FormItem
+                className="c7n-select_512"
+                {...formItemLayout}
+              >
+                {getFieldDecorator('url', {
+                  initialValue: config.url,
+                  rules: [
+                    {
+                      required: true,
+                      message: formatMessage({ id: 'required' }),
+                    },
+                    {
+                      validator: this.checkUrl,
+                    },
+                  ],
+                })(
+                  <Input
+                    type="text"
+                    label={<FormattedMessage id="elements.url" />}
+                  />,
+                )}
+              </FormItem>
+              {currentType === 'harbor' && <Fragment>
+                <FormItem
+                  className="c7n-select_512"
+                  {...formItemLayout}
+                >
+                  {getFieldDecorator('userName', {
+                    initialValue: config.userName,
+                    rules: [
+                      {
+                        required: true,
+                        message: formatMessage({ id: 'required' }),
+                      },
+                    ],
+                  })(
+                    <Input
+                      type="text"
+                      label={<FormattedMessage id="elements.user" />}
+                    />,
+                  )}
+                </FormItem>
+                <FormItem
+                  className="c7n-select_512 c7ncd-elements-password"
+                  {...formItemLayout}
+                >
+                  {getFieldDecorator('password', {
+                    initialValue: config.password,
+                    rules: [
+                      {
+                        required: true,
+                        message: formatMessage({ id: 'required' }),
+                      },
+                    ],
+                  })(
+                    <Input
+                      type="password"
+                      showPasswordEye
+                      label={<FormattedMessage id="elements.password" />}
+                    />,
+                  )}
+                </FormItem>
+                <FormItem
+                  className="c7n-select_512"
+                  {...formItemLayout}
+                >
+                  {getFieldDecorator('email', {
+                    initialValue: config.email,
+                    rules: [{
+                      type: 'email',
+                      message: formatMessage({ id: 'checkEmailError' }),
+                    }, {
+                      required: true,
+                      message: formatMessage({ id: 'required' }),
+                    }],
+                  })(
+                    <Input label={<FormattedMessage id="elements.email" />} />,
+                  )}
+                </FormItem>
+                <FormItem
+                  className="c7n-select_512"
+                  {...formItemLayout}
+                >
+                  {getFieldDecorator('project', {
+                    initialValue: config.project,
+                  })(
+                    <Input
+                      type="text"
+                      label={<FormattedMessage id="elements.project" />}
+                      suffix={<Tips type="form" data="elements.project.help" />}
+                    />,
+                  )}
+                </FormItem>
+              </Fragment>}
+            </Form>
+            <div className="c7ncd-elements-test">
+              <Button
+                funcType="raised"
+                className="c7ncd-elements-test-button"
+                onClick={this.handleTestClick}
+                loading={getTestLoading}
+              >
+                <FormattedMessage id="elements.test" />
+              </Button>
+              {getTestResult && <div className="c7ncd-elements-test-result">
+                <Icon type={LINK_TEST_ICON[getTestResult]}
+                      className={`c7ncd-elements-test-icon c7ncd-elements-test-icon_${getTestResult}`} />
+                <FormattedMessage id={`elements.link.${getTestResult}`} />
+              </div>}
+            </div>
           </div>
+
+          {isEditMode && getDetailLoading && <Spin className="c7ncd-sidebar-spin" />}
         </Content>
-        <InterceptMask visible={submitting || getTestLoading} />
+        <InterceptMask visible={submitting || getTestLoading || getDetailLoading} />
       </Sidebar>
     );
   }
 }
-
-export default Form.create({})(ElementsCreate);

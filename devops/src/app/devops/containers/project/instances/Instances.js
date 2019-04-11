@@ -447,7 +447,7 @@ class Instances extends Component {
     const {
       intl: { formatMessage },
     } = this.props;
-    const { id, status, connect, appVersionId } = record;
+    const { status, connect, appVersionId } = record;
     const actionType = {
       detail: {
         service: ['devops-service.application-instance.listResources'],

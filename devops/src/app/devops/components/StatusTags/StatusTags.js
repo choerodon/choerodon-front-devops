@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 import { Tooltip } from 'choerodon-ui';
 import './StatusTags.scss';
 
@@ -16,11 +17,19 @@ const Color = {
   finished: '#00bf96',
 };
 
-class StatusTags extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    return !(nextProps.name === this.props.name
-      && nextProps.color === this.props.color);
-  }
+class StatusTags extends PureComponent {
+  static propTypes = {
+    name: PropTypes.string.isRequired,
+    color: PropTypes.string,
+    colorCode: PropTypes.string,
+    style: PropTypes.object,
+    ellipsis: PropTypes.object,
+    error: PropTypes.string,
+  };
+
+  static defaultProps = {
+    name: '',
+  };
 
   render() {
     const { name, color, colorCode, style, ellipsis, error } = this.props;
