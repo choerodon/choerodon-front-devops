@@ -1,5 +1,5 @@
 import { observable, action, computed } from "mobx";
-import { axios, store, stores } from "choerodon-front-boot";
+import { store } from "choerodon-front-boot";
 import { storage } from "../utils";
 
 const REFRESH_INTERVAL = 1000 * 10;

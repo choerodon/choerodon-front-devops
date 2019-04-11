@@ -2,11 +2,8 @@ import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import _ from 'lodash';
 import { handleProptError, handleCheckerProptError } from '../../../utils';
+import { HEIGHT } from '../../../common/Constants';
 
-const HEIGHT =
-  window.innerHeight ||
-  document.documentElement.clientHeight ||
-  document.body.clientHeight;
 const TEST_PASS = 'pass';
 const TEST_FAILED = 'failed';
 
@@ -21,6 +18,8 @@ class ElementsStore {
   };
 
   @observable loading = false;
+
+  @observable detailLoading = false;
 
   @observable testLoading = false;
 
@@ -74,6 +73,14 @@ class ElementsStore {
 
   @computed get getConfig() {
     return this.config;
+  }
+
+  @action setDetailLoading(data) {
+    this.detailLoading = data;
+  }
+
+  @computed get getDetailLoading() {
+    return this.detailLoading;
   }
 
   async loadListData(projectId, page, size, sort, param) {
@@ -168,13 +175,16 @@ class ElementsStore {
   }
 
   async queryConfigById(projectId, id) {
+    this.setDetailLoading(true);
     try {
       const response = await axios.get(`/devops/v1/projects/${projectId}/project_config/${id}`);
       const result = handleProptError(response);
       if (result) {
         this.setConfig(result);
       }
+      this.setDetailLoading(false);
     } catch (e) {
+      this.setDetailLoading(false);
     }
   }
 
