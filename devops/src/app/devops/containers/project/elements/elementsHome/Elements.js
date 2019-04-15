@@ -1,20 +1,28 @@
 import React, { Component } from 'react';
-import { observer } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
 import { Button, Table, Tooltip, Modal, Spin } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import ElementsCreate from '../elementsCreate';
 import { handleCheckerProptError } from '../../../../utils';
-import { SORTER_MAP } from '../../../../common/Constant';
+import { SORTER_MAP } from '../../../../common/Constants';
 
 import './Element.scss';
 
-const { AppState } = stores;
 const EDIT_MODE = true;
+
+function _renderName(record) {
+  return <FormattedMessage id={`elements.type.${record.type}`} />;
+}
+
+function _renderOrigin(record) {
+  return <FormattedMessage id={`elements.origin.${record.origin}`} />;
+}
 
 @injectIntl
 @withRouter
+@inject('AppState')
 @observer
 class Elements extends Component {
   constructor(props) {
@@ -88,8 +96,12 @@ class Elements extends Component {
   };
 
   loadData = (page = 0, size = 10, sort = { field: 'id', order: 'desc' }, filter = { searchParam: {}, param: '' }) => {
-    const { ElementsStore } = this.props;
-    const { id: projectId } = AppState.currentMenuType;
+    const {
+      ElementsStore,
+      AppState: {
+        currentMenuType: { id: projectId },
+      },
+    } = this.props;
     ElementsStore.loadListData(projectId, page, size, sort, filter);
   };
 
@@ -118,8 +130,12 @@ class Elements extends Component {
   };
 
   async openRemove(id, name) {
-    const { ElementsStore } = this.props;
-    const { id: projectId } = AppState.currentMenuType;
+    const {
+      ElementsStore,
+      AppState: {
+        currentMenuType: { id: projectId },
+      },
+    } = this.props;
     this.setState({
       showDelete: true,
       enableDeleteLoading: true,
@@ -149,8 +165,12 @@ class Elements extends Component {
   };
 
   handleDelete = async () => {
-    const { ElementsStore } = this.props;
-    const { id: projectId } = AppState.currentMenuType;
+    const {
+      ElementsStore,
+      AppState: {
+        currentMenuType: { id: projectId },
+      },
+    } = this.props;
     const { deleteId } = this.state;
     try {
       this.setState({ deleteLoading: true });
@@ -168,15 +188,17 @@ class Elements extends Component {
   };
 
   get getColumns() {
-    const { intl: { formatMessage } } = this.props;
-    const { filters, sorter: { columnKey, order } } = this.state;
     const {
-      type,
-      id: projectId,
-      organizationId,
-    } = AppState.currentMenuType;
-    const _renderName = record => (<FormattedMessage id={`elements.type.${record.type}`} />);
-    const _renderOrigin = record => (<FormattedMessage id={`elements.origin.${record.origin}`} />);
+      intl: { formatMessage },
+      AppState: {
+        currentMenuType: {
+          type,
+          id: projectId,
+          organizationId,
+        },
+      },
+    } = this.props;
+    const { filters, sorter: { columnKey, order } } = this.state;
     const _renderAction = (record) => {
       return record.origin === 'project' ? (<Permission
         service={[
@@ -257,13 +279,15 @@ class Elements extends Component {
         getPageInfo,
         getListData,
       },
+      AppState: {
+        currentMenuType: {
+          type,
+          id: projectId,
+          organizationId,
+          name,
+        },
+      },
     } = this.props;
-    const {
-      type,
-      id: projectId,
-      organizationId,
-      name,
-    } = AppState.currentMenuType;
     const {
       showCreation,
       editMode,
@@ -339,7 +363,7 @@ class Elements extends Component {
           closable={false}
           footer={!enableDeleteLoading ? [
             <Button key="back" onClick={this.closeRemove} disabled={deleteLoading}>
-              {<FormattedMessage id="cancel" />}
+              <FormattedMessage id="cancel" />
             </Button>,
             <Button
               key="submit"

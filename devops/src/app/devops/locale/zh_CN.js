@@ -1,4 +1,27 @@
 // zh_CN.js
+const commonField = {
+  // 表格通用列名
+  status: "状态",
+  name: "名称",
+  creator: "创建者",
+  updateDate: "更新时间",
+
+  // 操作
+  active: "启用",
+  stop: "停用",
+  return: "返回",
+  submit: "确认",
+  create: "创建",
+  add: "添加",
+  edit: "修改",
+
+  // 通用描述
+  app: "应用",
+  appName: "应用名称",
+  environment: "环境",
+  envName: "环境名称",
+};
+
 // 文档地址前缀
 const docServer = "http://v0-15.choerodon.io/zh/docs";
 // 界面标题描述统一管理
@@ -386,20 +409,35 @@ const pageDetail = {
   "elements.title": '项目"{name}"的组件设置',
   "elements.description": "组件设置页面用于管理项目下所有的组件配置，目前包括了Helm仓库与Docker仓库。您在此创建的组件配置可用于当前项目下所有的应用。",
   "elements.link": `${docServer}/user-guide/system-configuration/project/elements-settings`,
-  "elements.create.title": '项目"{name}"的组件设置',
+  "elements.create.title": '在项目"{name}"中创建组件配置',
   "elements.create.description": "您可在此填入相关信息来创建对应的组件配置，且只有测试通过后才能创建成功。",
   "elements.create.link": `${docServer}/user-guide/system-configuration/project/elements-settings`,
-  "elements.edit.title": '项目"{name}"的组件设置',
+  "elements.edit.title": '修改项目"{name}"的组件设置',
   "elements.edit.description": "您可在此修改组件配置的所有信息，但只有测试成功后才能保存。",
   "elements.edit.link": `${docServer}/user-guide/system-configuration/project/elements-settings`,
+
+  // 流水线
+  "pipeline.title": '项目"{name}"的流水线',
+  "pipeline.description": "流水线是一种实现任务流程自动化、可视化的方式，您可在此预设流水线中的各个阶段与任务，使整个流程更加高效。",
+  "pipeline.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "pipeline.create.title": '在项目"{name}"中创建流水线',
+  "pipeline.create.description": "您可以在此填写流水线名称、选择触发方式、创建阶段以及添加任务以此来创建流水线。",
+  "pipeline.create.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "pipeline.edit.title": '修改项目"{name}"的流水线',
+  "pipeline.edit.description": "流水线是一种实现任务流程自动化、可视化的方式，您可在此预设流水线中的各个阶段与任务，使整个流程更加高效。",
+  "pipeline.edit.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "pipeline.task.create.title": '在"{name}"中添加任务',
+  "pipeline.task.create.description": "您可以在此选择对应的任务类型，填选对应的内容，以此来添加任务。",
+  "pipeline.task.create.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
 };
 
 const zhCN = {
+  ...commonField,
+
   // public
   detail: "详情",
   operate: "操作",
   save: "保存",
-  active: "启用",
   edit: "修改",
   cancel: "取消",
   close: "关闭",
@@ -409,7 +447,6 @@ const zhCN = {
   Mobile: "移动",
   Application: "普通应用",
   JavaLib: "Java 库",
-  create: "创建",
   running: "运行中",
   operating: "处理中",
   stopping: "停止中",
@@ -435,7 +472,6 @@ const zhCN = {
   organization: "本组织",
   public: "全平台",
   filter: "过滤表",
-  stop: "停用",
   previous: "上一步",
   next: "下一步",
   finish: "结束",
@@ -463,8 +499,6 @@ const zhCN = {
   more: "更多",
   total: "总次数",
   recent: "最近",
-  return: "返回",
-  submit: "确认",
   key: "键",
   value: "值",
   detailMore: "更多详情",
@@ -483,7 +517,6 @@ const zhCN = {
   ci_created: "创建中",
   ci_skipped: "未执行",
   ci_manual: "未执行",
-  status: "状态",
 
   // 刷新
   refresh: "刷新",
@@ -1198,7 +1231,7 @@ const zhCN = {
   "editor.mode.changer": "切换编辑器模式",
   "yaml.modify": "当前修改",
   "yaml.error.tooltip":
-    "Values文件yaml格式错误，请在应用代码中修改错误并重新生成正确的应用版本。",
+    "Values文件yaml格式错误，请根据错误提示信息修改。",
 
   // merge request
   "merge.head": "合并请求",
@@ -1559,13 +1592,61 @@ const zhCN = {
   "elements.test": "测试连接",
   "elements.link.pass": "测试成功",
   "elements.link.failed": "测试失败",
-  "elements.delete": "删除组件配置",
+  "elements.delete": "删除组件配置 ",
   "elements.delete.enable": "确定删除该组件配置吗？",
   "elements.delete.disable": "不能删除该组件配置。您仅能删除没有关联应用的自定义组件配置。",
 
   // terminal
   "devops.term.close": "连接已关闭",
   "devops.term.error": "连接错误，请重新打开",
+
+  // pipeline
+  "pipeline.head": "流水线",
+  "pipeline.header.create": "创建流水线",
+  "pipeline.record": "流水线执行记录总览",
+  "pipeline.trigger": "触发方式",
+  "pipeline.trigger.member": "触发人员",
+  "pipeline.trigger.auto": "自动触发",
+  "pipeline.trigger.manual": "手动触发",
+  "pipeline.flow.auto": "自动流转",
+  "pipeline.flow.manual": "手动流转",
+  "pipeline.action.detail": "查看详情",
+  "pipeline.action.run": "执行",
+  "pipeline.delete": "删除流水线 ",
+  "pipeline.delete.message": "确定删除该流水线吗？",
+  "pipeline.invalid": "停用流水线 ",
+  "pipeline.invalid.message": "确定停用该流水线吗？",
+  "pipeline.task.create.head": "添加任务",
+  "pipeline.task.type": "任务类型",
+  "pipeline.task.parallel": "任务并行",
+  "pipeline.task.serial": "任务串行",
+  "pipeline.task.list": "任务列表",
+  "pipeline.task.settings": "任务设置",
+  "pipeline.task.name": "任务名称",
+  "pipeline.task.version": "版本类型",
+  "pipeline.task.version.tips": "您可在此输入或选择自动部署的应用版本类型，若想自动部署所选应用的所有版本，则不必填写此栏。",
+  "pipeline.task.instance": "实例名称",
+  "pipeline.task.instance.create": "新建实例",
+  "pipeline.task.instance.update": "替换实例",
+  "pipeline.task.instance.tips": "替换实例会更新该实例的镜像及配置信息，请确认要替换的实例选择无误。",
+  "pipeline.deploy.mode.tip":
+    "若选择新建实例，那么在第一次执行该条自动部署任务时，会在所选环境中新建一个实例，而后续执行该条自动部署任务时，均会默认在此实例上进行升级或更新；若选择替换实例，首先需要满足所选应用在所选环境中存在实例，而选中要替换的目标实例后，后续的自动部署便会直接在此实例上进行升级或更新。",
+  "pipeline.task.instance.replace": "选择要替换的实例",
+  "pipeline.task.auditor": "审核人员",
+  "pipeline.task.auditMode": "审核模式",
+  "pipeline.mode.manual": "人工卡点",
+  "pipeline.mode.auto": "部署",
+  "pipeline.audit.sign": "会签（需所有审核人员通过）",
+  "pipeline.audit.orSign": "或签",
+  "pipeline.deploy.mode": "选择部署模式",
+  "pipeline.task.config": "部署配置",
+  "pipeline.task.add": "添加任务",
+  "pipeline.task.delete": "删除阶段任务",
+  "pipeline.task.delete.msg": "确定删除该任务？",
+  "pipeline.stage.delete": "删除阶段",
+  "pipeline.stage.delete.msg": "确定删除该阶段？",
+  "pipeline.stage.create": "创建新阶段",
+  "pipeline.stage.edit": "修改阶段信息",
 
   ...pageDetail,
 };

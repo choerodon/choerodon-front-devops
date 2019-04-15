@@ -12,7 +12,7 @@ import StatusTags from '../../../../components/StatusTags';
 import AppName from '../../../../components/appName';
 import EnvOverviewStore from '../../../../stores/project/envOverview';
 import DepPipelineEmpty from '../../../../components/DepPipelineEmpty/DepPipelineEmpty';
-import { SORTER_MAP } from '../../../../common/Constant';
+import { SORTER_MAP } from '../../../../common/Constants';
 import LogSidebar from '../logSidebar';
 import TermSidebar from '../termSidebar';
 

@@ -31,13 +31,13 @@ export default class Term extends PureComponent {
   term = null;
   socket = null;
 
-  resizeScreen = _.throttle(() => {
+  resizeScreen = _.debounce(() => {
     if (this.term) {
       this.term.fit();
       const { cols, rows } = this.term;
       this.term.resize(cols, rows);
     }
-  }, 1000);
+  }, 100);
 
   componentDidMount() {
     this.setupTerm();

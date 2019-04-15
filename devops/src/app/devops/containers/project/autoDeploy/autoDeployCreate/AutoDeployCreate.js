@@ -1,7 +1,7 @@
-import React, { Component, Fragment } from "react";
-import { observer } from "mobx-react";
-import { withRouter, Link } from "react-router-dom";
-import { injectIntl, FormattedMessage } from "react-intl";
+import React, { Component, Fragment } from 'react';
+import { observer } from 'mobx-react';
+import { withRouter, Link } from 'react-router-dom';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import {
   Button,
   Modal,
@@ -11,19 +11,19 @@ import {
   Form,
   Input,
   Radio,
-  Spin
-} from "choerodon-ui";
+  Spin,
+} from 'choerodon-ui';
 import {
   Content,
   Permission,
   stores,
-} from "choerodon-front-boot";
-import _ from "lodash";
-import uuidv1 from "uuid/v1";
+} from 'choerodon-front-boot';
+import _ from 'lodash';
+import uuidv1 from 'uuid/v1';
 import '../../../main.scss';
 import './AutoDeployCreate.scss';
-import YamlEditor from "../../../../components/yamlEditor/YamlEditor";
-import Tips from "../../../../components/Tips/Tips";
+import YamlEditor from '../../../../components/yamlEditor/YamlEditor';
+import Tips from '../../../../components/Tips/Tips';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -61,13 +61,13 @@ class AutoDeployCreate extends Component {
       store.checkName(projectId, value)
         .then(data => {
           if (data && data.failed) {
-            callback(intl.formatMessage({ id: "task.name.exist" }));
+            callback(intl.formatMessage({ id: 'task.name.exist' }));
           } else {
             callback();
           }
         });
     } else {
-      callback(intl.formatMessage({ id: "task.name.check.failed" }));
+      callback(intl.formatMessage({ id: 'task.name.check.failed' }));
     }
   }, 1000);
 
@@ -88,13 +88,13 @@ class AutoDeployCreate extends Component {
       store.checkIstName(projectId, value)
         .then(data => {
           if (data && data.failed) {
-            callback(intl.formatMessage({ id: "task.name.exist" }));
+            callback(intl.formatMessage({ id: 'task.name.exist' }));
           } else {
             callback();
           }
         });
     } else {
-      callback(intl.formatMessage({ id: "network.name.check.failed" }));
+      callback(intl.formatMessage({ id: 'network.name.check.failed' }));
     }
   }, 1000);
 
@@ -148,7 +148,7 @@ class AutoDeployCreate extends Component {
     const { store } = this.props;
     store.setValue(null);
     store.setSingleTask(null);
-    store.setInstanceList([])
+    store.setInstanceList([]);
   }
 
   /**
@@ -186,7 +186,7 @@ class AutoDeployCreate extends Component {
       } else {
         this.setState({ submitting: false });
       }
-    })
+    });
   };
 
   /**
@@ -240,7 +240,7 @@ class AutoDeployCreate extends Component {
       return;
     }
     let istId = null;
-    let newMode = "new";
+    let newMode = 'new';
     let val = null;
 
     const appData = store.getHasVersionApp;
@@ -272,7 +272,7 @@ class AutoDeployCreate extends Component {
    */
   handleSelect = (value, type) => {
     const { store } = this.props;
-    if (type === "envId" || type === "appId") {
+    if (type === 'envId' || type === 'appId') {
       store.setValue(null);
       this.setState({
         [type]: value,
@@ -292,7 +292,7 @@ class AutoDeployCreate extends Component {
   handleChangeMode = value => {
     const { store } = this.props;
     const { appId } = this.state;
-    if (value === "new") {
+    if (value === 'new') {
       const appData = store.getHasVersionApp;
       const currentApp = _.find(appData, app => app.id === appId);
       const appCode = currentApp ? currentApp.code : '';
@@ -336,14 +336,14 @@ class AutoDeployCreate extends Component {
     } = this.state;
     const { store: { getValue } } = this.props;
     return (getValue || val ?
-      <YamlEditor
-        readOnly={false}
-        value={changedValue || getValue || value || ""}
-        originValue={getValue || value}
-        onValueChange={this.handleChangeValue}
-        handleEnableNext={this.handleEnableNext}
-      /> : null
-    )
+        <YamlEditor
+          readOnly={false}
+          value={changedValue || getValue || value || ''}
+          originValue={getValue || value}
+          onValueChange={this.handleChangeValue}
+          handleEnableNext={this.handleEnableNext}
+        /> : null
+    );
   };
 
   /**
@@ -379,7 +379,7 @@ class AutoDeployCreate extends Component {
     } = this.state;
     const {
       getFieldDecorator,
-    } =form;
+    } = form;
     const {
       taskName,
       triggerVersion,
@@ -406,25 +406,25 @@ class AutoDeployCreate extends Component {
               loading={submitting}
               disabled={hasEditorError || loading}
             >
-              {sidebarType === "create"
-                ? formatMessage({ id: "create" })
-                : formatMessage({ id: "save" })
+              {sidebarType === 'create'
+                ? formatMessage({ id: 'create' })
+                : formatMessage({ id: 'save' })
               }
             </Button>,
-            <Button
-              key="back"
-              funcType="raised"
-              onClick={this.handleClose.bind(this, false)}
-              disabled={submitting}
-              className="c7n-autoDeploy-sidebar-cancel"
-            >
-              {formatMessage({ id: "cancel" })}
-            </Button>]
+              <Button
+                key="back"
+                funcType="raised"
+                onClick={this.handleClose.bind(this, false)}
+                disabled={submitting}
+                className="c7n-autoDeploy-sidebar-cancel"
+              >
+                {formatMessage({ id: 'cancel' })}
+              </Button>]
           }
         >
           <Content
             code={`autoDeploy.${sidebarType}`}
-            values={{ name: sidebarType === 'create' ? name : taskName  }}
+            values={{ name: sidebarType === 'create' ? name : taskName }}
             className="c7n-autodDeploy-create sidebar-content"
           >
             <Form layout="vertical">
@@ -432,43 +432,43 @@ class AutoDeployCreate extends Component {
                 className="c7n-select_512"
                 {...formItemLayout}
               >
-                {getFieldDecorator("taskName", {
+                {getFieldDecorator('taskName', {
                   rules: [
                     {
                       required: true,
-                      message: formatMessage({ id: "required" }),
+                      message: formatMessage({ id: 'required' }),
                       whitespace: true,
                     },
                     {
                       validator: this.checkName,
                     },
                   ],
-                  initialValue: taskName || "",
+                  initialValue: taskName || '',
                 })(
                   <Input
                     maxLength={30}
                     type="text"
                     label={<FormattedMessage id="autoDeploy.task.name" />}
-                  />
+                  />,
                 )}
               </FormItem>
               <FormItem
                 className="c7n-select_512"
                 {...formItemLayout}
               >
-                {getFieldDecorator("appId", {
+                {getFieldDecorator('appId', {
                   rules: [
                     {
                       required: true,
-                      message: formatMessage({ id: "required" }),
+                      message: formatMessage({ id: 'required' }),
                     },
                   ],
                   initialValue: appId,
                 })(
                   <Select
-                    label={formatMessage({ id: "deploy.appName" })}
+                    label={formatMessage({ id: 'deploy.appName' })}
                     optionFilterProp="children"
-                    onChange={ value => this.handleSelect(value, 'appId')}
+                    onChange={value => this.handleSelect(value, 'appId')}
                     filter
                     filterOption={(input, option) =>
                       option.props.children
@@ -486,7 +486,7 @@ class AutoDeployCreate extends Component {
                         </Option>
                       ))
                     }
-                  </Select>
+                  </Select>,
                 )}
               </FormItem>
               <div className="c7ncd-sidebar-select autoDeploy-type-tips">
@@ -494,12 +494,12 @@ class AutoDeployCreate extends Component {
                   className="c7n-select_512"
                   {...formItemLayout}
                 >
-                  {getFieldDecorator("triggerVersion", {
+                  {getFieldDecorator('triggerVersion', {
                     initialValue: triggerVersion || [],
                   })(
                     <Select
                       mode="tags"
-                      label={formatMessage({ id: "autoDeploy.version.type" })}
+                      label={formatMessage({ id: 'autoDeploy.version.type' })}
                       allowClear
                     >
                       {_.map(VERSIONTYPE, item => (
@@ -508,7 +508,7 @@ class AutoDeployCreate extends Component {
                         </Option>
                       ))
                       }
-                    </Select>
+                    </Select>,
                   )}
                 </FormItem>
                 <Tips type="form" data="autoDeploy.create.type.tips" />
@@ -517,19 +517,19 @@ class AutoDeployCreate extends Component {
                 className="c7n-select_512"
                 {...formItemLayout}
               >
-                {getFieldDecorator("envId", {
+                {getFieldDecorator('envId', {
                   rules: [
                     {
                       required: true,
-                      message: formatMessage({ id: "required" }),
+                      message: formatMessage({ id: 'required' }),
                     },
                   ],
                   initialValue: envId,
                 })(
                   <Select
-                    label={formatMessage({ id: "deploy.envName" })}
+                    label={formatMessage({ id: 'deploy.envName' })}
                     optionFilterProp="children"
-                    onChange={ value => this.handleSelect(value, 'envId')}
+                    onChange={value => this.handleSelect(value, 'envId')}
                     filter
                     filterOption={(input, option) =>
                       option.props.children[1]
@@ -553,7 +553,7 @@ class AutoDeployCreate extends Component {
                         </Option>
                       ))
                     }
-                  </Select>
+                  </Select>,
                 )}
               </FormItem>
               <div>
@@ -569,13 +569,13 @@ class AutoDeployCreate extends Component {
                     value="new"
                     disabled={instanceId && (appId === app && envId === env && istId)}
                   >
-                    <FormattedMessage id="autoDeploy.instance.create"/>
+                    <FormattedMessage id="autoDeploy.instance.create" />
                   </Radio>
                   <Radio
                     value="replace"
                     disabled={!instanceList || instanceList.length === 0}
                   >
-                    <FormattedMessage id="autoDeploy.instance.update"/>
+                    <FormattedMessage id="autoDeploy.instance.update" />
                     <Icon
                       className="c7n-autoDeploy-replace-tip-icon"
                       type="error"
@@ -583,21 +583,21 @@ class AutoDeployCreate extends Component {
                     <span
                       className="c7n-autoDeploy-replace-tip-text"
                     >
-                      {formatMessage({id: "autoDeploy.replace.instance.tips"})}
+                      {formatMessage({ id: 'autoDeploy.replace.instance.tips' })}
                     </span>
                   </Radio>
                 </RadioGroup>
               </div>
-              {mode === "new" && (
+              {mode === 'new' && (
                 <FormItem
                   className="c7n-select_512"
                   {...formItemLayout}
                 >
-                  {getFieldDecorator("instanceName", {
+                  {getFieldDecorator('instanceName', {
                     rules: [
                       {
                         required: true,
-                        message: formatMessage({id: "required"}),
+                        message: formatMessage({ id: 'required' }),
                       },
                       {
                         validator: this.checkIstName,
@@ -607,23 +607,23 @@ class AutoDeployCreate extends Component {
                   })(
                     <Input
                       onChange={e => this.handleSelect(e.target.value, 'instanceName')}
-                      disabled={mode !== "new"}
+                      disabled={mode !== 'new'}
                       maxLength={30}
-                      label={formatMessage({id: "deploy.instance"})}
-                    />
+                      label={formatMessage({ id: 'deploy.instance' })}
+                    />,
                   )}
                 </FormItem>
               )}
-              {mode === "replace" && (
+              {mode === 'replace' && (
                 <FormItem
                   className="c7n-select_512"
                   {...formItemLayout}
                 >
-                  {getFieldDecorator("instanceId", {
+                  {getFieldDecorator('instanceId', {
                     rules: [
                       {
                         required: true,
-                        message: formatMessage({ id: "required" }),
+                        message: formatMessage({ id: 'required' }),
                       },
                     ],
                     initialValue: instanceId,
@@ -632,7 +632,7 @@ class AutoDeployCreate extends Component {
                       filter
                       optionFilterProp="children"
                       onSelect={value => this.handleChangeIst(value)}
-                      label={formatMessage({ id: "deploy.step.three.mode.replace.label" })}
+                      label={formatMessage({ id: 'deploy.step.three.mode.replace.label' })}
                       filterOption={(input, option) =>
                         option.props.children.props.children.props.children
                           .toLowerCase()
@@ -648,7 +648,7 @@ class AutoDeployCreate extends Component {
                           <Tooltip
                             title={
                               item.isEnabled === 0 && parseInt(item.id) !== istId ?
-                                formatMessage({ id: "autoDeploy.instance.tooltip" }) : ''
+                                formatMessage({ id: 'autoDeploy.instance.tooltip' }) : ''
                             }
                             placement="right"
                           >

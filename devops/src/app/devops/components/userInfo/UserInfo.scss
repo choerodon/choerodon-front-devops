@@ -1,0 +1,17 @@
+.c7ncd-userinfo-wrap {
+  .c7ncd-userinfo-avatar {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: none;
+    text-align: center;
+  }
+  .c7ncd-userinfo-name {
+    display: inline-block;
+    margin-left: 8px;
+    vertical-align: middle;
+    line-height: 20px;
+    color: #000;
+  }
+}
