@@ -1,10 +1,80 @@
 import { observable, action, computed, set, remove } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
+import _ from 'lodash';
 import { handleProptError } from '../../../utils';
+
+const HEAD_STAGE_INDEX = 0;
+const initStage = {
+  id: 0,
+  name: 'stage1',
+  type: 'auto',
+  member: null,
+};
 
 @store('PipelineCreateStore')
 class PipelineCreateStore {
-  @observable taskList = {};
+  @observable stageIndex = 0;
+
+  @action setStageIndex(index) {
+    this.stageIndex = index;
+  }
+
+  @computed get getStageIndex() {
+    return this.stageIndex;
+  }
+
+  @observable stageList = [{
+    id: 0,
+    name: 'stage1',
+    type: 'auto',
+    flowMember: null,
+  }];
+
+  /**
+   * 添加阶段
+   * @param id 前一个阶段的id
+   * @param data
+   */
+  @action addStage(id, data) {
+    const index = _.findIndex(this.stageList, ['id', id]);
+    if (index === -1) return;
+    this.stageList.splice(index + 1, 0, data);
+  }
+
+  /**
+   * 修改阶段
+   * @param id 当前修改阶段的id
+   * @param data
+   */
+  @action editStage(id, data) {
+    const stage = _.find(this.stageList, ['id', id]);
+    set(stage, { ...data });
+  }
+
+  @action setStageList(id, data) {
+    const thisStage = _.find(this.stageList, ['id', id]);
+    if (!thisStage) return;
+
+    set(thisStage, { ...data });
+  }
+
+  @action removeStage(id) {
+    const index = _.findIndex(this.stageList, ['id', id]);
+    if (index === -1) return;
+    remove(this.stageList, index);
+  }
+
+  @computed get getStageList() {
+    return this.stageList.slice();
+  }
+
+  @observable taskList = {
+    0: [{
+      id: 0,
+      name: 'Staging 部署任务很长很长，甚至看不见了',
+      type: 'auto',
+    }],
+  };
 
   /**
    * 设置某阶段的任务列表
@@ -23,16 +93,6 @@ class PipelineCreateStore {
 
   @computed get getTaskList() {
     return this.taskList;
-  }
-
-  @observable stageInfoList = [];
-
-  @action setStageInfoList(data) {
-    this.stageInfoList = data;
-  }
-
-  @computed get getStageInfoList() {
-    return this.stageInfoList.slice();
   }
 
   @observable taskSettings = {};

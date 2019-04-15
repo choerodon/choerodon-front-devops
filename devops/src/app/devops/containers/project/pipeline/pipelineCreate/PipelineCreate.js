@@ -3,10 +3,11 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Modal, Spin, Tooltip, Form, Input, Select, Radio } from 'choerodon-ui';
-import { Permission, Content, Header, Page, Action } from 'choerodon-front-boot';
+import { Permission, Content, Header, Page } from 'choerodon-front-boot';
 import _ from 'lodash';
 import StageCard from '../components/stageCard';
-import StageTitle from '../components/stageTitle';
+import StageCreateModal from '../components/stageCreateModal';
+import { STAGE_FLOW_AUTO, STAGE_FLOW_MANUAL } from '../components/Constans';
 
 import './PipelineCreate.scss';
 import '../../../main.scss';
@@ -25,15 +26,16 @@ const formItemLayout = {
   },
 };
 
-@Form.create()
+@Form.create({})
 @injectIntl
 @withRouter
 @inject('AppState')
 @observer
 export default class PipelineCreate extends Component {
   state = {
-    triggerType: 'auto',
-    showLengthInfo: false,
+    triggerType: STAGE_FLOW_AUTO,
+    showCreate: false,
+    prevId: null,
   };
 
   changeTriggerType = (e) => {
@@ -42,21 +44,21 @@ export default class PipelineCreate extends Component {
     });
   };
 
-  /**
-   * 输入框显示已输入字数，无内容不显示
-   */
-  handleInputName = () => {
-    const { showLengthInfo } = this.state;
-    if (!showLengthInfo) {
-      this.setState({
-        showLengthInfo: true,
-      });
-    }
+  openCreateForm = (prevId) => {
+    this.setState({ showCreate: true, prevId });
   };
 
-  get getPipelineDom() {
-    const { PipelineCreateStore: { getStageInfoList } } = this.props;
+  closeCreateForm = () => {
+    this.setState({ showCreate: false, prevId: null });
+  };
 
+  get renderPipelineDom() {
+    const { PipelineCreateStore: { getStageList } } = this.props;
+    return _.map(getStageList, item => (<StageCard
+      key={item.id}
+      stageId={item.id}
+      clickAdd={this.openCreateForm}
+    />));
   }
 
   render() {
@@ -75,12 +77,10 @@ export default class PipelineCreate extends Component {
       },
       intl: { formatMessage },
       form: { getFieldDecorator },
+      PipelineCreateStore,
     } = this.props;
 
-    const {
-      triggerType,
-      showLengthInfo,
-    } = this.state;
+    const { triggerType, showCreate, prevId } = this.state;
 
     return (<Page
       className="c7n-region c7n-pipeline-creat"
@@ -109,8 +109,6 @@ export default class PipelineCreate extends Component {
                 label={<FormattedMessage id="name" />}
                 type="text"
                 maxLength={10}
-                onChange={this.handleInputName}
-                showLengthInfo={showLengthInfo}
               />,
             )}
           </FormItem>
@@ -119,23 +117,23 @@ export default class PipelineCreate extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('triggerType', {
-              initialValue: 'auto',
+              initialValue: STAGE_FLOW_AUTO,
               rules: [{
                 required: true,
                 message: formatMessage({ id: 'required' }),
               }],
             })(
               <RadioGroup label={formatMessage({ id: 'pipeline.trigger' })} onChange={this.changeTriggerType}>
-                <Radio value="auto">
+                <Radio value={STAGE_FLOW_AUTO}>
                   <FormattedMessage id="pipeline.trigger.auto" />
                 </Radio>
-                <Radio value="manual">
+                <Radio value={STAGE_FLOW_MANUAL}>
                   <FormattedMessage id="pipeline.trigger.manual" />
                 </Radio>
               </RadioGroup>,
             )}
           </FormItem>
-          {triggerType === 'manual' && <FormItem
+          {triggerType === STAGE_FLOW_MANUAL && <FormItem
             className="c7n-select_512"
             {...formItemLayout}
           >
@@ -146,7 +144,6 @@ export default class PipelineCreate extends Component {
               }],
             })(
               <Select
-                className="c7n-select_512"
                 label={formatMessage({ id: 'pipeline.trigger.member' })}
                 mode="tags"
                 getPopupContainer={triggerNode => triggerNode.parentNode}
@@ -159,11 +156,9 @@ export default class PipelineCreate extends Component {
             )}
           </FormItem>}
           <div className="c7ncd-pipeline-main">
-            <StageTitle
-              name="阶段一"
-              type="auto"
-            />
-            <StageCard stageName="stage1" />
+            <div className="c7ncd-pipeline-scroll">
+              {this.renderPipelineDom}
+            </div>
           </div>
           <FormItem
             {...formItemLayout}
@@ -181,6 +176,12 @@ export default class PipelineCreate extends Component {
           </FormItem>
         </Form>
       </Content>
+      {showCreate && <StageCreateModal
+        store={PipelineCreateStore}
+        prevId={prevId}
+        visible={showCreate}
+        onClose={this.closeCreateForm}
+      />}
     </Page>);
   }
 

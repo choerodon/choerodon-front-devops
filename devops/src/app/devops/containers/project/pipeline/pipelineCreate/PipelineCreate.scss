@@ -9,9 +9,16 @@
 
   .c7ncd-pipeline-main {
     margin-bottom: 32px;
-    padding: 24px;
+    padding: 24px 0;
     width: 100%;
     border: 1px solid #e3e3e3;
     background: #fff;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    .c7ncd-pipeline-scroll {
+      display: inline-flex;
+      padding: 0 14px;
+    }
   }
 }

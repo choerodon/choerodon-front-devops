@@ -13,6 +13,7 @@ const commonField = {
   submit: "确认",
   create: "创建",
   add: "添加",
+  edit: "修改",
 
   // 通用描述
   app: "应用",
@@ -1628,6 +1629,8 @@ const zhCN = {
   "pipeline.task.instance.create": "新建实例",
   "pipeline.task.instance.update": "替换实例",
   "pipeline.task.instance.tips": "替换实例会更新该实例的镜像及配置信息，请确认要替换的实例选择无误。",
+  "pipeline.deploy.mode.tip":
+    "若选择新建实例，那么在第一次执行该条自动部署任务时，会在所选环境中新建一个实例，而后续执行该条自动部署任务时，均会默认在此实例上进行升级或更新；若选择替换实例，首先需要满足所选应用在所选环境中存在实例，而选中要替换的目标实例后，后续的自动部署便会直接在此实例上进行升级或更新。",
   "pipeline.task.instance.replace": "选择要替换的实例",
   "pipeline.task.auditor": "审核人员",
   "pipeline.task.auditMode": "审核模式",
@@ -1640,6 +1643,10 @@ const zhCN = {
   "pipeline.task.add": "添加任务",
   "pipeline.task.delete": "删除阶段任务",
   "pipeline.task.delete.msg": "确定删除该任务？",
+  "pipeline.stage.delete": "删除阶段",
+  "pipeline.stage.delete.msg": "确定删除该阶段？",
+  "pipeline.stage.create": "创建新阶段",
+  "pipeline.stage.edit": "修改阶段信息",
 
   ...pageDetail,
 };

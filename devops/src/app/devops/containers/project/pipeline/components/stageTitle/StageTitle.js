@@ -20,10 +20,12 @@ export default class StageTitle extends PureComponent {
     const {
       name,
       type,
+      onChange,
+      onRemove,
     } = this.props;
 
     return (
-      <div className="c7ncd-pipeline-stage-wrap">
+      <div className="c7ncd-pipeline-stage-head">
         <div className="c7ncd-pipeline-stage-title">
           <h3 className="c7ncd-pipeline-stage-name">{name}</h3>
           <div className="c7ncd-pipeline-stage-type">
@@ -31,8 +33,19 @@ export default class StageTitle extends PureComponent {
           </div>
         </div>
         <div className="c7ncd-pipeline-stage-op">
-          <Button className="c7ncd-pipeline-stage-btn" size="small" icon="mode_edit" shape="circle" />
-          <Button size="small" icon="delete_forever" shape="circle" />
+          <Button
+            className="c7ncd-pipeline-stage-btn"
+            size="small"
+            icon="mode_edit"
+            shape="circle"
+            onClick={onChange}
+          />
+          <Button
+            size="small"
+            icon="delete_forever"
+            shape="circle"
+            onClick={onRemove}
+          />
         </div>
       </div>
     );

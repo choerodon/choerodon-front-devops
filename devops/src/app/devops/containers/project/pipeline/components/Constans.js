@@ -1,3 +1,6 @@
+const STAGE_FLOW_AUTO = 'auto';
+const STAGE_FLOW_MANUAL = 'manual';
+
 const TASK_TYPE_DEPLOY = 'auto';
 const TASK_TYPE_MANUAL = 'manual';
 
@@ -13,6 +16,8 @@ const TASK_PARALLEL = 'parallel';
 const TASK_SERIAL = 'serial';
 
 export {
+  STAGE_FLOW_AUTO,
+  STAGE_FLOW_MANUAL,
   TASK_TYPE_DEPLOY,
   TASK_TYPE_MANUAL,
   MODE_TYPE_NEW,

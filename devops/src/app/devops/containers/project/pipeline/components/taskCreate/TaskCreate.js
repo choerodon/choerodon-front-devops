@@ -50,7 +50,18 @@ export default class TaskCreate extends Component {
   };
 
   componentDidMount() {
-    this.loadingOptionsData();
+    const { stageId, taskName } = this.props;
+    const { getTaskList } = PipelineCreateStore;
+    const initData = _.find(getTaskList[stageId], ['name', taskName]) || {};
+    const deployData = initData.appDeployDTOS || {};
+
+    if (!(initData.type === TASK_TYPE_MANUAL)) {
+      this.loadingOptionsData();
+    }
+
+    if (deployData.applicationId && deployData.envId) {
+      this.loadInstanceData(deployData.envId, deployData.applicationId);
+    }
   }
 
   componentWillUnmount() {
@@ -65,28 +76,32 @@ export default class TaskCreate extends Component {
     const {
       form: { validateFieldsAndScroll },
       onClose,
-      name: stageName,
+      stageId,
     } = this.props;
 
     validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const { type, name, applicationId, triggerVersion, envId, instanceName, valueId, instanceId } = values;
+        const { type, name, applicationId, triggerVersion, envId, instanceName, valueId, instanceId, userId } = values;
         const { configValue } = this.state;
+        const appDeployDTOS = type === TASK_TYPE_DEPLOY ? {
+          applicationId,
+          triggerVersion,
+          envId,
+          instanceId,
+          instanceName,
+          value: configValue,
+          valueId,
+        } : null;
+        const taskUserRelDTOS = type === TASK_TYPE_MANUAL ? { userId } : null;
         const data = {
+          // tempId:
           type,
           name,
-          stageName,
-          appDeployDTOS: {
-            applicationId,
-            triggerVersion,
-            envId,
-            instanceId,
-            instanceName,
-            value: configValue,
-            valueId,
-          },
+          stageId,
+          appDeployDTOS,
+          taskUserRelDTOS,
         };
-        PipelineCreateStore.setTaskList(stageName || 'stage1', data);
+        PipelineCreateStore.setTaskList(stageId, data);
         onClose();
       }
     });
@@ -146,7 +161,11 @@ export default class TaskCreate extends Component {
    * 获取配置信息
    */
   getYaml = () => {
-    const value = PipelineCreateStore.getConfig || '';
+    const { stageId, taskName } = this.props;
+    const { getTaskList } = PipelineCreateStore;
+    const initData = _.find(getTaskList[stageId], ['name', taskName]) || {};
+    const deployData = initData.appDeployDTOS || {};
+    const value = deployData.value || PipelineCreateStore.getConfig || '';
 
     return value && <YamlEditor
       readOnly={false}
@@ -180,9 +199,11 @@ export default class TaskCreate extends Component {
     const {
       visible,
       onClose,
-      name,
       form: { getFieldDecorator },
       intl: { formatMessage },
+      stageId,
+      stageName,
+      taskName,
     } = this.props;
     const {
       getEnvData,
@@ -191,6 +212,41 @@ export default class TaskCreate extends Component {
       getInstance,
     } = PipelineCreateStore;
     const { submitting, taskType, mode } = this.state;
+    const { getTaskList } = PipelineCreateStore;
+    const initData = _.find(getTaskList[stageId], ['name', taskName]) || {};
+    const deployData = initData.appDeployDTOS || {};
+    // const manualData = initData.
+
+    let appOptions = [];
+    let envOptions = [];
+    let instanceOptions = [];
+
+    if (initData.type !== TASK_TYPE_MANUAL) {
+      appOptions = _.map(getAppData, item => (<Option key={item.id} value={item.id}>
+          {item.name}
+        </Option>
+      ));
+      envOptions = _.map(VERSION_TYPE, item => (
+        <Option key={item} value={item}>{item}</Option>
+      ));
+      if (deployData.instanceId) {
+        instanceOptions = _.map(getInstance, item => (
+          <Option
+            value={item.id}
+            key={item.id}
+            disabled={item.isEnabled === 0}
+          >
+            <Tooltip
+              title={
+                item.isEnabled === 0 ? formatMessage({ id: 'autoDeploy.instance.tooltip' }) : ''
+              }
+              placement="right"
+            >
+              {item.code}
+            </Tooltip>
+          </Option>));
+      }
+    }
 
     return (<Sidebar
       destroyOnClose
@@ -217,7 +273,7 @@ export default class TaskCreate extends Component {
     >
       <Content
         code="pipeline.task.create"
-        values={{ name }}
+        values={{ name: stageName }}
         className="sidebar-content c7n-pipeline-task-create"
       >
         <Form layout="vertical">
@@ -226,7 +282,7 @@ export default class TaskCreate extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('type', {
-              initialValue: TASK_TYPE_DEPLOY,
+              initialValue: initData.type || TASK_TYPE_DEPLOY,
             })(
               <Select
                 label={formatMessage({ id: 'pipeline.task.type' })}
@@ -257,6 +313,7 @@ export default class TaskCreate extends Component {
                   // validator: this.checkName,
                 },
               ],
+              initialValue: initData.name,
             })(
               <Input
                 maxLength={30}
@@ -277,6 +334,7 @@ export default class TaskCreate extends Component {
                     message: formatMessage({ id: 'required' }),
                   },
                 ],
+                initialValue: deployData.applicationId,
               })(
                 <Select
                   label={formatMessage({ id: 'app' })}
@@ -290,10 +348,7 @@ export default class TaskCreate extends Component {
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {_.map(getAppData, item => (<Option key={item.id} value={item.id}>
-                      {item.name}
-                    </Option>
-                  ))}
+                  {appOptions}
                 </Select>,
               )}
             </FormItem>
@@ -302,15 +357,15 @@ export default class TaskCreate extends Component {
                 className="c7n-select_512"
                 {...formItemLayout}
               >
-                {getFieldDecorator('triggerVersion')(
+                {getFieldDecorator('triggerVersion', {
+                  initialValue: deployData.triggerVersion,
+                })(
                   <Select
                     mode="tags"
                     label={formatMessage({ id: 'pipeline.task.version' })}
                     allowClear
                   >
-                    {_.map(VERSION_TYPE, item => (
-                      <Option key={item} value={item}>{item}</Option>
-                    ))}
+                    {envOptions}
                   </Select>,
                 )}
               </FormItem>
@@ -327,6 +382,7 @@ export default class TaskCreate extends Component {
                     message: formatMessage({ id: 'required' }),
                   },
                 ],
+                initialValue: deployData.envId,
               })(
                 <Select
                   label={formatMessage({ id: 'envName' })}
@@ -381,8 +437,8 @@ export default class TaskCreate extends Component {
                   <span
                     className="c7n-pipeline-replace-tip-text"
                   >
-                  {formatMessage({ id: 'pipeline.task.instance.tips' })}
-                </span>
+                    {formatMessage({ id: 'pipeline.task.instance.tips' })}
+                  </span>
                 </Radio>
               </RadioGroup>
             </Fragment>
@@ -401,6 +457,7 @@ export default class TaskCreate extends Component {
                       // validator: this.checkIstName,
                     },
                   ],
+                  initialValue: deployData.instanceName,
                 })(
                   <Input
                     disabled={mode !== MODE_TYPE_NEW}
@@ -422,6 +479,7 @@ export default class TaskCreate extends Component {
                       message: formatMessage({ id: 'required' }),
                     },
                   ],
+                  initialValue: deployData.instanceId,
                 })(
                   <Select
                     filter
@@ -433,22 +491,7 @@ export default class TaskCreate extends Component {
                         .indexOf(input.toLowerCase()) >= 0
                     }
                   >
-                    {_.map(getInstance, item => (
-                      <Option
-                        value={item.id}
-                        key={item.id}
-                        disabled={item.isEnabled === 0}
-                      >
-                        <Tooltip
-                          title={
-                            item.isEnabled === 0 ? formatMessage({ id: 'autoDeploy.instance.tooltip' }) : ''
-                          }
-                          placement="right"
-                        >
-                          {item.code}
-                        </Tooltip>
-                      </Option>))
-                    }
+                    {instanceOptions}
                   </Select>)
                 }
               </FormItem>)
@@ -467,6 +510,7 @@ export default class TaskCreate extends Component {
                     message: formatMessage({ id: 'required' }),
                   },
                 ],
+                initialValue: deployData.valueId,
               })(
                 <Select
                   label={formatMessage({ id: 'pipeline.task.config' })}
@@ -492,7 +536,7 @@ export default class TaskCreate extends Component {
               className="c7n-select_512"
               {...formItemLayout}
             >
-              {getFieldDecorator('auditor', {
+              {getFieldDecorator('userId', {
                 rules: [{
                   required: true,
                   message: formatMessage({ id: 'required' }),
