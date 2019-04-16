@@ -43,6 +43,8 @@ const AutoDeploy = asyncRouter(() => import('./project/autoDeploy'));
 const Elements = asyncRouter(() => import('./project/elements'));
 const PipelineIndex = asyncRouter(() => import('./project/pipeline'));
 const PipelineDetialIndex = asyncRouter(() => import('./project/pipelineDetail'));
+const DeploymentConfig = asyncRouter(() => import('./project/deploymentConfig'));
+const PipelineRecord = asyncRouter(() => import('./project/pipelineRecord'));
 
 @inject('AppState')
 class DEVOPSIndex extends React.Component {
@@ -100,6 +102,8 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/certificate-manage`} component={CertificateManage} />
           <Route path={`${match.url}/pipeline`} component={PipelineIndex}/>
           <Route path={`${match.url}/pipeline-detail`} component={PipelineDetialIndex}/>
+          <Route path={`${match.url}/pipeline-record`} component={PipelineRecord}/>
+          <Route path={`${match.url}/deployment-config`} component={DeploymentConfig} />
           <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>
