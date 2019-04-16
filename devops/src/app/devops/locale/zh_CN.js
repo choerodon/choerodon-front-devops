@@ -416,6 +416,25 @@ const pageDetail = {
   "elements.edit.description": "您可在此修改组件配置的所有信息，但只有测试成功后才能保存。",
   "elements.edit.link": `${docServer}/user-guide/system-configuration/project/elements-settings`,
 
+  // 部署配置
+  "deploymentConfig.title": '项目"{name}"的部署配置',
+  "deploymentConfig.description":
+    "部署配置用于管理流水线中添加部署任务时需要用到的配置信息。",
+  "deploymentConfig.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "deploymentConfig.create.title": '在项目"{name}"中创建部署配置',
+  "deploymentConfig.create.description":
+    "您可此选择应用与环境，编辑出对应的配置信息，以此来创建部署配置。",
+  "deploymentConfig.create.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "deploymentConfig.edit.title": '在项目"{name}"中修改部署配置',
+  "deploymentConfig.edit.description":
+    "您可在此修改部署配置的名称、描述与配置信息。",
+  "deploymentConfig.edit.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+
+  // 流水线执行总览
+  "pipelineRecord.title": '项目"{name}"的流水线执行总览',
+  "pipelineRecord.description": "您可在此查看所有流水线的执行情况与流程详情。",
+  "pipelineRecord.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+
   // 流水线
   "pipeline.title": '项目"{name}"的流水线',
   "pipeline.description": "流水线是一种实现任务流程自动化、可视化的方式，您可在此预设流水线中的各个阶段与任务，使整个流程更加高效。",
@@ -1599,6 +1618,37 @@ const zhCN = {
   // terminal
   "devops.term.close": "连接已关闭",
   "devops.term.error": "连接错误，请重新打开",
+
+  // 部署配置
+  "deploymentConfig.header": "部署配置",
+  "deploymentConfig.create.header": "创建部署配置",
+  "deploymentConfig.edit.header": "修改部署配置",
+  "deploymentConfig.delete": "删除部署配置",
+  "deploymentConfig.delete.tooltip": "确定删除该部署配置吗？",
+  "deploymentConfig.name": "部署配置名称",
+  "deploymentConfig.des": "部署配置描述",
+  "deployment.delete.unable": "仅能删除没有关联任务的部署配置",
+
+  // 流水线执行总览
+  "pipelineRecord.header": "流水线执行总览",
+  "pipelineRecord.status.deleted": "已删除",
+  "pipelineRecord.status.failed": "失败",
+  "pipelineRecord.status.running": "执行中",
+  "pipelineRecord.status.stop": "已中止",
+  "pipelineRecord.status.success": "成功",
+  "pipelineRecord.status.pendingcheck": "待审核",
+  "pipelineRecord.process": "流程",
+  "pipelineRecord.pipeline.name": "流水线名称",
+  "pipelineRecord.pipeline.status": "流水线状态",
+  "pipelineRecord.detail": "查看详情",
+  "pipelineRecord.check.manual": "人工审核",
+  "pipelineRecord.check.cancel": "稍后处理",
+  "pipelineRecord.check.stop": "中止",
+  "pipelineRecord.check.pass": "通过",
+  "pipelineRecord.check.task.des": '流水线“{name}”目前暂停于阶段【{stage}】，需要您进行审核。',
+  "pipelineRecord.check.stage.des": '流水线“{name}”已执行完阶段【{stage}】，需要您进行审核。',
+  "pipelineRecord.retry": "重新执行",
+  "pipelineRecord.retry.des": "确定要重新执行该流水线吗？",
 
   // pipeline
   "pipeline.head": "流水线",
