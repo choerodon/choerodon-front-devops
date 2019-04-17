@@ -599,6 +599,7 @@ input::-webkit-contacts-auto-fill-button {
 
   .c7ncd-more-btn {
     @extend .c7ncd-detail-btn;
+    display: block;
     padding: 4px 12px;
     width: 100%;
     height: 28px;

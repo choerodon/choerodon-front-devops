@@ -1,8 +1,26 @@
 .c7ncd-pipeline-stage-wrap {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex: 0 0 292px;
   padding: 0 10px;
+
+  .c7ncd-pipeline-create-btn {
+    position: absolute;
+    right: -14px;
+    top: 15px;
+    width: 30px;
+    height: 30px;
+    background: #fff;
+    box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 3px 3px -2px rgba(0, 0, 0, 0.12), 0 1px 8px 0 rgba(0, 0, 0, 0.20);
+    z-index: 1;
+
+    .c7ncd-pipeline-create-icon {
+      line-height: 1.5;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  }
 
   .c7ncd-stagecard-wrap {
     flex: 1;
@@ -22,6 +40,10 @@
       .c7ncd-stagecard-item {
         padding: 5px 10px;
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+        &.c7ncd-stagecard-error {
+          color: red;
+        }
 
         &:first-child {
           border-top: 1px solid rgba(0, 0, 0, 0.12);

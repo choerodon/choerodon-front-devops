@@ -38,7 +38,7 @@ export default class StageCreateModal extends Component {
   };
 
   state = {
-    flowType: STAGE_FLOW_AUTO,
+    flowType: '',
   };
 
   changeFlowType = (e) => {
@@ -57,23 +57,23 @@ export default class StageCreateModal extends Component {
       form: { validateFieldsAndScroll },
     } = this.props;
 
-    validateFieldsAndScroll((err, values) => {
+    validateFieldsAndScroll((err, { name, triggerType, users }) => {
       if (!err) {
-        const { flowType, stageName, flowMember } = values;
         const data = {
-          name: stageName,
-          type: flowType,
-          flowMember,
+          name,
+          triggerType,
+          stageUserRelDTOS: users ? _.map(users, item => Number(item)) : null,
         };
         if (_.isEmpty(stage)) {
           const currentIndex = store.getStageIndex + 1;
           store.addStage(prevId, {
             ...data,
-            id: currentIndex,
+            isParallel: 0,
+            tempId: currentIndex,
           });
           store.setStageIndex(currentIndex);
         } else {
-          store.editStage(stage.id, { ...stage, ...data });
+          store.editStage(stage.tempId, { ...stage, ...data });
         }
         onClose();
       }
@@ -84,20 +84,30 @@ export default class StageCreateModal extends Component {
     const {
       intl: { formatMessage },
       form: { getFieldDecorator },
-      stage,
+      stage: {
+        name,
+        triggerType,
+        stageUserRelDTOS,
+      },
+      prevId,
       visible,
       onClose,
+      store,
     } = this.props;
     const { flowType } = this.state;
-    const {
-      name,
-      type,
-      flowMember,
-    } = stage;
+
+    const createOrEdit = (prevId || prevId === 0) ? 'create' : 'edit';
+    const user = _.map(store.getUser, ({ id, realName }) => (
+      <Option key={id} value={String(id)}>{realName}</Option>));
+
+    let initUsers;
+    if (stageUserRelDTOS) {
+      initUsers = _.map(stageUserRelDTOS.slice(), item => String(item));
+    }
 
     return <Modal
       visible={visible}
-      title={formatMessage({ id: `pipeline.stage.${_.isEmpty(stage) ? 'create' : 'edit'}` })}
+      title={formatMessage({ id: `pipeline.stage.${createOrEdit}` })}
       closable={false}
       footer={null}
     >
@@ -106,7 +116,7 @@ export default class StageCreateModal extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('stageName', {
+            {getFieldDecorator('name', {
               rules: [{
                 required: true,
                 message: formatMessage({ id: 'required' }),
@@ -116,7 +126,7 @@ export default class StageCreateModal extends Component {
               <Input
                 label={<FormattedMessage id="name" />}
                 type="text"
-                maxLength={10}
+                maxLength={30}
               />,
             )}
           </FormItem>
@@ -124,10 +134,10 @@ export default class StageCreateModal extends Component {
             className="c7ncd-stage-modal-from"
             {...formItemLayout}
           >
-            {getFieldDecorator('flowType', {
-              initialValue: type || STAGE_FLOW_AUTO,
+            {getFieldDecorator('triggerType', {
+              initialValue: triggerType || STAGE_FLOW_AUTO,
             })(
-              <RadioGroup label={formatMessage({ id: 'pipeline.trigger' })} onChange={this.changeFlowType}>
+              <RadioGroup label={formatMessage({ id: 'pipeline.flow' })} onChange={this.changeFlowType}>
                 <Radio value={STAGE_FLOW_AUTO}>
                   <FormattedMessage id="pipeline.flow.auto" />
                 </Radio>
@@ -137,24 +147,23 @@ export default class StageCreateModal extends Component {
               </RadioGroup>,
             )}
           </FormItem>
-          {(type || flowType) === STAGE_FLOW_MANUAL && <FormItem
+          {(flowType || triggerType) === STAGE_FLOW_MANUAL && <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('flowMember', {
+            {getFieldDecorator('users', {
               rules: [{
                 required: true,
                 message: formatMessage({ id: 'required' }),
               }],
-              initialValue: flowMember ? flowMember.slice() : undefined,
+              initialValue: initUsers,
             })(
               <Select
-                label={formatMessage({ id: 'pipeline.trigger.member' })}
+                label={formatMessage({ id: 'pipeline.flow.member' })}
                 mode="tags"
                 getPopupContainer={triggerNode => triggerNode.parentNode}
                 allowClear
               >
-                <Option value="jack">Jack</Option>
-                <Option value="lucy">Lucy</Option>
+                {user}
               </Select>,
             )}
           </FormItem>}
@@ -165,8 +174,12 @@ export default class StageCreateModal extends Component {
             <Button key="back" onClick={onClose}>
               <FormattedMessage id="cancel" />
             </Button>
-            <Button key="submit" type="primary" onClick={this.onSubmit}>
-              <FormattedMessage id={_.isEmpty(stage) ? 'create' : 'edit'} />
+            <Button
+              key="submit"
+              type="primary"
+              onClick={this.onSubmit}
+            >
+              <FormattedMessage id={createOrEdit} />
             </Button>
           </FormItem>
         </Form>
