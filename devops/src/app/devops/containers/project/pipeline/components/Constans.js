@@ -12,8 +12,8 @@ const VERSION_TYPE = ['master', 'feature', 'bugfix', 'release', 'hotfix'];
 const AUDIT_MODE_SING = 'sign';
 const AUDIT_MODE_ORSING = 'orSign';
 
-const TASK_PARALLEL = 'parallel';
-const TASK_SERIAL = 'serial';
+const TASK_PARALLEL = 1;
+const TASK_SERIAL = 0;
 
 export {
   STAGE_FLOW_AUTO,

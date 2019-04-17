@@ -9,11 +9,13 @@ export default class StageTitle extends PureComponent {
   static propTypes = {
     name: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
+    allowDelete: PropTypes.bool,
   };
 
   static defaultProps = {
     name: '',
     type: 'auto',
+    allowDelete: true,
   };
 
   render() {
@@ -22,6 +24,7 @@ export default class StageTitle extends PureComponent {
       type,
       onChange,
       onRemove,
+      allowDelete,
     } = this.props;
 
     return (
@@ -40,12 +43,12 @@ export default class StageTitle extends PureComponent {
             shape="circle"
             onClick={onChange}
           />
-          <Button
+          {allowDelete && <Button
             size="small"
             icon="delete_forever"
             shape="circle"
             onClick={onRemove}
-          />
+          />}
         </div>
       </div>
     );
