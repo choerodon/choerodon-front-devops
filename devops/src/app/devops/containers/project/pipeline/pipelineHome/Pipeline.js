@@ -9,9 +9,11 @@ import StatusTags from '../../../../components/StatusTags';
 import TimePopover from '../../../../components/timePopover';
 import UserInfo from '../../../../components/userInfo';
 import { handleCheckerProptError } from '../../../../utils';
-import { SORTER_MAP } from '../../../../common/Constants';
 
 import './Pipeline.scss';
+
+const STATUS_INVALID = 0;
+const STATUS_ACTIVE = 1;
 
 @injectIntl
 @withRouter
@@ -20,13 +22,20 @@ import './Pipeline.scss';
 export default class Pipeline extends Component {
   constructor(props) {
     super(props);
+    const {
+      PipelineStore: {
+        getPageInfo: {
+          current,
+          pageSize,
+        },
+      },
+    } = props;
     this.state = {
+      page: current - 1,
+      pageSize: pageSize,
       param: '',
       filters: {},
-      sorter: {
-        columnKey: 'id',
-        order: 'descend',
-      },
+      sorter: null,
       showDelete: false,
       deleteName: '',
       deleteId: null,
@@ -43,23 +52,7 @@ export default class Pipeline extends Component {
   }
 
   handleRefresh = (e, page) => {
-    const { PipelineStore } = this.props;
-    const { current, pageSize } = PipelineStore.getPageInfo;
-    const { param, filters, sorter } = this.state;
-
-    const currentPage = (page || page === 0) ? page : current - 1;
-    const sort = { field: 'id', order: 'desc' };
-    if (sorter.column) {
-      sort.field = sorter.field || sorter.columnKey;
-      sort.order = SORTER_MAP[sorter.order];
-    }
-
-    const postData = {
-      searchParam: filters,
-      param: param.toString(),
-    };
-
-    this.loadData(currentPage, pageSize, sort, postData);
+    this.loadData(page);
   };
 
   linkToChange = (url) => {
@@ -86,33 +79,60 @@ export default class Pipeline extends Component {
     history.push(_url);
   };
 
-  tableChange = (pagination, filters, sorter, param) => {
-    const page = pagination.current - 1;
-    const pageSize = pagination.pageSize;
-    const sort = { field: 'id', order: 'desc' };
-    const postData = {
-      searchParam: filters,
-      param: param.toString(),
-    };
-
-    if (sorter.column) {
-      sort.field = sorter.field || sorter.columnKey;
-      sort.order = SORTER_MAP[sorter.order];
-    }
-
-    this.setState({ param, filters, sorter });
-    this.loadData(page, pageSize, sort, postData);
-  };
-
-  loadData = (page = 0, size = 10, sort = { field: 'id', order: 'desc' }, filter = { searchParam: {}, param: '' }) => {
+  tableChange = ({ current, pageSize }, filters, sorter, param) => {
     const {
-      PipelineStore, AppState: {
+      PipelineStore,
+      AppState: {
         currentMenuType: {
           id: projectId,
         },
       },
     } = this.props;
-    PipelineStore.loadListData(projectId, page, size, sort, filter);
+    this.setState({
+      page: current - 1,
+      pageSize,
+      param,
+      filters,
+      sorter,
+    });
+    PipelineStore.loadListData(
+      projectId,
+      current - 1,
+      pageSize,
+      sorter,
+      {
+        searchParam: filters,
+        param: param.toString(),
+      },
+    );
+  };
+
+  /**
+   * 加载数据
+   * @param toPage 指定加载页码
+   */
+  loadData = (toPage) => {
+    const {
+      PipelineStore,
+      AppState: {
+        currentMenuType: {
+          id: projectId,
+        },
+      },
+    } = this.props;
+    const { page, pageSize, param, filters, sorter } = this.state;
+    const currentPage = (toPage || toPage === 0) ? toPage : page;
+
+    PipelineStore.loadListData(
+      projectId,
+      currentPage,
+      pageSize,
+      sorter,
+      {
+        searchParam: filters,
+        param: param.toString(),
+      },
+    );
   };
 
   handleCreateClick = () => {
@@ -141,12 +161,11 @@ export default class Pipeline extends Component {
     } = this.props;
     const { deleteId } = this.state;
     this.setState({ deleteLoading: true });
-    const response = await PipelineStore.deletePipelie(projectId, deleteId).catch(e => {
+    const response = await PipelineStore.deletePipeline(projectId, deleteId).catch(e => {
       this.setState({ deleteLoading: false });
       Choerodon.handleResponseError(e);
     });
-    const result = handleCheckerProptError(response);
-    if (result) {
+    if (handleCheckerProptError(response)) {
       this.closeRemove();
       this.handleRefresh(null, 0);
     }
@@ -172,32 +191,36 @@ export default class Pipeline extends Component {
         currentMenuType: { id: projectId },
       },
     } = this.props;
-
     const { invalidId } = this.state;
 
     this.setState({ invalidLoading: true });
-    const response = await PipelineStore.changeStatus(projectId, invalidId);
-    //   .catch(e => {
-    //   this.setState({ invalidLoading: false });
-    //   Choerodon.handleResponseError(e);
-    // });
-    const result = handleCheckerProptError(response);
-    if (result) {
+    const response = await PipelineStore
+      .changeStatus(projectId, invalidId, STATUS_INVALID)
+      .catch(e => {
+        this.setState({ invalidLoading: false });
+        Choerodon.handleResponseError(e);
+      });
+    if (handleCheckerProptError(response)) {
       this.closeInvalid();
       this.handleRefresh(null, 0);
     }
     this.setState({ invalidLoading: false });
   };
 
-  makeStatusActive(id) {
+  async makeStatusActive(id) {
     const {
       PipelineStore,
       AppState: {
         currentMenuType: { id: projectId },
       },
     } = this.props;
-    // PipelineStore.changeStatus(projectId, id).catch(e => Choerodon.handleResponseError(e));
-    PipelineStore.changeStatus(projectId, id);
+    const response = await PipelineStore
+      .changeStatus(projectId, id, STATUS_ACTIVE)
+      .catch(e => Choerodon.handleResponseError(e));
+
+    if (handleCheckerProptError(response)) {
+      this.handleRefresh(null, 0);
+    }
   }
 
   openInvalid(id, name) {
@@ -229,13 +252,6 @@ export default class Pipeline extends Component {
   renderAction = (record) => {
     const {
       intl: { formatMessage },
-      AppState: {
-        currentMenuType: {
-          type,
-          id: projectId,
-          organizationId,
-        },
-      },
     } = this.props;
     const { id, name, isEnabled, triggerType } = record;
 
@@ -289,7 +305,8 @@ export default class Pipeline extends Component {
   };
 
   get getColumns() {
-    const { filters, sorter: { columnKey, order } } = this.state;
+    const { filters, sorter } = this.state;
+    const { columnKey, order } = sorter || {};
 
     return [{
       title: <FormattedMessage id="status" />,
@@ -320,8 +337,6 @@ export default class Pipeline extends Component {
     }, {
       title: <FormattedMessage id="creator" />,
       key: 'createUserRealName',
-      sorter: true,
-      sortOrder: columnKey === 'createUserRealName' && order,
       filters: [],
       filteredValue: filters.createUserRealName || [],
       render: _renderUser,

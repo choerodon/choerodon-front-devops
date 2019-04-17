@@ -14,6 +14,7 @@ const commonField = {
   create: "创建",
   add: "添加",
   edit: "修改",
+  save: "保存",
 
   // 通用描述
   app: "应用",
@@ -448,6 +449,9 @@ const pageDetail = {
   "pipeline.task.create.title": '在"{name}"中添加任务',
   "pipeline.task.create.description": "您可以在此选择对应的任务类型，填选对应的内容，以此来添加任务。",
   "pipeline.task.create.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "pipeline.task.edit.title": '修改"{name}"中的任务',
+  "pipeline.task.edit.description": "您可以在此选择对应的任务类型，填选对应的内容，以此来添加任务。",
+  "pipeline.task.edit.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
 };
 
 const zhCN = {
@@ -456,7 +460,6 @@ const zhCN = {
   // public
   detail: "详情",
   operate: "操作",
-  save: "保存",
   edit: "修改",
   cancel: "取消",
   close: "关闭",
@@ -524,6 +527,7 @@ const zhCN = {
   expandAll: "全部展开",
   collapseAll: "全部折叠",
   checkNameExist: "名称已存在",
+  checkNameFail: "网络错误，请稍后重试",
   formatError: "格式有误",
   checkEmailError: "请输入有效的邮箱地址",
   nameCanNotBeEmpty: "名称不能为空",
@@ -1668,8 +1672,11 @@ const zhCN = {
   "pipeline.invalid": "停用流水线 ",
   "pipeline.invalid.message": "确定停用该流水线吗？",
   "pipeline.task.create.head": "添加任务",
+  "pipeline.task.edit.head": "修改任务",
   "pipeline.task.type": "任务类型",
+  "pipeline.task.type.change": "若想切换为任务并行，请清除阶段中的人工卡点任务",
   "pipeline.task.parallel": "任务并行",
+  "pipeline.task.parallel.disabled": "流水线触发方式为自动触发时的第一个阶段的第一个任务或阶段中任务为并行时，不可以选择人工卡点任务",
   "pipeline.task.serial": "任务串行",
   "pipeline.task.list": "任务列表",
   "pipeline.task.settings": "任务设置",
@@ -1687,9 +1694,11 @@ const zhCN = {
   "pipeline.task.auditMode": "审核模式",
   "pipeline.mode.manual": "人工卡点",
   "pipeline.mode.auto": "部署",
+  "pipeline.mode.error": "{name}（任务类型错误，请修改或删除该任务）",
   "pipeline.audit.sign": "会签（需所有审核人员通过）",
   "pipeline.audit.orSign": "或签",
   "pipeline.deploy.mode": "选择部署模式",
+  "pipeline.task.config.title": "配置信息",
   "pipeline.task.config": "部署配置",
   "pipeline.task.add": "添加任务",
   "pipeline.task.delete": "删除阶段任务",
@@ -1698,6 +1707,10 @@ const zhCN = {
   "pipeline.stage.delete.msg": "确定删除该阶段？",
   "pipeline.stage.create": "创建新阶段",
   "pipeline.stage.edit": "修改阶段信息",
+  "pipeline.flow": "流转方式",
+  "pipeline.flow.member": "审核人员",
+  "pipeline.link.toConfig": "创建部署配置",
+  "pipeline.task.type.error": "任务类型错误",
 
   ...pageDetail,
 };
