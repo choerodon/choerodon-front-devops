@@ -1648,6 +1648,7 @@ const zhCN = {
   "pipelineRecord.check.task.des": '流水线“{name}”目前暂停于阶段【{stage}】，需要您进行审核。',
   "pipelineRecord.check.stage.des": '流水线“{name}”已执行完阶段【{stage}】，需要您进行审核。',
   "pipelineRecord.retry": "重新执行",
+  "pipelineRecord.retry.title": "重新执行流水线“{name}”",
   "pipelineRecord.retry.des": "确定要重新执行该流水线吗？",
 
   // pipeline
