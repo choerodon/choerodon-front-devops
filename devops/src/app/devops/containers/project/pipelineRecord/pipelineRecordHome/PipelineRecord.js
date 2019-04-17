@@ -41,10 +41,7 @@ class PipelineRecord extends Component {
     this.state = {
       pipelineId: null,
       id: null,
-      name: null,
-      stageName: null,
-      recordId: null,
-      checkType: null,
+      checkData: {},
       show: false,
       showRetry: false,
       passLoading: false,
@@ -218,7 +215,7 @@ class PipelineRecord extends Component {
         key: "action",
         align: 'right',
         render: (text, record) => {
-          const { status, type: checkType, id, name, stageName, recordId } = record;
+          const { status, type: checkType, id, name, stageName, stageRecordId, taskRecordId } = record;
           return (<div>
             {status === "failed" && (
               <Permission
@@ -255,7 +252,7 @@ class PipelineRecord extends Component {
                     icon="authorize"
                     shape="circle"
                     size="small"
-                    onClick={this.showSidebar.bind(this, checkType, id, name, stageName, recordId)}
+                    onClick={this.showSidebar.bind(this, id, checkType, name, stageName, stageRecordId, taskRecordId)}
                   />
                 </Tooltip>
               </Permission>
@@ -361,15 +358,19 @@ class PipelineRecord extends Component {
     const { PipelineRecordStore } = this.props;
     const {
       id,
-      recordId,
-      checkType,
+      checkData: {
+        stageRecordId,
+        taskRecordId,
+        checkType,
+      },
     } = this.state;
     const data = {
       pipelineRecordId: id,
       userId,
       isApprove: flag,
       type: checkType,
-      [`${checkType}RecordId`]: recordId,
+      stageRecordId,
+      taskRecordId,
     };
     this.setState({ [flag ? "passLoading" : "stopLoading"]: true });
     PipelineRecordStore.checkData(projectId, data)
@@ -403,10 +404,22 @@ class PipelineRecord extends Component {
    * @param checkType 阶段间或人工卡点时审核
    * @param id 流水线执行记录id
    * @param name 流水线名称
-   * @param stage 流水线执行阶段
+   * @param stageName 流阶段名称
+   * @param stageRecordId 阶段id
+   * @param taskRecordId 任务id
    */
-  showSidebar = (checkType, id = null, name, stageName, recordId) => {
-    this.setState({ show: true, checkType, id, name, stageName, recordId });
+  showSidebar = (id = null, checkType, name, stageName, stageRecordId = null, taskRecordId = null) => {
+    this.setState({
+      show: true,
+      id,
+      checkData: {
+        checkType,
+        name,
+        stageName,
+        stageRecordId,
+        taskRecordId,
+      },
+    });
   };
 
   /**
@@ -417,7 +430,7 @@ class PipelineRecord extends Component {
     if (flag) {
       this.loadData();
     }
-    this.setState({ show: false, checkType: null, id: null, name: null, stageName: null, recordId: null });
+    this.setState({ show: false, id: null, checkData: {} });
   };
 
 
@@ -437,9 +450,11 @@ class PipelineRecord extends Component {
       show,
       passLoading,
       stopLoading,
-      name: pipelineName,
-      stageName,
-      checkType,
+      checkData: {
+        name: pipelineName,
+        stageName,
+        checkType,
+      },
       showRetry,
       submitting,
     } = this.state;
