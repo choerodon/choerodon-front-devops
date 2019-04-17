@@ -41,6 +41,7 @@ class PipelineRecord extends Component {
     this.state = {
       pipelineId: null,
       id: null,
+      name: null,
       checkData: {},
       show: false,
       showRetry: false,
@@ -232,7 +233,7 @@ class PipelineRecord extends Component {
                       icon="replay"
                       shape="circle"
                       size="small"
-                      onClick={this.openRetry.bind(this, id)}
+                      onClick={this.openRetry.bind(this, id, name)}
                     />
                   </Tooltip>
               </Permission>
@@ -388,15 +389,15 @@ class PipelineRecord extends Component {
    * 展开重试弹窗
    * @param id 流水线执行记录id
    */
-  openRetry = (id) => {
-    this.setState({ showRetry: true, id });
+  openRetry = (id, name) => {
+    this.setState({ showRetry: true, id, name });
   };
 
   /**
    * 关闭重试弹窗
    */
   closeRetry = () => {
-    this.setState({ showRetry: false, id: null });
+    this.setState({ showRetry: false, id: null, name: null });
   };
 
   /**
@@ -412,9 +413,9 @@ class PipelineRecord extends Component {
     this.setState({
       show: true,
       id,
+      name,
       checkData: {
         checkType,
-        name,
         stageName,
         stageRecordId,
         taskRecordId,
@@ -430,7 +431,7 @@ class PipelineRecord extends Component {
     if (flag) {
       this.loadData();
     }
-    this.setState({ show: false, id: null, checkData: {} });
+    this.setState({ show: false, id: null, name:null, checkData: {} });
   };
 
 
@@ -450,8 +451,8 @@ class PipelineRecord extends Component {
       show,
       passLoading,
       stopLoading,
+      name: pipelineName,
       checkData: {
-        name: pipelineName,
         stageName,
         checkType,
       },
@@ -524,7 +525,7 @@ class PipelineRecord extends Component {
           <Modal
             confirmLoading={submitting}
             visible={showRetry}
-            title={`${formatMessage({ id: "pipelineRecord.retry" })}`}
+            title={`${formatMessage({ id: "pipelineRecord.retry.title" }, { name: pipelineName })}`}
             closable={false}
             onOk={this.handleRetry}
             onCancel={this.closeRetry}
