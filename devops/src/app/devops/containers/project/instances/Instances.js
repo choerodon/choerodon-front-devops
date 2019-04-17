@@ -58,6 +58,8 @@ class Instances extends Component {
       } else {
         EnvOverviewStore.loadActiveEnv(projectId, "instance");
       }
+    } else {
+      InstancesStore.setIsCache({ isCache: false });
     }
   }
 
