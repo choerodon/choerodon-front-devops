@@ -162,7 +162,7 @@ export default class StageCard extends Component {
       showHeadModal,
       isEditHead,
     } = this.state;
-    const { name, triggerType, isParallel } = _.find(PipelineCreateStore.getStageList, ['tempId', stageId]) || {};
+    const { stageName, triggerType, isParallel } = _.find(PipelineCreateStore.getStageList, ['tempId', stageId]) || {};
     const hasManualTask = _.find(PipelineCreateStore.getTaskList[stageId], ['type', 'manual']);
 
     return (
@@ -177,7 +177,7 @@ export default class StageCard extends Component {
 
         <StageTitle
           allowDelete={allowDelete}
-          name={name}
+          name={stageName}
           type={triggerType}
           onChange={this.handleHeadChange}
           onRemove={this.openStageRemove}

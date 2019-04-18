@@ -58,7 +58,7 @@ class PipelineCreateStore {
   @observable stageList = [
     {
       tempId: INIT_INDEX,
-      name: '阶段一',
+      stageName: '阶段一',
       triggerType: 'auto',
       pipelineTaskDTOS: null,
       stageUserRelDTOS: null,
@@ -135,7 +135,7 @@ class PipelineCreateStore {
     this.stageList = [
       {
         tempId: INIT_INDEX,
-        name: '阶段一',
+        stageName: '阶段一',
         triggerType: 'auto',
         pipelineTaskDTOS: null,
         stageUserRelDTOS: null,
@@ -300,6 +300,53 @@ class PipelineCreateStore {
 
   @computed get getUser() {
     return this.user.slice();
+  }
+
+  @observable detailLoading = false;
+
+  @action setDetailLoading(data) {
+    this.detailLoading = data;
+  }
+
+  @computed get getDetailLoading() {
+    return this.detailLoading;
+  }
+
+  @observable pipeline = {};
+
+  @action setPipeline(data) {
+    this.pipeline = data;
+  }
+
+  @computed get getPipeline() {
+    return this.pipeline;
+  }
+
+  @action initPipeline(data) {
+    const { pipelineStageDTOS, triggerType } = data;
+    const taskList = {};
+    let stageIndex = INIT_INDEX;
+    let taskIndex = { 0: INIT_INDEX };
+
+    const stageList = _.map(pipelineStageDTOS, ({ pipelineTaskDTOS, ...item }) => {
+      let index = 1;
+      const tasks = _.map(pipelineTaskDTOS, task => ({
+        ...task,
+        isHead: stageIndex === INIT_INDEX && index === 1,
+        index: index++,
+      }));
+
+      const stage = { ...item, tempId: ++stageIndex, pipelineTaskDTOS: tasks };
+      taskList[stageIndex] = tasks;
+      taskIndex[stageIndex] = index;
+      return stage;
+    });
+
+    this.trigger = triggerType;
+    this.taskIndex = taskIndex;
+    this.stageIndex = stageIndex;
+    this.stageList = stageList;
+    this.taskList = taskList;
   }
 
   /**
@@ -478,6 +525,27 @@ class PipelineCreateStore {
       JSON.stringify(data),
     );
   }
+
+  editPipeline(projectId, data) {
+    return axios.put(`/devops/v1/projects/${projectId}/pipeline`, JSON.stringify(data));
+  }
+
+  async loadDetail(projectId, id) {
+    this.setDetailLoading(true);
+    let response = await axios
+      .get(`/devops/v1/projects/${projectId}/pipeline/${id}/detail`)
+      .catch(e => {
+        this.setDetailLoading(false);
+        Choerodon.handleResponseError(e);
+      });
+    this.setDetailLoading(false);
+    const res = handleProptError(response);
+    if (res) {
+      this.setPipeline(res);
+      this.initPipeline(res);
+    }
+  }
+
 }
 
 const pipelineCreateStore = new PipelineCreateStore();

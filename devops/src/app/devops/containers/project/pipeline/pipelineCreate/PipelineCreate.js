@@ -128,7 +128,7 @@ export default class PipelineCreate extends Component {
           });
         this.setState({ submitLoading: false });
         if (result && result.failed) {
-          Choerodon.prompt(data.message);
+          Choerodon.prompt(result.message);
         } else {
           this.goBack();
         }
@@ -163,20 +163,20 @@ export default class PipelineCreate extends Component {
   get renderPipelineDom() {
     const { PipelineCreateStore: { getStageList } } = this.props;
     if (getStageList.length === 1) {
-      const [{ tempId, name }] = getStageList;
+      const [{ tempId, stageName }] = getStageList;
       return <StageCard
         allowDelete={false}
         key={tempId}
         stageId={tempId}
-        stageName={name}
+        stageName={stageName}
         clickAdd={this.openCreateForm}
       />;
     }
 
-    return _.map(getStageList, ({ tempId, name }) => (<StageCard
+    return _.map(getStageList, ({ tempId, stageName }) => (<StageCard
       key={tempId}
       stageId={tempId}
-      stageName={name}
+      stageName={stageName}
       clickAdd={this.openCreateForm}
     />));
   }

@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Table, Button, Modal, Spin, Tooltip } from 'choerodon-ui';
+import { Table, Button, Modal, Spin } from 'choerodon-ui';
 import { Permission, Content, Header, Page, Action } from 'choerodon-front-boot';
 import _ from 'lodash';
 import StatusTags from '../../../../components/StatusTags';
@@ -14,6 +14,8 @@ import './Pipeline.scss';
 
 const STATUS_INVALID = 0;
 const STATUS_ACTIVE = 1;
+const EXECUTE_PASS = 'pass';
+const EXECUTE_FAILED = 'failed';
 
 @injectIntl
 @withRouter
@@ -44,6 +46,10 @@ export default class Pipeline extends Component {
       invalidName: '',
       invalidId: null,
       invalidLoading: false,
+      showExecute: false,
+      executeId: null,
+      executeName: '',
+      executeCheck: false,
     };
   }
 
@@ -55,7 +61,7 @@ export default class Pipeline extends Component {
     this.loadData(page);
   };
 
-  linkToChange = (url) => {
+  linkToChange = (path) => {
     const {
       history,
       AppState: {
@@ -67,16 +73,11 @@ export default class Pipeline extends Component {
         },
       },
     } = this.props;
-    const search = `?type=${type}&id=${projectId}&name=${encodeURIComponent(
+
+    const url = `${path}?type=${type}&id=${projectId}&name=${encodeURIComponent(
       name,
     )}&organizationId=${organizationId}`;
-    let _url = url;
-    if (typeof _url === 'object') {
-      _url = { ...url, search };
-    } else {
-      _url += search;
-    }
-    history.push(_url);
+    history.push(url);
   };
 
   tableChange = ({ current, pageSize }, filters, sorter, param) => {
@@ -135,10 +136,7 @@ export default class Pipeline extends Component {
     );
   };
 
-  handleCreateClick = () => {
-    const { match } = this.props;
-    this.linkToChange(`${match.url}/create`);
-  };
+  /****************** 删除 *********************/
 
   openRemove(id, name) {
     this.setState({
@@ -172,16 +170,14 @@ export default class Pipeline extends Component {
     this.setState({ deleteLoading: false });
   };
 
+  /*************** 启用、停用 *****************/
+
   renderStatus = (record) => {
     const { intl: { formatMessage } } = this.props;
     return <StatusTags
       name={formatMessage({ id: record ? 'active' : 'stop' })}
       color={record ? '#00bfa5' : '#cecece'}
     />;
-  };
-
-  actionFun = () => {
-
   };
 
   makeStatusInvalid = async () => {
@@ -202,7 +198,7 @@ export default class Pipeline extends Component {
       });
     if (handleCheckerProptError(response)) {
       this.closeInvalid();
-      this.handleRefresh(null, 0);
+      this.handleRefresh();
     }
     this.setState({ invalidLoading: false });
   };
@@ -219,7 +215,7 @@ export default class Pipeline extends Component {
       .catch(e => Choerodon.handleResponseError(e));
 
     if (handleCheckerProptError(response)) {
-      this.handleRefresh(null, 0);
+      this.handleRefresh();
     }
   }
 
@@ -239,21 +235,92 @@ export default class Pipeline extends Component {
     });
   };
 
+  /***************** 执行流水线 ********************/
+
+  executeFun = async () => {
+    const {
+      PipelineStore,
+      AppState: {
+        currentMenuType: { id: projectId },
+      },
+    } = this.props;
+    const { executeId } = this.state;
+
+    this.closeExecuteCheck();
+    this.handleRefresh();
+    let response = await PipelineStore
+      .executePipeline(projectId, executeId)
+      .catch(e => Choerodon.handleResponseError(e));
+
+    if (response && response.failed) {
+      Choerodon.prompt(response.message);
+    }
+  };
+
+  /**
+   * 检测是否满足执行条件
+   * @param name
+   * @param id
+   * @returns {Promise<void>}
+   */
+  async openExecuteCheck(name, id) {
+    const {
+      PipelineStore,
+      AppState: {
+        currentMenuType: { id: projectId },
+      },
+    } = this.props;
+    this.setState({
+      showExecute: true,
+      executeName: name,
+      executeId: id,
+    });
+    let response = await PipelineStore
+      .checkExecute(projectId, id)
+      .catch(e => Choerodon.handleResponseError(e));
+
+    if (response && response.failed) {
+      Choerodon.prompt(response.message);
+      this.setState({ executeCheck: false });
+      return;
+    }
+    this.setState({ executeCheck: response ? EXECUTE_PASS : EXECUTE_FAILED });
+  }
+
+  closeExecuteCheck = () => {
+    this.setState({ showExecute: false, executeName: '', executeId: null, executeCheck: false });
+  };
+
+  /**
+   * 跳转到创建页面
+   */
+  linkToCreate = () => {
+    const { match } = this.props;
+    this.linkToChange(`${match.url}/create`);
+  };
+
   /**
    * 跳转到详情页面
    */
-  linkToDetail(data) {
-    this.linkToChange({
-      pathname: `/devops/pipeline-detail`,
-      state: { name: data },
-    });
+  linkToDetail(id) {
+    const { match } = this.props;
+    this.linkToChange(`${match.url}/detail/${id}`);
   };
+
+  /**
+   * 跳转到编辑页面
+   * @param id
+   */
+  linkToEdit(id) {
+    const { match } = this.props;
+    this.linkToChange(`${match.url}/edit/${id}`);
+  }
 
   renderAction = (record) => {
     const {
       intl: { formatMessage },
     } = this.props;
-    const { id, name, isEnabled, triggerType } = record;
+    const { id, name, isEnabled, triggerType, execute } = record;
 
     const _filterItem = (collection, predicate) => _.filter(collection, item => item !== predicate);
 
@@ -266,12 +333,12 @@ export default class Pipeline extends Component {
       execute: {
         service: ['devops-service.devops-project-config.pageByOptions'],
         text: formatMessage({ id: 'pipeline.action.run' }),
-        action: this.actionFun.bind(this, record),
+        action: this.openExecuteCheck.bind(this, name, id),
       },
       edit: {
         service: ['devops-service.devops-project-config.pageByOptions'],
         text: formatMessage({ id: 'edit' }),
-        action: this.actionFun.bind(this, record),
+        action: this.linkToEdit.bind(this, id),
       },
       disabled: {
         service: ['devops-service.devops-project-config.pageByOptions'],
@@ -291,15 +358,9 @@ export default class Pipeline extends Component {
     };
 
     let actionItem = _.keys(action);
-    if (isEnabled) {
-      actionItem = _filterItem(actionItem, 'enable');
-    } else {
-      actionItem = _filterItem(actionItem, 'disabled');
-    }
-
-    if (triggerType === 'auto') {
-      actionItem = _filterItem(actionItem, 'execute');
-    }
+    actionItem = _filterItem(actionItem, isEnabled ? 'enable' : 'disabled');
+    // 自动触发或无权限用户（execute为false）不显示执行动作
+    (triggerType === 'auto' || !execute) && (actionItem = _filterItem(actionItem, 'execute'));
 
     return (<Action data={_.map(actionItem, item => ({ ...action[item] }))} />);
   };
@@ -380,6 +441,9 @@ export default class Pipeline extends Component {
       showInvalid,
       invalidName,
       invalidLoading,
+      showExecute,
+      executeName,
+      executeCheck,
     } = this.state;
 
     return (<Page
@@ -399,7 +463,7 @@ export default class Pipeline extends Component {
           <Button
             funcType="flat"
             icon="playlist_add"
-            onClick={this.handleCreateClick}
+            onClick={this.linkToCreate}
           >
             <FormattedMessage id="pipeline.header.create" />
           </Button>
@@ -443,6 +507,35 @@ export default class Pipeline extends Component {
       >
         <div className="c7n-padding-top_8">
           <FormattedMessage id="pipeline.delete.message" />
+        </div>
+      </Modal>)}
+      {showExecute && (<Modal
+        visible={showExecute}
+        title={`${formatMessage({ id: 'pipeline.execute' })}“${executeName}”`}
+        closable={false}
+        footer={executeCheck === EXECUTE_PASS ? [
+          <Button key="back" onClick={this.closeExecuteCheck}>
+            <FormattedMessage id="cancel" />
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={this.executeFun}
+          >
+            <FormattedMessage id="submit" />
+          </Button>,
+        ] : [<Button key="back" onClick={this.closeExecuteCheck}>
+          <FormattedMessage id="close" />
+        </Button>]}
+      >
+        <div className="c7n-padding-top_8">
+          {executeCheck
+            ? <FormattedMessage id={`pipeline.execute.${executeCheck}`} />
+            : <Fragment>
+              <Spin size="small" />
+              <span className="c7ncd-pipeline-execute">{formatMessage({ id: 'pipeline.execute.checking' })}</span>
+            </Fragment>
+          }
         </div>
       </Modal>)}
       {showInvalid && (<Modal
