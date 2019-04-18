@@ -368,7 +368,7 @@ export default class TaskCreate extends Component {
       getTaskSettings,
       getTrigger,
     } = PipelineCreateStore;
-    const { submitting, taskType, mode, isHead } = this.state;
+    const { submitting, taskType, mode, isHead, appId, envId: selectEnvId } = this.state;
     const { appDeployDTOS, type, name, isCountersigned, taskUserRelDTOS } = _.find(getTaskList[stageId], ['index', taskId]) || {};
     const { instanceId, applicationId, triggerVersion, envId, instanceName, valueId } = appDeployDTOS || {};
 
@@ -400,8 +400,12 @@ export default class TaskCreate extends Component {
         <Link
           className="c7ncd-more-btn"
           to={{
-            pathname: `/devops/pipeline`,
+            pathname: `/devops/deployment-config`,
             search: `?type=${menuType}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`,
+            state: {
+              appId,
+              envId: selectEnvId,
+            },
           }}
         >
           {formatMessage({ id: 'pipeline.link.toConfig' })}
