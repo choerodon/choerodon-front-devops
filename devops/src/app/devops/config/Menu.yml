@@ -273,6 +273,24 @@
           - "devops-service.devops-secret.querySecret"
           - "devops-service.devops-secret.deleteSecret"
           - "devops-service.devops-secret.listByOption"
+    - "pipeline-management":
+        icon: router
+        Routes: /devops/pipeline
+        sort: 15
+        permission:
+          - "devops-service.application.listByActive"
+    - "pipeline-record":
+        icon: language
+        Routes: /devops/pipeline-record
+        sort: 16
+        permission:
+          - "devops-service.application.listByActive"
+    - "deployment-config":
+        icon: kubernetes
+        Routes: /devops/deployment-config
+        sort: 17
+        permission:
+          - "devops-service.application.listByActive"
 
 # 项目设置
 "prosetting":
@@ -284,15 +302,15 @@
         Routes: /devops/elements
         sort: 4
         permission:
-         - "devops-service.devops-project-config.pageByOptions"
-         - 'devops-service.devops-project-config.update'
-         - 'devops-service.devops-project-config.create'
-         - 'devops-service.devops-project-config.checkName'
-         - 'devops-service.application.checkHarbor'
-         - 'devops-service.application.checkChart'
-         - 'devops-service.devops-project-config.queryByPrimaryKey'
-         - 'devops-service.devops-project-config.deleteByProjectConfigId'
-         - 'devops-service.devops-project-config.checkIsUsed'
+          - "devops-service.devops-project-config.pageByOptions"
+          - 'devops-service.devops-project-config.update'
+          - 'devops-service.devops-project-config.create'
+          - 'devops-service.devops-project-config.checkName'
+          - 'devops-service.application.checkHarbor'
+          - 'devops-service.application.checkChart'
+          - 'devops-service.devops-project-config.queryByPrimaryKey'
+          - 'devops-service.devops-project-config.deleteByProjectConfigId'
+          - 'devops-service.devops-project-config.checkIsUsed'
 
 # 项目层报表
 "platform-reports":

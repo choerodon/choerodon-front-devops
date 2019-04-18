@@ -80,6 +80,26 @@ class PipelineStore {
   changeStatus(projectId, id, status) {
     return axios.put(`/devops/v1/projects/${projectId}/pipeline/${id}?isEnabled=${status}`);
   };
+
+  /**
+   * 执行手动触发的流水线
+   * @param projectId
+   * @param id
+   * @returns {*}
+   */
+  executePipeline(projectId, id) {
+    return axios.get(`/devops/v1/projects/${projectId}/pipeline/${id}/execute`);
+  }
+
+  /**
+   * 检查是否可以执行
+   * @param projectId
+   * @param id
+   * @returns {*}
+   */
+  checkExecute(projectId, id) {
+    return axios.get(`/devops/v1/projects/${projectId}/pipeline/check_deploy?pipeline_id=${id}`);
+  }
 }
 
 const pipelineStore = new PipelineStore();

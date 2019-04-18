@@ -1658,6 +1658,7 @@ const zhCN = {
   // pipeline
   "pipeline.head": "流水线",
   "pipeline.header.create": "创建流水线",
+  "pipeline.header.edit": "修改流水线",
   "pipeline.record": "流水线执行记录总览",
   "pipeline.trigger": "触发方式",
   "pipeline.trigger.member": "触发人员",
@@ -1711,6 +1712,13 @@ const zhCN = {
   "pipeline.flow.member": "审核人员",
   "pipeline.link.toConfig": "创建部署配置",
   "pipeline.task.type.error": "任务类型错误",
+  "pipeline.execute": "执行流水线",
+  "pipeline.execute.checking": "正在检查流水线执行条件，请耐心等待！",
+  "pipeline.execute.pass": "点击确认后开始执行该流水线。",
+  "pipeline.execute.failed": "该流水线不满足执行条件，无法触发执行。",
+  "pipeline.edit.error": "出错了",
+  "pipeline.edit.error.msg": "信息加载错误，请返回流水线页面，刷新后重试。",
+  "pipeline.edit.back": "返回流水线",
 
   ...pageDetail,
 };

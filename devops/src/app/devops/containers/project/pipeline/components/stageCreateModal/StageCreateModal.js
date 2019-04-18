@@ -57,10 +57,10 @@ export default class StageCreateModal extends Component {
       form: { validateFieldsAndScroll },
     } = this.props;
 
-    validateFieldsAndScroll((err, { name, triggerType, users }) => {
+    validateFieldsAndScroll((err, { stageName, triggerType, users }) => {
       if (!err) {
         const data = {
-          name,
+          stageName,
           triggerType,
           stageUserRelDTOS: users ? _.map(users, item => Number(item)) : null,
         };
@@ -85,7 +85,7 @@ export default class StageCreateModal extends Component {
       intl: { formatMessage },
       form: { getFieldDecorator },
       stage: {
-        name,
+        stageName,
         triggerType,
         stageUserRelDTOS,
       },
@@ -116,12 +116,12 @@ export default class StageCreateModal extends Component {
           <FormItem
             {...formItemLayout}
           >
-            {getFieldDecorator('name', {
+            {getFieldDecorator('stageName', {
               rules: [{
                 required: true,
                 message: formatMessage({ id: 'required' }),
               }],
-              initialValue: name,
+              initialValue: stageName,
             })(
               <Input
                 label={<FormattedMessage id="name" />}
