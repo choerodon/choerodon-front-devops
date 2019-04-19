@@ -33,8 +33,6 @@ release:
     do
         sleep 30
         date "+%Y-%m-%d %H:%M:%S"
-        free -h
-        w
     done
   }
 
