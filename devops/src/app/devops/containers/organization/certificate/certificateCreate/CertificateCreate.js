@@ -1,31 +1,24 @@
 import React, { Component, Fragment } from "react";
-import { observer } from "mobx-react";
+import { observer, inject } from "mobx-react";
 import { injectIntl, FormattedMessage } from "react-intl";
-import { stores, Content } from "choerodon-front-boot";
+import { Content } from "choerodon-front-boot";
 import _ from "lodash";
 import {
-  Button,
   Form,
   Select,
   Input,
   Modal,
-  Icon,
   Radio,
   Table,
   Tag,
 } from "choerodon-ui";
 import "../../../main.scss";
-import "./CreateCert.scss";
+import "./CertificateCreate.scss";
 import '../../../project/envPipeline/EnvPipeLineHome.scss';
 import Tips from "../../../../components/Tips/Tips";
 import InterceptMask from "../../../../components/interceptMask/InterceptMask";
+import { HEIGHT } from "../../../../common/Constants";
 
-const HEIGHT =
-  window.innerHeight ||
-  document.documentElement.clientHeight ||
-  document.body.clientHeight;
-
-const { AppState } = stores;
 const { Sidebar } = Modal;
 const { Item: FormItem } = Form;
 const { Option, OptGroup } = Select;
@@ -41,14 +34,21 @@ const formItemLayout = {
     sm: { span: 26 },
   },
 };
+
+@Form.create({})
+@injectIntl
+@inject('AppState')
 @observer
-class CreateCert extends Component {
+class CertificateCreate extends Component {
   /**
    * 校验证书名称唯一性
    */
   checkName = _.debounce((rule, value, callback) => {
-    const { organizationId } = AppState.currentMenuType;
-    const { store, intl: { formatMessage } } = this.props;
+    const {
+      store,
+      intl: { formatMessage },
+      AppState: { currentMenuType: { organizationId } },
+    } = this.props;
     store.checkCertName(organizationId, value)
       .then(data => {
         if (data && data.failed) {
@@ -77,8 +77,12 @@ class CreateCert extends Component {
   }
 
   componentDidMount() {
-    const { showType, store, id } = this.props;
-    const { organizationId } = AppState.currentMenuType;
+    const {
+      showType,
+      store,
+      id,
+      AppState: { currentMenuType: { organizationId } },
+    } = this.props;
     if (showType === 'create') {
       store.loadPro(organizationId, null);
     } else if (showType === 'edit') {
@@ -97,8 +101,12 @@ class CreateCert extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, store, showType } = this.props;
-    const { organizationId } = AppState.currentMenuType;
+    const {
+      form,
+      store,
+      showType,
+      AppState: { currentMenuType: { organizationId } },
+    } = this.props;
     const {  checked, createSelectedRowKeys } = this.state;
     this.setState({ submitting: true });
     if (showType === 'create') {
@@ -133,8 +141,10 @@ class CreateCert extends Component {
    * @param promise
    */
   handleResponse = promise => {
-    const { store } = this.props;
-    const { organizationId } = AppState.currentMenuType;
+    const {
+      store,
+      AppState: { currentMenuType: { organizationId } },
+    } = this.props;
     promise
       .then(res => {
         this.setState({ submitting: false });
@@ -254,8 +264,11 @@ class CreateCert extends Component {
    * @param paras
    */
   tableChange =(pagination, filters, sorter, paras) => {
-    const { store, showType } = this.props;
-    const { organizationId } = AppState.currentMenuType;
+    const {
+      store,
+      showType,
+      AppState: { currentMenuType: { organizationId } },
+    } = this.props;
     store.setInfo({ filters, sort: sorter, paras });
     let sort = { field: '', order: 'desc' };
     if (sorter.column) {
@@ -277,13 +290,18 @@ class CreateCert extends Component {
   };
 
   render() {
-    const { form, intl: { formatMessage }, store, showType } = this.props;
+    const {
+      form,
+      intl: { formatMessage },
+      store,
+      showType,
+      AppState: { currentMenuType: { name } },
+    } = this.props;
     const {
       getCert,
     } = store;
     const { getFieldDecorator } = form;
     const { submitting, checked, createSelectedRowKeys, createSelected} = this.state;
-    const { name } = AppState.currentMenuType;
     const {
       getInfo: { filters, sort: { columnKey, order }, paras },
       getProPageInfo,
@@ -473,4 +491,4 @@ class CreateCert extends Component {
   }
 }
 
-export default Form.create({})(injectIntl(CreateCert));
+export default CertificateCreate;

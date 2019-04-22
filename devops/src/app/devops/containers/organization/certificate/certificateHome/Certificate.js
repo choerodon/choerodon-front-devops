@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { observer } from "mobx-react";
+import { observer, inject } from "mobx-react";
 import { withRouter } from "react-router-dom";
 import { injectIntl, FormattedMessage } from "react-intl";
 import {
@@ -7,23 +7,19 @@ import {
   Header,
   Page,
   Permission,
-  stores,
 } from "choerodon-front-boot";
-import { Select, Button, Tooltip, Table, Modal } from "choerodon-ui";
+import { Button, Tooltip, Table, Modal } from "choerodon-ui";
 import _ from "lodash";
 import "../../../main.scss";
-import "./CertificateHome.scss";
-import CreateCert from "../createCert";
+import "./Certificate.scss";
+import CertificateCreate from "../certificateCreate";
+import { HEIGHT } from '../../../../common/Constants';
 
-const HEIGHT =
-  window.innerHeight ||
-  document.documentElement.clientHeight ||
-  document.body.clientHeight;
-
-const { AppState } = stores;
-
+@injectIntl
+@withRouter
+@inject('AppState')
 @observer
-class CertificateHome extends Component {
+class Certificate extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -56,14 +52,16 @@ class CertificateHome extends Component {
   }
 
   loadCertData = () => {
-    const { CertificateStore } = this.props;
+    const {
+      CertificateStore,
+      AppState: { currentMenuType: { organizationId } },
+    } = this.props;
     const {
       page,
       pageSize,
       sorter,
       postData,
     } = CertificateStore.getTableFilter;
-    const { organizationId } = AppState.currentMenuType;
     CertificateStore.loadCertData(
       organizationId,
       page,
@@ -93,8 +91,10 @@ class CertificateHome extends Component {
    * 删除证书
    */
   handleDelete = () => {
-    const { CertificateStore } = this.props;
-    const { organizationId } = AppState.currentMenuType;
+    const {
+      CertificateStore,
+      AppState: { currentMenuType: { organizationId } },
+    } = this.props;
     const { deleteCert } = this.state;
     this.setState({ deleteStatus: true });
     CertificateStore.deleteCertById(organizationId, deleteCert)
@@ -145,8 +145,10 @@ class CertificateHome extends Component {
    * @param paras
    */
   tableChange = (pagination, filters, sorter, paras) => {
-    const { CertificateStore } = this.props;
-    const { organizationId } = AppState.currentMenuType;
+    const {
+      CertificateStore,
+      AppState: { currentMenuType: { organizationId } },
+    } = this.props;
     const { current, pageSize } = pagination;
     const page = current - 1;
     const sort = _.isEmpty(sorter)
@@ -240,6 +242,7 @@ class CertificateHome extends Component {
     const {
       intl: {formatMessage},
       CertificateStore,
+      AppState: { currentMenuType: { organizationId: orgId, type } },
     } = this.props;
     const {
       filters,
@@ -250,10 +253,6 @@ class CertificateHome extends Component {
       getPageInfo,
       getCertData,
     } = CertificateStore;
-    const {
-      type,
-      organizationId: orgId,
-    } = AppState.currentMenuType;
 
     const columns = [
       {
@@ -293,12 +292,10 @@ class CertificateHome extends Component {
     const {
       CertificateStore,
       intl: { formatMessage },
+      AppState: {
+        currentMenuType: { organizationId: orgId, type, name },
+      },
     } = this.props;
-    const {
-      type,
-      organizationId: orgId,
-      name,
-    } = AppState.currentMenuType;
     const { removeDisplay, deleteStatus, certName, showType, id } = this.state;
 
     return (
@@ -373,7 +370,7 @@ class CertificateHome extends Component {
           </div>
         </Modal>
         {showType !== '' && (
-          <CreateCert
+          <CertificateCreate
             store={CertificateStore}
             onClose={this.closeSideBar}
             id={id}
@@ -385,4 +382,4 @@ class CertificateHome extends Component {
   }
 }
 
-export default withRouter(injectIntl(CertificateHome));
+export default Certificate;

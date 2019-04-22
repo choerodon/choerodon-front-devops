@@ -125,7 +125,7 @@ class PipelineRecordStore {
    * @param type 中止或通过
    */
   checkData = (projectId, data) =>
-    axios.post(`/devops/v1/projects/{project_id}/pipeline/audit`, JSON.stringify(data));
+    axios.post(`/devops/v1/projects/${projectId}/pipeline/audit`, JSON.stringify(data));
 }
 
 const pipelineRecordStore = new PipelineRecordStore();
