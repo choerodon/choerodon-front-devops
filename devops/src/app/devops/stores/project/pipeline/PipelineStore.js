@@ -37,6 +37,36 @@ class PipelineStore {
     return this.loading;
   }
 
+  @observable detail = {};
+
+  @action setDetail(data) {
+    this.detail = data;
+  }
+
+  @computed get getDetail() {
+    return this.detail;
+  }
+
+  @observable detailLoading = false;
+
+  @action setDetailLoading(data) {
+    this.detailLoading = data;
+  }
+
+  @computed get getDetailLoading() {
+    return this.detailLoading;
+  }
+
+  @observable recordDate = [];
+
+  @action setRecordDate(data) {
+    this.recordDate = data;
+  }
+
+  @computed get getRecordDate() {
+    return this.recordDate.slice();
+  }
+
   async loadListData(projectId, page, size, sort, param) {
     this.setLoading(true);
 
@@ -99,6 +129,37 @@ class PipelineStore {
    */
   checkExecute(projectId, id) {
     return axios.get(`/devops/v1/projects/${projectId}/pipeline/check_deploy?pipeline_id=${id}`);
+  }
+
+  /**
+   * 加载记录详情
+   * @param projectId
+   * @param id 执行记录 id
+   * @returns {Promise<void>}
+   */
+  async loadPipelineRecordDetail(projectId, id) {
+    this.setDetailLoading(true);
+    let data = await axios.get(`/devops/v1/projects/${projectId}/pipeline/${id}/record_detail`)
+      .catch(e => {
+        this.setDetailLoading(false);
+        Choerodon.handleResponseError(e);
+      });
+
+    const result = handleProptError(data);
+    if (result) {
+      this.setDetail(result);
+    }
+    this.setDetailLoading(false);
+  };
+
+  async loadExeRecord(projectId, id) {
+    let data = await axios
+      .get(`/devops/v1/projects/${projectId}/pipeline/${id}/list`)
+      .catch(e => Choerodon.handleResponseError(e));
+    const result = handleProptError(data);
+    if (result) {
+      this.setRecordDate(result);
+    }
   }
 }
 

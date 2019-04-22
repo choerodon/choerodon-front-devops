@@ -1,37 +1,37 @@
-import React, { Component, Fragment } from "react";
-import { observer } from "mobx-react";
-import { withRouter } from "react-router-dom";
-import { injectIntl, FormattedMessage } from "react-intl";
+import React, { Component, Fragment } from 'react';
+import { observer } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import {
   Table,
   Button,
   Modal,
   Tooltip,
   Select,
-} from "choerodon-ui";
+} from 'choerodon-ui';
 import {
   Content,
   Header,
   Page,
   Permission,
   stores,
-} from "choerodon-front-boot";
-import _ from "lodash";
-import TimePopover from "../../../../components/timePopover";
+} from 'choerodon-front-boot';
+import _ from 'lodash';
+import TimePopover from '../../../../components/timePopover';
 import '../../../main.scss';
 import './PipelineRecord.scss';
-import StatusTags from "../../../../components/StatusTags/StatusTags";
+import StatusTags from '../../../../components/StatusTags/StatusTags';
 import { HEIGHT } from '../../../../common/Constants';
 
-const { Option } =Select;
+const { Option } = Select;
 const { AppState } = stores;
 const STATUS_COLOR = {
-  success: "#00BFA5",
-  running: "#4D90FE",
-  failed: "#F44336",
-  stop: "#FF7043",
-  deleted: "#D3D3D3",
-  pendingcheck: "#FFB100",
+  success: '#00BFA5',
+  running: '#4D90FE',
+  failed: '#F44336',
+  stop: '#FF7043',
+  deleted: '#D3D3D3',
+  pendingcheck: '#FFB100',
 };
 
 @observer
@@ -54,13 +54,13 @@ class PipelineRecord extends Component {
   componentDidMount() {
     const { PipelineRecordStore } = this.props;
     const { projectId } = AppState.currentMenuType;
-    const { history: { location: { state } } } = this.props;
+    const { location: { state } } = this.props;
     PipelineRecordStore.loadPipelineData(projectId);
     if (state && state.pipelineId) {
       this.setState({ pipelineId: state.pipelineId });
-      PipelineRecordStore.loadRecordList(projectId, state.pipelineId, 0, HEIGHT < 900 ? 10 : 15)
+      PipelineRecordStore.loadRecordList(projectId, state.pipelineId, 0, HEIGHT < 900 ? 10 : 15);
     } else {
-      PipelineRecordStore.loadRecordList(projectId, null, 0, HEIGHT < 900 ? 10 : 15)
+      PipelineRecordStore.loadRecordList(projectId, null, 0, HEIGHT < 900 ? 10 : 15);
     }
   }
 
@@ -73,10 +73,10 @@ class PipelineRecord extends Component {
     const { pipelineId } = this.state;
     PipelineRecordStore.setInfo({
       filters: {},
-      sort: { columnKey: "id", order: "descend" },
+      sort: { columnKey: 'id', order: 'descend' },
       paras: [],
     });
-    PipelineRecordStore.loadRecordList(projectId, pipelineId, 0, HEIGHT < 900 ? 10 : 15)
+    PipelineRecordStore.loadRecordList(projectId, pipelineId, 0, HEIGHT < 900 ? 10 : 15);
   };
 
   /**
@@ -103,13 +103,13 @@ class PipelineRecord extends Component {
       projectId,
     } = AppState.currentMenuType;
     PipelineRecordStore.setInfo({ filters, sort: sorter, paras });
-    const sort = { field: "id", order: "desc" };
+    const sort = { field: 'id', order: 'desc' };
     if (sorter.column) {
       sort.field = sorter.field || sorter.columnKey;
-      if (sorter.order === "ascend") {
-        sort.order = "asc";
-      } else if (sorter.order === "descend") {
-        sort.order = "desc";
+      if (sorter.order === 'ascend') {
+        sort.order = 'asc';
+      } else if (sorter.order === 'descend') {
+        sort.order = 'desc';
       }
     }
     let searchParam = {};
@@ -137,7 +137,7 @@ class PipelineRecord extends Component {
     const { PipelineRecordStore } = this.props;
     PipelineRecordStore.setInfo({
       filters: {},
-      sort: { columnKey: "id", order: "descend" },
+      sort: { columnKey: 'id', order: 'descend' },
       paras: [],
     });
     this.setState({ pipelineId: value }, () => this.loadData());
@@ -162,69 +162,70 @@ class PipelineRecord extends Component {
     } = PipelineRecordStore.getInfo;
     return [
       {
-        title: formatMessage({ id: "pipelineRecord.pipeline.status" }),
-        key: "status",
-        dataIndex: "status",
+        title: formatMessage({ id: 'pipelineRecord.pipeline.status' }),
+        key: 'status',
+        dataIndex: 'status',
         sorter: true,
-        sortOrder: columnKey === "status" && order,
-        filters: _.map(["success", "failed", "running", "stop", "pendingcheck", "deleted"], item => (
+        sortOrder: columnKey === 'status' && order,
+        filters: _.map(['success', 'failed', 'running', 'stop', 'pendingcheck', 'deleted'], item => (
           {
-            text: formatMessage({ id: `pipelineRecord.status.${item}`}),
+            text: formatMessage({ id: `pipelineRecord.status.${item}` }),
             value: item,
           }
         )),
         filteredValue: filters.status || [],
-        render: text => (<StatusTags name={formatMessage({ id: `pipelineRecord.status.${text}`})} color={STATUS_COLOR[text]} />),
+        render: text => (
+          <StatusTags name={formatMessage({ id: `pipelineRecord.status.${text}` })} color={STATUS_COLOR[text]} />),
       },
       {
-        title: formatMessage({ id: "pipeline.trigger" }),
-        key: "triggerType",
-        dataIndex: "triggerType",
+        title: formatMessage({ id: 'pipeline.trigger' }),
+        key: 'triggerType',
+        dataIndex: 'triggerType',
         sorter: true,
-        sortOrder: columnKey === "triggerType" && order,
+        sortOrder: columnKey === 'triggerType' && order,
         filters: [
           {
-            text: formatMessage({ id: "pipeline.trigger.auto" }),
-            value: "auto",
+            text: formatMessage({ id: 'pipeline.trigger.auto' }),
+            value: 'auto',
           },
           {
-            text: formatMessage({ id: "pipeline.trigger.manual" }),
-            value: "manual",
+            text: formatMessage({ id: 'pipeline.trigger.manual' }),
+            value: 'manual',
           },
         ],
         filteredValue: filters.triggerType || [],
         render: text => (<FormattedMessage id={`pipeline.trigger.${text}`} />),
       },
       {
-        title: formatMessage({ id: "pipelineRecord.pipeline.name" }),
-        key: "name",
-        dataIndex: "name",
+        title: formatMessage({ id: 'pipelineRecord.pipeline.name' }),
+        key: 'name',
+        dataIndex: 'name',
       },
       {
-        title: formatMessage({ id: "pipelineRecord.process" }),
-        key: "stageDTOList",
-        dataIndex: "stageDTOList",
+        title: formatMessage({ id: 'pipelineRecord.process' }),
+        key: 'stageDTOList',
+        dataIndex: 'stageDTOList',
         render: this.getProcess,
       },
       {
         title: <FormattedMessage id="ist.expand.date" />,
-        dataIndex: "lastUpdateDate",
-        key: "lastUpdateDate",
+        dataIndex: 'lastUpdateDate',
+        key: 'lastUpdateDate',
         render: text => <TimePopover content={text} />,
       },
       {
-        key: "action",
+        key: 'action',
         align: 'right',
         render: (text, record) => {
           const { status, type: checkType, id, name, stageName, stageRecordId, taskRecordId } = record;
           return (<div>
-            {status === "failed" && (
-              <Permission
-                type={type}
-                projectId={projectId}
-                organizationId={organizationId}
-                service={["devops-service.pipeline.retry"]}
-              >
+              {status === 'failed' && (
+                <Permission
+                  type={type}
+                  projectId={projectId}
+                  organizationId={organizationId}
+                  service={['devops-service.pipeline.retry']}
+                >
                   <Tooltip
                     placement="bottom"
                     title={<FormattedMessage id="pipelineRecord.retry" />}
@@ -236,48 +237,49 @@ class PipelineRecord extends Component {
                       onClick={this.openRetry.bind(this, id, name)}
                     />
                   </Tooltip>
-              </Permission>
-            )}
-            {status === "pendingcheck" && (
+                </Permission>
+              )}
+              {status === 'pendingcheck' && (
+                <Permission
+                  type={type}
+                  projectId={projectId}
+                  organizationId={organizationId}
+                  service={['devops-service.pipeline.audit']}
+                >
+                  <Tooltip
+                    placement="bottom"
+                    title={<FormattedMessage id="pipelineRecord.check.manual" />}
+                  >
+                    <Button
+                      icon="authorize"
+                      shape="circle"
+                      size="small"
+                      onClick={this.showSidebar.bind(this, id, checkType, name, stageName, stageRecordId, taskRecordId)}
+                    />
+                  </Tooltip>
+                </Permission>
+              )}
               <Permission
                 type={type}
                 projectId={projectId}
                 organizationId={organizationId}
-                service={["devops-service.pipeline.audit"]}
+                service={['devops-service.pipeline.getRecordById']}
               >
                 <Tooltip
                   placement="bottom"
-                  title={<FormattedMessage id="pipelineRecord.check.manual" />}
+                  title={<FormattedMessage id="pipelineRecord.detail" />}
                 >
                   <Button
-                    icon="authorize"
+                    icon="find_in_page"
                     shape="circle"
                     size="small"
-                    onClick={this.showSidebar.bind(this, id, checkType, name, stageName, stageRecordId, taskRecordId)}
+                    onClick={this.linkToDetail.bind(this, id, name)}
                   />
                 </Tooltip>
               </Permission>
-            )}
-            <Permission
-              type={type}
-              projectId={projectId}
-              organizationId={organizationId}
-              service={["devops-service.pipeline.getRecordById"]}
-            >
-              <Tooltip
-                placement="bottom"
-                title={<FormattedMessage id="pipelineRecord.detail" />}
-              >
-                <Button
-                  icon="find_in_page"
-                  shape="circle"
-                  size="small"
-                  onClick={this.linkToDetail.bind(this, id)}
-                />
-              </Tooltip>
-            </Permission>
-          </div>
-        )},
+            </div>
+          );
+        },
       },
     ];
   };
@@ -297,35 +299,38 @@ class PipelineRecord extends Component {
             const { status, id } = item;
             return (<div key={id} className="c7n-process-content">
               <span className={`c7n-process-line c7n-process-line-${status}`} />
-              {type === "task" && status === "running"
+              {type === 'task' && status === 'running'
                 ? <svg className="c7n-process-svg">
-                  <circle cx="4" cy="4" r="4" stroke={pipelineStatus === "stop" ? "#FF7043" : "#FFB100"} strokeWidth="4" fill="none" />
+                  <circle cx="4" cy="4" r="4" stroke={pipelineStatus === 'stop' ? '#FF7043' : '#FFB100'} strokeWidth="4"
+                          fill="none" />
                 </svg>
                 : <span className={`c7n-process-status c7n-process-status-${status}`} />
               }
-            </div>)
+            </div>);
           })
         }
       </div>
-    )
+    );
   };
 
   /**
    * 跳转到流水线详情
    * @param recordId 流水线记录id
    */
-  linkToDetail = (recordId) => {
-    const { history } = this.props;
+  linkToDetail = (recordId, name) => {
     const {
-      projectId,
-      type,
-      name,
-      organizationId,
-    } = AppState.currentMenuType;
+      history,
+      location: {
+        state,
+        search,
+      },
+    } = this.props;
+    const { pipelineId } = state || {};
+
     history.push({
-      pathname: '/devops/pipeline-detail',
-      search: `?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}`,
-      state: { recordId },
+      pathname: '/devops/pipeline/detail',
+      search,
+      state: { recordId, name, pipelineId },
     });
   };
 
@@ -339,14 +344,14 @@ class PipelineRecord extends Component {
     this.setState({ submitting: true });
     PipelineRecordStore.retry(projectId, id)
       .then(data => {
-        if(data && data.failed) {
+        if (data && data.failed) {
           Choerodon.prompt(data.message);
         } else {
           this.setState({ showRetry: false, id: null });
           this.loadData();
         }
         this.setState({ submitting: false });
-      })
+      });
   };
 
   /**
@@ -373,16 +378,16 @@ class PipelineRecord extends Component {
       stageRecordId,
       taskRecordId,
     };
-    this.setState({ [flag ? "passLoading" : "stopLoading"]: true });
+    this.setState({ [flag ? 'passLoading' : 'stopLoading']: true });
     PipelineRecordStore.checkData(projectId, data)
       .then(data => {
-        if(data && data.failed) {
+        if (data && data.failed) {
           Choerodon.prompt(data.message);
         } else {
           this.handClose(true);
         }
-        this.setState({ [flag ? passLoading : stopLoading]: false })
-      })
+        this.setState({ [flag ? passLoading : stopLoading]: false });
+      });
   };
 
   /**
@@ -431,21 +436,19 @@ class PipelineRecord extends Component {
     if (flag) {
       this.loadData();
     }
-    this.setState({ show: false, id: null, name:null, checkData: {} });
+    this.setState({ show: false, id: null, name: null, checkData: {} });
   };
-
 
   render() {
     const {
       PipelineRecordStore,
       intl: { formatMessage },
+      location: {
+        state,
+        search,
+      },
     } = this.props;
-    const {
-      type,
-      projectId,
-      organizationId: orgId,
-      name,
-    } = AppState.currentMenuType;
+    const { name } = AppState.currentMenuType;
     const {
       pipelineId,
       show,
@@ -465,18 +468,24 @@ class PipelineRecord extends Component {
     const data = PipelineRecordStore.getRecordList;
     const { paras } = PipelineRecordStore.getInfo;
 
+    const { pipelineId: propsPId } = state || {};
+    const backPath = propsPId ? `/devops/pipeline${search}` : null;
+
     return (
       <Page
         className="c7n-region c7n-pipelineRecord-wrapper"
         service={[
-          "devops-service.pipeline.listRecords",
-          "devops-service.pipeline.listPipelineDTO",
-          "devops-service.pipeline.getRecordById",
-          "devops-service.pipeline.retry",
-          "devops-service.pipeline.audit",
+          'devops-service.pipeline.listRecords',
+          'devops-service.pipeline.listPipelineDTO',
+          'devops-service.pipeline.getRecordById',
+          'devops-service.pipeline.retry',
+          'devops-service.pipeline.audit',
         ]}
       >
-        <Header title={formatMessage({ id: "pipelineRecord.header" })}>
+        <Header
+          title={formatMessage({ id: 'pipelineRecord.header' })}
+          backPath={backPath}
+        >
           <Button
             onClick={this.handleRefresh}
             icon="refresh"
@@ -486,7 +495,7 @@ class PipelineRecord extends Component {
         </Header>
         <Content code="pipelineRecord" values={{ name }}>
           <Select
-            label={formatMessage({ id: "pipelineRecord.pipeline.name" })}
+            label={formatMessage({ id: 'pipelineRecord.pipeline.name' })}
             className="c7n-pipelineRecord-select"
             optionFilterProp="children"
             onChange={this.handleSelect}
@@ -511,7 +520,7 @@ class PipelineRecord extends Component {
             }
           </Select>
           <Table
-            filterBarPlaceholder={formatMessage({ id: "filter" })}
+            filterBarPlaceholder={formatMessage({ id: 'filter' })}
             loading={loading}
             onChange={this.tableChange}
             pagination={pageInfo}
@@ -525,7 +534,7 @@ class PipelineRecord extends Component {
           <Modal
             confirmLoading={submitting}
             visible={showRetry}
-            title={`${formatMessage({ id: "pipelineRecord.retry.title" }, { name: pipelineName })}`}
+            title={`${formatMessage({ id: 'pipelineRecord.retry.title' }, { name: pipelineName })}`}
             closable={false}
             onOk={this.handleRetry}
             onCancel={this.closeRetry}
@@ -538,7 +547,7 @@ class PipelineRecord extends Component {
         {show && (
           <Modal
             visible={show}
-            title={formatMessage({ id: "pipelineRecord.check.manual"})}
+            title={formatMessage({ id: 'pipelineRecord.check.manual' })}
             closable={false}
             footer={[
               <Button
@@ -569,7 +578,8 @@ class PipelineRecord extends Component {
             ]}
           >
             <div className="c7n-padding-top_8">
-              <FormattedMessage id={`pipelineRecord.check.${checkType}.des`} values={{name: pipelineName, stage: stageName}} />
+              <FormattedMessage id={`pipelineRecord.check.${checkType}.des`}
+                                values={{ name: pipelineName, stage: stageName }} />
             </div>
           </Modal>
         )}
