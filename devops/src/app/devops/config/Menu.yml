@@ -274,19 +274,19 @@
           - "devops-service.devops-secret.deleteSecret"
           - "devops-service.devops-secret.listByOption"
     - "pipeline-management":
-        icon: router
+        icon: line_manage
         Routes: /devops/pipeline
         sort: 15
         permission:
           - "devops-service.application.listByActive"
     - "pipeline-record":
-        icon: language
+        icon: format_list_bulleted
         Routes: /devops/pipeline-record
         sort: 16
         permission:
           - "devops-service.application.listByActive"
     - "deployment-config":
-        icon: kubernetes
+        icon: cloud_done
         Routes: /devops/deployment-config
         sort: 17
         permission:
