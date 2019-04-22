@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { observer } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import {
@@ -14,7 +14,6 @@ import {
   Header,
   Page,
   Permission,
-  stores,
 } from 'choerodon-front-boot';
 import _ from 'lodash';
 import TimePopover from '../../../../components/timePopover';
@@ -24,7 +23,6 @@ import StatusTags from '../../../../components/StatusTags/StatusTags';
 import { HEIGHT } from '../../../../common/Constants';
 
 const { Option } = Select;
-const { AppState } = stores;
 const STATUS_COLOR = {
   success: '#00BFA5',
   running: '#4D90FE',
@@ -34,6 +32,9 @@ const STATUS_COLOR = {
   pendingcheck: '#FFB100',
 };
 
+@injectIntl
+@withRouter
+@inject('AppState')
 @observer
 class PipelineRecord extends Component {
   constructor(props, context) {
@@ -52,9 +53,11 @@ class PipelineRecord extends Component {
   }
 
   componentDidMount() {
-    const { PipelineRecordStore } = this.props;
-    const { projectId } = AppState.currentMenuType;
-    const { location: { state } } = this.props;
+    const {
+      PipelineRecordStore,
+      AppState: { currentMenuType: { projectId } },
+      location: { state },
+    } = this.props;
     PipelineRecordStore.loadPipelineData(projectId);
     if (state && state.pipelineId) {
       this.setState({ pipelineId: state.pipelineId });
@@ -68,8 +71,10 @@ class PipelineRecord extends Component {
    * 加载流水线执行总览列表
    */
   loadData = () => {
-    const { PipelineRecordStore } = this.props;
-    const { projectId } = AppState.currentMenuType;
+    const {
+      PipelineRecordStore,
+      AppState: { currentMenuType: { projectId } },
+    } = this.props;
     const { pipelineId } = this.state;
     PipelineRecordStore.setInfo({
       filters: {},
@@ -97,11 +102,11 @@ class PipelineRecord extends Component {
    * @param paras
    */
   tableChange = (pagination, filters, sorter, paras) => {
-    const { PipelineRecordStore } = this.props;
-    const { pipelineId } = this.state;
     const {
-      projectId,
-    } = AppState.currentMenuType;
+      PipelineRecordStore,
+      AppState: { currentMenuType: { projectId } },
+    } = this.props;
+    const { pipelineId } = this.state;
     PipelineRecordStore.setInfo({ filters, sort: sorter, paras });
     const sort = { field: 'id', order: 'desc' };
     if (sorter.column) {
@@ -150,12 +155,14 @@ class PipelineRecord extends Component {
     const {
       PipelineRecordStore,
       intl: { formatMessage },
+      AppState: {
+        currentMenuType: {
+          projectId,
+          type,
+          organizationId,
+        },
+      },
     } = this.props;
-    const {
-      type,
-      projectId,
-      organizationId,
-    } = AppState.currentMenuType;
     const {
       filters,
       sort: { columnKey, order },
@@ -217,9 +224,9 @@ class PipelineRecord extends Component {
         key: 'action',
         align: 'right',
         render: (text, record) => {
-          const { status, type: checkType, id, name, stageName, stageRecordId, taskRecordId } = record;
+          const { status, type: checkType, id, name, stageName, stageRecordId, taskRecordId, index } = record;
           return (<div>
-              {status === 'failed' && (
+              {index && status === 'failed' && (
                 <Permission
                   type={type}
                   projectId={projectId}
@@ -239,7 +246,7 @@ class PipelineRecord extends Component {
                   </Tooltip>
                 </Permission>
               )}
-              {status === 'pendingcheck' && (
+              {index && status === 'pendingcheck' && (
                 <Permission
                   type={type}
                   projectId={projectId}
@@ -295,11 +302,10 @@ class PipelineRecord extends Component {
     return (
       <div className="c7n-pipelineRecord-process">
         {
-          _.map(stageDTOList, item => {
-            const { status, id } = item;
+          _.map(stageDTOList, ({ status, id }) => {
             return (<div key={id} className="c7n-process-content">
               <span className={`c7n-process-line c7n-process-line-${status}`} />
-              {type === 'task' && status === 'running'
+              {type === 'task' && (status === 'running' || status === 'stop')
                 ? <svg className="c7n-process-svg">
                   <circle cx="4" cy="4" r="4" stroke={pipelineStatus === 'stop' ? '#FF7043' : '#FFB100'} strokeWidth="4"
                           fill="none" />
@@ -314,7 +320,7 @@ class PipelineRecord extends Component {
   };
 
   /**
-   * 跳转到流水线详情
+   * 跳转到流水线记录详情
    * @param recordId 流水线记录id
    */
   linkToDetail = (recordId, name) => {
@@ -338,8 +344,10 @@ class PipelineRecord extends Component {
    * 处理重新执行操作
    */
   handleRetry = () => {
-    const { PipelineRecordStore } = this.props;
-    const { projectId } = AppState.currentMenuType;
+    const {
+      PipelineRecordStore,
+      AppState: { currentMenuType: { projectId } },
+    } = this.props;
     const { id } = this.state;
     this.setState({ submitting: true });
     PipelineRecordStore.retry(projectId, id)
@@ -359,9 +367,13 @@ class PipelineRecord extends Component {
    * @param flag 是否通过
    */
   handleSubmit = (flag) => {
-    const { projectId } = AppState.currentMenuType;
-    const { id: userId } = AppState.userInfo;
-    const { PipelineRecordStore } = this.props;
+    const {
+      PipelineRecordStore,
+      AppState: {
+        currentMenuType: { projectId },
+        userInfo: { id: userId },
+      },
+    } = this.props;
     const {
       id,
       checkData: {
@@ -386,7 +398,7 @@ class PipelineRecord extends Component {
         } else {
           this.handClose(true);
         }
-        this.setState({ [flag ? passLoading : stopLoading]: false });
+        this.setState({ [flag ? 'passLoading' : 'stopLoading']: false });
       });
   };
 
@@ -447,8 +459,15 @@ class PipelineRecord extends Component {
         state,
         search,
       },
+      AppState: {
+        currentMenuType: {
+          projectId,
+          type,
+          organizationId: orgId,
+          name,
+        },
+      },
     } = this.props;
-    const { name } = AppState.currentMenuType;
     const {
       pipelineId,
       show,
@@ -509,12 +528,12 @@ class PipelineRecord extends Component {
             }
           >
             {
-              _.map(pipelineData, item => (
+              _.map(pipelineData, ({ id, name }) => (
                 <Option
-                  key={item.id}
-                  value={item.id}
+                  key={id}
+                  value={id}
                 >
-                  {item.name}
+                  {name}
                 </Option>
               ))
             }
@@ -588,4 +607,4 @@ class PipelineRecord extends Component {
   }
 }
 
-export default withRouter(injectIntl(PipelineRecord));
+export default PipelineRecord;
