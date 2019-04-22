@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { observer } from "mobx-react";
-import { withRouter } from "react-router-dom";
+import { observer, inject } from "mobx-react";
 import { injectIntl, FormattedMessage } from "react-intl";
 import {
   Button,
@@ -10,16 +9,13 @@ import {
   Input,
   Spin,
 } from "choerodon-ui";
-import {
-  Content,
-  stores,
-} from "choerodon-front-boot";
+import { Content } from "choerodon-front-boot";
 import _ from "lodash";
 import '../../../main.scss';
 import './DeploymentConfigCreate.scss';
 import YamlEditor from "../../../../components/yamlEditor/YamlEditor";
+import InterceptMask from "../../../../components/interceptMask/InterceptMask";
 
-const { AppState } = stores;
 const { Sidebar } = Modal;
 const { Item: FormItem } = Form;
 const { TextArea } = Input;
@@ -35,6 +31,9 @@ const formItemLayout = {
   },
 };
 
+@Form.create({})
+@injectIntl
+@inject('AppState')
 @observer
 class DeploymentConfigCreate extends Component {
   /**
@@ -49,8 +48,10 @@ class DeploymentConfigCreate extends Component {
       return;
     }
     if (p.test(value)) {
-      const { store } = this.props;
-      const { projectId } = AppState.currentMenuType;
+      const {
+        store,
+        AppState: { currentMenuType: { projectId } },
+      } = this.props;
       store.checkName(projectId, value)
         .then(data => {
           if (data && data.failed) {
@@ -79,8 +80,8 @@ class DeploymentConfigCreate extends Component {
       id,
       sidebarType,
       store,
+      AppState: { currentMenuType: { projectId } },
     } = this.props;
-    const { projectId } = AppState.currentMenuType;
     store.loadEnvData(projectId);
     store.loadAppData(projectId);
     if (id && sidebarType === 'edit') {
@@ -111,8 +112,8 @@ class DeploymentConfigCreate extends Component {
       store,
       sidebarType,
       id,
+      AppState: { currentMenuType: { projectId } },
     } = this.props;
-    const { projectId } = AppState.currentMenuType;
     const {
       changedValue,
     } = this.state;
@@ -185,8 +186,10 @@ class DeploymentConfigCreate extends Component {
    * 加载配置信息
    */
   loadValue = (appId) => {
-    const { store } = this.props;
-    const { projectId } = AppState.currentMenuType;
+    const {
+      store,
+      AppState: { currentMenuType: { projectId } },
+    } = this.props;
     appId && store.loadValue(projectId, appId);
   };
 
@@ -224,13 +227,11 @@ class DeploymentConfigCreate extends Component {
 
   render() {
     const {
-      name,
-    } = AppState.currentMenuType;
-    const {
       intl: { formatMessage },
       form,
       store,
       sidebarType,
+      AppState: { currentMenuType: { name } },
     } = this.props;
     const {
       submitting,
@@ -357,12 +358,12 @@ class DeploymentConfigCreate extends Component {
                     }
                   >
                     {
-                      _.map(appData, item => (
+                      _.map(appData, ({ id, name }) => (
                         <Option
-                          key={item.id}
-                          value={item.id}
+                          key={id}
+                          value={id}
                         >
-                          {item.name}
+                          {name}
                         </Option>
                       ))
                     }
@@ -394,18 +395,18 @@ class DeploymentConfigCreate extends Component {
                     }
                   >
                     {
-                      _.map(envData, item => (
+                      _.map(envData, ({ id, connect, permission, name }) => (
                         <Option
-                          key={item.id}
-                          value={item.id}
-                          disabled={!item.connect || !item.permission}
+                          key={id}
+                          value={id}
+                          disabled={!connect || !permission}
                         >
-                          {item.connect ? (
+                          {connect ? (
                             <span className="c7ncd-status c7ncd-status-success" />
                           ) : (
                             <span className="c7ncd-status c7ncd-status-disconnect" />
                           )}
-                          {item.name}
+                          {name}
                         </Option>
                       ))
                     }
@@ -417,6 +418,7 @@ class DeploymentConfigCreate extends Component {
               </div>
               {loading ? <Spin /> : this.getYaml()}
             </Form>
+            <InterceptMask visible={submitting} />
           </Content>
         </Sidebar>
       </div>
@@ -424,4 +426,4 @@ class DeploymentConfigCreate extends Component {
   }
 }
 
-export default Form.create({})(withRouter(injectIntl(DeploymentConfigCreate)));
+export default DeploymentConfigCreate;

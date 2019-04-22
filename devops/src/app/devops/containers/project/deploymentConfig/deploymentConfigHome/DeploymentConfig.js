@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { observer } from "mobx-react";
+import { observer, inject } from "mobx-react";
 import { withRouter } from "react-router-dom";
 import { injectIntl, FormattedMessage } from "react-intl";
 import {
@@ -14,17 +14,17 @@ import {
   Header,
   Page,
   Permission,
-  stores,
 } from "choerodon-front-boot";
 import TimePopover from "../../../../components/timePopover";
 import '../../../main.scss';
 import './DeploymentConfig.scss';
 import EnvFlag from "../../../../components/envFlag";
 import DeploymentConfigCreate from "../deploymentConfigCreate";
+import { HEIGHT } from '../../../../common/Constants';
 
-const { AppState } = stores;
-const HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-
+@injectIntl
+@withRouter
+@inject('AppState')
 @observer
 class DeploymentConfig extends Component {
   constructor(props, context) {
@@ -42,8 +42,10 @@ class DeploymentConfig extends Component {
   }
 
   loadData = () => {
-    const { projectId } = AppState.currentMenuType;
-    const { DeploymentConfigStore } = this.props;
+    const {
+      DeploymentConfigStore,
+      AppState: { currentMenuType: { projectId } },
+    } = this.props;
     DeploymentConfigStore.loadAllData(projectId, 0, HEIGHT < 900 ? 10 : 15);
   };
 
@@ -65,10 +67,10 @@ class DeploymentConfig extends Component {
    * @param paras
    */
   tableChange = (pagination, filters, sorter, paras) => {
-    const { DeploymentConfigStore } = this.props;
     const {
-      projectId,
-    } = AppState.currentMenuType;
+      DeploymentConfigStore,
+      AppState: { currentMenuType: { projectId } },
+    } = this.props;
     DeploymentConfigStore.setInfo({ filters, sort: sorter, paras });
     const sort = { field: "id", order: "desc" };
     if (sorter.column) {
@@ -103,12 +105,10 @@ class DeploymentConfig extends Component {
     const {
       DeploymentConfigStore,
       intl: { formatMessage },
+      AppState: {
+        currentMenuType: { projectId, type, organizationId },
+      },
     } = this.props;
-    const {
-      type,
-      projectId,
-      organizationId,
-    } = AppState.currentMenuType;
     const {
       filters,
       sort: { columnKey, order },
@@ -239,8 +239,13 @@ class DeploymentConfig extends Component {
    * 删除部署配置
    */
   handleDelete = () => {
-    const { DeploymentConfigStore, intl: { formatMessage } } = this.props;
-    const { projectId } = AppState.currentMenuType;
+    const {
+      DeploymentConfigStore,
+      intl: { formatMessage },
+      AppState: {
+        currentMenuType: { projectId },
+      },
+    } = this.props;
     const { id } = this.state;
     this.setState({ deleteLoading: true });
     DeploymentConfigStore.deleteData(projectId, id)
@@ -266,13 +271,10 @@ class DeploymentConfig extends Component {
     const {
       DeploymentConfigStore,
       intl: { formatMessage },
+      AppState: {
+        currentMenuType: { projectId, type, organizationId: orgId, name },
+      },
     } = this.props;
-    const {
-      type,
-      projectId,
-      organizationId: orgId,
-      name,
-    } = AppState.currentMenuType;
     const {
       sidebarType,
       name: configName,
@@ -281,11 +283,8 @@ class DeploymentConfig extends Component {
     } = this.state;
 
     const { loading, pageInfo } = DeploymentConfigStore;
-
     const data = DeploymentConfigStore.getConfigList;
-    const {
-      paras,
-    } = DeploymentConfigStore.getInfo;
+    const { paras } = DeploymentConfigStore.getInfo;
 
     return (
       <Page
@@ -349,7 +348,7 @@ class DeploymentConfig extends Component {
           okType="danger"
         >
           <div className="c7n-padding-top_8">
-            <FormattedMessage id="pipelineRecord.check.des" />
+            <FormattedMessage id="deploymentConfig.delete.tooltip" />
           </div>
         </Modal>
       </Page>
@@ -357,4 +356,4 @@ class DeploymentConfig extends Component {
   }
 }
 
-export default withRouter(injectIntl(DeploymentConfig));
+export default DeploymentConfig;
