@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Modal, Spin, Tooltip, Form, Input, Select, Radio, Icon } from 'choerodon-ui';
 import { Content } from 'choerodon-front-boot';
+import classnames from "classnames";
 import _ from 'lodash';
 import PipelineCreateStore from '../../../../../stores/project/pipeline/PipelineCreateStore';
 import Tips from '../../../../../components/Tips';
@@ -377,17 +378,25 @@ export default class TaskCreate extends Component {
         {name}
       </Option>
     ));
+
     const envOptions = _.map(getEnvData, ({ id, connect, permission, name }) => (<Option
       key={id}
       value={id}
       disabled={!(connect && permission)}
     >
-      <span className={`c7ncd-status c7ncd-status-${connect ? 'success' : 'disconnect'}`} />
+      <span className={classnames({
+        'c7ncd-status': true,
+        'c7ncd-status-success': connect,
+        'c7ncd-status-disconnect': !connect,
+      })} />
       {name}
     </Option>));
+
     const instanceOptions = _.map(getInstance, ({ id, code }) => (<Option value={id} key={id}>{code}</Option>));
+
     const userOptions = _.map(getUser, ({ id, realName }) => (
       <Option key={id} value={String(id)}>{realName}</Option>));
+
     const configOptions = _.map(getConfigList, ({ id, name }) => (<Option key={id} value={id}>
       <span>{name}</span>
     </Option>));
@@ -708,7 +717,6 @@ export default class TaskCreate extends Component {
                 </Select>,
               )}
             </FormItem>
-            {getLoading.value ? <Spin /> : this.renderYamlEditor()}
           </Fragment>}
           {taskType === TASK_TYPE_MANUAL && <Fragment>
             <FormItem
@@ -759,6 +767,7 @@ export default class TaskCreate extends Component {
             </FormItem>
           </Fragment>}
         </Form>
+        {taskType === TASK_TYPE_DEPLOY && getLoading.value ? <Spin /> : this.renderYamlEditor()}
       </Content>
     </Sidebar>);
   }

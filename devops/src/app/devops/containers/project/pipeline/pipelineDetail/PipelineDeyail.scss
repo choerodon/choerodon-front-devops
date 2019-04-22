@@ -1,1 +1,41 @@
-// pipeline
+.c7n-pipeline-detail {
+  .c7ncd-pipeline-detail-select {
+    margin-bottom: 32px;
+    width: 512px;
+  }
+
+  .c7ncd-pipeline-detail-msg {
+    margin-bottom: 16px;
+
+    .c7ncd-pipeline-detail-item {
+      display: inline-block;
+      font-size: 14px;
+
+      &:first-child {
+        margin-right: 86px;
+      }
+
+      span {
+        display: inline-block;
+        margin-right: 6px;
+        vertical-align: top;
+        color: rgba(0, 0, 0, 0.54);
+      }
+    }
+  }
+
+  .c7ncd-pipeline-main {
+    margin-bottom: 32px;
+    padding: 24px 0;
+    width: 100%;
+    border: 1px solid #e3e3e3;
+    background: #fff;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    .c7ncd-pipeline-scroll {
+      display: inline-flex;
+      padding: 0 14px;
+    }
+  }
+}

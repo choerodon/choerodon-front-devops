@@ -74,9 +74,7 @@ export default class Pipeline extends Component {
       },
     } = this.props;
 
-    const url = `${path}?type=${type}&id=${projectId}&name=${encodeURIComponent(
-      name,
-    )}&organizationId=${organizationId}`;
+    const url = `${path}?type=${type}&id=${projectId}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`;
     history.push(url);
   };
 
@@ -263,7 +261,7 @@ export default class Pipeline extends Component {
    * @param id
    * @returns {Promise<void>}
    */
-  async openExecuteCheck(name, id) {
+  async openExecuteCheck(id, name) {
     const {
       PipelineStore,
       AppState: {
@@ -302,9 +300,24 @@ export default class Pipeline extends Component {
   /**
    * 跳转到详情页面
    */
-  linkToDetail(id) {
-    const { match } = this.props;
-    this.linkToChange(`${match.url}/detail/${id}`);
+  linkToRecord(id) {
+    const {
+      history,
+      match,
+      AppState: {
+        currentMenuType: {
+          projectId,
+          name: projectName,
+          organizationId,
+          type,
+        },
+      },
+    } = this.props;
+    history.push({
+      pathname: '/devops/pipeline-record',
+      search: `?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`,
+      state: { pipelineId: id },
+    });
   };
 
   /**
@@ -328,12 +341,12 @@ export default class Pipeline extends Component {
       detail: {
         service: ['devops-service.devops-project-config.pageByOptions'],
         text: formatMessage({ id: 'pipeline.action.detail' }),
-        action: this.linkToDetail.bind(this, name),
+        action: this.linkToRecord.bind(this, id),
       },
       execute: {
         service: ['devops-service.devops-project-config.pageByOptions'],
         text: formatMessage({ id: 'pipeline.action.run' }),
-        action: this.openExecuteCheck.bind(this, name, id),
+        action: this.openExecuteCheck.bind(this, id, name),
       },
       edit: {
         service: ['devops-service.devops-project-config.pageByOptions'],
