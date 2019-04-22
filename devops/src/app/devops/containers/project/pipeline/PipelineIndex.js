@@ -12,7 +12,7 @@ const PipelineIndex = ({ match }) => (
     <Route exact path={match.url} component={PipelineHome} />
     <Route path={`${match.url}/create`} component={PipelineCreate} />
     <Route path={`${match.url}/edit/:id`} component={PipelineEdit} />
-    <Route path={`${match.url}/detail/:id`} component={PipelineDetail} />
+    <Route path={`${match.url}/detail`} component={PipelineDetail} />
     <Route path="*" component={nomatch} />
   </Switch>
 );
