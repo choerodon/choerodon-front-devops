@@ -18,7 +18,7 @@
     "lint-staged:es": "eslint"
   },
   "dependencies": {
-    "choerodon-front-boot": "^0.10.4",
+    "choerodon-front-boot": "0.10.4",
     "diff-match-patch": "^1.0.4",
     "echarts": "^4.1.0",
     "echarts-for-react": "^2.0.12",
