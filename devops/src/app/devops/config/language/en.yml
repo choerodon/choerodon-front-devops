@@ -30,6 +30,10 @@
 "deployment-pipeline.certificate": "Certificate"
 "deployment-pipeline.config-map": "Config Map"
 "deployment-pipeline.secret": "Secret"
+"deployment-pipeline.pipeline-management": "Pipeline Management"
+"deployment-pipeline.pipeline-record": "Pipeline Record"
+"deployment-pipeline.deployment-config": "Deployment Config"
+
 
 # 报表
 "platform-reports": "Reports"
