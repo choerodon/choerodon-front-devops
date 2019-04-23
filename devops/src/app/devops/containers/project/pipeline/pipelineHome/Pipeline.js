@@ -339,32 +339,32 @@ export default class Pipeline extends Component {
 
     let action = {
       detail: {
-        service: ['devops-service.devops-project-config.pageByOptions'],
+        service: ['devops-service.pipeline.listRecords'],
         text: formatMessage({ id: 'pipeline.action.detail' }),
         action: this.linkToRecord.bind(this, id),
       },
       execute: {
-        service: ['devops-service.devops-project-config.pageByOptions'],
+        service: ['devops-service.pipeline.execute'],
         text: formatMessage({ id: 'pipeline.action.run' }),
         action: this.openExecuteCheck.bind(this, id, name),
       },
       edit: {
-        service: ['devops-service.devops-project-config.pageByOptions'],
+        service: ['devops-service.pipeline.update'],
         text: formatMessage({ id: 'edit' }),
         action: this.linkToEdit.bind(this, id),
       },
       disabled: {
-        service: ['devops-service.devops-project-config.pageByOptions'],
+        service: ['devops-service.pipeline.updateIsEnabled'],
         text: formatMessage({ id: 'stop' }),
         action: this.openInvalid.bind(this, id, name),
       },
       enable: {
-        service: ['devops-service.devops-project-config.pageByOptions'],
+        service: ['devops-service.pipeline.updateIsEnabled'],
         text: formatMessage({ id: 'active' }),
         action: this.makeStatusActive.bind(this, id),
       },
       remove: {
-        service: ['devops-service.devops-project-config.pageByOptions'],
+        service: ['devops-service.pipeline.delete'],
         text: formatMessage({ id: 'delete' }),
         action: this.openRemove.bind(this, id, name),
       },
@@ -462,13 +462,20 @@ export default class Pipeline extends Component {
     return (<Page
       className="c7n-region"
       service={[
-        'devops-service.devops-project-config.pageByOptions',
+        'devops-service.pipeline.create',
+        'devops-service.pipeline.update',
+        'devops-service.pipeline.listByOptions',
+        'devops-service.pipeline.updateIsEnabled',
+        'devops-service.pipeline.delete',
+        'devops-service.pipeline.execute',
+        'devops-service.pipeline.listRecords',
+        'devops-service.pipeline.checkDeploy',
       ]}
     >
       <Header title={<FormattedMessage id="pipeline.head" />}>
 
         <Permission
-          service={['devops-service.devops-project-config.create']}
+          service={['devops-service.pipeline.create']}
           type={type}
           projectId={projectId}
           organizationId={organizationId}

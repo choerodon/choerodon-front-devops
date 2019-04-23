@@ -278,19 +278,33 @@
         Routes: /devops/pipeline
         sort: 15
         permission:
-          - "devops-service.application.listByActive"
+          - "devops-service.pipeline.create"
+          - "devops-service.pipeline.update"
+          - "devops-service.pipeline.listByOptions"
+          - "devops-service.pipeline.updateIsEnabled"
+          - "devops-service.pipeline.delete"
+          - "devops-service.pipeline.execute"
+          - "devops-service.pipeline.listRecords"
+          - "devops-service.pipeline.checkDeploy"
     - "pipeline-record":
         icon: format_list_bulleted
         Routes: /devops/pipeline-record
         sort: 16
         permission:
-          - "devops-service.application.listByActive"
+          - "devops-service.pipeline.listRecords"
+          - "devops-service.pipeline.listPipelineDTO"
+          - "devops-service.pipeline.getRecordById"
+          - "devops-service.pipeline.retry"
+          - "devops-service.pipeline.audit"
     - "deployment-config":
         icon: cloud_done
         Routes: /devops/deployment-config
         sort: 17
         permission:
-          - "devops-service.application.listByActive"
+          - "devops-service.pipeline-value.listByOptions"
+          - "devops-service.pipeline-value.queryById"
+          - "devops-service.pipeline-value.createOrUpdate"
+          - "devops-service.pipeline-value.delete"
 
 # 项目设置
 "prosetting":
