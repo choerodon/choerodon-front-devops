@@ -32,6 +32,8 @@ class CodeMirror extends React.Component {
     this.state = {
       viewMode: 'normal',
     };
+    // 多个编辑器同时存在时，生成不同的id，以便点击切换编辑模式查找对应的id
+    this.codeMirrorId = Date.now();
   }
 
   getCodeMirrorInstance() {
@@ -70,7 +72,7 @@ class CodeMirror extends React.Component {
 
   initUI(viewMode = this.state.viewMode) {
     const { options, value, originValue } = this.props;
-    const view = document.getElementById('c7ncd-yaml-editor');
+    const view = document.getElementById(this.codeMirrorId);
     const codeMirrorInstance = this.getCodeMirrorInstance();
 
     if (viewMode === 'diff') {
@@ -159,7 +161,7 @@ class CodeMirror extends React.Component {
             defaultValue={this.props.value}
             autoComplete="off"
           />
-          <div id="c7ncd-yaml-editor" />
+          <div id={this.codeMirrorId} />
         </div>
       </div>
     );

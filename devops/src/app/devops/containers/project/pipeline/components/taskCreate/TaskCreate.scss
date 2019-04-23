@@ -41,8 +41,33 @@
       }
     }
   }
+
+  .c7n-pipeline-config-value {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+
+    .c7n-config-tip-icon {
+      color: #f44336;
+      margin-right: 6px;
+    }
+
+    .c7n-config-tip-text {
+      color: rgba(0, 0, 0, 0.54);
+    }
+
+    .ant-btn > .icon {
+      margin-right: -2px;
+    }
+  }
 }
 
 .c7n-pipeline-sidebar-cancel {
   color: #3f51b5;
+}
+
+.c7n-config-value-modal {
+  width: 1200px !important;
+  height: 500px;
+  overflow-y: scroll;
 }

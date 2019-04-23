@@ -298,13 +298,13 @@ class PipelineRecord extends Component {
    * @returns {*}
    */
   getProcess = (stageDTOList, record) => {
-    const { stageRecordId, status: pipelineStatus } = record;
+    const { type, stageRecordId, status: pipelineStatus } = record;
     return (
       <div className="c7n-pipelineRecord-process">
         {
           _.map(stageDTOList, ({ status, id }) => {
             return (<div key={id} className="c7n-process-content">
-              <span className={`c7n-process-line ${stageRecordId === id ? `c7n-process-line-${pipelineStatus}` : ""}`} />
+              <span className={`c7n-process-line ${stageRecordId === id && type === "stage" ? `c7n-process-line-${pipelineStatus}` : ""}`} />
               <span className={`c7n-process-status c7n-process-status-${status}`} />
             </div>);
           })
