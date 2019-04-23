@@ -38,6 +38,11 @@ class DeploymentConfig extends Component {
   }
 
   componentDidMount() {
+    const {
+      location: { state },
+    } = this.props;
+    const { appId, envId } = state || {};
+    appId && envId && this.setState({ sidebarType: "create" });
     this.loadData();
   }
 
@@ -274,6 +279,7 @@ class DeploymentConfig extends Component {
       AppState: {
         currentMenuType: { projectId, type, organizationId: orgId, name },
       },
+      location: { state },
     } = this.props;
     const {
       sidebarType,
@@ -335,6 +341,7 @@ class DeploymentConfig extends Component {
             store={DeploymentConfigStore}
             onClose={this.handClose}
             id={id}
+            state={state || {}}
           />
         }
         <Modal

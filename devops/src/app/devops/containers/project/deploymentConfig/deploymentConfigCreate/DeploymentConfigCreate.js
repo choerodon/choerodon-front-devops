@@ -81,9 +81,17 @@ class DeploymentConfigCreate extends Component {
       sidebarType,
       store,
       AppState: { currentMenuType: { projectId } },
+      state,
+      form: { setFieldsValue },
     } = this.props;
     store.loadEnvData(projectId);
     store.loadAppData(projectId);
+    const { appId, envId } = state;
+    if (appId && envId) {
+      this.handleSelect(appId);
+      setFieldsValue({ appId });
+      setFieldsValue({ envId });
+    }
     if (id && sidebarType === 'edit') {
       store.loadDataById(projectId, id)
         .then(data => {
@@ -165,7 +173,7 @@ class DeploymentConfigCreate extends Component {
   };
 
   /**
-   * 选择环境、应用,修改实例名称
+   * 选择应用
    */
   handleSelect = (value) => {
     const { store } = this.props;

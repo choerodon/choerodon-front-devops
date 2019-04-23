@@ -205,7 +205,14 @@ export default class PipelineCreate extends Component {
     return (<Page
       className="c7n-region c7n-pipeline-creat"
       service={[
-        'devops-service.devops-project-config.pageByOptions',
+        'devops-service.pipeline.create',
+        'devops-service.pipeline.getAllUsers',
+        'devops-service.pipeline.checkName',
+        'devops-service.application.pageByOptions',
+        'devops-service.devops-environment.listByProjectIdAndActive',
+        'devops-service.application-instance.getByAppIdAndEnvId',
+        'devops-service.pipeline-value.queryByAppIdAndEnvId',
+        'devops-service.pipeline-value.queryById',
       ]}
     >
       <Header
