@@ -620,3 +620,51 @@ input::-webkit-contacts-auto-fill-button {
   top: 50%;
   left: 0;
 }
+
+.c7n-expand-table {
+
+  .ant-table-tbody {
+    &>tr {
+      &.ant-table-expanded-row {
+        background: #fff;
+
+        &:hover {
+          background: #fff;
+        }
+      }
+
+      &.ant-table-expanded-row-level-1 {
+        &:hover {
+          &>td {
+            background: transparent;
+          }
+        }
+      }
+    }
+  }
+
+  .ant-table-row-expand-icon-cell {
+    position: relative;
+    padding: 5px 9px;
+    text-align: left;
+
+    &:after {
+      content: ' ';
+      position: absolute;
+      top: 20%;
+      right: 13px;
+      width: 0;
+      height: 60%;
+      border-right: 1px solid rgba(0, 0, 0, .12);
+    }
+
+    .ant-table-row-expand-icon {
+      width: 18px;
+      font-size: 18px;
+
+      &:before {
+        content: '\E5CF';
+      }
+    }
+  }
+}

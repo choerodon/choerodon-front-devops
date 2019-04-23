@@ -132,8 +132,16 @@ export default class PipelineEdit extends Component {
   };
 
   goBack = () => {
-    const { history } = this.props;
-    history.go(-1);
+    const {
+      history,
+      location: {
+        search,
+      },
+    } = this.props;
+    history.push({
+      pathname: '/devops/pipeline',
+      search,
+    });
   };
 
   get renderPipelineDom() {

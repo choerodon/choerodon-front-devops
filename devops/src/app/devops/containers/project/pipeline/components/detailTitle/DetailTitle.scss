@@ -1,0 +1,102 @@
+@import "../status.scss";
+
+.c7ncd-pipeline-title {
+  flex: 0 0 60px;
+  height: 60px;
+  display: flex;
+  width: 270px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: #f4f4f4;
+  border: 1px solid;
+
+  &_running {
+    border-color: $running;
+    background: $bk_running;
+  }
+
+  &_pendingcheck {
+    border-color: $pendingcheck;
+    background: $bk_pendingcheck;
+  }
+
+  &_success {
+    border-color: $success;
+    background: $bk_success;
+  }
+
+  &_failed {
+    border-color: $failed;
+    background: $bk_failed;
+  }
+
+  &_stop {
+    border-color: $stop;
+    background: $bk_stop;
+  }
+
+  &_unexecuted {
+    border-color: $unexecuted;
+    background: $bk_unexecuted;
+  }
+
+  .c7ncd-pipeline-status {
+    flex: 0 0 20px;
+    height: 20px;
+    width: 20px;
+    margin-right: 8px;
+    margin-top: 2px;
+
+    &_running {
+      color: $running;
+    }
+
+    &_pendingcheck {
+      color: $pendingcheck;
+    }
+
+    &_success {
+      color: $success;
+    }
+
+    &_failed {
+      color: $failed;
+    }
+
+    &_stop {
+      color: $stop;
+    }
+
+    &_unexecuted {
+      color: $unexecuted;
+    }
+  }
+
+  .c7ncd-pipeline-execute {
+    flex: 0 0 166px;
+    width: 166px;
+
+    .c7ncd-pipeline-execute-name {
+      height: 22px;
+      font-size: 16px;
+      color: #000;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .c7ncd-pipeline-execute-time {
+      height: 14px;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.54);
+    }
+  }
+
+  .c7ncd-pipeline-title-trigger {
+    flex: 0 0 54px;
+    width: 54px;
+    line-height: 38px;
+    text-align: right;
+  }
+}

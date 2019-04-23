@@ -126,7 +126,7 @@ export default class StageCard extends Component {
           placement="top"
         >
           <span className="c7ncd-stagecard-title">
-          【{formatMessage({ id: `pipeline.mode.${type}` })}】{name}
+            【{formatMessage({ id: `pipeline.mode.${type}` })}】{name}
           </span>
         </Tooltip>
         <Button

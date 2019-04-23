@@ -627,53 +627,6 @@
 }
 
 // 修改实例管理中列表的展开箭头
-.c7n-devops-instance-table {
-
-  .ant-table-tbody {
-    &>tr {
-      &.ant-table-expanded-row {
-        background: #fff;
-
-        &:hover {
-          background: #fff;
-        }
-      }
-
-      &.ant-table-expanded-row-level-1 {
-        &:hover {
-          &>td {
-            background: transparent;
-          }
-        }
-      }
-    }
-  }
-
-  .ant-table-row-expand-icon-cell {
-    position: relative;
-    padding: 5px 9px;
-    text-align: left;
-
-    &:after {
-      content: ' ';
-      position: absolute;
-      top: 20%;
-      right: 13px;
-      width: 0;
-      height: 60%;
-      border-right: 1px solid rgba(0, 0, 0, .12);
-    }
-
-    .ant-table-row-expand-icon {
-      width: 18px;
-      font-size: 18px;
-
-      &:before {
-        content: '\E5CF';
-      }
-    }
-  }
-}
 
 .c7n-instance-header {
   display: block;

@@ -671,7 +671,7 @@ class Instances extends Component {
           <FormattedMessage id="ist.head" />
         </div>
         <Table
-          className="c7n-devops-instance-table"
+          className="c7n-expand-table"
           filterBarPlaceholder={formatMessage({ id: 'filter' })}
           onChange={this.tableChange}
           dataSource={getIstAll}

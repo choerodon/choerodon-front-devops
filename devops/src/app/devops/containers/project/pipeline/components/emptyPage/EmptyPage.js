@@ -27,7 +27,7 @@ export default class EmptyPage extends Component {
       <Content>
         <div className="c7ncd-pipeline-empty">
           <Card title={formatMessage({ id: 'pipeline.edit.error' })}>
-            <span className="c7ncd-pipeline-empty-msg">{formatMessage({ id: 'empty.member.no-app' })}</span>
+            <span className="c7ncd-pipeline-empty-msg">{formatMessage({ id: 'pipeline.edit.error.msg' })}</span>
             <div className="c7ncd-pipeline-empty-btn">
               <Button
                 type="primary"

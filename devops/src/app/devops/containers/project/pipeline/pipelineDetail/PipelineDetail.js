@@ -1,13 +1,14 @@
 import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Icon, Form, Input, Select, Radio } from 'choerodon-ui';
+import { Button, Icon, Table, Select } from 'choerodon-ui';
 import { Content, Header, Page } from 'choerodon-front-boot';
 import _ from 'lodash';
-import { STAGE_FLOW_AUTO, STAGE_FLOW_MANUAL } from '../components/Constans';
 import LoadingBar from '../../../../components/loadingBar';
 import UserInfo from '../../../../components/userInfo';
+import DetailTitle from '../components/detailTitle';
+import DetailCard from '../components/detailCard';
 
 import '../../../main.scss';
 import './PipelineDeyail.scss';
@@ -36,30 +37,67 @@ export default class PipelineDetail extends Component {
    * @param id 执行 id
    */
   handleChange = (id) => {
-    this.setState({ recordId: id });
-  };
-
-  loadingData() {
     const {
-      location: { state },
       PipelineStore,
       AppState: {
         currentMenuType: { id: projectId },
       },
     } = this.props;
-    const { recordId: propsRecordId, pipelineId } = state || {};
-    const { recordId: stateRecordId } = this.state;
+    PipelineStore.loadPipelineRecordDetail(projectId, Number(id));
+    this.setState({ recordId: id });
+  };
 
-    const recordId = propsRecordId || stateRecordId;
-    if (recordId) {
-      PipelineStore.loadPipelineRecordDetail(projectId, Number(recordId));
-    } else {
-      // 无 pId 的处理
-    }
+  loadingData() {
+    const {
+      match: {
+        params,
+      },
+      PipelineStore,
+      AppState: {
+        currentMenuType: { id: projectId },
+      },
+    } = this.props;
 
-    if (pipelineId) {
-      PipelineStore.loadExeRecord(projectId, pipelineId);
-    }
+    PipelineStore.loadPipelineRecordDetail(projectId, params.rId);
+    PipelineStore.loadExeRecord(projectId, params.pId);
+  }
+
+  get renderPipeline() {
+    const {
+      intl: { formatMessage },
+      PipelineStore: {
+        getDetail: {
+          stageRecordDTOS,
+        },
+        getDetailLoading,
+      },
+    } = this.props;
+
+    return _.map(stageRecordDTOS,
+      ({
+         id,
+         status,
+         stageName,
+         executionTime,
+         triggerUserName,
+         triggerType,
+         isParallel,
+         taskRecordDTOS,
+       }) => (
+        <div className="c7ncd-pipeline-detail-stage" key={id}>
+          <DetailTitle
+            name={stageName}
+            time={executionTime}
+            type={triggerType}
+            user={triggerUserName}
+            status={status}
+          />
+          <DetailCard
+            isParallel={isParallel}
+            tasks={taskRecordDTOS ? taskRecordDTOS.slice() : []}
+          />
+        </div>
+      ));
   }
 
   render() {
@@ -68,22 +106,34 @@ export default class PipelineDetail extends Component {
         search,
         state,
       },
+      match: {
+        params,
+      },
       intl: { formatMessage },
       PipelineStore: {
-        getDetail,
+        getDetail: {
+          triggerUserId,
+          triggerUserName,
+          triggerType,
+        },
         getDetailLoading,
         getRecordDate,
       },
     } = this.props;
-    const { name } = state || {};
+    const { recordId } = this.state;
+
+    const { name, isFilter, pipelineId, fromPipeline } = state || {};
     const backPath = {
       pathname: '/devops/pipeline-record',
       search,
-      state,
+      state: {
+        pipelineId: isFilter ? pipelineId : undefined,
+        fromPipeline,
+      },
     };
 
-    const exeDateOptions = _.map(getRecordDate, ({ id, lastUpdateDate }) => (
-      <Option value={String(id)}>{lastUpdateDate}</Option>
+    const exeDateOptions = _.map(getRecordDate, ({ id, creationTime }) => (
+      <Option key={id} value={String(id)}>{creationTime}</Option>
     ));
 
     return (<Page
@@ -109,7 +159,9 @@ export default class PipelineDetail extends Component {
           className="c7ncd-pipeline-detail-select"
           optionFilterProp="children"
           onChange={this.handleChange}
+          value={recordId || params.rId}
           filter
+          allowClear
           filterOption={(input, option) =>
             option.props.children
               .toLowerCase()
@@ -120,17 +172,16 @@ export default class PipelineDetail extends Component {
         </Select>
         <div className="c7ncd-pipeline-detail-msg">
           <div className="c7ncd-pipeline-detail-item">
-            <span>{formatMessage({ id: 'pipeline.trigger.type' })}</span>手动触发
+            <span className="c7ncd-pipeline-detail-label">{formatMessage({ id: 'pipeline.trigger.type' })}</span>
+            {triggerType && <FormattedMessage id={`pipeline.trigger.${triggerType}`} />}
           </div>
           <div className="c7ncd-pipeline-detail-item">
-            <span>{formatMessage({ id: 'pipeline.trigger.people' })}</span>
-            <UserInfo avatar={null} name={'Tom'} id={12334} />
+            <span className="c7ncd-pipeline-detail-label">{formatMessage({ id: 'pipeline.trigger.people' })}</span>
+            <UserInfo avatar={null} name={triggerUserName || ''} id={triggerUserId} />
           </div>
         </div>
         <div className="c7ncd-pipeline-main">
-          <div className="c7ncd-pipeline-scroll">
-            {getDetailLoading ? <LoadingBar display /> : JSON.stringify(getDetail)}
-          </div>
+          {getDetailLoading ? <LoadingBar display /> : <div className="c7ncd-pipeline-scroll">{this.renderPipeline}</div>}
         </div>
       </Content>
     </Page>);

@@ -3,9 +3,6 @@
 
 import moment from 'moment';
 import _ from 'lodash';
-import React from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Icon, Popover } from 'choerodon-ui';
 import storage from './storage';
 
 /**
@@ -233,6 +230,30 @@ function matchSpaces(str) {
   return str.match(pat);
 }
 
+/**
+ * 将毫秒数转为时分秒格式
+ * @param time 毫秒数
+ */
+function timeConvert(time) {
+  if (!time || typeof time !== 'number') {
+    return;
+  }
+  // 毫秒转为秒
+  const _time = time / 1000;
+  const sec = Math.floor((_time % 60) % 60);
+  const min = Math.floor(_time / 60) % 60;
+  const hour = Math.floor(_time / 3600);
+
+  let result = `${sec}s`;
+  if (hour > 0) {
+    result = `${hour}h ${min}m ${sec}s`;
+  } else if (hour <= 0 && min > 0) {
+    result = `${min}m ${sec}s`;
+  }
+
+  return result;
+}
+
 export {
   handleProptError,
   padZero,
@@ -247,4 +268,5 @@ export {
   storage,
   matchSpaces,
   handleCheckerProptError,
+  timeConvert,
 };
