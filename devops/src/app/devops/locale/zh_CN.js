@@ -1705,6 +1705,8 @@ const zhCN = {
   "pipeline.audit.orSign": "或签",
   "pipeline.deploy.mode": "选择部署模式",
   "pipeline.task.config.title": "配置信息",
+  "pipeline.task.config.title.tip":
+    "根据您所选的应用与环境，下方会匹配出对应的部署配置，选择后，会出现对应的配置信息；若当前流水线内无部署配置，则需要去部属配置界面创建后才可选择。",
   "pipeline.task.config": "部署配置",
   "pipeline.task.add": "添加任务",
   "pipeline.task.delete": "删除阶段任务",
@@ -1727,6 +1729,9 @@ const zhCN = {
   "pipeline.execute.history": "执行历史",
   "pipeline.trigger.type": "触发方式 - ",
   "pipeline.trigger.people": "触发人 - ",
+  "pipeline.config.value.tips": "修改的配置信息后，所选的部署配置中的配置信息也将随之改动。",
+  "pipeline.config.value.edit": "修改配置信息",
+  "pipeline.config.edit.title": "修改“{name}”配置信息",
 
   ...pageDetail,
 };

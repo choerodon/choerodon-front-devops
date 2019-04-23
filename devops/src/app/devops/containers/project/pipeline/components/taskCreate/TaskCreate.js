@@ -61,6 +61,9 @@ export default class TaskCreate extends Component {
     configValue: null,
     configError: false,
     value: '',
+    configData: null,
+    showEditValue: false,
+    editLoading: false,
   };
 
   checkIstName = _.debounce((rule, value, callback) => {
@@ -104,7 +107,7 @@ export default class TaskCreate extends Component {
     } = this.props;
     const { getTaskList, getStageList } = PipelineCreateStore;
     const { appDeployDTOS, type } = _.find(getTaskList[stageId], ['index', taskId]) || {};
-    const { applicationId, envId, instanceId, value } = appDeployDTOS || {};
+    const { applicationId, envId, instanceId, value, valueId } = appDeployDTOS || {};
 
     this.setState({ taskType: type || TASK_TYPE_DEPLOY });
     if (instanceId) {
@@ -121,6 +124,8 @@ export default class TaskCreate extends Component {
       this.loadInstanceData(envId, applicationId);
       this.loadConfigValue(envId, applicationId);
     }
+
+    valueId && this.handleChangeConfig(valueId);
 
     /**
      * 第一个阶段的第一个任务
@@ -173,7 +178,7 @@ export default class TaskCreate extends Component {
       isCountersigned,
     }) => {
       if (!err) {
-        const { configValue, isHead } = this.state;
+        const { value, isHead } = this.state;
         const appDeployDTOS = type === TASK_TYPE_DEPLOY ? {
           applicationId,
           triggerVersion,
@@ -181,7 +186,7 @@ export default class TaskCreate extends Component {
           instanceId,
           instanceName,
           valueId,
-          value: configValue,
+          value,
         } : null;
         const taskUserRelDTOS = type === TASK_TYPE_MANUAL ? _.map(users, item => Number(item)) : null;
         const data = {
@@ -269,10 +274,10 @@ export default class TaskCreate extends Component {
       },
     } = this.props;
     const configValue = await PipelineCreateStore.loadValue(id, value);
-    if (configValue) {
-      this.setState({ value: configValue });
+    if (configValue && configValue.value) {
+      this.setState({ value: configValue.value, configData: configValue });
     } else {
-      this.setState({ value: '' });
+      this.setState({ value: '', configData: null });
     }
   };
 
@@ -297,14 +302,76 @@ export default class TaskCreate extends Component {
    */
   renderYamlEditor = () => {
     const { value } = this.state;
+    const { intl: { formatMessage } } = this.props;
 
-    return value && <YamlEditor
-      readOnly={false}
-      value={value}
-      originValue={value}
-      onValueChange={this.handleChangeValue}
-      handleEnableNext={this.handleEnableNext}
-    />;
+    return value && (
+      <div>
+        <div className="c7n-pipeline-config-value">
+          <Icon
+            className="c7n-config-tip-icon"
+            type="error"
+          />
+          <span
+            className="c7n-config-tip-text"
+          >
+          {formatMessage({ id: 'pipeline.config.value.tips' })}
+        </span>
+          <Button
+            icon="mode_edit"
+            type="primary"
+            onClick={this.openEditValue}
+          >
+            <FormattedMessage id="pipeline.config.value.edit" />
+          </Button>
+        </div>
+        <YamlEditor
+          readOnly={true}
+          value={value}
+        />
+      </div>
+    );
+  };
+
+  /**
+   * 打开修改配置信息弹窗
+   */
+  openEditValue = () => {
+    this.setState({ showEditValue: true })
+  };
+
+  /**
+   * 关闭修改配置信息弹窗
+   */
+  closeEditValue = () => {
+    this.setState({ showEditValue: false, configValue: null, configError: false })
+  };
+
+  /**
+   * 修改配置信息
+   */
+  handleEditValue = () => {
+    const { configValue, configData } = this.state;
+    const {
+      AppState: {
+        currentMenuType: { id },
+      },
+    } = this.props;
+    this.setState({ editLoading: true });
+    configData.value = configValue;
+    PipelineCreateStore.editConfigValue(id, configData)
+      .then(data => {
+        this.setState({ editLoading: false });
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
+        } else {
+          this.handleChangeConfig(configData.id);
+          this.closeEditValue();
+        }
+      })
+      .catch(err => {
+        this.setState({ editLoading: false });
+        Choerodon.handleResponseError(err);
+      });
   };
 
   loadingOptionsData() {
@@ -369,7 +436,7 @@ export default class TaskCreate extends Component {
       getTaskSettings,
       getTrigger,
     } = PipelineCreateStore;
-    const { submitting, taskType, mode, isHead, appId, envId: selectEnvId } = this.state;
+    const { submitting, taskType, mode, isHead, appId, envId: selectEnvId, showEditValue, editLoading, value, configData, configError } = this.state;
     const { appDeployDTOS, type, name, isCountersigned, taskUserRelDTOS } = _.find(getTaskList[stageId], ['index', taskId]) || {};
     const { instanceId, applicationId, triggerVersion, envId, instanceName, valueId } = appDeployDTOS || {};
 
@@ -439,7 +506,7 @@ export default class TaskCreate extends Component {
       || (getTrigger === STAGE_FLOW_AUTO && isHead);
     const isEdit = taskId || taskId === 0;
 
-    return (<Sidebar
+    return (<Fragment><Sidebar
       destroyOnClose
       title={<FormattedMessage id={`pipeline.task.${isEdit ? 'edit' : 'create'}.head`} />}
       visible={visible}
@@ -686,7 +753,7 @@ export default class TaskCreate extends Component {
               </FormItem>)
             }
             <div className="c7n-pipeline-config">
-              <FormattedMessage id="pipeline.task.config.title" />
+              <Tips type="title" data="pipeline.task.config.title" />
             </div>
             <FormItem
               className="c7n-select_512"
@@ -771,6 +838,29 @@ export default class TaskCreate extends Component {
         </Form>
         {taskType === TASK_TYPE_DEPLOY && getLoading.value ? <Spin /> : this.renderYamlEditor()}
       </Content>
-    </Sidebar>);
+    </Sidebar>
+    {showEditValue && (
+      <Modal
+        confirmLoading={editLoading}
+        visible={showEditValue}
+        title={`${formatMessage({id: "pipeline.config.edit.title"}, {name: configData.name})}`}
+        className="c7n-config-value-modal"
+        closable={false}
+        onOk={this.handleEditValue}
+        onCancel={this.closeEditValue}
+        disableOk={configError}
+        okText={formatMessage({ id: "edit" })}
+      >
+        <div className="c7n-padding-top_8">
+          <YamlEditor
+            readOnly={false}
+            value={value}
+            originValue={value}
+            onValueChange={this.handleChangeValue}
+            handleEnableNext={this.handleEnableNext}
+          />
+        </div>
+      </Modal>)
+    }</Fragment>);
   }
 }

@@ -483,10 +483,19 @@ class PipelineCreateStore {
     this.setLoading('value', false);
     const data = handleProptError(response);
     if (data) {
-      return data.value;
+      return data;
     }
     return;
   }
+
+  /**
+   * 修改部署信息
+   * @param projectId
+   * @param data
+   * @returns {Promise<void>}
+   */
+  editConfigValue = (projectId, data) =>
+    axios.post(`/devops/v1/projects/${projectId}/pipeline_value`, JSON.stringify(data));
 
   /**
    * 项目所有者和项目成员
