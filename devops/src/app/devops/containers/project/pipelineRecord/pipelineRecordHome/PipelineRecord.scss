@@ -26,6 +26,18 @@
         &-failed {
           background-color: #f44336;
         }
+
+        &-running {
+          background-color: #4d90fe;
+        }
+
+        &-stop {
+          background-color: #ff7043;
+        }
+
+        &-pendingcheck {
+          background-color: #ffb100;
+        }
       }
 
       .c7n-process-line {

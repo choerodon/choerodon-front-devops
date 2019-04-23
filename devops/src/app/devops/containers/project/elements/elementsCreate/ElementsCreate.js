@@ -399,6 +399,10 @@ export default class ElementsCreate extends Component {
                 >
                   {getFieldDecorator('project', {
                     initialValue: config.project,
+                    rules: [{
+                      required: type,
+                      message: formatMessage({ id: 'required' }),
+                    }],
                   })(
                     <Input
                       type="text"

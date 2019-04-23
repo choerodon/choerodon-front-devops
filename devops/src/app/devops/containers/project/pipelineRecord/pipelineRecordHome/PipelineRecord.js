@@ -298,20 +298,14 @@ class PipelineRecord extends Component {
    * @returns {*}
    */
   getProcess = (stageDTOList, record) => {
-    const { type, status: pipelineStatus } = record;
+    const { stageRecordId, status: pipelineStatus } = record;
     return (
       <div className="c7n-pipelineRecord-process">
         {
           _.map(stageDTOList, ({ status, id }) => {
             return (<div key={id} className="c7n-process-content">
-              <span className={`c7n-process-line c7n-process-line-${status}`} />
-              {type === 'task' && (status === 'running' || status === 'stop')
-                ? <svg className="c7n-process-svg">
-                  <circle cx="4" cy="4" r="4" stroke={pipelineStatus === 'stop' ? '#FF7043' : '#FFB100'} strokeWidth="4"
-                          fill="none" />
-                </svg>
-                : <span className={`c7n-process-status c7n-process-status-${status}`} />
-              }
+              <span className={`c7n-process-line ${stageRecordId === id ? `c7n-process-line-${pipelineStatus}` : ""}`} />
+              <span className={`c7n-process-status c7n-process-status-${status}`} />
             </div>);
           })
         }

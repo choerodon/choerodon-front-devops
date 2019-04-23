@@ -189,7 +189,7 @@ export default class TaskCreate extends Component {
           name,
           appDeployDTOS,
           taskUserRelDTOS,
-          isCountersigned: auditMode[isCountersigned],
+          isCountersigned: auditMode[isCountersigned || 'orSign'],
           isHead,
         };
         if (!taskId) {
@@ -740,31 +740,33 @@ export default class TaskCreate extends Component {
                 </Select>,
               )}
             </FormItem>
-            <FormItem
-              className="c7n-select_512"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('isCountersigned', {
-                rules: [{
-                  required: true,
-                  message: formatMessage({ id: 'required' }),
-                }],
-                initialValue: initSign,
-              })(
-                <Select
-                  className="c7n-select_512"
-                  label={<FormattedMessage id="pipeline.task.auditMode" />}
-                  getPopupContainer={triggerNode => triggerNode.parentNode}
-                >
-                  <Option value={AUDIT_MODE_SING}>
-                    <FormattedMessage id="pipeline.audit.sign" />
-                  </Option>
-                  <Option value={AUDIT_MODE_ORSING}>
-                    <FormattedMessage id="pipeline.audit.orSign" />
-                  </Option>
-                </Select>,
-              )}
-            </FormItem>
+            {getFieldValue('users') && getFieldValue('users').length > 1 && (
+              <FormItem
+                className="c7n-select_512"
+                {...formItemLayout}
+              >
+                {getFieldDecorator('isCountersigned', {
+                  rules: [{
+                    required: true,
+                    message: formatMessage({ id: 'required' }),
+                  }],
+                  initialValue: initSign,
+                })(
+                  <Select
+                    className="c7n-select_512"
+                    label={<FormattedMessage id="pipeline.task.auditMode" />}
+                    getPopupContainer={triggerNode => triggerNode.parentNode}
+                  >
+                    <Option value={AUDIT_MODE_SING}>
+                      <FormattedMessage id="pipeline.audit.sign" />
+                    </Option>
+                    <Option value={AUDIT_MODE_ORSING}>
+                      <FormattedMessage id="pipeline.audit.orSign" />
+                    </Option>
+                  </Select>,
+                )}
+              </FormItem>)
+            }
           </Fragment>}
         </Form>
         {taskType === TASK_TYPE_DEPLOY && getLoading.value ? <Spin /> : this.renderYamlEditor()}

@@ -1608,7 +1608,7 @@ const zhCN = {
   "elements.password": "密码",
   "elements.email": "邮箱",
   "elements.project": "Harbor project",
-  "elements.project.help": "若您想将之后生成的镜像存放于Docker仓库里已有的project中，则在此填入对应的Harbor project名称即可。若不填，则默认在此仓库中新建一个Harbor project用于存放之后的镜像。",
+  "elements.project.help": "您需要在此填入Docker仓库中已有的Harbor project名称，用于存放之后生成的镜像。",
   "elements.type.columns": "组件配置类型",
   "elements.type.form": "选择组件配置类型",
   "elements.header.create": "创建组件配置",
