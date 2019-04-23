@@ -7,7 +7,6 @@ import {
   Button,
   Modal,
   Tooltip,
-  Avatar,
 } from "choerodon-ui";
 import {
   Content,
@@ -21,6 +20,7 @@ import './DeploymentConfig.scss';
 import EnvFlag from "../../../../components/envFlag";
 import DeploymentConfigCreate from "../deploymentConfigCreate";
 import { HEIGHT } from '../../../../common/Constants';
+import UserInfo from '../../../../components/userInfo';
 
 @injectIntl
 @withRouter
@@ -152,17 +152,7 @@ class DeploymentConfig extends Component {
       {
         title: formatMessage({ id: "app.creator" }),
         key: "creator",
-        render: record => {
-          const { createUserUrl, createUserRealName, createUserName } = record;
-          return (<div>
-            {createUserUrl ? (
-              <Avatar src={createUserUrl} size={18} />
-            ) : (
-              <Avatar size={18}>{createUserRealName ? createUserRealName.toString().slice(0, 1).toUpperCase() : '?'}</Avatar>
-            )}
-            <span className="c7n-mg-left-8">{createUserName}&nbsp;{createUserRealName}</span>
-          </div>)
-        },
+        render: ({ createUserUrl, createUserRealName, createUserName }) => (<UserInfo avatar={createUserUrl} name={createUserRealName} id={createUserName} />),
       },
       {
         title: <FormattedMessage id="ist.expand.date" />,

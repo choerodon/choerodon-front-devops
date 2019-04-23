@@ -15,10 +15,8 @@
         margin-right: 86px;
       }
 
-      span {
-        display: inline-block;
+      .c7ncd-pipeline-detail-label {
         margin-right: 6px;
-        vertical-align: top;
         color: rgba(0, 0, 0, 0.54);
       }
     }
@@ -37,5 +35,13 @@
       display: inline-flex;
       padding: 0 14px;
     }
+  }
+
+  .c7ncd-pipeline-detail-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 292px;
+    padding: 0 10px;
   }
 }

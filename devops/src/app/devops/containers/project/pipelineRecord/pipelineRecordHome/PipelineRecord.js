@@ -224,7 +224,7 @@ class PipelineRecord extends Component {
         key: 'action',
         align: 'right',
         render: (text, record) => {
-          const { status, type: checkType, id, name, stageName, stageRecordId, taskRecordId, index } = record;
+          const { status, type: checkType, id, name, stageName, stageRecordId, taskRecordId, pipelineId, index } = record;
           return (<div>
               {index && status === 'failed' && (
                 <Permission
@@ -280,7 +280,7 @@ class PipelineRecord extends Component {
                     icon="find_in_page"
                     shape="circle"
                     size="small"
-                    onClick={this.linkToDetail.bind(this, id, name)}
+                    onClick={this.linkToDetail.bind(this, id, pipelineId, name)}
                   />
                 </Tooltip>
               </Permission>
@@ -314,23 +314,33 @@ class PipelineRecord extends Component {
   };
 
   /**
-   * 跳转到流水线记录详情
-   * @param recordId 流水线记录id
+   * 跳转到流水线详情
+   * @param recordId
+   * @param pId
+   * @param name
    */
-  linkToDetail = (recordId, name) => {
+  linkToDetail = (recordId, pId, name) => {
     const {
+      match,
       history,
       location: {
-        state,
         search,
+        state,
       },
     } = this.props;
-    const { pipelineId } = state || {};
+    const { pipelineId } = this.state;
+    const { fromPipeline } = state || {};
 
     history.push({
-      pathname: '/devops/pipeline/detail',
+      pathname: `/devops/pipeline/detail/${pipelineId}/${recordId}`,
       search,
-      state: { recordId, name, pipelineId },
+      state: {
+        recordId,
+        name,
+        pipelineId: pId,
+        isFilter: !!pipelineId,
+        fromPipeline,
+      },
     });
   };
 
@@ -455,9 +465,6 @@ class PipelineRecord extends Component {
       },
       AppState: {
         currentMenuType: {
-          projectId,
-          type,
-          organizationId: orgId,
           name,
         },
       },
@@ -481,8 +488,8 @@ class PipelineRecord extends Component {
     const data = PipelineRecordStore.getRecordList;
     const { paras } = PipelineRecordStore.getInfo;
 
-    const { pipelineId: propsPId } = state || {};
-    const backPath = propsPId ? `/devops/pipeline${search}` : null;
+    const { fromPipeline } = state || {};
+    const backPath = fromPipeline ? `/devops/pipeline${search}` : null;
 
     return (
       <Page

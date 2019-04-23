@@ -303,7 +303,6 @@ export default class Pipeline extends Component {
   linkToRecord(id) {
     const {
       history,
-      match,
       AppState: {
         currentMenuType: {
           projectId,
@@ -316,7 +315,7 @@ export default class Pipeline extends Component {
     history.push({
       pathname: '/devops/pipeline-record',
       search: `?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`,
-      state: { pipelineId: id },
+      state: { pipelineId: id, fromPipeline: true },
     });
   };
 

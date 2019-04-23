@@ -32,7 +32,7 @@ export default class StageTitle extends PureComponent {
         <div className="c7ncd-pipeline-stage-title">
           <h3 className="c7ncd-pipeline-stage-name">{name}</h3>
           <div className="c7ncd-pipeline-stage-type">
-            <FormattedMessage id={`pipeline.flow.${type}`} />
+            {type && <FormattedMessage id={`pipeline.flow.${type}`} />}
           </div>
         </div>
         <div className="c7ncd-pipeline-stage-op">
