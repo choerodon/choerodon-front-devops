@@ -107,7 +107,7 @@ export default class TaskCreate extends Component {
     } = this.props;
     const { getTaskList, getStageList } = PipelineCreateStore;
     const { appDeployDTOS, type } = _.find(getTaskList[stageId], ['index', taskId]) || {};
-    const { applicationId, envId, instanceId, value, valueId } = appDeployDTOS || {};
+    const { applicationId, envId, instanceId, valueId } = appDeployDTOS || {};
 
     this.setState({ taskType: type || TASK_TYPE_DEPLOY });
     if (instanceId) {
@@ -115,7 +115,6 @@ export default class TaskCreate extends Component {
     }
 
     if (!(type === TASK_TYPE_MANUAL)) {
-      this.setState({ value });
       this.loadingOptionsData();
     }
 
@@ -178,7 +177,7 @@ export default class TaskCreate extends Component {
       isCountersigned,
     }) => {
       if (!err) {
-        const { value, isHead } = this.state;
+        const { isHead } = this.state;
         const appDeployDTOS = type === TASK_TYPE_DEPLOY ? {
           applicationId,
           triggerVersion,
@@ -186,7 +185,6 @@ export default class TaskCreate extends Component {
           instanceId,
           instanceName,
           valueId,
-          value,
         } : null;
         const taskUserRelDTOS = type === TASK_TYPE_MANUAL ? _.map(users, item => Number(item)) : null;
         const data = {
@@ -851,7 +849,7 @@ export default class TaskCreate extends Component {
         disableOk={configError}
         okText={formatMessage({ id: "edit" })}
       >
-        <div className="c7n-padding-top_8">
+        <div className="c7n-config-value-modal-content">
           <YamlEditor
             readOnly={false}
             value={value}

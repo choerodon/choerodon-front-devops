@@ -1607,6 +1607,11 @@ const zhCN = {
   "pipelineRecord.retry": "重新执行",
   "pipelineRecord.retry.title": "重新执行流水线“{name}”",
   "pipelineRecord.retry.des": "确定要重新执行该流水线吗？",
+  "pipelineRecord.check.tips.button": "我知道了",
+  "pipeline.check.tips.text":
+    "此任务为会签审核任务，目前{checkUsers}已审核通过，还需{unCheckUsers}审核通过后，才能执行之后的步骤。",
+  "pipeline.canCheck.tips.0": "此任务已被{userName}审核",
+  "pipeline.canCheck.tips.1": "此任务已被{userName}终止",
 
   // pipeline
   "pipeline.head": "流水线",
@@ -1680,7 +1685,7 @@ const zhCN = {
   "pipeline.execute.history": "执行历史",
   "pipeline.trigger.type": "触发方式 - ",
   "pipeline.trigger.people": "触发人 - ",
-  "pipeline.config.value.tips": "修改的配置信息后，所选的部署配置中的配置信息也将随之改动。",
+  "pipeline.config.value.tips": "修改配置信息后，所选的部署配置中的配置信息也将随之改动。",
   "pipeline.config.value.edit": "修改配置信息",
   "pipeline.config.edit.title": "修改“{name}”配置信息",
   "pipeline.result.pendingcheck": "未审核",
