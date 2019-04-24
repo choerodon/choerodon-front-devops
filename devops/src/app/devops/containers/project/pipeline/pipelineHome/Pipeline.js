@@ -50,6 +50,7 @@ export default class Pipeline extends Component {
       executeId: null,
       executeName: '',
       executeCheck: false,
+      executeLoading: false,
     };
   }
 
@@ -233,8 +234,10 @@ export default class Pipeline extends Component {
     });
   };
 
-  /***************** 执行流水线 ********************/
-
+  /**
+   * 执行流水线
+   * @returns {Promise<void>}
+   */
   executeFun = async () => {
     const {
       PipelineStore,
@@ -245,13 +248,17 @@ export default class Pipeline extends Component {
     const { executeId } = this.state;
 
     this.closeExecuteCheck();
-    this.handleRefresh();
+
+    this.setState({ executeLoading: true });
     let response = await PipelineStore
       .executePipeline(projectId, executeId)
       .catch(e => Choerodon.handleResponseError(e));
+    this.setState({ executeLoading: true });
 
     if (response && response.failed) {
       Choerodon.prompt(response.message);
+    } else {
+      this.linkToRecord(executeId);
     }
   };
 
@@ -298,7 +305,7 @@ export default class Pipeline extends Component {
   };
 
   /**
-   * 跳转到详情页面
+   * 跳转到执行详情页面
    */
   linkToRecord(id) {
     const {
@@ -371,10 +378,15 @@ export default class Pipeline extends Component {
 
     let actionItem = _.keys(action);
     actionItem = _filterItem(actionItem, isEnabled ? 'enable' : 'disabled');
-    // 自动触发或无权限用户（execute为false）不显示执行动作
-    (triggerType === 'auto' || !execute) && (actionItem = _filterItem(actionItem, 'execute'));
+
+    if (triggerType === 'auto' || !execute) {
+      actionItem = _filterItem(actionItem, 'execute');
+    }
+
     // 停用的流水线不能修改
-    !isEnabled && (actionItem = _filterItem(actionItem, 'edit'));
+    if (!isEnabled) {
+      actionItem = _filterItem(actionItem, 'edit');
+    }
 
     return (<Action data={_.map(actionItem, item => ({ ...action[item] }))} />);
   };
@@ -456,6 +468,7 @@ export default class Pipeline extends Component {
       showExecute,
       executeName,
       executeCheck,
+      executeLoading,
     } = this.state;
 
     return (<Page
@@ -497,7 +510,7 @@ export default class Pipeline extends Component {
       <Content code="pipeline" values={{ name }}>
         <Table
           filterBarPlaceholder={formatMessage({ id: 'filter' })}
-          loading={getLoading}
+          loading={getLoading || executeLoading}
           filters={param || []}
           onChange={this.tableChange}
           columns={this.getColumns}

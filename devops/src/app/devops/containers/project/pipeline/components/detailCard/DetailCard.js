@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { withRouter, Link } from 'react-router-dom';
 import _ from 'lodash';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Collapse, Icon, Tooltip } from 'choerodon-ui';
@@ -10,6 +11,7 @@ import './DetailCard.scss';
 const { Panel } = Collapse;
 
 @injectIntl
+@withRouter
 export default class DetailCard extends PureComponent {
   static propTypes = {
     isParallel: PropTypes.number,
@@ -17,7 +19,14 @@ export default class DetailCard extends PureComponent {
   };
 
   render() {
-    const { isParallel, tasks, intl: { formatMessage } } = this.props;
+    const {
+      isParallel,
+      tasks,
+      intl: { formatMessage },
+      location: {
+        search,
+      },
+    } = this.props;
     const executeType = ['serial', 'parallel'];
     const mode = ['sign', 'orSign'];
 
@@ -79,7 +88,7 @@ export default class DetailCard extends PureComponent {
             </div>
             <div className="c7ncd-pipeline-task">
               <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.instance' })}</span>
-              <div>{instanceName || formatMessage({ id: 'null' })}</div>
+              {instanceName || formatMessage({ id: 'null' })}
             </div>
           </Fragment>),
         };
@@ -89,8 +98,9 @@ export default class DetailCard extends PureComponent {
       });
 
     return (<div className="c7ncd-pipeline-card">
-      <div className="c7ncd-task-top">{formatMessage({ id: "pipeline.task.settings"})} - <FormattedMessage id={`pipeline.task.${executeType[isParallel]}`} /></div>
-      <h4 className="c7ncd-task-header">{formatMessage({ id: "pipeline.task.list"})}</h4>
+      <div className="c7ncd-task-top">{formatMessage({ id: 'pipeline.task.settings' })} - <FormattedMessage
+        id={`pipeline.task.${executeType[isParallel]}`} /></div>
+      <h4 className="c7ncd-task-header">{formatMessage({ id: 'pipeline.task.list' })}</h4>
       {task.length
         ? <Collapse className="c7ncd-pipeline-collapse" bordered={false}>
           {task}
