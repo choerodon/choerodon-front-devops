@@ -406,7 +406,7 @@ class PipelineRecord extends Component {
             //会签，非最后一人审核，返回数据：["已审核人员"，"未审核人员"]
             this.setState({
               canCheck: false,
-              checkTips: formatMessage({ id: `pipeline.check.tips.text`}, {checkUsers: data[0]}, {unCheckUsers: data[1]}),
+              checkTips: formatMessage({ id: "pipeline.check.tips.text"}, {checkUsers: data[0], unCheckUsers: data[1]}),
             })
           } else {
             // 或签、会签最后一人，返回数据[]
@@ -462,11 +462,12 @@ class PipelineRecord extends Component {
         if (data) {
           if (data.failed) {
             Choerodon.prompt(data.message);
-          } else if (data.isCountersigned && data.userName) {
+          } else if ((data.isCountersigned || data.isCountersigned === 0) && data.userName) {
             // 会签已被终止、或签已被审核，返回数据：{ isCountersigned: 0 或签 | 1 会签, userName: "string"}
             this.setState({
+              show: true,
               canCheck: false,
-              checkTips: formatMessage({ id: `pipeline.canCheck.tips.${isCountersigned}`}, {userName: data.userName}),
+              checkTips: formatMessage({ id: `pipeline.canCheck.tips.${data.isCountersigned}`}, {userName: data.userName}),
             })
           } else {
             // 预检通过，返回数据：{ isCountersigned: null, userName: null }
@@ -651,10 +652,13 @@ class PipelineRecord extends Component {
             ]}
           >
             <div className="c7n-padding-top_8">
-              <FormattedMessage
-                id={canCheck ? `pipelineRecord.check.${checkType}.des` : checkTips}
-                values={{ name: pipelineName, stage: stageName }}
-              />
+              {canCheck ?
+                <FormattedMessage
+                  id={`pipelineRecord.check.${checkType}.des`}
+                  values={{ name: pipelineName, stage: stageName }}
+                /> :
+                <span>{checkTips}</span>
+              }
             </div>
           </Modal>
         )}

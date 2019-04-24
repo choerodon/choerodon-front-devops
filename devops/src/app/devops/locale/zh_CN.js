@@ -412,7 +412,7 @@ const pageDetail = {
   "deploymentConfig.create.description":
     "您可此选择应用与环境，编辑出对应的配置信息，以此来创建部署配置。",
   "deploymentConfig.create.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
-  "deploymentConfig.edit.title": '在项目"{name}"中修改部署配置',
+  "deploymentConfig.edit.title": '对部署配置"{name}"进行修改',
   "deploymentConfig.edit.description":
     "您可在此修改部署配置的名称、描述与配置信息。",
   "deploymentConfig.edit.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
