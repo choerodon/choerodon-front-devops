@@ -373,6 +373,8 @@ export default class Pipeline extends Component {
     actionItem = _filterItem(actionItem, isEnabled ? 'enable' : 'disabled');
     // 自动触发或无权限用户（execute为false）不显示执行动作
     (triggerType === 'auto' || !execute) && (actionItem = _filterItem(actionItem, 'execute'));
+    // 停用的流水线不能修改
+    !isEnabled && (actionItem = _filterItem(actionItem, 'edit'));
 
     return (<Action data={_.map(actionItem, item => ({ ...action[item] }))} />);
   };

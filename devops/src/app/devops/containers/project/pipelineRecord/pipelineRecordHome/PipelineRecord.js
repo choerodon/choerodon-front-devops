@@ -280,7 +280,7 @@ class PipelineRecord extends Component {
                     icon="find_in_page"
                     shape="circle"
                     size="small"
-                    onClick={this.linkToDetail.bind(this, id, pipelineId, name)}
+                    onClick={this.linkToDetail.bind(this, id, pipelineId)}
                   />
                 </Tooltip>
               </Permission>
@@ -319,26 +319,25 @@ class PipelineRecord extends Component {
    * @param pId
    * @param name
    */
-  linkToDetail = (recordId, pId, name) => {
+  linkToDetail = (recordId, pId) => {
     const {
-      match,
       history,
       location: {
         search,
         state,
       },
     } = this.props;
-    const { pipelineId } = this.state;
     const { fromPipeline } = state || {};
 
+    // 流水线进行过筛选
+    const { PipelineId } = this.state;
+
     history.push({
-      pathname: `/devops/pipeline/detail/${pipelineId}/${recordId}`,
+      pathname: `/devops/pipeline/detail/${pId}/${recordId}`,
       search,
       state: {
-        recordId,
-        name,
         pipelineId: pId,
-        isFilter: !!pipelineId,
+        isFilter: !!PipelineId,
         fromPipeline,
       },
     });

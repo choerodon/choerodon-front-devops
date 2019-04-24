@@ -21,6 +21,10 @@ const commonField = {
   appName: "应用名称",
   environment: "环境",
   envName: "环境名称",
+  version: "版本",
+
+  // 状态描述
+  null: "无",
 };
 
 // 文档地址前缀
@@ -487,7 +491,6 @@ const zhCN = {
   delete_failed: "删除失败",
   deploy_failed: "部署失败",
   rollback_failed: "回滚失败",
-  null: "无",
   learnmore: "了解详情",
   required: "该字段是必输的",
   connect: "已连接",
@@ -1703,6 +1706,7 @@ const zhCN = {
   "pipeline.audit.signLong": "会签（需所有审核人员通过）",
   "pipeline.audit.sign": "会签",
   "pipeline.audit.orSign": "或签",
+  "pipeline.audit.undefined": "",
   "pipeline.deploy.mode": "选择部署模式",
   "pipeline.task.config.title": "配置信息",
   "pipeline.task.config.title.tip":
@@ -1732,6 +1736,16 @@ const zhCN = {
   "pipeline.config.value.tips": "修改的配置信息后，所选的部署配置中的配置信息也将随之改动。",
   "pipeline.config.value.edit": "修改配置信息",
   "pipeline.config.edit.title": "修改“{name}”配置信息",
+  "pipeline.result.pendingcheck": "未审核",
+  "pipeline.result.success": "通过",
+  "pipeline.result.failed": "未知",
+  "pipeline.result.stop": "终止",
+  "pipeline.result.unexecuted": "未审核",
+  "pipeline.task.empty": "无执行任务",
+  "pipeline.detail.mode": "审核模式：",
+  "pipeline.detail.users": "审核人员：",
+  "pipeline.detail.result": "审核结果：",
+  "pipeline.detail.instance": "生成实例：",
 
   ...pageDetail,
 };
