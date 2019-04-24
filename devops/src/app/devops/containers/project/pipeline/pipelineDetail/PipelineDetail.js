@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Button, Icon, Table, Select } from 'choerodon-ui';
+import { Button, Select } from 'choerodon-ui';
 import { Content, Header, Page } from 'choerodon-front-boot';
 import _ from 'lodash';
 import LoadingBar from '../../../../components/loadingBar';
@@ -64,12 +64,10 @@ export default class PipelineDetail extends Component {
 
   get renderPipeline() {
     const {
-      intl: { formatMessage },
       PipelineStore: {
         getDetail: {
           stageRecordDTOS,
         },
-        getDetailLoading,
       },
     } = this.props;
 
@@ -115,6 +113,7 @@ export default class PipelineDetail extends Component {
           triggerUserId,
           triggerUserName,
           triggerType,
+          name,
         },
         getDetailLoading,
         getRecordDate,
@@ -122,7 +121,7 @@ export default class PipelineDetail extends Component {
     } = this.props;
     const { recordId } = this.state;
 
-    const { name, isFilter, pipelineId, fromPipeline } = state || {};
+    const { isFilter, pipelineId, fromPipeline } = state || {};
     const backPath = {
       pathname: '/devops/pipeline-record',
       search,
@@ -153,7 +152,7 @@ export default class PipelineDetail extends Component {
           <FormattedMessage id="refresh" />
         </Button>
       </Header>
-      <Content code="pipeline.detail" values={{ name: name || '' }}>
+      <Content code="pipeline.detail" values={{ name }}>
         <Select
           label={<FormattedMessage id="pipeline.execute.history" />}
           className="c7ncd-pipeline-detail-select"
@@ -161,7 +160,6 @@ export default class PipelineDetail extends Component {
           onChange={this.handleChange}
           value={recordId || params.rId}
           filter
-          allowClear
           filterOption={(input, option) =>
             option.props.children
               .toLowerCase()
