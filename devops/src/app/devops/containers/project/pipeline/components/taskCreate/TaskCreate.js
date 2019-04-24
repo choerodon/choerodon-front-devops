@@ -526,27 +526,25 @@ export default class TaskCreate extends Component {
     const configOptions = _.map(getConfigList, ({ id, name }) => (<Option key={id} value={id}>
       <span>{name}</span>
     </Option>));
-    if (!configOptions.length) {
-      configOptions.push(<Option
-        disabled
-        className="c7ncd-more-btn-wrap"
-        key="btn_load_more"
+    configOptions.push(<Option
+      disabled
+      className="c7ncd-more-btn-wrap"
+      key="btn_load_more"
+    >
+      <Link
+        className="c7ncd-more-btn"
+        to={{
+          pathname: `/devops/deployment-config`,
+          search: `?type=${menuType}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`,
+          state: {
+            appId,
+            envId: selectEnvId,
+          },
+        }}
       >
-        <Link
-          className="c7ncd-more-btn"
-          to={{
-            pathname: `/devops/deployment-config`,
-            search: `?type=${menuType}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`,
-            state: {
-              appId,
-              envId: selectEnvId,
-            },
-          }}
-        >
-          {formatMessage({ id: 'pipeline.link.toConfig' })}
-        </Link>
-      </Option>);
-    }
+        {formatMessage({ id: 'pipeline.link.toConfig' })}
+      </Link>
+    </Option>);
     /************ end ***************/
 
     const initUsers = _.map(taskUserRelDTOS, item => String(item));
