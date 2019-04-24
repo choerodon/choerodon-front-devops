@@ -544,6 +544,7 @@ class PipelineCreateStore {
     let response = await axios
       .get(`/devops/v1/projects/${projectId}/pipeline/${id}/detail`)
       .catch(e => {
+        this.setPipeline(null);
         this.setDetailLoading(false);
         Choerodon.handleResponseError(e);
       });

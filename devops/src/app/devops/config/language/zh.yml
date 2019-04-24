@@ -32,7 +32,7 @@
 "deployment-pipeline.secret": "密文"
 "deployment-pipeline.pipeline-management": "流水线管理"
 "deployment-pipeline.pipeline-record": "流水线执行总览"
-"deployment-pipeline.deployment-config": "部属配置"
+"deployment-pipeline.deployment-config": "部署配置"
 
 # 报表
 "platform-reports": "报表"

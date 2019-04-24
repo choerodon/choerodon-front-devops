@@ -65,6 +65,7 @@ export default class PipelineEdit extends Component {
     PipelineCreateStore.clearTaskSettings();
     PipelineCreateStore.clearTaskIndex();
     PipelineCreateStore.setTrigger(STAGE_FLOW_AUTO);
+    PipelineCreateStore.setPipeline([]);
   }
 
   onSubmit = (e) => {
@@ -207,7 +208,7 @@ export default class PipelineEdit extends Component {
         'devops-service.pipeline.queryById',
       ]}
     >
-      {_.isEmpty(getPipeline) ? <EmptyPage /> : <Fragment>
+      {_.isNull(getPipeline) ? <EmptyPage /> : <Fragment>
         <Header
           title={<FormattedMessage id="pipeline.header.edit" />}
           backPath={`${pathname.replace(/\/edit\/\d*/, '')}${search}`}

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Modal, Spin, Tooltip, Form, Input, Select, Radio, Icon } from 'choerodon-ui';
 import { Content } from 'choerodon-front-boot';
-import classnames from "classnames";
+import classnames from 'classnames';
 import _ from 'lodash';
 import PipelineCreateStore from '../../../../../stores/project/pipeline/PipelineCreateStore';
 import Tips from '../../../../../components/Tips';
