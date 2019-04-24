@@ -11,6 +11,7 @@
   "scripts": {
     "start": "choerodon-front-boot start --config ../config.js",
     "build": "choerodon-front-boot build --config ../config.js",
+    "linux_build": "node --max_old_space_size=2048 node_modules/choerodon-front-boot/bin/choerodon-front-boot-build --config ./config.js",
     "lint": "npm run lint:es && npm run lint:style",
     "lint:es": "eslint src/**/*.js ../config.js",
     "lint:style": "stylelint src/**/*.scss --syntax scss",
@@ -18,7 +19,7 @@
     "lint-staged:es": "eslint"
   },
   "dependencies": {
-    "choerodon-front-boot": "^0.10.3",
+    "choerodon-front-boot": "0.10.10",
     "diff-match-patch": "^1.0.4",
     "echarts": "^4.1.0",
     "echarts-for-react": "^2.0.12",

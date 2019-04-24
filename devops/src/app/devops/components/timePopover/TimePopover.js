@@ -9,35 +9,30 @@ import PropTypes from 'prop-types';
 import { formatDate } from '../../utils';
 
 const TimePopoverRequiredProps = {
-  title: PropTypes.node,
-  content: PropTypes.string,
+  content: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+  style: PropTypes.object,
 };
 
-function TimePopover({ content, title, style }) {
+function TimePopover({ content, style }) {
   const timestamp = content && typeof content === 'string'
     ? Math.min(Date.now(), new Date(content.replace(/-/g, '/')).getTime())
     : false;
-  return (<React.Fragment>
-    {timestamp ? (<div style={style}>
+
+  return (
+    <div style={style}>
       <Tooltip
-        title={formatDate(timestamp)}
+        title={formatDate(timestamp || content)}
       >
         <TimeAgo
-          datetime={timestamp}
+          datetime={timestamp || content}
           locale={Choerodon.getMessage('zh_CN', 'en')}
         />
       </Tooltip>
-    </div>) : <div style={style}>
-      <Tooltip
-        title={formatDate(content)}
-      >
-        <TimeAgo
-          datetime={content}
-          locale={Choerodon.getMessage('zh_CN', 'en')}
-        />
-      </Tooltip>
-    </div>}
-  </React.Fragment>);
+    </div>
+  );
 }
 
 TimePopover.propTypes = TimePopoverRequiredProps;

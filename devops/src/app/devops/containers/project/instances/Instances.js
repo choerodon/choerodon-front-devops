@@ -447,7 +447,7 @@ class Instances extends Component {
     const {
       intl: { formatMessage },
     } = this.props;
-    const { id, status, connect, appVersionId } = record;
+    const { status, connect, appVersionId } = record;
     const actionType = {
       detail: {
         service: ['devops-service.application-instance.listResources'],
@@ -671,7 +671,7 @@ class Instances extends Component {
           <FormattedMessage id="ist.head" />
         </div>
         <Table
-          className="c7n-devops-instance-table"
+          className="c7n-expand-table"
           filterBarPlaceholder={formatMessage({ id: 'filter' })}
           onChange={this.tableChange}
           dataSource={getIstAll}
