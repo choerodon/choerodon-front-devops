@@ -1620,6 +1620,8 @@ const zhCN = {
   "pipeline.header.detail": "流水线详情",
   "pipeline.record": "流水线执行记录总览",
   "pipeline.trigger": "触发方式",
+  "pipeline.trigger.tip":
+    "选择自动触发后，整条流水线会在满足条件后自动执行，但自动触发流水线中阶段一里的任务一不能设置为人工卡点；选择手动触发后，需指定审核人员手动触发该流水线",
   "pipeline.trigger.member": "触发人员",
   "pipeline.trigger.auto": "自动触发",
   "pipeline.trigger.manual": "手动触发",
@@ -1638,6 +1640,8 @@ const zhCN = {
   "pipeline.task.parallel": "任务并行",
   "pipeline.task.parallel.disabled": "流水线触发方式为自动触发时的第一个阶段的第一个任务或阶段中任务为并行时，不可以选择人工卡点任务",
   "pipeline.task.serial": "任务串行",
+  "pipeline.task.serial.tip":
+    "选择任务串行后，阶段中任务会从上至下按序执行；而任务并行指的是，阶段中所有任务会同时执行，但并行任务的阶段中不能添加人工卡点的任务",
   "pipeline.task.list": "任务列表",
   "pipeline.task.settings": "任务设置",
   "pipeline.task.name": "任务名称",
@@ -1689,6 +1693,8 @@ const zhCN = {
   "pipeline.config.value.tips": "修改配置信息后，所选的部署配置中的配置信息也将随之改动。",
   "pipeline.config.value.edit": "修改配置信息",
   "pipeline.config.edit.title": "修改“{name}”配置信息",
+  "pipeline.task.auditMode.tips":
+    "会签模式中，需要所有审核人员都审核通过才能通过，审核人员中任一人点击终止，则流水线终止；或签模式中，仅需任一审核人员审核即可，即第一个审核的人点击通过则通过，点击终止则终止",
   "pipeline.result.pendingcheck": "未审核",
   "pipeline.result.success": "通过",
   "pipeline.result.failed": "未知",

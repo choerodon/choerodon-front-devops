@@ -9,6 +9,7 @@ import StageCard from '../components/stageCard';
 import StageCreateModal from '../components/stageCreateModal';
 import { STAGE_FLOW_AUTO, STAGE_FLOW_MANUAL } from '../components/Constans';
 import InterceptMask from '../../../../components/interceptMask';
+import Tips from "../../../../components/Tips/Tips";
 
 import './PipelineCreate.scss';
 import '../../../main.scss';
@@ -251,7 +252,10 @@ export default class PipelineCreate extends Component {
             {getFieldDecorator('triggerType', {
               initialValue: STAGE_FLOW_AUTO,
             })(
-              <RadioGroup label={formatMessage({ id: 'pipeline.trigger' })} onChange={this.changeTriggerType}>
+              <RadioGroup
+                label={<Tips type="title" data="pipeline.trigger" />}
+                onChange={this.changeTriggerType}
+              >
                 <Radio value={STAGE_FLOW_AUTO}>
                   <FormattedMessage id="pipeline.trigger.auto" />
                 </Radio>

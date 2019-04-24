@@ -788,31 +788,34 @@ export default class TaskCreate extends Component {
           )}
         </FormItem>
         {getFieldValue('users') && getFieldValue('users').length > 1 && (
-          <FormItem
-            className="c7n-select_512"
-            {...formItemLayout}
-          >
-            {getFieldDecorator('isCountersigned', {
-              rules: [{
-                required: true,
-                message: formatMessage({ id: 'required' }),
-              }],
-              initialValue: initSign,
-            })(
-              <Select
-                className="c7n-select_512"
-                label={<FormattedMessage id="pipeline.task.auditMode" />}
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-              >
-                <Option value={AUDIT_MODE_SING}>
-                  <FormattedMessage id="pipeline.audit.sign" />
-                </Option>
-                <Option value={AUDIT_MODE_ORSING}>
-                  <FormattedMessage id="pipeline.audit.orSign" />
-                </Option>
-              </Select>,
-            )}
-          </FormItem>)
+          <div className="c7ncd-sidebar-select pipeline-type-tips">
+            <FormItem
+              className="c7n-select_512"
+              {...formItemLayout}
+            >
+              {getFieldDecorator('isCountersigned', {
+                rules: [{
+                  required: true,
+                  message: formatMessage({ id: 'required' }),
+                }],
+                initialValue: initSign,
+              })(
+                <Select
+                  className="c7n-select_512"
+                  label={<FormattedMessage id="pipeline.task.auditMode" />}
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                >
+                  <Option value={AUDIT_MODE_SING}>
+                    <FormattedMessage id="pipeline.audit.sign" />
+                  </Option>
+                  <Option value={AUDIT_MODE_ORSING}>
+                    <FormattedMessage id="pipeline.audit.orSign" />
+                  </Option>
+                </Select>,
+              )}
+            </FormItem>
+            <Tips type="form" data="pipeline.task.auditMode.tips" />
+          </div>)
         }
       </Fragment>;
 

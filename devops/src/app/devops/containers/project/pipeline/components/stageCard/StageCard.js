@@ -7,6 +7,7 @@ import PipelineCreateStore from '../../../../../stores/project/pipeline/Pipeline
 import TaskCreate from '../taskCreate';
 import StageTitle from '../stageTitle';
 import StageCreateModal from '../stageCreateModal';
+import Tips from "../../../../../components/Tips/Tips";
 import {
   TASK_SERIAL,
   TASK_PARALLEL,
@@ -188,7 +189,7 @@ export default class StageCard extends Component {
           onChange={this.handleHeadChange}
           onRemove={this.openStageRemove}
         />
-        <div className="c7ncd-stagecard-wrap">
+        <div className="c7ncd-stagecard-wrap c7ncd-sidebar-select">
           <Select
             value={_.toString(isParallel || TASK_SERIAL)}
             label={<FormattedMessage id="pipeline.task.settings" />}
@@ -209,6 +210,7 @@ export default class StageCard extends Component {
               </Tooltip>
             </Option>
           </Select>
+          <Tips type="form" data="pipeline.task.serial.tip" />
           <h3 className="c7ncd-stagecard-label">
             <FormattedMessage id="pipeline.task.list" />
           </h3>
