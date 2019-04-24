@@ -49,6 +49,8 @@ class PipelineRecord extends Component {
       passLoading: false,
       stopLoading: false,
       submitting: false,
+      canCheck: false,
+      checkTips: null,
     };
   }
 
@@ -376,6 +378,7 @@ class PipelineRecord extends Component {
         currentMenuType: { projectId },
         userInfo: { id: userId },
       },
+      intl: { formatMessage },
     } = this.props;
     const {
       id,
@@ -396,10 +399,19 @@ class PipelineRecord extends Component {
     this.setState({ [flag ? 'passLoading' : 'stopLoading']: true });
     PipelineRecordStore.checkData(projectId, data)
       .then(data => {
-        if (data && data.failed) {
-          Choerodon.prompt(data.message);
-        } else {
-          this.handClose(true);
+        if (data) {
+          if (data.failed) {
+            Choerodon.prompt(data.message);
+          } else if (data.length){
+            //会签，非最后一人审核，返回数据：["已审核人员"，"未审核人员"]
+            this.setState({
+              canCheck: false,
+              checkTips: formatMessage({ id: `pipeline.check.tips.text`}, {checkUsers: data[0]}, {unCheckUsers: data[1]}),
+            })
+          } else {
+            // 或签、会签最后一人，返回数据[]
+            this.handClose(true);
+          }
         }
         this.setState({ [flag ? 'passLoading' : 'stopLoading']: false });
       });
@@ -430,17 +442,49 @@ class PipelineRecord extends Component {
    * @param taskRecordId 任务id
    */
   showSidebar = (id = null, checkType, name, stageName, stageRecordId = null, taskRecordId = null) => {
-    this.setState({
-      show: true,
-      id,
-      name,
-      checkData: {
-        checkType,
-        stageName,
-        stageRecordId,
-        taskRecordId,
+    const {
+      PipelineRecordStore,
+      AppState: {
+        currentMenuType: { projectId },
+        userInfo: { id: userId },
       },
-    });
+      intl: { formatMessage },
+    } = this.props;
+    const data = {
+      pipelineRecordId: id,
+      userId,
+      type: checkType,
+      stageRecordId,
+      taskRecordId,
+    };
+    PipelineRecordStore.canCheck(projectId, data)
+      .then(data =>{
+        if (data) {
+          if (data.failed) {
+            Choerodon.prompt(data.message);
+          } else if (data.isCountersigned && data.userName) {
+            // 会签已被终止、或签已被审核，返回数据：{ isCountersigned: 0 或签 | 1 会签, userName: "string"}
+            this.setState({
+              canCheck: false,
+              checkTips: formatMessage({ id: `pipeline.canCheck.tips.${isCountersigned}`}, {userName: data.userName}),
+            })
+          } else {
+            // 预检通过，返回数据：{ isCountersigned: null, userName: null }
+            this.setState({
+              show: true,
+              id,
+              name,
+              checkData: {
+                checkType,
+                stageName,
+                stageRecordId,
+                taskRecordId,
+              },
+              canCheck: true,
+            });
+          }
+        }
+      });
   };
 
   /**
@@ -451,7 +495,7 @@ class PipelineRecord extends Component {
     if (flag) {
       this.loadData();
     }
-    this.setState({ show: false, id: null, name: null, checkData: {} });
+    this.setState({ show: false, id: null, name: null, checkData: {}, canCheck: false, checkTips: null });
   };
 
   render() {
@@ -480,6 +524,8 @@ class PipelineRecord extends Component {
       },
       showRetry,
       submitting,
+      canCheck,
+      checkTips,
     } = this.state;
 
     const { loading, pageInfo } = PipelineRecordStore;
@@ -568,7 +614,7 @@ class PipelineRecord extends Component {
             visible={show}
             title={formatMessage({ id: 'pipelineRecord.check.manual' })}
             closable={false}
-            footer={[
+            footer={canCheck ? [
               <Button
                 key="back"
                 onClick={this.handClose.bind(this, false)}
@@ -594,11 +640,21 @@ class PipelineRecord extends Component {
               >
                 <FormattedMessage id="pipelineRecord.check.pass" />
               </Button>,
+            ] : [
+              <Button
+                key="back"
+                type="primary"
+                onClick={this.handClose.bind(this, true)}
+              >
+                <FormattedMessage id="pipelineRecord.check.tips.button" />
+              </Button>,
             ]}
           >
             <div className="c7n-padding-top_8">
-              <FormattedMessage id={`pipelineRecord.check.${checkType}.des`}
-                                values={{ name: pipelineName, stage: stageName }} />
+              <FormattedMessage
+                id={canCheck ? `pipelineRecord.check.${checkType}.des` : checkTips}
+                values={{ name: pipelineName, stage: stageName }}
+              />
             </div>
           </Modal>
         )}

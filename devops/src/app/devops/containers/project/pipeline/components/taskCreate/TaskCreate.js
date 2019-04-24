@@ -111,7 +111,7 @@ export default class TaskCreate extends Component {
     } = this.props;
     const { getTaskList, getStageList } = PipelineCreateStore;
     const { appDeployDTOS, type } = _.find(getTaskList[stageId], ['index', taskId]) || {};
-    const { applicationId, envId, instanceId, value, valueId, instanceName } = appDeployDTOS || {};
+    const { applicationId, envId, instanceId, valueId, instanceName } = appDeployDTOS || {};
 
     this.setState({
       taskType: type || TASK_TYPE_DEPLOY,
@@ -127,7 +127,6 @@ export default class TaskCreate extends Component {
     }
 
     if (!(type === TASK_TYPE_MANUAL)) {
-      this.setState({ value });
       this.loadingOptionsData();
     }
 
@@ -194,7 +193,7 @@ export default class TaskCreate extends Component {
       isCountersigned,
     }) => {
       if (!err) {
-        const { value, isHead } = this.state;
+        const { isHead } = this.state;
         const appDeployDTOS = type === TASK_TYPE_DEPLOY ? {
           applicationId,
           triggerVersion,
@@ -202,7 +201,6 @@ export default class TaskCreate extends Component {
           instanceId,
           instanceName,
           valueId,
-          value,
         } : null;
         const taskUserRelDTOS = type === TASK_TYPE_MANUAL ? _.map(users, item => Number(item)) : null;
         const data = {
@@ -563,339 +561,340 @@ export default class TaskCreate extends Component {
       || (getTrigger === STAGE_FLOW_AUTO && isHead);
     const isEdit = taskId || taskId === 0;
 
-    return (<Fragment><Sidebar
-      destroyOnClose
-      title={<FormattedMessage id={`pipeline.task.${isEdit ? 'edit' : 'create'}.head`} />}
-      visible={visible}
-      footer={
-        [<Button
-          key="submit"
-          type="primary"
-          funcType="raised"
-          onClick={this.handleSubmit}
-          loading={submitting}
-        >
-          <FormattedMessage id={isEdit ? 'save' : 'add'} />
-        </Button>, <Button
-          key="cancel"
-          funcType="raised"
-          onClick={onClose}
-          disabled={submitting}
-        >
-          <FormattedMessage id="cancel" />
-        </Button>]
-      }
-    >
-      <Content
-        code={`pipeline.task.${isEdit ? 'edit' : 'create'}`}
-        values={{ name: stageName }}
-        className="sidebar-content c7n-pipeline-task-create"
+    return (<Fragment>
+      <Sidebar
+        destroyOnClose
+        title={<FormattedMessage id={`pipeline.task.${isEdit ? 'edit' : 'create'}.head`} />}
+        visible={visible}
+        footer={
+          [<Button
+            key="submit"
+            type="primary"
+            funcType="raised"
+            onClick={this.handleSubmit}
+            loading={submitting}
+          >
+            <FormattedMessage id={isEdit ? 'save' : 'add'} />
+          </Button>, <Button
+            key="cancel"
+            funcType="raised"
+            onClick={onClose}
+            disabled={submitting}
+          >
+            <FormattedMessage id="cancel" />
+          </Button>]
+        }
       >
-        <Form layout="vertical">
-          <FormItem
-            className="c7n-select_512"
-            {...formItemLayout}
-          >
-            {getFieldDecorator('type', {
-              initialValue: type || TASK_TYPE_DEPLOY,
-            })(
-              <Select
-                label={formatMessage({ id: 'pipeline.task.type' })}
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-                onChange={this.changeTaskType}
-              >
-                <Option value={TASK_TYPE_DEPLOY}>
-                  <FormattedMessage id="pipeline.mode.auto" />
-                </Option>
-                <Option
-                  // 并行任务不可以选择人工卡点
-                  disabled={disableChooseManual}
-                  value={TASK_TYPE_MANUAL}
-                >
-                  <Tooltip
-                    title={disableChooseManual ? formatMessage({ id: 'pipeline.task.parallel.disabled' }) : ''}
-                    placement="right"
-                  >
-                    <span><FormattedMessage id="pipeline.mode.manual" /></span>
-                  </Tooltip>
-                </Option>
-              </Select>,
-            )}
-          </FormItem>
-          <FormItem
-            className="c7n-select_512"
-            {...formItemLayout}
-          >
-            {getFieldDecorator('name', {
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage({ id: 'required' }),
-                  whitespace: true,
-                },
-              ],
-              initialValue: taskName,
-            })(
-              <Input
-                maxLength={30}
-                type="text"
-                label={<FormattedMessage id="pipeline.task.name" />}
-              />,
-            )}
-          </FormItem>
-          {taskType === TASK_TYPE_DEPLOY && <Fragment>
+        <Content
+          code={`pipeline.task.${isEdit ? 'edit' : 'create'}`}
+          values={{ name: stageName }}
+          className="sidebar-content c7n-pipeline-task-create"
+        >
+          <Form layout="vertical">
             <FormItem
               className="c7n-select_512"
               {...formItemLayout}
             >
-              {getFieldDecorator('applicationId', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'required' }),
-                  },
-                ],
-                initialValue: appOptions.length ? applicationId : undefined,
+              {getFieldDecorator('type', {
+                initialValue: type || TASK_TYPE_DEPLOY,
               })(
                 <Select
-                  label={formatMessage({ id: 'app' })}
-                  optionFilterProp="children"
-                  onChange={this.handleChangeApp}
-                  loading={getLoading.app}
-                  filter
-                  filterOption={(input, option) =>
-                    option.props.children
-                      .toLowerCase()
-                      .indexOf(input.toLowerCase()) >= 0
-                  }
+                  label={formatMessage({ id: 'pipeline.task.type' })}
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                  onChange={this.changeTaskType}
                 >
-                  {appOptions}
+                  <Option value={TASK_TYPE_DEPLOY}>
+                    <FormattedMessage id="pipeline.mode.auto" />
+                  </Option>
+                  <Option
+                    // 并行任务不可以选择人工卡点
+                    disabled={disableChooseManual}
+                    value={TASK_TYPE_MANUAL}
+                  >
+                    <Tooltip
+                      title={disableChooseManual ? formatMessage({ id: 'pipeline.task.parallel.disabled' }) : ''}
+                      placement="right"
+                    >
+                      <span><FormattedMessage id="pipeline.mode.manual" /></span>
+                    </Tooltip>
+                  </Option>
                 </Select>,
               )}
             </FormItem>
-            <div className="c7ncd-sidebar-select pipeline-type-tips">
-              <FormItem
-                className="c7n-select_512"
-                {...formItemLayout}
-              >
-                {getFieldDecorator('triggerVersion', {
-                  initialValue: triggerVersion ? triggerVersion.slice() : undefined,
-                })(
-                  <Select
-                    mode="tags"
-                    label={formatMessage({ id: 'pipeline.task.version' })}
-                    allowClear
-                  >
-                    {_.map(VERSION_TYPE, item => (
-                      <Option key={item} value={item}>{item}</Option>
-                    ))}
-                  </Select>,
-                )}
-              </FormItem>
-              <Tips type="form" data="pipeline.task.version.tips" />
-            </div>
             <FormItem
               className="c7n-select_512"
               {...formItemLayout}
             >
-              {getFieldDecorator('envId', {
+              {getFieldDecorator('name', {
                 rules: [
                   {
                     required: true,
                     message: formatMessage({ id: 'required' }),
+                    whitespace: true,
                   },
                 ],
-                initialValue: envOptions.length ? envId : undefined,
+                initialValue: taskName,
               })(
-                <Select
-                  label={formatMessage({ id: 'envName' })}
-                  optionFilterProp="children"
-                  onChange={this.handleChangeEnv}
-                  loading={getLoading.env}
-                  filter
-                  filterOption={(input, option) =>
-                    option.props.children[1]
-                      .toLowerCase()
-                      .indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  {envOptions}
-                </Select>,
+                <Input
+                  maxLength={30}
+                  type="text"
+                  label={<FormattedMessage id="pipeline.task.name" />}
+                />,
               )}
             </FormItem>
-            <Fragment>
-              <div className="c7n-pipeline-config">
-                <Tips type="title" data="pipeline.deploy.mode" />
-              </div>
-              <RadioGroup
-                onChange={this.handleChangeMode}
-                value={mode}
-                className="c7n-pipeline-radio"
-              >
-                <Radio
-                  disabled={instanceId}
-                  value={MODE_TYPE_NEW}
-                >
-                  <FormattedMessage id="pipeline.task.instance.create" />
-                </Radio>
-                <Radio
-                  disabled={!(getInstance && getInstance.length)}
-                  value={MODE_TYPE_UPDATE}
-                >
-                  <FormattedMessage id="pipeline.task.instance.update" />
-                  <Icon
-                    className="c7n-pipeline-replace-tip-icon"
-                    type="error"
-                  />
-                  <span
-                    className="c7n-pipeline-replace-tip-text"
-                  >
-                    {formatMessage({ id: 'pipeline.task.instance.tips' })}
-                  </span>
-                </Radio>
-              </RadioGroup>
-            </Fragment>
-            {mode === MODE_TYPE_NEW && (
+            {taskType === TASK_TYPE_DEPLOY && <Fragment>
               <FormItem
                 className="c7n-select_512"
                 {...formItemLayout}
               >
-                {getFieldDecorator('instanceName', {
-                  rules: [
-                    {
-                      required: true,
-                      message: formatMessage({ id: 'required' }),
-                    },
-                    {
-                      validator: this.checkIstName,
-                    },
-                  ],
-                  initialValue: initIstName,
-                })(
-                  <Input
-                    disabled={mode !== MODE_TYPE_NEW}
-                    maxLength={30}
-                    label={formatMessage({ id: 'pipeline.task.instance' })}
-                  />,
-                )}
-              </FormItem>
-            )}
-            {mode === MODE_TYPE_UPDATE && (
-              <FormItem
-                className="c7n-select_512"
-                {...formItemLayout}
-              >
-                {getFieldDecorator('instanceId', {
+                {getFieldDecorator('applicationId', {
                   rules: [
                     {
                       required: true,
                       message: formatMessage({ id: 'required' }),
                     },
                   ],
-                  initialValue: instanceOptions.length ? initIstId : undefined,
+                  initialValue: appOptions.length ? applicationId : undefined,
                 })(
                   <Select
-                    filter
+                    label={formatMessage({ id: 'app' })}
                     optionFilterProp="children"
-                    label={formatMessage({ id: 'pipeline.task.instance.replace' })}
+                    onChange={this.handleChangeApp}
+                    loading={getLoading.app}
+                    filter
                     filterOption={(input, option) =>
                       option.props.children
                         .toLowerCase()
                         .indexOf(input.toLowerCase()) >= 0
                     }
                   >
-                    {instanceOptions}
-                  </Select>)
-                }
-              </FormItem>)
-            }
-            <div className="c7n-pipeline-config">
-              <Tips type="title" data="pipeline.task.config.title" />
-            </div>
-            <FormItem
-              className="c7n-select_512"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('valueId', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'required' }),
-                  },
-                ],
-                initialValue: configOptions.length ? valueId : undefined,
-              })(
-                <Select
-                  disabled={!(getFieldValue('applicationId') && getFieldValue('envId'))}
-                  label={formatMessage({ id: 'pipeline.task.config' })}
-                  optionFilterProp="children"
-                  onChange={this.handleChangeConfig}
-                  loading={getLoading.config}
-                  filter
-                  filterOption={(input, option) => option.props.children.props.children
-                    .toLowerCase()
-                    .indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  {configOptions}
-                </Select>,
-              )}
-            </FormItem>
-          </Fragment>}
-          {taskType === TASK_TYPE_MANUAL && <Fragment>
-            <FormItem
-              className="c7n-select_512"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('users', {
-                rules: [{
-                  required: true,
-                  message: formatMessage({ id: 'required' }),
-                }],
-                initialValue: userOptions.length ? initUsers : undefined,
-              })(
-                <Select
+                    {appOptions}
+                  </Select>,
+                )}
+              </FormItem>
+              <div className="c7ncd-sidebar-select pipeline-type-tips">
+                <FormItem
                   className="c7n-select_512"
-                  label={<FormattedMessage id="pipeline.task.auditor" />}
-                  mode="tags"
-                  allowClear
+                  {...formItemLayout}
                 >
-                  {userOptions}
-                </Select>,
-              )}
-            </FormItem>
-            {getFieldValue('users') && getFieldValue('users').length > 1 && (
+                  {getFieldDecorator('triggerVersion', {
+                    initialValue: triggerVersion ? triggerVersion.slice() : undefined,
+                  })(
+                    <Select
+                      mode="tags"
+                      label={formatMessage({ id: 'pipeline.task.version' })}
+                      allowClear
+                    >
+                      {_.map(VERSION_TYPE, item => (
+                        <Option key={item} value={item}>{item}</Option>
+                      ))}
+                    </Select>,
+                  )}
+                </FormItem>
+                <Tips type="form" data="pipeline.task.version.tips" />
+              </div>
               <FormItem
                 className="c7n-select_512"
                 {...formItemLayout}
               >
-                {getFieldDecorator('isCountersigned', {
+                {getFieldDecorator('envId', {
+                  rules: [
+                    {
+                      required: true,
+                      message: formatMessage({ id: 'required' }),
+                    },
+                  ],
+                  initialValue: envOptions.length ? envId : undefined,
+                })(
+                  <Select
+                    label={formatMessage({ id: 'envName' })}
+                    optionFilterProp="children"
+                    onChange={this.handleChangeEnv}
+                    loading={getLoading.env}
+                    filter
+                    filterOption={(input, option) =>
+                      option.props.children[1]
+                        .toLowerCase()
+                        .indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {envOptions}
+                  </Select>,
+                )}
+              </FormItem>
+              <Fragment>
+                <div className="c7n-pipeline-config">
+                  <Tips type="title" data="pipeline.deploy.mode" />
+                </div>
+                <RadioGroup
+                  onChange={this.handleChangeMode}
+                  value={mode}
+                  className="c7n-pipeline-radio"
+                >
+                  <Radio
+                    disabled={instanceId}
+                    value={MODE_TYPE_NEW}
+                  >
+                    <FormattedMessage id="pipeline.task.instance.create" />
+                  </Radio>
+                  <Radio
+                    disabled={!(getInstance && getInstance.length)}
+                    value={MODE_TYPE_UPDATE}
+                  >
+                    <FormattedMessage id="pipeline.task.instance.update" />
+                    <Icon
+                      className="c7n-pipeline-replace-tip-icon"
+                      type="error"
+                    />
+                    <span
+                      className="c7n-pipeline-replace-tip-text"
+                    >
+                    {formatMessage({ id: 'pipeline.task.instance.tips' })}
+                  </span>
+                  </Radio>
+                </RadioGroup>
+              </Fragment>
+              {mode === MODE_TYPE_NEW && (
+                <FormItem
+                  className="c7n-select_512"
+                  {...formItemLayout}
+                >
+                  {getFieldDecorator('instanceName', {
+                    rules: [
+                      {
+                        required: true,
+                        message: formatMessage({ id: 'required' }),
+                      },
+                      {
+                        validator: this.checkIstName,
+                      },
+                    ],
+                    initialValue: initIstName,
+                  })(
+                    <Input
+                      disabled={mode !== MODE_TYPE_NEW}
+                      maxLength={30}
+                      label={formatMessage({ id: 'pipeline.task.instance' })}
+                    />,
+                  )}
+                </FormItem>
+              )}
+              {mode === MODE_TYPE_UPDATE && (
+                <FormItem
+                  className="c7n-select_512"
+                  {...formItemLayout}
+                >
+                  {getFieldDecorator('instanceId', {
+                    rules: [
+                      {
+                        required: true,
+                        message: formatMessage({ id: 'required' }),
+                      },
+                    ],
+                    initialValue: instanceOptions.length ? initIstId : undefined,
+                  })(
+                    <Select
+                      filter
+                      optionFilterProp="children"
+                      label={formatMessage({ id: 'pipeline.task.instance.replace' })}
+                      filterOption={(input, option) =>
+                        option.props.children
+                          .toLowerCase()
+                          .indexOf(input.toLowerCase()) >= 0
+                      }
+                    >
+                      {instanceOptions}
+                    </Select>)
+                  }
+                </FormItem>)
+              }
+              <div className="c7n-pipeline-config">
+                <Tips type="title" data="pipeline.task.config.title" />
+              </div>
+              <FormItem
+                className="c7n-select_512"
+                {...formItemLayout}
+              >
+                {getFieldDecorator('valueId', {
+                  rules: [
+                    {
+                      required: true,
+                      message: formatMessage({ id: 'required' }),
+                    },
+                  ],
+                  initialValue: configOptions.length ? valueId : undefined,
+                })(
+                  <Select
+                    disabled={!(getFieldValue('applicationId') && getFieldValue('envId'))}
+                    label={formatMessage({ id: 'pipeline.task.config' })}
+                    optionFilterProp="children"
+                    onChange={this.handleChangeConfig}
+                    loading={getLoading.config}
+                    filter
+                    filterOption={(input, option) => option.props.children.props.children
+                      .toLowerCase()
+                      .indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {configOptions}
+                  </Select>,
+                )}
+              </FormItem>
+            </Fragment>}
+            {taskType === TASK_TYPE_MANUAL && <Fragment>
+              <FormItem
+                className="c7n-select_512"
+                {...formItemLayout}
+              >
+                {getFieldDecorator('users', {
                   rules: [{
                     required: true,
                     message: formatMessage({ id: 'required' }),
                   }],
-                  initialValue: initSign,
+                  initialValue: userOptions.length ? initUsers : undefined,
                 })(
                   <Select
                     className="c7n-select_512"
-                    label={<FormattedMessage id="pipeline.task.auditMode" />}
-                    getPopupContainer={triggerNode => triggerNode.parentNode}
+                    label={<FormattedMessage id="pipeline.task.auditor" />}
+                    mode="tags"
+                    allowClear
                   >
-                    <Option value={AUDIT_MODE_SING}>
-                      <FormattedMessage id="pipeline.audit.sign" />
-                    </Option>
-                    <Option value={AUDIT_MODE_ORSING}>
-                      <FormattedMessage id="pipeline.audit.orSign" />
-                    </Option>
+                    {userOptions}
                   </Select>,
                 )}
-              </FormItem>)
-            }
-          </Fragment>}
-        </Form>
-        {taskType === TASK_TYPE_DEPLOY && getLoading.value ? <Spin /> : this.renderYamlEditor()}
-      </Content>
-    </Sidebar>
+              </FormItem>
+              {getFieldValue('users') && getFieldValue('users').length > 1 && (
+                <FormItem
+                  className="c7n-select_512"
+                  {...formItemLayout}
+                >
+                  {getFieldDecorator('isCountersigned', {
+                    rules: [{
+                      required: true,
+                      message: formatMessage({ id: 'required' }),
+                    }],
+                    initialValue: initSign,
+                  })(
+                    <Select
+                      className="c7n-select_512"
+                      label={<FormattedMessage id="pipeline.task.auditMode" />}
+                      getPopupContainer={triggerNode => triggerNode.parentNode}
+                    >
+                      <Option value={AUDIT_MODE_SING}>
+                        <FormattedMessage id="pipeline.audit.sign" />
+                      </Option>
+                      <Option value={AUDIT_MODE_ORSING}>
+                        <FormattedMessage id="pipeline.audit.orSign" />
+                      </Option>
+                    </Select>,
+                  )}
+                </FormItem>)
+              }
+            </Fragment>}
+          </Form>
+          {taskType === TASK_TYPE_DEPLOY && getLoading.value ? <Spin /> : this.renderYamlEditor()}
+        </Content>
+      </Sidebar>
       {showEditValue && (
         <Modal
           confirmLoading={editLoading}
@@ -908,7 +907,7 @@ export default class TaskCreate extends Component {
           disableOk={configError}
           okText={formatMessage({ id: 'edit' })}
         >
-          <div className="c7n-padding-top_8">
+          <div className="c7n-config-value-modal-content">
             <YamlEditor
               readOnly={false}
               value={value}
@@ -918,6 +917,7 @@ export default class TaskCreate extends Component {
             />
           </div>
         </Modal>)
-      }</Fragment>);
+      }
+    </Fragment>);
   }
 }

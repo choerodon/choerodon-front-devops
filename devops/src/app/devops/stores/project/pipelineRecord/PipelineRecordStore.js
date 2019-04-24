@@ -120,12 +120,18 @@ class PipelineRecordStore {
   /**
    ** 人工审核阶段或任务
    * @param projectId
-   * @param recordId 流水线记录id
-   * @param id 阶段id或任务id
-   * @param type 中止或通过
+   * @param data
    */
   checkData = (projectId, data) =>
     axios.post(`/devops/v1/projects/${projectId}/pipeline/audit`, JSON.stringify(data));
+
+  /**
+   ** 人工审核预检，判断是否可以审核
+   * @param projectId
+   * @param data
+   */
+  canCheck = (projectId, data) =>
+    axios.post(`/devops/v1/projects/${projectId}/pipeline/check_audit`, JSON.stringify(data));
 }
 
 const pipelineRecordStore = new PipelineRecordStore();

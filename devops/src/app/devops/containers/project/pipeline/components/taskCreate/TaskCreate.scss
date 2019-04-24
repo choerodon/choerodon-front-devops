@@ -68,6 +68,11 @@
 
 .c7n-config-value-modal {
   width: 1200px !important;
-  height: 500px;
-  overflow-y: scroll;
+  top: 70px;
+
+  .c7n-config-value-modal-content {
+    height: 440px;
+    overflow-y: scroll;
+    margin-top: 8px;
+  }
 }
