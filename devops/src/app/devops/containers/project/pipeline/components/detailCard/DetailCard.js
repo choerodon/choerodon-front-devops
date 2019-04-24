@@ -23,12 +23,9 @@ export default class DetailCard extends PureComponent {
       isParallel,
       tasks,
       intl: { formatMessage },
-      location: {
-        search,
-      },
     } = this.props;
     const executeType = ['serial', 'parallel'];
-    const mode = ['sign', 'orSign'];
+    const mode = ['orSign', 'sign'];
 
     const task = _.map(tasks,
       ({
@@ -42,7 +39,6 @@ export default class DetailCard extends PureComponent {
          envName,
          version,
          instanceName,
-         instanceId,
        }) => {
 
         const panelHead = (<div className="c7ncd-pipeline-panel-title">
@@ -62,7 +58,7 @@ export default class DetailCard extends PureComponent {
           manual: () => (<Fragment>
             <div className="c7ncd-pipeline-task">
               <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.mode' })}</span>
-              {formatMessage({ id: `pipeline.audit.${mode[isParallel]}` })}
+              {formatMessage({ id: `pipeline.audit.${mode[isCountersigned]}` })}
             </div>
             <div className="c7ncd-pipeline-task">
               <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.users' })}</span>

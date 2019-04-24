@@ -552,7 +552,7 @@ export default class TaskCreate extends Component {
     const initUsers = _.map(taskUserRelDTOS, item => String(item));
     let initSign;
     if (typeof isCountersigned === 'number') {
-      initSign = isCountersigned ? AUDIT_MODE_ORSING : AUDIT_MODE_SING;
+      initSign = isCountersigned ? AUDIT_MODE_SING : AUDIT_MODE_ORSING;
     }
 
     /**
@@ -815,8 +815,6 @@ export default class TaskCreate extends Component {
           </FormItem>)
         }
       </Fragment>;
-
-    // const manualFields = taskType === TASK_TYPE_MANUAL ?  : null;
 
     return (<Fragment>
       <Sidebar
