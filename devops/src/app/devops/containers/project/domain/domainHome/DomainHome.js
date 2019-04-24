@@ -424,6 +424,7 @@ class DomainHome extends Component {
               pagination={DomainStore.pageInfo}
               columns={columns}
               dataSource={data}
+              noFilter
               rowKey={record => record.id}
               filters={paras.slice()}
             />

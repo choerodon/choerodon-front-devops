@@ -412,8 +412,6 @@ export default class Pipeline extends Component {
     }, {
       title: <FormattedMessage id="creator" />,
       key: 'createUserRealName',
-      filters: [],
-      filteredValue: filters.createUserRealName || [],
       render: _renderUser,
     }, {
       title: <FormattedMessage id="updateDate" />,

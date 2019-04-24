@@ -6,6 +6,7 @@ import { Button, Modal, Spin, Tooltip, Form, Input, Select, Radio, Icon } from '
 import { Content } from 'choerodon-front-boot';
 import classnames from 'classnames';
 import _ from 'lodash';
+import uuidv1 from 'uuid/v1';
 import PipelineCreateStore from '../../../../../stores/project/pipeline/PipelineCreateStore';
 import Tips from '../../../../../components/Tips';
 import YamlEditor from '../../../../../components/yamlEditor';
@@ -18,6 +19,7 @@ import {
   VERSION_TYPE,
   AUDIT_MODE_ORSING,
   AUDIT_MODE_SING, TASK_PARALLEL,
+  TRIGGER_TYPE_AUTO,
 } from '../Constans';
 
 import './TaskCreate.scss';
@@ -64,6 +66,8 @@ export default class TaskCreate extends Component {
     configData: null,
     showEditValue: false,
     editLoading: false,
+    initIstId: undefined,
+    initIstName: undefined,
   };
 
   checkIstName = _.debounce((rule, value, callback) => {
@@ -107,11 +111,19 @@ export default class TaskCreate extends Component {
     } = this.props;
     const { getTaskList, getStageList } = PipelineCreateStore;
     const { appDeployDTOS, type } = _.find(getTaskList[stageId], ['index', taskId]) || {};
-    const { applicationId, envId, instanceId, value, valueId } = appDeployDTOS || {};
+    const { applicationId, envId, instanceId, value, valueId, instanceName } = appDeployDTOS || {};
 
-    this.setState({ taskType: type || TASK_TYPE_DEPLOY });
+    this.setState({
+      taskType: type || TASK_TYPE_DEPLOY,
+      initIstName: instanceName,
+    });
+
     if (instanceId) {
-      this.setState({ mode: MODE_TYPE_UPDATE });
+      this.setState({
+        mode: MODE_TYPE_UPDATE,
+        // initValue 可以接受undefined表示无初始值，但是不能为null
+        initIstId: instanceId || undefined,
+      });
     }
 
     if (!(type === TASK_TYPE_MANUAL)) {
@@ -137,7 +149,11 @@ export default class TaskCreate extends Component {
       this.setState({ isHead: true });
     }
 
-    if ((taskId || taskId === 0) && isHead && type === TASK_TYPE_MANUAL) {
+    const isErrorType = PipelineCreateStore.getTrigger === TRIGGER_TYPE_AUTO
+      && (taskId || taskId === 0)
+      && isHead
+      && type === TASK_TYPE_MANUAL;
+    if (isErrorType) {
       setFields({
         type: {
           value: TASK_TYPE_MANUAL,
@@ -235,9 +251,12 @@ export default class TaskCreate extends Component {
    * @param e
    */
   handleChangeMode = e => {
-    this.setState({
-      mode: e.target.value,
-    });
+    const { appId } = this.state;
+    const mode = e.target.value;
+    const app = appId ? _.find(PipelineCreateStore.getAppData, ['id', appId]) : null;
+    const initIstName = app ? `${app.code}-${uuidv1().substring(0, 5)}` : uuidv1().substring(0, 30);
+
+    this.setState({ mode, initIstName });
   };
 
   /**
@@ -249,15 +268,36 @@ export default class TaskCreate extends Component {
 
   handleChangeEnv = (id) => {
     const { appId } = this.state;
-    this.setState({ envId: id, value: '' });
+
+    this.setState({ envId: id, value: '', initIstId: undefined });
+
     this.clearConfigFiled();
     appId && this.loadInstanceData(id, appId);
     appId && this.loadConfigValue(id, appId);
   };
 
   handleChangeApp = (id) => {
+    const {
+      form: {
+        setFieldsValue,
+        getFieldsValue,
+      },
+    } = this.props;
     const { envId } = this.state;
-    this.setState({ appId: id, value: '' });
+
+    this.setState({
+      appId: id,
+      value: '',
+      mode: MODE_TYPE_NEW,
+      initIstId: undefined,
+    });
+
+    if (getFieldsValue(['instanceName'])) {
+      const { code } = _.find(PipelineCreateStore.getAppData, ['id', id]) || {};
+      const initIstName = code ? `${code}-${uuidv1().substring(0, 5)}` : uuidv1().substring(0, 30);
+      setFieldsValue({ 'instanceName': initIstName });
+    }
+
     this.clearConfigFiled();
     envId && this.loadInstanceData(envId, id);
     envId && this.loadConfigValue(envId, id);
@@ -336,14 +376,14 @@ export default class TaskCreate extends Component {
    * 打开修改配置信息弹窗
    */
   openEditValue = () => {
-    this.setState({ showEditValue: true })
+    this.setState({ showEditValue: true });
   };
 
   /**
    * 关闭修改配置信息弹窗
    */
   closeEditValue = () => {
-    this.setState({ showEditValue: false, configValue: null, configError: false })
+    this.setState({ showEditValue: false, configValue: null, configError: false });
   };
 
   /**
@@ -436,9 +476,26 @@ export default class TaskCreate extends Component {
       getTaskSettings,
       getTrigger,
     } = PipelineCreateStore;
-    const { submitting, taskType, mode, isHead, appId, envId: selectEnvId, showEditValue, editLoading, value, configData, configError } = this.state;
-    const { appDeployDTOS, type, name, isCountersigned, taskUserRelDTOS } = _.find(getTaskList[stageId], ['index', taskId]) || {};
-    const { instanceId, applicationId, triggerVersion, envId, instanceName, valueId } = appDeployDTOS || {};
+    const {
+      submitting,
+      taskType,
+      mode,
+      isHead,
+      appId,
+      envId: selectEnvId,
+      showEditValue,
+      editLoading,
+      value,
+      configData,
+      configError,
+      initIstId,
+      initIstName,
+    } = this.state;
+
+    const { appDeployDTOS, type, name: taskName, isCountersigned, taskUserRelDTOS } =
+    _.find(getTaskList[stageId], ['index', taskId]) || {};
+    const { instanceId, applicationId, triggerVersion, envId, valueId } =
+    appDeployDTOS || {};
 
     /*********** 生成选择器的选项 **********/
     const appOptions = _.map(getAppData, ({ id, name }) => (<Option key={id} value={id}>
@@ -577,7 +634,7 @@ export default class TaskCreate extends Component {
                   whitespace: true,
                 },
               ],
-              initialValue: name,
+              initialValue: taskName,
             })(
               <Input
                 maxLength={30}
@@ -713,7 +770,7 @@ export default class TaskCreate extends Component {
                       validator: this.checkIstName,
                     },
                   ],
-                  initialValue: instanceName,
+                  initialValue: initIstName,
                 })(
                   <Input
                     disabled={mode !== MODE_TYPE_NEW}
@@ -735,7 +792,7 @@ export default class TaskCreate extends Component {
                       message: formatMessage({ id: 'required' }),
                     },
                   ],
-                  initialValue: instanceOptions.length ? instanceId : undefined,
+                  initialValue: instanceOptions.length ? initIstId : undefined,
                 })(
                   <Select
                     filter
@@ -839,28 +896,28 @@ export default class TaskCreate extends Component {
         {taskType === TASK_TYPE_DEPLOY && getLoading.value ? <Spin /> : this.renderYamlEditor()}
       </Content>
     </Sidebar>
-    {showEditValue && (
-      <Modal
-        confirmLoading={editLoading}
-        visible={showEditValue}
-        title={`${formatMessage({id: "pipeline.config.edit.title"}, {name: configData.name})}`}
-        className="c7n-config-value-modal"
-        closable={false}
-        onOk={this.handleEditValue}
-        onCancel={this.closeEditValue}
-        disableOk={configError}
-        okText={formatMessage({ id: "edit" })}
-      >
-        <div className="c7n-padding-top_8">
-          <YamlEditor
-            readOnly={false}
-            value={value}
-            originValue={value}
-            onValueChange={this.handleChangeValue}
-            handleEnableNext={this.handleEnableNext}
-          />
-        </div>
-      </Modal>)
-    }</Fragment>);
+      {showEditValue && (
+        <Modal
+          confirmLoading={editLoading}
+          visible={showEditValue}
+          title={`${formatMessage({ id: 'pipeline.config.edit.title' }, { name: configData.name })}`}
+          className="c7n-config-value-modal"
+          closable={false}
+          onOk={this.handleEditValue}
+          onCancel={this.closeEditValue}
+          disableOk={configError}
+          okText={formatMessage({ id: 'edit' })}
+        >
+          <div className="c7n-padding-top_8">
+            <YamlEditor
+              readOnly={false}
+              value={value}
+              originValue={value}
+              onValueChange={this.handleChangeValue}
+              handleEnableNext={this.handleEnableNext}
+            />
+          </div>
+        </Modal>)
+      }</Fragment>);
   }
 }

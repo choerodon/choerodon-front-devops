@@ -1666,6 +1666,7 @@ const zhCN = {
   "pipeline.stage.delete.msg": "确定删除该阶段？",
   "pipeline.stage.create": "创建新阶段",
   "pipeline.stage.edit": "修改阶段信息",
+  "pipeline.stage.add": "添加阶段",
   "pipeline.flow": "流转方式",
   "pipeline.flow.member": "审核人员",
   "pipeline.link.toConfig": "创建部署配置",

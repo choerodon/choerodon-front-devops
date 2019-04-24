@@ -4,8 +4,9 @@ import _ from 'lodash';
 import { handleProptError } from '../../../utils';
 import {
   STAGE_FLOW_AUTO,
-  STAGE_FLOW_MANUAL,
   TASK_TYPE_MANUAL,
+  TRIGGER_TYPE_AUTO,
+  TRIGGER_TYPE_MANUAL,
 } from '../../../containers/project/pipeline/components/Constans';
 
 const INIT_INDEX = 0;
@@ -25,11 +26,11 @@ class PipelineCreateStore {
   /**
    * 流水线的触发方式
    */
-  @observable trigger = 'auto';
+  @observable trigger = TRIGGER_TYPE_AUTO;
 
   @action setTrigger(type) {
     // 切换触发方式，对第一个阶段的首个任务的类型校验
-    if (type === STAGE_FLOW_MANUAL) {
+    if (type === TRIGGER_TYPE_MANUAL) {
       this.setIsDisabled(false);
     } else {
       const headStageId = (_.head(this.stageList) || {}).tempId;
@@ -553,6 +554,7 @@ class PipelineCreateStore {
     if (res) {
       this.setPipeline(res);
       this.initPipeline(res);
+      this.setTrigger(res.triggerType);
     }
   }
 

@@ -70,7 +70,7 @@ class PipelineStore {
   async loadListData(projectId, page, size, sort, param) {
     this.setLoading(true);
 
-    const sortPath = sort ? `&sort=${sort.field || sort.columnKey || 'id'},${SORTER_MAP[sort.order] || 'descend'}` : '';
+    const sortPath = sort ? `&sort=${sort.field || sort.columnKey || 'id'},${SORTER_MAP[sort.order] || 'desc'}` : '';
     const data = await axios
       .post(
         `/devops/v1/projects/${projectId}/pipeline/list_by_options?page=${page}&size=${size}${sortPath}`,

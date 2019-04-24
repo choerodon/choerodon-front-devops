@@ -190,9 +190,11 @@ export default class PipelineEdit extends Component {
       getDetailLoading,
     } = PipelineCreateStore;
 
+    const showUserSelector = triggerType
+      ? (triggerType === STAGE_FLOW_MANUAL)
+      : (getPipeline.triggerType === STAGE_FLOW_MANUAL);
     const user = _.map(getUser, ({ id, realName }) => (
       <Option key={id} value={String(id)}>{realName}</Option>));
-
     const initUser = _.map(getPipeline.pipelineUserRelDTOS, item => String(item));
 
     return (<Page
@@ -255,7 +257,7 @@ export default class PipelineEdit extends Component {
                 </RadioGroup>,
               )}
             </FormItem>
-            {triggerType || (getPipeline.triggerType === STAGE_FLOW_MANUAL) && <FormItem
+            {showUserSelector && <FormItem
               className="c7n-select_512"
               {...formItemLayout}
             >

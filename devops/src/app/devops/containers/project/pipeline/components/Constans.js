@@ -1,3 +1,6 @@
+const TRIGGER_TYPE_AUTO = 'auto';
+const TRIGGER_TYPE_MANUAL = 'manual';
+
 const STAGE_FLOW_AUTO = 'auto';
 const STAGE_FLOW_MANUAL = 'manual';
 
@@ -27,4 +30,6 @@ export {
   AUDIT_MODE_SING,
   TASK_PARALLEL,
   TASK_SERIAL,
+  TRIGGER_TYPE_AUTO,
+  TRIGGER_TYPE_MANUAL,
 };
