@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Prompt } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Icon, Form, Input, Select, Radio } from 'choerodon-ui';
 import { Content, Header, Page } from 'choerodon-front-boot';
@@ -39,6 +39,7 @@ export default class PipelineEdit extends Component {
     showCreate: false,
     prevId: null,
     submitLoading: false,
+    promptDisplay: true,
   };
 
   componentDidMount() {
@@ -70,6 +71,7 @@ export default class PipelineEdit extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
+    this.setState({ promptDisplay: false });
 
     const {
       PipelineCreateStore,
@@ -181,7 +183,7 @@ export default class PipelineEdit extends Component {
       form: { getFieldDecorator },
       PipelineCreateStore,
     } = this.props;
-    const { triggerType, showCreate, prevId, submitLoading } = this.state;
+    const { triggerType, showCreate, prevId, submitLoading, promptDisplay } = this.state;
     const {
       getLoading,
       getUser,
@@ -211,6 +213,7 @@ export default class PipelineEdit extends Component {
       ]}
     >
       {_.isNull(getPipeline) ? <EmptyPage /> : <Fragment>
+        <Prompt when={promptDisplay} message="再玩会呀，走了就没了啊！" />
         <Header
           title={<FormattedMessage id="pipeline.header.edit" />}
           backPath={`${pathname.replace(/\/edit\/\d*/, '')}${search}`}

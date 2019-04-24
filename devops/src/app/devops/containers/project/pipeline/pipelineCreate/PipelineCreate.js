@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Prompt } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Icon, Form, Input, Select, Radio } from 'choerodon-ui';
 import { Content, Header, Page } from 'choerodon-front-boot';
@@ -38,6 +38,7 @@ export default class PipelineCreate extends Component {
     showCreate: false,
     prevId: null,
     submitLoading: false,
+    promptDisplay: true,
   };
 
   checkName = _.debounce((rule, value, callback) => {
@@ -96,6 +97,7 @@ export default class PipelineCreate extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
+    this.setState({ promptDisplay: false });
 
     const {
       PipelineCreateStore,
@@ -196,7 +198,13 @@ export default class PipelineCreate extends Component {
       form: { getFieldDecorator },
       PipelineCreateStore,
     } = this.props;
-    const { triggerType, showCreate, prevId, submitLoading } = this.state;
+    const {
+      triggerType,
+      showCreate,
+      prevId,
+      submitLoading,
+      promptDisplay,
+    } = this.state;
     const { getLoading, getUser, getIsDisabled } = PipelineCreateStore;
 
     const user = _.map(getUser, ({ id, realName }) => (
@@ -215,6 +223,7 @@ export default class PipelineCreate extends Component {
         'devops-service.pipeline-value.queryById',
       ]}
     >
+      <Prompt when={promptDisplay} message="再玩会呀，走了就没了啊！" />
       <Header
         title={<FormattedMessage id="pipeline.header.create" />}
         backPath={`${pathname.replace(/\/create/, '')}${search}`}
