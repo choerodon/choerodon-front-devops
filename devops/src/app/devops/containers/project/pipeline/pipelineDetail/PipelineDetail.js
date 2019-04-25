@@ -28,6 +28,14 @@ export default class PipelineDetail extends Component {
     this.loadingData();
   }
 
+  componentWillUnmount() {
+    const {
+      PipelineStore,
+    } = this.props;
+    PipelineStore.setDetail({});
+    PipelineStore.setRecordDate([]);
+  }
+
   handleRefresh = () => {
     this.loadingData();
   };
@@ -179,7 +187,8 @@ export default class PipelineDetail extends Component {
           </div>
         </div>
         <div className="c7ncd-pipeline-main">
-          {getDetailLoading ? <LoadingBar display /> : <div className="c7ncd-pipeline-scroll">{this.renderPipeline}</div>}
+          {getDetailLoading ? <LoadingBar display /> :
+            <div className="c7ncd-pipeline-scroll">{this.renderPipeline}</div>}
         </div>
       </Content>
     </Page>);

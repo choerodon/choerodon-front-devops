@@ -4,6 +4,8 @@ import _ from 'lodash';
 import { handleProptError } from '../../../utils';
 import {
   STAGE_FLOW_AUTO,
+  TASK_PARALLEL,
+  TASK_SERIAL,
   TASK_TYPE_MANUAL,
   TRIGGER_TYPE_AUTO,
   TRIGGER_TYPE_MANUAL,
@@ -60,10 +62,10 @@ class PipelineCreateStore {
     {
       tempId: INIT_INDEX,
       stageName: '阶段一',
-      triggerType: 'auto',
+      triggerType: TRIGGER_TYPE_AUTO,
       pipelineTaskDTOS: null,
       stageUserRelDTOS: null,
-      isParallel: 0,
+      isParallel: TASK_SERIAL,
     },
   ];
 
@@ -137,10 +139,10 @@ class PipelineCreateStore {
       {
         tempId: INIT_INDEX,
         stageName: '阶段一',
-        triggerType: 'auto',
+        triggerType: TRIGGER_TYPE_AUTO,
         pipelineTaskDTOS: null,
         stageUserRelDTOS: null,
-        isParallel: 0,
+        isParallel: TASK_SERIAL,
       },
     ];
   }

@@ -119,9 +119,8 @@ export default class TaskCreate extends Component {
 
     if (instanceId) {
       this.setState({
-        mode: MODE_TYPE_UPDATE,
         // initValue 可以接受undefined表示无初始值，但是不能为null
-        initIstId: instanceId || undefined,
+        initIstId: String(instanceId) || undefined,
       });
     }
 
@@ -164,6 +163,7 @@ export default class TaskCreate extends Component {
     setTimeout(() => {
       this.setState({
         taskType: type || TASK_TYPE_DEPLOY,
+        mode: instanceId ? MODE_TYPE_UPDATE : MODE_TYPE_NEW,
       });
     });
   }
@@ -654,7 +654,7 @@ export default class TaskCreate extends Component {
             className="c7n-pipeline-radio"
           >
             <Radio
-              disabled={instanceId}
+              disabled={!!instanceId}
               value={MODE_TYPE_NEW}
             >
               <FormattedMessage id="pipeline.task.instance.create" />
@@ -873,9 +873,9 @@ export default class TaskCreate extends Component {
                     <Tooltip
                       title={disableChooseManual
                         ? (<div className="pipeline-task-parallel-disabled">
-                            <FormattedMessage id="pipeline.task.parallel.disabled-1" />
-                            <FormattedMessage id="pipeline.task.parallel.disabled-2" />
-                          </div>)
+                          <FormattedMessage id="pipeline.task.parallel.disabled-1" />
+                          <FormattedMessage id="pipeline.task.parallel.disabled-2" />
+                        </div>)
                         : ''
                       }
                       placement="right"
