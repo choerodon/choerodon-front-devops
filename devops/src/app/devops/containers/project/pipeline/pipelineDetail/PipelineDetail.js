@@ -12,6 +12,7 @@ import DetailCard from '../components/detailCard';
 
 import '../../../main.scss';
 import './PipelineDeyail.scss';
+import { TRIGGER_TYPE_MANUAL } from '../components/Constans';
 
 const { Option } = Select;
 
@@ -85,7 +86,7 @@ export default class PipelineDetail extends Component {
          status,
          stageName,
          executionTime,
-         triggerUserName,
+         userDTOS,
          triggerType,
          isParallel,
          taskRecordDTOS,
@@ -95,7 +96,7 @@ export default class PipelineDetail extends Component {
             name={stageName}
             time={executionTime}
             type={triggerType}
-            user={triggerUserName}
+            user={userDTOS}
             status={status}
           />
           <DetailCard
@@ -118,15 +119,15 @@ export default class PipelineDetail extends Component {
       intl: { formatMessage },
       PipelineStore: {
         getDetail: {
-          triggerUserId,
-          triggerUserName,
+          userDTO,
           triggerType,
-          name,
+          pipelineName,
         },
         getDetailLoading,
         getRecordDate,
       },
     } = this.props;
+    const { loginName, realName, imageUrl } = userDTO || {};
     const { recordId } = this.state;
 
     const { isFilter, pipelineId, fromPipeline } = state || {};
@@ -160,7 +161,7 @@ export default class PipelineDetail extends Component {
           <FormattedMessage id="refresh" />
         </Button>
       </Header>
-      <Content code="pipeline.detail" values={{ name }}>
+      <Content code="pipeline.detail" values={{ name: pipelineName }}>
         <Select
           label={<FormattedMessage id="pipeline.execute.history" />}
           className="c7ncd-pipeline-detail-select"
@@ -181,10 +182,10 @@ export default class PipelineDetail extends Component {
             <span className="c7ncd-pipeline-detail-label">{formatMessage({ id: 'pipeline.trigger.type' })}</span>
             {triggerType && <FormattedMessage id={`pipeline.trigger.${triggerType}`} />}
           </div>
-          <div className="c7ncd-pipeline-detail-item">
+          {triggerType === TRIGGER_TYPE_MANUAL && <div className="c7ncd-pipeline-detail-item">
             <span className="c7ncd-pipeline-detail-label">{formatMessage({ id: 'pipeline.trigger.people' })}</span>
-            <UserInfo avatar={null} name={triggerUserName || ''} id={triggerUserId} />
-          </div>
+            <UserInfo avatar={imageUrl} name={realName || ''} id={loginName} />
+          </div>}
         </div>
         <div className="c7ncd-pipeline-main">
           {getDetailLoading ? <LoadingBar display /> :

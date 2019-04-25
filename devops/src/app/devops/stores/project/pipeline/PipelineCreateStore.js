@@ -5,6 +5,7 @@ import { handleProptError } from '../../../utils';
 import {
   STAGE_FLOW_AUTO,
   TASK_SERIAL,
+  TASK_TYPE_DEPLOY,
   TASK_TYPE_MANUAL,
   TRIGGER_TYPE_AUTO,
   TRIGGER_TYPE_MANUAL,
@@ -221,7 +222,7 @@ class PipelineCreateStore {
       task[current] = data;
     }
     if (data.isHead) {
-      this.setIsDisabled(data.type === TASK_TYPE_MANUAL);
+      this.setIsDisabled(data.type === TASK_TYPE_DEPLOY);
     }
     set(this.taskList, { [stage]: task });
   }

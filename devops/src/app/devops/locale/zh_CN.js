@@ -1697,14 +1697,15 @@ const zhCN = {
   "pipeline.config.edit.title": "修改部署配置“{name}”的配置信息",
   "pipeline.task.auditMode.tips":
     "会签模式中，需要所有审核人员都审核通过才能通过，审核人员中任一人点击终止，则流水线终止；或签模式中，仅需任一审核人员审核即可，即第一个审核的人点击通过则通过，点击终止则终止",
-  "pipeline.result.pendingcheck": "未审核",
+  "pipeline.result.pendingcheck": "审核中",
   "pipeline.result.success": "通过",
   "pipeline.result.failed": "未知",
   "pipeline.result.stop": "终止",
   "pipeline.result.unexecuted": "未审核",
   "pipeline.task.empty": "无执行任务",
   "pipeline.detail.mode": "审核模式：",
-  "pipeline.detail.users": "审核人员：",
+  "pipeline.detail.users.all": "指定审核人员：",
+  "pipeline.detail.users.audit": "已审核人员：",
   "pipeline.detail.result": "审核结果：",
   "pipeline.detail.instance": "生成实例：",
   // __@.@__ 作为分隔符，前面内容是title，后面内容是content

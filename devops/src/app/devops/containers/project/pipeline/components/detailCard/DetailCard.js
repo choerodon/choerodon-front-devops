@@ -9,6 +9,7 @@ import { statusIcon } from '../statusMap';
 import './DetailCard.scss';
 
 const { Panel } = Collapse;
+const INSTANCE_DELETE_STATUS = 'delete';
 
 @injectIntl
 @withRouter
@@ -34,13 +35,14 @@ export default class DetailCard extends PureComponent {
          status,
          taskType,
          isCountersigned,
-         auditUsers,
+         instanceStatus,
+         userDTOList,
          appName,
          envName,
          version,
          instanceName,
        }) => {
-
+        instanceStatus = INSTANCE_DELETE_STATUS;
         const panelHead = (<div className="c7ncd-pipeline-panel-title">
           <Tooltip
             title={name}
@@ -54,6 +56,16 @@ export default class DetailCard extends PureComponent {
           <Icon type={statusIcon[status]} className={`task-status_${status}`} />
         </div>);
 
+        const auditUsers = [];
+        const allAuditUsers = [];
+
+        _.forEach(userDTOList, ({ audit, realName }) => {
+          if (audit) {
+            auditUsers.push(realName);
+          }
+          allAuditUsers.push(realName);
+        });
+
         const expandRow = {
           manual: () => (<Fragment>
             <div className="c7ncd-pipeline-task">
@@ -61,8 +73,12 @@ export default class DetailCard extends PureComponent {
               {formatMessage({ id: `pipeline.audit.${mode[isCountersigned]}` })}
             </div>
             <div className="c7ncd-pipeline-task">
-              <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.users' })}</span>
-              {auditUsers || formatMessage({ id: 'null' })}
+              <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.users.all' })}</span>
+              {allAuditUsers.length ? allAuditUsers.join('，') : formatMessage({ id: 'null' })}
+            </div>
+            <div className="c7ncd-pipeline-task">
+              <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.users.audit' })}</span>
+              {auditUsers.length ? auditUsers.join('，') : formatMessage({ id: 'null' })}
             </div>
             <div className="c7ncd-pipeline-task">
               <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.result' })}</span>
@@ -84,11 +100,18 @@ export default class DetailCard extends PureComponent {
             </div>
             <div className="c7ncd-pipeline-task">
               <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.instance' })}</span>
+              <span
+                className="c7ncd-pipeline-tag_delete"
+              >
+                {instanceStatus && instanceStatus === INSTANCE_DELETE_STATUS
+                  ? formatMessage({ id: 'deleted' })
+                  : null}
+              </span>
               {instanceName || formatMessage({ id: 'null' })}
             </div>
           </Fragment>),
         };
-        return <Panel className="c7ncd-pipeline-panel" header={panelHead}>
+        return <Panel key={id} className="c7ncd-pipeline-panel" header={panelHead}>
           {expandRow[taskType] ? expandRow[taskType]() : null}
         </Panel>;
       });

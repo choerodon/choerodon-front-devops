@@ -332,14 +332,14 @@ class PipelineRecord extends Component {
     const { fromPipeline } = state || {};
 
     // 流水线进行过筛选
-    const { PipelineId } = this.state;
+    const { pipelineId } = this.state;
 
     history.push({
       pathname: `/devops/pipeline/detail/${pId}/${recordId}`,
       search,
       state: {
         pipelineId: pId,
-        isFilter: !!PipelineId,
+        isFilter: !!pipelineId,
         fromPipeline,
       },
     });
