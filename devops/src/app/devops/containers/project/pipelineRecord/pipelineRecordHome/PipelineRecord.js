@@ -403,10 +403,17 @@ class PipelineRecord extends Component {
           if (data.failed) {
             Choerodon.prompt(data.message);
           } else if (data.length){
-            //会签，非最后一人审核，返回数据：["已审核人员"，"未审核人员"]
+            //会签，非最后一人审核，返回数据：[{ audit: true 已审核 | false 未审核, loginName: "工号", realName: "姓名"}]
+            const users = {
+              check: [],
+              unCheck: [],
+            };
+            _.forEach(data, ({ audit, loginName, realName }) => {
+              users[audit ? "check" : "unCheck"].push(`${loginName} ${realName}`);
+            });
             this.setState({
               canCheck: false,
-              checkTips: formatMessage({ id: "pipeline.check.tips.text"}, {checkUsers: data[0], unCheckUsers: data[1]}),
+              checkTips: formatMessage({ id: "pipeline.check.tips.text"}, {checkUsers: users["check"].join("，"), unCheckUsers: users["unCheck"].join("，")}),
             })
           } else {
             // 或签、会签最后一人，返回数据[]
