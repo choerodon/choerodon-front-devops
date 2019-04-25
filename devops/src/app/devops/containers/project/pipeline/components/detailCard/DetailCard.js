@@ -42,7 +42,6 @@ export default class DetailCard extends PureComponent {
          version,
          instanceName,
        }) => {
-        instanceStatus = INSTANCE_DELETE_STATUS;
         const panelHead = (<div className="c7ncd-pipeline-panel-title">
           <Tooltip
             title={name}
