@@ -429,7 +429,7 @@ const pageDetail = {
   "pipeline.create.title": '在项目"{name}"中创建流水线',
   "pipeline.create.description": "您可以在此填写流水线名称、选择触发方式、创建阶段以及添加任务以此来创建流水线。",
   "pipeline.create.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
-  "pipeline.edit.title": '修改项目"{name}"的流水线',
+  "pipeline.edit.title": '对流水线"{name}"进行修改',
   "pipeline.edit.description": "流水线是一种实现任务流程自动化、可视化的方式，您可在此预设流水线中的各个阶段与任务，使整个流程更加高效。",
   "pipeline.edit.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
   "pipeline.detail.title": '流水线"{name}"的详情',
@@ -1638,7 +1638,9 @@ const zhCN = {
   "pipeline.task.type": "任务类型",
   "pipeline.task.type.change": "若想切换为任务并行，请清除阶段中的人工卡点任务",
   "pipeline.task.parallel": "任务并行",
-  "pipeline.task.parallel.disabled": "流水线触发方式为自动触发时的第一个阶段的第一个任务或阶段中任务为并行时，不可以选择人工卡点任务",
+  "pipeline.task.parallel.disabled-1":
+    "1. 自动触发流水线里，阶段一中的任务一不可以选择人工卡点任务",
+  "pipeline.task.parallel.disabled-2": "2. 任务设置为并行时，此阶段中不能添加人工卡点任务",
   "pipeline.task.serial": "任务串行",
   "pipeline.task.serial.tip":
     "选择任务串行后，阶段中任务会从上至下按序执行；而任务并行指的是，阶段中所有任务会同时执行，但并行任务的阶段中不能添加人工卡点的任务",
@@ -1692,7 +1694,7 @@ const zhCN = {
   "pipeline.trigger.people": "触发人 - ",
   "pipeline.config.value.tips": "修改配置信息后，所选的部署配置中的配置信息也将随之改动。",
   "pipeline.config.value.edit": "修改配置信息",
-  "pipeline.config.edit.title": "修改“{name}”配置信息",
+  "pipeline.config.edit.title": "修改部署配置“{name}”的配置信息",
   "pipeline.task.auditMode.tips":
     "会签模式中，需要所有审核人员都审核通过才能通过，审核人员中任一人点击终止，则流水线终止；或签模式中，仅需任一审核人员审核即可，即第一个审核的人点击通过则通过，点击终止则终止",
   "pipeline.result.pendingcheck": "未审核",

@@ -218,7 +218,7 @@ export default class PipelineEdit extends Component {
           title={<FormattedMessage id="pipeline.header.edit" />}
           backPath={`${pathname.replace(/\/edit\/\d*/, '')}${search}`}
         />
-        <Content code="pipeline.edit" values={{ name }}>
+        <Content code="pipeline.edit" values={{ name: getPipeline.name }}>
           <Form
             layout="vertical"
             onSubmit={this.onSubmit}

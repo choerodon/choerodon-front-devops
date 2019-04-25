@@ -207,8 +207,8 @@ class PipelineRecord extends Component {
       },
       {
         title: formatMessage({ id: 'pipelineRecord.pipeline.name' }),
-        key: 'name',
-        dataIndex: 'name',
+        key: 'pipelineName',
+        dataIndex: 'pipelineName',
       },
       {
         title: formatMessage({ id: 'pipelineRecord.process' }),
@@ -226,7 +226,7 @@ class PipelineRecord extends Component {
         key: 'action',
         align: 'right',
         render: (text, record) => {
-          const { status, type: checkType, id, name, stageName, stageRecordId, taskRecordId, pipelineId, index } = record;
+          const { status, type: checkType, id, pipelineName, stageName, stageRecordId, taskRecordId, pipelineId, index } = record;
           return (<div>
               {index && status === 'failed' && (
                 <Permission
@@ -243,7 +243,7 @@ class PipelineRecord extends Component {
                       icon="replay"
                       shape="circle"
                       size="small"
-                      onClick={this.openRetry.bind(this, id, name)}
+                      onClick={this.openRetry.bind(this, id, pipelineName)}
                     />
                   </Tooltip>
                 </Permission>
@@ -263,7 +263,7 @@ class PipelineRecord extends Component {
                       icon="authorize"
                       shape="circle"
                       size="small"
-                      onClick={this.showSidebar.bind(this, id, checkType, name, stageName, stageRecordId, taskRecordId)}
+                      onClick={this.showSidebar.bind(this, id, checkType, pipelineName, stageName, stageRecordId, taskRecordId)}
                     />
                   </Tooltip>
                 </Permission>
