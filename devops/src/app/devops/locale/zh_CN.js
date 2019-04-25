@@ -1705,6 +1705,8 @@ const zhCN = {
   "pipeline.detail.users": "审核人员：",
   "pipeline.detail.result": "审核结果：",
   "pipeline.detail.instance": "生成实例：",
+  // __@.@__ 作为分隔符，前面内容是title，后面内容是content
+  "pipeline.before.leave": "离开当前页面？__@.@__离开后，系统将不会保存您所做的修改。",
 
   ...pageDetail,
 };

@@ -213,7 +213,7 @@ export default class PipelineEdit extends Component {
       ]}
     >
       {_.isNull(getPipeline) ? <EmptyPage /> : <Fragment>
-        <Prompt when={promptDisplay} message="再玩会呀，走了就没了啊！" />
+        <Prompt when={promptDisplay} message={formatMessage({ id: 'pipeline.before.leave' })} />
         <Header
           title={<FormattedMessage id="pipeline.header.edit" />}
           backPath={`${pathname.replace(/\/edit\/\d*/, '')}${search}`}

@@ -9,7 +9,7 @@ import StageCard from '../components/stageCard';
 import StageCreateModal from '../components/stageCreateModal';
 import { STAGE_FLOW_AUTO, STAGE_FLOW_MANUAL } from '../components/Constans';
 import InterceptMask from '../../../../components/interceptMask';
-import Tips from "../../../../components/Tips/Tips";
+import Tips from '../../../../components/Tips/Tips';
 
 import './PipelineCreate.scss';
 import '../../../main.scss';
@@ -224,7 +224,7 @@ export default class PipelineCreate extends Component {
         'devops-service.pipeline-value.queryById',
       ]}
     >
-      <Prompt when={promptDisplay} message="再玩会呀，走了就没了啊！" />
+      <Prompt when={promptDisplay} message={formatMessage({ id: 'pipeline.before.leave' })} />
       <Header
         title={<FormattedMessage id="pipeline.header.create" />}
         backPath={`${pathname.replace(/\/create/, '')}${search}`}

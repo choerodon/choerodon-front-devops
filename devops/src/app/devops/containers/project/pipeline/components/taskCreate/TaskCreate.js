@@ -763,7 +763,9 @@ export default class TaskCreate extends Component {
           )}
         </FormItem>
       </Fragment>
-      : <Fragment>
+      : null;
+    const manualFields = taskType === TASK_TYPE_MANUAL
+      ? <Fragment>
         <FormItem
           className="c7n-select_512"
           {...formItemLayout}
@@ -815,7 +817,8 @@ export default class TaskCreate extends Component {
             <Tips type="form" data="pipeline.task.auditMode.tips" />
           </div>)
         }
-      </Fragment>;
+      </Fragment>
+      : null;
 
     return (<Fragment>
       <Sidebar
@@ -899,6 +902,7 @@ export default class TaskCreate extends Component {
               )}
             </FormItem>
             {deployFields}
+            {manualFields}
           </Form>
           {taskType === TASK_TYPE_DEPLOY && getLoading.value ? <Spin /> : this.renderYamlEditor()}
         </Content>
