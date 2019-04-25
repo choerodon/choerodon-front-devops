@@ -1609,7 +1609,7 @@ const zhCN = {
   "pipelineRecord.retry.des": "确定要重新执行该流水线吗？",
   "pipelineRecord.check.tips.button": "我知道了",
   "pipeline.check.tips.text":
-    "此任务为会签审核任务，目前{checkUsers}已审核通过，还需{unCheckUsers}审核通过后，才能执行之后的步骤。",
+    "此任务为会签审核任务，目前【{checkUsers}】已审核通过，还需【{unCheckUsers}】审核通过后，才能执行之后的步骤。",
   "pipeline.canCheck.tips.0": "此任务已被{userName}审核",
   "pipeline.canCheck.tips.1": "此任务已被{userName}终止",
 
@@ -1678,7 +1678,7 @@ const zhCN = {
   "pipeline.stage.create": "创建新阶段",
   "pipeline.stage.edit": "修改阶段信息",
   "pipeline.stage.add": "添加阶段",
-  "pipeline.flow": "流转方式",
+  "pipeline.flow": "流转至下一阶段",
   "pipeline.flow.member": "审核人员",
   "pipeline.link.toConfig": "创建部署配置",
   "pipeline.task.type.error": "任务类型错误",
