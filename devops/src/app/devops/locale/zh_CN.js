@@ -1709,6 +1709,8 @@ const zhCN = {
   "pipeline.detail.instance": "生成实例：",
   // __@.@__ 作为分隔符，前面内容是title，后面内容是content
   "pipeline.before.leave": "离开当前页面？__@.@__离开后，系统将不会保存您所做的修改。",
+  "pipeline.create.error-1": "请检查任务类型是否正确！",
+  "pipeline.create.error-2": "自动触发类型的流水线需要以部署任务作为触发器！",
 
   ...pageDetail,
 };

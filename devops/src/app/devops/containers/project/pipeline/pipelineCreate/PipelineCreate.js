@@ -7,7 +7,7 @@ import { Content, Header, Page } from 'choerodon-front-boot';
 import _ from 'lodash';
 import StageCard from '../components/stageCard';
 import StageCreateModal from '../components/stageCreateModal';
-import { STAGE_FLOW_AUTO, STAGE_FLOW_MANUAL } from '../components/Constans';
+import { STAGE_FLOW_AUTO, STAGE_FLOW_MANUAL, TRIGGER_TYPE_AUTO, TRIGGER_TYPE_MANUAL } from '../components/Constans';
 import InterceptMask from '../../../../components/interceptMask';
 import Tips from '../../../../components/Tips/Tips';
 
@@ -83,6 +83,7 @@ export default class PipelineCreate extends Component {
     } = this.props;
 
     PipelineCreateStore.loadUser(id);
+    PipelineCreateStore.checkCanSubmit();
   }
 
   componentWillUnmount() {
@@ -144,6 +145,12 @@ export default class PipelineCreate extends Component {
     const triggerType = e.target.value;
     this.setState({ triggerType });
     PipelineCreateStore.setTrigger(triggerType);
+
+    if (triggerType === TRIGGER_TYPE_AUTO) {
+      PipelineCreateStore.checkCanSubmit();
+    } else {
+      PipelineCreateStore.setCanSubmit(triggerType === TRIGGER_TYPE_MANUAL);
+    }
   };
 
   /**
@@ -206,7 +213,12 @@ export default class PipelineCreate extends Component {
       submitLoading,
       promptDisplay,
     } = this.state;
-    const { getLoading, getUser, getIsDisabled } = PipelineCreateStore;
+    const {
+      getLoading,
+      getUser,
+      getIsDisabled,
+      getCanSubmit,
+    } = PipelineCreateStore;
 
     const user = _.map(getUser, ({ id, realName }) => (
       <Option key={id} value={String(id)}>{realName}</Option>));
@@ -309,13 +321,17 @@ export default class PipelineCreate extends Component {
           </div>
           {getIsDisabled && <div className="c7ncd-pipeline-error">
             <Icon type="error" className="c7ncd-pipeline-error-icon" />
-            <span className="c7ncd-pipeline-error-msg">请检查任务类型是否正确！</span>
+            <span className="c7ncd-pipeline-error-msg">{formatMessage({ id: 'pipeline.create.error-1' })}</span>
+          </div>}
+          {!getCanSubmit && <div className="c7ncd-pipeline-error">
+            <Icon type="error" className="c7ncd-pipeline-error-icon" />
+            <span className="c7ncd-pipeline-error-msg">{formatMessage({ id: 'pipeline.create.error-2' })}</span>
           </div>}
           <FormItem
             {...formItemLayout}
           >
             <Button
-              disabled={getIsDisabled}
+              disabled={getIsDisabled || !getCanSubmit}
               type="primary"
               funcType="raised"
               htmlType="submit"

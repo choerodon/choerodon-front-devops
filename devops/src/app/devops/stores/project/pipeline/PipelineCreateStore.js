@@ -4,7 +4,6 @@ import _ from 'lodash';
 import { handleProptError } from '../../../utils';
 import {
   STAGE_FLOW_AUTO,
-  TASK_PARALLEL,
   TASK_SERIAL,
   TASK_TYPE_MANUAL,
   TRIGGER_TYPE_AUTO,
@@ -15,6 +14,7 @@ const INIT_INDEX = 0;
 
 @store('PipelineCreateStore')
 class PipelineCreateStore {
+  // 第一个任务的任务类型错误禁止提交表单
   @observable isDisabled = false;
 
   @action setIsDisabled(data) {
@@ -23,6 +23,28 @@ class PipelineCreateStore {
 
   @computed get getIsDisabled() {
     return this.isDisabled;
+  }
+
+  // 自动触发时，第一个阶段为空，禁止提交表单
+  @observable canSubmit = true;
+
+  @action setCanSubmit(flag) {
+    this.canSubmit = flag;
+  }
+
+  @action checkCanSubmit = () => {
+    /**
+     * 校验时机：
+     * 删除任务|添加任务|删除阶段|修改触发方式|修改流水线数据加载完成后
+     */
+    const { tempId } = this.stageList[0];
+    const tasks = (tempId || tempId === 0) ? this.getTaskList[tempId] : [];
+
+    this.canSubmit = this.getTrigger !== TRIGGER_TYPE_AUTO || tasks && tasks.length;
+  };
+
+  @computed get getCanSubmit() {
+    return this.canSubmit;
   }
 
   /**
@@ -557,6 +579,7 @@ class PipelineCreateStore {
       this.setPipeline(res);
       this.initPipeline(res);
       this.setTrigger(res.triggerType);
+      this.checkCanSubmit();
     }
   }
 

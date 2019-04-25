@@ -215,6 +215,7 @@ export default class TaskCreate extends Component {
           isCountersigned: auditMode[isCountersigned || 'orSign'],
           isHead,
         };
+
         if (!taskId) {
           const index = (PipelineCreateStore.getTaskIndex[stageId] || 0) + 1;
           PipelineCreateStore.setTaskIndex(stageId, index);
@@ -222,6 +223,11 @@ export default class TaskCreate extends Component {
         } else {
           PipelineCreateStore.updateTaskList(stageId, taskId, { ...data, index: taskId });
         }
+
+        if (!PipelineCreateStore.getCanSubmit) {
+          PipelineCreateStore.checkCanSubmit();
+        }
+
         onClose();
       }
     });

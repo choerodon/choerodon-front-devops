@@ -65,6 +65,7 @@ export default class StageCard extends Component {
     const { stageId } = this.props;
     const { taskId, isRemoveHead } = this.state;
     PipelineCreateStore.removeTask(stageId, taskId, isRemoveHead);
+    PipelineCreateStore.checkCanSubmit();
     this.closeTaskRemove();
   };
 
@@ -86,6 +87,7 @@ export default class StageCard extends Component {
   handleStageRemove = () => {
     const { stageId } = this.props;
     PipelineCreateStore.removeStage(stageId);
+    PipelineCreateStore.checkCanSubmit();
     this.closeStageRemove();
   };
 
