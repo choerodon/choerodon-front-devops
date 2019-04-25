@@ -167,10 +167,7 @@ class EnvOverviewStore {
       .then(data => {
         const res = handleProptError(data);
         if (res) {
-          const envSort = _.concat(
-            _.filter(data, ["connect", true]),
-            _.filter(data, ["connect", false])
-          );
+          const envSort = _.sortBy(data, ({ connect, permission}) => [-permission, -connect]);
           const flag = _.filter(envSort, ["permission", true]);
           const flagConnect = _.filter(flag, ["connect", true]);
           this.setEnvcard(envSort);
