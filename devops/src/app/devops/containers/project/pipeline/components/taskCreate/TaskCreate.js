@@ -871,7 +871,13 @@ export default class TaskCreate extends Component {
                     value={TASK_TYPE_MANUAL}
                   >
                     <Tooltip
-                      title={disableChooseManual ? formatMessage({ id: 'pipeline.task.parallel.disabled' }) : ''}
+                      title={disableChooseManual
+                        ? (<div className="pipeline-task-parallel-disabled">
+                            <FormattedMessage id="pipeline.task.parallel.disabled-1" />
+                            <FormattedMessage id="pipeline.task.parallel.disabled-2" />
+                          </div>)
+                        : ''
+                      }
                       placement="right"
                     >
                       <span><FormattedMessage id="pipeline.mode.manual" /></span>
