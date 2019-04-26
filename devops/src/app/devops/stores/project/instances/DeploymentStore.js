@@ -66,7 +66,8 @@ class DeploymentStore {
     }
     const istLoader = {
       instance() {
-        InstancesStore.loadInstanceAll(false, projectId, { envId });
+        const time = Date.now();
+        InstancesStore.loadInstanceAll(false, projectId, { envId }, time);
       },
       overview() {
         EnvOverviewStore.loadIstOverview(false, projectId, envId);

@@ -217,12 +217,14 @@ class EnvOverviewStore {
                 } = InstancesStore;
                 const appPageSize =
                   Math.floor((window.innerWidth - 350) / 200) * 3;
+                const time = Date.now();
+
                 InstancesStore.setAppPageSize(appPageSize);
                 loadAppNameByEnv(projectId, this.tpEnvId, 0, appPageSize);
                 loadInstanceAll(true, projectId, {
                   envId: this.tpEnvId,
                   appId: getAppId,
-                }).catch(err => {
+                }, time).catch(err => {
                   InstancesStore.changeLoading(false);
                 });
                 break;

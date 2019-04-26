@@ -160,6 +160,8 @@ export default class TaskCreate extends Component {
         },
       });
     }
+
+    // 使用这个trick，是因为当模态框还没有渲染出来，表单项就已经注册，之后就无法删除
     setTimeout(() => {
       this.setState({
         taskType: type || TASK_TYPE_DEPLOY,

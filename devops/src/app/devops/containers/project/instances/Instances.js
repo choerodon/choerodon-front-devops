@@ -44,7 +44,7 @@ class Instances extends Component {
     const { InstancesStore } = this.props;
     if (!InstancesStore.getIsCache) {
       const { id: projectId } = AppState.currentMenuType;
-      EnvOverviewStore.loadActiveEnv(projectId, "instance");
+      EnvOverviewStore.loadActiveEnv(projectId, 'instance');
     } else {
       InstancesStore.setIsCache(false);
     }
@@ -55,7 +55,7 @@ class Instances extends Component {
     if (!InstancesStore.getIsCache) {
       InstancesStore.setAppId(null);
       InstancesStore.setAppNameByEnv([]);
-      InstancesStore.setIstAll([]);
+      InstancesStore.clearIst();
       InstancesStore.setIstTableFilter(null);
       InstancesStore.setIstPage(null);
     }
@@ -141,16 +141,14 @@ class Instances extends Component {
     const { current, pageSize } = pagination;
     const appId = InstancesStore.getAppId;
     const envId = EnvOverviewStore.getTpEnvId;
-    let searchParam = {};
-    if (Object.keys(filters).length) {
-      searchParam = filters;
-    }
+    const time = Date.now();
+
     InstancesStore.setIstTableFilter({ filters, param });
     InstancesStore.setIstPage({ page: current - 1, pageSize });
     InstancesStore.loadInstanceAll(true, projectId, {
       envId,
       appId,
-    }).catch(err => {
+    }, time).catch(err => {
       InstancesStore.changeLoading(false);
       Choerodon.handleResponseError(err);
     });
@@ -196,7 +194,8 @@ class Instances extends Component {
       .then(data => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(true, projectId, { envId }).catch(err => {
+          const time = Date.now();
+          loadInstanceAll(true, projectId, { envId }, time).catch(err => {
             InstancesStore.changeLoading(false);
             Choerodon.handleResponseError(err);
           });
@@ -283,7 +282,8 @@ class Instances extends Component {
     const envId = EnvOverviewStore.getTpEnvId;
     clear && InstancesStore.setIstTableFilter(null);
 
-    InstancesStore.loadInstanceAll(spin, projectId, { envId, appId }).catch(
+    const time = Date.now();
+    InstancesStore.loadInstanceAll(spin, projectId, { envId, appId }, time).catch(
       err => {
         InstancesStore.changeLoading(false);
         Choerodon.handleResponseError(err);
@@ -333,7 +333,8 @@ class Instances extends Component {
         if (res) {
           InstancesStore.setIstTableFilter(null);
           InstancesStore.setIstPage(null);
-          loadInstanceAll(true, projectId, { envId, getAppId }).catch(err => {
+          const time = Date.now();
+          loadInstanceAll(true, projectId, { envId, getAppId }, time).catch(err => {
             InstancesStore.changeLoading(false);
             Choerodon.handleResponseError(err);
           });
@@ -371,7 +372,7 @@ class Instances extends Component {
   activeIst = (id, status) => {
     const { id: projectId } = AppState.currentMenuType;
     const {
-      InstancesStore: { changeIstActive, loadInstanceAll, getAppId },
+      InstancesStore: { changeIstActive, loadInstanceAll },
     } = this.props;
     const envId = EnvOverviewStore.getTpEnvId;
     this.setState({
@@ -387,7 +388,8 @@ class Instances extends Component {
       if (res) {
         InstancesStore.setAppId(null);
         InstancesStore.setIstTableFilter(null);
-        loadInstanceAll(true, projectId, { envId }).catch(err => {
+        const time = Date.now();
+        loadInstanceAll(true, projectId, { envId }, time).catch(err => {
           InstancesStore.changeLoading(false);
           Choerodon.handleResponseError(err);
         });

@@ -63,7 +63,7 @@ class DEVOPSIndex extends React.Component {
       InstancesStore.setIsCache(false);
       InstancesStore.setAppId(null);
       InstancesStore.setAppNameByEnv([]);
-      InstancesStore.setIstAll([]);
+      InstancesStore.clearIst();
       InstancesStore.setIstTableFilter(null);
       InstancesStore.setIstPage(null);
     }

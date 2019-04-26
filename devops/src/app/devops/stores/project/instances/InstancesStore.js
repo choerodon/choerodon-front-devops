@@ -102,11 +102,13 @@ class InstancesStore {
   }
 
   @action setPageInfo(page) {
-    this.pageInfo = {
-      current: page.number + 1,
-      total: page.totalElements,
-      pageSize: page.size,
-    };
+    if (this.requireTime <= page.requireTime) {
+      this.pageInfo = {
+        current: page.number + 1,
+        total: page.totalElements,
+        pageSize: page.size,
+      };
+    }
   }
 
   @computed get getPageInfo() {
@@ -152,8 +154,26 @@ class InstancesStore {
     return this.isLoading;
   }
 
-  @action setIstAll(istAll) {
-    this.istAll = istAll;
+  /**
+   * 最新一次请求实例的时间
+   * 加这个是因为，实例数据多的时候，等所有数据加载完后，会覆盖数据
+   * 比如，进入实例页面就点击一个应用后，会先显示这个应用下的实例，之后被全部实例数据覆盖
+   */
+  @observable requireTime = null;
+
+  @action setRequireTime(time) {
+    this.requireTime = time;
+  }
+
+  @action clearIst() {
+    this.istAll = [];
+  }
+
+  @action setIstAll(data) {
+    if (this.requireTime <= data.requireTime) {
+      this.istAll = data.content;
+      this.requireTime = data.requireTime;
+    }
   }
 
   @computed get getIstAll() {
@@ -207,18 +227,24 @@ class InstancesStore {
    * @param fresh 刷新图案显示
    * @param projectId
    * @param info { 环境id， 应用id }
+   * @param requireTime 发起请求的时间
    */
-  loadInstanceAll = (fresh = true, projectId, info = {}) => {
+  loadInstanceAll = (fresh = true, projectId, info = {}, requireTime) => {
     this.changeLoading(fresh);
+
     // 拼接url
     let search = '';
-    _.forEach(info, (value, key) => {
-      if (value) {
-        search = search.concat(`&${key}=${value}`);
+    for (const key in info) {
+      if (info.hasOwnProperty(key) && info[key]) {
+        search = `${search}&${key}=${info[key]}`;
       }
-    });
+    }
+
     const { param, filters } = this.istParams;
     const { pageSize, page } = this.istPage;
+
+    this.setRequireTime(requireTime);
+
     return axios
       .post(
         `devops/v1/projects/${projectId}/app_instances/list_by_options?page=${page}&size=${pageSize}${search}`,
@@ -227,21 +253,12 @@ class InstancesStore {
       .then(data => {
         const res = handleProptError(data);
         if (res) {
-          this.handleData(data);
-        } else {
-          this.changeLoading(false);
+          const { number, size, totalElements, content } = data;
+          this.setIstAll({ content, requireTime });
+          this.setPageInfo({ number, size, totalElements, requireTime });
         }
+        this.changeLoading(false);
       });
-  };
-
-  handleData = data => {
-    const { number, size, totalElements, content } = data;
-    if (!_.isEqual(content, this.istAll)) {
-      this.setIstAll(content);
-    }
-    const page = { number, size, totalElements };
-    this.setPageInfo(page);
-    this.changeLoading(false);
   };
 
   loadAppNameByEnv = (projectId, envId, page, appPageSize) =>
