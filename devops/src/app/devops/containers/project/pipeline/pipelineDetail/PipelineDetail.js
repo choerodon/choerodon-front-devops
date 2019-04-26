@@ -76,13 +76,17 @@ export default class PipelineDetail extends Component {
       PipelineStore: {
         getDetail: {
           stageRecordDTOS,
+          status: pipelineStatus,
         },
       },
     } = this.props;
 
+    const isPipelineCadence = pipelineStatus === 'stop';
+
     return _.map(stageRecordDTOS,
       ({
          id,
+         index,
          status,
          stageName,
          executionTime,
@@ -93,6 +97,8 @@ export default class PipelineDetail extends Component {
        }) => (
         <div className="c7ncd-pipeline-detail-stage" key={id}>
           <DetailTitle
+            isCadence={isPipelineCadence}
+            checking={index}
             name={stageName}
             time={executionTime}
             type={triggerType}

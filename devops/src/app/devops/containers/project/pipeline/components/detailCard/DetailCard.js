@@ -9,7 +9,7 @@ import { statusIcon } from '../statusMap';
 import './DetailCard.scss';
 
 const { Panel } = Collapse;
-const INSTANCE_DELETE_STATUS = 'delete';
+const INSTANCE_DELETE_STATUS = 'deleted';
 
 @injectIntl
 @withRouter

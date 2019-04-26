@@ -126,8 +126,20 @@
       background: #c5cbe8;
     }
 
-    .c7ncd-trigger-pending {
+    .c7ncd-manualflow-pass {
+      color: $success;
+    }
+
+    .c7ncd-manualflow-stop {
+      color: $stop;
+    }
+
+    .c7ncd-manualflow-pending {
       color: $pendingcheck;
+    }
+
+    .c7ncd-autoflow-pass {
+      color: $success;
     }
   }
 }
