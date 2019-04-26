@@ -88,18 +88,20 @@ export default class Pipeline extends Component {
         },
       },
     } = this.props;
+
+    const realSorter = _.isEmpty(sorter) ? null : sorter;
     this.setState({
       page: current - 1,
       pageSize,
       param,
       filters,
-      sorter,
+      sorter: realSorter,
     });
     PipelineStore.loadListData(
       projectId,
       current - 1,
       pageSize,
-      sorter,
+      realSorter,
       {
         searchParam: filters,
         param: param.toString(),

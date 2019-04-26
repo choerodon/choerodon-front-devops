@@ -5,7 +5,6 @@ import { handleProptError } from '../../../utils';
 import {
   STAGE_FLOW_AUTO,
   TASK_SERIAL,
-  TASK_TYPE_DEPLOY,
   TASK_TYPE_MANUAL,
   TRIGGER_TYPE_AUTO,
   TRIGGER_TYPE_MANUAL,
@@ -151,7 +150,7 @@ class PipelineCreateStore {
         tasks[0].isHead = true;
         this.setIsDisabled(
           tasks[0].type === TASK_TYPE_MANUAL &&
-          this.trigger === STAGE_FLOW_AUTO,
+          this.trigger === TRIGGER_TYPE_AUTO,
         );
       }
     }
@@ -221,9 +220,12 @@ class PipelineCreateStore {
     if (current || current === 0) {
       task[current] = data;
     }
-    if (data.isHead) {
-      this.setIsDisabled(data.type === TASK_TYPE_DEPLOY);
+
+    if (data.isHead && this.trigger === TRIGGER_TYPE_AUTO) {
+      // 修改节点为第一个阶段的第一个任务，触发方式为自动触发时
+      this.setIsDisabled(data.type === TASK_TYPE_MANUAL);
     }
+
     set(this.taskList, { [stage]: task });
   }
 
@@ -240,14 +242,17 @@ class PipelineCreateStore {
       this.taskList[stage],
       item => item.index !== id,
     );
+
     if (isHead && newTaskList[0]) {
       newTaskList[0].isHead = true;
+
       // 类型错误，禁止创建
       this.setIsDisabled(
         newTaskList[0].type === TASK_TYPE_MANUAL &&
-        this.trigger === STAGE_FLOW_AUTO,
+        this.trigger === TRIGGER_TYPE_AUTO,
       );
     }
+
     set(this.taskList, { [stage]: newTaskList });
   }
 
