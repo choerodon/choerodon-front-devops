@@ -81,7 +81,19 @@
   }
 }
 
-.pipeline-task-parallel-disabled {
+.c7n-pipeline-task-parallel-disabled {
   display: flex;
   flex-direction: column;
+}
+
+.c7n-pipeline-config-select {
+
+  .ant-select-dropdown-footer {
+    padding: 8px;
+  }
+
+  .ant-select-dropdown-menu-item,
+  .ant-select-dropdown-filter {
+    padding-left: 23px;
+  }
 }

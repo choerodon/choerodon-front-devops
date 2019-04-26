@@ -532,25 +532,6 @@ export default class TaskCreate extends Component {
     const configOptions = _.map(getConfigList, ({ id, name }) => (<Option key={id} value={id}>
       <span>{name}</span>
     </Option>));
-    configOptions.push(<Option
-      disabled
-      className="c7ncd-more-btn-wrap"
-      key="btn_load_more"
-    >
-      <Link
-        className="c7ncd-more-btn"
-        to={{
-          pathname: `/devops/deployment-config`,
-          search: `?type=${menuType}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`,
-          state: {
-            appId,
-            envId: selectEnvId,
-          },
-        }}
-      >
-        {formatMessage({ id: 'pipeline.link.toConfig' })}
-      </Link>
-    </Option>);
     /************ end ***************/
 
     const initUsers = _.map(taskUserRelDTOS, item => String(item));
@@ -763,6 +744,24 @@ export default class TaskCreate extends Component {
                 .toLowerCase()
                 .indexOf(input.toLowerCase()) >= 0
               }
+              dropdownClassName="c7n-pipeline-config-select"
+              footer={
+                <Button type="primary">
+                  <Link
+                    className="c7ncd-more-btn"
+                    to={{
+                      pathname: `/devops/deployment-config`,
+                      search: `?type=${menuType}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`,
+                      state: {
+                        appId,
+                        envId: selectEnvId,
+                      },
+                    }}
+                  >
+                    {formatMessage({ id: 'pipeline.link.toConfig' })}
+                  </Link>
+                </Button>
+              }
             >
               {configOptions}
             </Select>,
@@ -878,7 +877,7 @@ export default class TaskCreate extends Component {
                   >
                     <Tooltip
                       title={disableChooseManual
-                        ? (<div className="pipeline-task-parallel-disabled">
+                        ? (<div className="c7n-pipeline-task-parallel-disabled">
                           <FormattedMessage id="pipeline.task.parallel.disabled-1" />
                           <FormattedMessage id="pipeline.task.parallel.disabled-2" />
                         </div>)
