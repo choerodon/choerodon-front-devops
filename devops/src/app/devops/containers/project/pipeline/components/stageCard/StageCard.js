@@ -7,10 +7,12 @@ import PipelineCreateStore from '../../../../../stores/project/pipeline/Pipeline
 import TaskCreate from '../taskCreate';
 import StageTitle from '../stageTitle';
 import StageCreateModal from '../stageCreateModal';
+import Tips from "../../../../../components/Tips/Tips";
 import {
   TASK_SERIAL,
   TASK_PARALLEL,
-  TASK_TYPE_MANUAL, STAGE_FLOW_AUTO,
+  TASK_TYPE_MANUAL,
+  TRIGGER_TYPE_AUTO,
 } from '../Constans';
 
 import './StageCard.scss';
@@ -63,6 +65,7 @@ export default class StageCard extends Component {
     const { stageId } = this.props;
     const { taskId, isRemoveHead } = this.state;
     PipelineCreateStore.removeTask(stageId, taskId, isRemoveHead);
+    PipelineCreateStore.checkCanSubmit();
     this.closeTaskRemove();
   };
 
@@ -84,6 +87,7 @@ export default class StageCard extends Component {
   handleStageRemove = () => {
     const { stageId } = this.props;
     PipelineCreateStore.removeStage(stageId);
+    PipelineCreateStore.checkCanSubmit();
     this.closeStageRemove();
   };
 
@@ -114,13 +118,13 @@ export default class StageCard extends Component {
     } = this.props;
 
     return _.map(PipelineCreateStore.getTaskList[stageId], ({ name, type, index, isHead }) => {
-      const typeError = isHead && type === TASK_TYPE_MANUAL && PipelineCreateStore.getTrigger === STAGE_FLOW_AUTO;
+      const isTaskTypeError = isHead && type === TASK_TYPE_MANUAL && PipelineCreateStore.getTrigger === TRIGGER_TYPE_AUTO;
       return <div
         key={index}
-        className={`c7ncd-stagecard-item ${typeError ? 'c7ncd-stagecard-error' : ''}`}
+        className={`c7ncd-stagecard-item ${isTaskTypeError ? 'c7ncd-stagecard-error' : ''}`}
       >
         <Tooltip
-          title={typeError
+          title={isTaskTypeError
             ? formatMessage({ id: 'pipeline.mode.error' }, { name })
             : name}
           placement="top"
@@ -167,13 +171,18 @@ export default class StageCard extends Component {
 
     return (
       <div className="c7ncd-pipeline-stage-wrap">
-        <Button
-          className="c7ncd-pipeline-create-btn"
-          shape="circle"
-          onClick={this.openCreateForm}
+        <Tooltip
+          title={formatMessage({ id: 'pipeline.stage.add' })}
+          placement="top"
         >
-          <Icon type="add" className="c7ncd-pipeline-create-icon" />
-        </Button>
+          <Button
+            className="c7ncd-pipeline-create-btn"
+            shape="circle"
+            onClick={this.openCreateForm}
+          >
+            <Icon type="add" className="c7ncd-pipeline-create-icon" />
+          </Button>
+        </Tooltip>
 
         <StageTitle
           allowDelete={allowDelete}
@@ -182,7 +191,7 @@ export default class StageCard extends Component {
           onChange={this.handleHeadChange}
           onRemove={this.openStageRemove}
         />
-        <div className="c7ncd-stagecard-wrap">
+        <div className="c7ncd-stagecard-wrap c7ncd-sidebar-select">
           <Select
             value={_.toString(isParallel || TASK_SERIAL)}
             label={<FormattedMessage id="pipeline.task.settings" />}
@@ -203,6 +212,7 @@ export default class StageCard extends Component {
               </Tooltip>
             </Option>
           </Select>
+          <Tips type="form" data="pipeline.task.serial.tip" />
           <h3 className="c7ncd-stagecard-label">
             <FormattedMessage id="pipeline.task.list" />
           </h3>
@@ -237,7 +247,7 @@ export default class StageCard extends Component {
         </Modal>
         <Modal
           visible={showStageDelete}
-          title={`${formatMessage({ id: 'pipeline.stage.delete' })}“${name}”`}
+          title={`${formatMessage({ id: 'pipeline.stage.delete' })}“${stageName}”`}
           closable={false}
           footer={[
             <Button key="back" onClick={this.closeStageRemove}>
@@ -255,7 +265,7 @@ export default class StageCard extends Component {
         {showTask && <TaskCreate
           id={taskId}
           isHead={isEditHead}
-          stageName={name}
+          stageName={stageName}
           stageId={stageId}
           visible={showTask}
           onClose={this.onCloseSidebar}

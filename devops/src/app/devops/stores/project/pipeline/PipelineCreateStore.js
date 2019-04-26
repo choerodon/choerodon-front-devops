@@ -4,14 +4,17 @@ import _ from 'lodash';
 import { handleProptError } from '../../../utils';
 import {
   STAGE_FLOW_AUTO,
-  STAGE_FLOW_MANUAL,
+  TASK_SERIAL,
   TASK_TYPE_MANUAL,
+  TRIGGER_TYPE_AUTO,
+  TRIGGER_TYPE_MANUAL,
 } from '../../../containers/project/pipeline/components/Constans';
 
 const INIT_INDEX = 0;
 
 @store('PipelineCreateStore')
 class PipelineCreateStore {
+  // 第一个任务的任务类型错误禁止提交表单
   @observable isDisabled = false;
 
   @action setIsDisabled(data) {
@@ -22,14 +25,36 @@ class PipelineCreateStore {
     return this.isDisabled;
   }
 
+  // 自动触发时，第一个阶段为空，禁止提交表单
+  @observable canSubmit = true;
+
+  @action setCanSubmit(flag) {
+    this.canSubmit = flag;
+  }
+
+  @action checkCanSubmit = () => {
+    /**
+     * 校验时机：
+     * 删除任务|添加任务|删除阶段|修改触发方式|修改流水线数据加载完成后
+     */
+    const { tempId } = this.stageList[0];
+    const tasks = (tempId || tempId === 0) ? this.getTaskList[tempId] : [];
+
+    this.canSubmit = this.getTrigger !== TRIGGER_TYPE_AUTO || tasks && tasks.length;
+  };
+
+  @computed get getCanSubmit() {
+    return this.canSubmit;
+  }
+
   /**
    * 流水线的触发方式
    */
-  @observable trigger = 'auto';
+  @observable trigger = TRIGGER_TYPE_AUTO;
 
   @action setTrigger(type) {
     // 切换触发方式，对第一个阶段的首个任务的类型校验
-    if (type === STAGE_FLOW_MANUAL) {
+    if (type === TRIGGER_TYPE_MANUAL) {
       this.setIsDisabled(false);
     } else {
       const headStageId = (_.head(this.stageList) || {}).tempId;
@@ -59,10 +84,10 @@ class PipelineCreateStore {
     {
       tempId: INIT_INDEX,
       stageName: '阶段一',
-      triggerType: 'auto',
+      triggerType: TRIGGER_TYPE_AUTO,
       pipelineTaskDTOS: null,
       stageUserRelDTOS: null,
-      isParallel: 0,
+      isParallel: TASK_SERIAL,
     },
   ];
 
@@ -125,7 +150,7 @@ class PipelineCreateStore {
         tasks[0].isHead = true;
         this.setIsDisabled(
           tasks[0].type === TASK_TYPE_MANUAL &&
-          this.trigger === STAGE_FLOW_AUTO,
+          this.trigger === TRIGGER_TYPE_AUTO,
         );
       }
     }
@@ -136,10 +161,10 @@ class PipelineCreateStore {
       {
         tempId: INIT_INDEX,
         stageName: '阶段一',
-        triggerType: 'auto',
+        triggerType: TRIGGER_TYPE_AUTO,
         pipelineTaskDTOS: null,
         stageUserRelDTOS: null,
-        isParallel: 0,
+        isParallel: TASK_SERIAL,
       },
     ];
   }
@@ -195,9 +220,12 @@ class PipelineCreateStore {
     if (current || current === 0) {
       task[current] = data;
     }
-    if (data.isHead) {
+
+    if (data.isHead && this.trigger === TRIGGER_TYPE_AUTO) {
+      // 修改节点为第一个阶段的第一个任务，触发方式为自动触发时
       this.setIsDisabled(data.type === TASK_TYPE_MANUAL);
     }
+
     set(this.taskList, { [stage]: task });
   }
 
@@ -214,14 +242,17 @@ class PipelineCreateStore {
       this.taskList[stage],
       item => item.index !== id,
     );
+
     if (isHead && newTaskList[0]) {
       newTaskList[0].isHead = true;
+
       // 类型错误，禁止创建
       this.setIsDisabled(
         newTaskList[0].type === TASK_TYPE_MANUAL &&
-        this.trigger === STAGE_FLOW_AUTO,
+        this.trigger === TRIGGER_TYPE_AUTO,
       );
     }
+
     set(this.taskList, { [stage]: newTaskList });
   }
 
@@ -553,6 +584,8 @@ class PipelineCreateStore {
     if (res) {
       this.setPipeline(res);
       this.initPipeline(res);
+      this.setTrigger(res.triggerType);
+      this.checkCanSubmit();
     }
   }
 

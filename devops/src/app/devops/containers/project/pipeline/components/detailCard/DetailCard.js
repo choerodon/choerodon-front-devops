@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { withRouter, Link } from 'react-router-dom';
 import _ from 'lodash';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Collapse, Icon, Tooltip } from 'choerodon-ui';
@@ -8,8 +9,10 @@ import { statusIcon } from '../statusMap';
 import './DetailCard.scss';
 
 const { Panel } = Collapse;
+const INSTANCE_DELETE_STATUS = 'deleted';
 
 @injectIntl
+@withRouter
 export default class DetailCard extends PureComponent {
   static propTypes = {
     isParallel: PropTypes.number,
@@ -17,9 +20,13 @@ export default class DetailCard extends PureComponent {
   };
 
   render() {
-    const { isParallel, tasks, intl: { formatMessage } } = this.props;
+    const {
+      isParallel,
+      tasks,
+      intl: { formatMessage },
+    } = this.props;
     const executeType = ['serial', 'parallel'];
-    const mode = ['sign', 'orSign'];
+    const mode = ['orSign', 'sign'];
 
     const task = _.map(tasks,
       ({
@@ -28,14 +35,13 @@ export default class DetailCard extends PureComponent {
          status,
          taskType,
          isCountersigned,
-         auditUsers,
+         instanceStatus,
+         userDTOList,
          appName,
          envName,
          version,
          instanceName,
-         instanceId,
        }) => {
-
         const panelHead = (<div className="c7ncd-pipeline-panel-title">
           <Tooltip
             title={name}
@@ -49,15 +55,29 @@ export default class DetailCard extends PureComponent {
           <Icon type={statusIcon[status]} className={`task-status_${status}`} />
         </div>);
 
+        const auditUsers = [];
+        const allAuditUsers = [];
+
+        _.forEach(userDTOList, ({ audit, realName }) => {
+          if (audit) {
+            auditUsers.push(realName);
+          }
+          allAuditUsers.push(realName);
+        });
+
         const expandRow = {
           manual: () => (<Fragment>
             <div className="c7ncd-pipeline-task">
               <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.mode' })}</span>
-              {formatMessage({ id: `pipeline.audit.${mode[isParallel]}` })}
+              {formatMessage({ id: `pipeline.audit.${mode[isCountersigned]}` })}
             </div>
             <div className="c7ncd-pipeline-task">
-              <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.users' })}</span>
-              {auditUsers || formatMessage({ id: 'null' })}
+              <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.users.all' })}</span>
+              {allAuditUsers.length ? allAuditUsers.join('，') : formatMessage({ id: 'null' })}
+            </div>
+            <div className="c7ncd-pipeline-task">
+              <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.users.audit' })}</span>
+              {auditUsers.length ? auditUsers.join('，') : formatMessage({ id: 'null' })}
             </div>
             <div className="c7ncd-pipeline-task">
               <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.result' })}</span>
@@ -79,18 +99,26 @@ export default class DetailCard extends PureComponent {
             </div>
             <div className="c7ncd-pipeline-task">
               <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.instance' })}</span>
-              <div>{instanceName || formatMessage({ id: 'null' })}</div>
+              {instanceStatus && instanceStatus === INSTANCE_DELETE_STATUS
+                ? <span
+                  className="c7ncd-pipeline-tag_delete"
+                >
+                {formatMessage({ id: 'deleted' })}
+              </span>
+                : null}
+              {instanceName || formatMessage({ id: 'null' })}
             </div>
           </Fragment>),
         };
-        return <Panel className="c7ncd-pipeline-panel" header={panelHead}>
+        return <Panel key={id} className="c7ncd-pipeline-panel" header={panelHead}>
           {expandRow[taskType] ? expandRow[taskType]() : null}
         </Panel>;
       });
 
     return (<div className="c7ncd-pipeline-card">
-      <div className="c7ncd-task-top">{formatMessage({ id: "pipeline.task.settings"})} - <FormattedMessage id={`pipeline.task.${executeType[isParallel]}`} /></div>
-      <h4 className="c7ncd-task-header">{formatMessage({ id: "pipeline.task.list"})}</h4>
+      <div className="c7ncd-task-top">{formatMessage({ id: 'pipeline.task.settings' })} - <FormattedMessage
+        id={`pipeline.task.${executeType[isParallel]}`} /></div>
+      <h4 className="c7ncd-task-header">{formatMessage({ id: 'pipeline.task.list' })}</h4>
       {task.length
         ? <Collapse className="c7ncd-pipeline-collapse" bordered={false}>
           {task}

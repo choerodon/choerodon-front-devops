@@ -167,10 +167,7 @@ class EnvOverviewStore {
       .then(data => {
         const res = handleProptError(data);
         if (res) {
-          const envSort = _.concat(
-            _.filter(data, ["connect", true]),
-            _.filter(data, ["connect", false])
-          );
+          const envSort = _.sortBy(data, ({ connect, permission}) => [-permission, -connect]);
           const flag = _.filter(envSort, ["permission", true]);
           const flagConnect = _.filter(flag, ["connect", true]);
           this.setEnvcard(envSort);
@@ -220,12 +217,14 @@ class EnvOverviewStore {
                 } = InstancesStore;
                 const appPageSize =
                   Math.floor((window.innerWidth - 350) / 200) * 3;
+                const time = Date.now();
+
                 InstancesStore.setAppPageSize(appPageSize);
                 loadAppNameByEnv(projectId, this.tpEnvId, 0, appPageSize);
                 loadInstanceAll(true, projectId, {
                   envId: this.tpEnvId,
                   appId: getAppId,
-                }).catch(err => {
+                }, time).catch(err => {
                   InstancesStore.changeLoading(false);
                 });
                 break;

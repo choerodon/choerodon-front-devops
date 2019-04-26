@@ -392,24 +392,6 @@ const pageDetail = {
   "certificate.edit.description": "您可在此修改证书的公开范围。",
   "certificate.edit.link": `${docServer}/user-guide/certificate-management/certificate`,
 
-  // 自动部署
-  "autoDeploy.title": '项目"{name}"的自动部署任务',
-  "autoDeploy.description":
-    "自动部署是一种实现部署流程自动化的方法，您可在此创建自动部署任务，以此来简化部署操作。",
-  "autoDeploy.link": `${docServer}/user-guide/deployment-pipeline/auto-deploy/`,
-  "autoDeploy.record.title": '项目"{name}"的自动部署记录',
-  "autoDeploy.record.description":
-    "您可在此查看该项目下所有自动化部署任务的执行记录。",
-  "autoDeploy.record.link": `${docServer}/user-guide/deployment-pipeline/auto-deploy/`,
-  "autoDeploy.create.title": '在项目"{name}"中创建自动部署任务',
-  "autoDeploy.create.description":
-    "您可在此设置应用、版本类型、对应的环境以及配置信息来创建自动部署的任务。",
-  "autoDeploy.create.link": `${docServer}/user-guide/deployment-pipeline/auto-deploy/`,
-  "autoDeploy.edit.title": '对自动部署任务"{name}"进行修改',
-  "autoDeploy.edit.description":
-    "您可在此修改所设置的应用、版本类型、环境以及配置信息。只是重新选择应用或环境后，下方的配置信息将会重置。",
-  "autoDeploy.edit.link": `${docServer}/user-guide/deployment-pipeline/auto-deploy/`,
-
   // 组件设置
   "elements.title": '项目"{name}"的组件设置',
   "elements.description": "组件设置页面用于管理项目下所有的组件配置，目前包括了Helm仓库与Docker仓库。您在此创建的组件配置可用于当前项目下所有的应用。",
@@ -430,7 +412,7 @@ const pageDetail = {
   "deploymentConfig.create.description":
     "您可此选择应用与环境，编辑出对应的配置信息，以此来创建部署配置。",
   "deploymentConfig.create.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
-  "deploymentConfig.edit.title": '在项目"{name}"中修改部署配置',
+  "deploymentConfig.edit.title": '对部署配置"{name}"进行修改',
   "deploymentConfig.edit.description":
     "您可在此修改部署配置的名称、描述与配置信息。",
   "deploymentConfig.edit.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
@@ -447,11 +429,11 @@ const pageDetail = {
   "pipeline.create.title": '在项目"{name}"中创建流水线',
   "pipeline.create.description": "您可以在此填写流水线名称、选择触发方式、创建阶段以及添加任务以此来创建流水线。",
   "pipeline.create.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
-  "pipeline.edit.title": '修改项目"{name}"的流水线',
-  "pipeline.edit.description": "流水线是一种实现任务流程自动化、可视化的方式，您可在此预设流水线中的各个阶段与任务，使整个流程更加高效。",
+  "pipeline.edit.title": '对流水线"{name}"进行修改',
+  "pipeline.edit.description": "您可以在此修改阶段或任务来修改流水线。",
   "pipeline.edit.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
   "pipeline.detail.title": '流水线"{name}"的详情',
-  "pipeline.detail.description": "根据项目需求，可以分拆为多个模块，每个模块可以进行负责人划分，配置后可以将项目中的问题归类到对应的模块中。例如“后端任务”，“基础架构”等等。",
+  "pipeline.detail.description": "您可以在此查看该流水线每次执行的流程详情。",
   "pipeline.detail.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
   "pipeline.task.create.title": '在"{name}"中添加任务',
   "pipeline.task.create.description": "您可以在此选择对应的任务类型，填选对应的内容，以此来添加任务。",
@@ -1563,41 +1545,6 @@ const zhCN = {
   "certificate.public": "证书公开范围",
   "ctf.sidebar.edit": "编辑证书",
 
-  // 自动部署
-  "autoDeploy.header": "自动部署",
-  "autoDeploy.record.header": "自动部署执行记录",
-  "autoDeploy.create.header": "创建自动部署任务",
-  "autoDeploy.edit.header": "修改自动部署任务",
-  "autoDeploy.create": "创建自动部署",
-  "autoDeploy.record": "自动部署记录总览",
-  "autoDeploy.task.name": "任务名称",
-  "autoDeploy.version.type": "版本类型",
-  "autoDeploy.delete": "删除自动部署任务",
-  "autoDeploy.delete.tooltip": "确定要删除此任务吗？",
-  "autoDeploy.record.instance": "生成实例",
-  "task.name.check.failed": "不能包含空格",
-  "task.name.exist": "名称已存在",
-  "autoDeploy.create.type.tips":
-    "您可在此输入或选择自动部署的应用版本类型，若想自动部署所选应用的所有版本，则不必填写此栏。",
-  "autoDeploy.chooseTask": "选择任务",
-  "autoDeploy.mode": "选择部署模式",
-  "autoDeploy.mode.tip":
-    "若选择新建实例，那么在第一次执行该条自动部署任务时，会在所选环境中新建一个实例，而后续执行该条自动部署任务时，均会默认在此实例上进行升级或更新；若选择替换实例，首先需要满足所选应用在所选环境中存在实例，而选中要替换的目标实例后，后续的自动部署便会直接在此实例上进行升级或更新。",
-  "autoDeploy.replace.instance.tips":
-    "替换实例会更新该实例的镜像及配置信息，请确认要替换的实例选择无误。",
-  "autoDeploy.task.status": "任务状态",
-  "autoDeploy.no.instance": "未生成实例",
-  "autoDeploy.status.deleted": "已删除",
-  "autoDeploy.status.running": "执行中",
-  "autoDeploy.status.failed": "失败",
-  "autoDeploy.status.finished": "已执行",
-  "autoDeploy.stop.tooltip": "确定要停用此任务吗？",
-  "autoDeploy.active.tooltip": "确定要启用此任务吗？",
-  "autoDeploy.execute.date": "执行时间",
-  "autoDeploy.instance.create": "新建实例",
-  "autoDeploy.instance.update": "替换实例",
-  "autoDeploy.instance.tooltip": "该实例已存在对应的自动部署任务",
-
   // 组件设置
   testAndCreate: "测试并创建",
   testAndSave: "测试并保存",
@@ -1638,6 +1585,7 @@ const zhCN = {
   "deploymentConfig.name": "部署配置名称",
   "deploymentConfig.des": "部署配置描述",
   "deployment.delete.unable": "仅能删除没有关联任务的部署配置",
+  "task.name.check.failed": "名称不能包含空格",
 
   // 流水线执行总览
   "pipelineRecord.header": "流水线执行总览",
@@ -1660,6 +1608,11 @@ const zhCN = {
   "pipelineRecord.retry": "重新执行",
   "pipelineRecord.retry.title": "重新执行流水线“{name}”",
   "pipelineRecord.retry.des": "确定要重新执行该流水线吗？",
+  "pipelineRecord.check.tips.button": "我知道了",
+  "pipeline.check.tips.text":
+    "此任务为会签审核任务，目前【{checkUsers}】已审核通过，还需【{unCheckUsers}】审核通过后，才能执行之后的步骤。",
+  "pipeline.canCheck.tips.0": "此任务已被{userName}审核",
+  "pipeline.canCheck.tips.1": "此任务已被{userName}终止",
 
   // pipeline
   "pipeline.head": "流水线",
@@ -1668,6 +1621,8 @@ const zhCN = {
   "pipeline.header.detail": "流水线详情",
   "pipeline.record": "流水线执行记录总览",
   "pipeline.trigger": "触发方式",
+  "pipeline.trigger.tip":
+    "选择自动触发后，整条流水线会在满足条件后自动执行，但自动触发流水线中阶段一里的任务一不能设置为人工卡点；选择手动触发后，需指定审核人员手动触发该流水线",
   "pipeline.trigger.member": "触发人员",
   "pipeline.trigger.auto": "自动触发",
   "pipeline.trigger.manual": "手动触发",
@@ -1684,8 +1639,12 @@ const zhCN = {
   "pipeline.task.type": "任务类型",
   "pipeline.task.type.change": "若想切换为任务并行，请清除阶段中的人工卡点任务",
   "pipeline.task.parallel": "任务并行",
-  "pipeline.task.parallel.disabled": "流水线触发方式为自动触发时的第一个阶段的第一个任务或阶段中任务为并行时，不可以选择人工卡点任务",
+  "pipeline.task.parallel.disabled-1":
+    "1. 自动触发流水线里，阶段一中的任务一不可以选择人工卡点任务",
+  "pipeline.task.parallel.disabled-2": "2. 任务设置为并行时，此阶段中不能添加人工卡点任务",
   "pipeline.task.serial": "任务串行",
+  "pipeline.task.serial.tip":
+    "选择任务串行后，阶段中任务会从上至下按序执行；而任务并行指的是，阶段中所有任务会同时执行，但并行任务的阶段中不能添加人工卡点的任务",
   "pipeline.task.list": "任务列表",
   "pipeline.task.settings": "任务设置",
   "pipeline.task.name": "任务名称",
@@ -1719,7 +1678,8 @@ const zhCN = {
   "pipeline.stage.delete.msg": "确定删除该阶段？",
   "pipeline.stage.create": "创建新阶段",
   "pipeline.stage.edit": "修改阶段信息",
-  "pipeline.flow": "流转方式",
+  "pipeline.stage.add": "添加阶段",
+  "pipeline.flow": "流转至下一阶段",
   "pipeline.flow.member": "审核人员",
   "pipeline.link.toConfig": "创建部署配置",
   "pipeline.task.type.error": "任务类型错误",
@@ -1733,19 +1693,26 @@ const zhCN = {
   "pipeline.execute.history": "执行历史",
   "pipeline.trigger.type": "触发方式 - ",
   "pipeline.trigger.people": "触发人 - ",
-  "pipeline.config.value.tips": "修改的配置信息后，所选的部署配置中的配置信息也将随之改动。",
+  "pipeline.config.value.tips": "修改配置信息后，所选的部署配置中的配置信息也将随之改动。",
   "pipeline.config.value.edit": "修改配置信息",
-  "pipeline.config.edit.title": "修改“{name}”配置信息",
-  "pipeline.result.pendingcheck": "未审核",
+  "pipeline.config.edit.title": "修改部署配置“{name}”的配置信息",
+  "pipeline.task.auditMode.tips":
+    "会签模式中，需要所有审核人员都审核通过才能通过，审核人员中任一人点击终止，则流水线终止；或签模式中，仅需任一审核人员审核即可，即第一个审核的人点击通过则通过，点击终止则终止",
+  "pipeline.result.pendingcheck": "审核中",
   "pipeline.result.success": "通过",
   "pipeline.result.failed": "未知",
   "pipeline.result.stop": "终止",
   "pipeline.result.unexecuted": "未审核",
   "pipeline.task.empty": "无执行任务",
   "pipeline.detail.mode": "审核模式：",
-  "pipeline.detail.users": "审核人员：",
+  "pipeline.detail.users.all": "指定审核人员：",
+  "pipeline.detail.users.audit": "已审核人员：",
   "pipeline.detail.result": "审核结果：",
   "pipeline.detail.instance": "生成实例：",
+  // __@.@__ 作为分隔符，前面内容是title，后面内容是content
+  "pipeline.before.leave": "离开当前页面？__@.@__离开后，系统将不会保存您所做的修改。",
+  "pipeline.create.error-1": "请检查任务类型是否正确！",
+  "pipeline.create.error-2": "自动触发类型的流水线需要以部署任务作为触发器！",
 
   ...pageDetail,
 };

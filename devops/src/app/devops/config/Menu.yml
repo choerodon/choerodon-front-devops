@@ -173,6 +173,12 @@
           - "devops-service.devops-ingress.queryDomainId"
           - "devops-service.devops-ingress.delete"
           - "devops-service.devops-ingress.listByEnv"
+    - "environment-pipeline":
+        icon: data_usage
+        Routes: /devops/env-pipeline
+        sort: 3
+        permission:
+          - "devops-service.devops-environment.create"
     - "deployment-overview":
         icon: Operation-monitoring
         Routes: /devops/deploy-overview
@@ -180,24 +186,12 @@
         permission:
           - "devops-service.application.listAll"
           - "devops-service.application-instance.deploy"
-    - "auto-deploy":
-        icon: auto_deploy
-        Routes: /devops/auto-deploy
-        sort: 3
-        permission:
-          - "devops-service.devops-auto-deploy.pageByOptions"
     - "application-deployment":
         icon: jsfiddle
         Routes: /devops/deployment-app
         sort: 5
         permission:
           - "devops-service.application-instance.deploy"
-    - "environment-pipeline":
-        icon: linear_scale
-        Routes: /devops/env-pipeline
-        sort: 2
-        permission:
-          - "devops-service.devops-environment.create"
     - "instance":
         icon: instance_outline
         Routes: /devops/instance
@@ -305,6 +299,13 @@
           - "devops-service.pipeline-value.queryById"
           - "devops-service.pipeline-value.createOrUpdate"
           - "devops-service.pipeline-value.delete"
+    - "auto-deploy":
+        icon: auto_deploy
+        Routes: /devops/auto-deploy
+        sort: 101
+        delete: true
+        permission:
+          - "devops-service.devops-auto-deploy.pageByOptions"
 
 # 项目设置
 "prosetting":

@@ -938,56 +938,56 @@ class AppHome extends Component {
             <Icon type="error" className="c7n-app-config-warn-icon" />
             <FormattedMessage id="app.config.warn" />
           </div>
-        </Fragment>) : null}
-        <div className="c7n-env-tag-title">
-          <FormattedMessage id="app.authority" />
-          <Popover
-            overlayStyle={{ maxWidth: '350px' }}
-            content={formatMessage({ id: 'app.authority.help' })}
-          >
-            <Icon type="help" />
-          </Popover>
-        </div>
-        <div className="c7n-app-authority-radio">
-          <RadioGroup
-            label={<FormattedMessage id="app.authority.label" />}
-            onChange={this.cbChange}
-            value={checked}
-          >
-            <Radio value={true}>
-              <FormattedMessage id="app.mbr.all" />
-            </Radio>
-            <Radio value={false}>
-              <FormattedMessage id="app.mbr.part" />
-            </Radio>
-          </RadioGroup>
-        </div>
-        {checked ? null : (
-          <div>
-            <div className="c7n-sidebar-form">
-              <Table
-                className="c7n-env-noTotal"
-                rowSelection={
-                  modeType === 'create' ? rowCreateSelection : rowSelection
-                }
-                columns={columns}
-                dataSource={getMbr}
-                filterBarPlaceholder={formatMessage({ id: 'filter' })}
-                pagination={getMbrPageInfo}
-                loading={tableLoading}
-                onChange={this.mbrTableChange}
-                rowKey={record => record.iamUserId}
-                filters={mbrParas.slice()}
-              />
-            </div>
-            <div className="c7n-env-tag-title">
-              <FormattedMessage id="app.authority.mbr" />
-            </div>
-            <div className="c7n-env-tag-wrap">
-              {modeType === 'create' ? tagCreateDom : tagDom}
-            </div>
+          <div className="c7n-env-tag-title">
+            <FormattedMessage id="app.authority" />
+            <Popover
+              overlayStyle={{ maxWidth: '350px' }}
+              content={formatMessage({ id: 'app.authority.help' })}
+            >
+              <Icon type="help" />
+            </Popover>
           </div>
-        )}
+          <div className="c7n-app-authority-radio">
+            <RadioGroup
+              label={<FormattedMessage id="app.authority.label" />}
+              onChange={this.cbChange}
+              value={checked}
+            >
+              <Radio value={true}>
+                <FormattedMessage id="app.mbr.all" />
+              </Radio>
+              <Radio value={false}>
+                <FormattedMessage id="app.mbr.part" />
+              </Radio>
+            </RadioGroup>
+          </div>
+          {checked ? null : (
+            <div>
+              <div className="c7n-sidebar-form">
+                <Table
+                  className="c7n-env-noTotal"
+                  rowSelection={
+                    modeType === 'create' ? rowCreateSelection : rowSelection
+                  }
+                  columns={columns}
+                  dataSource={getMbr}
+                  filterBarPlaceholder={formatMessage({ id: 'filter' })}
+                  pagination={getMbrPageInfo}
+                  loading={tableLoading}
+                  onChange={this.mbrTableChange}
+                  rowKey={record => record.iamUserId}
+                  filters={mbrParas.slice()}
+                />
+              </div>
+              <div className="c7n-env-tag-title">
+                <FormattedMessage id="app.authority.mbr" />
+              </div>
+              <div className="c7n-env-tag-wrap">
+                {modeType === 'create' ? tagCreateDom : tagDom}
+              </div>
+            </div>
+          )}
+        </Fragment>) : null}
       </React.Fragment>
     );
 

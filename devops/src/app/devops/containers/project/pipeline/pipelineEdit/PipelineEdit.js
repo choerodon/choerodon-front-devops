@@ -1,13 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Prompt } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Button, Icon, Form, Input, Select, Radio } from 'choerodon-ui';
 import { Content, Header, Page } from 'choerodon-front-boot';
 import _ from 'lodash';
 import StageCard from '../components/stageCard';
 import StageCreateModal from '../components/stageCreateModal';
-import { STAGE_FLOW_AUTO, STAGE_FLOW_MANUAL } from '../components/Constans';
+import { STAGE_FLOW_AUTO, STAGE_FLOW_MANUAL, TRIGGER_TYPE_AUTO, TRIGGER_TYPE_MANUAL } from '../components/Constans';
 import InterceptMask from '../../../../components/interceptMask';
 import EmptyPage from '../components/emptyPage';
 
@@ -39,6 +39,7 @@ export default class PipelineEdit extends Component {
     showCreate: false,
     prevId: null,
     submitLoading: false,
+    promptDisplay: true,
   };
 
   componentDidMount() {
@@ -70,6 +71,7 @@ export default class PipelineEdit extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
+    this.setState({ promptDisplay: false });
 
     const {
       PipelineCreateStore,
@@ -118,6 +120,12 @@ export default class PipelineEdit extends Component {
     const triggerType = e.target.value;
     this.setState({ triggerType });
     PipelineCreateStore.setTrigger(triggerType);
+
+    if (triggerType === TRIGGER_TYPE_AUTO) {
+      PipelineCreateStore.checkCanSubmit();
+    } else {
+      PipelineCreateStore.setCanSubmit(triggerType === TRIGGER_TYPE_MANUAL);
+    }
   };
 
   /**
@@ -172,27 +180,26 @@ export default class PipelineEdit extends Component {
         pathname,
         search,
       },
-      AppState: {
-        currentMenuType: {
-          name,
-        },
-      },
       intl: { formatMessage },
       form: { getFieldDecorator },
       PipelineCreateStore,
     } = this.props;
-    const { triggerType, showCreate, prevId, submitLoading } = this.state;
+    const { triggerType, showCreate, prevId, submitLoading, promptDisplay } = this.state;
     const {
       getLoading,
       getUser,
       getIsDisabled,
       getPipeline,
       getDetailLoading,
+      getCanSubmit,
     } = PipelineCreateStore;
+
+    const showUserSelector = triggerType
+      ? (triggerType === STAGE_FLOW_MANUAL)
+      : (getPipeline.triggerType === STAGE_FLOW_MANUAL);
 
     const user = _.map(getUser, ({ id, realName }) => (
       <Option key={id} value={String(id)}>{realName}</Option>));
-
     const initUser = _.map(getPipeline.pipelineUserRelDTOS, item => String(item));
 
     return (<Page
@@ -209,11 +216,12 @@ export default class PipelineEdit extends Component {
       ]}
     >
       {_.isNull(getPipeline) ? <EmptyPage /> : <Fragment>
+        <Prompt when={promptDisplay} message={formatMessage({ id: 'pipeline.before.leave' })} />
         <Header
           title={<FormattedMessage id="pipeline.header.edit" />}
           backPath={`${pathname.replace(/\/edit\/\d*/, '')}${search}`}
         />
-        <Content code="pipeline.edit" values={{ name }}>
+        <Content code="pipeline.edit" values={{ name: getPipeline.name }}>
           <Form
             layout="vertical"
             onSubmit={this.onSubmit}
@@ -255,7 +263,7 @@ export default class PipelineEdit extends Component {
                 </RadioGroup>,
               )}
             </FormItem>
-            {triggerType || (getPipeline.triggerType === STAGE_FLOW_MANUAL) && <FormItem
+            {showUserSelector && <FormItem
               className="c7n-select_512"
               {...formItemLayout}
             >
@@ -293,11 +301,15 @@ export default class PipelineEdit extends Component {
               <Icon type="error" className="c7ncd-pipeline-error-icon" />
               <span className="c7ncd-pipeline-error-msg">请检查任务类型是否正确！</span>
             </div>}
+            {!getCanSubmit && <div className="c7ncd-pipeline-error">
+              <Icon type="error" className="c7ncd-pipeline-error-icon" />
+              <span className="c7ncd-pipeline-error-msg">{formatMessage({ id: 'pipeline.create.error-2' })}</span>
+            </div>}
             <FormItem
               {...formItemLayout}
             >
               <Button
-                disabled={getIsDisabled}
+                disabled={getIsDisabled || !getCanSubmit}
                 type="primary"
                 funcType="raised"
                 htmlType="submit"

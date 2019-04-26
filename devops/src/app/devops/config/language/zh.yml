@@ -19,7 +19,6 @@
 # 部署流水线
 "deployment-pipeline": "部署流水线"
 "deployment-pipeline.environment-pipeline": "环境管理"
-"deployment-pipeline.auto-deploy": "自动部署"
 "deployment-pipeline.deployment-overview": "部署总览"
 "deployment-pipeline.application-deployment": "应用部署"
 "deployment-pipeline.instance": "实例"
@@ -77,3 +76,6 @@
 "application-management.application-release": "应用发布"
 "application-management.application-market": "应用市场"
 "application-management.application-template": "应用模板"
+
+#0.16废弃
+"deployment-pipeline.auto-deploy": "自动部署"

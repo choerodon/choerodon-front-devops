@@ -60,6 +60,10 @@
       margin-right: -2px;
     }
   }
+
+  .c7ncd-sidebar-select {
+    width: 512px;
+  }
 }
 
 .c7n-pipeline-sidebar-cancel {
@@ -68,6 +72,28 @@
 
 .c7n-config-value-modal {
   width: 1200px !important;
-  height: 500px;
-  overflow-y: scroll;
+  top: 70px;
+
+  .c7n-config-value-modal-content {
+    height: 440px;
+    overflow-y: scroll;
+    margin-top: 8px;
+  }
+}
+
+.c7n-pipeline-task-parallel-disabled {
+  display: flex;
+  flex-direction: column;
+}
+
+.c7n-pipeline-config-select {
+
+  .ant-select-dropdown-footer {
+    padding: 8px;
+  }
+
+  .ant-select-dropdown-menu-item,
+  .ant-select-dropdown-filter {
+    padding-left: 23px;
+  }
 }

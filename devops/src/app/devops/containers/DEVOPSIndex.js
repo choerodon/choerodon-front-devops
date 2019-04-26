@@ -39,7 +39,6 @@ const Reports = asyncRouter(() => import('./project/reports'));
 const DevConsole = asyncRouter(() => import('./project/devConsole'));
 const ConfigMap = asyncRouter(() => import('./project/configMap'));
 const Secret = asyncRouter(() => import('./project/secret'));
-const AutoDeploy = asyncRouter(() => import('./project/autoDeploy'));
 const Elements = asyncRouter(() => import('./project/elements'));
 const PipelineIndex = asyncRouter(() => import('./project/pipeline'));
 const DeploymentConfig = asyncRouter(() => import('./project/deploymentConfig'));
@@ -60,11 +59,11 @@ class DEVOPSIndex extends React.Component {
      * isCache 设置一个标志位，true表示不重新加载，否则重新加载
      */
     const isInstancePage = window.location.href.includes('instance') || window.location.href.includes('container');
-    if (InstancesStore.getIsCache.isCache && !isInstancePage) {
-      InstancesStore.setIsCache({ isCache: false, appId: null });
+    if (InstancesStore.getIsCache && !isInstancePage) {
+      InstancesStore.setIsCache(false);
       InstancesStore.setAppId(null);
       InstancesStore.setAppNameByEnv([]);
-      InstancesStore.setIstAll([]);
+      InstancesStore.clearIst();
       InstancesStore.setIstTableFilter(null);
       InstancesStore.setIstPage(null);
     }
@@ -96,13 +95,11 @@ class DEVOPSIndex extends React.Component {
           <Route path={`${match.url}/dev-console`} component={DevConsole} />
           <Route path={`${match.url}/config-map`} component={ConfigMap} />
           <Route path={`${match.url}/secret`} component={Secret} />
-          <Route path={`${match.url}/auto-deploy`} component={AutoDeploy} />
           <Route path={`${match.url}/elements`} component={Elements} />
           <Route path={`${match.url}/certificate-manage`} component={CertificateManage} />
           <Route path={`${match.url}/pipeline`} component={PipelineIndex}/>
           <Route path={`${match.url}/pipeline-record`} component={PipelineRecord}/>
           <Route path={`${match.url}/deployment-config`} component={DeploymentConfig} />
-
           <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>

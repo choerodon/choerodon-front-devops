@@ -21,12 +21,9 @@ import InstancesStore from '../../../stores/project/instances/InstancesStore';
 import EnvOverviewStore from '../../../stores/project/envOverview';
 import '../../main.scss';
 import './Instances.scss';
-import { commonComponent } from '../../../components/commonFunction';
 
 const Option = Select.Option;
 const { AppState } = stores;
-
-const HEIGHT = window.screen.height;
 
 @observer
 class Instances extends Component {
@@ -45,30 +42,20 @@ class Instances extends Component {
 
   componentDidMount() {
     const { InstancesStore } = this.props;
-    if (!InstancesStore.getIsCache.isCache) {
-      const {id: projectId} = AppState.currentMenuType;
-      const {history: {location: {state}}} = this.props;
-      if (state) {
-        const {envId, appId} = state;
-        EnvOverviewStore.setTpEnvId(envId);
-        InstancesStore.loadAppNameByEnv(projectId, envId, 0, HEIGHT < 900 ? 10 : 15, appId);
-        EnvOverviewStore.loadActiveEnv(projectId)
-        this.loadDetail(appId);
-        InstancesStore.setIsCache({appId})
-      } else {
-        EnvOverviewStore.loadActiveEnv(projectId, "instance");
-      }
+    if (!InstancesStore.getIsCache) {
+      const { id: projectId } = AppState.currentMenuType;
+      EnvOverviewStore.loadActiveEnv(projectId, 'instance');
     } else {
-      InstancesStore.setIsCache({ isCache: false });
+      InstancesStore.setIsCache(false);
     }
   }
 
   componentWillUnmount() {
     const { InstancesStore } = this.props;
-    if (!InstancesStore.getIsCache.isCache) {
+    if (!InstancesStore.getIsCache) {
       InstancesStore.setAppId(null);
       InstancesStore.setAppNameByEnv([]);
-      InstancesStore.setIstAll([]);
+      InstancesStore.clearIst();
       InstancesStore.setIstTableFilter(null);
       InstancesStore.setIstPage(null);
     }
@@ -110,7 +97,7 @@ class Instances extends Component {
   linkDeployDetail = record => {
     const { id, status, code } = record;
     const { InstancesStore } = this.props;
-    InstancesStore.setIsCache({ isCache: true });
+    InstancesStore.setIsCache(true);
     const { history } = this.props;
     const {
       id: projectId,
@@ -154,16 +141,14 @@ class Instances extends Component {
     const { current, pageSize } = pagination;
     const appId = InstancesStore.getAppId;
     const envId = EnvOverviewStore.getTpEnvId;
-    let searchParam = {};
-    if (Object.keys(filters).length) {
-      searchParam = filters;
-    }
+    const time = Date.now();
+
     InstancesStore.setIstTableFilter({ filters, param });
     InstancesStore.setIstPage({ page: current - 1, pageSize });
     InstancesStore.loadInstanceAll(true, projectId, {
       envId,
       appId,
-    }).catch(err => {
+    }, time).catch(err => {
       InstancesStore.changeLoading(false);
       Choerodon.handleResponseError(err);
     });
@@ -209,7 +194,8 @@ class Instances extends Component {
       .then(data => {
         const res = handleProptError(data);
         if (res) {
-          loadInstanceAll(true, projectId, { envId }).catch(err => {
+          const time = Date.now();
+          loadInstanceAll(true, projectId, { envId }, time).catch(err => {
             InstancesStore.changeLoading(false);
             Choerodon.handleResponseError(err);
           });
@@ -296,7 +282,8 @@ class Instances extends Component {
     const envId = EnvOverviewStore.getTpEnvId;
     clear && InstancesStore.setIstTableFilter(null);
 
-    InstancesStore.loadInstanceAll(spin, projectId, { envId, appId }).catch(
+    const time = Date.now();
+    InstancesStore.loadInstanceAll(spin, projectId, { envId, appId }, time).catch(
       err => {
         InstancesStore.changeLoading(false);
         Choerodon.handleResponseError(err);
@@ -317,12 +304,11 @@ class Instances extends Component {
         loadAppNameByEnv,
         getAppPage,
         getAppId,
-        getIsCache,
       },
     } = this.props;
     const envId = EnvOverviewStore.getTpEnvId;
 
-    loadAppNameByEnv(projectId, envId, getAppPage - 1, getAppPageSize, getIsCache.appId);
+    loadAppNameByEnv(projectId, envId, getAppPage - 1, getAppPageSize);
 
     this.reloadData(spin, clear, getAppId);
   };
@@ -338,7 +324,6 @@ class Instances extends Component {
     const { loadInstanceAll, deleteInstance, getAppId } = InstancesStore;
     const envId = EnvOverviewStore.getTpEnvId;
 
-
     this.setState({
       deleteLoading: true,
     });
@@ -348,7 +333,8 @@ class Instances extends Component {
         if (res) {
           InstancesStore.setIstTableFilter(null);
           InstancesStore.setIstPage(null);
-          loadInstanceAll(true, projectId, { envId, getAppId }).catch(err => {
+          const time = Date.now();
+          loadInstanceAll(true, projectId, { envId, getAppId }, time).catch(err => {
             InstancesStore.changeLoading(false);
             Choerodon.handleResponseError(err);
           });
@@ -386,7 +372,7 @@ class Instances extends Component {
   activeIst = (id, status) => {
     const { id: projectId } = AppState.currentMenuType;
     const {
-      InstancesStore: { changeIstActive, loadInstanceAll, getAppId },
+      InstancesStore: { changeIstActive, loadInstanceAll },
     } = this.props;
     const envId = EnvOverviewStore.getTpEnvId;
     this.setState({
@@ -402,7 +388,8 @@ class Instances extends Component {
       if (res) {
         InstancesStore.setAppId(null);
         InstancesStore.setIstTableFilter(null);
-        loadInstanceAll(true, projectId, { envId }).catch(err => {
+        const time = Date.now();
+        loadInstanceAll(true, projectId, { envId }, time).catch(err => {
           InstancesStore.changeLoading(false);
           Choerodon.handleResponseError(err);
         });
@@ -553,11 +540,10 @@ class Instances extends Component {
   render() {
     DevopsStore.initAutoRefresh('ist', this.reload);
 
-    const { id: projectId, name: projectName, type, organizationId } = AppState.currentMenuType;
+    const { id: projectId, name: projectName } = AppState.currentMenuType;
     const {
       InstancesStore,
       intl: { formatMessage },
-      history: { location: { state } },
     } = this.props;
     const {
       getIstAll,
@@ -706,13 +692,7 @@ class Instances extends Component {
       >
         {envData && envData.length && envId ? (
           <Fragment>
-            <Header
-              title={<FormattedMessage id="ist.head" />}
-              backPath={state ?
-                `/devops/auto-deploy/record?type=${type}&id=${projectId}&name=${projectName}&organizationId=${organizationId}`
-                : null
-              }
-            >
+            <Header title={<FormattedMessage id="ist.head" />}>
               <Select
                 className={`${
                   envId
