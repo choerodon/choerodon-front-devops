@@ -1585,6 +1585,7 @@ const zhCN = {
   "deploymentConfig.name": "部署配置名称",
   "deploymentConfig.des": "部署配置描述",
   "deployment.delete.unable": "仅能删除没有关联任务的部署配置",
+  "task.name.check.failed": "名称不能包含空格",
 
   // 流水线执行总览
   "pipelineRecord.header": "流水线执行总览",

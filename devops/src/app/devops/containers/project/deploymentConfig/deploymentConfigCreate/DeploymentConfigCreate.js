@@ -357,7 +357,7 @@ class DeploymentConfigCreate extends Component {
                     label={formatMessage({ id: "deploy.appName" })}
                     optionFilterProp="children"
                     onChange={ value => this.handleSelect(value)}
-                    disabled={index}
+                    disabled={sidebarType === "edit" && !index}
                     filter
                     filterOption={(input, option) =>
                       option.props.children
@@ -394,7 +394,7 @@ class DeploymentConfigCreate extends Component {
                   <Select
                     label={formatMessage({ id: "deploy.envName" })}
                     optionFilterProp="children"
-                    disabled={index}
+                    disabled={sidebarType === "edit" && !index}
                     filter
                     filterOption={(input, option) =>
                       option.props.children[1]

@@ -99,13 +99,13 @@ export default class DetailCard extends PureComponent {
             </div>
             <div className="c7ncd-pipeline-task">
               <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.instance' })}</span>
-              <span
-                className="c7ncd-pipeline-tag_delete"
-              >
-                {instanceStatus && instanceStatus === INSTANCE_DELETE_STATUS
-                  ? formatMessage({ id: 'deleted' })
-                  : null}
+              {instanceStatus && instanceStatus === INSTANCE_DELETE_STATUS
+                ? <span
+                  className="c7ncd-pipeline-tag_delete"
+                >
+                {formatMessage({ id: 'deleted' })}
               </span>
+                : null}
               {instanceName || formatMessage({ id: 'null' })}
             </div>
           </Fragment>),

@@ -34,6 +34,7 @@ class DeploymentConfig extends Component {
       id: null,
       name: null,
       deleteLoading: false,
+      canDelete: false,
     };
   }
 
@@ -211,7 +212,23 @@ class DeploymentConfig extends Component {
    * 展开弹窗
    */
   showSidebar = (sidebarType, id = null, name = null) => {
-    this.setState({ sidebarType, id, name });
+    const {
+      DeploymentConfigStore,
+      AppState: { currentMenuType: { projectId } },
+    } = this.props;
+    if (sidebarType === "delete") {
+      DeploymentConfigStore.checkDelete(projectId, id)
+        .then(data => {
+          if (data && data.failed) {
+            Choerodon.prompt(data.message);
+          } else {
+            // data 为true表示能删除，false表示不能删除
+            this.setState({ canDelete: data, sidebarType, id, name});
+          }
+        });
+    } else {
+      this.setState({ sidebarType, id, name });
+    }
   };
 
   /**
@@ -227,7 +244,7 @@ class DeploymentConfig extends Component {
       });
       this.loadData();
     }
-    this.setState({ sidebarType: null, id: null, name: null });
+    this.setState({ sidebarType: null, id: null, name: null, canDelete: false });
   };
 
   /**
@@ -245,14 +262,10 @@ class DeploymentConfig extends Component {
     this.setState({ deleteLoading: true });
     DeploymentConfigStore.deleteData(projectId, id)
       .then(data => {
-        if (data) {
-          if (data.failed) {
-            Choerodon.prompt(data.message);
-          } else {
-            this.handClose(true);
-          }
+        if (data && data.failed) {
+          Choerodon.prompt(data.message);
         } else {
-          Choerodon.prompt(formatMessage({ id: "deployment.delete.unable" }));
+          this.handClose(true);
         }
         this.setState({ deleteLoading: false })
       })
@@ -276,6 +289,7 @@ class DeploymentConfig extends Component {
       name: configName,
       id,
       deleteLoading,
+      canDelete,
     } = this.state;
 
     const { loading, pageInfo } = DeploymentConfigStore;
@@ -343,9 +357,34 @@ class DeploymentConfig extends Component {
           onCancel={this.handClose.bind(this, false)}
           okText={formatMessage({ id: "delete" })}
           okType="danger"
+          footer={canDelete ? [
+            <Button
+              key="back"
+              onClick={this.handClose.bind(this, false)}
+              disabled={deleteLoading}
+            >
+              <FormattedMessage id="cancel" />
+            </Button>,
+            <Button
+              key="delete"
+              loading={deleteLoading}
+              type="danger"
+              onClick={this.handleDelete}
+            >
+              <FormattedMessage id="delete" />
+            </Button>,
+          ] : [
+            <Button
+              key="back"
+              type="primary"
+              onClick={this.handClose.bind(this, false)}
+            >
+              <FormattedMessage id="pipelineRecord.check.tips.button" />
+            </Button>,
+          ]}
         >
           <div className="c7n-padding-top_8">
-            <FormattedMessage id="deploymentConfig.delete.tooltip" />
+            <FormattedMessage id={canDelete ? "deploymentConfig.delete.tooltip" : "deployment.delete.unable"} />
           </div>
         </Modal>
       </Page>

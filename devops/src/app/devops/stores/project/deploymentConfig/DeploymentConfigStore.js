@@ -202,6 +202,9 @@ class DeploymentConfigStore {
 
   checkName = (projectId, name) =>
     axios.get(`/devops/v1/projects/${projectId}/pipeline_value/check_name?name=${name}`);
+
+  checkDelete = (projectId, id) =>
+    axios.get(`/devops/v1/projects/${projectId}/pipeline_value/check_delete?value_id=${id}`);
 }
 
 const deploymentConfigStore = new DeploymentConfigStore();
