@@ -51,10 +51,13 @@ export default class DetailTitle extends PureComponent {
       if (audit) {
 
         const isStopFlow = status === 'stop' || isCadence && checking;
+
+        const messageCode = isStopFlow ? 'stopped' : type;
         const spanClass = classnames({
           'c7ncd-manualflow-pass': !isStopFlow,
           'c7ncd-manualflow-stop': isStopFlow,
         });
+
         const { realName, imageUrl } = audit;
         triggerDom = <Fragment>
           <Tooltip title={realName}>
@@ -63,7 +66,7 @@ export default class DetailTitle extends PureComponent {
               : <span className="c7ncd-trigger-text">{_.toString(realName).toUpperCase().substring(0, 1)
               }</span>}
           </Tooltip>
-          <span className={spanClass}><FormattedMessage id={`pipeline.flow.${type}`} /></span>
+          <span className={spanClass}><FormattedMessage id={`pipeline.flow.${messageCode}`} /></span>
         </Fragment>;
 
       } else {

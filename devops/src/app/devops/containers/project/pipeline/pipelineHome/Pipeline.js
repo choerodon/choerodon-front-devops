@@ -341,9 +341,11 @@ export default class Pipeline extends Component {
     const {
       intl: { formatMessage },
     } = this.props;
-    const { id, name, isEnabled, triggerType, execute } = record;
+    const { id, name, isEnabled, triggerType, execute, edit } = record;
 
-    const _filterItem = (collection, predicate) => _.filter(collection, item => item !== predicate);
+    const _filterItem = (collection, predicate) => _.filter(collection, item => {
+      return Array.isArray(predicate) ? !_.includes(predicate, item) : item !== predicate;
+    });
 
     let action = {
       detail: {
@@ -383,6 +385,10 @@ export default class Pipeline extends Component {
 
     if (triggerType === 'auto' || !execute) {
       actionItem = _filterItem(actionItem, 'execute');
+    }
+
+    if (!edit) {
+      actionItem = _filterItem(actionItem, ['edit', 'remove']);
     }
 
     // 停用的流水线不能修改
