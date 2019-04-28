@@ -1628,6 +1628,7 @@ const zhCN = {
   "pipeline.trigger.manual": "手动触发",
   "pipeline.flow.auto": "自动流转",
   "pipeline.flow.manual": "手动流转",
+  "pipeline.flow.stopped": "手动终止",
   "pipeline.action.detail": "执行记录",
   "pipeline.action.run": "执行",
   "pipeline.delete": "删除流水线 ",
