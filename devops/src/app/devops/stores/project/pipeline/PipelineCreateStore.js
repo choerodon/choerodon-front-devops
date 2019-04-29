@@ -8,7 +8,7 @@ import {
   TASK_TYPE_MANUAL,
   TRIGGER_TYPE_AUTO,
   TRIGGER_TYPE_MANUAL,
-} from '../../../containers/project/pipeline/components/Constans';
+} from '../../../containers/project/pipeline/components/Constants';
 
 const INIT_INDEX = 0;
 

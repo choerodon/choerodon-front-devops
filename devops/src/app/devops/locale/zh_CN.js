@@ -28,7 +28,7 @@ const commonField = {
 };
 
 // 文档地址前缀
-const docServer = "http://v0-15.choerodon.io/zh/docs";
+const docServer = "http://v0-16.choerodon.io/zh/docs";
 // 界面标题描述统一管理
 const pageDetail = {
   // network
@@ -407,40 +407,40 @@ const pageDetail = {
   "deploymentConfig.title": '项目"{name}"的部署配置',
   "deploymentConfig.description":
     "部署配置用于管理流水线中添加部署任务时需要用到的配置信息。",
-  "deploymentConfig.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "deploymentConfig.link": `${docServer}/user-guide/deployment-pipeline/pipeline/deployment-config/`,
   "deploymentConfig.create.title": '在项目"{name}"中创建部署配置',
   "deploymentConfig.create.description":
     "您可此选择应用与环境，编辑出对应的配置信息，以此来创建部署配置。",
-  "deploymentConfig.create.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "deploymentConfig.create.link": `${docServer}/user-guide/deployment-pipeline/pipeline/deployment-config/`,
   "deploymentConfig.edit.title": '对部署配置"{name}"进行修改',
   "deploymentConfig.edit.description":
     "您可在此修改部署配置的名称、描述与配置信息。",
-  "deploymentConfig.edit.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "deploymentConfig.edit.link": `${docServer}/user-guide/deployment-pipeline/pipeline/deployment-config/`,
 
   // 流水线执行总览
   "pipelineRecord.title": '项目"{name}"的流水线执行总览',
   "pipelineRecord.description": "您可在此查看所有流水线的执行情况与流程详情。",
-  "pipelineRecord.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "pipelineRecord.link": `${docServer}/user-guide/deployment-pipeline/pipeline/pipeline-record/`,
+  "pipeline.detail.title": '流水线"{name}"的详情',
+  "pipeline.detail.description": "您可以在此查看该流水线每次执行的流程详情。",
+  "pipeline.detail.link": `${docServer}/user-guide/deployment-pipeline/pipeline/pipeline-record/`,
 
   // 流水线
   "pipeline.title": '项目"{name}"的流水线',
   "pipeline.description": "流水线是一种实现任务流程自动化、可视化的方式，您可在此预设流水线中的各个阶段与任务，使整个流程更加高效。",
-  "pipeline.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "pipeline.link": `${docServer}/user-guide/deployment-pipeline/pipeline/pipeline-management/`,
   "pipeline.create.title": '在项目"{name}"中创建流水线',
   "pipeline.create.description": "您可以在此填写流水线名称、选择触发方式、创建阶段以及添加任务以此来创建流水线。",
-  "pipeline.create.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "pipeline.create.link": `${docServer}/user-guide/deployment-pipeline/pipeline/pipeline-management/`,
   "pipeline.edit.title": '对流水线"{name}"进行修改',
   "pipeline.edit.description": "您可以在此修改阶段或任务来修改流水线。",
-  "pipeline.edit.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
-  "pipeline.detail.title": '流水线"{name}"的详情',
-  "pipeline.detail.description": "您可以在此查看该流水线每次执行的流程详情。",
-  "pipeline.detail.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "pipeline.edit.link": `${docServer}/user-guide/deployment-pipeline/pipeline/pipeline-management/`,
   "pipeline.task.create.title": '在"{name}"中添加任务',
   "pipeline.task.create.description": "您可以在此选择对应的任务类型，填选对应的内容，以此来添加任务。",
-  "pipeline.task.create.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "pipeline.task.create.link": `${docServer}/user-guide/deployment-pipeline/pipeline/pipeline-management/`,
   "pipeline.task.edit.title": '修改"{name}"中的任务',
   "pipeline.task.edit.description": "您可以在此选择对应的任务类型，填选对应的内容，以此来添加任务。",
-  "pipeline.task.edit.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "pipeline.task.edit.link": `${docServer}/user-guide/deployment-pipeline/pipeline/pipeline-management/`,
 };
 
 const zhCN = {

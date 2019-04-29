@@ -1,4 +1,4 @@
-@import "../status.scss";
+@import "../status";
 
 .c7ncd-pipeline-title {
   flex: 0 0 60px;
@@ -9,7 +9,7 @@
   margin-bottom: 12px;
   padding: 10px 12px;
   background: #f4f4f4;
-  border: 1px solid;
+  border: 2px solid;
 
   &_running {
     border-color: $running;

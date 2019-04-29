@@ -3,7 +3,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { Button, Modal, Form, Input, Select, Radio } from 'choerodon-ui';
-import { STAGE_FLOW_MANUAL, STAGE_FLOW_AUTO } from '../Constans';
+import { STAGE_FLOW_MANUAL, STAGE_FLOW_AUTO } from '../Constants';
 
 import '../../../../main.scss';
 import './StageCreateModal.scss';
