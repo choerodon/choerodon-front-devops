@@ -17,24 +17,18 @@ export default class DetailTitle extends PureComponent {
     time: PropTypes.number,
     status: PropTypes.string,
     isCadence: PropTypes.bool,
+    head: PropTypes.bool,
   };
 
   static defaultProps = {
     name: '',
     type: 'auto',
     checking: null,
+    head: false,
   };
 
   render() {
-    const { name, time, type, user, status, checking, isCadence } = this.props;
-    const statusStyle = classnames({
-      'c7ncd-pipeline-status': true,
-      [`c7ncd-pipeline-status_${status}`]: true,
-    });
-    const bkColor = classnames({
-      'c7ncd-pipeline-title': true,
-      [`c7ncd-pipeline-title_${status}`]: true,
-    });
+    const { name, time, type, user, status, checking, isCadence, head } = this.props;
 
     /**
      * 手动流转模式说明
@@ -94,8 +88,29 @@ export default class DetailTitle extends PureComponent {
 
     }
 
+    const statusStyle = classnames({
+      'c7ncd-pipeline-status': true,
+      [`c7ncd-pipeline-status_${status}`]: true,
+    });
+    const bkColor = classnames({
+      'c7ncd-pipeline-title': !head,
+      'c7ncd-pipeline-title-head': head,
+      [`c7ncd-pipeline-title_${status}`]: true,
+    });
+
+    const arrowHeadClass = classnames({
+      'arrow-head': true,
+      [`arrow-head_${status}`]: true,
+    });
+    const arrowTailClass = classnames({
+      'arrow-tail': true,
+      [`arrow-tail_${status}`]: true,
+    });
+
     return (
       <div className={bkColor}>
+        <div className={arrowHeadClass} />
+        <div className={arrowTailClass} />
         <div className={statusStyle}>
           <Icon className="stage-icon" type={statusIcon[status]} />
         </div>
