@@ -12,7 +12,7 @@ import DetailCard from '../components/detailCard';
 
 import '../../../main.scss';
 import './PipelineDeyail.scss';
-import { TRIGGER_TYPE_MANUAL } from '../components/Constans';
+import { TRIGGER_TYPE_MANUAL } from '../components/Constants';
 
 const { Option } = Select;
 
@@ -153,7 +153,8 @@ export default class PipelineDetail extends Component {
     return (<Page
       className="c7n-region c7n-pipeline-detail"
       service={[
-        'devops-service.devops-project-config.pageByOptions',
+        'devops-service.pipeline.queryByPipelineId',
+        'devops-service.pipeline.queryByPipelineId',
       ]}
     >
       <Header

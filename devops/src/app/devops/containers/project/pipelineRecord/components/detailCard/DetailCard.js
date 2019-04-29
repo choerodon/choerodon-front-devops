@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import _ from 'lodash';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Collapse, Icon, Tooltip } from 'choerodon-ui';
@@ -100,11 +100,7 @@ export default class DetailCard extends PureComponent {
             <div className="c7ncd-pipeline-task">
               <span className="c7ncd-pipeline-task-label">{formatMessage({ id: 'pipeline.detail.instance' })}</span>
               {instanceStatus && instanceStatus === INSTANCE_DELETE_STATUS
-                ? <span
-                  className="c7ncd-pipeline-tag_delete"
-                >
-                {formatMessage({ id: 'deleted' })}
-              </span>
+                ? <span className="c7ncd-pipeline-tag_delete">{formatMessage({ id: 'deleted' })}</span>
                 : null}
               {instanceName || formatMessage({ id: 'null' })}
             </div>

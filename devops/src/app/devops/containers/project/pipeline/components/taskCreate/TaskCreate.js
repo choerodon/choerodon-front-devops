@@ -20,7 +20,7 @@ import {
   AUDIT_MODE_ORSING,
   AUDIT_MODE_SING, TASK_PARALLEL,
   TRIGGER_TYPE_AUTO,
-} from '../Constans';
+} from '../Constants';
 
 import './TaskCreate.scss';
 
@@ -200,14 +200,22 @@ export default class TaskCreate extends Component {
     }) => {
       if (!err) {
         const { isHead } = this.state;
-        const appDeployDTOS = type === TASK_TYPE_DEPLOY ? {
-          applicationId,
-          triggerVersion,
-          envId,
-          instanceId,
-          instanceName,
-          valueId,
-        } : null;
+        let appDeployDTOS = null;
+        if (type === TASK_TYPE_DEPLOY) {
+          let istName = instanceName;
+          if (instanceId) {
+            istName = _.find(PipelineCreateStore.getInstance, ['id', String(instanceId)]).code;
+          }
+
+          appDeployDTOS = {
+            applicationId,
+            triggerVersion,
+            envId,
+            instanceId,
+            instanceName: istName || null,
+            valueId,
+          };
+        }
         const taskUserRelDTOS = type === TASK_TYPE_MANUAL ? _.map(users, item => Number(item)) : null;
         const data = {
           type,

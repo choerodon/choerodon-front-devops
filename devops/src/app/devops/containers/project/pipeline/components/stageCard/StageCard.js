@@ -13,7 +13,7 @@ import {
   TASK_PARALLEL,
   TASK_TYPE_MANUAL,
   TRIGGER_TYPE_AUTO,
-} from '../Constans';
+} from '../Constants';
 
 import './StageCard.scss';
 

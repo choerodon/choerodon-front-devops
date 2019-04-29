@@ -335,7 +335,7 @@ class PipelineRecord extends Component {
     const { pipelineId } = this.state;
 
     history.push({
-      pathname: `/devops/pipeline/detail/${pId}/${recordId}`,
+      pathname: `/devops/pipeline-record/detail/${pId}/${recordId}`,
       search,
       state: {
         pipelineId: pId,

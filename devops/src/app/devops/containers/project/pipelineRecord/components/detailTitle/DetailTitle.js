@@ -6,7 +6,7 @@ import classnames from 'classnames';
 import _ from 'lodash';
 import { timeConvert } from '../../../../../utils';
 import { statusIcon } from '../statusMap';
-import { STAGE_FLOW_MANUAL } from '../Constans';
+import { STAGE_FLOW_MANUAL } from '../Constants';
 
 import './DetailTitle.scss';
 
