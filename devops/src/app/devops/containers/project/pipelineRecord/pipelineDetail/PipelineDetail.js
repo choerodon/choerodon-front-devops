@@ -94,7 +94,7 @@ export default class PipelineDetail extends Component {
          triggerType,
          isParallel,
          taskRecordDTOS,
-       }) => (
+       }, stageIndex) => (
         <div className="c7ncd-pipeline-detail-stage" key={id}>
           <DetailTitle
             isCadence={isPipelineCadence}
@@ -104,6 +104,8 @@ export default class PipelineDetail extends Component {
             type={triggerType}
             user={userDTOS}
             status={status}
+            head={stageIndex === 0}
+            onlyOne={stageRecordDTOS.length === 1}
           />
           <DetailCard
             isParallel={isParallel}
