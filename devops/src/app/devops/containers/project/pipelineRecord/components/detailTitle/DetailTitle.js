@@ -18,6 +18,8 @@ export default class DetailTitle extends PureComponent {
     status: PropTypes.string,
     isCadence: PropTypes.bool,
     head: PropTypes.bool,
+    onlyOne: PropTypes.bool,
+    tail: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -25,10 +27,23 @@ export default class DetailTitle extends PureComponent {
     type: 'auto',
     checking: null,
     head: false,
+    onlyOne: false,
+    tail: false,
   };
 
   render() {
-    const { name, time, type, user, status, checking, isCadence, head } = this.props;
+    const {
+      name,
+      time,
+      type,
+      user,
+      status,
+      checking,
+      isCadence,
+      head,
+      onlyOne,
+      tail,
+    } = this.props;
 
     /**
      * 手动流转模式说明
@@ -93,24 +108,32 @@ export default class DetailTitle extends PureComponent {
       [`c7ncd-pipeline-status_${status}`]: true,
     });
     const bkColor = classnames({
-      'c7ncd-pipeline-title': !head,
+      'c7ncd-pipeline-title': true,
       'c7ncd-pipeline-title-head': head,
+      'c7ncd-pipeline-title-tail': onlyOne || tail,
       [`c7ncd-pipeline-title_${status}`]: true,
     });
 
-    const arrowHeadClass = classnames({
-      'arrow-head': true,
-      [`arrow-head_${status}`]: true,
-    });
-    const arrowTailClass = classnames({
-      'arrow-tail': true,
-      [`arrow-tail_${status}`]: true,
-    });
+    let arrowDom = null;
+    if (!onlyOne) {
+      const arrowHeadClass = classnames({
+        'arrow-head': true,
+        [`arrow-head_${status}`]: true,
+      });
+      const arrowTailClass = classnames({
+        'arrow-tail': true,
+        [`arrow-tail_${status}`]: true,
+      });
+
+      arrowDom = <Fragment>
+        <div className={arrowHeadClass} />
+        <div className={arrowTailClass} />
+      </Fragment>;
+    }
 
     return (
       <div className={bkColor}>
-        <div className={arrowHeadClass} />
-        <div className={arrowTailClass} />
+        {arrowDom}
         <div className={statusStyle}>
           <Icon className="stage-icon" type={statusIcon[status]} />
         </div>
