@@ -793,10 +793,17 @@ export default class TaskCreate extends Component {
             initialValue: userOptions.length ? initUsers : undefined,
           })(
             <Select
+              filter
+              allowClear
+              mode="multiple"
+              optionFilterProp="children"
               className="c7n-select_512"
               label={<FormattedMessage id="pipeline.task.auditor" />}
-              mode="tags"
-              allowClear
+              filterOption={(input, option) =>
+                option.props.children
+                  .toLowerCase()
+                  .indexOf(input.toLowerCase()) >= 0
+              }
             >
               {userOptions}
             </Select>,

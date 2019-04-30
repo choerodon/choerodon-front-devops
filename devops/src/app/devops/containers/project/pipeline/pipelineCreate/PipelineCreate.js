@@ -299,13 +299,13 @@ export default class PipelineCreate extends Component {
               <Select
                 filter
                 allowClear
-                mode="tags"
+                mode="multiple"
                 optionFilterProp="children"
                 label={formatMessage({ id: 'pipeline.trigger.member' })}
                 loading={getLoading.user}
                 getPopupContainer={triggerNode => triggerNode.parentNode}
                 filterOption={(input, option) =>
-                  option.props.children[1]
+                  option.props.children
                     .toLowerCase()
                     .indexOf(input.toLowerCase()) >= 0
                 }

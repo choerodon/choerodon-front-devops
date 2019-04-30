@@ -158,10 +158,17 @@ export default class StageCreateModal extends Component {
               initialValue: initUsers,
             })(
               <Select
-                label={formatMessage({ id: 'pipeline.flow.member' })}
-                mode="tags"
-                getPopupContainer={triggerNode => triggerNode.parentNode}
+                filter
                 allowClear
+                mode="multiple"
+                optionFilterProp="children"
+                label={formatMessage({ id: 'pipeline.flow.member' })}
+                getPopupContainer={triggerNode => triggerNode.parentNode}
+                filterOption={(input, option) =>
+                  option.props.children
+                    .toLowerCase()
+                    .indexOf(input.toLowerCase()) >= 0
+                }
               >
                 {user}
               </Select>,
