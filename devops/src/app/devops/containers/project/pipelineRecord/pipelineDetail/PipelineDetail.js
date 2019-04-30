@@ -105,6 +105,7 @@ export default class PipelineDetail extends Component {
             user={userDTOS}
             status={status}
             head={stageIndex === 0}
+            tail={stageIndex === stageRecordDTOS.length - 1}
             onlyOne={stageRecordDTOS.length === 1}
           />
           <DetailCard

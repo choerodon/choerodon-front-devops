@@ -220,8 +220,8 @@
   }
 
   .c7ncd-pipeline-detail-execute {
-    flex: 0 0 148px;
-    width: 148px;
+    flex: 0 0 146px;
+    width: 146px;
 
     .c7ncd-pipeline-execute-name {
       height: 22px;
@@ -288,15 +288,32 @@
 }
 
 .c7ncd-pipeline-title-head {
-  @extend .c7ncd-pipeline-title;
+  //@extend .c7ncd-pipeline-title;
 
   border-left: 2px solid;
+  padding-left: 12px;
 
   &::before {
     border: none;
   }
 
   .arrow-tail {
+    display: none;
+  }
+}
+
+.c7ncd-pipeline-title-tail {
+  border-right: 2px solid;
+
+  .c7ncd-pipeline-title-trigger {
+    right: 12px;
+  }
+
+  &::after {
+    border: none;
+  }
+
+  .arrow-head {
     display: none;
   }
 }
