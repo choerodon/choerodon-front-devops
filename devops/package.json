@@ -41,8 +41,7 @@
     "webpack": "^3.7.0",
     "webpack-dev-server": "^2.9.1",
     "xterm": "^3.12.0",
-    "yamljs": "^0.3.0",
-    "choerodon-ui": "latest"
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "stylelint": "^9.5.0",
