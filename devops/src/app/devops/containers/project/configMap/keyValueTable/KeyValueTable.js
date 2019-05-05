@@ -9,10 +9,6 @@ import StatusTags from '../../../../components/StatusTags';
 import EnvOverviewStore from "../../../../stores/project/envOverview";
 
 const { AppState } = stores;
-const HEIGHT =
-  window.innerHeight ||
-  document.documentElement.clientHeight ||
-  document.body.clientHeight;
 
 @observer
 class KeyValueTable extends Component {
@@ -26,9 +22,6 @@ class KeyValueTable extends Component {
     };
   }
 
-  /**
-   * 删除
-   */
   deleteKeyValue = () => {
     const { store, envId, title } = this.props;
     const { id: projectId } = AppState.currentMenuType;

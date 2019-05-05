@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Content, Header, Page, Permission, stores } from 'choerodon-front-boot';
+import { Content, Header, Page, Permission } from 'choerodon-front-boot';
 import { Button, Table, Tooltip, Modal, Spin } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import ElementsCreate from '../elementsCreate';
@@ -12,39 +12,30 @@ import './Element.scss';
 
 const EDIT_MODE = true;
 
-function _renderName(record) {
-  return <FormattedMessage id={`elements.type.${record.type}`} />;
-}
-
-function _renderOrigin(record) {
-  return <FormattedMessage id={`elements.origin.${record.origin}`} />;
-}
-
 @injectIntl
 @withRouter
 @inject('AppState')
 @observer
-class Elements extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showCreation: false,
-      showDelete: false,
-      deleteId: null,
-      deleteName: '',
-      deleteLoading: false,
-      editMode: false,
-      eleIdForEdit: undefined,
-      param: '',
-      filters: {},
-      sorter: {
-        columnKey: 'id',
-        order: 'descend',
-      },
-      enableDeleteLoading: false,
-      enableDelete: false,
-    };
-  }
+export default class Elements extends Component {
+  state = {
+    showCreation: false,
+    showDelete: false,
+    deleteId: null,
+    deleteName: '',
+    deleteLoading: false,
+    editMode: false,
+    eleIdForEdit: undefined,
+    param: '',
+    filters: {},
+    sorter: {
+      columnKey: 'id',
+      order: 'descend',
+    },
+    enableDeleteLoading: false,
+    enableDelete: false,
+    showTypeModal: false,
+    changeLoading: false,
+  };
 
   componentDidMount() {
     this.loadData();
@@ -103,6 +94,7 @@ class Elements extends Component {
       },
     } = this.props;
     ElementsStore.loadListData(projectId, page, size, sort, filter);
+    ElementsStore.loadDefaultRepo(projectId);
   };
 
   /**
@@ -172,19 +164,62 @@ class Elements extends Component {
       },
     } = this.props;
     const { deleteId } = this.state;
-    try {
-      this.setState({ deleteLoading: true });
-      const response = await ElementsStore.deleteConfig(projectId, deleteId);
-      const result = handleCheckerProptError(response);
-      if (result) {
-        this.closeRemove();
-        this.handleRefresh(null, 0);
-      }
-      this.setState({ deleteLoading: false });
-    } catch (e) {
+
+    this.setState({ deleteLoading: true });
+    const response = await ElementsStore.deleteConfig(projectId, deleteId).catch(e => {
       this.setState({ deleteLoading: false });
       Choerodon.handleResponseError(e);
+    });
+    const result = handleCheckerProptError(response);
+
+    if (result) {
+      this.closeRemove();
+      this.handleRefresh(null, 0);
     }
+    this.setState({ deleteLoading: false });
+  };
+
+  openTypeChange = () => {
+    this.setState({
+      showTypeModal: true,
+    });
+  };
+
+  closeTypeChange = () => {
+    this.setState({
+      showTypeModal: false,
+    });
+  };
+
+  handleChangeType = async () => {
+    const {
+      ElementsStore,
+      AppState: {
+        currentMenuType: {
+          id: projectId,
+        },
+      },
+    } = this.props;
+
+    const {
+      getDefault: {
+        harborIsPrivate,
+      },
+    } = ElementsStore;
+
+    this.setState({ changeLoading: true });
+    let response = await ElementsStore.changeRepoType(projectId, !harborIsPrivate)
+      .catch(e => {
+        this.setState({ changeLoading: false });
+        Choerodon.handleResponseError(e);
+      });
+    const result = handleCheckerProptError(response);
+
+    if (result) {
+      this.closeTypeChange();
+      ElementsStore.loadDefaultRepo(projectId);
+    }
+    this.setState({ changeLoading: false });
   };
 
   get getColumns() {
@@ -278,6 +313,7 @@ class Elements extends Component {
         getLoading,
         getPageInfo,
         getListData,
+        getDefault,
       },
       AppState: {
         currentMenuType: {
@@ -289,15 +325,17 @@ class Elements extends Component {
       },
     } = this.props;
     const {
-      showCreation,
       editMode,
       eleIdForEdit,
       param,
-      showDelete,
       deleteLoading,
       deleteName,
       enableDeleteLoading,
       enableDelete,
+      showCreation,
+      showDelete,
+      showTypeModal,
+      changeLoading,
     } = this.state;
 
     return (
@@ -339,16 +377,45 @@ class Elements extends Component {
           </Button>
         </Header>
         <Content code="elements" values={{ name }}>
-          <Table
-            filterBarPlaceholder={formatMessage({ id: 'filter' })}
-            loading={getLoading}
-            filters={param || []}
-            onChange={this.tableChange}
-            columns={this.getColumns}
-            pagination={getPageInfo}
-            dataSource={getListData}
-            rowKey={record => record.id}
-          />
+          <section className="c7ncd-elements-section">
+            <h3 className="c7ncd-elements-title">项目仓库组件</h3>
+            <div className="c7ncd-elements-info">
+              <div className="c7ncd-elements-items">
+                <FormattedMessage id="elements.default.helm" />
+                {getDefault.chartConfigName}
+              </div>
+              <div className="c7ncd-elements-items">
+                <FormattedMessage id="elements.default.docker" />
+                {getDefault.harborConfigName}
+              </div>
+              <div className="c7ncd-elements-items">
+                <FormattedMessage id="elements.docker.type" />
+                {typeof getDefault.harborIsPrivate === 'boolean' ? <Fragment>
+                  <FormattedMessage id={`elements.docker.type.${getDefault.harborIsPrivate ? 'private' : 'open'}`} />
+                  <Button
+                    shape="circle"
+                    size="small"
+                    funcType="flat"
+                    icon="mode_edit"
+                    onClick={this.openTypeChange}
+                  />
+                </Fragment> : null}
+              </div>
+            </div>
+          </section>
+          <section className="c7ncd-elements-section">
+            <h3 className="c7ncd-elements-title">应用可选</h3>
+            <Table
+              filterBarPlaceholder={formatMessage({ id: 'filter' })}
+              loading={getLoading}
+              filters={param || []}
+              onChange={this.tableChange}
+              columns={this.getColumns}
+              pagination={getPageInfo}
+              dataSource={getListData}
+              rowKey={record => record.id}
+            />
+          </section>
         </Content>
         {showCreation && <ElementsCreate
           id={eleIdForEdit}
@@ -384,9 +451,41 @@ class Elements extends Component {
             </div>
           }
         </Modal>)}
+        {showTypeModal && (<Modal
+          visible={showTypeModal}
+          title={`${formatMessage({ id: 'elements.docker.type.title' })}`}
+          closable={false}
+          footer={[
+            <Button
+              key="back"
+              onClick={this.closeTypeChange}
+              disabled={changeLoading}
+            >
+              <FormattedMessage id="cancel" />
+            </Button>,
+            <Button
+              key="submit"
+              type="primary"
+              onClick={this.handleChangeType}
+              loading={changeLoading}
+            >
+              <FormattedMessage id="edit" />
+            </Button>,
+          ]}
+        >
+          <div className="c7ncd-elements-modal">
+            <FormattedMessage id={`elements.docker.${getDefault.harborIsPrivate ? 'open' : 'private'}.describe`} />
+          </div>
+        </Modal>)}
       </Page>
     );
   }
 }
 
-export default Elements;
+function _renderName(record) {
+  return <FormattedMessage id={`elements.type.${record.type}`} />;
+}
+
+function _renderOrigin(record) {
+  return <FormattedMessage id={`elements.origin.${record.origin}`} />;
+}

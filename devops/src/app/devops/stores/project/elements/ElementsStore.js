@@ -27,6 +27,8 @@ class ElementsStore {
 
   @observable config = {};
 
+  @observable defaultConfig = {};
+
   @action setListData(data) {
     this.listData = data;
   }
@@ -81,6 +83,14 @@ class ElementsStore {
 
   @computed get getDetailLoading() {
     return this.detailLoading;
+  }
+
+  @action setDefault(data) {
+    this.defaultConfig = data;
+  }
+
+  @computed get getDefault() {
+    return this.defaultConfig;
   }
 
   async loadListData(projectId, page, size, sort, param) {
@@ -186,6 +196,23 @@ class ElementsStore {
     } catch (e) {
       this.setDetailLoading(false);
     }
+  }
+
+  async loadDefaultRepo(projectId) {
+    let data = await axios.get(`/devops/v1/projects/${projectId}/project_config/defaultConfig`)
+      .catch(e => {
+        Choerodon.handleResponseError(e);
+      });
+
+    const result = handleProptError(data);
+
+    if (result) {
+      this.setDefault(result);
+    }
+  }
+
+  changeRepoType(projectId, status) {
+    return axios.get(`/devops/v1/projects/${projectId}/project_config/enableProject?harborPrivate=${status}`);
   }
 
   checkName(projectId, name) {

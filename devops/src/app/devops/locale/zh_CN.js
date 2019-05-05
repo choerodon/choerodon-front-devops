@@ -1571,8 +1571,16 @@ const zhCN = {
   "elements.delete": "删除组件配置 ",
   "elements.delete.enable": "确定删除该组件配置吗？",
   "elements.delete.disable": "不能删除该组件配置。您仅能删除没有关联应用的自定义组件配置。",
+  "elements.default.helm": "项目当前 Helm 仓库：",
+  "elements.default.docker": "项目当前 Docker 仓库：",
+  "elements.docker.type": "Docker 仓库类型：",
+  "elements.docker.type.open": "公开",
+  "elements.docker.type.private": "私有",
+  "elements.docker.type.title": "确认修改",
+  "elements.docker.private.describe": "确认修改此项目的 Docker 仓库类型为私有？\n修改后，项目下所有应用均会默认置于该私库之中。",
+  "elements.docker.open.describe": "确认修改此项目的 Docker 仓库类型为公开？",
 
-  // terminal
+// terminal
   "devops.term.close": "连接已关闭",
   "devops.term.error": "连接错误，请重新打开",
 
