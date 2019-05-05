@@ -9,10 +9,10 @@ import LoadingBar from '../../../../components/loadingBar';
 import UserInfo from '../../../../components/userInfo';
 import DetailTitle from '../components/detailTitle';
 import DetailCard from '../components/detailCard';
+import { TRIGGER_TYPE_MANUAL } from '../components/Constants';
 
 import '../../../main.scss';
-import './PipelineDeyail.scss';
-import { TRIGGER_TYPE_MANUAL } from '../components/Constants';
+import './PipelineDetail.scss';
 
 const { Option } = Select;
 
