@@ -158,6 +158,7 @@ export default class PipelineEdit extends Component {
     if (getStageList.length === 1) {
       const { tempId, stageName } = getStageList[0] || {};
       return <StageCard
+        head
         allowDelete={false}
         key={tempId}
         stageId={tempId}
@@ -166,8 +167,9 @@ export default class PipelineEdit extends Component {
       />;
     }
 
-    return _.map(getStageList, ({ tempId, stageName }) => (<StageCard
+    return _.map(getStageList, ({ tempId, stageName }, stageIndex) => (<StageCard
       key={tempId}
+      head={stageIndex === 0}
       stageId={tempId}
       stageName={stageName}
       clickAdd={this.openCreateForm}

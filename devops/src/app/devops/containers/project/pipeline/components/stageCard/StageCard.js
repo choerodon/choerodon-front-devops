@@ -155,6 +155,7 @@ export default class StageCard extends Component {
       stageId,
       allowDelete,
       intl: { formatMessage },
+      head,
     } = this.props;
     const {
       stage,
@@ -185,6 +186,7 @@ export default class StageCard extends Component {
         </Tooltip>
 
         <StageTitle
+          head={head}
           allowDelete={allowDelete}
           name={stageName}
           type={triggerType}
