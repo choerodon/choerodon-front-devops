@@ -150,7 +150,6 @@ export default class PodCircle extends PureComponent {
       connect,
       name,
       count: { sum },
-      intl: { formatMessage },
       targetCount,
     } = this.props;
     const { btnDisable, textDisplay } = this.state;
