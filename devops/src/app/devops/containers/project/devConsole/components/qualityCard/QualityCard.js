@@ -2,7 +2,7 @@ import React, {Component, Fragment} from 'react';
 import { observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { withRouter } from 'react-router-dom';
-import { Icon, Popover } from 'choerodon-ui';
+import { Icon, Popover, Spin } from 'choerodon-ui';
 import _ from "lodash";
 import CodeQualityStore from "../../../../../stores/project/codeQuality";
 import Percentage from "../../../../../components/percentage/Percentage";
@@ -54,16 +54,16 @@ export default class StageTitle extends Component {
     let tooltipsDom = null;
     if (codeLines && codeLines.value) {
       linesKye = codeLines.value.match(/((^|(?<=;)).*?(?==))/g);
-      tooltipsDom = _.map(codeLines.value.split(";"), item => <div>{item}</div>)
+      tooltipsDom = _.map(codeLines.value.split(";"), item => <div key={item}>{item}</div>)
     }
     return (
       <div className="c7n-dc-card-wrap c7n-dc-card-codeQuality" onClick={this.linkToQuality}>
         <div className="c7n-dc-card-title">
           <Icon type="quality" />
           <FormattedMessage id="codeQuality.content.title" />
-          <span className="codeQuality-title-date">{formatMessage({ id: "codeQuality.analysis"})}：{date}</span>
+          <span className="codeQuality-title-date">{formatMessage({ id: "codeQuality.analysis"})}：{date.split('+')[0].replace(/T/g, ' ')}</span>
         </div>
-        {getLoading ? <LoadingBar display /> : (
+        <Spin spinning={getLoading}>
           <div className="c7n-card-codeQuality-content">
             <div className="codeQuality-content-block">
               <span className={`codeQuality-head-status codeQuality-head-status-${status}`}>
@@ -71,7 +71,7 @@ export default class StageTitle extends Component {
               </span>
               <FormattedMessage id="codeQuality.content.title" />
             </div>
-            {_.map(QUALITY_LIST, ({ key, value, icon, rate, url }) => (
+            {_.map(QUALITY_LIST, ({ key, value, icon, rate }) => (
               <div className="codeQuality-content-block" key={key}>
                 <div className="codeQuality-content-block-detail mg-bottom-12">
                   {key === "coverage" && <Percentage data={Number(value)} size={30} />}
@@ -92,7 +92,7 @@ export default class StageTitle extends Component {
               </div>
             ))}
           </div>
-        )}
+        </Spin>
       </div>
     );
   }

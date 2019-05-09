@@ -246,6 +246,9 @@ class CodeQuality extends Component {
             color: 'rgba(0, 0, 0, 0.65)',
             fontSize: 12,
           },
+          formatter(value) {
+            return `${value.substr(11)}\n${value.substr(0, 10)}`
+          },
         },
         splitLine: {
           lineStyle: {
@@ -285,8 +288,6 @@ class CodeQuality extends Component {
             width: 1,
           },
         },
-        // min: () ? null : 0,
-        // max: () ? null : 4,
       },
       series: series,
     };
@@ -303,7 +304,7 @@ class CodeQuality extends Component {
       location: {
         state,
         search,
-      }
+      },
     } = this.props;
     const backPath = `/devops/${state && state.appId ? "code-quality" : "reports"}${search}`;
     const { dateType, objectType } = this.state;
