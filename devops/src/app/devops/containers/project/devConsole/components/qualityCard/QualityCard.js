@@ -81,13 +81,16 @@ export default class StageTitle extends Component {
                 </div>
                 <div className="codeQuality-content-block-detail">
                   <Icon type={icon} />
-                  <Popover
-                    content={tooltipsDom}
-                  >
-                    <span className="mg-left-8">
-                      {key === "ncloc" ? linesKye.join() : formatMessage({ id: `codeQuality.${key}` })}
-                    </span>
-                  </Popover>
+                  {key === "ncloc" ? (
+                    <Popover
+                      content={key === "ncloc" ? tooltipsDom : null}
+                    >
+                      <span className="mg-left-8">
+                        {linesKye.slice(0, 2).join()}
+                        {linesKye.length > 2 && ",···"}
+                      </span>
+                    </Popover>) : <FormattedMessage id={`codeQuality.${key}`} />
+                  }
                 </div>
               </div>
             ))}
