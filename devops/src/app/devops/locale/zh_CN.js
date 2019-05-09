@@ -165,6 +165,7 @@ const pageDetail = {
   "branch.app.title": '应用"{name}"的分支',
   "branch.app.description":
     "分支是将您的开发工作从主线上分离开来，以免影响主线。您可在此查看各应用的分支，创建分支，并将代码拉至本地开发后提交代码。",
+  "branch.app.link": `${docServer}/user-guide/development-pipeline/branch/`,
   "branch.create.title": '在应用"{name}"中创建分支',
   "branch.create.description":
     "您在此选择该分支要解决的问题、分支来源，修改默认的分支类型及分支名称，即可创建分支。",
@@ -232,6 +233,7 @@ const pageDetail = {
   "ciPipeline.app.title": '应用"{name}"的持续集成',
   "ciPipeline.app.description":
     "您可在此查看各应用所有持续集成流水线的运行情况。",
+  "ciPipeline.app.link": `${docServer}/user-guide/development-pipeline/continuous-integration/`,
   "ciPipeline.link": `${docServer}/user-guide/development-pipeline/continuous-integration/`,
 
   // merge-request
@@ -241,6 +243,7 @@ const pageDetail = {
   "merge.app.title": '应用"{name}"的合并请求',
   "merge.app.description":
     "合并请求是将某一分支的代码合并至另一分支的操作。您可在此查看各应用的合并请求，及创建合并请求。",
+  "merge.app.link": `${docServer}/user-guide/development-pipeline/merge-request/`,
   "merge.link": `${docServer}/user-guide/development-pipeline/merge-request/`,
 
   // app-tag
@@ -250,6 +253,7 @@ const pageDetail = {
   "apptag.app.description":
     "标记是用于标识某一时间点形成的稳定可发布的代码版本。您可在此查看各应用的所有标记及相关提交信息，还可以基于某一分支创建标记。",
   "apptag.app.title": '应用"{name}"的标记',
+  "apptag.app.link": `${docServer}/user-guide/development-pipeline/tag/`,
   "apptag.link": `${docServer}/user-guide/development-pipeline/tag/`,
   "apptag.createTag": '在应用"{name}"中创建标记',
   "apptag.createDescription":
@@ -1544,6 +1548,8 @@ const zhCN = {
   "configMap.keyRepeat": "存在重复键，请检查输入。",
   "configMap.del": "删除配置映射",
   "configMap.del.tooltip": "确认删除配置映射吗？",
+  "configMap.mode.kv": "编辑 YAML",
+  "configMap.mode.yaml": "编辑键值对",
 
   // 密文
   "secret.head": "密文",
