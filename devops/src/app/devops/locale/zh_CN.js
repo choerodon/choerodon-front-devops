@@ -449,7 +449,7 @@ const pageDetail = {
   // 代码质量
   "codeQuality.title": "应用“{name}”的代码质量",
   "codeQuality.description": "代码质量页面主要用于展示对应应用的代码质量详情。",
-  "codeQuality.link": `${docServer}/user-guide/system-configuration/project/pipeline`,
+  "codeQuality.link": `${docServer}/user-guide/development-pipeline/code-quality/`,
 };
 
 const zhCN = {
