@@ -71,7 +71,9 @@ class CodeQuality extends Component {
     const {
       ReportsStore,
       AppState: { currentMenuType: { projectId } },
+      location: { state },
     } = this.props;
+    const { appId, type } = state || {};
     ReportsStore.loadAllApps(projectId)
       .then((data) => {
         const appData = data && data.length ? _.filter(data, ['permission', true]) : [];
@@ -79,7 +81,13 @@ class CodeQuality extends Component {
           ReportsStore.setAppId(appData[0].id);
           this.loadCharts();
         }
+        if (appData.length) {
+          const selectApp = appId || appData[0].id;
+          ReportsStore.setAppId(selectApp);
+          this.loadCharts();
+        }
       });
+    type && this.setState({ objectType: type });
   };
 
   /**
@@ -290,15 +298,15 @@ class CodeQuality extends Component {
       history,
       ReportsStore,
       AppState: {
-        currentMenuType: {
-          projectId,
-          name,
-          type,
-          organizationId,
-        },
+        currentMenuType: { name },
       },
+      location: {
+        state,
+        search,
+      }
     } = this.props;
-    const { dateType, objectType  } = this.state;
+    const backPath = `/devops/${state && state.appId ? "code-quality" : "reports"}${search}`;
+    const { dateType, objectType } = this.state;
     const {
       getAllApps,
       getStartDate,
@@ -371,6 +379,7 @@ class CodeQuality extends Component {
     >
       <Header
         title={formatMessage({ id: 'report.code-quality.head' })}
+        backPath={backPath}
       >
         <ChartSwitch
           history={history}

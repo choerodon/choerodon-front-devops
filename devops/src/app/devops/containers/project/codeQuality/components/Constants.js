@@ -75,6 +75,14 @@ const QUALITY_LIST = [
   },
 ];
 
+const OBJECT_TYPE = {
+  reliability: "issue",
+  maintainability: "issue",
+  coverage: "coverage",
+  duplications: "duplicate",
+};
+
 export {
   QUALITY_LIST,
+  OBJECT_TYPE,
 };

@@ -10,7 +10,7 @@ import DevPipelineStore from "../../../../stores/project/devPipeline";
 import DepPipelineEmpty from "../../../../components/DepPipelineEmpty/DepPipelineEmpty";
 import Percentage from "../../../../components/percentage/Percentage";
 import Rating from "../../../../components/rating/Rating";
-import { QUALITY_LIST } from "../components/Constants";
+import { QUALITY_LIST, OBJECT_TYPE } from "../components/Constants";
 
 import './CodeQuality.scss';
 import '../../../main.scss';
@@ -113,7 +113,7 @@ class CodeQuality extends Component {
                           to={{
                             pathname: "/devops/reports/code-quality",
                             search,
-                            state: { appId: getSelectApp },
+                            state: { appId: getSelectApp, type: OBJECT_TYPE[objKey]},
                           }}
                         >
                           <Icon type="timeline" className="reports-icon" />
