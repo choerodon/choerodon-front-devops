@@ -11,24 +11,23 @@ import TimePicker from '../Component/TimePicker';
 import NoChart from '../Component/NoChart';
 import LoadingBar from '../../../../components/loadingBar/LoadingBar';
 import { HEIGHT} from "../../../../common/Constants";
-import { getAxis } from "../../../../utils";
 
 import "./CodeQuality.scss";
 
 const { Option } = Select;
 const OBJECT_TYPE = {
-  question: [
+  issue: [
     { name: "bugs", color: "#5266d4" },
     { name: "codeSmells", color: "#2196f3" },
     { name: "vulnerabilities", color: "#00bcd4" },
   ],
   coverage: [
-    { name: "coverageCodeRows", color: "#2196f3" },
-    { name: "coverageRows", color: "#00bcd4" },
+    { name: "linesToCover", color: "#2196f3" },
+    { name: "coverLines", color: "#00bcd4" },
   ],
-  duplications: [
-    { name: "duplicationsCodeRows", color: "#2196f3" },
-    { name: "duplicationsRows", color: "#00bcd4" },
+  duplicate: [
+    { name: "nclocs", color: "#2196f3" },
+    { name: "duplicatedLines", color: "#00bcd4" },
   ],
 };
 
@@ -40,7 +39,7 @@ class CodeQuality extends Component {
     super(props);
     this.state = {
       dateType: 'seven',
-      objectType: "question",
+      objectType: "issue",
     };
   }
 
@@ -95,7 +94,7 @@ class CodeQuality extends Component {
     const { getStartTime, getEndTime, getAppId } = ReportsStore;
     const startTime = getStartTime.format().split('T')[0].replace(/-/g, '/');
     const endTime = getEndTime.format().split('T')[0].replace(/-/g, '/');
-    // ReportsStore.loadCodeQuality(projectId, getAppId, objectType, startTime, endTime);
+    ReportsStore.loadCodeQuality(projectId, getAppId, objectType, startTime, endTime);
   };
 
   /**
@@ -145,26 +144,17 @@ class CodeQuality extends Component {
       ReportsStore,
     } = this.props;
     const { objectType } = this.state;
-    const { getStartTime, getEndTime } = ReportsStore;
-    const { xAxis } = getAxis(getStartTime, getEndTime);
-
-    const getCodeQuality = {
-      bugs: [120, 132, 101, 134, 90, 230, 210],
-      vulnerabilities: [220, 182, 191, 234, 290, 330, 310],
-      codeSmells: [150, 232, 201, 154, 190, 330, 410],
-      coverageCodeRows: [320, 332, 301, 334, 390, 330, 320],
-      coverageRows: [820, 932, 901, 934, 1290, 1330, 1320],
-      duplicationsCodeRows: [120, 732, 921, 534, 1090, 1110, 1320],
-      duplicationsRows: [230, 532, 601, 734, 990, 1130, 1390],
-    };
+    const { getCodeQuality } = ReportsStore;
     const series = [];
     const legend = [];
+    const dates = _.map(getCodeQuality.dates, item => item.split('+')[0].replace(/T/g, ' '));
     _.map(OBJECT_TYPE[objectType], ({ name, color }) => {
       series.push(
         {
           name: formatMessage({ id: `report.code-quality.${name}` }),
-          type: 'line',
-          symbol: 'none',
+          type: "line",
+          symbol: "circle",
+          showSymbol: false,
           itemStyle: {
             color: color,
           },
@@ -183,7 +173,7 @@ class CodeQuality extends Component {
       tooltip: {
         trigger: 'axis',
         axisPointer: {
-          type: 'none',
+          type: 'line',
         },
         backgroundColor: '#fff',
         textStyle: {
@@ -194,12 +184,29 @@ class CodeQuality extends Component {
         padding: [10, 15],
         extraCssText:
           'box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2); border: 1px solid #ddd; border-radius: 0;',
+        formatter(params) {
+          const percent = (params[1].value / params[0].value * 100).toFixed(1);
+          const list = _.map(params, ({ color, value, seriesName }) => (
+            `<div>
+              <span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>
+              <span>${seriesName}：${value}</span>
+            </div>`
+          ));
+          return `<div>
+            <div><span>${formatMessage({ id: "report.date" })}：${params[0].axisValue}</span></div>
+            ${objectType !== "issue" ?
+               `<div><span>${formatMessage({ id: `report.code-quality.type.${objectType}`})}：${percent}%</span></div>` : ""
+            }
+            ${list.join("")}
+          </div>`
+        },
       },
       legend: {
         data: legend,
         left: "right",
         itemGap: 40,
         itemWidth: 34,
+        selectedMode: false,
       },
       grid: {
         left: '2%',
@@ -207,6 +214,14 @@ class CodeQuality extends Component {
         bottom: '3%',
         containLabel: true,
       },
+      dataZoom: [
+        {
+          startValue: dates[0],
+        },
+        {
+          type: 'inside',
+        },
+      ],
       xAxis: {
         type: 'category',
         axisTick: { show: false },
@@ -223,9 +238,6 @@ class CodeQuality extends Component {
             color: 'rgba(0, 0, 0, 0.65)',
             fontSize: 12,
           },
-          formatter(value) {
-            return `${value.substr(5).replace('-', '/')}`;
-          },
         },
         splitLine: {
           lineStyle: {
@@ -234,10 +246,10 @@ class CodeQuality extends Component {
             type: 'solid',
           },
         },
-        data: xAxis,
+        data: dates,
       },
       yAxis: {
-        name: formatMessage({ id: objectType === "question" ? "report.code-quality.number" : "report.code-quality.rows" }),
+        name: formatMessage({ id: objectType === "issue" ? "report.code-quality.number" : "report.code-quality.rows" }),
         type: 'value',
         nameTextStyle: {
           fontSize: 13,
@@ -325,7 +337,7 @@ class CodeQuality extends Component {
           onChange={this.handleTypeSelect}
         >
           {
-            _.map(["question", "coverage", "duplications"], item => (
+            _.map(["issue", "coverage", "duplicate"], item => (
               <Option value={item} key={item}>
                 <FormattedMessage id={`report.code-quality.type.${item}`} />
               </Option>))
@@ -353,7 +365,8 @@ class CodeQuality extends Component {
     return (<Page
       className="c7n-region c7n-report-codeQuality-wrapper"
       service={[
-
+        "devops-service.application.listByActive",
+        "devops-service.application.getSonarQubeTable",
       ]}
     >
       <Header
