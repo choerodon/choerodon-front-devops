@@ -46,7 +46,7 @@ const QUALITY_LIST = [
     isPercent: true,
   },
   {
-    icon: "adjust",
+    icon: "hdr_strong",
     key: "tests",
     hasReport: false,
   },

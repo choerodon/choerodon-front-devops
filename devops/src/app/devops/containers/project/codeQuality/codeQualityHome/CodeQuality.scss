@@ -88,6 +88,12 @@
             &-percentage {
               font-size: 13px;
               color: #0e1d80;
+              margin-left: 2px;
+            }
+
+            &-noValue {
+              font-size: 13px;
+              color: rgba(0, 0, 0, 0.36);
             }
           }
 
@@ -122,6 +128,14 @@
       .codeQuality-empty-more {
         color: #3f51b5;
       }
+    }
+  }
+
+  a {
+
+    &:focus,
+    &:visited {
+      text-decoration: none;
     }
   }
 }
