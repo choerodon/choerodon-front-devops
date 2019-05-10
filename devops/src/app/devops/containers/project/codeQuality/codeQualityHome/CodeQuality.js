@@ -101,10 +101,10 @@ class CodeQuality extends Component {
                       {url ? (
                         <a href={url} target="_blank">
                           <span className="block-number-link">{value}</span>
+                          {isPercent && <span className="block-number-percentage">%</span>}
                         </a>) : (
-                        <span className="block-number">{value}</span>
+                        <span className={`block-number ${!value && "block-number-noValue"}`}>{value || formatMessage({ id: "nodata" })}</span>
                       )}
-                      {isPercent && <span className="block-number-percentage">%</span>}
                       {rate && key !== "duplicated_lines_density" && <Rating rating={rate} />}
                       {key === "coverage" && <Percentage data={Number(value)} />}
                       {key === "duplicated_lines_density" && <Rating rating={rate} size="18px" type="pie" />}
