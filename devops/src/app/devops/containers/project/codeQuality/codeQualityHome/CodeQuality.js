@@ -70,15 +70,16 @@ class CodeQuality extends Component {
     const { date, status, sonarContents } = getData || {};
 
     // 合并数据，生成{key, value, icon, url, rate, hasReport}对象数组
+    const qualityList = [];
     _.map(QUALITY_LIST, item => {
       const data = _.find(sonarContents, ({ key }) => item.key === key) || {};
-      Object.assign(item, data);
+      qualityList.push(Object.assign({}, item, data));
     });
     const quality = {
-      reliability: QUALITY_LIST.slice(0, 4),
-      maintainability: QUALITY_LIST.slice(4, 8),
-      coverage: QUALITY_LIST.slice(8, 11),
-      duplications: QUALITY_LIST.slice(11, 14),
+      reliability: qualityList.slice(0, 4),
+      maintainability: qualityList.slice(4, 8),
+      coverage: qualityList.slice(8, 11),
+      duplications: qualityList.slice(11, 14),
     };
 
     return (
