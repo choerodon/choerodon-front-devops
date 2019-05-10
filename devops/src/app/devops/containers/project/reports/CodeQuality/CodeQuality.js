@@ -155,26 +155,28 @@ class CodeQuality extends Component {
     const { getCodeQuality } = ReportsStore;
     const series = [];
     const legend = [];
-    const dates = _.map(getCodeQuality.dates, item => item.split('+')[0].replace(/T/g, ' '));
+    const dates = getCodeQuality.dates || [];
     _.map(OBJECT_TYPE[objectType], ({ name, color }) => {
-      series.push(
-        {
-          name: formatMessage({ id: `report.code-quality.${name}` }),
-          type: "line",
-          symbol: "circle",
-          showSymbol: false,
-          itemStyle: {
-            color: color,
-          },
-          data: getCodeQuality[name],
-        }
-      );
-      legend.push(
-        {
-          name: formatMessage({ id: `report.code-quality.${name}` }),
-          icon: "line",
-        }
-      )
+      if (getCodeQuality[name]) {
+        series.push(
+          {
+            name: formatMessage({id: `report.code-quality.${name}`}),
+            type: "line",
+            symbol: "circle",
+            showSymbol: false,
+            itemStyle: {
+              color: color,
+            },
+            data: _.map(dates, (item, index) => [item, getCodeQuality[name][index]]),
+          }
+        );
+        legend.push(
+          {
+            name: formatMessage({id: `report.code-quality.${name}`}),
+            icon: "line",
+          }
+        )
+      }
     });
 
     return {
@@ -193,15 +195,15 @@ class CodeQuality extends Component {
         extraCssText:
           'box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2); border: 1px solid #ddd; border-radius: 0;',
         formatter(params) {
-          const percent = (params[1].value / params[0].value * 100).toFixed(1);
+          const percent = (params[1].value[1] / params[0].value[1] * 100).toFixed(1);
           const list = _.map(params, ({ color, value, seriesName }) => (
             `<div>
               <span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>
-              <span>${seriesName}：${value}</span>
+              <span>${seriesName}：${value[1]}</span>
             </div>`
           ));
           return `<div>
-            <div><span>${formatMessage({ id: "report.date" })}：${params[0].axisValue}</span></div>
+            <div><span>${formatMessage({ id: "report.date" })}：${params[0].value[0].split('+')[0].replace(/T/g, ' ')}</span></div>
             ${objectType !== "issue" ?
                `<div><span>${formatMessage({ id: `report.code-quality.type.${objectType}`})}：${percent}%</span></div>` : ""
             }
@@ -215,10 +217,11 @@ class CodeQuality extends Component {
         itemGap: 40,
         itemWidth: 34,
         selectedMode: false,
+        padding: [5, 10, 5, 0],
       },
       grid: {
-        left: '2%',
-        right: '3%',
+        left: 'left',
+        right: 10,
         bottom: '3%',
         containLabel: true,
       },
@@ -231,7 +234,7 @@ class CodeQuality extends Component {
         },
       ],
       xAxis: {
-        type: 'category',
+        type: 'time',
         axisTick: { show: false },
         axisLine: {
           lineStyle: {
@@ -246,9 +249,7 @@ class CodeQuality extends Component {
             color: 'rgba(0, 0, 0, 0.65)',
             fontSize: 12,
           },
-          formatter(value) {
-            return `${value.substr(11)}\n${value.substr(0, 10)}`
-          },
+          align: 'right',
         },
         splitLine: {
           lineStyle: {
@@ -257,7 +258,6 @@ class CodeQuality extends Component {
             type: 'solid',
           },
         },
-        data: dates,
       },
       yAxis: {
         name: formatMessage({ id: objectType === "issue" ? "report.code-quality.number" : "report.code-quality.rows" }),
@@ -265,6 +265,7 @@ class CodeQuality extends Component {
         nameTextStyle: {
           fontSize: 13,
           color: '#000',
+          padding: dates && dates.length ? null : [0, 0, 0, 25],
         },
         axisTick: { show: false },
         axisLine: {
@@ -288,6 +289,7 @@ class CodeQuality extends Component {
             width: 1,
           },
         },
+        scale: true,
       },
       series: series,
     };
