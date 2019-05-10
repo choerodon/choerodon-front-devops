@@ -7,7 +7,6 @@ import _ from "lodash";
 import CodeQualityStore from "../../../../../stores/project/codeQuality";
 import Percentage from "../../../../../components/percentage/Percentage";
 import Rating from "../../../../../components/rating/Rating";
-import LoadingBar from "../../../../../components/loadingBar/LoadingBar";
 import { QUALITY_LIST } from "../Constants";
 
 import './QuaityCard.scss';
@@ -45,9 +44,10 @@ export default class StageTitle extends Component {
     if (!date) {
       return null;
     }
+    const qualityList = [];
     _.map(QUALITY_LIST, item => {
       const data = _.find(sonarContents, ({ key }) => item.key === key) || {};
-      Object.assign(item, data);
+      qualityList.push(Object.assign({}, item, data));
     });
     const codeLines = _.find(sonarContents,({ key }) => key === "ncloc_language_distribution");
     let linesKye = [];
@@ -71,7 +71,7 @@ export default class StageTitle extends Component {
               </span>
               <FormattedMessage id="codeQuality.content.title" />
             </div>
-            {_.map(QUALITY_LIST, ({ key, value, icon, rate }) => (
+            {_.map(qualityList, ({ key, value, icon, rate }) => (
               <div className="codeQuality-content-block" key={key}>
                 <div className="codeQuality-content-block-detail mg-bottom-12">
                   {key === "coverage" && <Percentage data={Number(value)} size={30} />}
