@@ -38,6 +38,7 @@ function parse(values) {
  * 有意义的值的改动检测
  * @param old
  * @param value
+ * @param callback
  * @returns {boolean}
  */
 function changedValue(old, value, callback) {

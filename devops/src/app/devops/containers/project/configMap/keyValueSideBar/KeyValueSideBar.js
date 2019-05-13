@@ -34,6 +34,10 @@ const formItemLayout = {
 @inject('AppState')
 @observer
 export default class KeyValueSideBar extends Component {
+  static defaultProps = {
+    modeSwitch: false,
+  };
+
   state = {
     // 键值对格式
     dataSource: [new ConfigNode()],
@@ -575,7 +579,8 @@ export default class KeyValueSideBar extends Component {
           onValueChange={this.changeYamlValue}
           handleEnableNext={this.checkYamlError}
         />
-        <div className="c7ncd-config-yaml-tip">{hasValueError && (valueErrorMsg || <FormattedMessage id="configMap.yaml.error" />)}</div>
+        <div className="c7ncd-config-yaml-tip">{hasValueError && (valueErrorMsg ||
+          <FormattedMessage id="configMap.yaml.error" />)}</div>
       </Fragment>;
     }
 
@@ -668,6 +673,7 @@ export default class KeyValueSideBar extends Component {
       id,
       envId,
       title,
+      modeSwitch,
     } = this.props;
     const {
       submitting,
@@ -726,7 +732,7 @@ export default class KeyValueSideBar extends Component {
               >
                 <Icon type="help" />
               </Popover>}
-              <Button
+              {modeSwitch ? <Button
                 className="c7n-config-mode-btn"
                 type="primary"
                 funcType="flat"
@@ -734,7 +740,7 @@ export default class KeyValueSideBar extends Component {
                 onClick={this.changeEditMode}
               >
                 <FormattedMessage id={isYamlEdit ? 'configMap.mode.yaml' : 'configMap.mode.kv'} />
-              </Button>
+              </Button> : null}
             </div>
 
             <div className="c7n-config-editor">
