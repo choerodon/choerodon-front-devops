@@ -38,7 +38,6 @@ class DomainHome extends Component {
     };
     this.opColumn = this.opColumn.bind(this);
   }
-  sadfsadf
 
   componentDidMount() {
     const { id: projectId } = AppState.currentMenuType;
