@@ -454,6 +454,17 @@ const pageDetail = {
   "codeQuality.title": "应用“{name}”的代码质量",
   "codeQuality.description": "代码质量页面用于直观地展示该应用中代码通过SonarQube检测后的结果详情。",
   "codeQuality.link": `${docServer}/user-guide/development-pipeline/code-quality/`,
+
+  // 通知设置
+  "notification.title": '项目"{name}"的通知设置',
+  "notification.description": "通知设置的描述",
+  "notification.link": `${docServer}/user-guide/`,
+  "notification.create.title": '在项目"{name}"中创建通知',
+  "notification.create.description": "创建通知设置的描述",
+  "notification.create.link": `${docServer}/user-guide/`,
+  "notification.edit.title": '对通知"{name}"进行修改',
+  "notification.edit.description": "修改通知设置的描述",
+  "notification.edit.link": `${docServer}/user-guide/`,
 };
 
 const zhCN = {
@@ -1676,7 +1687,7 @@ const zhCN = {
   "pipeline.flow.stopped": "手动终止",
   "pipeline.action.detail": "执行记录",
   "pipeline.action.run": "执行",
-  "pipeline.delete": "删除流水线 ",
+  "pipeline.delete": "删除流水线",
   "pipeline.delete.message": "确定删除该流水线吗？",
   "pipeline.invalid": "停用流水线 ",
   "pipeline.invalid.message": "确定停用该流水线吗？",
@@ -1788,6 +1799,17 @@ const zhCN = {
   "codeQuality.empty.title": "暂无详情",
   "codeQuality.empty.content":
     "当前应用未使用SonarQube进行代码质量的检测，因此没有相关的代码质量详情。",
+
+  // Notifications
+  "notification.header.title": "通知设置",
+  "notification.header.create": "创建通知",
+  "notification.sidebar.create": "创建通知",
+  "notification.sidebar.edit": "修改通知",
+  "notification.delete": "删除通知",
+  "notification.delete.message": "确认删除通知？",
+  "notification.event": "事件",
+  "notification.method": "通知方式",
+  "notification.target": "通知对象",
 
   ...pageDetail,
 };
