@@ -220,8 +220,8 @@ export default class PipelineCreate extends Component {
       getCanSubmit,
     } = PipelineCreateStore;
 
-    const user = _.map(getUser, ({ id, realName }) => (
-      <Option key={id} value={String(id)}>{realName}</Option>));
+    const user = _.map(getUser, ({ id, realName, loginName }) => (
+      <Option key={id} value={String(id)}>{realName || loginName}</Option>));
 
     return (<Page
       className="c7n-region c7n-pipeline-creat"

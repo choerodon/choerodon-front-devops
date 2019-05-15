@@ -58,11 +58,11 @@ export default class DetailCard extends PureComponent {
         const auditUsers = [];
         const allAuditUsers = [];
 
-        _.forEach(userDTOList, ({ audit, realName }) => {
+        _.forEach(userDTOList, ({ audit, realName, loginName }) => {
           if (audit) {
-            auditUsers.push(realName);
+            auditUsers.push(realName || loginName);
           }
-          allAuditUsers.push(realName);
+          allAuditUsers.push(realName || loginName);
         });
 
         const expandRow = {
