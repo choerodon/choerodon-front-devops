@@ -12,10 +12,16 @@ import {
   Header,
   Page,
 } from 'choerodon-front-boot';
-import { Table, Button, Modal, Tooltip } from 'choerodon-ui';
+import { Table, Button, Modal, Tooltip, Select } from 'choerodon-ui';
 import _ from 'lodash';
 import NotificationSidebar from '../notificationSidebar';
+import UserList from '../components/userList';
+import TableTags from '../components/tableTags';
 import { handleCheckerProptError } from '../../../../utils';
+
+import './Notifications.scss';
+
+const { Option } = Select;
 
 @injectIntl
 @withRouter
@@ -38,6 +44,7 @@ export default class Notifications extends Component {
 
   componentDidMount() {
     this.loadData();
+    this.loadEnvironments();
   }
 
   tableChange = ({ current, pageSize }, filters, sorter, param) => {
@@ -138,6 +145,19 @@ export default class Notifications extends Component {
     this.setState({ deleteLoading: false });
   };
 
+  loadEnvironments() {
+    const {
+      NotificationsStore,
+      AppState: {
+        currentMenuType: {
+          id: projectId,
+        },
+      },
+    } = this.props;
+
+    NotificationsStore.loadEnvironments(projectId);
+  }
+
   loadData(toPage) {
     const {
       NotificationsStore,
@@ -166,6 +186,16 @@ export default class Notifications extends Component {
       },
     );
   }
+
+  handleSelectEnv = (value) => {
+    this.loadData();
+  };
+
+  renderUser = () => (<UserList />);
+
+  renderEvent = ({ notifyTriggerEvent }) => _.map(notifyTriggerEvent, item => <TableTags key={item} value={item} />);
+
+  renderMethod = ({ notifyType }) => _.map(notifyType, item => <TableTags key={item} value={item} />);
 
   renderAction = ({ id, name }) => {
     const {
@@ -218,34 +248,30 @@ export default class Notifications extends Component {
 
     return [{
       title: <FormattedMessage id="environment" />,
-      key: 'isEnabled',
-      dataIndex: 'isEnabled',
+      key: 'envName',
+      dataIndex: 'envName',
       sorter: true,
-      sortOrder: columnKey === 'isEnabled' && order,
+      sortOrder: columnKey === 'envName' && order,
       filters: [],
-      filteredValue: filters.isEnabled || [],
+      filteredValue: filters.envName || [],
     }, {
       title: <FormattedMessage id="notification.event" />,
-      key: 'triggerType',
-      dataIndex: 'triggerType',
-      sorter: true,
-      sortOrder: columnKey === 'triggerType' && order,
+      key: 'notifyTriggerEvent',
       filters: [],
-      filteredValue: filters.triggerType || [],
+      filteredValue: filters.notifyTriggerEvent || [],
+      render: this.renderEvent,
     }, {
       title: <FormattedMessage id="notification.method" />,
-      key: 'name',
-      dataIndex: 'name',
-      sorter: true,
-      sortOrder: columnKey === 'name' && order,
+      key: 'notifyType',
       filters: [],
-      filteredValue: filters.name || [],
+      filteredValue: filters.notifyType || [],
+      render: this.renderMethod,
     }, {
       title: <FormattedMessage id="notification.target" />,
-      key: 'lastUpdateDate',
-      dataIndex: 'lastUpdateDate',
-      sorter: true,
-      sortOrder: columnKey === 'lastUpdateDate' && order,
+      key: 'userRelDTOS',
+      filters: [],
+      filteredValue: filters.userRelDTOS || [],
+      render: this.renderUser,
     }, {
       key: 'action',
       align: 'right',
@@ -282,8 +308,13 @@ export default class Notifications extends Component {
       editId,
     } = this.state;
 
+    const envOptions = _.map(getEnvs, ({ id, name }) => (<Option key={id} value={id}>{name}</Option>));
+
     return (
-      <Page service={[]}>
+      <Page
+        className="c7n-devops-notifications"
+        service={[]}
+      >
         <Header title={<FormattedMessage id="notification.header.title" />}>
           <Permission
             service={[]}
@@ -307,6 +338,22 @@ export default class Notifications extends Component {
           </Button>
         </Header>
         <Content code="notification" values={{ name }}>
+          <Select
+            label={formatMessage({ id: 'notification.env.select' })}
+            className="notifications-select"
+            optionFilterProp="children"
+            onChange={this.handleSelectEnv}
+            loading={getEnvLoading}
+            filter
+            allowClear
+            filterOption={(input, option) =>
+              option.props.children
+                .toLowerCase()
+                .indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {envOptions}
+          </Select>
           <Table
             filterBarPlaceholder={formatMessage({ id: 'filter' })}
             loading={getLoading}
