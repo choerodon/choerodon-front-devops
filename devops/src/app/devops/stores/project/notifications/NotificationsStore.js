@@ -6,7 +6,7 @@ import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import { handleProptError } from '../../../utils';
 import { HEIGHT, SORTER_MAP } from '../../../common/Constants';
-import _ from "lodash";
+import _ from 'lodash';
 
 @store('NotificationsStore')
 class NotificationsStore {
@@ -130,15 +130,19 @@ class NotificationsStore {
     return this.envLoading;
   }
 
-  async loadListData(projectId, page, size, sort, param) {
+  async loadListData({ projectId, page, size, sort, param, env }) {
     this.setLoading(true);
 
-    const sortPath = sort ? `&sort=${sort.field || sort.columnKey},${SORTER_MAP[sort.order] || 'desc'}` : '';
+    const envParam = env ? `env_id=${env}&` : '';
+
+    const sortPath = sort
+      ? `&sort=${sort.field || sort.columnKey},${SORTER_MAP[sort.order] || 'desc'}`
+      : '';
+
+    const url = `/devops/v1/projects/${projectId}/notification/list?${envParam}page=${page}&size=${size}${sortPath}`;
+
     const data = await axios
-      .post(
-        `/devops/v1/projects/${projectId}/notification/list?page=${page}&size=${size}${sortPath}`,
-        JSON.stringify(param),
-      )
+      .post(url, JSON.stringify(param))
       .catch(e => {
         this.setLoading(false);
         Choerodon.handleResponseError(e);

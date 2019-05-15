@@ -158,7 +158,7 @@ export default class Notifications extends Component {
     NotificationsStore.loadEnvironments(projectId);
   }
 
-  loadData(toPage) {
+  loadData(toPage, env) {
     const {
       NotificationsStore,
       AppState: {
@@ -175,27 +175,57 @@ export default class Notifications extends Component {
       },
     } = NotificationsStore;
 
-    NotificationsStore.loadListData(
+    const postData = {
       projectId,
-      currentPage,
-      pageSize || storePageSize,
-      sorter,
-      {
+      page: currentPage,
+      size: pageSize || storePageSize,
+      sort: sorter,
+      param: {
         searchParam: filters,
         param: param.toString(),
       },
-    );
+      env,
+    };
+
+    NotificationsStore.loadListData(postData);
   }
 
   handleSelectEnv = (value) => {
-    this.loadData();
+    this.loadData(0, value);
   };
 
-  renderUser = () => (<UserList />);
+  renderUser = ({ userRelDTOS, notifyObject }) => (
+    <div className="c7n-devops-userlist-warp">
+      <UserList
+        type={notifyObject}
+        dataSource={userRelDTOS}
+      />
+    </div>
+  );
 
-  renderEvent = ({ notifyTriggerEvent }) => _.map(notifyTriggerEvent, item => <TableTags key={item} value={item} />);
+  /**
+   * 事件和通知方式使用相同的组件
+   * @param data
+   * @param type
+   * @returns {*}
+   */
+  renderTags(data, type) {
+    return _.map(data, item => {
+      const { intl: { formatMessage } } = this.props;
+      return <TableTags
+        key={item}
+        value={formatMessage({ id: `notification.${type}.${item}` })}
+      />;
+    });
+  }
 
-  renderMethod = ({ notifyType }) => _.map(notifyType, item => <TableTags key={item} value={item} />);
+  renderEvent = ({ notifyTriggerEvent }) => {
+    return this.renderTags(notifyTriggerEvent, 'event');
+  };
+
+  renderMethod = ({ notifyType }) => {
+    return this.renderTags(notifyType, 'method');
+  };
 
   renderAction = ({ id, name }) => {
     const {
