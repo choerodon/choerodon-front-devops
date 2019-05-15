@@ -1810,6 +1810,18 @@ const zhCN = {
   "notification.event": "事件",
   "notification.method": "通知方式",
   "notification.target": "通知对象",
+  "notification.event.instance": "删除实例",
+  "notification.event.service": "删除网络",
+  "notification.event.ingress": "删除域名",
+  "notification.event.certification": "删除证书",
+  "notification.event.configMap": "删除配置映射",
+  "notification.event.secret": "删除密文",
+  "notification.method.sms": "短信",
+  "notification.method.email": "邮件",
+  "notification.method.pm": "站内信",
+  "notification.target.handler": "操作着",
+  "notification.target.owner": "项目所有者",
+  "notification.target.specifier": "指定用户",
 
   ...pageDetail,
 };

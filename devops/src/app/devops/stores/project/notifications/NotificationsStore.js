@@ -6,6 +6,7 @@ import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import { handleProptError } from '../../../utils';
 import { HEIGHT, SORTER_MAP } from '../../../common/Constants';
+import _ from "lodash";
 
 @store('NotificationsStore')
 class NotificationsStore {
@@ -16,6 +17,12 @@ class NotificationsStore {
     total: 0,
     pageSize: HEIGHT <= 900 ? 10 : 15,
   };
+
+  @observable envData = [];
+
+  @observable users = [];
+
+  @observable singleData = {};
 
   @action setListData(data) {
     this.listData = data;
@@ -71,6 +78,30 @@ class NotificationsStore {
     return this.recordDate.slice();
   }
 
+  @computed get getEnvData() {
+    return this.envData.slice();
+  }
+
+  @action setEnvData(data) {
+    this.envData = data;
+  }
+
+  @computed get getUsers() {
+    return this.users.slice();
+  }
+
+  @action setUsers(data) {
+    this.users = data;
+  }
+
+  @computed get getSingleData() {
+    return this.singleData;
+  }
+
+  @action setSingleData(data) {
+    this.singleData = data;
+  }
+
   async loadListData(projectId, page, size, sort, param) {
     this.setLoading(true);
 
@@ -103,6 +134,47 @@ class NotificationsStore {
   deletePipeline(projectId, id) {
     return axios.delete(`/devops/v1/projects/${projectId}/pipeline/${id}`);
   };
+
+  /**
+   ** 查询所有环境
+   */
+  loadEnvData = projectId =>
+    axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
+      .then((data) => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setEnvData(res);
+        }
+      });
+
+  /**
+   * 查询项目所有者和项目成员
+   * @param projectId
+   */
+  loadUsers = projectId =>
+    axios.get(`/devops/v1/projects/${projectId}/pipeline/all_users`)
+      .then(data => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setUsers(res);
+        }
+      });
+
+  createData = (projectId, data) =>
+    axios.post(`/devops/v1/projects/${projectId}/notification`, JSON.stringify(data));
+
+  updateData = (projectId, data) =>
+    axios.put(`/devops/v1/projects/${projectId}/notification`, JSON.stringify(data));
+
+  loadSingleData = (projectId, id) =>
+    axios.get(`/devops/v1/projects/${projectId}/notification/${id}`)
+      .then(data => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setSingleData(data);
+        }
+        return res;
+      });
 }
 
 const notificationsStore = new NotificationsStore();
