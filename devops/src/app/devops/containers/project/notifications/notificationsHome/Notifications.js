@@ -265,12 +265,13 @@ export default class Notifications extends Component {
         },
       },
       intl: { formatMessage },
-      NotificationsStore: {
-        getLoading,
-        getPageInfo,
-        getListData,
-      },
+      NotificationsStore,
     } = this.props;
+    const {
+      getLoading,
+      getPageInfo,
+      getListData,
+    } = NotificationsStore;
     const {
       param,
       showDelete,
@@ -278,6 +279,7 @@ export default class Notifications extends Component {
       deleteName,
       showSidebar,
       sidebarType,
+      editId,
     } = this.state;
 
     return (
@@ -341,6 +343,8 @@ export default class Notifications extends Component {
         {showSidebar && <NotificationSidebar
           type={sidebarType}
           visible={showSidebar}
+          id={editId}
+          store={NotificationsStore}
           onClose={this.closeSidebar}
         />}
       </Page>
