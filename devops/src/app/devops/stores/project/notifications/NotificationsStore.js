@@ -102,13 +102,33 @@ class NotificationsStore {
     this.singleData = data;
   }
 
+  @observable envs = [];
+
+  @action setEnvs(data) {
+    this.envs = data;
+  }
+
+  @computed get getEnvs() {
+    return this.envs.slice();
+  }
+
+  @observable envLoading = false;
+
+  @action setEnvLoading(flag) {
+    this.envLoading = flag;
+  }
+
+  @computed get getEnvLoading() {
+    return this.envLoading;
+  }
+
   async loadListData(projectId, page, size, sort, param) {
     this.setLoading(true);
 
     const sortPath = sort ? `&sort=${sort.field || sort.columnKey},${SORTER_MAP[sort.order] || 'desc'}` : '';
     const data = await axios
       .post(
-        `/devops/v1/projects/${projectId}/pipeline/list_by_options?page=${page}&size=${size}${sortPath}`,
+        `/devops/v1/projects/${projectId}/notification/list?page=${page}&size=${size}${sortPath}`,
         JSON.stringify(param),
       )
       .catch(e => {
@@ -129,6 +149,21 @@ class NotificationsStore {
       this.setPageInfo(pageInfo);
     }
     this.setLoading(false);
+  }
+
+  async loadEnvironments(projectId) {
+    this.setEnvLoading(true);
+
+    const response = await axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
+      .catch(e => {
+        this.setEnvLoading(false);
+        Choerodon.handleResponseError(e);
+      });
+    const result = handleProptError(response);
+    if (result) {
+      this.setEnvs(result);
+    }
+    this.setEnvLoading(false);
   }
 
   deletePipeline(projectId, id) {

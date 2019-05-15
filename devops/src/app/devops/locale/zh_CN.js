@@ -1815,6 +1815,7 @@ const zhCN = {
   "notification.target.handler": "操作着",
   "notification.target.owner": "项目所有者",
   "notification.target.specifier": "指定用户",
+  "notification.env.select": "选择环境",
 
   ...pageDetail,
 };

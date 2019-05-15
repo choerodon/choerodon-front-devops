@@ -332,7 +332,7 @@
           - 'devops-service.devops-project-config.queryByPrimaryKey'
           - 'devops-service.devops-project-config.deleteByProjectConfigId'
           - 'devops-service.devops-project-config.checkIsUsed'
-    - "element-settings":
+    - "notifications":
         icon: notifications
         Routes: /devops/notifications
         sort: 5

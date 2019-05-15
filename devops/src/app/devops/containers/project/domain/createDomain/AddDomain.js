@@ -735,8 +735,7 @@ class CreateDomain extends Component {
                     filter
                     showSearch
                   >
-                    {_.map(env, item => {
-                      const { id, connect, name, permission } = item;
+                    {_.map(env, ({ id, connect, name, permission }) => {
                       return (
                         <Option
                           key={id}
