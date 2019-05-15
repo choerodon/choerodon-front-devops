@@ -332,6 +332,12 @@
           - 'devops-service.devops-project-config.queryByPrimaryKey'
           - 'devops-service.devops-project-config.deleteByProjectConfigId'
           - 'devops-service.devops-project-config.checkIsUsed'
+    - "notifications":
+        icon: notifications
+        Routes: /devops/notifications
+        sort: 5
+        permission:
+          - "devops-service.application.listByActive"
 
 # 项目层报表
 "platform-reports":
