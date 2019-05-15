@@ -18,11 +18,11 @@ class NotificationsStore {
     pageSize: HEIGHT <= 900 ? 10 : 15,
   };
 
-  @observable envData = [];
-
   @observable users = [];
 
   @observable singleData = {};
+
+  @observable disabledEvent = [];
 
   @action setListData(data) {
     this.listData = data;
@@ -102,6 +102,14 @@ class NotificationsStore {
     this.singleData = data;
   }
 
+  @computed get getDisabledEvent() {
+    return this.disabledEvent;
+  }
+
+  @action setDisabledEvent(data) {
+    this.disabledEvent = data;
+  }
+
   @observable envs = [];
 
   @action setEnvs(data) {
@@ -171,18 +179,6 @@ class NotificationsStore {
   };
 
   /**
-   ** 查询所有环境
-   */
-  loadEnvData = projectId =>
-    axios.get(`/devops/v1/projects/${projectId}/envs?active=true`)
-      .then((data) => {
-        const res = handleProptError(data);
-        if (res) {
-          this.setEnvData(res);
-        }
-      });
-
-  /**
    * 查询项目所有者和项目成员
    * @param projectId
    */
@@ -210,6 +206,21 @@ class NotificationsStore {
         }
         return res;
       });
+
+  /**
+   * 查询该环境下已经创建过的触发事件
+   * @param projectId
+   * @param envId
+   * @returns {*}
+   */
+  eventCheck = (projectId, envId) =>
+    axios.get(`/devops/v1/projects/${projectId}/notification/check?env_id=${envId}`)
+      .then(data => {
+        const res = handleProptError(data);
+        if (res) {
+          this.setDisabledEvent(data);
+        }
+      })
 }
 
 const notificationsStore = new NotificationsStore();

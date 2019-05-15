@@ -1819,9 +1819,10 @@ const zhCN = {
   "notification.method.sms": "短信",
   "notification.method.email": "邮件",
   "notification.method.pm": "站内信",
-  "notification.target.handler": "操作着",
+  "notification.target.handler": "操作者",
   "notification.target.owner": "项目所有者",
   "notification.target.specifier": "指定用户",
+  "notification.event.tips": "该环境下已创建该事件的通知",
   "notification.env.select": "选择环境",
 
   ...pageDetail,
