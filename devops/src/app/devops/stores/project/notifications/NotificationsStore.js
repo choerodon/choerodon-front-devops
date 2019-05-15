@@ -6,7 +6,6 @@ import { observable, action, computed } from 'mobx';
 import { axios, store } from 'choerodon-front-boot';
 import { handleProptError } from '../../../utils';
 import { HEIGHT, SORTER_MAP } from '../../../common/Constants';
-import _ from 'lodash';
 
 @store('NotificationsStore')
 class NotificationsStore {
