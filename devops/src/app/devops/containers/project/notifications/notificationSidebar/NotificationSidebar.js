@@ -2,7 +2,7 @@
  * @author ale0720@163.com
  * @date 2019-05-13 16:47
  */
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content } from 'choerodon-front-boot';
@@ -13,10 +13,18 @@ import {
   Modal,
   Radio,
   Checkbox,
+  Tooltip,
 } from 'choerodon-ui';
 import InterceptMask from '../../../../components/interceptMask/InterceptMask';
+import {
+  EVENT,
+  TARGET_OPTIONS,
+  METHOD_OPTIONS,
+  TARGET_SPECIFIER,
+} from "../Constants";
 
 import '../../../main.scss';
+import './NotificationSidebar.scss';
 
 const { Sidebar } = Modal;
 const { Item: FormItem } = Form;
@@ -42,6 +50,7 @@ export default class NotificationSidebar extends Component {
   state = {
     submitting: false,
     target: null,
+    envId: null,
   };
 
   componentDidMount() {
@@ -53,23 +62,28 @@ export default class NotificationSidebar extends Component {
       type,
       id,
     } = this.props;
-    store.loadEnvData(projectId);
+    store.loadEnvironments(projectId);
+    store.loadUsers(projectId);
     if (type === "edit" && id) {
-      store.loadSingleData(projectId, id);
-      store.loadUsers(projectId)
+      store.loadSingleData(projectId, id)
         .then(data => {
           if (data && !data.failed) {
+            const { notifyObject, envId } = data;
             this.setState({
-              target: data.notifyObject,
+              target: notifyObject,
+              envId,
             });
+            store.eventCheck(projectId, envId);
           }
-        })
+        });
     }
   }
 
   componentWillUnmount() {
     const { store } = this.props;
     store.setSingleData({});
+    store.setDisabledEvent([]);
+    store.setUsers([]);
   }
 
   handleSubmit = (e) => {
@@ -111,7 +125,7 @@ export default class NotificationSidebar extends Component {
           if (data && data.failed) {
             Choerodon.prompt(data.message);
           } else {
-            this.handleClose();
+            this.handleClose(true);
           }
         })
         .catch(err => {
@@ -124,26 +138,36 @@ export default class NotificationSidebar extends Component {
   /**
    * 关闭弹框
    */
-  handleClose = (reload) => {
+  handleClose = (reload = false) => {
     const { onClose } = this.props;
     onClose(reload);
+  };
+
+  /**
+   * 选择环境，查询该环境下已创建的触发事件
+   * @param value
+   */
+  handleEnvSelect = (value) => {
+    const {
+      store,
+      AppState: { currentMenuType: { projectId } },
+      form: { setFieldsValue, resetFields },
+    } = this.props;
+    const { getSingleData: { envId } } = store;
+    value && store.eventCheck(projectId, value);
+    if (value && value === envId) {
+      resetFields(["notifyTriggerEvent"]);
+    } else {
+      setFieldsValue({ notifyTriggerEvent: undefined })
+    }
+    this.setState({ envId: value });
   };
 
   /**
    * 修改通知对象
    */
   changeTarget = (e) => {
-    const value = e.target.value;
-    const {
-      store,
-      AppState: {
-        currentMenuType: { projectId },
-      },
-    } = this.props;
-    if(value === "specifier") {
-      store.loadUsers(projectId);
-    }
-    this.setState({ target: value });
+    this.setState({ target: e.target.value });
   };
 
   render() {
@@ -157,21 +181,19 @@ export default class NotificationSidebar extends Component {
     const {
       submitting,
       target,
+      envId,
     } = this.state;
     const {
-      getEnvData,
+      getEnvs,
       getUsers,
       getSingleData: {
-        envId,
         notifyTriggerEvent,
         notifyType,
         notifyObject,
         userRelIds,
       },
+      getDisabledEvent,
     } = store;
-    const EVENT = ["instance","ingress","service","certification", "configMap", "secret"];
-    const METHOD_OPTIONS = ["sms", "email", "pm"];
-    const TARGET_OPTIONS = ["handler", "owner", "specifier"];
 
     return (
       <div className="c7n-region">
@@ -184,6 +206,7 @@ export default class NotificationSidebar extends Component {
           onOk={this.handleSubmit}
           onCancel={this.handleClose}
           confirmLoading={submitting}
+          className="c7n-notifications-sidebar"
         >
           <Content
             code={`notification.${type}`}
@@ -192,7 +215,7 @@ export default class NotificationSidebar extends Component {
             <Form layout="vertical" className="c7n-sidebar-form">
               <FormItem className="c7n-select_512" {...formItemLayout}>
                 {getFieldDecorator('envId', {
-                  initialValue: getEnvData.length ? envId : undefined,
+                  initialValue: envId || undefined,
                   rules: [
                     {
                       required: true,
@@ -210,9 +233,10 @@ export default class NotificationSidebar extends Component {
                         .toLowerCase()
                         .indexOf(input.toLowerCase()) >= 0
                     }
+                    onChange={this.handleEnvSelect}
                   >
                     {
-                      _.map(getEnvData, ({ id, name }) => (
+                      _.map(getEnvs, ({ id, name }) => (
                         <Option
                           key={id}
                           value={id}
@@ -226,7 +250,7 @@ export default class NotificationSidebar extends Component {
               </FormItem>
               <FormItem className="c7n-select_512" {...formItemLayout}>
                 {getFieldDecorator('notifyTriggerEvent', {
-                  initialValue: notifyTriggerEvent || undefined,
+                  initialValue: notifyTriggerEvent ? notifyTriggerEvent.slice() : undefined,
                   rules: [
                     {
                       required: true,
@@ -238,23 +262,32 @@ export default class NotificationSidebar extends Component {
                     mode="tags"
                     label={formatMessage({ id: "notification.event" })}
                     allowClear
+                    disabled={!envId}
                   >
                     {
-                      _.map(EVENT, item => (
-                        <Option
-                          key={item}
-                          value={item}
-                        >
-                          {formatMessage({ id: `notification.event.${item}`})}
-                        </Option>
-                      ))
+                      _.map(EVENT, item => {
+                        const isDisabled = _.includes(getDisabledEvent, item) && !_.includes(notifyTriggerEvent, item);
+                        return (
+                          <Option
+                            key={item}
+                            value={item}
+                            disabled={isDisabled}
+                          >
+                            <Tooltip
+                              title={isDisabled ? formatMessage({id: "notification.event.tips"}) : ""}
+                            >
+                              {formatMessage({id: `notification.event.${item}`})}
+                            </Tooltip>
+                          </Option>
+                        )
+                      })
                     }
                   </Select>
                 )}
               </FormItem>
               <FormItem className="c7n-select_512" {...formItemLayout}>
                 {getFieldDecorator('notifyType', {
-                  initialValue: notifyType || undefined,
+                  initialValue: notifyType ? notifyType.slice() : undefined,
                   rules: [
                     {
                       required: true,
@@ -264,12 +297,14 @@ export default class NotificationSidebar extends Component {
                 })(
                   <CheckboxGroup
                     label={formatMessage({ id: "notification.method" })}
+                    className="c7n-form-checkbox"
                   >
                     {
                       _.map(METHOD_OPTIONS, item => (
                         <Checkbox
                           key={item}
                           value={item}
+                          className="c7n-checkbox-item"
                         >
                           {formatMessage({ id: `notification.method.${item}` })}
                         </Checkbox>
@@ -291,12 +326,14 @@ export default class NotificationSidebar extends Component {
                   <RadioGroup
                     label={formatMessage({ id: "notification.target" })}
                     onChange={this.changeTarget}
+                    className="c7n-form-checkbox"
                   >
                     {
                       _.map(TARGET_OPTIONS, item => (
                         <Radio
                           key={item}
                           value={item}
+                          className="c7n-checkbox-item"
                         >
                           {formatMessage({ id: `notification.target.${item}` })}
                         </Radio>
@@ -305,9 +342,9 @@ export default class NotificationSidebar extends Component {
                   </RadioGroup>
                 )}
               </FormItem>
-              {target === "specifier" && <FormItem className="c7n-select_512" {...formItemLayout}>
+              {target === TARGET_SPECIFIER && <FormItem className="c7n-select_512" {...formItemLayout}>
                 {getFieldDecorator('userRelIds', {
-                  initialValue: userRelIds || undefined,
+                  initialValue: userRelIds ? userRelIds.slice() : undefined,
                   rules: [
                     {
                       required: true,

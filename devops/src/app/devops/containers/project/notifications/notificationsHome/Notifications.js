@@ -297,6 +297,8 @@ export default class Notifications extends Component {
       getLoading,
       getPageInfo,
       getListData,
+      getEnvs,
+      getEnvLoading,
     } = NotificationsStore;
     const {
       param,
