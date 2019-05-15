@@ -78,14 +78,6 @@ class NotificationsStore {
     return this.recordDate.slice();
   }
 
-  @computed get getEnvData() {
-    return this.envData.slice();
-  }
-
-  @action setEnvData(data) {
-    this.envData = data;
-  }
-
   @computed get getUsers() {
     return this.users.slice();
   }
