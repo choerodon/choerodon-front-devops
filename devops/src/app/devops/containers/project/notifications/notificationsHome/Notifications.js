@@ -38,7 +38,6 @@ export default class Notifications extends Component {
     sidebarType: 'create',
     editId: undefined,
     showDelete: false,
-    deleteName: '',
     deleteId: undefined,
   };
 
@@ -104,10 +103,9 @@ export default class Notifications extends Component {
     this.loadData(page);
   };
 
-  openRemove(id, name) {
+  openRemove(id) {
     this.setState({
       showDelete: true,
-      deleteName: name,
       deleteId: id,
     });
   }
@@ -115,7 +113,6 @@ export default class Notifications extends Component {
   closeRemove = () => {
     this.setState({
       deleteId: undefined,
-      deleteName: '',
       showDelete: false,
     });
   };
@@ -227,7 +224,7 @@ export default class Notifications extends Component {
     return this.renderTags(notifyType, 'method');
   };
 
-  renderAction = ({ id, name }) => {
+  renderAction = ({ id }) => {
     const {
       AppState: {
         currentMenuType: {
@@ -237,39 +234,52 @@ export default class Notifications extends Component {
         },
       },
     } = this.props;
-    return <Permission
-      service={[]}
-      type={type}
-      projectId={projectId}
-      organizationId={organizationId}
-    >
-      <Tooltip
-        trigger="hover"
-        placement="bottom"
-        title={<FormattedMessage id="edit" />}
+    return <Fragment>
+      <Permission
+        service={[
+          'devops-service.devops-notification.update',
+        ]}
+        type={type}
+        projectId={projectId}
+        organizationId={organizationId}
       >
-        <Button
-          shape="circle"
-          size="small"
-          funcType="flat"
-          icon="mode_edit"
-          onClick={this.openEdit.bind(this, id)}
-        />
-      </Tooltip>
-      <Tooltip
-        trigger="hover"
-        placement="bottom"
-        title={<FormattedMessage id="delete" />}
+        <Tooltip
+          trigger="hover"
+          placement="bottom"
+          title={<FormattedMessage id="edit" />}
+        >
+          <Button
+            shape="circle"
+            size="small"
+            funcType="flat"
+            icon="mode_edit"
+            onClick={this.openEdit.bind(this, id)}
+          />
+        </Tooltip>
+      </Permission>
+      <Permission
+        service={[
+          'devops-service.devops-notification.delete',
+        ]}
+        type={type}
+        projectId={projectId}
+        organizationId={organizationId}
       >
-        <Button
-          shape="circle"
-          size="small"
-          funcType="flat"
-          icon="delete_forever"
-          onClick={this.openRemove.bind(this, id, name)}
-        />
-      </Tooltip>
-    </Permission>;
+        <Tooltip
+          trigger="hover"
+          placement="bottom"
+          title={<FormattedMessage id="delete" />}
+        >
+          <Button
+            shape="circle"
+            size="small"
+            funcType="flat"
+            icon="delete_forever"
+            onClick={this.openRemove.bind(this, id)}
+          />
+        </Tooltip>
+      </Permission>
+    </Fragment>;
   };
 
   get getColumns() {
@@ -334,7 +344,6 @@ export default class Notifications extends Component {
       param,
       showDelete,
       deleteLoading,
-      deleteName,
       showSidebar,
       sidebarType,
       editId,
@@ -345,11 +354,20 @@ export default class Notifications extends Component {
     return (
       <Page
         className="c7n-devops-notifications"
-        service={[]}
+        service={[
+          'devops-service.devops-notification.create',
+          'devops-service.devops-notification.update',
+          'devops-service.devops-notification.check',
+          'devops-service.devops-notification.listByOptions',
+          'devops-service.devops-notification.queryById',
+          'devops-service.devops-notification.delete',
+        ]}
       >
         <Header title={<FormattedMessage id="notification.header.title" />}>
           <Permission
-            service={[]}
+            service={[
+              'devops-service.devops-notification.create',
+            ]}
             type={type}
             projectId={projectId}
             organizationId={organizationId}
@@ -399,7 +417,7 @@ export default class Notifications extends Component {
         </Content>
         {showDelete && (<Modal
           visible={showDelete}
-          title={`${formatMessage({ id: 'notification.delete' })}“${deleteName}”`}
+          title={<FormattedMessage id="notification.delete" />}
           closable={false}
           footer={[
             <Button key="back" onClick={this.closeRemove} disabled={deleteLoading}>

@@ -324,20 +324,25 @@
         sort: 4
         permission:
           - "devops-service.devops-project-config.pageByOptions"
-          - 'devops-service.devops-project-config.update'
-          - 'devops-service.devops-project-config.create'
-          - 'devops-service.devops-project-config.checkName'
-          - 'devops-service.application.checkHarbor'
-          - 'devops-service.application.checkChart'
-          - 'devops-service.devops-project-config.queryByPrimaryKey'
-          - 'devops-service.devops-project-config.deleteByProjectConfigId'
-          - 'devops-service.devops-project-config.checkIsUsed'
-    - "notifications":
+          - "devops-service.devops-project-config.update"
+          - "devops-service.devops-project-config.create"
+          - "devops-service.devops-project-config.checkName"
+          - "devops-service.application.checkHarbor"
+          - "devops-service.application.checkChart"
+          - "devops-service.devops-project-config.queryByPrimaryKey"
+          - "devops-service.devops-project-config.deleteByProjectConfigId"
+          - "devops-service.devops-project-config.checkIsUsed"
+    - "devops-notifications":
         icon: notifications
         Routes: /devops/notifications
         sort: 5
         permission:
-          - "devops-service.application.listByActive"
+          - "devops-service.devops-notification.create"
+          - "devops-service.devops-notification.update"
+          - "devops-service.devops-notification.check"
+          - "devops-service.devops-notification.listByOptions"
+          - "devops-service.devops-notification.queryById"
+          - "devops-service.devops-notification.delete"
 
 # 项目层报表
 "platform-reports":
