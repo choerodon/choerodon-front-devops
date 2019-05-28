@@ -1,4 +1,7 @@
 # DevOps Front
+
+##  这个仓库已经被迁移至新的仓库。[https://github.com/choerodon/devops-service](https://github.com/choerodon/devops-service)
+
 `DevOps Front` is the core front service of Choerodon. This project is an overall front-end project includes [Choerodon DevOps](https://github.com/choerodon/choerodon-front-devops). This service is responsible for the continuous delivery of all homepages and provides users with a better user experience through a rich interface.
 
 ## Features
@@ -98,4 +101,3 @@ If you find any shortcomings or bugs, please describe them in the [issue](https:
 
 ## How to Contribute
 We welcome all contributions. You can submit any ideas as [pull requests](https://github.com/choerodon/choerodon/pulls). [Follow](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) to know for more information on how to contribute.
- 
