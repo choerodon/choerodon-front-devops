@@ -27,17 +27,14 @@ const config = {
   webpackConfig(configs) {
     const webpack = require("./devops/node_modules/webpack");
     configs.plugins.push(new webpack.DefinePlugin(env));
-    // const BundleAnalyzerPlugin = require('./devops/node_modules/webpack-bundle-analyzer').BundleAnalyzerPlugin;
-    // configs.plugins.push(new BundleAnalyzerPlugin());
     return configs;
   },
   entryName: "index",
   root: "/",
-  routes: null, // by default, routes use main in package.json
-  server: "http://api.staging.saas.hand-china.com", // api server
-  // server: "http://api.alpha.saas.hand-china.com",
+  routes: null,
+  server: "http://api.staging.saas.test.com", // api server
   clientid: "localhost",
-  fileServer: "http://minio.staging.saas.hand-china.com",
+  fileServer: "http://minio.staging.saas.test.com",
   titlename: "Choerodon",
   favicon: "favicon.ico",
   theme: {
